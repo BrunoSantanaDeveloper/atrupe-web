@@ -5,7 +5,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { useEffect } from 'react'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
-import { HandleValidateCpf } from '@/lib/HandleValidateCpf'
+import { HandleValidateCpf } from '@/lib/validateDocs'
 
 export function PersonFields() {
   const { watch, setValue, setError, setFocus, clearErrors } =
