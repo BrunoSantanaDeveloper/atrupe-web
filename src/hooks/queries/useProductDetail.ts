@@ -1,0 +1,57 @@
+import { getItemOld } from '@/actions/_cruds'
+import { useQuery } from '@tanstack/react-query'
+
+export interface IProductItem {
+  id: string
+  name: string
+  productId: string
+  unitOfMeasureId: string
+  unitCost: number
+  salePrice: number
+  quantity: number
+}
+
+export interface IProduct {
+  id: string
+  name: string
+  code: string
+  isActive: boolean
+  isStandard: boolean
+  unitOfMeasureId: string | null
+  unitCost: number | null
+  salePrice: number | null
+  quantity: number | null
+  companyId: string
+  categoryId: string
+  sectorId: string
+  items: IProductItem[]
+  technicalDescription?: string | null
+  allowEditDescription: boolean
+  allowEditValues: boolean
+}
+
+const QUERY_KEY = 'product'
+
+async function fetchData(productId: string): Promise<IProduct | undefined> {
+  if (!productId) {
+    return undefined
+  }
+  const data = await getItemOld({
+    route: 'productRoute',
+    id: productId,
+  })
+  return data
+}
+
+export function useProductDetail(productId: string) {
+  const queryKey = [QUERY_KEY, productId]
+
+  const { data, isError, isLoading } = useQuery({
+    queryKey,
+    queryFn: () => fetchData(productId),
+    enabled: !!productId,
+    staleTime: Infinity,
+  })
+
+  return { data, isError, isLoading }
+}

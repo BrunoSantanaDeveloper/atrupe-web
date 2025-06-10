@@ -1,0 +1,53 @@
+import { SVGProps } from 'react'
+
+import {
+  IconCnc,
+  IconTime,
+  IconFleet,
+  IconPrint,
+  IconRental,
+  IconCreation,
+  IconDelivery,
+  IconPainting,
+  IconProperty,
+  IconClothing,
+  IconWoodwork,
+  IconCommercial,
+  IconFinishing,
+  IconMetalwork,
+  IconWarehouse,
+  IconOutsourced,
+  IconProduction,
+  IconSerigraphy,
+  IconFastPrinting,
+  IconInstallation,
+  IconClientPickup,
+  IconAdministration,
+} from '@/assets/icons/CustomIcons'
+
+export const sectorIcons: {
+  [key: string]: (props: SVGProps<SVGSVGElement>) => JSX.Element
+} = {
+  'device-desktop-analytics': IconAdministration,
+  shirt: IconClothing,
+  cnc: IconCnc,
+  'heart-handshake': IconCommercial,
+  bulb: IconCreation,
+  'package-export': IconDelivery,
+  'user-up': IconClientPickup,
+  printer: IconFastPrinting,
+  slice: IconFinishing,
+  truck: IconFleet,
+  track: IconInstallation,
+  hacksaw: IconWoodwork,
+  metalwork: IconMetalwork,
+  'users-group': IconOutsourced,
+  painting: IconPainting,
+  print: IconPrint,
+  'settings-cog': IconProduction,
+  'devices-2': IconProperty,
+  'presentation-analytics': IconRental,
+  'screen-printing': IconSerigraphy,
+  'clock-hour-8': IconTime,
+  wallpaper: IconWarehouse,
+}

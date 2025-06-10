@@ -1,0 +1,124 @@
+import { ActionButton } from '@/components/common/ActionButton'
+import { CpfOrCnpjField } from '@/components/common/form/global-inputs/CpfOrCnpjField'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { Loader2, SearchIcon, TextSearchIcon } from 'lucide-react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+const searchClientSchema = z.object({
+  cpfOrCnpj: z
+    .string()
+    .min(13, { message: 'CPF ou CNPJ é obrigatório' })
+    .max(14, { message: 'CPF ou CNPJ é obrigatório' }),
+})
+
+type SearchClientFormType = z.infer<typeof searchClientSchema>
+
+export function SearchClientTriggerButton({
+  onOpenChange,
+}: {
+  onOpenChange: (open: boolean) => void
+}) {
+  return (
+    <TooltipProvider>
+      <ActionButton
+        tooltip="Consultar dados de cliente"
+        size="iconMd"
+        variant="neutralOutline"
+        Icon={TextSearchIcon}
+        className="bg-transparent"
+        onClick={() => onOpenChange(true)}
+      />
+    </TooltipProvider>
+  )
+}
+
+export function SearchClientModal({
+  open,
+  onOpenChange,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}) {
+  const form = useForm<SearchClientFormType>({
+    resolver: zodResolver(searchClientSchema),
+  })
+
+  const {
+    formState: { isSubmitting },
+  } = form
+
+  const handleSubmit = (data: SearchClientFormType) => {
+    console.log('data', data)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-[400px]">
+        <DialogHeader className="border-none">
+          <div className="flex flex-col items-center gap-4">
+            <FeaturedIcon
+              variant="successBorderedLight"
+              className="w-12 h-12"
+              rounded
+              Icon={TextSearchIcon}
+            />
+
+            <DialogTitle>Consultar dados de cliente</DialogTitle>
+            <DialogDescription className="text-center">
+              Informe o CNPJ ou CPF
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+        <DialogBody className="mt-0 pt-0">
+          <FormProvider {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <CpfOrCnpjField
+                name="cpfOrCnpj"
+                placeholder="Digite aqui"
+                label=""
+              />
+            </form>
+          </FormProvider>
+        </DialogBody>
+        <DialogFooter className="flex sm:justify-end pt-0 border-none">
+          <div className="space-x-4">
+            <DialogClose asChild>
+              <Button type="button" variant="neutralOutline">
+                Fechar
+              </Button>
+            </DialogClose>
+
+            <Button
+              type="submit"
+              form="new-client-form-abc"
+              disabled={isSubmitting}
+              onClick={() => {
+                form.handleSubmit(handleSubmit)()
+              }}
+            >
+              Consultar
+              {isSubmitting && (
+                <Loader2 className="w-5 h-5 ml-1 animate-spin" />
+              )}
+              {!isSubmitting && <SearchIcon className="w-5 h-5 ml-1" />}
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}

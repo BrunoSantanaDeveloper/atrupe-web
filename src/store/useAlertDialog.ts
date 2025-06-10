@@ -1,0 +1,119 @@
+import { create } from 'zustand'
+import { IconAlertTriangle, IconProps } from '@tabler/icons-react'
+import { ButtonProps } from '@/components/ui/button'
+import { FeaturedIconProps } from '@/components/ui/featured-icon'
+import { toast } from 'sonner'
+
+const DEFAULT_TIMEOUT = 30000
+
+const DEFAULT_MESSAGES = {
+  loading: 'Aguarde...',
+  success: 'Sucesso!',
+  error: 'Ocorreu um erro',
+} as const
+
+type LoadingConfig = {
+  loading?: string
+  success?: string
+  error?: string
+}
+
+type BaseAlertDialog = {
+  isOpen: boolean
+  title: string
+  description?: string
+  confirmLabel?: string
+  cancelLabel?: string
+  onConfirm?: () => void | Promise<void>
+  onCancel?: () => void
+  Icon?: React.ComponentType<IconProps>
+  iconVariant?: FeaturedIconProps['variant']
+  confirmVariant?: ButtonProps['variant']
+  toastMsg?: LoadingConfig
+  timeout?: number
+}
+
+// Função auxiliar para criar Promise com timeout
+const createTimeoutPromise = (timeout: number) =>
+  new Promise((_resolve, reject) =>
+    setTimeout(() => reject(new Error('Operation timed out')), timeout),
+  )
+
+type AlertDialogStore = BaseAlertDialog & {
+  open: (props: Omit<BaseAlertDialog, 'isOpen'>) => Promise<boolean>
+  close: () => void
+  confirm: () => Promise<boolean>
+}
+
+export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
+  isOpen: false,
+  title: 'Confirmar ação',
+  description: '',
+  confirmLabel: '',
+  cancelLabel: 'Voltar',
+  onConfirm: undefined,
+  onCancel: undefined,
+  Icon: IconAlertTriangle,
+  iconVariant: 'warningBorderedLight',
+  confirmVariant: 'default',
+  toastMsg: DEFAULT_MESSAGES,
+  timeout: DEFAULT_TIMEOUT,
+  open: (props) => {
+    set({ isOpen: true, ...props })
+    return get().confirm()
+  },
+  close: () => set({ isOpen: false }),
+  confirm: () => {
+    return new Promise((resolve, reject) => {
+      const { onConfirm, toastMsg, timeout = DEFAULT_TIMEOUT } = get()
+
+      const timeoutId = setTimeout(() => {
+        set({ isOpen: false })
+        reject(new Error('Dialog confirmation timed out'))
+      }, timeout)
+
+      const cleanup = () => {
+        clearTimeout(timeoutId)
+        set({ isOpen: false })
+      }
+
+      const handleConfirm = async () => {
+        if (!onConfirm) {
+          cleanup()
+          resolve(true)
+          return
+        }
+
+        try {
+          if (toastMsg) {
+            await toast.promise(
+              Promise.race([onConfirm(), createTimeoutPromise(timeout)]),
+              {
+                loading: toastMsg.loading ?? DEFAULT_MESSAGES.loading,
+                success: toastMsg.success ?? DEFAULT_MESSAGES.success,
+                error: (error: Error) =>
+                  error.message || toastMsg.error || DEFAULT_MESSAGES.error,
+              },
+            )
+          } else {
+            await Promise.race([onConfirm(), createTimeoutPromise(timeout)])
+          }
+          cleanup()
+          resolve(true)
+        } catch (error) {
+          cleanup()
+          resolve(false)
+        }
+      }
+
+      set({
+        isOpen: true,
+        onConfirm: handleConfirm,
+        onCancel: () => {
+          cleanup()
+          resolve(false)
+        },
+      })
+    })
+  },
+}))

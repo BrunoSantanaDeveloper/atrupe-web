@@ -1,0 +1,142 @@
+'use client'
+
+// React
+import { useState } from 'react'
+
+// UI
+import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+
+// Components
+import {
+  ListDataTotalEmpty,
+  ListDataStatusEmpty,
+} from '@/components/common/TableEmptyState'
+import { OrdersData } from './OrdersTable/OrdersData'
+import { OrdersFilter } from './OrdersTable/OrdersFilter'
+import { TabNavType, Topbar } from '@/components/common/Topbar'
+import { TableFiltersHeader } from '@/components/common/TableHeader'
+import {
+  NewQuotationModal,
+  NewQuotationTriggerButton,
+} from '../../orcamentos/components/NewQuotation'
+import { PermissionGate } from '@/components/common/PermissionGate'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
+
+// Actions
+import { getDataOld } from '@/actions/_cruds'
+
+// Third-party
+import { useQuery } from '@tanstack/react-query'
+
+// Icons
+import { IconNewsOff } from '@tabler/icons-react'
+
+export function Orders({ searchParams }: SearchParamsType) {
+  const [openDialog, setOpenDialog] = useState(false)
+
+  const { data, isLoading } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['order-totals'],
+    queryFn: () => getDataOld({ route: 'orderTotalsRoute' }),
+  })
+
+  const totals: { [key: string]: number } = {
+    aguardando: data?.PENDING,
+    producao: data?.IN_PRODUCTION,
+    finalizadas: data?.FINISHED,
+    canceladas: data?.CANCELED,
+    todas: data?.TOTAL,
+  }
+
+  const status = searchParams.status
+  const statusEmpty = totals?.[status] === 0
+
+  const tabs: TabNavType[] = [
+    {
+      value: 'PENDING',
+      tab: 'aguardando',
+      label: 'Aguardando',
+      count: totals?.aguardando,
+    },
+    {
+      value: 'IN_PRODUCTION',
+      tab: 'producao',
+      label: 'Em produção / Entrega',
+      count: totals?.producao,
+    },
+    {
+      value: 'FINISHED',
+      tab: 'finalizadas',
+      label: 'Finalizadas',
+      count: totals?.finalizadas,
+    },
+    {
+      value: 'CANCELED',
+      tab: 'canceladas',
+      label: 'Canceladas',
+      count: totals?.canceladas,
+    },
+    {
+      value: '',
+      tab: 'todas',
+      label: 'Todas',
+      count: totals?.todas,
+    },
+  ]
+
+  const statusLabel =
+    tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
+
+  return (
+    <PermissionGate permissions={['sale:order:view']}>
+      <div className="space-y-5">
+        <Topbar
+          title="Ordens de serviço"
+          tabs={tabs}
+          activeTab={searchParams?.status || 'todas'}
+          paramName="status"
+          primaryCta={
+            <NewQuotationTriggerButton onOpenChange={setOpenDialog} />
+          }
+        />
+        <div>
+          <Card>
+            {isLoading ? (
+              <Skeleton className="h-[calc(100vh-150px)]" />
+            ) : totals?.todas && totals?.todas > 0 ? (
+              statusEmpty ? (
+                <ListDataStatusEmpty
+                  title={`Nenhuma ordem de serviço para o status: ${statusLabel}`}
+                  icon={IconNewsOff}
+                />
+              ) : (
+                <>
+                  <TableFiltersHeader searchParams={searchParams}>
+                    <OrdersFilter searchParams={searchParams} />
+                  </TableFiltersHeader>
+                  <OrdersData searchParams={searchParams} tabs={tabs} />
+                </>
+              )
+            ) : (
+              <ListDataTotalEmpty
+                icon={IconNewsOff}
+                title="Sem ordens de serviço"
+                description="Cadastre um orçamento"
+                cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
+              />
+            )}
+          </Card>
+          <NewQuotationModal
+            open={openDialog}
+            onOpenChange={(open) => {
+              setOpenDialog(open)
+            }}
+          />
+        </div>
+      </div>
+    </PermissionGate>
+  )
+}
