@@ -86,8 +86,8 @@ A aplicação estará disponível em [http://localhost:3018](http://localhost:30
 
 ```
 src/
-├── app/                          # App Router do Next.js
-│   ├── (app)/                   # Rotas protegidas/autenticadas
+├── app/                         # App Router do Next.js
+│   ├── (app-sidebar)/           # Rotas protegidas/autenticadas
 │   │   ├── admin/               # Área administrativa
 │   │   ├── cadastros/           # Gestão de cadastros
 │   │   ├── configuracoes/       # Configurações do sistema
@@ -96,7 +96,7 @@ src/
 │   │   ├── producao/            # Controle de produção
 │   │   └── vendas/              # Módulo de vendas
 │   └── (blank-layout-pages)/    # Páginas sem layout (auth, etc.)
-├── components/                   # Componentes React
+├── components/                  # Componentes React
 │   ├── ui/                      # Componentes base (ShadCN UI)
 │   ├── common/                  # Componentes reutilizáveis
 │   └── layout/                  # Componentes de layout
