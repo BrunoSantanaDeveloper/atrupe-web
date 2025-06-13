@@ -75,8 +75,6 @@ export function SidebarComponent(props: Props) {
 
   const mainNavigation = getMainNavigation(userRole)
 
-  // const { trialDaysLeft, trial } = session.company
-
   const { hasPermission } = usePermissions()
 
   // TODO: Verificar se o usuário é admin com isAdmin
@@ -343,23 +341,6 @@ export function SidebarComponent(props: Props) {
               </Accordion>
             </nav>
           </ScrollArea>
-          {/* {trial ? (
-            <div className="flex items-center justify-between gap-4 p-5 mt-auto bg-orange">
-              <div className="flex items-center gap-3">
-                <IconClock className="text-white" />
-                <span className="text-sm font-semibold text-white">Trial</span>
-              </div>
-              <Badge
-                className={cn(
-                  'bg-white text-orange-700 mix-blend-normal transition-all ease-in-out duration-500',
-                  collapsed ? 'opacity-0' : '',
-                )}
-              >
-                {trialDaysLeft || 0} {trialDaysLeft === 1 ? 'dia' : 'dias'}{' '}
-                {trialDaysLeft === 1 ? 'restante' : 'restantes'}
-              </Badge>
-            </div>
-          ) : null} */}
         </div>
 
         {/* Secondary navigation */}

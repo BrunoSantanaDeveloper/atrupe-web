@@ -5,7 +5,6 @@ import { UAParser } from 'ua-parser-js'
 
 // Lib Imports
 import apiInstance from '@/lib/api'
-import { defaultRoutes } from '@/actions/routes'
 
 declare module 'next-auth' {
   interface Session {
@@ -23,9 +22,9 @@ declare module 'next-auth' {
       legalName: string
       logo: string
       favicon: string
-      plan: string
-      trial: boolean
-      trialDaysLeft: number
+      subscription: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
+      isTrial: boolean
+      trialEndsAt: string
     }
     accessToken: string
   }
@@ -44,7 +43,6 @@ export const {
       },
       authorize: async (credentials, request) => {
         const api = await apiInstance()
-        const defaultRoute = defaultRoutes()
 
         const headers = request.headers
 
@@ -58,7 +56,7 @@ export const {
         )
 
         try {
-          const res = await api.post(defaultRoute.authRoute, credentials)
+          const res = await api.post('/auth/login', credentials)
 
           const authData = await res.data
 
@@ -69,6 +67,8 @@ export const {
           if (res.status === 201) {
             const token = `Bearer ${authData.access_token}`
             api.defaults.headers.Authorization = token
+
+            const isTrial = authData.company.subscription === 'TRIAL'
 
             return {
               id: authData.id,
@@ -83,9 +83,9 @@ export const {
               companyName: authData.company.name,
               companyLegalName: authData.company.legalName,
               accessToken: token,
-              plan: authData.company.plan || 'START',
-              trial: authData.company.trial || true,
-              trialDaysLeft: authData.company.trialDaysLeft || 3,
+              subscription: authData.company.subscription,
+              isTrial,
+              trialEndsAt: authData.company.trialEndsAt,
               permissions: authData.permissions || [],
             }
           }
@@ -113,11 +113,11 @@ export const {
       if (trigger === 'update' && session) {
         // Atualizar dados da empresa se fornecidos
         if (session.company) {
-          if (typeof session.company.trial !== 'undefined') {
-            token.trial = session.company.trial
+          if (typeof session.company.isTrial !== 'undefined') {
+            token.isTrial = session.company.isTrial
           }
-          if (typeof session.company.trialDaysLeft !== 'undefined') {
-            token.trialDaysLeft = session.company.trialDaysLeft
+          if (typeof session.company.trialEndsAt !== 'undefined') {
+            token.trialEndsAt = session.company.trialEndsAt
           }
           if (typeof session.company.name !== 'undefined') {
             token.companyName = session.company.name
@@ -153,9 +153,9 @@ export const {
           legalName: token.companyLegalName,
           logo: token.companyLogo,
           favicon: token.companyFavicon,
-          plan: token.plan,
-          trial: token.trial,
-          trialDaysLeft: token.trialDaysLeft,
+          subscription: token.subscription,
+          isTrial: token.isTrial,
+          trialEndsAt: token.trialEndsAt,
         },
         expires: session.expires,
         accessToken: token.accessToken,

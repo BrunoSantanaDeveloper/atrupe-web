@@ -1,6 +1,5 @@
 const defaultRoute: { [key: string]: string } = {
   // auth
-  authRoute: '/auth/login',
   meRoute: '/user/me',
 
   // configurações de venda
@@ -103,14 +102,6 @@ const defaultRoute: { [key: string]: string } = {
   uploadFileRoute: '/file/upload-image',
 }
 
-const devRoutes: { [key: string]: string } = {
-  authRoute: '/authLogin',
-  meRoute: '/userMe',
-  adminMe: '/adminMe',
-}
-
 export function defaultRoutes() {
   return defaultRoute
-
-  return devRoutes
 }

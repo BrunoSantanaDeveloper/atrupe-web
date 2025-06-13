@@ -20,13 +20,18 @@ export async function TrialExpiredAlert() {
 
   if (!session) return null
 
-  const { trialDaysLeft, trial } = session.company
+  const { trialEndsAt, isTrial } = session.company
 
-  if (!trial) return null
+  if (!isTrial) return null
 
-  const isExpired = trialDaysLeft === 0
+  const isExpired = new Date(trialEndsAt) < new Date()
 
   const Icon = isExpired ? IconClockX : IconClock
+
+  const trialDaysLeft = Math.ceil(
+    (new Date(trialEndsAt).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
+  )
 
   return (
     <div
