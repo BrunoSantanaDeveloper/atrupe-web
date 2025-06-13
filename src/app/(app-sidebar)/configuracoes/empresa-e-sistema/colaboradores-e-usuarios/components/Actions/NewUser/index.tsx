@@ -31,7 +31,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { createItem, updateItem } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -101,9 +101,12 @@ export function NewUserDialog({
   const mutation = useMutation({
     mutationFn: (data: Omit<FormType, 'confirmPassword' | 'password'>) =>
       editMode
-        ? updateItem('userRoute', `${rowData?.user?.id}`, data)
-        : createItem({
-            route: 'userRoute',
+        ? updateItemNew({
+            route: `/user/employee/${rowData?.user?.id}`,
+            data,
+          })
+        : createItemNew({
+            route: '/user/employee',
             data: { ...data, employeeId: rowData?.id },
           }),
     onSuccess: () => {

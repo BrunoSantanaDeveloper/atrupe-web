@@ -47,7 +47,6 @@ export interface AcademyItem {
 }
 
 interface AcademySection {
-  id: string
   title: string
   items: AcademyItem[]
 }
@@ -146,13 +145,13 @@ export default function AcademyPage() {
     <Accordion
       type="single"
       collapsible
-      defaultValue={`item-${academyData.sections[0].id}`}
+      // defaultValue={`item-${academyData.sections[0].title}`}
     >
       <div className="flex flex-col gap-4">
-        {academyData.sections.map((section) => (
-          <Card key={section.id} className="w-full">
+        {academyData.sections.map((section, index) => (
+          <Card key={section.title + index} className="w-full">
             <AccordionItem
-              value={`item-${section.id}`}
+              value={`item-${section.title}`}
               className="p-0 m-0 border-0"
             >
               <CardHeader>

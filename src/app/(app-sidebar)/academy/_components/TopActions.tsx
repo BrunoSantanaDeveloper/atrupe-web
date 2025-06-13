@@ -27,10 +27,7 @@ export default function TopActions() {
   }, [])
 
   const handleOpenManual = () => {
-    window.open(
-      `https://atrupe.com.br/manual-completo-${currentPlan}.pdf`,
-      '_blank',
-    )
+    window.open(`/docs/atrupe-manual-completo-${currentPlan}.pdf`, '_blank')
   }
 
   const handleToggleAcademy = (value: boolean) => {
