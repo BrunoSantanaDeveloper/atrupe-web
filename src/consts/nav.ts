@@ -1,12 +1,14 @@
 // Type Imports
 // import type { LucideIconType } from '@/components/LucideIcon'
-import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
+import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { IconProps } from '@tabler/icons-react'
+import type { SVGProps } from 'react'
 
 // Icon Imports
 import {
   IconCoin,
   IconNews,
+  IconBook,
   IconCoins,
   IconUsers,
   IconBoxSeam,
@@ -32,7 +34,9 @@ import {
 } from '@tabler/icons-react'
 
 interface MainNavigationType {
-  icon: React.ComponentType<IconProps>
+  icon:
+    | React.ComponentType<IconProps>
+    | React.ComponentType<SVGProps<SVGSVGElement>>
   title: string // ** "Clientes"
   path?: string // ** "cadastros/clientes"
   query?: string // ** "?status=ACTIVE&page=1"
@@ -46,7 +50,9 @@ export type SecondaryNavigationType = {
   title: string
   parentPath: string
   items: {
-    icon?: React.ComponentType<IconProps>
+    icon?:
+      | React.ComponentType<IconProps>
+      | React.ComponentType<SVGProps<SVGSVGElement>>
     title: string
     path: string
   }[]
@@ -110,7 +116,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconDeviceDesktopDollar,
-        title: 'Frente de caixa',
+        title: 'PDV',
         path: '/financeiro/frente-de-caixa',
         permission: 'financial:checkout:view',
       },
@@ -216,6 +222,38 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Vendas',
         path: '/configuracoes/vendas',
         permission: 'settings:sales:view',
+      },
+    ],
+  },
+  {
+    icon: IconBook,
+    title: 'Academy',
+    path: '/academy',
+    children: [
+      {
+        icon: IconAtrupeLogo,
+        title: 'Start',
+        path: '/academy/start',
+      },
+      {
+        icon: IconAtrupeLogo,
+        title: 'Lite',
+        path: '/academy/lite',
+      },
+      {
+        icon: IconAtrupeLogo,
+        title: 'Pro',
+        path: '/academy/pro',
+      },
+      {
+        icon: IconAtrupeLogo,
+        title: 'Elite',
+        path: '/academy/elite',
+      },
+      {
+        icon: IconAtrupeLogo,
+        title: 'Full',
+        path: '/academy/full',
       },
     ],
   },

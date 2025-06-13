@@ -66,7 +66,7 @@ export function LoginForm() {
       return
     }
 
-    if (res && res.ok && res.error === null) {
+    if (res && res.ok && !res.error) {
       router.replace(redirectUrl)
     } else {
       setErrorState(

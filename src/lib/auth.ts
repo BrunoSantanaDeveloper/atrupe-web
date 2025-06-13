@@ -23,6 +23,7 @@ declare module 'next-auth' {
       legalName: string
       logo: string
       favicon: string
+      plan: string
       trial: boolean
       trialDaysLeft: number
     }
@@ -82,6 +83,7 @@ export const {
               companyName: authData.company.name,
               companyLegalName: authData.company.legalName,
               accessToken: token,
+              plan: authData.company.plan || 'START',
               trial: authData.company.trial || true,
               trialDaysLeft: authData.company.trialDaysLeft || 3,
               permissions: authData.permissions || [],
@@ -151,6 +153,7 @@ export const {
           legalName: token.companyLegalName,
           logo: token.companyLogo,
           favicon: token.companyFavicon,
+          plan: token.plan,
           trial: token.trial,
           trialDaysLeft: token.trialDaysLeft,
         },

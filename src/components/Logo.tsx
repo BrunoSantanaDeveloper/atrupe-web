@@ -1,7 +1,7 @@
-// Next Imports
+// Next
 import Image from 'next/image'
 
-// Logo Imports
+// Logos
 import logo from '@public/logo/logo.png'
 import logoText from '@public/logo/logo-text.png'
 import logoLight from '@public/logo/logo-light.png'

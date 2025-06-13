@@ -77,7 +77,7 @@ export const getData = async ({
       page: res.data.page,
       lastPage: res.data.lastPage || res.data.totalPages,
       total: res.data.total,
-      data: res.data.data,
+      data: res.data.data || res.data,
     }
   } catch (error: any) {
     const userMessage = error?.response?.data?.userMessage
@@ -85,7 +85,7 @@ export const getData = async ({
     return {
       success: false,
       code: userMessage?.statusCode || 'unknown',
-      message: userMessage?.message || 'Erro desconhecido.',
+      message: userMessage?.message || userMessage || 'Erro desconhecido.',
     }
   }
 }

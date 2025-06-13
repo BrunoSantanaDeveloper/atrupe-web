@@ -1,5 +1,5 @@
 import { getData } from '@/actions/_cruds'
-import { ICompanyResponse } from '@/app/(app)/configuracoes/empresa-e-sistema/components/CompanyInfo/schema'
+import { ICompanyResponse } from '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/schema'
 import { useQuery } from '@tanstack/react-query'
 
 interface ICompanies {
