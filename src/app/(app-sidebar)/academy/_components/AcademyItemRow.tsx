@@ -2,43 +2,49 @@
 
 import { useState } from 'react'
 
-// UI
-import { Button } from '@/components/ui/button'
+// Components
 import { VideoDialog } from './VideoDialog'
+import { AcademyItem } from '../[planName]/page'
+import { Button, ButtonProps } from '@/components/ui/button'
+
+// Actions
+import { createItemNew } from '@/actions/_cruds'
 
 // Libs
 import { cn } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
   IconVideo,
-  IconFileText,
   IconCircleFilled,
   IconCircleCheckFilled,
+  IconFileTextFilled,
 } from '@tabler/icons-react'
 
 // Modals
 import { modalRegistry } from './ModalRegistry'
 
-interface Props {
-  description: string
-  checked: boolean
-  files?: string[]
-  video?: string
-  page?: string
-  modal?: string
-  buttonTitle?: string
+const buttonVariant: Record<string, ButtonProps['variant']> = {
+  pdf: 'errorGhost',
+  doc: 'neutralGhost',
+  docx: 'neutralGhost',
+  xls: 'successGhost',
+  xlsx: 'successGhost',
+  ppt: 'warningGhost',
+  other: 'neutralGhost',
 }
 
-export function AcademyItemRow({
-  description,
-  checked,
-  files,
-  video,
-  page,
-  modal,
-  buttonTitle,
-}: Props) {
+interface Props {
+  data: AcademyItem
+}
+
+export function AcademyItemRow({ data }: Props) {
+  const { id, description, checked, files, video, page, modal, buttonTitle } =
+    data
+
+  const queryClient = useQueryClient()
+
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
 
@@ -46,14 +52,28 @@ export function AcademyItemRow({
     type: 'file' | 'video' | 'page' | 'modal',
     value?: string,
   ) => {
-    if (type === 'modal' && value) {
-      setActiveModal(value)
-    } else if (type === 'page' && value) {
-      window.open(value, '_blank')
-    } else if (type === 'file' && value) {
-      window.open(value, '_blank')
-    } else if (type === 'video' && value) {
-      setVideoDialogOpen(true)
+    if (value) {
+      if (type === 'modal') {
+        setActiveModal(value)
+      } else if (type === 'page') {
+        window.open(value, '_blank')
+      } else if (type === 'file') {
+        window.open(value, '_blank')
+      } else if (type === 'video') {
+        setVideoDialogOpen(true)
+      }
+    }
+  }
+
+  const handleSetChecked = async () => {
+    try {
+      await createItemNew({
+        route: 'academy/progress',
+        data: { itemId: id },
+      })
+      queryClient.invalidateQueries()
+    } catch (error) {
+      console.error('Erro ao marcar item como concluído:', error)
     }
   }
 
@@ -88,13 +108,16 @@ export function AcademyItemRow({
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           {files?.map((file, index) => {
+            const fileExtension =
+              file.split('.').pop()?.toLowerCase() || 'other'
+
             return (
               <Button
                 key={index}
                 type="button"
-                variant="neutralGhost"
+                variant={buttonVariant[fileExtension] || 'neutralGhost'}
                 size="iconSm"
-                RightIcon={IconFileText}
+                RightIcon={IconFileTextFilled}
                 onClick={() => handleAction('file', file)}
               />
             )
@@ -116,9 +139,15 @@ export function AcademyItemRow({
             type="button"
             size="sm"
             className="min-w-[200px]"
-            onClick={() =>
-              handleAction(modal ? 'modal' : 'page', modal || page)
-            }
+            disabled={!page && !modal}
+            onClick={async () => {
+              try {
+                await handleSetChecked()
+                handleAction(page ? 'page' : 'modal', page || modal)
+              } catch (error) {
+                console.error('Erro ao marcar item como concluído:', error)
+              }
+            }}
           >
             {buttonTitle || 'Configurar'}
           </Button>

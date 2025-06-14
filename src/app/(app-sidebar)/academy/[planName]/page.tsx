@@ -187,16 +187,7 @@ export default function AcademyPage() {
                 <CardContent className="p-0">
                   {section.items.length > 0 ? (
                     section.items.map((item) => (
-                      <AcademyItemRow
-                        key={item.id}
-                        description={item.description}
-                        checked={item.checked}
-                        files={item.files}
-                        video={item.video}
-                        page={item.page}
-                        modal={item.modal}
-                        buttonTitle={item.buttonTitle}
-                      />
+                      <AcademyItemRow key={item.id} data={item} />
                     ))
                   ) : (
                     <div className="p-4 text-center text-gray-500 text-sm">
