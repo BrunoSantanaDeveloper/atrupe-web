@@ -47,6 +47,7 @@ export function AcademyItemRow({ data }: Props) {
 
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const [isCheckLoading, setIsCheckLoading] = useState(false)
 
   const handleAction = (
     type: 'file' | 'video' | 'page' | 'modal',
@@ -66,6 +67,8 @@ export function AcademyItemRow({ data }: Props) {
   }
 
   const handleSetChecked = async () => {
+    setIsCheckLoading(true)
+
     try {
       await createItemNew({
         route: 'academy/progress',
@@ -74,6 +77,8 @@ export function AcademyItemRow({ data }: Props) {
       queryClient.invalidateQueries()
     } catch (error) {
       console.error('Erro ao marcar item como concluído:', error)
+    } finally {
+      setIsCheckLoading(false)
     }
   }
 
@@ -140,6 +145,7 @@ export function AcademyItemRow({ data }: Props) {
             size="sm"
             className="min-w-[200px]"
             disabled={!page && !modal}
+            isLoading={isCheckLoading}
             onClick={async () => {
               try {
                 await handleSetChecked()

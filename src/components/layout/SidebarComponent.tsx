@@ -290,7 +290,8 @@ export function SidebarComponent(props: Props) {
                                                 `${navChild?.path}`,
                                               )
                                                 ? 'text-brand'
-                                                : 'text-gray-400',
+                                                : navChild?.iconColor ||
+                                                    'text-gray-400',
                                               navChild?.action
                                                 ? 'text-brand'
                                                 : '',
