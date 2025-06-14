@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -18,37 +17,8 @@ import {
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
 
-const modalRegistry = {
-  CompanyInfo: dynamic(
-    () =>
-      import(
-        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo'
-      ).then((module) => ({ default: module.CompanyInfo })),
-    {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
-      ssr: false, // Modais só precisam rodar no client
-    },
-  ),
-  // Adicione outros modais aqui - cada um só carrega quando usado!
-  MeasureStandards: dynamic(
-    () =>
-      import(
-        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/Dialog'
-      ).then((module) => ({ default: module.MeasureDefaultsDialog })),
-    {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
-      ssr: false,
-    },
-  ),
-}
+// Modals
+import { modalRegistry } from './ModalRegistry'
 
 interface Props {
   description: string
@@ -88,15 +58,11 @@ export function AcademyItemRow({
   }
 
   const renderModal = () => {
-    if (
-      !activeModal ||
-      !modalRegistry[activeModal as keyof typeof modalRegistry]
-    ) {
+    if (!activeModal || !modalRegistry[activeModal]) {
       return null
     }
 
-    const ModalComponent =
-      modalRegistry[activeModal as keyof typeof modalRegistry]
+    const ModalComponent = modalRegistry[activeModal]
 
     return <ModalComponent />
   }
@@ -145,7 +111,7 @@ export function AcademyItemRow({
           />
         )}
 
-        {!activeModal && (
+        {!activeModal ? (
           <Button
             type="button"
             size="sm"
@@ -156,8 +122,9 @@ export function AcademyItemRow({
           >
             {buttonTitle || 'Configurar'}
           </Button>
+        ) : (
+          renderModal()
         )}
-        {renderModal()}
       </div>
 
       {video && (

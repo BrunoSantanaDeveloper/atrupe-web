@@ -58,7 +58,9 @@ export async function TrialExpiredAlert() {
           >
             {isExpired
               ? 'Seu teste expirou'
-              : `Seu teste expira em ${trialDaysLeft} dias`}
+              : `Seu teste expira em ${trialDaysLeft} dia${
+                  trialDaysLeft > 1 ? 's' : ''
+                }`}
           </span>
           <span className="text-sm text-gray">
             Escolha o melhor plano para o seu negócio e contrate agora!
