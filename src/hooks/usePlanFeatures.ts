@@ -1,0 +1,27 @@
+'use client'
+
+import { useSession } from 'next-auth/react'
+
+export function usePlanFeatures() {
+  const { data: session } = useSession()
+
+  const hasFeature = (feature: string) => {
+    if (!session?.company?.plan?.features) return false
+
+    return session.company.plan.features.includes(feature)
+  }
+
+  const hasAnyFeature = (features: string[]) => {
+    return features.some((feature) => hasFeature(feature))
+  }
+
+  const hasAllFeatures = (features: string[]) => {
+    return features.every((feature) => hasFeature(feature))
+  }
+
+  return {
+    hasFeature,
+    hasAnyFeature,
+    hasAllFeatures,
+  }
+}

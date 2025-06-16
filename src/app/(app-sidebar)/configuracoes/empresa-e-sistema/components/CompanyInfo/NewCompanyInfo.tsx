@@ -51,6 +51,9 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props {
   editMode?: boolean
   open: boolean
@@ -275,18 +278,50 @@ export function NewCompanyTriggerButton({
   editMode?: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const { hasFeature } = usePlanFeatures()
+
+  // Se estiver no modo de edição, não há restrições
+  if (editMode) {
+    return (
+      <Button
+        type="button"
+        variant="default"
+        size="default"
+        RightIcon={IconArrowRight}
+        onClick={() => onOpenChange(true)}
+      >
+        Configurar
+      </Button>
+    )
+  }
+
+  // Para adicionar nova empresa, verificar se tem a feature
+  const canAddMultipleCompanies = hasFeature('multiple_companies')
+
+  if (!canAddMultipleCompanies) {
+    return (
+      <Button
+        type="button"
+        variant="neutralGhost"
+        size="default"
+        disabled
+        title="Não disponível no plano atual"
+      >
+        <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+        Adicionar empresa
+      </Button>
+    )
+  }
+
   return (
     <Button
       type="button"
-      variant={editMode ? 'default' : 'neutralGhost'}
-      size={'default'}
-      RightIcon={editMode ? IconArrowRight : undefined}
+      variant="neutralGhost"
+      size="default"
       onClick={() => onOpenChange(true)}
     >
-      {!editMode && (
-        <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
-      )}
-      {editMode ? 'Configurar' : 'Adicionar empresa'}
+      <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+      Adicionar empresa
     </Button>
   )
 }
