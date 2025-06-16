@@ -20,9 +20,9 @@ export async function TrialExpiredAlert() {
 
   if (!session) return null
 
-  const { trialEndsAt, isTrial } = session.company
+  const { trialEndsAt, subscription } = session.company
 
-  if (!isTrial) return null
+  if (subscription !== 'TRIAL') return null
 
   const isExpired = new Date(trialEndsAt) < new Date()
 

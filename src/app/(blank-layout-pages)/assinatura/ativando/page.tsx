@@ -39,8 +39,8 @@ export default function AtivarPlanoPage() {
           if (session?.company?.id) {
             await update({
               company: {
-                isTrial: false,
-                // subscription: 'START', // TODO: Gravar o plano escolhido
+                subscription: 'START', // TODO: Gravar o plano escolhido e features
+                features: [],
               },
             })
           }

@@ -22,9 +22,13 @@ declare module 'next-auth' {
       legalName: string
       logo: string
       favicon: string
-      subscription: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
-      isTrial: boolean
-      trialEndsAt: string
+      features: string[]
+      plan: {
+        name: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
+        active: boolean
+        trialEndsAt: string
+        features: string[]
+      }
     }
     accessToken: string
   }
@@ -68,8 +72,6 @@ export const {
             const token = `Bearer ${authData.access_token}`
             api.defaults.headers.Authorization = token
 
-            const isTrial = authData.company.subscription === 'TRIAL'
-
             return {
               id: authData.id,
               name: authData.name,
@@ -84,9 +86,10 @@ export const {
               companyLegalName: authData.company.legalName,
               accessToken: token,
               subscription: authData.company.subscription,
-              isTrial,
+              subscriptionActive: authData.company.subscriptionActive,
               trialEndsAt: authData.company.trialEndsAt,
               permissions: authData.permissions || [],
+              features: authData.company.features || [],
             }
           }
 
@@ -113,9 +116,6 @@ export const {
       if (trigger === 'update' && session) {
         // Atualizar dados da empresa se fornecidos
         if (session.company) {
-          if (typeof session.company.isTrial !== 'undefined') {
-            token.isTrial = session.company.isTrial
-          }
           if (typeof session.company.trialEndsAt !== 'undefined') {
             token.trialEndsAt = session.company.trialEndsAt
           }
@@ -130,6 +130,12 @@ export const {
           }
           if (typeof session.company.favicon !== 'undefined') {
             token.companyFavicon = session.company.favicon
+          }
+          if (typeof session.company.features !== 'undefined') {
+            token.features = session.company.features
+          }
+          if (typeof session.company.subscription !== 'undefined') {
+            token.subscription = session.company.subscription
           }
         }
       }
@@ -153,9 +159,12 @@ export const {
           legalName: token.companyLegalName,
           logo: token.companyLogo,
           favicon: token.companyFavicon,
-          subscription: token.subscription,
-          isTrial: token.isTrial,
-          trialEndsAt: token.trialEndsAt,
+          plan: {
+            name: token.subscription,
+            active: token.subscriptionActive,
+            trialEndsAt: token.trialEndsAt,
+            features: token.features,
+          },
         },
         expires: session.expires,
         accessToken: token.accessToken,
