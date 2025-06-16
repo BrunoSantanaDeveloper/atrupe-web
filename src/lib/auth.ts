@@ -116,9 +116,6 @@ export const {
       if (trigger === 'update' && session) {
         // Atualizar dados da empresa se fornecidos
         if (session.company) {
-          if (typeof session.company.trialEndsAt !== 'undefined') {
-            token.trialEndsAt = session.company.trialEndsAt
-          }
           if (typeof session.company.name !== 'undefined') {
             token.companyName = session.company.name
           }
@@ -131,11 +128,8 @@ export const {
           if (typeof session.company.favicon !== 'undefined') {
             token.companyFavicon = session.company.favicon
           }
-          if (typeof session.company.features !== 'undefined') {
-            token.features = session.company.features
-          }
-          if (typeof session.company.subscription !== 'undefined') {
-            token.subscription = session.company.subscription
+          if (typeof session.company.plan !== 'undefined') {
+            token.plan = session.company.plan
           }
         }
       }

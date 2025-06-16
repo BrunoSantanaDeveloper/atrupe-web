@@ -37,10 +37,13 @@ export default function AtivarPlanoPage() {
         try {
           // Atualizar a sessão local com os novos dados
           if (session?.company?.id) {
+            // TODO: Gravar o plano escolhido e features
             await update({
               company: {
-                subscription: 'START', // TODO: Gravar o plano escolhido e features
-                features: [],
+                plan: {
+                  name: 'START',
+                  features: [],
+                },
               },
             })
           }
