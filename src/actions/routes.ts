@@ -55,7 +55,6 @@ const defaultRoute: { [key: string]: string } = {
   finFlowTotalsRoute: '/financial/flow/totals',
   finFlowListRoute: '/financial/flow',
   receivableRoute: '/financial/receivable',
-  payableRoute: '/financial/payable',
   creditLimitRoute: '/financial/credit-limit',
   transactionCategoryRoute: '/financial/nature/sub-category',
   bankMethodRoute: '/bank/method', // /bank/method/:methodId

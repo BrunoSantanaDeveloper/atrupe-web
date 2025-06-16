@@ -12,7 +12,7 @@ Hook que fornece acesso às informações do plano do usuário:
 const { hasFeature } = usePlanFeatures()
 ```
 
-### 2. `FeatureGate` Component
+### 2. `FeatureGate` Component (Opcional)
 
 Componente que controla renderização baseado em features específicas:
 
@@ -27,50 +27,39 @@ Componente que controla renderização baseado em features específicas:
 </FeatureGate>
 ```
 
-## Exemplos de Uso
+## Abordagens de Implementação
 
-### Controlar Botão de Adicionar Empresa
+### Abordagem 1: Verificação Simples (Recomendada)
+Controle direto com verificação da feature:
 
 ```tsx
 export function AddCompanyButton() {
   const { hasFeature } = usePlanFeatures()
   const canAddMultipleCompanies = hasFeature('multiple_companies')
-
+  
   if (!canAddMultipleCompanies) {
     return (
-      <FeatureGate features={['multiple_companies']} showUpgradeMessage={true}>
-        <Button disabled>Feature não disponível</Button>
-      </FeatureGate>
+      <Button disabled title="Não disponível no plano atual">
+        Adicionar empresa
+      </Button>
     )
   }
-
-  return <Button>Adicionar Empresa</Button>
+  
+  return <Button>Adicionar empresa</Button>
 }
 ```
 
-### Verificar Feature Específica
+### Abordagem 2: Com FeatureGate (Para casos complexos)
+Quando precisar de mensagens de upgrade ou fallbacks complexos:
 
 ```tsx
 export function AdvancedFeature() {
   return (
-    <FeatureGate features={['advanced_reports']}>
-      <AdvancedReportsComponent />
-    </FeatureGate>
-  )
-}
-```
-
-### Verificar Múltiplas Features
-
-```tsx
-export function PremiumFeature() {
-  return (
-    <FeatureGate
-      features={['api_access', 'white_label']}
-      requireAll={true}
+    <FeatureGate 
+      features={['advanced_reports']}
       showUpgradeMessage={true}
     >
-      <PremiumComponent />
+      <AdvancedReportsComponent />
     </FeatureGate>
   )
 }
@@ -86,7 +75,7 @@ O backend deve retornar as features no formato:
     "plan": {
       "name": "TRIAL",
       "active": true,
-      "features": ["basic_reports", "single_company", "limited_storage"]
+      "features": ["basic_reports", "limited_storage"]
     }
   }
 }
@@ -128,19 +117,37 @@ _Resultado: múltiplas empresas_
 
 _Resultado: empresas ilimitadas_
 
-## Implementação no Componente
+## Implementação Real no NewCompanyInfo
 
-No `NewCompanyInfo.tsx`, a implementação verifica:
+A implementação atual usa a **Abordagem 1 (Simples)**:
 
-1. **Modo de edição**: Sem restrições
-2. **`hasFeature('multiple_companies')` = false**: Mostra FeatureGate com upgrade message
-3. **Feature disponível**: Botão habilitado
+```tsx
+export function NewCompanyTriggerButton({ editMode, onOpenChange }) {
+  const { hasFeature } = usePlanFeatures()
+
+  if (editMode) {
+    return <Button>Configurar</Button>
+  }
+
+  const canAddMultipleCompanies = hasFeature('multiple_companies')
+
+  if (!canAddMultipleCompanies) {
+    return (
+      <Button disabled title="Não disponível no plano atual">
+        Adicionar empresa
+      </Button>
+    )
+  }
+
+  return <Button>Adicionar empresa</Button>
+}
+```
 
 ## Vantagens desta Abordagem
 
-- ✅ **Simples**: Apenas um hook para gerenciar features
-- ✅ **Flexível**: Controle granular por feature específica
-- ✅ **Escalável**: Fácil adicionar novas features sem complexidade extra
-- ✅ **Backend-driven**: O backend define completamente as capabilities
-- ✅ **Sem hardcode**: Não há referências diretas a nomes de planos no código
-- ✅ **Performance**: Não faz consultas desnecessárias à API
+- ✅ **Ultra simples**: Verificação direta da feature
+- ✅ **Performance**: Sem componentes adicionais
+- ✅ **Claro**: Lógica explícita e fácil de entender
+- ✅ **Flexível**: Use FeatureGate apenas quando necessário
+- ✅ **Backend-driven**: O backend controla tudo via features
+- ✅ **Zero complexidade**: Código direto ao ponto

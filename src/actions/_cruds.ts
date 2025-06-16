@@ -251,17 +251,17 @@ export const deleteItem = async (route: string, id?: string | number) => {
 // EXCLUIR NOVO (usar sempre este em vez de deleteItem)
 export const deleteItemNew = async ({
   route,
-  id,
+  params,
 }: {
   route: string
-  id: string | number
+  params?: unknown
 }) => {
   const api = await apiInstance()
 
-  const url = `${defaultRoute[route]}/${id}`
+  // const url = `${defaultRoute[route]}/${id}`
 
   try {
-    const res = await api.delete(url)
+    const res = await api.delete(route, { params })
 
     return {
       success: true,

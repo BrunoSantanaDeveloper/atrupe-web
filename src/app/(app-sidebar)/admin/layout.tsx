@@ -12,7 +12,6 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 
   const userRole = session?.user?.role || 'USER'
 
-  if (userRole !== 'SUPER_ADMIN') notFound()
-
   return children
+  if (userRole !== 'SUPER_ADMIN') notFound()
 }
