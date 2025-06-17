@@ -25,10 +25,13 @@ export function usePlanFeatures() {
     return 0
   }
 
+  const canManageSectors = () => hasFeature('sectors_management')
+
   return {
     hasFeature,
     hasAnyFeature,
     hasAllFeatures,
     getUserLimit,
+    canManageSectors,
   }
 }
