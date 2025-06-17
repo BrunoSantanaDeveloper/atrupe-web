@@ -33,6 +33,12 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  const getRejectionReasonsType = () => {
+    if (hasFeature('rejection_reasons_full')) return 'full'
+    if (hasFeature('rejection_reasons_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
@@ -40,5 +46,6 @@ export function usePlanFeatures() {
     getUserLimit,
     canManageSectors,
     getSalesOrdersType,
+    getRejectionReasonsType,
   }
 }

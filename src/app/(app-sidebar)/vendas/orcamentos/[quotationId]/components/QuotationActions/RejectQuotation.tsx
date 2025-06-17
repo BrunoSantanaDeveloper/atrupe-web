@@ -45,6 +45,9 @@ import { createItem } from '@/actions/_cruds'
 import { IconX, IconAlertCircle } from '@tabler/icons-react'
 import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props {
   data: QuotationType
 }
@@ -54,6 +57,7 @@ export function RejectQuotation({ data }: Props) {
   const [reason, setReason] = useState('')
 
   const queryClient = useQueryClient()
+  const { getRejectionReasonsType } = usePlanFeatures()
 
   const { data: reasonList } = useCancelReason('REJECTION')
 
@@ -74,7 +78,33 @@ export function RejectQuotation({ data }: Props) {
     },
   })
 
+  // Não renderiza se não tiver acesso à funcionalidade
+  if (getRejectionReasonsType() === 'none') {
+    return null
+  }
+
   const handleReject = async () => {
+    // Se for limited, rejeita direto sem motivo
+    if (getRejectionReasonsType() === 'limited') {
+      toast.promise(
+        createItem({
+          route: 'quotationRoute',
+          customPath: `/${data.id}/reject`,
+          data: {},
+        }),
+        {
+          loading: 'Aguarde...',
+          success: () => {
+            queryClient.invalidateQueries()
+            return 'Orçamento rejeitado'
+          },
+          error: 'Ocorreu um erro',
+        },
+      )
+      return
+    }
+
+    // Lógica normal para full (com motivo)
     toast.promise(mutation.mutateAsync(), {
       loading: 'Aguarde...',
       success: () => {
@@ -82,6 +112,18 @@ export function RejectQuotation({ data }: Props) {
       },
       error: 'Ocorreu um erro',
     })
+  }
+
+  // Se for limited, mostra botão simples sem modal
+  if (getRejectionReasonsType() === 'limited') {
+    return (
+      <CustomButton
+        icon={IconX}
+        title="Rejeitar orçamento"
+        iconVariant="errorLight"
+        onClick={handleReject}
+      />
+    )
   }
 
   return (
