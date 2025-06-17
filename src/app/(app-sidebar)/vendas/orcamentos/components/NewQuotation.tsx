@@ -110,7 +110,7 @@ export function NewQuotationModal({
     resolver: zodResolver(quotationSchema),
     defaultValues: {
       companyId: session?.company?.id,
-      clientId: '',
+      clientId: undefined,
       description: '',
       contactType: serviceOptions[0].value,
       seriesId: '',
@@ -120,7 +120,10 @@ export function NewQuotationModal({
     values: data
       ? {
           companyId: data?.company?.id,
-          clientId: data?.client?.id,
+          clientId: {
+            label: data?.client?.name,
+            value: data?.client?.id,
+          } as unknown as string,
           description: data?.description,
           contactType: data?.contactType ?? '',
           seriesId: data?.serie.id,
@@ -214,14 +217,7 @@ export function NewQuotationModal({
               className="flex flex-wrap gap-5"
               noValidate
             >
-              <ClientSelector
-                name="clientId"
-                label="Cliente"
-                width="w-full"
-                additionalOnChange={(e) => {
-                  form.setValue('clientId', e)
-                }}
-              />
+              <ClientSelector name="clientId" label="Cliente" width="w-full" />
               <FormInput<QuotationFormType>
                 name="description"
                 label="Descrição do serviço"
