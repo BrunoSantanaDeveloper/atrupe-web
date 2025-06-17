@@ -1,7 +1,7 @@
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
 
-export function CheckoutsActions() {
+export function PDVActions() {
   return (
     <div className="flex flex-wrap gap-4">
       <CustomButton caption="Caixa empresa" title="Frente de caixa 1" />

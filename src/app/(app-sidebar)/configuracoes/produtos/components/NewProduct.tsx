@@ -52,6 +52,9 @@ import {
 // Action
 import { createItemNew, getItemOld, updateItemNew } from '@/actions/_cruds'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 import { parseCurrencyToBrl } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -89,9 +92,13 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
   // console.log('🔧 NewProductModal rendered:', { editMode, productId, open })
 
   const queryClient = useQueryClient()
+  const { getProductsType, getProductionStagesType } = usePlanFeatures()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
 
   const [insertAnother, setInsertAnother] = useState(!editMode)
+
+  const canAddComposition = getProductsType() === 'full'
+  const canShowProductionStages = getProductionStagesType() === 'full'
 
   const { data: product, isLoading } = useQuery({
     staleTime: Infinity,
@@ -376,23 +383,25 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         />
                       </div>
                     ))}
-                  <div className="w-full">
-                    <Button
-                      type="button"
-                      variant="none"
-                      className="flex justify-center items-center mx-auto gap-3 py-8"
-                      onClick={handleAppendProductItems}
-                    >
-                      <FeaturedIcon
-                        variant="light"
-                        Icon={IconCirclePlus}
-                        rounded
-                      />
-                      <p className="text-sm text-gray-600 font-medium">
-                        Adicionar composição
-                      </p>
-                    </Button>
-                  </div>
+                  {canAddComposition && (
+                    <div className="w-full">
+                      <Button
+                        type="button"
+                        variant="none"
+                        className="flex justify-center items-center mx-auto gap-3 py-8"
+                        onClick={handleAppendProductItems}
+                      >
+                        <FeaturedIcon
+                          variant="light"
+                          Icon={IconCirclePlus}
+                          rounded
+                        />
+                        <p className="text-sm text-gray-600 font-medium">
+                          Adicionar composição
+                        </p>
+                      </Button>
+                    </div>
+                  )}
                   <FormImageUpload<NewProductsFormType>
                     control={control}
                     name="imageUrl"
@@ -412,7 +421,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                       label="Permitir editar descrição"
                     />
                   </div>
-                  <ProductionStages />
+                  {canShowProductionStages && <ProductionStages />}
                 </form>
               </Form>
             </div>

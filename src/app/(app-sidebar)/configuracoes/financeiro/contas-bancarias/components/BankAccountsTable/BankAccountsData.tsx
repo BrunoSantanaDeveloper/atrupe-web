@@ -35,6 +35,9 @@ import { getDataOld } from '@/actions/_cruds'
 // Third-party Imports
 import { useQuery } from '@tanstack/react-query'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Icon
 import { IconPencil, IconTrash } from '@tabler/icons-react'
 
@@ -43,8 +46,10 @@ interface Props extends SearchParamsType {}
 export function BankAccountsData({ searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<BankAccountsType>()
+  const { getBankAccountsType } = usePlanFeatures()
 
   const filters = { ...searchParams }
+  const canCreateBankAccount = getBankAccountsType() === 'full'
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -154,8 +159,16 @@ export function BankAccountsData({ searchParams }: Props) {
         ) : (
           <ListDataTotalEmpty
             title="Nenhuma conta bancária"
-            description="Cadastre sua primeira conta"
-            cta={<NewBankAccountDialog searchParams={searchParams} />}
+            description={
+              canCreateBankAccount
+                ? 'Cadastre sua primeira conta'
+                : 'Nenhuma conta bancária cadastrada'
+            }
+            cta={
+              canCreateBankAccount ? (
+                <NewBankAccountDialog searchParams={searchParams} />
+              ) : undefined
+            }
           />
         )}
       </CardContent>

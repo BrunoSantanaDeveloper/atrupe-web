@@ -45,6 +45,38 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  // Financeiro
+  const hasFinancialModule = (
+    module: 'receivable' | 'payable' | 'cash' | 'pdv' | 'credit_limit',
+  ) => {
+    const moduleMap = {
+      receivable: 'accounts_receivable',
+      payable: 'accounts_payable',
+      cash: 'cash_control',
+      pdv: 'pdv',
+      credit_limit: 'credit_limit',
+    }
+    return hasFeature(moduleMap[module])
+  }
+
+  const getBankAccountsType = () => {
+    if (hasFeature('bank_accounts_full')) return 'full'
+    if (hasFeature('bank_accounts_limited')) return 'limited'
+    return 'none'
+  }
+
+  const getProductsType = () => {
+    if (hasFeature('products_full')) return 'full'
+    if (hasFeature('products_limited')) return 'limited'
+    return 'none'
+  }
+
+  const getProductionStagesType = () => {
+    if (hasFeature('production_stages_full')) return 'full'
+    if (hasFeature('production_stages_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
@@ -54,5 +86,9 @@ export function usePlanFeatures() {
     getSalesOrdersType,
     getRejectionReasonsType,
     getBudgetStatusType,
+    hasFinancialModule,
+    getBankAccountsType,
+    getProductsType,
+    getProductionStagesType,
   }
 }

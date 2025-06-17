@@ -5,14 +5,14 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Component Imports
-import { CheckoutsActions } from './CheckoutsActions'
+import { PDVActions } from './PDVActions'
 import {
   ListDataTotalEmpty,
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
-import { CheckoutsData } from './CheckoutsTable/CheckoutsData'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
-import { CheckoutsFilter } from './CheckoutsTable/CheckoutsFilter'
+import { PDVData } from './PDVTable/PDVData'
+import { PDVFilter } from './PDVTable/PDVFilter'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 
 // Type Imports
@@ -27,7 +27,7 @@ import { useQuery } from '@tanstack/react-query'
 // Icon Imports
 import { IconDeviceImacCancel } from '@tabler/icons-react'
 
-export function Checkouts({ searchParams }: SearchParamsType) {
+export function PDV({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['checkouts-totals'],
@@ -76,7 +76,7 @@ export function Checkouts({ searchParams }: SearchParamsType) {
         paramName="status"
       />
       <div className="space-y-2">
-        <CheckoutsActions />
+        <PDVActions />
         <Card>
           {isLoading ? (
             <Skeleton className="h-[calc(100vh-150px)]" />
@@ -89,9 +89,9 @@ export function Checkouts({ searchParams }: SearchParamsType) {
             ) : (
               <>
                 <TableFiltersHeader searchParams={searchParams}>
-                  <CheckoutsFilter searchParams={searchParams} />
+                  <PDVFilter searchParams={searchParams} />
                 </TableFiltersHeader>
-                <CheckoutsData searchParams={searchParams} tabs={tabs} />
+                <PDVData searchParams={searchParams} tabs={tabs} />
               </>
             )
           ) : (

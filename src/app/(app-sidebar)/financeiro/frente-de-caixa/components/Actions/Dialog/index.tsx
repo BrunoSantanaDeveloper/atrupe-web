@@ -36,7 +36,7 @@ interface Props extends SearchParamsType {
   rowData?: CashControlType
 }
 
-export function EditCheckoutDialog(props: Props) {
+export function EditPDVDialog(props: Props) {
   const { open, setOpen } = props
 
   const form = useForm<FormType>({

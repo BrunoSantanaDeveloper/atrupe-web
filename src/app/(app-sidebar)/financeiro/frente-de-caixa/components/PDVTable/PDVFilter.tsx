@@ -9,7 +9,7 @@ import { SelectBankField } from '@/components/common/form/global-inputs/BanksSel
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
-export function CheckoutsFilter({ searchParams }: SearchParamsType) {
+export function PDVFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
 
   const searchParamsObject = new URLSearchParams(searchParams)
