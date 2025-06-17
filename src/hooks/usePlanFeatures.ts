@@ -27,11 +27,18 @@ export function usePlanFeatures() {
 
   const canManageSectors = () => hasFeature('sectors_management')
 
+  const getSalesOrdersType = () => {
+    if (hasFeature('sales_orders_full')) return 'full'
+    if (hasFeature('sales_orders_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
     hasAllFeatures,
     getUserLimit,
     canManageSectors,
+    getSalesOrdersType,
   }
 }
