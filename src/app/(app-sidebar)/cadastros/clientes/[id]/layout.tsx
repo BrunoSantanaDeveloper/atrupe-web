@@ -17,6 +17,7 @@ import { clientStatusObj } from '@/consts/client'
 
 // Hooks
 import { useClientById } from '@/hooks/queries/useClient'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   params: {
@@ -28,13 +29,16 @@ interface Props {
 
 export default function ClientDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useClientById({ id: params.id })
+  const { getClientsType } = usePlanFeatures()
 
   const totals: { [key: string]: number } = {
     orcamentos: data?.quotationsQuantity,
     ordens: data?.ordersQuantity,
   }
 
-  const tabs: TabNavType[] = [
+  const showAdvancedTabs = getClientsType() === 'full'
+
+  const allTabs: TabNavType[] = [
     {
       value: 'REGISTER',
       tab: 'cadastro',
@@ -58,6 +62,10 @@ export default function ClientDetailLayout({ children, params }: Props) {
       label: 'Financeiro',
     },
   ]
+
+  const tabs = showAdvancedTabs
+    ? allTabs
+    : allTabs.filter((tab) => tab.tab === 'cadastro')
 
   return (
     <div className="space-y-5">

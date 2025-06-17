@@ -77,6 +77,18 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  const getClientsType = () => {
+    if (hasFeature('clients_full')) return 'full'
+    if (hasFeature('clients_limited')) return 'limited'
+    return 'none'
+  }
+
+  const getSuppliersType = () => {
+    if (hasFeature('suppliers_full')) return 'full'
+    if (hasFeature('suppliers_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
@@ -90,5 +102,7 @@ export function usePlanFeatures() {
     getBankAccountsType,
     getProductsType,
     getProductionStagesType,
+    getClientsType,
+    getSuppliersType,
   }
 }

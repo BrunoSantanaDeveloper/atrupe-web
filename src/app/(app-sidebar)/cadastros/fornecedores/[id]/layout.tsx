@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge'
 
 // Hooks
 import { useSupplierById } from '@/hooks/queries/useSupplierById'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   params: {
@@ -30,13 +31,16 @@ interface Props {
 
 export default function SupplierDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useSupplierById({ id: params.id })
+  const { getSuppliersType } = usePlanFeatures()
 
   const totals: { [key: string]: number } = {
     orcamentos: data?.quotationsQuantity,
     ordens: data?.ordersQuantity,
   }
 
-  const tabs: TabNavType[] = [
+  const showAdvancedTabs = getSuppliersType() === 'full'
+
+  const allTabs: TabNavType[] = [
     {
       value: 'REGISTER',
       tab: 'cadastro',
@@ -60,6 +64,10 @@ export default function SupplierDetailLayout({ children, params }: Props) {
       label: 'Financeiro',
     },
   ]
+
+  const tabs = showAdvancedTabs
+    ? allTabs
+    : allTabs.filter((tab) => tab.tab === 'cadastro')
 
   return (
     <div className="space-y-5">
