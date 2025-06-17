@@ -39,6 +39,12 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  const getBudgetStatusType = () => {
+    if (hasFeature('budget_status_full')) return 'full'
+    if (hasFeature('budget_status_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
@@ -47,5 +53,6 @@ export function usePlanFeatures() {
     canManageSectors,
     getSalesOrdersType,
     getRejectionReasonsType,
+    getBudgetStatusType,
   }
 }

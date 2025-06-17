@@ -52,6 +52,9 @@ import { IconPencil, IconPrinter } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
   searchDescription?: string
@@ -65,6 +68,9 @@ export function QuotationsData({
   const [openDialog, setOpenDialog] = useState(false)
   const [rowData, setRowData] = useState<QuotationType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
+
+  const { getBudgetStatusType } = usePlanFeatures()
+  const showStatusColumn = getBudgetStatusType() === 'full'
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -94,7 +100,7 @@ export function QuotationsData({
                   <TableHead>Referência</TableHead>
                   <TableHead>Valor</TableHead>
                   <TableHead>Fase atual</TableHead>
-                  <TableHead>Status</TableHead>
+                  {showStatusColumn && <TableHead>Status</TableHead>}
                   <TableHead>Concluído em</TableHead>
                   <TableHead>Válido até</TableHead>
                   <TableHead></TableHead>
@@ -105,7 +111,7 @@ export function QuotationsData({
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={7}
+                        colSpan={showStatusColumn ? 7 : 6}
                         className="text-gray font-medium text-xs py-3"
                       >
                         {formatToWeekDate(group?.date)}
@@ -153,12 +159,14 @@ export function QuotationsData({
                                   '-'
                                 )}
                               </TableCell>
-                              <TableCell>
-                                <QuotationTagDropdown
-                                  quotation={quotation}
-                                  tagsList={tagsList || []}
-                                />
-                              </TableCell>
+                              {showStatusColumn && (
+                                <TableCell>
+                                  <QuotationTagDropdown
+                                    quotation={quotation}
+                                    tagsList={tagsList || []}
+                                  />
+                                </TableCell>
+                              )}
                               <TableCell className="text-gray-600">
                                 {formatToLocaleDate(quotation?.finishedAt)}
                               </TableCell>

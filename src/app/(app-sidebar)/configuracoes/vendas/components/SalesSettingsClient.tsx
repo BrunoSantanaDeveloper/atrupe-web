@@ -20,7 +20,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 const defaultPath = 'vendas'
 
 export function SalesSettingsClient() {
-  const { getRejectionReasonsType } = usePlanFeatures()
+  const { getRejectionReasonsType, getBudgetStatusType } = usePlanFeatures()
 
   const allSettings: CompanySettingsType[] = [
     {
@@ -49,12 +49,16 @@ export function SalesSettingsClient() {
               },
             ]
           : []),
-        {
-          title: 'Status de orçamento',
-          icon: IconStatusChange,
-          description: 'Defina status para acompanhamento das propostas.',
-          link: `${defaultPath}/status-de-orcamento`,
-        },
+        ...(getBudgetStatusType() === 'full'
+          ? [
+              {
+                title: 'Status de orçamento',
+                icon: IconStatusChange,
+                description: 'Defina status para acompanhamento das propostas.',
+                link: `${defaultPath}/status-de-orcamento`,
+              },
+            ]
+          : []),
       ],
     },
   ]
