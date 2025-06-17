@@ -2,6 +2,7 @@
 
 // React
 import { Fragment, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 // Components
 import { NewEmployeeDialog } from './NewEmployee'
@@ -14,6 +15,10 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
+
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 // UI
 import {
@@ -61,6 +66,10 @@ export function TableData({ tabs, searchParams }: Props) {
   const [rowData, setRowData] = useState<EmployeeType>()
   const [editUser, setEditUser] = useState(false)
 
+  const router = useRouter()
+  const { getUserLimit } = usePlanFeatures()
+  const { open: openAlertDialog } = useAlertDialog()
+
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   const filters = { ...searchParams, status }
@@ -73,6 +82,49 @@ export function TableData({ tabs, searchParams }: Props) {
 
   const employeeArray: ListEmployeeDataType[] = data?.data || []
   const hasData = employeeArray.length
+
+  // Contar usuários ativos (funcionários que têm usuário ativo)
+  const activeUsersCount = employeeArray.reduce((count, group) => {
+    return count + group.employees.filter((emp) => emp.user?.isActive).length
+  }, 0)
+
+  // Função para verificar limite antes de criar usuário
+  const handleCreateUser = (item: EmployeeType) => {
+    const userLimit = getUserLimit()
+
+    // Se está editando usuário existente, permite
+    if (item?.user?.isActive) {
+      setRowData(item)
+      setEditUser(true)
+      setOpenDialog('new-user')
+      return
+    }
+
+    // Se atingiu o limite, mostra alerta
+    if (activeUsersCount >= userLimit) {
+      openAlertDialog({
+        title: 'Limite de usuários atingido',
+        description: `Seu plano permite apenas ${userLimit} usuário${
+          userLimit > 1 ? 's' : ''
+        }. Para criar mais usuários, faça upgrade do seu plano.`,
+        confirmLabel: 'Fazer Upgrade',
+        cancelLabel: 'Entendi',
+        iconVariant: 'warningBorderedLight',
+        onConfirm: () => {
+          router.push('/assinatura/contratar')
+        },
+        toastMsg: {
+          success: 'Redirecionando para a página de upgrade...',
+        },
+      })
+      return
+    }
+
+    // Se não atingiu o limite, permite criar
+    setRowData(item)
+    setEditUser(false)
+    setOpenDialog('new-user')
+  }
 
   return (
     <>
@@ -186,11 +238,7 @@ export function TableData({ tabs, searchParams }: Props) {
                                             ? 'Editar usuário'
                                             : 'Novo usuário'
                                         }
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setEditUser(item?.user?.isActive)
-                                          setOpenDialog('new-user')
-                                        }}
+                                        onClick={() => handleCreateUser(item)}
                                       />
                                     </PermissionGate>
                                     <PermissionGate

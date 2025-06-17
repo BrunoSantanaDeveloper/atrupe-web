@@ -19,9 +19,16 @@ export function usePlanFeatures() {
     return features.every((feature) => hasFeature(feature))
   }
 
+  const getUserLimit = () => {
+    if (hasFeature('user_limit_5')) return 5
+    if (hasFeature('user_limit_3')) return 3
+    return 0
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
     hasAllFeatures,
+    getUserLimit,
   }
 }
