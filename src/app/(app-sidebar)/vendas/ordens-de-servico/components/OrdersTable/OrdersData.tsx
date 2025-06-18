@@ -45,6 +45,9 @@ import { ordersStatusObj } from '@/consts/orders'
 import { IconPrinter, IconSearch } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
   searchDescription?: string
@@ -53,6 +56,11 @@ interface Props extends SearchParamsType {
 export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
+
+  // Hook para controle de features
+  const { getSalesOrdersType } = usePlanFeatures()
+  const salesOrdersType = getSalesOrdersType()
+  const showCurrentPhase = salesOrdersType === 'full'
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -67,11 +75,14 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const orderArray: OrderListType[] = data?.data || []
   const hasData = orderArray.length
 
+  // Calcular colSpan baseado no número de colunas
+  const totalColumns = showCurrentPhase ? 5 : 4
+
   return (
     <>
       <CardContent>
         {isLoading ? (
-          <TableSkeleton />
+          <TableSkeleton cols={totalColumns} />
         ) : hasData ? (
           <>
             <Table>
@@ -80,7 +91,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                   <TableHead>Referência</TableHead>
                   <TableHead>Valor</TableHead>
                   <TableHead>Vendedor</TableHead>
-                  <TableHead>Fase atual</TableHead>
+                  {showCurrentPhase && <TableHead>Fase atual</TableHead>}
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -89,7 +100,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={6}
+                        colSpan={totalColumns}
                         className="text-gray font-medium text-xs py-3"
                       >
                         {formatToWeekDate(group?.date)}
@@ -120,20 +131,22 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                               <TableCell className="text-gray-600">
                                 {quotation?.seller?.name}
                               </TableCell>
-                              <TableCell>
-                                {order?.status ? (
-                                  <Badge
-                                    status
-                                    variant={
-                                      ordersStatusObj[order?.status]?.variant
-                                    }
-                                  >
-                                    {ordersStatusObj[order?.status]?.text}
-                                  </Badge>
-                                ) : (
-                                  '-'
-                                )}
-                              </TableCell>
+                              {showCurrentPhase && (
+                                <TableCell>
+                                  {order?.status ? (
+                                    <Badge
+                                      status
+                                      variant={
+                                        ordersStatusObj[order?.status]?.variant
+                                      }
+                                    >
+                                      {ordersStatusObj[order?.status]?.text}
+                                    </Badge>
+                                  ) : (
+                                    '-'
+                                  )}
+                                </TableCell>
+                              )}
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>

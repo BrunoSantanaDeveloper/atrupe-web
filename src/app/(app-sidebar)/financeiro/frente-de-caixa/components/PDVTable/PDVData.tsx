@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { Fragment, useState } from 'react'
 
 // Components
-import { ViewCheckoutDialog } from '../Actions/ViewCheckout'
-import { CloseCheckoutDialog } from '../Actions/CloseCheckout'
+import { ViewPDVDialog } from '../Actions/ViewPDV'
+import { ClosePDVDialog } from '../Actions/ClosePDV'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
@@ -54,7 +54,7 @@ interface Props extends SearchParamsType {
   tabs?: TabNavType[]
 }
 
-export function CheckoutsData({ searchParams, tabs }: Props) {
+export function PDVData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<CheckoutType>()
 
@@ -64,7 +64,7 @@ export function CheckoutsData({ searchParams, tabs }: Props) {
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['checkout-list', searchParams],
+    queryKey: ['pdv-list', searchParams],
     queryFn: () => getDataOld({ route: 'checkoutListRoute', filters }),
   })
 
@@ -207,13 +207,13 @@ export function CheckoutsData({ searchParams, tabs }: Props) {
           />
         </CardFooter>
       ) : null}
-      <ViewCheckoutDialog
+      <ViewPDVDialog
         open={openDialog === 'view'}
         setOpen={setOpenDialog}
         rowData={rowData}
         searchParams={searchParams}
       />
-      <CloseCheckoutDialog
+      <ClosePDVDialog
         open={openDialog === 'close'}
         setOpen={setOpenDialog}
         rowData={rowData}

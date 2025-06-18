@@ -71,7 +71,7 @@ export function CheckoutData({ searchParams, tabs, id }: Props) {
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['checkout-list', id, searchParams],
+    queryKey: ['pdv-list', id, searchParams],
     queryFn: () => getDataOld({ route: 'checkoutListRoute', filters }),
   })
 

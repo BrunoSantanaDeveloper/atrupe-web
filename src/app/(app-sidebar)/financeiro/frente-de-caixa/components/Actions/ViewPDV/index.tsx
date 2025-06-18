@@ -36,7 +36,7 @@ interface Props extends SearchParamsType {
   rowData?: CheckoutType
 }
 
-export function ViewCheckoutDialog(props: Props) {
+export function ViewPDVDialog(props: Props) {
   const { open, setOpen } = props
 
   const form = useForm<FormType>({

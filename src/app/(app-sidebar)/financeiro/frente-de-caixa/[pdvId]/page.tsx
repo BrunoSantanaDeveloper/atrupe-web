@@ -7,5 +7,5 @@ import type { ParamsType, SearchParamsType } from '@/types/coreTypes'
 interface Props extends SearchParamsType, ParamsType {}
 
 export default function CheckoutPage({ searchParams, params }: Props) {
-  return <Checkout searchParams={searchParams} id={params.checkoutId} />
+  return <Checkout searchParams={searchParams} id={params.pdvId} />
 }

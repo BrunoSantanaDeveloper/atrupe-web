@@ -154,8 +154,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     setIsGenerating([payableId])
     try {
       const response = await deleteItemNew({
-        route: 'payableRoute',
-        id: payableId,
+        route: `/financial/payable/${payableId}`,
       })
 
       if (response.success) {

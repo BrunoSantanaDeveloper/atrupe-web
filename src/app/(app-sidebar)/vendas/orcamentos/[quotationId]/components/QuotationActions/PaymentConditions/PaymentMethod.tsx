@@ -53,7 +53,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
     const maxInstallments = data?.maxInstallments || 1
 
     const additionalFee =
-      data?.installments[maxInstallments - 1].operatorFeeTransfer
+      data?.installments[maxInstallments - 1]?.operatorFeeTransfer || 0
     const additionalFeeType = data?.costType
 
     setValue('minInstallmentQty', minInstallments)

@@ -2,7 +2,16 @@ import { z } from 'zod'
 
 export const quotationSchema = z.object({
   companyId: z.string(),
-  clientId: z.string(),
+  clientId: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .nullable()
+    .refine((value) => !!value && !!value.value, {
+      message: 'Selecione um cliente',
+    })
+    .transform((value) => value!.value),
   description: z.string(),
   contactType: z.string(),
   seriesId: z.string().min(1, { message: 'Selecione uma série' }),
@@ -11,13 +20,3 @@ export const quotationSchema = z.object({
 })
 
 export type QuotationFormType = z.infer<typeof quotationSchema>
-
-export const quotationDefaultValues: QuotationFormType = {
-  companyId: '',
-  clientId: '',
-  description: '',
-  contactType: '',
-  seriesId: '',
-  sellerId: '',
-  quickSale: false,
-}

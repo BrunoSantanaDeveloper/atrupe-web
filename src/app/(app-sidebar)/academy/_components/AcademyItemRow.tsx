@@ -1,102 +1,93 @@
 'use client'
 
 import { useState } from 'react'
-import dynamic from 'next/dynamic'
 
-// UI
-import { Button } from '@/components/ui/button'
+// Components
 import { VideoDialog } from './VideoDialog'
+import { AcademyItem } from '../[planName]/page'
+import { Button, ButtonProps } from '@/components/ui/button'
+
+// Actions
+import { createItemNew } from '@/actions/_cruds'
 
 // Libs
 import { cn } from '@/lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
   IconVideo,
-  IconFileText,
   IconCircleFilled,
   IconCircleCheckFilled,
+  IconFileTextFilled,
 } from '@tabler/icons-react'
 
-const modalRegistry = {
-  CompanyInfo: dynamic(
-    () =>
-      import(
-        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo'
-      ).then((module) => ({ default: module.CompanyInfo })),
-    {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
-      ssr: false, // Modais só precisam rodar no client
-    },
-  ),
-  // Adicione outros modais aqui - cada um só carrega quando usado!
-  MeasureStandards: dynamic(
-    () =>
-      import(
-        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/Dialog'
-      ).then((module) => ({ default: module.MeasureDefaultsDialog })),
-    {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
-      ssr: false,
-    },
-  ),
+// Modals
+import { modalRegistry } from './ModalRegistry'
+
+const buttonVariant: Record<string, ButtonProps['variant']> = {
+  pdf: 'errorGhost',
+  doc: 'neutralGhost',
+  docx: 'neutralGhost',
+  xls: 'successGhost',
+  xlsx: 'successGhost',
+  ppt: 'warningGhost',
+  other: 'neutralGhost',
 }
 
 interface Props {
-  description: string
-  checked: boolean
-  files?: string[]
-  video?: string
-  page?: string
-  modal?: string
-  buttonTitle?: string
+  data: AcademyItem
 }
 
-export function AcademyItemRow({
-  description,
-  checked,
-  files,
-  video,
-  page,
-  modal,
-  buttonTitle,
-}: Props) {
+export function AcademyItemRow({ data }: Props) {
+  const { id, description, checked, files, video, page, modal, buttonTitle } =
+    data
+
+  const queryClient = useQueryClient()
+
   const [activeModal, setActiveModal] = useState<string | null>(null)
   const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const [isCheckLoading, setIsCheckLoading] = useState(false)
 
   const handleAction = (
     type: 'file' | 'video' | 'page' | 'modal',
     value?: string,
   ) => {
-    if (type === 'modal' && value) {
-      setActiveModal(value)
-    } else if (type === 'page' && value) {
-      window.open(value, '_blank')
-    } else if (type === 'file' && value) {
-      window.open(value, '_blank')
-    } else if (type === 'video' && value) {
-      setVideoDialogOpen(true)
+    if (value) {
+      if (type === 'modal') {
+        setActiveModal(value)
+      } else if (type === 'page') {
+        window.open(value, '_blank')
+      } else if (type === 'file') {
+        window.open(value, '_blank')
+      } else if (type === 'video') {
+        setVideoDialogOpen(true)
+      }
+    }
+  }
+
+  const handleSetChecked = async () => {
+    setIsCheckLoading(true)
+
+    try {
+      await createItemNew({
+        route: 'academy/progress',
+        data: { itemId: id },
+      })
+      queryClient.invalidateQueries()
+    } catch (error) {
+      console.error('Erro ao marcar item como concluído:', error)
+    } finally {
+      setIsCheckLoading(false)
     }
   }
 
   const renderModal = () => {
-    if (
-      !activeModal ||
-      !modalRegistry[activeModal as keyof typeof modalRegistry]
-    ) {
+    if (!activeModal || !modalRegistry[activeModal]) {
       return null
     }
 
-    const ModalComponent =
-      modalRegistry[activeModal as keyof typeof modalRegistry]
+    const ModalComponent = modalRegistry[activeModal]
 
     return <ModalComponent />
   }
@@ -122,13 +113,16 @@ export function AcademyItemRow({
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
           {files?.map((file, index) => {
+            const fileExtension =
+              file.split('.').pop()?.toLowerCase() || 'other'
+
             return (
               <Button
                 key={index}
                 type="button"
-                variant="neutralGhost"
+                variant={buttonVariant[fileExtension] || 'neutralGhost'}
                 size="iconSm"
-                RightIcon={IconFileText}
+                RightIcon={IconFileTextFilled}
                 onClick={() => handleAction('file', file)}
               />
             )
@@ -145,19 +139,27 @@ export function AcademyItemRow({
           />
         )}
 
-        {!activeModal && (
+        {!activeModal ? (
           <Button
             type="button"
             size="sm"
             className="min-w-[200px]"
-            onClick={() =>
-              handleAction(modal ? 'modal' : 'page', modal || page)
-            }
+            disabled={!page && !modal}
+            isLoading={isCheckLoading}
+            onClick={async () => {
+              try {
+                await handleSetChecked()
+                handleAction(page ? 'page' : 'modal', page || modal)
+              } catch (error) {
+                console.error('Erro ao marcar item como concluído:', error)
+              }
+            }}
           >
             {buttonTitle || 'Configurar'}
           </Button>
+        ) : (
+          renderModal()
         )}
-        {renderModal()}
       </div>
 
       {video && (

@@ -63,6 +63,9 @@ import {
 } from '@tabler/icons-react'
 import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Consts
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
@@ -74,6 +77,9 @@ interface Props extends SearchParamsType {
 export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
+
+  const { getDeliveryScheduleType } = usePlanFeatures()
+  const deliveryScheduleType = getDeliveryScheduleType()
 
   const alertDialog = useAlertDialog()
 
@@ -179,47 +185,54 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                   </div>
                                 ) : (
                                   <div className="flex gap-2 items-center">
-                                    <div className="flex gap-2">
-                                      <TooltipProvider>
-                                        {deliverySchedule?.productionStages?.map(
-                                          (stage) => {
-                                            const tooltip = `${stage?.stage?.name || 'Etapa desconhecida'} ${stageStatus[stage?.status]?.tooltip || ''}`
-                                            return (
-                                              <StageStatusDropdown
-                                                key={stage?.id}
-                                                currentStage={stage?.stage?.id}
-                                                rowData={stage}
-                                                searchParams={searchParams}
-                                              >
-                                                <ActionButton
-                                                  Icon={
-                                                    sectorIcons[
-                                                      stage?.stage?.icon
-                                                    ] || IconQuestionMark
+                                    {deliveryScheduleType === 'full' && (
+                                      <div className="flex gap-2">
+                                        <TooltipProvider>
+                                          {deliverySchedule?.productionStages?.map(
+                                            (stage) => {
+                                              const tooltip = `${stage?.stage?.name || 'Etapa desconhecida'} ${stageStatus[stage?.status]?.tooltip || ''}`
+                                              return (
+                                                <StageStatusDropdown
+                                                  key={stage?.id}
+                                                  currentStage={
+                                                    stage?.stage?.id
                                                   }
-                                                  tooltip={tooltip}
-                                                  badge={
-                                                    stageStatus[stage?.status]
-                                                      ?.badge
-                                                  }
-                                                  variant={
-                                                    stage?.status === 'DONE'
-                                                      ? 'successLight'
-                                                      : 'neutralLight'
-                                                  }
-                                                  className="p-2"
-                                                />
-                                              </StageStatusDropdown>
-                                            )
-                                          },
-                                        )}
-                                      </TooltipProvider>
-                                    </div>
+                                                  rowData={stage}
+                                                  searchParams={searchParams}
+                                                >
+                                                  <ActionButton
+                                                    Icon={
+                                                      sectorIcons[
+                                                        stage?.stage?.icon
+                                                      ] || IconQuestionMark
+                                                    }
+                                                    tooltip={tooltip}
+                                                    badge={
+                                                      stageStatus[stage?.status]
+                                                        ?.badge
+                                                    }
+                                                    variant={
+                                                      stage?.status === 'DONE'
+                                                        ? 'successLight'
+                                                        : 'neutralLight'
+                                                    }
+                                                    className="p-2"
+                                                  />
+                                                </StageStatusDropdown>
+                                              )
+                                            },
+                                          )}
+                                        </TooltipProvider>
+                                      </div>
+                                    )}
                                     <div
                                       className={cn(
                                         'overflow-hidden transition-[width] duration-300 ease-in-out',
-                                        !deliverySchedule?.productionStages
-                                          ?.length ||
+                                        // Para planos limitados, sempre mostrar o botão
+                                        // Para planos completos, mostrar apenas quando etapas estão concluídas
+                                        deliveryScheduleType === 'limited' ||
+                                          !deliverySchedule?.productionStages
+                                            ?.length ||
                                           deliverySchedule?.productionStages?.every(
                                             (stage) =>
                                               stage.status === 'DONE' ||

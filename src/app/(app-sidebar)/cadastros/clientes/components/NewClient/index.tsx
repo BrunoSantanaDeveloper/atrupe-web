@@ -9,6 +9,9 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { extractConditions } from './utils/ExtractConditions'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Components
 import { toast } from 'sonner'
 import {
@@ -61,6 +64,7 @@ export function NewClientModal({
   onOpenChange,
 }: Props) {
   const queryClient = useQueryClient()
+  const { hasFinancialModule } = usePlanFeatures()
 
   const [activeTab, setActiveTab] = useState('general')
   const [insertAnother, setInsertAnother] = useState(!editMode)
@@ -205,6 +209,11 @@ export function NewClientModal({
 
   const handleValidateAllTabs = async () => {
     const tabs = ['general', 'addresses', 'responsibilities']
+    // Adiciona creditLimit apenas se o plano permitir
+    if (hasFinancialModule('credit_limit')) {
+      tabs.push('creditLimit')
+    }
+
     for (const tab of tabs) {
       const isValid = await form.trigger(tab as keyof NewClientFormType)
       if (!isValid) {
@@ -220,23 +229,32 @@ export function NewClientModal({
     const isValid = await handleValidateAllTabs()
     if (!isValid) return
 
-    const formData = {
-      ...data,
-      contacts: data.responsibilities,
-      creditLimit: {
-        ...data.creditLimit,
-        conditions: extractConditions(data?.creditLimit?.paymentMethods),
-        paymentMethods: undefined,
-      },
-      responsibilities: undefined,
+    const {
+      responsibilities: _responsibilities,
+      ...dataWithoutResponsibilities
+    } = data
+    let formData = {
+      ...dataWithoutResponsibilities,
+      contacts: [],
+    }
+
+    // Processa creditLimit apenas se o plano permitir
+    if (hasFinancialModule('credit_limit')) {
+      const { paymentMethods, ...creditLimitData } = data.creditLimit
+      formData.creditLimit = {
+        ...creditLimitData,
+        conditions: extractConditions(paymentMethods),
+      } as any
+    } else {
+      // Remove creditLimit se não estiver disponível no plano
+      const { creditLimit: _creditLimit, ...formDataWithoutCreditLimit } =
+        formData
+      formData = formDataWithoutCreditLimit as any
     }
 
     if (client?.status !== 'INACTIVE') {
       formData.status = 'ACTIVE'
     }
-
-    delete formData.responsibilities
-    delete formData.creditLimit.paymentMethods
 
     if (isSubmitting) return
 
@@ -275,15 +293,19 @@ export function NewClientModal({
   }
 
   function handleCleanForm() {
-    reset({
-      ...defaultPersonValues,
-      creditLimit: {
+    const cleanData = { ...defaultPersonValues }
+
+    // Adiciona creditLimit apenas se o plano permitir
+    if (hasFinancialModule('credit_limit')) {
+      cleanData.creditLimit = {
         minValue: personPaymentMethods.minValue,
         maxValue: personPaymentMethods.maxValue,
         paymentMethods: personPaymentMethods.paymentMethods,
         blockClient: false,
-      },
-    })
+      }
+    }
+
+    reset(cleanData)
   }
   function handleToggleModal() {
     handleCleanForm()
@@ -322,6 +344,7 @@ export function NewClientModal({
               <NewClientForm
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                showCreditLimit={hasFinancialModule('credit_limit')}
               />
             </form>
           </FormProvider>
@@ -364,10 +387,12 @@ export function NewClientModal({
               disabled={isSubmitting}
               onClick={() => {
                 // TODO : corrigir e remover este workaround para o erro de não submitar se não abrir tab limite de crédito
-                form.trigger('creditLimit')
-                const errors = form.formState.errors
-                if (errors) {
-                  setActiveTab('creditLimit')
+                if (hasFinancialModule('credit_limit')) {
+                  form.trigger('creditLimit')
+                  const errors = form.formState.errors
+                  if (errors) {
+                    setActiveTab('creditLimit')
+                  }
                 }
               }}
             >

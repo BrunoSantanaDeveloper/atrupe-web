@@ -52,6 +52,7 @@ import type { BankAccountsType } from '@/types/financial/bank'
 
 // Hooks
 import { usePaymentMethod } from '@/hooks/queries/usePaymentMethods'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Actions
 import { createItem, updateItem } from '@/actions/_cruds'
@@ -79,6 +80,7 @@ export function NewBankAccountDialog({
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const queryClient = useQueryClient()
+  const { hasFinancialModule } = usePlanFeatures()
 
   const paymentMethods = usePaymentMethod()
 
@@ -99,7 +101,7 @@ export function NewBankAccountDialog({
       name: rowData?.name || '',
       bankId: rowData?.bankId || '',
       description: rowData?.description || '',
-      cashControl: !!rowData?.cashControl || false,
+      cashControl: !!rowData?.cashControl || true,
       bankAccountCashControl: editMode
         ? (rowData?.bankAccountCashControl || []).map((item) => ({
             ...item,
@@ -220,11 +222,13 @@ export function NewBankAccountDialog({
                   label="Banco"
                   width="flex-[1_0_600px]"
                 />
-                <FormSwitch<FormType>
-                  name="cashControl"
-                  label="Controle de Caixa"
-                  className="w-full"
-                />
+                {hasFinancialModule('cash') && (
+                  <FormSwitch<FormType>
+                    name="cashControl"
+                    label="Controle de Caixa"
+                    className="w-full"
+                  />
+                )}
                 <div className="w-full border rounded-xl">
                   <Table>
                     <TableHeader>

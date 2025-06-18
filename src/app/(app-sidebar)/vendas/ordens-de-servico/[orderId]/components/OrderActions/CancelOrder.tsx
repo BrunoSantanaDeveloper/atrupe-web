@@ -46,6 +46,9 @@ import { createItem } from '@/actions/_cruds'
 
 import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props {
   data: OrderType
 }
@@ -55,6 +58,7 @@ export function CancelOrder({ data }: Props) {
   const [reason, setReason] = useState('')
 
   const queryClient = useQueryClient()
+  const { getRejectionReasonsType } = usePlanFeatures()
 
   const { data: reasonList } = useCancelReason('CANCELLATION')
 
@@ -77,7 +81,33 @@ export function CancelOrder({ data }: Props) {
     },
   })
 
+  // Não renderiza se não tiver acesso à funcionalidade
+  if (getRejectionReasonsType() === 'none') {
+    return null
+  }
+
   const handleCancel = async () => {
+    // Se for limited, cancela direto sem motivo
+    if (getRejectionReasonsType() === 'limited') {
+      toast.promise(
+        createItem({
+          route: 'orderRoute',
+          customPath: `/${data.id}/cancel`,
+          data: {},
+        }),
+        {
+          loading: 'Aguarde...',
+          success: () => {
+            queryClient.invalidateQueries()
+            return 'Venda cancelada'
+          },
+          error: 'Ocorreu um erro',
+        },
+      )
+      return
+    }
+
+    // Lógica normal para full (com motivo)
     toast.promise(mutation.mutateAsync(), {
       loading: 'Aguarde...',
       success: () => {
@@ -85,6 +115,18 @@ export function CancelOrder({ data }: Props) {
       },
       error: 'Ocorreu um erro',
     })
+  }
+
+  // Se for limited, mostra botão simples sem modal
+  if (getRejectionReasonsType() === 'limited') {
+    return (
+      <CustomButton
+        icon={IconX}
+        title="Cancelar venda"
+        iconVariant="errorLight"
+        onClick={handleCancel}
+      />
+    )
   }
 
   return (

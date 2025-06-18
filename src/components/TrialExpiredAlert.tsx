@@ -20,13 +20,18 @@ export async function TrialExpiredAlert() {
 
   if (!session) return null
 
-  const { trialDaysLeft, trial } = session.company
+  const { trialEndsAt, name: planName } = session.company.plan
 
-  if (!trial) return null
+  if (planName !== 'TRIAL') return null
 
-  const isExpired = trialDaysLeft === 0
+  const isExpired = new Date(trialEndsAt) < new Date()
 
   const Icon = isExpired ? IconClockX : IconClock
+
+  const trialDaysLeft = Math.ceil(
+    (new Date(trialEndsAt).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
+  )
 
   return (
     <div
@@ -53,7 +58,9 @@ export async function TrialExpiredAlert() {
           >
             {isExpired
               ? 'Seu teste expirou'
-              : `Seu teste expira em ${trialDaysLeft} dias`}
+              : `Seu teste expira em ${trialDaysLeft} dia${
+                  trialDaysLeft > 1 ? 's' : ''
+                }`}
           </span>
           <span className="text-sm text-gray">
             Escolha o melhor plano para o seu negócio e contrate agora!

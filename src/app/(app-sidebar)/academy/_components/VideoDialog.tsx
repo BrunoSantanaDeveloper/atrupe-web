@@ -8,13 +8,42 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 
+// Converte URLs do YouTube e Vimeo para formato de embed
+function getEmbedUrl(url: string): string {
+  // Se já é uma URL de embed válida, retorna como está
+  if (url.includes('embed') || url.includes('player.vimeo.com')) {
+    return url
+  }
+
+  // YouTube - diferentes formatos
+  const youtubeRegex =
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+  const youtubeMatch = url.match(youtubeRegex)
+
+  if (youtubeMatch) {
+    const videoId = youtubeMatch[1]
+    return `https://www.youtube.com/embed/${videoId}`
+  }
+
+  // Vimeo - diferentes formatos
+  const vimeoRegex = /(?:vimeo\.com\/)(\d+)/
+  const vimeoMatch = url.match(vimeoRegex)
+
+  if (vimeoMatch) {
+    const videoId = vimeoMatch[1]
+    return `https://player.vimeo.com/video/${videoId}`
+  }
+
+  // Se não for YouTube nem Vimeo, retorna a URL original
+  return url
+}
+
 interface VideoDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   video: string
   title?: string
   description?: string
-  videoType?: 'youtube' | 'vimeo'
 }
 
 export function VideoDialog({
@@ -23,12 +52,8 @@ export function VideoDialog({
   video,
   title,
   description,
-  videoType = 'vimeo',
 }: VideoDialogProps) {
-  const embedUrl =
-    videoType === 'youtube'
-      ? `https://www.youtube.com/embed/${video}`
-      : `https://player.vimeo.com/video/${video}?h=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479&autoplay=1`
+  const embedUrl = getEmbedUrl(video)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

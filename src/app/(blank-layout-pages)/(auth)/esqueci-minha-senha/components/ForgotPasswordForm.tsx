@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 // UI
@@ -74,6 +75,12 @@ export function ForgotPasswordForm() {
         >
           Redefinir senha
         </Button>
+
+        <div className="text-center text-sm font-medium text-gray-700">
+          <Link href="/login" className="text-brand hover:underline">
+            Voltar ao Login
+          </Link>
+        </div>
       </form>
     </Form>
   )

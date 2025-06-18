@@ -32,7 +32,12 @@ export function LoginForm() {
 
   const searchParams = useSearchParams()
 
-  const redirectUrl = searchParams.get('to') || '/'
+  const isAcademyEnabled =
+    typeof window !== 'undefined' && localStorage.getItem('academy') === 'true'
+
+  const defaultHomePage = isAcademyEnabled ? '/academy/start' : '/'
+
+  const redirectUrl = searchParams.get('to') || defaultHomePage
 
   useEffect(() => {
     if (redirectUrl !== '/') router.refresh()

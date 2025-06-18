@@ -19,7 +19,7 @@ import { IconBulb } from '@tabler/icons-react'
 // Types
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
-import noImage from '@public/img/image-placeholder.svg'
+import noImage from '@/assets/images/image-placeholder.svg'
 
 interface Props {
   open: boolean
