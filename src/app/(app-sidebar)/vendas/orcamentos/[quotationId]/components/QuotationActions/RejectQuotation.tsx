@@ -79,9 +79,9 @@ export function RejectQuotation({ data }: Props) {
   })
 
   // Não renderiza se não tiver acesso à funcionalidade
-  if (getRejectionReasonsType() === 'none') {
-    return null
-  }
+  // if (getRejectionReasonsType() === 'none') {
+  //   return null
+  // }
 
   const handleReject = async () => {
     // Se for limited, rejeita direto sem motivo
