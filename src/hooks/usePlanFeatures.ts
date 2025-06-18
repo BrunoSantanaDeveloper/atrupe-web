@@ -65,6 +65,12 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  const getBankTaxTransferType = () => {
+    if (hasFeature('bank_tax_transfer_full')) return 'full'
+    if (hasFeature('bank_tax_transfer_limited')) return 'limited'
+    return 'none'
+  }
+
   const getProductsType = () => {
     if (hasFeature('products_full')) return 'full'
     if (hasFeature('products_limited')) return 'limited'
@@ -100,6 +106,7 @@ export function usePlanFeatures() {
     getBudgetStatusType,
     hasFinancialModule,
     getBankAccountsType,
+    getBankTaxTransferType,
     getProductsType,
     getProductionStagesType,
     getClientsType,

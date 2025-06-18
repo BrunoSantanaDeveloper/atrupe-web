@@ -34,6 +34,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { useQueryClient } from '@tanstack/react-query'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Icons
 import {
   IconCalculator,
@@ -56,6 +59,10 @@ export function NewPaymentCondition({
 }: Props) {
   const [showDialog, setShowDialog] = useState(false)
   const queryClient = useQueryClient()
+  const { getBankTaxTransferType } = usePlanFeatures()
+
+  const bankTaxTransferType = getBankTaxTransferType()
+  const isTaxFieldsDisabled = bankTaxTransferType === 'limited'
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -271,6 +278,7 @@ export function NewPaymentCondition({
                               label="Taxa operadora"
                               width="flex-[1_0_100px]"
                               startAdornment={<>R$</>}
+                              disabled={isTaxFieldsDisabled}
                             />
                             <FormBrlInput
                               key={'operatorFeeTransfer' + (index + 1)}
@@ -278,6 +286,7 @@ export function NewPaymentCondition({
                               label="Repasse da taxa"
                               width="flex-[1_0_100px]"
                               startAdornment={<>R$</>}
+                              disabled={isTaxFieldsDisabled}
                             />
                           </>
                         ) : (
@@ -289,6 +298,7 @@ export function NewPaymentCondition({
                               label="Taxa operadora"
                               width="flex-[1_0_100px]"
                               endAdornment={<>%</>}
+                              disabled={isTaxFieldsDisabled}
                             />
 
                             <FormInput
@@ -298,6 +308,7 @@ export function NewPaymentCondition({
                               label="Repasse da taxa"
                               width="flex-[1_0_100px]"
                               endAdornment={<>%</>}
+                              disabled={isTaxFieldsDisabled}
                             />
                           </>
                         )}
@@ -313,6 +324,7 @@ export function NewPaymentCondition({
                     label="Taxa operadora"
                     width="flex-[1_0_100px]"
                     startAdornment={<>R$</>}
+                    disabled={isTaxFieldsDisabled}
                   />
                   <FormBrlInput
                     key="operatorFeeTransfer1"
@@ -320,6 +332,7 @@ export function NewPaymentCondition({
                     label="Repasse da taxa"
                     width="flex-[1_0_100px]"
                     startAdornment={<>R$</>}
+                    disabled={isTaxFieldsDisabled}
                   />
                 </>
               ) : (
@@ -331,6 +344,7 @@ export function NewPaymentCondition({
                     label="Taxa operadora"
                     width="flex-[1_0_100px]"
                     endAdornment={<>%</>}
+                    disabled={isTaxFieldsDisabled}
                   />
 
                   <FormInput
@@ -340,6 +354,7 @@ export function NewPaymentCondition({
                     label="Repasse da taxa"
                     width="flex-[1_0_100px]"
                     endAdornment={<>%</>}
+                    disabled={isTaxFieldsDisabled}
                   />
                 </>
               )}
