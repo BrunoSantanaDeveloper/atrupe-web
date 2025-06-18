@@ -41,8 +41,28 @@ export default function AtivarPlanoPage() {
             await update({
               company: {
                 plan: {
-                  name: 'START',
-                  features: [],
+                  name: 'LITE',
+                  features: [
+                    'user_limit_5',
+                    'additional_cnpj',
+                    'sectors_management',
+                    'sales_orders_full',
+                    'quick_sale',
+                    'rejection_reasons_full',
+                    'budget_status_full',
+                    'delivery_schedule_full',
+                    'accounts_receivable',
+                    'accounts_payable',
+                    'cash_control',
+                    'pdv',
+                    'bank_accounts_full',
+                    'bank_tax_transfer_full',
+                    'credit_limit',
+                    'products_full',
+                    'production_stages_full',
+                    'clients_full',
+                    'suppliers_full',
+                  ],
                 },
               },
             })

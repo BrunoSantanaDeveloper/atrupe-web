@@ -128,8 +128,11 @@ export const {
           if (typeof session.company.favicon !== 'undefined') {
             token.companyFavicon = session.company.favicon
           }
-          if (typeof session.company.plan !== 'undefined') {
-            token.plan = session.company.plan
+          if (typeof session.company.plan.name !== 'undefined') {
+            token.subscription = session.company.plan.name
+          }
+          if (typeof session.company.plan.features !== 'undefined') {
+            token.features = session.company.plan.features
           }
         }
       }
