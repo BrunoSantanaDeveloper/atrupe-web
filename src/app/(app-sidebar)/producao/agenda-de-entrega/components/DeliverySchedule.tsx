@@ -26,7 +26,13 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import { IconReportMoney } from '@tabler/icons-react'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 export function DeliverySchedule({ searchParams }: SearchParamsType) {
+  const { getDeliveryScheduleType } = usePlanFeatures()
+  const deliveryScheduleType = getDeliveryScheduleType()
+
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['delivery-schedule-totals'],
@@ -64,28 +70,42 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
       count: totals?.faturamento,
     },
     {
+      value: '',
+      tab: 'todos',
+      label: 'Todos os ativos',
+      count: totals?.todos,
+    },
+    {
       value: 'DONE',
       tab: 'finalizados',
       label: 'Finalizados',
       count: totals?.finalizados,
     },
-    {
-      value: '',
-      tab: 'todos',
-      label: 'Todos',
-      count: totals?.todos,
-    },
   ]
+
+  // Filtrar abas baseado no plano
+  const filteredTabs =
+    deliveryScheduleType === 'limited'
+      ? tabs.filter((tab) => tab.tab !== 'producao' && tab.tab !== 'todos')
+      : tabs
 
   const statusLabel =
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
+
+  // Determinar aba ativa - se a aba atual não existe nas filtradas, usar 'entrega'
+  const activeTab = (() => {
+    const currentTab = searchParams?.status || 'todos'
+    const tabExists = filteredTabs.some((tab) => tab.tab === currentTab)
+    if (tabExists) return currentTab
+    return deliveryScheduleType === 'limited' ? 'entrega' : 'todos'
+  })()
 
   return (
     <div className="space-y-5">
       <Topbar
         title="Agenda de entrega"
-        tabs={tabs}
-        activeTab={searchParams?.status || 'todos'}
+        tabs={filteredTabs}
+        activeTab={activeTab}
         paramName="status"
       />
       <div>

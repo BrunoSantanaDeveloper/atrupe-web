@@ -95,6 +95,12 @@ export function usePlanFeatures() {
     return 'none'
   }
 
+  const getDeliveryScheduleType = () => {
+    if (hasFeature('delivery_schedule_full')) return 'full'
+    if (hasFeature('delivery_schedule_limited')) return 'limited'
+    return 'none'
+  }
+
   return {
     hasFeature,
     hasAnyFeature,
@@ -111,5 +117,6 @@ export function usePlanFeatures() {
     getProductionStagesType,
     getClientsType,
     getSuppliersType,
+    getDeliveryScheduleType,
   }
 }
