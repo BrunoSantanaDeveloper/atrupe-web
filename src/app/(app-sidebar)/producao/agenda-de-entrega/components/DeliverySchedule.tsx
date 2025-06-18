@@ -85,19 +85,20 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
 
   // Filtrar abas baseado no plano
   const filteredTabs =
-    deliveryScheduleType === 'limited'
-      ? tabs.filter((tab) => tab.tab !== 'producao' && tab.tab !== 'todos')
-      : tabs
+    deliveryScheduleType === 'full'
+      ? tabs
+      : tabs.filter((tab) => tab.tab !== 'producao' && tab.tab !== 'todos')
 
   const statusLabel =
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
-  // Determinar aba ativa - se a aba atual não existe nas filtradas, usar 'entrega'
+  // Determinar aba ativa - se a aba atual não existe nas filtradas, usar padrão baseado no plano
   const activeTab = (() => {
-    const currentTab = searchParams?.status || 'todos'
+    const defaultTab = deliveryScheduleType === 'full' ? 'todos' : 'entrega'
+    const currentTab = searchParams?.status || defaultTab
     const tabExists = filteredTabs.some((tab) => tab.tab === currentTab)
     if (tabExists) return currentTab
-    return deliveryScheduleType === 'limited' ? 'entrega' : 'todos'
+    return defaultTab
   })()
 
   return (
