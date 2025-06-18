@@ -18,8 +18,14 @@ import { toast } from 'sonner'
 interface Props {
   activeTab: string
   setActiveTab: (tab: string) => void
+  showCreditLimit?: boolean
 }
-export function NewClientForm({ activeTab, setActiveTab }: Props) {
+
+export function NewClientForm({
+  activeTab,
+  setActiveTab,
+  showCreditLimit = true,
+}: Props) {
   const form = useFormContext<NewClientFormType>()
   const { reset, watch, trigger } = form
 
@@ -76,9 +82,11 @@ export function NewClientForm({ activeTab, setActiveTab }: Props) {
           <TabsTrigger value="responsibilities" className="w-full">
             Responsáveis
           </TabsTrigger>
-          <TabsTrigger value="creditLimit" className="w-full">
-            Limite de crédito
-          </TabsTrigger>
+          {showCreditLimit && (
+            <TabsTrigger value="creditLimit" className="w-full">
+              Limite de crédito
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="general">
@@ -90,9 +98,11 @@ export function NewClientForm({ activeTab, setActiveTab }: Props) {
         <TabsContent value="responsibilities">
           <ResponsibilitiesTab />
         </TabsContent>
-        <TabsContent value="creditLimit">
-          <CreditLimitTab />
-        </TabsContent>
+        {showCreditLimit && (
+          <TabsContent value="creditLimit">
+            <CreditLimitTab />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   )
