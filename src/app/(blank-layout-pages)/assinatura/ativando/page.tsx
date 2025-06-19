@@ -16,6 +16,7 @@ import { ProgressCircle } from '@/components/ui/progress-circle'
 
 // Components
 import { Logo } from '@/components/Logo'
+import { toast } from 'sonner'
 
 export default function AtivarPlanoPage() {
   const router = useRouter()
@@ -23,17 +24,23 @@ export default function AtivarPlanoPage() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    if (progress > 0) return
+
     const startProgress = async () => {
-      for (let i = 0; i <= 100; i += 10) {
-        setProgress(i)
+      const progressPromise = (async () => {
+        for (let i = 0; i <= 100; i += Math.floor(Math.random() * 3) + 1) {
+          setProgress(i)
 
-        if (i < 100) {
-          await new Promise((resolve) => setTimeout(resolve, 500))
+          if (i < 100) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, Math.random() * 100),
+            )
+          }
         }
-      }
+        setProgress(100)
+      })()
 
-      // Aguardar um pouco antes de atualizar os dados e redirecionar
-      setTimeout(async () => {
+      const updateSessionPromise = (async () => {
         try {
           // Atualizar a sessão local com os novos dados
           if (session?.company?.id) {
@@ -69,23 +76,30 @@ export default function AtivarPlanoPage() {
           }
         } catch (error) {
           console.error('Erro ao atualizar dados da empresa:', error)
-        } finally {
-          // Redirecionar para a página inicial
-          router.replace('/')
         }
-      }, 1500)
+      })()
+
+      // Aguardar ambos os processos terminarem
+      await Promise.all([progressPromise, updateSessionPromise])
+
+      toast.success('Redirecionando...')
+
+      // Aguardar um pouco antes de redirecionar
+      setTimeout(() => {
+        router.replace('/')
+      }, 500)
     }
 
     // Iniciar após pequeno delay
     const timer = setTimeout(startProgress, 1000)
 
     return () => clearTimeout(timer)
-  }, [router, session, update])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, progress])
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="flex flex-col items-center justify-center gap-8 w-full">
-        <Logo text width={154} />
         <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
           <CardHeader className="p-0 mb-8 text-center">
             <CardTitle className="text-xl font-bold">Validando dados</CardTitle>
@@ -95,9 +109,9 @@ export default function AtivarPlanoPage() {
           </CardHeader>
           <CardContent className="flex flex-col items-center gap-4">
             <ProgressCircle value={progress} size={180} />
-            <div className="text-2xl font-bold text-gray-700">{progress}%</div>
           </CardContent>
         </Card>
+        <Logo text width={154} />
       </div>
     </div>
   )

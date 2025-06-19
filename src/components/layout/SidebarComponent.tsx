@@ -32,7 +32,7 @@ import favicon from '@public/logo/logo.png'
 import logo from '@public/logo/logo-text.png'
 
 // Libs
-import { cn } from '@/lib/utils'
+import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Consts
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
@@ -188,7 +188,7 @@ export function SidebarComponent(props: Props) {
                     )}
                   >
                     <p className="text-sm font-semibold text-gray-700">
-                      {session?.user?.name}
+                      {getFirstAndLastName(session?.user?.name || '')}
                     </p>
                     <p className="text-xs font-medium text-gray">
                       {userRoleObj[userRole] || userRole}

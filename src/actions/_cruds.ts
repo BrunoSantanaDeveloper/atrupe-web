@@ -279,20 +279,14 @@ export const deleteItemNew = async ({
   }
 }
 
-export const uploadFile = async (
-  route: string,
-  data: FormData,
-  customPath?: string,
-) => {
+export const uploadFile = async (route: string, data: FormData) => {
   const api = await apiInstance()
 
   // Convert file to plain object before appending
   // const plainFile = new Blob([file], { type: file.type })
 
-  const url = ((route && defaultRoute[route]) || '') + (customPath || '')
-
   try {
-    const response = await api.post(url, data, {
+    const response = await api.post(route, data, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -309,41 +303,6 @@ export const uploadFile = async (
     throw caughtError
   }
 }
-
-// export const uploadFile = async (
-//   route: string,
-//   fileBase64: string, // Serializable Base64
-//   fileType: string, // Add type to reconstruct Blob
-//   customPath?: string,
-// ) => {
-//   try {
-//     const api = await apiInstance()
-
-//     // Recreate the Blob from Base64
-//     const binary = atob(fileBase64)
-//     const array = Uint8Array.from(binary, (char) => char.charCodeAt(0))
-//     const plainFile = new Blob([array], { type: fileType })
-
-//     // Create FormData
-//     const formData = new FormData()
-//     formData.append('image', plainFile)
-
-//     const url = ((route && defaultRoute[route]) || '') + (customPath || '')
-//     const response = await api.post(url, formData, {
-//       headers: {
-//         'Content-Type': 'multipart/form-data',
-//       },
-//     })
-//     return response.data
-//   } catch (error: any) {
-//     const caughtError =
-//       error.response?.data?.data?.message ||
-//       error.response?.data?.message ||
-//       error.message ||
-//       error
-//     throw caughtError
-//   }
-// }
 
 // Helper to encode file as Base64
 export const encodeFileToBase64 = async (file: Blob) => {

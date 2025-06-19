@@ -97,8 +97,6 @@ const defaultRoute: { [key: string]: string } = {
 
   sellerProfileTotalsRoute: '/seller/profile',
   sellerProfilesRoute: '/seller/profile',
-
-  uploadFileRoute: '/file/upload-image',
 }
 
 export function defaultRoutes() {

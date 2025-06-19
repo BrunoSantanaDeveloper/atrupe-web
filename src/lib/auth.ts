@@ -135,6 +135,15 @@ export const {
             token.features = session.company.plan.features
           }
         }
+
+        if (session.user) {
+          if (typeof session.user.avatar !== 'undefined') {
+            token.avatar = session.user.avatar
+          }
+          if (typeof session.user.name !== 'undefined') {
+            token.name = session.user.name
+          }
+        }
       }
 
       return token

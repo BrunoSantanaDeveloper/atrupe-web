@@ -46,8 +46,7 @@ import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 
 // Hooks
-import { useRouter } from 'next/navigation'
-import { useAlertDialog } from '@/store/useAlertDialog'
+import { useSession } from 'next-auth/react'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -61,9 +60,7 @@ export function EditEmployeeDialog({
   rowData,
   searchParams,
 }: Props) {
-  const alertDialog = useAlertDialog()
-
-  const router = useRouter()
+  const { data: session, update: updateSession } = useSession()
 
   const queryClient = useQueryClient()
 
@@ -109,26 +106,10 @@ export function EditEmployeeDialog({
 
   const onSubmit = async (data: FormType) => {
     await mutation.mutateAsync(data)
-    // await updateSessionInfo({
-    //   id: rowData?.userId || '',
-    //   newPhotoUrl: data.avatarUrl,
-    // })
-
-    // TODO : Remover isto após corrigir a revalidação de sessão
-    if (rowData?.role?.isAdmin) {
-      await alertDialog.open({
-        title: `Informações atualizadas`,
-        description:
-          'As alterações realizadas para o colaborador (Nome, Foto de perfil, etc.) serão aplicadas no próximo login. Você ainda verá a foto anterior na barra lateral, a menos que saia e entre novamente. Deseja sair da aplicação agora?',
-        cancelLabel: 'Ficar',
-        confirmLabel: 'Sair',
-        onConfirm: () => {
-          router.push('/logout')
-        },
-        toastMsg: {
-          loading: `Saindo...`,
-          success: `Faça login novamente para ver as alterações.`,
-          error: `Erro ao sair`,
+    if (session?.user?.userId === rowData?.user?.id) {
+      await updateSession({
+        user: {
+          avatar: data.avatarUrl || '',
         },
       })
     }
@@ -187,6 +168,7 @@ export function EditEmployeeDialog({
                     name="sectorId"
                     label="Setor"
                     width="flex-[1_0_190px]"
+                    disabled={rowData?.role?.isAdmin}
                   />
 
                   <SelectRoleField<FormType>
@@ -194,6 +176,7 @@ export function EditEmployeeDialog({
                     label="Cargo"
                     width="flex-[1_0_190px]"
                     sectorId={watch('sectorId')}
+                    disabled={rowData?.role?.isAdmin}
                   />
 
                   <FormInput<FormType>

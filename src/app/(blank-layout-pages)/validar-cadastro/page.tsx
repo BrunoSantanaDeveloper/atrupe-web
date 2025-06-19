@@ -31,6 +31,8 @@ export default function ValidationPage() {
   const processStarted = useRef(false)
 
   useEffect(() => {
+    if (progress > 0) return
+
     let isMounted = true
 
     const sendData = async () => {
@@ -108,7 +110,7 @@ export default function ValidationPage() {
         } else {
           clearSignupData()
           setProgress(100)
-          router.replace('/')
+          router.replace('/academy/start')
         }
       } catch (error) {
         setProgress(0)
@@ -132,7 +134,8 @@ export default function ValidationPage() {
       console.log('Componente desmontado, cancelando operações')
       isMounted = false
     }
-  }, [signupData, newPasswordData, router, clearSignupData])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signupData, newPasswordData, clearSignupData])
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">

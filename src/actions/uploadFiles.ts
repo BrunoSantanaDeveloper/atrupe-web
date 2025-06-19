@@ -19,7 +19,7 @@ export async function uploadFiles({
 }: SimulateProgressParams) {
   const file = files[0]!
   const formData = new FormData()
-  formData.append('image', file)
+  formData.append('file', file)
 
   let progress = 0
   const sleep = (ms: number) =>
@@ -32,5 +32,5 @@ export async function uploadFiles({
   }
   setProgresses({ [file.name]: 100 })
 
-  return await uploadFile('uploadFileRoute', formData)
+  return await uploadFile('/file/upload-file', formData)
 }
