@@ -44,6 +44,7 @@ import { useSeller } from '@/hooks/queries/useSeller'
 import { QuotationType } from '@/types/sales/quotation'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { QuotationFormType, quotationSchema } from './schema'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 const serviceOptions = [
   { value: 'direct', label: 'Venda Direta' },
@@ -103,6 +104,7 @@ export function NewQuotationModal({
 }: Props) {
   const { data: session } = useSession()
   const { data: sellers } = useSeller()
+  const { hasFeature } = usePlanFeatures()
 
   const queryClient = useQueryClient()
 
@@ -227,7 +229,7 @@ export function NewQuotationModal({
                 name="companyId"
                 label="Empresa"
                 width="flex-[1_0_300px]"
-                disabled={editMode}
+                disabled={editMode || !hasFeature('multiple_companies')}
               />
               <SelectSerieField
                 name="seriesId"
