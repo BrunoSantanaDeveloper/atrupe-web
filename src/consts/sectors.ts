@@ -25,7 +25,7 @@ import {
   IconAdministration,
 } from '@/assets/icons/CustomIcons'
 
-export const sectorIcons: {
+const sectors: {
   [key: string]: {
     text: string
     icon: (props: SVGProps<SVGSVGElement>) => JSX.Element
@@ -104,7 +104,7 @@ export const sectorIcons: {
     icon: IconProperty,
   },
   'presentation-analytics': {
-    text: 'Locação',
+    text: 'Painel',
     icon: IconRental,
   },
   'screen-printing': {
@@ -112,7 +112,7 @@ export const sectorIcons: {
     icon: IconSerigraphy,
   },
   'clock-hour-8': {
-    text: 'Tempo',
+    text: 'Controle',
     icon: IconTime,
   },
   wallpaper: {
@@ -120,3 +120,8 @@ export const sectorIcons: {
     icon: IconWarehouse,
   },
 }
+
+// Ordena os setores alfabeticamente
+export const sectorIcons = Object.fromEntries(
+  Object.entries(sectors).sort(([, a], [, b]) => a.text.localeCompare(b.text)),
+)
