@@ -114,35 +114,43 @@ export const {
 
       // Se é um update trigger, atualize os dados do token
       if (trigger === 'update' && session) {
-        // Atualizar dados da empresa se fornecidos
-        if (session.company) {
-          if (typeof session.company.name !== 'undefined') {
-            token.companyName = session.company.name
+        try {
+          // Atualizar dados da empresa se fornecidos
+          if (session.company) {
+            if (typeof session.company.name !== 'undefined') {
+              token.companyName = session.company.name
+            }
+            if (typeof session.company.legalName !== 'undefined') {
+              token.companyLegalName = session.company.legalName
+            }
+            if (typeof session.company.logo !== 'undefined') {
+              token.companyLogo = session.company.logo
+            }
+            if (typeof session.company.favicon !== 'undefined') {
+              token.companyFavicon = session.company.favicon
+            }
+            // Verificar se plan existe antes de acessar suas propriedades
+            if (session.company.plan) {
+              if (typeof session.company.plan.name !== 'undefined') {
+                token.subscription = session.company.plan.name
+              }
+              if (typeof session.company.plan.features !== 'undefined') {
+                token.features = session.company.plan.features
+              }
+            }
           }
-          if (typeof session.company.legalName !== 'undefined') {
-            token.companyLegalName = session.company.legalName
-          }
-          if (typeof session.company.logo !== 'undefined') {
-            token.companyLogo = session.company.logo
-          }
-          if (typeof session.company.favicon !== 'undefined') {
-            token.companyFavicon = session.company.favicon
-          }
-          if (typeof session.company.plan.name !== 'undefined') {
-            token.subscription = session.company.plan.name
-          }
-          if (typeof session.company.plan.features !== 'undefined') {
-            token.features = session.company.plan.features
-          }
-        }
 
-        if (session.user) {
-          if (typeof session.user.avatar !== 'undefined') {
-            token.avatar = session.user.avatar
+          if (session.user) {
+            if (typeof session.user.avatar !== 'undefined') {
+              token.avatar = session.user.avatar
+            }
+            if (typeof session.user.name !== 'undefined') {
+              token.name = session.user.name
+            }
           }
-          if (typeof session.user.name !== 'undefined') {
-            token.name = session.user.name
-          }
+        } catch (error) {
+          // Em caso de erro, logar mas não quebrar a sessão
+          console.error('Erro ao atualizar sessão:', error)
         }
       }
 
@@ -151,29 +159,29 @@ export const {
     session({ session, token }) {
       const sessionData = {
         user: {
-          userId: token.id,
-          name: token.name,
-          email: token.email,
-          role: token.role,
-          avatar: token.avatar,
-          employeeId: token.employeeId,
-          permissions: token.permissions,
+          userId: token.id || '',
+          name: token.name || '',
+          email: token.email || '',
+          role: token.role || '',
+          avatar: token.avatar || '',
+          employeeId: token.employeeId || '',
+          permissions: token.permissions || [],
         },
         company: {
-          id: token.companyId,
-          name: token.companyName,
-          legalName: token.companyLegalName,
-          logo: token.companyLogo,
-          favicon: token.companyFavicon,
+          id: token.companyId || '',
+          name: token.companyName || '',
+          legalName: token.companyLegalName || '',
+          logo: token.companyLogo || '',
+          favicon: token.companyFavicon || '',
           plan: {
-            name: token.subscription,
-            active: token.subscriptionActive,
-            trialEndsAt: token.trialEndsAt,
-            features: token.features,
+            name: token.subscription || 'TRIAL',
+            active: token.subscriptionActive || false,
+            trialEndsAt: token.trialEndsAt || '',
+            features: token.features || [],
           },
         },
         expires: session.expires,
-        accessToken: token.accessToken,
+        accessToken: token.accessToken || '',
       }
 
       return sessionData
