@@ -109,7 +109,7 @@ export function NewUserDialog({
             data,
           })
         : createItemNew({
-            route: '/user',
+            route: '/user/employee',
             data: { ...data, employeeId: rowData?.id },
           }),
     onSuccess: () => {

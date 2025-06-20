@@ -50,8 +50,11 @@ interface Props extends SearchParamsType {
 const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
   label: (
     <div className="flex items-center gap-2 text-nowrap">
-      <IconComponent icon={value} className="size-5 [&>path]:stroke-[2px]" />
-      {key}
+      <IconComponent
+        icon={value.icon}
+        className="size-5 [&>path]:stroke-[2px]"
+      />
+      {value.text}
     </div>
   ),
   value: key,
