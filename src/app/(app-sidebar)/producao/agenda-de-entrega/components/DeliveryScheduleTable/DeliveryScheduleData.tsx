@@ -85,8 +85,17 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
 
   const queryClient = useQueryClient()
 
-  const status =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
+  const status = (() => {
+    const foundStatus =
+      tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
+
+    // Se deliveryScheduleType não for 'full' e status estiver vazio, usar 'DELIVERING'
+    if (deliveryScheduleType !== 'full' && !foundStatus) {
+      return 'DELIVERING'
+    }
+
+    return foundStatus
+  })()
 
   const filters = { ...searchParams, status }
 
