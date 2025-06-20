@@ -38,6 +38,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { EmployeeType } from '@/types/settings/employee'
 
 // Lib
+import { useSession } from 'next-auth/react'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Icons
@@ -78,6 +79,8 @@ export function NewUserDialog({
     initialPasswordValidations,
   )
 
+  const { data: session, update: updateSession } = useSession()
+
   const userData = rowData?.user || {
     name: '',
     email: '',
@@ -102,11 +105,11 @@ export function NewUserDialog({
     mutationFn: (data: Omit<FormType, 'confirmPassword' | 'password'>) =>
       editMode
         ? updateItemNew({
-            route: `/user/employee/${rowData?.user?.id}`,
+            route: `/user/${rowData?.user?.id}`,
             data,
           })
         : createItemNew({
-            route: '/user/employee',
+            route: '/user',
             data: { ...data, employeeId: rowData?.id },
           }),
     onSuccess: () => {
@@ -137,10 +140,17 @@ export function NewUserDialog({
     if (editMode && !body.password) {
       const { password: _, ...bodyWithoutPassword } = body
       await mutation.mutateAsync(bodyWithoutPassword)
-      return
+    } else {
+      await mutation.mutateAsync(body)
     }
 
-    await mutation.mutateAsync(body)
+    if (session?.user?.userId === rowData?.user?.id) {
+      await updateSession({
+        user: {
+          name: data.name || '',
+        },
+      })
+    }
   }
 
   const handleOpenChange = (value: boolean) => {

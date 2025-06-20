@@ -304,8 +304,8 @@ export function NewCompanyTriggerButton({
         type="button"
         variant="neutralGhost"
         size="default"
-        disabled
         title="Não disponível no plano atual"
+        className="hidden"
       >
         <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
         Adicionar empresa
