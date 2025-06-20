@@ -204,7 +204,8 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                     Icon={
                                                       sectorIcons[
                                                         stage?.stage?.icon
-                                                      ] || IconQuestionMark
+                                                      ]?.icon ||
+                                                      IconQuestionMark
                                                     }
                                                     tooltip={tooltip}
                                                     badge={

@@ -71,11 +71,14 @@ export function QuotationCategorySelectorModal({
                   onClick={() => handleSelect(option.id)}
                 >
                   {option.icon ? (
-                    createElement(sectorIcons[option.icon], {
-                      className:
-                        'mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full',
-                      'aria-hidden': 'true',
-                    })
+                    createElement(
+                      sectorIcons[option.icon]?.icon || IconQuestionMark,
+                      {
+                        className:
+                          'mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full',
+                        'aria-hidden': 'true',
+                      },
+                    )
                   ) : (
                     <IconQuestionMark
                       className="mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full"

@@ -129,7 +129,8 @@ export function Main({ searchParams }: Props) {
                                     item?.isActive ? 'light' : 'neutralLight'
                                   }
                                   Icon={
-                                    sectorIcons[item?.icon] || IconQuestionMark
+                                    sectorIcons[item?.icon]?.icon ||
+                                    IconQuestionMark
                                   }
                                   className="[&_path]:stroke-[3px]"
                                 />

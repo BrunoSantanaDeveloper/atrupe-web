@@ -23,7 +23,7 @@ export function ProductionStageIcon({
           type="button"
           size="icon"
           variant={isActive ? 'successLight' : 'neutralLight'}
-          RightIcon={sectorIcons[icon ?? ''] || IconQuestionMark}
+          RightIcon={sectorIcons[icon ?? '']?.icon || IconQuestionMark}
           className="p-2 [&>svg]:stroke-2 pointer-events-none"
         />
       </div>
