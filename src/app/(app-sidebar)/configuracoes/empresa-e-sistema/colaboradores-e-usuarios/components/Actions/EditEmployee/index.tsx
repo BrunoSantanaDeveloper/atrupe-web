@@ -110,6 +110,7 @@ export function EditEmployeeDialog({
       await updateSession({
         user: {
           avatar: data.avatarUrl || '',
+          name: data.name || '',
         },
       })
     }
