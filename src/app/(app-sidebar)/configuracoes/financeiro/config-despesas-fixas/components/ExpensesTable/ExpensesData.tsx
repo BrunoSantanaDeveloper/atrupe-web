@@ -27,7 +27,7 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -57,7 +57,10 @@ export function FixedExpensesData({ searchParams, tabs }: Props) {
     staleTime: Infinity,
     queryKey: ['fixed-expenses-config', searchParams],
     queryFn: () =>
-      getDataOld({ route: 'listFixedExpensesConfigRoute', filters }),
+      getData({
+        route: '/financial/scheduled-expense/by-level1/payable',
+        filters,
+      }),
   })
   const fixedExpenses: FixedExpensesConfigType[] = data?.data || []
   const hasData = fixedExpenses.length

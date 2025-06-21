@@ -51,8 +51,13 @@ export function NewPassword() {
   }
 
   return (
-    <Form {...form}>
-      <NewPasswordForm onSubmit={onSubmit} />
-    </Form>
+    <>
+      <p className="text-xs text-gray-500 text-center mb-4">
+        {signupData?.email}
+      </p>
+      <Form {...form}>
+        <NewPasswordForm onSubmit={onSubmit} />
+      </Form>
+    </>
   )
 }

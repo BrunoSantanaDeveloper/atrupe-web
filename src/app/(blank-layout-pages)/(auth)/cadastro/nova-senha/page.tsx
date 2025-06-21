@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default function NewPasswordPage() {
   return (
     <>
-      <CardHeader className="p-0 mb-8 text-center">
+      <CardHeader className="p-0 mb-4 text-center">
         <CardTitle className="text-xl font-bold">Criação de senha</CardTitle>
       </CardHeader>
       <CardContent>
