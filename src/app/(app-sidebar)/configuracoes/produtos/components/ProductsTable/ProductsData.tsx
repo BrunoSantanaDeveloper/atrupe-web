@@ -68,7 +68,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
               <TableRow className="bg-gray-50">
                 <TableHead>Produto</TableHead>
                 <TableHead>Setor</TableHead>
-                <TableHead>Custo</TableHead>
                 <TableHead>P.V.</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
@@ -82,9 +81,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   </TableCell>
                   <TableCell className="text-gray-600">
                     <Badge variant="neutralLight">{product?.sectorName}</Badge>
-                  </TableCell>
-                  <TableCell className="text-gray-600">
-                    {formatCurrencyToBrl(product?.unitCost)}
                   </TableCell>
                   <TableCell className="text-success-700">
                     {formatCurrencyToBrl(product?.salePrice)}
