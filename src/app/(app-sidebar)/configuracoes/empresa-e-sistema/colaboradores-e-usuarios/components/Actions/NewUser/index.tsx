@@ -38,7 +38,6 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { EmployeeType } from '@/types/settings/employee'
 
 // Lib
-import { useSession } from 'next-auth/react'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Icons
@@ -78,8 +77,6 @@ export function NewUserDialog({
   const [passwordValidations, setPasswordValidations] = useState(
     initialPasswordValidations,
   )
-
-  const { data: session, update: updateSession } = useSession()
 
   const userData = rowData?.user || {
     name: '',
@@ -142,14 +139,6 @@ export function NewUserDialog({
       await mutation.mutateAsync(bodyWithoutPassword)
     } else {
       await mutation.mutateAsync(body)
-    }
-
-    if (session?.user?.userId === rowData?.user?.id) {
-      await updateSession({
-        user: {
-          name: data.name || '',
-        },
-      })
     }
   }
 

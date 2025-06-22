@@ -20,26 +20,29 @@ import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormSelect } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
+import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
 import { SelectTransactionCategoryField } from '@/components/common/form/global-inputs/TransactionCategorySelectField'
-import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 
 // Form
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
 import {
-  defaultFixedExpensesValues,
   FixedExpensesFormType,
   newFixedExpensesSchema,
+  defaultFixedExpensesValues,
 } from './schema'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+
 // Icons
 import {
-  IconCircleCheck,
   IconPencil,
+  IconCircleCheck,
   IconCalendarPlus,
   IconCalendarMonth,
 } from '@tabler/icons-react'
@@ -52,10 +55,9 @@ import {
   updateItemNew,
 } from '@/actions/_cruds'
 
+// Libs
 import { cn } from '@/lib/utils'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { recurringTypeOptions } from '@/consts/fixedExpenses'
-import { useAlertDialog } from '@/store/useAlertDialog'
 
 interface Props {
   editMode?: boolean
@@ -150,6 +152,8 @@ function NewFixedExpenseModal({
       toast.error(
         `Erro ao ${editMode ? 'editar' : 'cadastrar'} despesa fixa: ${errorMessage}`,
       )
+    } finally {
+      handleToggleModal()
     }
   }
 

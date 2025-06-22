@@ -1,10 +1,3 @@
-// Type Imports
-// import type { LucideIconType } from '@/components/LucideIcon'
-import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
-import type { IconProps } from '@tabler/icons-react'
-import type { SVGProps } from 'react'
-
-// Icon Imports
 import {
   IconCoin,
   IconNews,
@@ -32,6 +25,12 @@ import {
   IconBuildingCommunity,
   IconDeviceDesktopDollar,
 } from '@tabler/icons-react'
+import {
+  IconAtrupeLogo,
+  // IconReceitaFederal,
+} from '@/assets/icons/CustomIcons'
+import type { SVGProps } from 'react'
+import type { IconProps } from '@tabler/icons-react'
 
 interface MainNavigationType {
   icon:
@@ -212,12 +211,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/configuracoes/financeiro',
         permission: 'settings:financial:view',
       },
-      {
-        icon: IconReceitaFederal,
-        title: 'Nota Fiscal',
-        path: '/configuracoes/nota-fiscal',
-        permission: 'settings:invoice:view',
-      },
+      // {
+      //   icon: IconReceitaFederal,
+      //   title: 'Nota Fiscal',
+      //   path: '/configuracoes/nota-fiscal',
+      //   permission: 'settings:invoice:view',
+      // },
       {
         icon: IconCoin,
         title: 'Vendas',

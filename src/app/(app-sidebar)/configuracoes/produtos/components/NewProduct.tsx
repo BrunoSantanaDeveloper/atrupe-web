@@ -196,9 +196,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
           throw new Error(result.message)
         }
 
-        await queryClient.invalidateQueries({
-          queryKey: ['product', productId],
-        })
+        await queryClient.invalidateQueries()
         toast.success('Produto atualizado com sucesso!')
       } else {
         const result = await createItemNew({
@@ -212,9 +210,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
         toast.success('Produto criado com sucesso!')
       }
-      await queryClient.invalidateQueries({ queryKey: ['product', null] })
-      await queryClient.invalidateQueries({ queryKey: ['product-list', {}] })
-      await queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      await queryClient.invalidateQueries()
 
       if (!insertAnother) {
         handleCleanForm()

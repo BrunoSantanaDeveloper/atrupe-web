@@ -18,8 +18,6 @@ const defaultRoute: { [key: string]: string } = {
   accountsPlanTotalsRoute: '/financial/nature/quantity',
   accountsPlanRoute: '/financial/nature',
   fixedExpensesConfigRoute: '/financial/scheduled-expense',
-  listFixedExpensesConfigRoute:
-    '/financial/scheduled-expense/by-level1/payable',
   fixedExpensesConfigTotalsRoute: '/financial/scheduled-expense/quantity',
   payrollConfigRoute: '/financial/salaries',
 
@@ -28,8 +26,6 @@ const defaultRoute: { [key: string]: string } = {
   quotationTotalsRoute: '/sale/quotation/quantity',
   quotationRoute: '/sale/quotation',
   deliveryInfoRoute: '/quotation/delivery',
-  paymentConditionsRoute: '/quotation/payment',
-  commissionRoute: '/quotation/payment/commission',
 
   // ordem de serviço
   orderTotalsRoute: '/sale/order/quantity',

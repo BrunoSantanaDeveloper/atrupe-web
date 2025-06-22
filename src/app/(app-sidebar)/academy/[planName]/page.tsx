@@ -141,12 +141,39 @@ export default function AcademyPage() {
     )
   }
 
+  // Determina qual seção deve estar aberta por padrão
+  const getDefaultOpenSection = () => {
+    // Primeiro, procura por seções com progresso parcial (alguns itens checados, mas não todos)
+    const sectionWithPartialProgress = academyData.sections.find(
+      (section) =>
+        section.items.length > 0 &&
+        section.items.some((item) => item.checked) &&
+        !section.items.every((item) => item.checked),
+    )
+
+    if (sectionWithPartialProgress) {
+      return `item-${sectionWithPartialProgress.title}`
+    }
+
+    // Se não há seções com progresso parcial, procura pela primeira seção não completamente concluída
+    const firstIncompleteSection = academyData.sections.find(
+      (section) =>
+        section.items.length > 0 &&
+        !section.items.every((item) => item.checked),
+    )
+
+    if (firstIncompleteSection) {
+      return `item-${firstIncompleteSection.title}`
+    }
+
+    // Se todas as seções estão completas, abre a primeira seção
+    return academyData.sections.length > 0
+      ? `item-${academyData.sections[0].title}`
+      : ''
+  }
+
   return (
-    <Accordion
-      type="single"
-      collapsible
-      // defaultValue={`item-${academyData.sections[0].title}`}
-    >
+    <Accordion type="single" collapsible defaultValue={getDefaultOpenSection()}>
       <div className="flex flex-col gap-4">
         {academyData.sections.map((section, index) => (
           <Card key={section.title + index} className="w-full">

@@ -1,9 +1,8 @@
 'use client'
 
-// Component Imports
 import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 
-// Type Imports
 import { CompanyFormType } from '../../schema'
 
 import { Path, useFormContext } from 'react-hook-form'
@@ -12,12 +11,54 @@ import Image from 'next/image'
 import { IconExternalLink, IconTrash } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { pdf } from '@react-pdf/renderer'
+import { useState } from 'react'
+import { formData, quotationExampleData } from './previewData'
+import { maskCnpj } from '@/lib/utils'
 
 export function Step3() {
   const { watch } = useFormContext<CompanyFormType>()
+  const [isLoading, setIsLoading] = useState(false)
 
   const logoUrl = watch('personalization.logoUrl')
   const favIconUrl = watch('personalization.favIconUrl')
+
+  // Dados para a pré-visualização do orçamento
+  const customData = {
+    company: {
+      name: watch('general.name'),
+      cnpj: maskCnpj(watch('general.cnpj')),
+      address: {
+        street: watch('address.street'),
+        number: watch('address.number'),
+        complement: watch('address.complement'),
+        neighborhood: watch('address.neighborhood'),
+        city: watch('address.city'),
+        state: watch('address.state'),
+        zipCode: watch('address.zipcode'),
+      },
+      logo: logoUrl,
+      textBeforeItems: watch('personalization.textsBeforeItems'),
+      textAfterItems: watch('personalization.textsAfterItems'),
+    },
+  }
+
+  const handlePreview = async () => {
+    setIsLoading(true)
+
+    const pdfData = {
+      ...quotationExampleData,
+      ...customData,
+    }
+
+    const blob = await pdf(
+      <GeneratePdf data={pdfData} printOptions={formData} type="quotation" />,
+    ).toBlob()
+
+    const url = URL.createObjectURL(blob)
+    window.open(url, '_blank')
+    setIsLoading(false)
+  }
 
   return (
     <div className="flex flex-wrap gap-4">
@@ -58,8 +99,10 @@ export function Step3() {
       <Button
         type="button"
         variant="neutralOutline"
-        LeftIcon={IconExternalLink}
+        RightIcon={IconExternalLink}
         className="mx-auto"
+        onClick={handlePreview}
+        isLoading={isLoading}
       >
         Pré-visualizar proposta
       </Button>
