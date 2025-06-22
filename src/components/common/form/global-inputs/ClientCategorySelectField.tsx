@@ -5,6 +5,7 @@ import { SelectBasic } from '../FormSelect'
 
 // Type Imports
 import type { Path, FieldValues } from 'react-hook-form'
+import { clientCategoryOptions } from '@/consts/client'
 
 // Hooks
 // import { useClientCategory } from '@/hooks/queries/useClientCategory'
@@ -35,26 +36,12 @@ export function SelectClientCategoryField<T extends FieldValues>({
   //     }))
   //   }, [clientCategories]) || []
 
-  const options = [
-    { label: 'Comércio', value: 'Comércio' },
-    { label: 'Indústria', value: 'Indústria' },
-    { label: 'Serviços', value: 'Serviços' },
-    {
-      label: 'Agências de Publicidade e Marketing',
-      value: 'Agências de Publicidade e Marketing',
-    },
-    { label: 'Estúdios de Fotografia', value: 'Estúdios de Fotografia' },
-    { label: 'Arquiteto/Decorador', value: 'Arquiteto/Decorador' },
-    { label: 'Saúde', value: 'Saúde' },
-    { label: 'Terceirizados', value: 'Terceirizados' },
-  ]
-
   return (
     <SelectBasic
       name={name}
       label={label}
       placeholder={placeholder}
-      options={[{ value: 'all', label: 'Todas' }, ...options]}
+      options={[{ value: 'all', label: 'Todas' }, ...clientCategoryOptions]}
       className={className}
       {...props}
     />

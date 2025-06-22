@@ -6,6 +6,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { useEffect } from 'react'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCpf } from '@/lib/validateDocs'
+import { clientCategoryOptions } from '@/consts/client'
 
 export function PersonFields() {
   const { watch, setValue, setError, setFocus, clearErrors } =
@@ -35,19 +36,7 @@ export function PersonFields() {
         name="category"
         label="Categoria"
         width="flex-[1_0_300px]"
-        options={[
-          { label: 'Comércio', value: 'Comércio' },
-          { label: 'Indústria', value: 'Indústria' },
-          { label: 'Serviços', value: 'Serviços' },
-          {
-            label: 'Agências de Publicidade e Marketing',
-            value: 'Agências de Publicidade e Marketing',
-          },
-          { label: 'Estúdios de Fotografia', value: 'Estúdios de Fotografia' },
-          { label: 'Arquiteto/Decorador', value: 'Arquiteto/Decorador' },
-          { label: 'Saúde', value: 'Saúde' },
-          { label: 'Terceirizados', value: 'Terceirizados' },
-        ]}
+        options={clientCategoryOptions}
       />
       <FormInput
         name="rg"

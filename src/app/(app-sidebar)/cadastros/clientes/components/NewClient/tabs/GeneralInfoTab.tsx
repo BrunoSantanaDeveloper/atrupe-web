@@ -4,6 +4,7 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
+import { clientCategoryOptions } from '@/consts/client'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -70,19 +71,7 @@ export function GeneralInfoTab({ type }: Props) {
       <FormSelect<NewClientFormType>
         name="general.category"
         label="Categoria"
-        options={[
-          { label: 'Comércio', value: 'Comércio' },
-          { label: 'Indústria', value: 'Indústria' },
-          { label: 'Serviços', value: 'Serviços' },
-          {
-            label: 'Agências de Publicidade e Marketing',
-            value: 'Agências de Publicidade e Marketing',
-          },
-          { label: 'Estúdios de Fotografia', value: 'Estúdios de Fotografia' },
-          { label: 'Arquiteto/Decorador', value: 'Arquiteto/Decorador' },
-          { label: 'Saúde', value: 'Saúde' },
-          { label: 'Terceirizados', value: 'Terceirizados' },
-        ]}
+        options={clientCategoryOptions}
       />
 
       <FormInput<NewClientFormType>

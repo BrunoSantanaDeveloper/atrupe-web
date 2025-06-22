@@ -4,6 +4,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCnpj } from '@/lib/validateDocs'
+import { clientCategoryOptions } from '@/consts/client'
 
 export function CompanyFields() {
   const { setValue, setError, setFocus, clearErrors } =
@@ -65,19 +66,7 @@ export function CompanyFields() {
         name="category"
         label="Categoria"
         width="flex-[1_0_300px]"
-        options={[
-          { label: 'Comércio', value: 'Comércio' },
-          { label: 'Indústria', value: 'Indústria' },
-          { label: 'Serviços', value: 'Serviços' },
-          {
-            label: 'Agências de Publicidade e Marketing',
-            value: 'Agências de Publicidade e Marketing',
-          },
-          { label: 'Estúdios de Fotografia', value: 'Estúdios de Fotografia' },
-          { label: 'Arquiteto/Decorador', value: 'Arquiteto/Decorador' },
-          { label: 'Saúde', value: 'Saúde' },
-          { label: 'Terceirizados', value: 'Terceirizados' },
-        ]}
+        options={clientCategoryOptions}
       />
       <FormInput<NewClientFormType>
         name="phone"
