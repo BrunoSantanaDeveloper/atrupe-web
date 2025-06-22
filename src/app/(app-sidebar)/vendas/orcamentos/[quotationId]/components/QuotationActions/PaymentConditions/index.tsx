@@ -50,7 +50,7 @@ import {
 } from '@tanstack/react-query'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Libs
 import { actionDisabled } from '@/lib/quotation'
@@ -151,7 +151,10 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
   // Faz a requisição para atualizar condições de pagamento
   const mutation = useMutation({
     mutationFn: (body: QuotationPaymentConditionsType) =>
-      updateItem('paymentConditionsRoute', quotationData.id, body),
+      updateItemNew({
+        route: `/quotation/payment/${quotationData.id}`,
+        data: body,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries()
     },
@@ -172,6 +175,11 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
     // Se não há entrada, remover entrada
     if (!data.hasDownPayment) {
       data.downPayment = null
+    }
+
+    // Garantir que o campo commission seja sempre um objeto
+    if (!data.commission || data.commission === null) {
+      data.commission = { totalCommission: null }
     }
 
     data.installmentQty = Number(data.installmentQty) as unknown as string

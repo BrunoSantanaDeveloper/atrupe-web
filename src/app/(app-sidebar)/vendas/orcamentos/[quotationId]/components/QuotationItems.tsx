@@ -391,7 +391,7 @@ export function QuotationItems({ data }: Props) {
             <Button
               type="button"
               variant="none"
-              className="flex justify-center items-center h-full w-full gap-3 py-8"
+              className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
               onClick={() => openModal('sectorSelector')}
               disabled={actionDisabled('addItem', status)}
             >

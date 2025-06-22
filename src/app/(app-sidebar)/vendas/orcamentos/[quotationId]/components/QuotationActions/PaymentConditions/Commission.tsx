@@ -152,8 +152,7 @@ export function CommissionDialog({
       }
 
       // Limpar o objeto de comissão
-      paymentConditionsForm.setValue('commission.totalCommission', 0)
-      paymentConditionsForm.setValue('commission', null)
+      paymentConditionsForm.setValue('commission', { totalCommission: null })
 
       // Recalcular as parcelas
       updateInstallments(newTotalValue)

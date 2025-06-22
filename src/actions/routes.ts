@@ -26,8 +26,6 @@ const defaultRoute: { [key: string]: string } = {
   quotationTotalsRoute: '/sale/quotation/quantity',
   quotationRoute: '/sale/quotation',
   deliveryInfoRoute: '/quotation/delivery',
-  paymentConditionsRoute: '/quotation/payment',
-  commissionRoute: '/quotation/payment/commission',
 
   // ordem de serviço
   orderTotalsRoute: '/sale/order/quantity',
