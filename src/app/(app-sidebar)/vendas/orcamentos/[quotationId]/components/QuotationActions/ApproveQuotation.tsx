@@ -52,8 +52,16 @@ export function ApproveQuotation({ data }: Props) {
         customPath: `/${data.id}/approve`,
       }),
     onSuccess: (data) => {
-      queryClient.invalidateQueries()
-      router.replace(`/vendas/ordens-de-servico/${data.id}`)
+      queryClient.invalidateQueries({ queryKey: ['quotation-data'] })
+      queryClient.invalidateQueries({ queryKey: ['order-data'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['order-totals'] })
+      queryClient.invalidateQueries({ queryKey: ['order-list'] })
+
+      setTimeout(() => {
+        router.replace(`/vendas/ordens-de-servico/${data.id}`)
+      }, 100)
     },
   })
 
