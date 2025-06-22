@@ -106,7 +106,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
                       <TooltipProvider>
                         <PermissionGate permissions={['register:client:view']}>
                           <ActionButton
-                            link={`/cadastros/clientes/${client?.id}/cadastro`}
+                            link={`/cadastros/clientes/${client?.id}/dados`}
                             Icon={IconEye}
                             tooltip="Detalhes"
                           />

@@ -115,7 +115,7 @@ export function SuppliersData({ searchParams, tabs }: Props) {
                           permissions={['register:supplier:view']}
                         >
                           <ActionButton
-                            link={`/cadastros/fornecedores/${supplier?.id}`}
+                            link={`/cadastros/fornecedores/${supplier?.id}/dados`}
                             Icon={IconEye}
                             tooltip="Ver"
                           />
