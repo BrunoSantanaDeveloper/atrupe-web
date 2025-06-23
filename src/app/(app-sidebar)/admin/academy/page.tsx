@@ -6,6 +6,21 @@ import { useState, Fragment } from 'react'
 // UI
 import { toast } from 'sonner'
 import {
+  Table,
+  TableRow,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+} from '@/components/ui/table'
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select'
+import {
   Dialog,
   DialogBody,
   DialogTitle,
@@ -15,39 +30,28 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
+import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 
 // Components
+import { Topbar } from '@/components/common/Topbar'
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { FormFileUpload } from '@/components/common/form/FileUpload'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { FormFileUpload } from '@/components/common/form/FileUpload'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
+import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
 
 // Icons
 import {
   IconBook,
   IconTrash,
+  IconVideo,
   IconCirclePlus,
   IconCircleCheck,
+  IconFileTextFilled,
 } from '@tabler/icons-react'
 
 // Form
@@ -58,10 +62,23 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, deleteItemNew, getData } from '@/actions/_cruds'
-import { Topbar } from '@/components/common/Topbar'
 
 // Utils
 import { cn } from '@/lib/utils'
+
+// Button variants for file types
+const buttonVariant: Record<
+  string,
+  'errorGhost' | 'neutralGhost' | 'successGhost' | 'warningGhost'
+> = {
+  pdf: 'errorGhost',
+  doc: 'neutralGhost',
+  docx: 'neutralGhost',
+  xls: 'successGhost',
+  xlsx: 'successGhost',
+  ppt: 'warningGhost',
+  other: 'neutralGhost',
+}
 
 // Interfaces (baseado na estrutura da AcademyPage)
 interface AcademyItem {
@@ -70,7 +87,7 @@ interface AcademyItem {
   section: string
   description?: string
   order: number
-  videoUrl?: string
+  video?: string
   page?: string
   modal?: string
   buttonTitle?: string
@@ -94,6 +111,11 @@ export default function AddAcademyPage() {
   const [isCreatingNewSection, setIsCreatingNewSection] = useState(false)
   const [isGenerating, setIsGenerating] = useState<string[]>([])
   const [fileFieldsCount, setFileFieldsCount] = useState(1)
+  const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState<{
+    url: string
+    title: string
+  } | null>(null)
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -288,6 +310,11 @@ export default function AddAcademyPage() {
     await new Promise((resolve) => setTimeout(resolve, 600))
 
     setIsGenerating([])
+  }
+
+  const handleVideoClick = (videoUrl: string, description: string) => {
+    setSelectedVideo({ url: videoUrl, title: description })
+    setVideoDialogOpen(true)
   }
 
   return (
@@ -536,33 +563,45 @@ export default function AddAcademyPage() {
                         </TableCell>
                         <TableCell>
                           {item.files && item.files.length > 0 ? (
-                            <div className="flex flex-col gap-1">
-                              {item.files.map((file, index) => (
-                                <a
-                                  key={index}
-                                  href={file}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 text-xs underline truncate"
-                                >
-                                  Arquivo {index + 1}
-                                </a>
-                              ))}
+                            <div className="flex flex-wrap gap-1">
+                              {item.files.map((file, index) => {
+                                const fileExtension =
+                                  file.split('.').pop()?.toLowerCase() ||
+                                  'other'
+
+                                return (
+                                  <Button
+                                    key={index}
+                                    type="button"
+                                    variant={
+                                      buttonVariant[fileExtension] ||
+                                      'neutralGhost'
+                                    }
+                                    size="iconSm"
+                                    RightIcon={IconFileTextFilled}
+                                    onClick={() => window.open(file, '_blank')}
+                                  />
+                                )
+                              })}
                             </div>
                           ) : (
                             '-'
                           )}
                         </TableCell>
                         <TableCell>
-                          {item.videoUrl ? (
-                            <a
-                              href={item.videoUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 text-xs underline"
-                            >
-                              Ver vídeo
-                            </a>
+                          {item.video ? (
+                            <Button
+                              type="button"
+                              variant="neutralGhost"
+                              size="iconSm"
+                              onClick={() =>
+                                handleVideoClick(
+                                  item.video!,
+                                  item.description || 'Vídeo',
+                                )
+                              }
+                              RightIcon={IconVideo}
+                            />
                           ) : (
                             '-'
                           )}
@@ -608,6 +647,16 @@ export default function AddAcademyPage() {
           )}
         </CardContent>
       </Card>
+
+      {selectedVideo && (
+        <VideoDialog
+          open={videoDialogOpen}
+          onOpenChange={setVideoDialogOpen}
+          video={selectedVideo.url}
+          title={selectedVideo.title}
+          description={selectedVideo.title}
+        />
+      )}
     </div>
   )
 }
