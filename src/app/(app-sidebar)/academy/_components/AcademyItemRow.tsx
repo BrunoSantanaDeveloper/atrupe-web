@@ -120,7 +120,7 @@ export function AcademyItemRow({ data }: Props) {
               <Button
                 key={index}
                 type="button"
-                variant={buttonVariant[fileExtension] || 'neutralGhost'}
+                variant={buttonVariant[fileExtension] || 'neutralLight'}
                 size="iconSm"
                 RightIcon={IconFileTextFilled}
                 onClick={() => handleAction('file', file)}
@@ -132,7 +132,7 @@ export function AcademyItemRow({ data }: Props) {
         {video && (
           <Button
             type="button"
-            variant="neutralGhost"
+            variant="neutralLight"
             size="iconSm"
             onClick={() => handleAction('video', video)}
             RightIcon={IconVideo}
