@@ -181,7 +181,7 @@ export function FileUploader(props: FileUploaderProps) {
                     <div className="flex flex-col gap-1 text-gray text-sm">
                       <p>
                         <span className="font-semibold text-brand-700">
-                          Clique para adicionar imagem{' '}
+                          Clique para adicionar arquivo{' '}
                         </span>
                         {customHelpText && (
                           <>
@@ -296,7 +296,7 @@ export function UploadedFilesCard({
           <div className="flex h-full flex-1 gap-4">
             <Image
               src={uploadedFileUrl}
-              alt="Imagem carregada"
+              alt="Arquivo carregado"
               width={200}
               height={133}
               loading="lazy"

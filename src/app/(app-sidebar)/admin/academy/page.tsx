@@ -38,9 +38,9 @@ import {
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { FormRadio } from '@/components/common/form/FormRadio'
+import { FormFileUpload } from '@/components/common/form/FileUpload'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
-import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
 
 // Icons
 import {
@@ -59,6 +59,9 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 // Actions
 import { createItemNew, deleteItemNew, getData } from '@/actions/_cruds'
 import { Topbar } from '@/components/common/Topbar'
+
+// Utils
+import { cn } from '@/lib/utils'
 
 // Interfaces (baseado na estrutura da AcademyPage)
 interface AcademyItem {
@@ -87,10 +90,10 @@ interface AcademyData {
 
 export default function AddAcademyPage() {
   const [open, setOpen] = useState(false)
-  const [files, setFiles] = useState<string[]>([''])
   const [selectedPlan, setSelectedPlan] = useState('START')
   const [isCreatingNewSection, setIsCreatingNewSection] = useState(false)
   const [isGenerating, setIsGenerating] = useState<string[]>([])
+  const [fileFieldsCount, setFileFieldsCount] = useState(1)
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -112,7 +115,7 @@ export default function AddAcademyPage() {
     { value: 'FULL', label: 'Full' },
   ]
 
-  const planRadioItems = planOptions.map((option) => ({
+  const planSelectOptions = planOptions.map((option) => ({
     value: option.value,
     label: option.label,
   }))
@@ -145,14 +148,9 @@ export default function AddAcademyPage() {
 
   const mutation = useMutation({
     mutationFn: (data: FormType) => {
-      // Filtrar arquivos vazios antes de enviar
-      const filteredData = {
-        ...data,
-        files: files.filter((file) => file.trim() !== ''),
-      }
       return createItemNew({
         route: '/academy',
-        data: filteredData,
+        data,
       })
     },
     onSuccess: () => {
@@ -162,8 +160,22 @@ export default function AddAcademyPage() {
   })
 
   const onSubmit = async (data: FormType) => {
+    // Coletar URLs dos arquivos dos campos do formulário
+    const filesUrls: string[] = []
+    for (let i = 0; i < fileFieldsCount; i++) {
+      const fileUrl = form.getValues(`files.${i}` as keyof FormType) as string
+      if (fileUrl && fileUrl.trim() !== '') {
+        filesUrls.push(fileUrl)
+      }
+    }
+
+    const formData = {
+      ...data,
+      files: filesUrls,
+    }
+
     await mutation
-      .mutateAsync(data)
+      .mutateAsync(formData)
       .then(() => {
         toast.success('Item da academy criado com sucesso!')
         handleOpenChange(false)
@@ -177,7 +189,7 @@ export default function AddAcademyPage() {
     setOpen(openDialog)
     if (!openDialog) {
       reset(defaultValues)
-      setFiles([''])
+      setFileFieldsCount(1)
       setIsCreatingNewSection(false)
     }
   }
@@ -193,18 +205,27 @@ export default function AddAcademyPage() {
   }
 
   const addFileField = () => {
-    setFiles([...files, ''])
+    setFileFieldsCount(fileFieldsCount + 1)
   }
 
   const removeFileField = (index: number) => {
-    const newFiles = files.filter((_, i) => i !== index)
-    setFiles(newFiles.length === 0 ? [''] : newFiles)
-  }
+    // Remover o valor do campo do formulário
+    form.setValue(`files.${index}` as keyof FormType, '' as string)
 
-  const updateFileField = (index: number, value: string) => {
-    const newFiles = [...files]
-    newFiles[index] = value
-    setFiles(newFiles)
+    // Reorganizar os campos restantes
+    for (let i = index; i < fileFieldsCount - 1; i++) {
+      const nextValue = form.getValues(
+        `files.${i + 1}` as keyof FormType,
+      ) as string
+      form.setValue(`files.${i}` as keyof FormType, nextValue)
+    }
+
+    // Limpar o último campo e diminuir o contador
+    form.setValue(
+      `files.${fileFieldsCount - 1}` as keyof FormType,
+      '' as string,
+    )
+    setFileFieldsCount(Math.max(1, fileFieldsCount - 1))
   }
 
   const academyData: AcademyData = academyResponse?.data
@@ -259,6 +280,7 @@ export default function AddAcademyPage() {
 
     if (response.success) {
       toast.success('Item da academy excluído com sucesso!')
+      refetchAcademy()
     } else {
       toast.error(response.message || 'Erro ao excluir item da academy')
     }
@@ -291,81 +313,83 @@ export default function AddAcademyPage() {
                     className="space-y-6"
                     noValidate
                   >
-                    {/* Primeira linha - Planos */}
-                    <div className="space-y-2">
-                      <FormRadio<FormType>
-                        name="type"
-                        label="Plano *"
-                        items={planRadioItems}
-                        className="space-y-2"
-                      />
-                      {form.formState.errors.type && (
-                        <p className="text-sm text-red-600">
-                          {form.formState.errors.type.message}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Segunda linha - Seção e Ordem */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="md:col-span-3">
+                    {/* Primeira linha - Plano e Seção */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <FormSelect<FormType>
+                          name="type"
+                          label="Plano"
+                          options={planSelectOptions}
+                        />
+                      </div>
+                      <div
+                        className={cn(
+                          'grid gap-4',
+                          isCreatingNewSection
+                            ? 'grid-cols-[1fr_2fr]'
+                            : 'grid-cols-1',
+                        )}
+                      >
                         <FormSelect<FormType>
                           name="section"
-                          label="Seção *"
+                          label="Seção"
                           options={sectionOptions}
                           additionalOnChange={handleSectionChange}
                           disabled={isSectionDisabled}
                         />
+                        {/* Campo para nova seção (quando aplicável) */}
+                        {isCreatingNewSection && (
+                          <FormInput<FormType>
+                            name="section"
+                            label="Nome da nova seção"
+                            placeholder="Digite o nome da nova seção"
+                            width="w-full"
+                          />
+                        )}
                       </div>
-                      {/* <div>
+                    </div>
+
+                    {/* Terceira linha - Descrição */}
+                    <FormTextarea<FormType>
+                      name="description"
+                      label="Descrição"
+                      placeholder="Digite uma descrição"
+                      rows={3}
+                      width="w-full"
+                    />
+
+                    {/* Quarta linha - URL do Vídeo e Ordem */}
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="md:col-span-3">
+                        <FormInput<FormType>
+                          name="videoUrl"
+                          label="URL do Vídeo"
+                          type="url"
+                          placeholder="https://vimeo.com/495579294"
+                          width="w-full"
+                        />
+                      </div>
+                      <div>
                         <FormInput<FormType>
                           name="order"
-                          label="Ordem *"
+                          label="Ordem"
                           type="number"
-                          placeholder="0"
+                          placeholder="1"
                           width="w-full"
                           additionalOnChange={(value) => {
                             const numValue = value ? Number(value) : 0
                             setValue('order', numValue)
                           }}
                         />
-                      </div> */}
+                      </div>
                     </div>
-
-                    {/* Campo para nova seção (quando aplicável) */}
-                    {isCreatingNewSection && (
-                      <FormInput<FormType>
-                        name="section"
-                        label="Nome da nova seção *"
-                        placeholder="Digite o nome da nova seção"
-                        width="w-full"
-                      />
-                    )}
-
-                    {/* Terceira linha - Descrição */}
-                    <FormTextarea<FormType>
-                      name="description"
-                      label="Descrição"
-                      placeholder="Digite uma descrição (opcional)"
-                      rows={3}
-                      width="w-full"
-                    />
-
-                    {/* Quarta linha - URL do Vídeo */}
-                    <FormInput<FormType>
-                      name="videoUrl"
-                      label="URL do Vídeo"
-                      type="url"
-                      placeholder="https://exemplo.com/video (opcional)"
-                      width="w-full"
-                    />
 
                     {/* Quinta linha - Página, Modal e Título do Botão */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <FormInput<FormType>
                         name="page"
                         label="Página"
-                        placeholder="Nome da página (opcional)"
+                        placeholder="/cadastros/clientes"
                         width="w-full"
                         disabled={!!modalValue}
                         additionalOnChange={(value) => {
@@ -377,7 +401,7 @@ export default function AddAcademyPage() {
                       <FormInput<FormType>
                         name="modal"
                         label="Modal"
-                        placeholder="Nome do modal (opcional)"
+                        placeholder="NewClient"
                         width="w-full"
                         disabled={!!pageValue}
                         additionalOnChange={(value) => {
@@ -389,39 +413,39 @@ export default function AddAcademyPage() {
                       <FormInput<FormType>
                         name="buttonTitle"
                         label="Título do Botão"
-                        placeholder="Texto do botão (opcional)"
+                        placeholder="Cadastrar Cliente"
                         width="w-full"
                       />
                     </div>
 
                     {/* Arquivos */}
-                    <div className="space-y-2">
+                    <div className="space-y-4">
                       <Label className="text-sm font-medium">Arquivos</Label>
-                      {files.map((file, index) => (
-                        <div key={index} className="flex gap-2">
-                          <input
-                            type="text"
-                            value={file}
-                            onChange={(e) =>
-                              updateFileField(index, e.target.value)
-                            }
-                            placeholder="URL ou caminho do arquivo"
-                            className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-brand focus:border-brand disabled:cursor-not-allowed disabled:opacity-50"
-                          />
-                          <Button
-                            type="button"
-                            variant="error"
-                            size="icon"
-                            onClick={() => removeFileField(index)}
-                            RightIcon={IconTrash}
-                          />
+                      {Array.from({ length: fileFieldsCount }, (_, index) => (
+                        <div key={index} className="flex gap-4 items-end">
+                          <div className="flex-1">
+                            <FormFileUpload<FormType>
+                              control={form.control}
+                              name={`files.${index}` as keyof FormType}
+                            />
+                          </div>
+                          {fileFieldsCount > 1 && (
+                            <Button
+                              type="button"
+                              variant="error"
+                              size="icon"
+                              onClick={() => removeFileField(index)}
+                              RightIcon={IconTrash}
+                              className="mb-1"
+                            />
+                          )}
                         </div>
                       ))}
                       <Button
                         type="button"
                         variant="outline"
-                        size="sm"
                         onClick={addFileField}
+                        LeftIcon={IconCirclePlus}
                       >
                         Adicionar Arquivo
                       </Button>
@@ -480,6 +504,7 @@ export default function AddAcademyPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  <TableHead className="max-w-10">#</TableHead>
                   <TableHead>Descrição</TableHead>
                   <TableHead>Arquivos</TableHead>
                   <TableHead>Vídeo</TableHead>
@@ -494,15 +519,18 @@ export default function AddAcademyPage() {
                     {/* Header da seção */}
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={6}
+                        colSpan={7}
                         className="text-gray font-medium text-xs py-3"
                       >
                         {section}
                       </TableCell>
                     </TableRow>
                     {/* Items da seção */}
-                    {items.map((item) => (
+                    {items.map((item, index) => (
                       <TableRow key={item.id}>
+                        <TableCell className="text-sm text-gray">
+                          {index + 1}
+                        </TableCell>
                         <TableCell className="font-medium max-w-xs">
                           <p className="truncate">{item.description || '-'}</p>
                         </TableCell>
@@ -574,9 +602,8 @@ export default function AddAcademyPage() {
               </TableBody>
             </Table>
           ) : (
-            <FilteredDataEmpty
-              title="Nenhum item encontrado"
-              description={`Não há itens cadastrados para o plano ${selectedPlan}.`}
+            <ListDataStatusEmpty
+              title={`Não há itens no plano ${selectedPlan}.`}
             />
           )}
         </CardContent>

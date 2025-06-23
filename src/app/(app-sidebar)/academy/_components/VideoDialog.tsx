@@ -22,7 +22,7 @@ function getEmbedUrl(url: string): string {
 
   if (youtubeMatch) {
     const videoId = youtubeMatch[1]
-    return `https://www.youtube.com/embed/${videoId}`
+    return `https://www.youtube.com/embed/${videoId}?autoplay=1`
   }
 
   // Vimeo - diferentes formatos
@@ -31,7 +31,7 @@ function getEmbedUrl(url: string): string {
 
   if (vimeoMatch) {
     const videoId = vimeoMatch[1]
-    return `https://player.vimeo.com/video/${videoId}`
+    return `https://player.vimeo.com/video/${videoId}?autoplay=1`
   }
 
   // Se não for YouTube nem Vimeo, retorna a URL original
