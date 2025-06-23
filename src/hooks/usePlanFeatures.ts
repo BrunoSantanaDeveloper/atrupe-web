@@ -11,6 +11,8 @@ export function usePlanFeatures() {
     return session.company.plan.features.includes(feature)
   }
 
+  const planName = session?.company?.plan?.name
+
   const hasAnyFeature = (features: string[]) => {
     return features.some((feature) => hasFeature(feature))
   }
@@ -26,6 +28,9 @@ export function usePlanFeatures() {
   }
 
   const canManageSectors = () => hasFeature('sectors_management')
+
+  const canManageMultipleCompanies = () =>
+    planName !== 'TRIAL' && planName !== 'START' // TODO: Alterar para hasFeature('multiple_companies')
 
   const getSalesOrdersType = () => {
     if (hasFeature('sales_orders_full')) return 'full'
@@ -102,6 +107,7 @@ export function usePlanFeatures() {
   }
 
   return {
+    planName,
     hasFeature,
     hasAnyFeature,
     hasAllFeatures,
@@ -118,5 +124,6 @@ export function usePlanFeatures() {
     getClientsType,
     getSuppliersType,
     getDeliveryScheduleType,
+    canManageMultipleCompanies,
   }
 }
