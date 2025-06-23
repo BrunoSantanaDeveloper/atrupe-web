@@ -1,10 +1,16 @@
 import { z } from 'zod'
 
 export const schema = z.object({
-  type: z.array(z.string()).min(1, 'Selecione pelo menos um tipo'),
+  type: z
+    .string()
+    .min(1, 'Plano é obrigatório')
+    .transform((val) => [val]),
   section: z.string().min(1, 'Seção é obrigatória'),
   description: z.string().optional(),
-  order: z.number().min(0, 'Ordem deve ser maior ou igual a 0'),
+  order: z
+    .number()
+    .min(1, 'Ordem deve ser maior ou igual a 1')
+    .transform((val) => val - 1),
   videoUrl: z.string().optional(),
   page: z.string().optional(),
   modal: z.string().optional(),
@@ -15,10 +21,10 @@ export const schema = z.object({
 export type FormType = z.infer<typeof schema>
 
 export const defaultValues: FormType = {
-  type: [],
+  type: '' as unknown as string[],
   section: '',
   description: '',
-  order: 0,
+  order: 1,
   videoUrl: '',
   page: '',
   modal: '',
