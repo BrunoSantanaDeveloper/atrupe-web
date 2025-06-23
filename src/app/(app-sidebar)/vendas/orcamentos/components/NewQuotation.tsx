@@ -104,7 +104,7 @@ export function NewQuotationModal({
 }: Props) {
   const { data: session } = useSession()
   const { data: sellers } = useSeller()
-  const { hasFeature } = usePlanFeatures()
+  const { canManageMultipleCompanies } = usePlanFeatures()
 
   const queryClient = useQueryClient()
 
@@ -229,7 +229,7 @@ export function NewQuotationModal({
                 name="companyId"
                 label="Empresa"
                 width="flex-[1_0_300px]"
-                disabled={editMode || !hasFeature('multiple_companies')}
+                disabled={editMode || !canManageMultipleCompanies()}
               />
               <SelectSerieField
                 name="seriesId"

@@ -278,7 +278,7 @@ export function NewCompanyTriggerButton({
   editMode?: boolean
   onOpenChange: (open: boolean) => void
 }) {
-  const { hasFeature } = usePlanFeatures()
+  const { canManageMultipleCompanies } = usePlanFeatures()
 
   // Se estiver no modo de edição, não há restrições
   if (editMode) {
@@ -295,10 +295,7 @@ export function NewCompanyTriggerButton({
     )
   }
 
-  // Para adicionar nova empresa, verificar se tem a feature
-  const canAddMultipleCompanies = hasFeature('multiple_companies')
-
-  if (!canAddMultipleCompanies) {
+  if (!canManageMultipleCompanies()) {
     return (
       <Button
         type="button"
