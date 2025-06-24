@@ -223,7 +223,7 @@ export default function ContratarPage() {
       })
 
       // Redirecionar para página de ativação
-      router.push('/assinatura/ativando')
+      router.push('/assinatura/ativar/start')
     } catch (err: unknown) {
       console.error('Erro ao inscrever plano:', err)
 
