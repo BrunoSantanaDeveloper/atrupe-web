@@ -17,7 +17,7 @@ const buttonVariants = cva(
         light:
           'bg-brand-100 text-brand-600 hover:bg-brand-300 active:bg-brand-200',
         ghost:
-          'text-brand hover:bg-brand-100 hover:text-brand-600 active:border-brand-300 active:bg-brand-50 active:text-brand',
+          'text-brand hover:bg-brand-50 hover:text-brand-600 active:border-brand-300 active:bg-brand-50 active:text-brand',
 
         success:
           'bg-success text-white hover:bg-success-700 active:bg-success-600',
