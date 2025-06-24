@@ -53,7 +53,16 @@ export function SquareMeters<T extends FieldValues>({
   // Calcular valores de largura e altura
   const widthValue = watch(`items[${index}].width`) ?? 0
   const heightValue = watch(`items[${index}].height`) ?? 0
-  const area = widthValue * heightValue || 0
+  const quantity = watch(`items[${index}].quantity`) ?? 1
+  const productQuantity = watch('quantity') ?? 1
+  const items = watch('items') ?? []
+
+  // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
+  // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
+  const isSimpleProduct = items.length === 1
+  const area = isSimpleProduct
+    ? widthValue * heightValue * quantity || 0
+    : widthValue * heightValue * quantity * productQuantity || 0
 
   // Subcomponente para campo de número com rótulo
   const renderLinearMeter = (fieldName: string, label: string) => (

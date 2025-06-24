@@ -26,7 +26,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 import { FormImageUpload } from '@/components/common/form/ImageUpload'
-import { FormCurrencyInput } from '@/components/common/form/FormCurrencyInput'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
@@ -54,8 +54,6 @@ import { createItemNew, getItemOld, updateItemNew } from '@/actions/_cruds'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
-
-import { parseCurrencyToBrl } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 interface Props {
@@ -74,11 +72,6 @@ const defaultItemFields = [
   },
 ]
 
-// const formInitialValues: Partial<NewProductsFormType> = {
-//   allowEditValues: true,
-//   allowEditDescription: true,
-//   items: defaultItemFields,
-// }
 async function handleGetProduct(productId: string) {
   if (!productId) return
   const product = await getItemOld({
@@ -89,11 +82,8 @@ async function handleGetProduct(productId: string) {
 }
 
 function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
-  // console.log('🔧 NewProductModal rendered:', { editMode, productId, open })
-
   const queryClient = useQueryClient()
   const { getProductsType, getProductionStagesType } = usePlanFeatures()
-  // const { data: unitOfMeasure } = useUnitOfMeasure()
 
   const [insertAnother, setInsertAnother] = useState(!editMode)
 
@@ -107,8 +97,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     enabled: !!productId,
   })
 
-  // console.log('🔧 Product data:', { product, isLoading, editMode })
-
   const form = useForm<NewProductsFormType>({
     resolver: zodResolver(newProductsSchema),
     mode: 'onChange',
@@ -119,16 +107,11 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items: product?.items?.map((item: any) => ({
             ...item,
-            unitCost: parseCurrencyToBrl(item.unitCost),
-            salePrice: parseCurrencyToBrl(item.salePrice),
+            unitCost: item.unitCost,
+            salePrice: item.salePrice,
           })),
         },
   })
-
-  // console.log('🔧 Form initialized:', {
-  //   formValues: form.getValues(),
-  //   formErrors: form.formState.errors,
-  // })
 
   const items = useFieldArray({
     control: form.control,
@@ -155,26 +138,16 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     items.replace(defaultItemFields)
   }
 
-  // function getUnitCode(unitOfMeasureId: string) {
-  //   const unitCode = unitOfMeasure?.find(
-  //     (unit) => unit.id === unitOfMeasureId,
-  //   )?.code
-  //   return unitCode ?? ''
-  // }
-
   const onSubmit = async (data: NewProductsFormType) => {
     const body = {
       ...data,
-      companyId: undefined,
       items: data.items?.map((item) => ({
         ...item,
         id: editMode ? item.id : undefined,
         name: item?.name,
         unitOfMeasureId: item.unitOfMeasureId,
         salePrice: item.salePrice,
-        // salePrice: parseCurrency(item.salePrice.toString()),
-        unitCost: item.unitCost,
-        // unitCost: parseCurrency(item.unitCost?.toString() ?? '0'),
+        unitCost: item.salePrice,
       })),
       technicalDescription: data?.technicalDescription ?? '',
       productionStages: data?.productionStages?.map((stage) => ({
@@ -182,8 +155,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
         isActive: stage?.isActive,
       })),
     }
-    // return
-    delete body.companyId
 
     try {
       if (editMode) {
@@ -309,21 +280,11 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         index={0}
                         unitOfMeasureId={watch('items.0.unitOfMeasureId')}
                       />
-                      {/* <FormCurrencyInput<NewProductsFormType>
-                        control={control}
-                        name="items.0.unitCost"
-                        label={`Custo ${getUnitCode(watch('items.0.unitOfMeasureId'))}`}
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_200px]"
-                        // className="max-w-[290px]"
-                      /> */}
-                      <FormCurrencyInput<NewProductsFormType>
-                        control={control}
+                      <FormBrlInput<NewProductsFormType>
                         name={`items.0.salePrice`}
                         label="Preço de venda"
                         startAdornment={<>R$</>}
                         width="flex-[1_0_200px] max-w-[290px]"
-                        // className="max-w-[290px]"
                       />
                     </>
                   )}
@@ -363,15 +324,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                             `items.${index}.unitOfMeasureId`,
                           )}
                         />
-                        {/* <FormCurrencyInput<NewProductsFormType>
-                          control={control}
-                          name={`items.${index}.unitCost`}
-                          label={`Custo ${getUnitCode(watch(`items.${index}.unitOfMeasureId`))}`}
-                          startAdornment={<>R$</>}
-                          width="flex-[1_0_200px]"
-                        /> */}
-                        <FormCurrencyInput<NewProductsFormType>
-                          control={control}
+                        <FormBrlInput<NewProductsFormType>
                           name={`items.${index}.salePrice`}
                           label="Preço de venda"
                           startAdornment={<>R$</>}

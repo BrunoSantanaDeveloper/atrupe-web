@@ -26,7 +26,7 @@ import {
 } from '@tabler/icons-react'
 
 // Third-party Imports
-import { FormCurrencyInput } from '@/components/common/form/FormCurrencyInput'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 
@@ -49,9 +49,9 @@ import {
 import { createItem, updateItem } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { useParams } from 'next/navigation'
-import { parseCurrencyToBrl, parseCurrencyToCent } from '@/lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
+import { parseCurrencyToBrl } from '@/lib/utils'
 
 interface Props {
   open: boolean
@@ -82,7 +82,10 @@ export function QuotationProdDetailModal({
       description: data.description ?? null,
       imageUrl: data.image?.url ?? null,
       technicalDescription: data.technicalDescription ?? null,
-      quantity: data.product.quantity ?? null,
+      quantity:
+        data?.product?.compositions?.[0]?.originalQuantity ??
+        data.product.quantity ??
+        null,
       items: data?.product?.compositions.map((item) => ({
         ...item,
         distance: item.distance ?? null,
@@ -91,10 +94,8 @@ export function QuotationProdDetailModal({
         id: item.id ?? null,
         length: item.length ?? null,
         quantity: item?.originalQuantity ?? null,
-        salePrice:
-          parseCurrencyToBrl(item?.unitValue * (item?.originalQuantity ?? 1)) ??
-          null,
-        unitCost: parseCurrencyToBrl(item?.unitValue) ?? null,
+        salePrice: item?.totalValue ?? null,
+        unitCost: item?.unitValue ?? null,
         unitOfMeasureId: item?.unitOfMeasure?.id ?? null,
         volume: item.volume ?? null,
         weight: item.weight ?? null,
@@ -127,16 +128,13 @@ export function QuotationProdDetailModal({
         description: product.name as unknown as string,
         technicalDescription:
           product?.technicalDescription as unknown as string,
-        quantity: Number(product.quantity ?? 1) as unknown as number,
+        quantity: Number(product.quantity ?? 1),
         items: product.items.map((item) => ({
           ...item,
           quantity: item.quantity ?? 1,
-          salePrice: parseCurrencyToBrl(item.salePrice) as unknown as number,
-          unitCost: parseCurrencyToBrl(item.salePrice) as unknown as number,
+          salePrice: item.salePrice,
+          unitCost: item.unitCost,
         })),
-        // unitOfMeasureId: product.unitOfMeasureId ?? undefined,
-        // unitValue: product.salePrice ?? undefined,
-        // salesValue: product.salePrice ?? undefined,
       })
     }
   }, [product, reset])
@@ -151,77 +149,120 @@ export function QuotationProdDetailModal({
     const item = compositions[index]
     if (!item)
       return {
-        total: '0,00',
-        measurementValue: '',
+        total: 0,
+        measurementValue: 0,
       }
 
+    // Em modo de edição, usar o salePrice já calculado se existir
+    if (editMode && item.salePrice) {
+      const quantity = Number(item.quantity || 1)
+      const productQuantity = Number(watch('quantity') || 1)
+      const items = watch('items') ?? []
+
+      const measurement = (): number => {
+        const unitCode = unitOfMeasure?.find(
+          (unit) => unit.id === item.unitOfMeasureId,
+        )?.code
+
+        const basicMeasurement = (() => {
+          switch (unitCode) {
+            case 'M²':
+              return (item.height ?? 0) * (item.width ?? 0)
+            case 'M':
+              return item.width ?? 0
+            case 'LT':
+              return item.volume ?? 0
+            case 'KG':
+              return item.weight ?? 0
+            case 'KM':
+              return item.distance ?? 0
+            case 'HH': {
+              const duration = Number(item.duration || 0)
+              const hours = duration > 60 ? duration / 60 : duration
+              return hours
+            }
+            default:
+              return 1
+          }
+        })()
+
+        // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
+        // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
+        const isSimpleProduct = items.length === 1
+        return isSimpleProduct
+          ? basicMeasurement * quantity
+          : basicMeasurement * quantity * productQuantity
+      }
+
+      const measurementValue = item.unitCost * measurement()
+
+      return {
+        measurementValue,
+        total: item.salePrice,
+      }
+    }
+
+    // Lógica original para novos itens
     const quantity = Number(item.quantity || 1)
+    const productQuantity = Number(watch('quantity') || 1)
+    const items = watch('items') ?? []
 
     const unitCode = unitOfMeasure?.find(
       (unit) => unit.id === item.unitOfMeasureId,
     )?.code
 
     const measurement = (): number => {
-      switch (unitCode) {
-        case 'M²':
-          return (item.height ?? 0) * (item.width ?? 0)
-        case 'M':
-          return item.width ?? 0
-        case 'LT':
-          return item.volume ?? 0
-        case 'KG':
-          return item.weight ?? 0
-        case 'KM':
-          return item.distance ?? 0
-        case 'HH': {
-          const duration = Number(item.duration || 0)
-          const hours = duration > 60 ? duration / 60 : duration
-          return hours
+      const basicMeasurement = (() => {
+        switch (unitCode) {
+          case 'M²':
+            return (item.height ?? 0) * (item.width ?? 0)
+          case 'M':
+            return item.width ?? 0
+          case 'LT':
+            return item.volume ?? 0
+          case 'KG':
+            return item.weight ?? 0
+          case 'KM':
+            return item.distance ?? 0
+          case 'HH': {
+            const duration = Number(item.duration || 0)
+            const hours = duration > 60 ? duration / 60 : duration
+            return hours
+          }
+          default:
+            return 1
         }
-        default:
-          return 1
-      }
+      })()
+
+      // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
+      // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
+      const isSimpleProduct = items.length === 1
+      return isSimpleProduct
+        ? basicMeasurement * quantity
+        : basicMeasurement * quantity * productQuantity
     }
 
-    const unitValue = parseFloat(
-      String(item.unitCost)
-        .replace(/[^0-9,]/g, '')
-        .replace(',', '.') || '0',
-    )
-    const measurementValue = unitValue * measurement()
+    const measurementValue = item.unitCost * measurement()
 
-    const total = measurementValue * quantity
+    const total = measurementValue
 
-    const formattedData = {
-      measurementValue: measurementValue.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
-      total: total.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
+    return {
+      measurementValue,
+      total,
     }
-    return formattedData
   }
 
-  const calculateFinalValue = useCallback((): string => {
+  const calculateFinalValue = useCallback((): number => {
     const items = watch('items')
-    const quantity = watch('quantity')
     let total = 0
     items.forEach((item, index) => {
       const { total: saleValue } = calculateSalesValue(index)
-      total += Number(
-        saleValue.replace('.', '').replace(',', '.').replace('R$', ''),
-      )
+      total += saleValue
     })
 
-    total = total * quantity
-
-    return total.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    })
+    // O calculateSalesValue já inclui a quantidade do produto principal
+    // para novos itens, então não precisamos multiplicar novamente
+    return total
   }, [calculateSalesValue, watch])
 
   if (!open) return null
@@ -232,19 +273,16 @@ export function QuotationProdDetailModal({
   }
 
   async function onSubmit(data: ProductsFormType) {
-    // setIsLoading(true)
     const newFormData = {
       ...data,
       items: data?.items?.map((item) => ({
-        // ...item,
+        id: item.id ?? null,
         distance: item.distance ?? null,
         duration: item.duration ?? null,
         height: item.height ?? null,
-        id: item.id ?? null,
         length: item.length ?? null,
         quantity: item.quantity ?? null,
-        salePrice:
-          parseCurrencyToCent(String(item.measurementValue ?? '')) ?? null,
+        salePrice: item.salePrice,
         unitCost: item.unitCost ?? null,
         unitOfMeasureId: item.unitOfMeasureId ?? null,
         volume: item.volume ?? null,
@@ -252,7 +290,7 @@ export function QuotationProdDetailModal({
         width: item.width ?? null,
       })),
     }
-    // return
+
     if (!editMode) {
       createItem({
         route: 'quotationRoute',
@@ -392,25 +430,19 @@ export function QuotationProdDetailModal({
                           )
                           const { total, measurementValue } =
                             calculateSalesValue(index)
-                          setValue(
-                            `items.${index}.salePrice`,
-                            total as unknown as number,
-                          )
+                          setValue(`items.${index}.salePrice`, total)
                           setValue(
                             `items.${index}.measurementValue`,
-                            measurementValue as unknown as number,
+                            measurementValue,
                           )
                         }}
                         onBlur={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
-                          setValue(
-                            `items.${index}.salePrice`,
-                            total as unknown as number,
-                          )
+                          setValue(`items.${index}.salePrice`, total)
                           setValue(
                             `items.${index}.measurementValue`,
-                            measurementValue as unknown as number,
+                            measurementValue,
                           )
                         }}
                       />
@@ -421,30 +453,23 @@ export function QuotationProdDetailModal({
                         onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
-                          setValue(
-                            `items.${index}.salePrice`,
-                            total as unknown as number,
-                          )
+                          setValue(`items.${index}.salePrice`, total)
                           setValue(
                             `items.${index}.measurementValue`,
-                            measurementValue as unknown as number,
+                            measurementValue,
                           )
                         }}
                         onBlur={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
-                          setValue(
-                            `items.${index}.salePrice`,
-                            total as unknown as number,
-                          )
+                          setValue(`items.${index}.salePrice`, total)
                           setValue(
                             `items.${index}.measurementValue`,
-                            measurementValue as unknown as number,
+                            measurementValue,
                           )
                         }}
                       />
-                      <FormCurrencyInput<ProductsFormType>
-                        control={control}
+                      <FormBrlInput<ProductsFormType>
                         name={`items.${index}.unitCost`}
                         label={`Valor ${getPriceLabel(item?.unitOfMeasureId)}`}
                         placeholder="0,00"
@@ -454,58 +479,24 @@ export function QuotationProdDetailModal({
                           product?.allowEditValues === false ||
                           data?.allowEditValues === false
                         }
-                        // onChange={(e) => {
-                        //   const value = parseCurrencyToCent(
-                        //     e.target.value.toString(),
-                        //   )
-
-                        //   // let value = e.target.value.replace(/[^0-9]/g, '')
-                        //   // value = (Number(value) / 100).toLocaleString(
-                        //   //   'pt-BR',
-                        //   //   {
-                        //   //     minimumFractionDigits: 2,
-                        //   //     maximumFractionDigits: 2,
-                        //   //   },
-                        //   // )
-                        //   setValue(
-                        //     `items.${index}.unitCost`,
-                        //     String(value).replace('.', '') as unknown as number,
-                        //   )
-
-                        //   const { total, measurementValue } =
-                        //     calculateSalesValue(index)
-                        //   setValue(
-                        //     `items.${index}.salePrice`,
-                        //     total as unknown as number,
-                        //   )
-                        //   setValue(
-                        //     `items.${index}.measurementValue`,
-                        //     measurementValue as unknown as number,
-                        //   )
-                        // }}
-                        onBlur={() => {
+                        additionalOnChange={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
-                          setValue(
-                            `items.${index}.salePrice`,
-                            total as unknown as number,
-                          )
+                          setValue(`items.${index}.salePrice`, total)
                           setValue(
                             `items.${index}.measurementValue`,
-                            measurementValue as unknown as number,
+                            measurementValue,
                           )
                         }}
                       />
-                      <FormCurrencyInput<ProductsFormType>
+                      <FormBrlInput<ProductsFormType>
                         readOnly
                         disabled
-                        control={control}
                         name={`items.${index}.salePrice`}
                         label="Valor de venda"
                         placeholder="0,00"
                         startAdornment={<>R$</>}
                         width="flex-[1_0_130px]"
-                        // value={calculateSalesValue(index)}
                       />
                     </div>
                   )
@@ -526,13 +517,26 @@ export function QuotationProdDetailModal({
         <DialogFooter className="sm:justify-between">
           <div className="flex flex-col">
             <strong className="font-semibold text-lg text-gray-900">
-              R$ {calculateFinalValue()}
+              R$ {parseCurrencyToBrl(calculateFinalValue())}
             </strong>
             <span className="font-medium text-gray-700 text-sm">
               Valor Final
             </span>
           </div>
           <div className="space-x-4">
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  form.trigger()
+                  console.log('Form values:', form.getValues())
+                  console.log('Form errors:', form.formState.errors)
+                }}
+              >
+                Teste
+              </Button>
+            )}
             <Button
               type="button"
               variant="neutralOutline"
@@ -545,7 +549,7 @@ export function QuotationProdDetailModal({
               className="gap-2"
               form="new-product"
               isLoading={isSubmitting || isLoading}
-              disabled={!form.formState.isValid || isSubmitting || isLoading}
+              disabled={isSubmitting || isLoading}
             >
               Salvar
               {!isLoading && <IconCircleCheck />}
