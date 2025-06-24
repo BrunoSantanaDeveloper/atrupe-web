@@ -42,7 +42,7 @@ import { setCookie } from 'cookies-next'
 
 // Icons
 import { IconComponent } from '../common/Icon'
-import { IconChevronLeft } from '@tabler/icons-react'
+import { IconChevronLeft, IconBrandWhatsapp } from '@tabler/icons-react'
 
 // Types
 import type { Session } from 'next-auth'
@@ -267,7 +267,7 @@ export function SidebarComponent(props: Props) {
           </div>
 
           {/* Main navigation */}
-          <ScrollArea>
+          <ScrollArea className="flex-1">
             <nav
               className="overflow-hidden text-nowrap"
               hidden={!!secondaryNav}
@@ -408,6 +408,39 @@ export function SidebarComponent(props: Props) {
               </Accordion>
             </nav>
           </ScrollArea>
+
+          {/* WhatsApp Link */}
+          <div className="border-t p-4">
+            <Button
+              asChild
+              type="button"
+              variant="ghost"
+              className={cn(
+                'w-full h-12 justify-start transition-all ease-in-out duration-500 hover:bg-green-50 hover:text-green-600',
+                collapsed ? 'px-5' : 'px-2',
+              )}
+            >
+              <a
+                href="https://wa.me/554721229194"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4"
+              >
+                <IconComponent
+                  icon={IconBrandWhatsapp}
+                  className="w-6 h-6 text-green-600 flex-shrink-0"
+                />
+                <span
+                  className={cn(
+                    'text-sm font-medium transition-all ease-in-out duration-500',
+                    collapsed ? 'ml-4 opacity-0' : 'mr-0',
+                  )}
+                >
+                  Suporte WhatsApp
+                </span>
+              </a>
+            </Button>
+          </div>
         </div>
 
         {/* Secondary navigation */}
