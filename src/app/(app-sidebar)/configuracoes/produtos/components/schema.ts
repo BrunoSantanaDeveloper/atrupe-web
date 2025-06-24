@@ -1,5 +1,4 @@
-import { parseCurrencyToCent } from '@/lib/utils'
-import { string, z } from 'zod'
+import { z } from 'zod'
 
 export const newProductsSchema = z.object({
   id: z.string().optional(),
@@ -11,7 +10,6 @@ export const newProductsSchema = z.object({
     .string({ required_error: 'Campo obrigatório' })
     .min(2, { message: 'Campo obrigatório' })
     .trim(),
-  companyId: z.string({ required_error: 'Campo obrigatório' }).optional(),
   categoryId: z
     .string({ required_error: 'Campo obrigatório' })
     .min(2, { message: 'Campo obrigatório' })
@@ -35,20 +33,8 @@ export const newProductsSchema = z.object({
         .string({ required_error: 'Campo obrigatório' })
         .min(2, { message: 'Campo obrigatório' })
         .trim(),
-      unitCost: z
-        .union([z.number(), z.string()])
-        .transform((val) => parseCurrencyToCent(val.toString()))
-        .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
-        })
-        .nullable()
-        .optional(),
-      salePrice: z
-        .union([z.number(), z.string()])
-        .transform((val) => parseCurrencyToCent(val.toString()))
-        .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
-        }),
+      unitCost: z.number().optional().nullable(),
+      salePrice: z.number(),
       width: z
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
@@ -109,7 +95,7 @@ export const newProductsSchema = z.object({
   ),
   productionStages: z.array(
     z.object({
-      id: string({ required_error: 'Campo obrigatório' }).trim(),
+      id: z.string({ required_error: 'Campo obrigatório' }).trim(),
       name: z
         .string({ required_error: 'Campo obrigatório' })
         .min(2, { message: 'Campo obrigatório' })
@@ -149,7 +135,6 @@ export type NewProductsFormType = z.infer<typeof newProductsSchema>
 export const defaultNewProductValues: NewProductsFormType = {
   name: '',
   code: '',
-  companyId: '',
   categoryId: '',
   sectorId: '',
   technicalDescription: null,

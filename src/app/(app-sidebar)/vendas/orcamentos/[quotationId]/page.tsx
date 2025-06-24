@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
 // Components
 import { Quotation } from './components/Quotation'
@@ -12,5 +13,9 @@ export const metadata: Metadata = {
 }
 
 export default async function QuotationPage({ params }: ParamsType) {
-  return <Quotation id={params.quotationId} />
+  return (
+    <Suspense fallback={null}>
+      <Quotation id={params.quotationId} />
+    </Suspense>
+  )
 }

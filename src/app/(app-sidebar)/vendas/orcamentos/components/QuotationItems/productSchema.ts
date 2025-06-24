@@ -1,4 +1,4 @@
-import { brlToFloat, parseCurrencyToCent } from '@/lib/utils'
+// import { brlToFloat, parseCurrencyToCent } from '@/lib/utils'
 import { z } from 'zod'
 
 export const productSchema = z.object({
@@ -88,26 +88,9 @@ export const productSchema = z.object({
         .optional()
         .nullable(),
 
-      unitCost: z
-        .string({
-          invalid_type_error: 'Digite um valor',
-          required_error: 'Campo obrigatório',
-        })
-        .transform((value) => parseCurrencyToCent(value)),
-      salePrice: z
-        .string({
-          invalid_type_error: 'Digite um valor',
-          required_error: 'Campo obrigatório',
-        })
-        .transform((value) => parseCurrencyToCent(value)),
-      measurementValue: z
-        .string({
-          invalid_type_error: 'Digite um valor',
-          required_error: 'Campo obrigatório',
-        })
-        .transform((value) => brlToFloat(value))
-        .optional()
-        .nullable(),
+      unitCost: z.number(),
+      salePrice: z.number(),
+      measurementValue: z.number(),
     }),
   ),
   notes: z.string().optional().nullable(),
