@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { notFound, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
 // UI
@@ -18,7 +18,48 @@ import { ProgressCircle } from '@/components/ui/progress-circle'
 import { Logo } from '@/components/Logo'
 import { toast } from 'sonner'
 
-export default function AtivarPlanoPage() {
+const features = {
+  START: [
+    'user_limit_3',
+    'sales_orders_limited',
+    'rejection_reasons_limited',
+    'budget_status_limited',
+    'delivery_schedule_limited',
+    'bank_accounts_limited',
+    'bank_tax_transfer_limited',
+    'products_limited',
+    'production_stages_limited',
+    'clients_limited',
+    'suppliers_limited',
+  ],
+  LITE: [
+    'user_limit_5',
+    'additional_cnpj',
+    'sectors_management',
+    'sales_orders_full',
+    'quick_sale',
+    'rejection_reasons_full',
+    'budget_status_full',
+    'delivery_schedule_full',
+    'accounts_receivable',
+    'accounts_payable',
+    'cash_control',
+    'pdv',
+    'bank_accounts_full',
+    'bank_tax_transfer_full',
+    'credit_limit',
+    'products_full',
+    'production_stages_full',
+    'clients_full',
+    'suppliers_full',
+  ],
+}
+
+export default function AtivarPlanoPage({
+  params,
+}: {
+  params: { plan: string }
+}) {
   const router = useRouter()
   const { data: session, update } = useSession()
   const [progress, setProgress] = useState(0)
@@ -48,28 +89,11 @@ export default function AtivarPlanoPage() {
             await update({
               company: {
                 plan: {
-                  name: 'LITE',
-                  features: [
-                    'user_limit_5',
-                    'additional_cnpj',
-                    'sectors_management',
-                    'sales_orders_full',
-                    'quick_sale',
-                    'rejection_reasons_full',
-                    'budget_status_full',
-                    'delivery_schedule_full',
-                    'accounts_receivable',
-                    'accounts_payable',
-                    'cash_control',
-                    'pdv',
-                    'bank_accounts_full',
-                    'bank_tax_transfer_full',
-                    'credit_limit',
-                    'products_full',
-                    'production_stages_full',
-                    'clients_full',
-                    'suppliers_full',
-                  ],
+                  name: params.plan.toUpperCase(),
+                  features:
+                    features[
+                      params.plan.toUpperCase() as keyof typeof features
+                    ],
                 },
               },
             })
@@ -96,6 +120,10 @@ export default function AtivarPlanoPage() {
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, progress])
+
+  if (!features[params.plan.toUpperCase() as keyof typeof features]) {
+    notFound()
+  }
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
