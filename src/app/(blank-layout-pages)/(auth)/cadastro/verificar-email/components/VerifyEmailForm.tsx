@@ -167,10 +167,10 @@ export function VerifyEmailForm() {
 
           <Button
             variant="neutralOutline"
-            disabled={countdown > 0}
             onClick={handleResendCode}
             type="button"
-            isLoading={isResending || isSubmitting}
+            isLoading={isResending}
+            disabled={countdown > 0 || isSubmitting}
           >
             {countdown > 0
               ? `Reenviar em ${formatTime(countdown)}`
