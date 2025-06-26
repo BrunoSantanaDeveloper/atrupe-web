@@ -5,13 +5,18 @@ import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
 import { clientCategoryOptions } from '@/consts/client'
+import { supplierCategoryOptions } from '@/consts/supplier'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
+  context?: 'client' | 'supplier'
 }
 
-export function GeneralInfoTab({ type }: Props) {
+export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue } = useFormContext<NewClientFormType>()
+
+  const categoryOptions =
+    context === 'supplier' ? supplierCategoryOptions : clientCategoryOptions
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -71,7 +76,7 @@ export function GeneralInfoTab({ type }: Props) {
       <FormSelect<NewClientFormType>
         name="general.category"
         label="Categoria"
-        options={clientCategoryOptions}
+        options={categoryOptions}
       />
 
       <FormInput<NewClientFormType>
