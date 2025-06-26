@@ -90,7 +90,7 @@ export const productSchema = z.object({
 
       unitCost: z.number(),
       salePrice: z.number(),
-      measurementValue: z.number(),
+      measurementValue: z.number().optional(),
     }),
   ),
   notes: z.string().optional().nullable(),

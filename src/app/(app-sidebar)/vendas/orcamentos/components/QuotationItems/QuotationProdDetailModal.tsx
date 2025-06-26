@@ -86,21 +86,49 @@ export function QuotationProdDetailModal({
         data?.product?.compositions?.[0]?.originalQuantity ??
         data.product.quantity ??
         null,
-      items: data?.product?.compositions.map((item) => ({
-        ...item,
-        distance: item.distance ?? null,
-        duration: item.duration ?? null,
-        height: item.height ?? null,
-        id: item.id ?? null,
-        length: item.length ?? null,
-        quantity: item?.originalQuantity ?? null,
-        salePrice: item?.totalValue ?? null,
-        unitCost: item?.unitValue ?? null,
-        unitOfMeasureId: item?.unitOfMeasure?.id ?? null,
-        volume: item.volume ?? null,
-        weight: item.weight ?? null,
-        width: item.width ?? null,
-      })),
+      items: data?.product?.compositions.map((item) => {
+        // Calcular measurementValue inicial baseado nos dados existentes
+        const unitValue = item?.unitValue ?? 0
+        const quantity = item?.originalQuantity ?? 1
+        const basicMeasurement = (() => {
+          switch (item?.unitOfMeasure?.code) {
+            case 'M²':
+              return (item.height ?? 0) * (item.width ?? 0)
+            case 'M':
+              return item.width ?? 0
+            case 'LT':
+              return item.volume ?? 0
+            case 'KG':
+              return item.weight ?? 0
+            case 'KM':
+              return item.distance ?? 0
+            case 'HH': {
+              const duration = Number(item.duration || 0)
+              return duration > 60 ? duration / 60 : duration
+            }
+            default:
+              return 1
+          }
+        })()
+
+        const measurementValue = unitValue * basicMeasurement * quantity
+        return {
+          ...item,
+          distance: item.distance ?? null,
+          duration: item.duration ?? null,
+          height: item.height ?? null,
+          id: item.id ?? null,
+          length: item.length ?? null,
+          quantity: item?.originalQuantity ?? null,
+          salePrice: item?.totalValue ?? null,
+          unitCost: item?.unitValue ?? null,
+          unitOfMeasureId: item?.unitOfMeasure?.id ?? null,
+          volume: item.volume ?? null,
+          weight: item.weight ?? null,
+          width: item.width ?? null,
+          measurementValue,
+        }
+      }),
     }
     return newData
   }
