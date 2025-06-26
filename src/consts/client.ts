@@ -9,13 +9,6 @@ export const clientStatusObj: {
   INACTIVE: { text: 'Inativo', variant: 'neutralLight' },
 }
 
-export const supplierStatusObj: {
-  [key: string]: BadgeType
-} = {
-  ACTIVE: { text: 'Ativo', variant: 'successLight' },
-  INACTIVE: { text: 'Inativo', variant: 'neutralLight' },
-}
-
 export const clientCategoryOptions = [
   { label: 'Comércio', value: 'Comércio' },
   { label: 'Indústria', value: 'Indústria' },

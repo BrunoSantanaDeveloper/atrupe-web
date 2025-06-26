@@ -31,15 +31,12 @@ import type { TabNavType } from '@/components/common/Topbar'
 // Action Imports
 import { getDataOld } from '@/actions/_cruds'
 
-// Lib Imports
-import { truncateString } from '@/lib/utils'
-
 // Third-party Imports
 import { useQuery } from '@tanstack/react-query'
 
 // Icon Imports
 import { IconEye } from '@tabler/icons-react'
-import { supplierStatusObj } from '@/consts/client'
+import { supplierStatusObj } from '@/consts/supplier'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props extends SearchParamsType {
@@ -93,9 +90,7 @@ export function SuppliersData({ searchParams, tabs }: Props) {
                     <p className="font-medium">{supplier?.name}</p>
                     <p className="text-gray">{supplier?.kind}</p>
                   </TableCell>
-                  <TableCell>
-                    {truncateString(5, supplier?.categoryId)}
-                  </TableCell>
+                  <TableCell>{supplier?.category || '-'}</TableCell>
                   <TableCell>
                     <Badge
                       status

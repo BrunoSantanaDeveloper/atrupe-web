@@ -11,7 +11,7 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { ClientActions } from '../../clientes/[id]/components/ClientActions'
 
 // Consts
-import { supplierStatusObj } from '@/consts/client'
+import { supplierStatusObj } from '@/consts/supplier'
 
 // UI
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
