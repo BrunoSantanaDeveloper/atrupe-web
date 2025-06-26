@@ -23,24 +23,24 @@ export function ProductionStages() {
   useEffect(() => {
     if (hasInitialized.current) return
     if (!sectors) return
-    if (stages.fields.length > 0) return
 
-    sectors
-      ?.filter((sector) => sector.isActive === true)
-      ?.forEach((sector) => {
-        const existingStage = stages?.fields?.find(
-          (stage) => stage.id === sector.id,
-        )
+    // Obter apenas os setores ativos para etapas de produção
+    const activeSectors = sectors.filter((sector) => sector.isActive === true)
 
-        if (!existingStage) {
-          stages?.append({
-            id: sector.id,
-            name: sector.name,
-            icon: sector?.icon,
-            isActive: false,
-          })
-        }
+    // Se não há etapas no formulário, adicionar todas as etapas ativas
+    if (stages.fields.length === 0) {
+      activeSectors.forEach((sector) => {
+        stages.append({
+          id: sector.id,
+          name: sector.name,
+          icon: sector?.icon,
+          isActive: false,
+        })
       })
+    } else {
+      // Modo edição: as etapas já vêm filtradas e enriquecidas do NewProduct.tsx
+      // Não precisamos fazer nada aqui, pois as etapas já estão corretas
+    }
 
     hasInitialized.current = true
     // eslint-disable-next-line react-hooks/exhaustive-deps
