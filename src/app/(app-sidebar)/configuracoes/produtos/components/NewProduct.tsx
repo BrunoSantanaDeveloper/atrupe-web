@@ -55,6 +55,7 @@ import { createItemNew, getItemOld, updateItemNew } from '@/actions/_cruds'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSector } from '@/hooks/queries/useSector'
 
 interface Props {
   editMode?: boolean
@@ -84,6 +85,7 @@ async function handleGetProduct(productId: string) {
 function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
   const queryClient = useQueryClient()
   const { getProductsType, getProductionStagesType } = usePlanFeatures()
+  const { data: sectors } = useSector({ isProductionStage: true })
 
   const [insertAnother, setInsertAnother] = useState(!editMode)
 
@@ -96,6 +98,29 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     queryFn: () => handleGetProduct(productId ?? ''),
     enabled: !!productId,
   })
+
+  // Filtrar etapas de produção para manter apenas as dos setores ativos, preservando isActive
+  const getFilteredProductionStages = () => {
+    if (!editMode || !product?.productionStages || !sectors) return []
+
+    const activeSectors = sectors.filter((sector) => sector.isActive)
+
+    // Filtrar apenas etapas que correspondem aos setores ativos e enriquecer com dados atuais do setor
+    return product.productionStages
+      .filter((stage: { id: string; isActive: boolean }) => {
+        const sector = activeSectors.find((s) => s.id === stage.id)
+        return !!sector
+      })
+      .map((stage: { id: string; isActive: boolean }) => {
+        const sector = activeSectors.find((s) => s.id === stage.id)
+        return {
+          id: stage.id,
+          name: sector?.name || '',
+          icon: sector?.icon || '',
+          isActive: stage.isActive, // Preservar o isActive original
+        }
+      })
+  }
 
   const form = useForm<NewProductsFormType>({
     resolver: zodResolver(newProductsSchema),
@@ -110,6 +135,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
             unitCost: item.unitCost,
             salePrice: item.salePrice,
           })),
+          productionStages: getFilteredProductionStages(),
         },
   })
 
