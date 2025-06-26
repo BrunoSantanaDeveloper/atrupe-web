@@ -132,6 +132,7 @@ export function QuotationProdDetailModal({
     }
     return newData
   }
+
   const form = useForm<ProductsFormType>({
     resolver: zodResolver(productSchema),
     values: editMode
@@ -139,6 +140,7 @@ export function QuotationProdDetailModal({
       : defaultProductValues,
     // values: defaultProductValues,
   })
+
   const {
     handleSubmit,
     control,
@@ -181,7 +183,7 @@ export function QuotationProdDetailModal({
         measurementValue: 0,
       }
 
-    // Em modo de edição, usar o salePrice já calculado se existir
+    // Em modo de edição, recalcular baseado na nova quantidade
     if (editMode && item.salePrice) {
       const quantity = Number(item.quantity || 1)
       const productQuantity = Number(watch('quantity') || 1)
@@ -223,10 +225,11 @@ export function QuotationProdDetailModal({
       }
 
       const measurementValue = item.unitCost * measurement()
+      const total = measurementValue
 
       return {
         measurementValue,
-        total: item.salePrice,
+        total,
       }
     }
 
@@ -451,20 +454,7 @@ export function QuotationProdDetailModal({
                           </TooltipProvider>
                         }
                         width="flex-[1_0_130px]"
-                        onChange={(e) => {
-                          setValue(
-                            `items.${index}.quantity`,
-                            Number(e.target.value),
-                          )
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                        onBlur={() => {
+                        additionalOnChange={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
                           setValue(`items.${index}.salePrice`, total)
@@ -479,15 +469,6 @@ export function QuotationProdDetailModal({
                         index={index}
                         unitOfMeasureId={item?.unitOfMeasureId}
                         onHasChanged={() => {
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                        onBlur={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
                           setValue(`items.${index}.salePrice`, total)
