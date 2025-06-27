@@ -4,8 +4,8 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
-import { clientCategoryOptions } from '@/consts/client'
-import { supplierCategoryOptions } from '@/consts/supplier'
+import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
+import { useMemo } from 'react'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -15,8 +15,11 @@ interface Props {
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue } = useFormContext<NewClientFormType>()
 
-  const categoryOptions =
-    context === 'supplier' ? supplierCategoryOptions : clientCategoryOptions
+  const { data: categoryData } = useCategoryOptions(
+    context === 'supplier' ? 'SUPPLIER' : 'CLIENT',
+  )
+
+  const categoryOptions = useMemo(() => categoryData || [], [categoryData])
 
   return (
     <div className="grid grid-cols-2 gap-4">

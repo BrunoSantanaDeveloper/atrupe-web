@@ -1,14 +1,13 @@
-// import React, { useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 // UI component Imports
 import { SelectBasic } from '../FormSelect'
 
 // Type Imports
 import type { Path, FieldValues } from 'react-hook-form'
-import { supplierCategoryOptions } from '@/consts/supplier'
 
 // Hooks
-// import { useClientCategory } from '@/hooks/queries/useClientCategory'
+import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 
 interface Props<T extends FieldValues> {
   name: Path<T>
@@ -21,27 +20,24 @@ interface Props<T extends FieldValues> {
 
 export function SupplierCategorySelectField<T extends FieldValues>({
   name,
-  label = 'Categoria de cliente',
+  label = 'Categoria de fornecedor',
   placeholder = label,
   className = 'flex-[1_0_100px]',
   ...props
 }: Props<T>) {
-  // const { data: clientCategories } = useClientCategory() || []
+  const { data: supplierCategories, isLoading } = useCategoryOptions('SUPPLIER')
 
-  // const options =
-  //   useMemo(() => {
-  //     return clientCategories?.map((sector) => ({
-  //       value: sector.id,
-  //       label: sector.name,
-  //     }))
-  //   }, [clientCategories]) || []
+  const options = useMemo(() => {
+    if (isLoading) return []
+    return [{ value: 'all', label: 'Todas' }, ...supplierCategories]
+  }, [supplierCategories, isLoading])
 
   return (
     <SelectBasic
       name={name}
       label={label}
       placeholder={placeholder}
-      options={[{ value: 'all', label: 'Todas' }, ...supplierCategoryOptions]}
+      options={options}
       className={className}
       {...props}
     />

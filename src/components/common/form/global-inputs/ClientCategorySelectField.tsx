@@ -1,14 +1,13 @@
-// import React, { useMemo } from 'react'
+import React, { useMemo } from 'react'
 
 // UI component Imports
 import { SelectBasic } from '../FormSelect'
 
 // Type Imports
 import type { Path, FieldValues } from 'react-hook-form'
-import { clientCategoryOptions } from '@/consts/client'
 
 // Hooks
-// import { useClientCategory } from '@/hooks/queries/useClientCategory'
+import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 
 interface Props<T extends FieldValues> {
   name: Path<T>
@@ -26,22 +25,19 @@ export function SelectClientCategoryField<T extends FieldValues>({
   className = 'flex-[1_0_100px]',
   ...props
 }: Props<T>) {
-  // const { data: clientCategories } = useClientCategory() || []
+  const { data: clientCategories, isLoading } = useCategoryOptions('CLIENT')
 
-  // const options =
-  //   useMemo(() => {
-  //     return clientCategories?.map((sector) => ({
-  //       value: sector.id,
-  //       label: sector.name,
-  //     }))
-  //   }, [clientCategories]) || []
+  const options = useMemo(() => {
+    if (isLoading) return []
+    return [{ value: 'all', label: 'Todas' }, ...clientCategories]
+  }, [clientCategories, isLoading])
 
   return (
     <SelectBasic
       name={name}
       label={label}
       placeholder={placeholder}
-      options={[{ value: 'all', label: 'Todas' }, ...clientCategoryOptions]}
+      options={options}
       className={className}
       {...props}
     />
