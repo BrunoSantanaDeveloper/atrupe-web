@@ -3,16 +3,19 @@ import { useFormContext } from 'react-hook-form'
 import { NewClientFormType } from './schema'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCpf } from '@/lib/validateDocs'
-import { clientCategoryOptions } from '@/consts/client'
+import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 
 export function PersonFields() {
   const { watch, setValue, setError, setFocus, clearErrors } =
     useFormContext<NewClientFormType>()
 
   const { data } = useCheckCpf(watch('cpf')?.replace(/\D/g, '') ?? '')
+  const { data: categoryData } = useCategoryOptions('CLIENT')
+
+  const categoryOptions = useMemo(() => categoryData || [], [categoryData])
 
   useEffect(() => {
     setValue('name', data?.name || '')
@@ -36,7 +39,7 @@ export function PersonFields() {
         name="category"
         label="Categoria"
         width="flex-[1_0_300px]"
-        options={clientCategoryOptions}
+        options={categoryOptions}
       />
       <FormInput
         name="rg"

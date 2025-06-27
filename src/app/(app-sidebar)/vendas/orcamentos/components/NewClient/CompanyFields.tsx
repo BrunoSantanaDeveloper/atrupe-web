@@ -4,11 +4,16 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCnpj } from '@/lib/validateDocs'
-import { clientCategoryOptions } from '@/consts/client'
+import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
+import { useMemo } from 'react'
 
 export function CompanyFields() {
   const { setValue, setError, setFocus, clearErrors } =
     useFormContext<NewClientFormType>()
+
+  const { data: categoryData } = useCategoryOptions('CLIENT')
+  const categoryOptions = useMemo(() => categoryData || [], [categoryData])
+
   return (
     <div className="flex flex-wrap gap-5">
       <FormInput<NewClientFormType>
@@ -37,12 +42,12 @@ export function CompanyFields() {
         }}
         placeholder="Digite aqui"
       />
-      <FormInput<NewClientFormType>
+      {/* <FormInput<NewClientFormType>
         name="activity"
         label="Atividade"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
-      />
+      /> */}
       <FormInput<NewClientFormType>
         name="name"
         label="Nome Fantasia"
@@ -66,7 +71,7 @@ export function CompanyFields() {
         name="category"
         label="Categoria"
         width="flex-[1_0_300px]"
-        options={clientCategoryOptions}
+        options={categoryOptions}
       />
       <FormInput<NewClientFormType>
         name="phone"

@@ -30,10 +30,10 @@ export function ClientSummary({ data }: Props) {
           {data?.general?.cpf ? (
             <TextSupportingText supporting="CPF" text={data?.general?.cpf} />
           ) : null}
-          <TextSupportingText
+          {/* <TextSupportingText
             supporting="Atividade"
             text={data?.general?.activity}
-          />
+          /> */}
           <TextSupportingText
             supporting="Categoria"
             text={data?.general?.category}

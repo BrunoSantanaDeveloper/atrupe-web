@@ -42,7 +42,6 @@ const defaultRoute: { [key: string]: string } = {
   // cliente
   clientTotalsRoute: '/client/quantity',
   clientRoute: '/client',
-  clientCategoryRoute: '/client/category',
 
   // fornecedor
   supplierRoute: '/supplier',

@@ -8,14 +8,16 @@ import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
-import { NewSupplier, NewSupplierTriggerButton } from './NewSupplier'
 import {
   ListDataTotalEmpty,
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { SuppliersData } from './SuppliersTable/SuppliersData'
+import { ActionButton } from '@/components/common/ActionButton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { NewSupplier, NewSupplierTriggerButton } from './NewSupplier'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -27,7 +29,7 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconBuildingCommunity } from '@tabler/icons-react'
+import { IconBuildingCommunity, IconFolders } from '@tabler/icons-react'
 
 type TotalsType = {
   todos: number
@@ -98,13 +100,23 @@ export function Suppliers({ searchParams }: SearchParamsType) {
         activeTab={searchParams?.status || 'todos'}
         paramName="status"
         primaryCta={
-          <PermissionGate permissions={['register:supplier:create']}>
-            <NewSupplierTriggerButton
-              onOpenChange={() => {
-                setOpenDialog('new-supplier')
-              }}
+          <TooltipProvider>
+            <ActionButton
+              tooltip="Categorias de fornecedores"
+              size="iconMd"
+              variant="neutralOutline"
+              Icon={IconFolders}
+              className="bg-transparent"
+              link="/cadastros/fornecedores/categorias"
             />
-          </PermissionGate>
+            <PermissionGate permissions={['register:supplier:create']}>
+              <NewSupplierTriggerButton
+                onOpenChange={() => {
+                  setOpenDialog('new-supplier')
+                }}
+              />
+            </PermissionGate>
+          </TooltipProvider>
         }
       />
       <div>
