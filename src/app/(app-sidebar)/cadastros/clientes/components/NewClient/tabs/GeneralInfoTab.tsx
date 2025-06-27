@@ -71,7 +71,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         </>
       )}
 
-      <FormInput<NewClientFormType> name="general.activity" label="Atividade" />
+      {/* <FormInput<NewClientFormType> name="general.activity" label="Atividade" /> */}
 
       <FormSelect<NewClientFormType>
         name="general.category"

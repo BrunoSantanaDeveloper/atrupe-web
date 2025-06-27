@@ -37,12 +37,12 @@ export function CompanyFields() {
         }}
         placeholder="Digite aqui"
       />
-      <FormInput<NewClientFormType>
+      {/* <FormInput<NewClientFormType>
         name="activity"
         label="Atividade"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
-      />
+      /> */}
       <FormInput<NewClientFormType>
         name="name"
         label="Nome Fantasia"

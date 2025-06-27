@@ -21,7 +21,7 @@ export function DetailCard({
     | React.ComponentType<SVGProps<SVGSVGElement>>
 }) {
   return (
-    <Card className="w-full">
+    <Card className="w-full pb-4">
       <CardHeader>
         <div className="flex justify-between">
           <div className="flex gap-3 items-center">
