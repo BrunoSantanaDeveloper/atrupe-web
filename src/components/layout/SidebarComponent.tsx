@@ -93,12 +93,8 @@ export function SidebarComponent(props: Props) {
   const mainNavigation = getMainNavigation(userRole)
 
   const { hasPermission } = usePermissions()
-  const {
-    canManageSectors,
-    getUserLimit,
-    getRejectionReasonsType,
-    hasFinancialModule,
-  } = usePlanFeatures()
+  const { getUserLimit, getRejectionReasonsType, hasFinancialModule } =
+    usePlanFeatures()
 
   // TODO: Verificar se o usuário é admin com isAdmin
   // Função auxiliar que verifica permissão considerando admin
@@ -118,9 +114,9 @@ export function SidebarComponent(props: Props) {
 
     // Depois verifica features específicas do plano baseado no path
     // Controle de Setores
-    if (item.path?.includes('/setores')) {
-      return canManageSectors()
-    }
+    // if (item.path?.includes('/setores')) {
+    //   return canManageSectors()
+    // }
 
     // Controle de Colaboradores e Usuários - baseado no limite de usuários
     if (item.path?.includes('/colaboradores-e-usuarios')) {
