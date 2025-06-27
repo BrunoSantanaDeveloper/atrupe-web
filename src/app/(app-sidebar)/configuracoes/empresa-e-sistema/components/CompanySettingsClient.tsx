@@ -4,9 +4,6 @@
 import { CompanyInfo } from '../components/CompanyInfo'
 import { CompanySettingsList } from '../../components/CompanySettingsList'
 
-// Hooks
-import { usePlanFeatures } from '@/hooks/usePlanFeatures'
-
 // Types
 import type { CompanySettingsType } from '../../components/CompanySettingsList'
 
@@ -22,8 +19,6 @@ import { MeasureDefaultsDialog } from '../padrao-de-medida/components/Dialog'
 const defaultPath = 'empresa-e-sistema'
 
 export function CompanySettingsClient() {
-  const { canManageSectors } = usePlanFeatures()
-
   const settings: CompanySettingsType[] = [
     {
       category: 'Empresa e sistema',
@@ -35,18 +30,13 @@ export function CompanySettingsClient() {
             'Defina as informações gerais, endereços e personalização de marca de uma ou mais empresas.',
           cta: <CompanyInfo />,
         },
-        // Setores - apenas se permitido pelo plano
-        ...(canManageSectors()
-          ? [
-              {
-                title: 'Setores',
-                icon: IconSettingsCog,
-                description:
-                  'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
-                link: `${defaultPath}/setores`,
-              },
-            ]
-          : []),
+        {
+          title: 'Setores',
+          icon: IconSettingsCog,
+          description:
+            'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
+          link: `${defaultPath}/setores`,
+        },
         {
           title: 'Padrão de medida',
           icon: IconRuler2,
