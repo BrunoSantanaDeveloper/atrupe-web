@@ -15,9 +15,10 @@ import {
 } from '@/components/common/TableEmptyState'
 import { ClientsData } from './ClientsTable/ClientsData'
 import { ClientsFilter } from './ClientsTable/ClientsFilter'
+import { ActionButton } from '@/components/common/ActionButton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
-import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableFiltersHeader } from '@/components/common/TableHeader'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -29,12 +30,13 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconUserOff } from '@tabler/icons-react'
+import { IconFolders, IconUserOff } from '@tabler/icons-react'
 
 import {
   SearchClientModal,
   SearchClientTriggerButton,
 } from './SearchClient/SearchClientModal'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 export function Clients({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
@@ -93,18 +95,28 @@ export function Clients({ searchParams }: SearchParamsType) {
         activeTab={searchParams?.status || 'todos'}
         paramName="status"
         primaryCta={
-          <PermissionGate permissions={['register:client:create']}>
-            <SearchClientTriggerButton
-              onOpenChange={() => {
-                setOpenDialog('search-client')
-              }}
+          <TooltipProvider>
+            <ActionButton
+              tooltip="Categorias de clientes"
+              size="iconMd"
+              variant="neutralOutline"
+              Icon={IconFolders}
+              className="bg-transparent"
+              link="/cadastros/clientes/categorias"
             />
-            <NewClientTriggerButton
-              onOpenChange={() => {
-                setOpenDialog('new-client')
-              }}
-            />
-          </PermissionGate>
+            <PermissionGate permissions={['register:client:create']}>
+              <SearchClientTriggerButton
+                onOpenChange={() => {
+                  setOpenDialog('search-client')
+                }}
+              />
+              <NewClientTriggerButton
+                onOpenChange={() => {
+                  setOpenDialog('new-client')
+                }}
+              />
+            </PermissionGate>
+          </TooltipProvider>
         }
       />
       <PermissionGate

@@ -13,7 +13,6 @@ import {
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { Loader2, SearchIcon, TextSearchIcon } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -33,16 +32,14 @@ export function SearchClientTriggerButton({
   onOpenChange: (open: boolean) => void
 }) {
   return (
-    <TooltipProvider>
-      <ActionButton
-        tooltip="Consultar dados de cliente"
-        size="iconMd"
-        variant="neutralOutline"
-        Icon={TextSearchIcon}
-        className="bg-transparent"
-        onClick={() => onOpenChange(true)}
-      />
-    </TooltipProvider>
+    <ActionButton
+      tooltip="Consultar dados de cliente"
+      size="iconMd"
+      variant="neutralOutline"
+      Icon={TextSearchIcon}
+      className="bg-transparent"
+      onClick={() => onOpenChange(true)}
+    />
   )
 }
 
