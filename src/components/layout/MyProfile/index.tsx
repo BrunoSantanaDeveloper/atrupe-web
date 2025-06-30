@@ -40,7 +40,7 @@ import { useSession } from 'next-auth/react'
 
 export function MyProfileDialog() {
   const queryClient = useQueryClient()
-  const { data: session, update: updateSession } = useSession()
+  const { update: updateSession } = useSession()
   const { data: currentEmployee, isLoading, isError } = useCurrentEmployee()
 
   const form = useForm<FormType>({
