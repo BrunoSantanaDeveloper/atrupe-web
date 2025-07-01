@@ -47,28 +47,32 @@ export interface PayrollDetailType {
 }
 
 export type PayrollPdfType = {
-  id: string
-  reference: string
-  employee: {
-    id: string
+  company: {
     name: string
-    email?: string
-    phone?: string
+    cnpj: string
+    email: string
+    logo: string
+    address: {
+      street: string
+      number: string
+      neighborhood: string
+      city: string
+      state: string
+    }
   }
-  status: 'OPEN' | 'CLOSED'
-  totalSalary: number
-  totalDeductions: number
+  employeeName: string
+  reference: string
+  items: {
+    id: string
+    description: string
+    type: 'INCREASE' | 'DISCOUNT' | 'ADVANCE'
+    amount: number
+  }[]
   netSalary: number
-  createdAt: string
-  updatedAt: string
-  items: PayrollItemType[]
-  movements: PayrollMovementType[]
-}
-
-export type PayrollsDataType = {
-  data: PayrollListType[]
-  count: number
-  limit: number
-  page: number
-  totalPages: number
+  payment: {
+    dueDate: string
+    paidAt: string
+    amountPaid: number
+    paymentMethod: string
+  }
 }

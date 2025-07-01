@@ -29,6 +29,51 @@ interface Props {
   data: PayrollDetailType
 }
 
+const mockData: PayrollPdfType = {
+  company: {
+    name: 'Atrupe Comunicação Visual',
+    cnpj: '00.000.000/0001-00',
+    email: 'atrupe.sistemas',
+    logo: 'https://files-atrupe.s3.us-east-1.amazonaws.com/tesla-logo-169d25c3-1bf3-42dd-a1e9-6b42bda5d741.png',
+    address: {
+      street: 'Avenida Getúlio Vargas',
+      number: '192',
+      neighborhood: 'Vila Operária',
+      city: 'Itajaí',
+      state: 'SC',
+    },
+  },
+  employeeName: 'João da Silva',
+  reference: '3/25',
+  items: [
+    {
+      id: '1',
+      description: 'Salário',
+      type: 'INCREASE',
+      amount: 250000,
+    },
+    {
+      id: '2',
+      description: 'INSS',
+      type: 'DISCOUNT',
+      amount: 30000,
+    },
+    {
+      id: '2',
+      description: 'Adiantamento',
+      type: 'ADVANCE',
+      amount: 55000,
+    },
+  ],
+  netSalary: 220000,
+  payment: {
+    dueDate: '2025-03-01',
+    paidAt: '2025-03-01',
+    amountPaid: 165000,
+    paymentMethod: 'PIX',
+  },
+}
+
 export function PayrollActions({ data }: Props) {
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
   const { open: openAlertDialog } = useAlertDialog()
@@ -64,11 +109,11 @@ export function PayrollActions({ data }: Props) {
   }
 
   const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
+    console.log(payrollData)
+
     setIsLoadingPDF(true)
     try {
-      const blob = await pdf(
-        <PayrollPdf data={payrollData as unknown as PayrollPdfType} />, // TODO: Remover o as unknown as PayrollPdfType
-      ).toBlob()
+      const blob = await pdf(<PayrollPdf data={mockData} />).toBlob()
 
       const url = URL.createObjectURL(blob)
 
