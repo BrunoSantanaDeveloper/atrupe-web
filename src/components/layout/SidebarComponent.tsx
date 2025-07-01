@@ -42,7 +42,7 @@ import { setCookie } from 'cookies-next'
 
 // Icons
 import { IconComponent } from '../common/Icon'
-import { IconChevronLeft, IconBrandWhatsapp } from '@tabler/icons-react'
+import { IconChevronLeft } from '@tabler/icons-react'
 
 // Types
 import type { Session } from 'next-auth'
@@ -406,7 +406,7 @@ export function SidebarComponent(props: Props) {
           </ScrollArea>
 
           {/* WhatsApp Link */}
-          <div className="border-t p-4">
+          {/* <div className="border-t p-4">
             <Button
               asChild
               type="button"
@@ -436,7 +436,7 @@ export function SidebarComponent(props: Props) {
                 </span>
               </a>
             </Button>
-          </div>
+          </div> */}
         </div>
 
         {/* Secondary navigation */}
