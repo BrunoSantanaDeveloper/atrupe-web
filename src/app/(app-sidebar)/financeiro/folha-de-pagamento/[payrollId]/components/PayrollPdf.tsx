@@ -22,11 +22,11 @@ const styles = StyleSheet.create({
     width: '100vw',
     display: 'flex',
     flexDirection: 'column',
-    gap: 20,
     fontFamily: 'Helvetica',
-    fontSize: 8,
+    fontSize: 9,
     paddingBottom: 30,
     paddingTop: 90,
+    backgroundColor: '#fff',
   },
   header: {
     position: 'absolute',
@@ -39,65 +39,70 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#F2F4F7',
-    padding: 30,
+    padding: 24,
     height: 76,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     objectFit: 'contain',
   },
   companyInfo: {
-    width: '100%',
     fontSize: 8,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    gap: 4,
+    gap: 2,
   },
   companyName: {
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: 'bold',
     marginBottom: 2,
   },
   infoContainer: {
-    padding: 30,
+    padding: 24,
     paddingTop: 0,
   },
   title: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
+    textAlign: 'left',
+    marginBottom: 10,
+    marginTop: 10,
   },
   infoSection: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 8,
   },
   infoBlock: {
-    width: '48%',
+    width: '50%',
     lineHeight: 1.2,
+    alignItems: 'flex-end',
+    textAlign: 'right',
   },
   infoTitle: {
     fontSize: 9,
-    marginBottom: 4,
     fontWeight: 'bold',
+    marginBottom: 2,
   },
   table: {
     width: '100%',
     marginVertical: 8,
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   tableHeader: {
     flexDirection: 'row',
-    paddingVertical: 6,
+    paddingVertical: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     fontWeight: 'bold',
+    backgroundColor: '#F9FAFB',
   },
   tableHeaderCell: {
     fontSize: 8,
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: 'row',
-    paddingVertical: 6,
+    paddingVertical: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     justifyContent: 'space-between',
@@ -132,6 +137,26 @@ const styles = StyleSheet.create({
   totalValue: {
     fontSize: 10,
     fontWeight: 'bold',
+  },
+  bottomSection: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 20,
+  },
+  bottomBlock: {
+    width: '48%',
+    flexDirection: 'column',
+    gap: 2,
+  },
+  bottomTitle: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  bottomText: {
+    fontSize: 8,
+    marginBottom: 1,
   },
   pageNumber: {
     position: 'absolute',
@@ -169,7 +194,7 @@ const mockCompany = {
 export function PayrollPdf({ data }: Props) {
   // Calcular totais
   const totalAdditions = data.items
-    .filter((item) => item.type === 'INCREASE')
+    .filter((item) => item.type === 'INCREASE' || item.type === 'ADVANCE')
     .reduce((sum, item) => sum + item.amount, 0)
 
   const totalDeductions = data.items
@@ -178,14 +203,20 @@ export function PayrollPdf({ data }: Props) {
 
   const netSalary = totalAdditions - totalDeductions
 
+  // Buscar informações de pagamento e vencimento do primeiro movimento (se houver)
+  const firstMovement =
+    data.movements && data.movements.length > 0 ? data.movements[0] : undefined
+  const dueDate = firstMovement ? firstMovement.dueDate : undefined
+  const paymentDate = firstMovement ? firstMovement.completedDate : undefined
+  // Não há campo de paymentMethod, então deixar como 'PIX' ou underline
+  const paymentMethod = 'PIX'
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Cabeçalho */}
         <View style={styles.header} fixed>
-          <View style={{ width: '100%' }}>
-            <PDFImage src={mockCompany.logo} style={styles.logo} />
-          </View>
+          <PDFImage src={mockCompany.logo} style={styles.logo} />
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{mockCompany.name}</Text>
             <Text>{mockCompany.cnpj}</Text>
@@ -196,13 +227,6 @@ export function PayrollPdf({ data }: Props) {
               {mockCompany.address.neighborhood}, {mockCompany.address.city},{' '}
               {mockCompany.address.state}.
             </Text>
-            <View style={{ marginTop: 4, alignItems: 'flex-end' }}>
-              <Text>{mockCompany.contacts.site}</Text>
-              <Text>{mockCompany.contacts.email}</Text>
-              <Text>{mockCompany.contacts.phone}</Text>
-              <Text>{mockCompany.contacts.whatsapp}</Text>
-              <Text>{mockCompany.contacts.support}</Text>
-            </View>
           </View>
         </View>
 
@@ -212,22 +236,11 @@ export function PayrollPdf({ data }: Props) {
 
           {/* Informações do Colaborador e Referência */}
           <View style={styles.infoSection}>
+            <View style={{ width: '50%' }} />
             <View style={styles.infoBlock}>
               <Text style={styles.infoTitle}>Nome do Colaborador</Text>
               <Text>{data.employee.name}</Text>
-              {data.employee.email && <Text>{data.employee.email}</Text>}
-              {data.employee.phone && <Text>{data.employee.phone}</Text>}
-            </View>
-
-            <View style={[styles.infoBlock, { textAlign: 'right' }]}>
-              <Text style={styles.infoTitle}>Referência: {data.reference}</Text>
-              <Text>
-                Status: {data.status === 'OPEN' ? 'Em Aberto' : 'Fechado'}
-              </Text>
-              <Text>Criado em: {formatToLocaleDate(data.createdAt)}</Text>
-              {data.updatedAt && (
-                <Text>Atualizado em: {formatToLocaleDate(data.updatedAt)}</Text>
-              )}
+              <Text style={{ marginTop: 2 }}>Referência: {data.reference}</Text>
             </View>
           </View>
 
@@ -254,39 +267,34 @@ export function PayrollPdf({ data }: Props) {
                 VALOR
               </Text>
             </View>
-
             {data.items.map((item, index) => (
               <View key={item.id || index} style={styles.tableRow}>
-                <View style={{ width: '60%' }}>
-                  <Text style={styles.tableCell}>{item.description}</Text>
-                  {item.description && (
-                    <Text
-                      style={[
-                        styles.tableCell,
-                        { fontSize: 7, color: '#6B7280' },
-                      ]}
-                    >
-                      {item.description}
-                    </Text>
-                  )}
-                </View>
-
-                <View style={{ width: '20%' }}>
-                  <Text style={[styles.tableCell, { textAlign: 'center' }]}>
-                    {item.type === 'INCREASE'
-                      ? 'Acréscimo'
-                      : item.type === 'DISCOUNT'
-                        ? 'Desconto'
-                        : 'Adiantamento'}
-                  </Text>
-                </View>
-
-                <View style={{ width: '20%' }}>
-                  <Text style={[styles.tableCell, { textAlign: 'right' }]}>
-                    {item.type === 'DISCOUNT' ? '-' : ''}
-                    {formatCurrencyToBrl(item.amount)}
-                  </Text>
-                </View>
+                <Text style={[styles.tableCell, { width: '60%' }]}>
+                  {item.description}
+                </Text>
+                <Text
+                  style={[
+                    styles.tableCell,
+                    { width: '20%', textAlign: 'center' },
+                  ]}
+                >
+                  {' '}
+                  {item.type === 'INCREASE'
+                    ? 'Acréscimo'
+                    : item.type === 'DISCOUNT'
+                      ? 'Desconto'
+                      : 'Adiantamento'}
+                </Text>
+                <Text
+                  style={[
+                    styles.tableCell,
+                    { width: '20%', textAlign: 'right' },
+                  ]}
+                >
+                  {' '}
+                  {item.type === 'DISCOUNT' ? '-' : ''}
+                  {formatCurrencyToBrl(item.amount)}
+                </Text>
               </View>
             ))}
           </View>
@@ -300,23 +308,33 @@ export function PayrollPdf({ data }: Props) {
           </View>
 
           {/* Informações de Data e Pagamento */}
-          <View
-            style={{
-              marginTop: 30,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <View style={{ width: '45%' }}>
-              <Text style={styles.infoTitle}>Data</Text>
-              <Text>Vencimento em: {formatToLocaleDate(data.createdAt)}</Text>
-              <Text>Pagamento em: ___/___/_____</Text>
+          <View style={styles.bottomSection}>
+            <View style={styles.bottomBlock}>
+              <Text style={styles.bottomTitle}>Data</Text>
+              <Text style={styles.bottomText}>
+                Vencimento em:{' '}
+                {dueDate ? formatToLocaleDate(dueDate) : '___/___/_____'}{' '}
+              </Text>
+              <Text style={styles.bottomText}>
+                Pagamento em:{' '}
+                {paymentDate
+                  ? formatToLocaleDate(paymentDate)
+                  : '___/___/_____'}{' '}
+              </Text>
             </View>
-
-            <View style={{ width: '45%', textAlign: 'right' }}>
-              <Text style={styles.infoTitle}>Pagamento</Text>
-              <Text>Valor: ________________</Text>
-              <Text>Forma de pagamento: ________________</Text>
+            <View
+              style={[
+                styles.bottomBlock,
+                { alignItems: 'flex-end', textAlign: 'right' },
+              ]}
+            >
+              <Text style={styles.bottomTitle}>Pagamento</Text>
+              <Text style={styles.bottomText}>
+                Valor: {formatCurrencyToBrl(netSalary)}
+              </Text>
+              <Text style={styles.bottomText}>
+                Forma de pagamento: {paymentMethod}
+              </Text>
             </View>
           </View>
         </View>

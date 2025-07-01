@@ -35,7 +35,9 @@ import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_compon
 
 // Icons
 import {
+  IconEye,
   IconCash,
+  IconEyeOff,
   IconPencil,
   IconSearch,
   IconThumbUp,
@@ -68,6 +70,7 @@ export function PayrollItems({ data }: Props) {
   const [rowData, setRowData] = useState<PayrollItemType>()
   const [isAdvance, setIsAdvance] = useState(false)
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
+  const [showValues, setShowValues] = useState(true)
 
   const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
     setIsLoadingPDF(true)
@@ -98,12 +101,26 @@ export function PayrollItems({ data }: Props) {
                 Itens
               </CardTitle>
             </div>
-            <div className="text-right">
-              <div className="text-lg font-semibold">
-                {formatCurrencyToBrl(data?.balance || 0)}
-              </div>
-              <div className="text-sm text-gray-700 font-medium">
-                Salário a pagar
+            <div className="flex gap-3 items-center">
+              <TooltipProvider>
+                <ActionButton
+                  Icon={showValues ? IconEyeOff : IconEye}
+                  tooltip={showValues ? 'Ocultar valores' : 'Ver valores'}
+                  onClick={() => {
+                    setShowValues(!showValues)
+                  }}
+                  className="hidden"
+                />
+              </TooltipProvider>
+              <div className="text-right">
+                <div className="text-lg font-semibold min-w-28">
+                  {showValues
+                    ? formatCurrencyToBrl(data?.balance || 0)
+                    : '***********'}
+                </div>
+                <div className="text-sm text-gray-700 font-medium">
+                  Salário a pagar
+                </div>
               </div>
             </div>
           </div>
@@ -146,10 +163,14 @@ export function PayrollItems({ data }: Props) {
                     </TableCell>
                     <TableCell>
                       <div className="font-medium">
-                        {formatCurrencyToBrl(item.amount)}
+                        {showValues
+                          ? formatCurrencyToBrl(item.amount)
+                          : '********'}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {formatToLocaleDateTime(item.paidAt)}
+                        {showValues
+                          ? formatToLocaleDateTime(item.paidAt)
+                          : '********'}
                       </div>
                     </TableCell>
                     <TableCell>

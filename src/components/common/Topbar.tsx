@@ -2,17 +2,31 @@
 import Link from 'next/link'
 
 // UI
+import {
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Icon
-import { IconArrowLeft } from '@tabler/icons-react'
+import {
+  IconFileText,
+  IconArrowLeft,
+  IconHelpCircle,
+  IconPlayerPlay,
+  IconBrandWhatsapp,
+} from '@tabler/icons-react'
 
 // Type
 import { BadgeType } from '@/types/coreTypes'
 import { cn } from '@/lib/utils'
 import { Skeleton } from '../ui/skeleton'
+import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
+import { useState } from 'react'
 
 export type TabNavType = {
   value: string
@@ -34,6 +48,11 @@ interface Props {
   supportText?: string
 }
 
+const exampleHelpData = {
+  files: ['/docs/atrupe-manual-completo-start.pdf'],
+  video: 'https://vimeo.com/495579294',
+}
+
 export function Topbar({
   tabs,
   title,
@@ -46,6 +65,8 @@ export function Topbar({
   badge,
   supportText,
 }: Props) {
+  const helpData = exampleHelpData
+
   return (
     <div className="space-y-3">
       <div
@@ -84,6 +105,7 @@ export function Topbar({
         </div>
         <div className="flex items-center gap-3">
           {label ? <p className="font-semibold pr-4">{label}</p> : null}
+          {helpData ? <HelpButton data={helpData} /> : null}
           {secondaryCta || null}
           {primaryCta || null}
         </div>
@@ -110,5 +132,61 @@ export function Topbar({
         </Tabs>
       ) : null}
     </div>
+  )
+}
+
+function HelpButton({ data }: { data: { files: string[]; video: string } }) {
+  const [videoDialogOpen, setVideoDialogOpen] = useState(false)
+  const { files, video } = data
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            size="iconMd"
+            variant="neutralOutline"
+            RightIcon={IconHelpCircle}
+          />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="min-w-32" align="start">
+          <DropdownMenuItem
+            onClick={() => {
+              setVideoDialogOpen(true)
+            }}
+          >
+            <IconPlayerPlay size={16} className="mr-2" />
+            <span>Vídeo</span>
+          </DropdownMenuItem>
+          {files.length > 0 ? (
+            <DropdownMenuItem
+              onClick={() => {
+                window.open(files[0], '_blank')
+              }}
+            >
+              <IconFileText size={16} className="mr-2" />
+              <span>PDF</span>
+            </DropdownMenuItem>
+          ) : null}
+          <DropdownMenuItem
+            onClick={() => window.open('https://wa.me/554721229194', '_blank')}
+          >
+            <IconBrandWhatsapp size={16} className="mr-2" />
+            <span>Suporte</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {video && (
+        <VideoDialog
+          open={videoDialogOpen}
+          onOpenChange={setVideoDialogOpen}
+          video={video}
+          title={'Vídeo de Ajuda'}
+          description={'Vídeo de Ajuda'}
+        />
+      )}
+    </>
   )
 }
