@@ -38,7 +38,10 @@ interface Props {
 }
 
 const exampleHelpData = {
-  files: ['/docs/atrupe-manual-completo-start.pdf'],
+  files: [
+    '/docs/atrupe-manual-completo-start.pdf',
+    '/docs/atrupe-manual-completo-start.xlsx',
+  ],
   video: 'https://vimeo.com/495579294',
 }
 
