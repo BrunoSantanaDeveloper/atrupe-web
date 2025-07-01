@@ -12,7 +12,7 @@ import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Actions
-import { updateItemNew } from '@/actions/_cruds'
+import { updateItemNew, getItem } from '@/actions/_cruds'
 
 // Icons
 import {
@@ -27,51 +27,6 @@ import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
   data: PayrollDetailType
-}
-
-const mockData: PayrollPdfType = {
-  company: {
-    name: 'Atrupe Comunicação Visual',
-    cnpj: '00.000.000/0001-00',
-    email: 'atrupe.sistemas',
-    logo: 'https://files-atrupe.s3.us-east-1.amazonaws.com/tesla-logo-169d25c3-1bf3-42dd-a1e9-6b42bda5d741.png',
-    address: {
-      street: 'Avenida Getúlio Vargas',
-      number: '192',
-      neighborhood: 'Vila Operária',
-      city: 'Itajaí',
-      state: 'SC',
-    },
-  },
-  employeeName: 'João da Silva',
-  reference: '3/25',
-  items: [
-    {
-      id: '1',
-      description: 'Salário',
-      type: 'INCREASE',
-      amount: 250000,
-    },
-    {
-      id: '2',
-      description: 'INSS',
-      type: 'DISCOUNT',
-      amount: 30000,
-    },
-    {
-      id: '2',
-      description: 'Adiantamento',
-      type: 'ADVANCE',
-      amount: 55000,
-    },
-  ],
-  netSalary: 220000,
-  payment: {
-    dueDate: '2025-03-01',
-    paidAt: '2025-03-01',
-    amountPaid: 165000,
-    paymentMethod: 'PIX',
-  },
 }
 
 export function PayrollActions({ data }: Props) {
@@ -109,11 +64,20 @@ export function PayrollActions({ data }: Props) {
   }
 
   const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
-    console.log(payrollData)
-
     setIsLoadingPDF(true)
     try {
-      const blob = await pdf(<PayrollPdf data={mockData} />).toBlob()
+      // Buscar dados do PDF da API
+      const result = await getItem({
+        route: `/financial/salary-sheets/${payrollData.id}/pdf-data`,
+      })
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
+      const pdfData: PayrollPdfType = result.data
+
+      const blob = await pdf(<PayrollPdf data={pdfData} />).toBlob()
 
       const url = URL.createObjectURL(blob)
 

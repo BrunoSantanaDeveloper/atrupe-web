@@ -15,7 +15,7 @@ import { PayrollPdfType } from '@/types/financial/payroll'
 
 // Utils
 import { formatToLocaleDate } from '@/lib/formatDate'
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
 
 // Icons
 import { MoneySignIcon, CalendarDollarIcon } from '@/assets/icons/PdfIcons'
@@ -180,8 +180,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
-    marginTop: 16,
+    marginBottom: 5,
   },
   collaboratorBlock: {
     flexDirection: 'column',
@@ -212,7 +211,7 @@ export function PayrollPdf({ data }: Props) {
           <PDFImage src={data.company.logo} style={styles.logo} />
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{data.company.name}</Text>
-            <Text>{data.company.cnpj}</Text>
+            <Text>{maskCnpj(data.company.cnpj)}</Text>
             <Text>
               {data.company.address.street}, {data.company.address.number}
             </Text>
@@ -286,25 +285,28 @@ export function PayrollPdf({ data }: Props) {
               <Text style={styles.bottomTitle}>Data</Text>
               <Text style={styles.bottomText}>
                 Vencimento em:{' '}
-                {data.payment.dueDate
+                {data.payment?.dueDate
                   ? formatToLocaleDate(data.payment.dueDate)
-                  : '___/___/_____'}{' '}
+                  : ''}
               </Text>
               <Text style={styles.bottomText}>
                 Pagamento em:{' '}
-                {data.payment.paidAt
+                {data.payment?.paidAt
                   ? formatToLocaleDate(data.payment.paidAt)
-                  : '___/___/_____'}{' '}
+                  : ''}
               </Text>
             </View>
             <View style={styles.bottomBlock}>
               <MoneySignIcon />
               <Text style={styles.bottomTitle}>Pagamento</Text>
               <Text style={styles.bottomText}>
-                Valor: {formatCurrencyToBrl(data.payment.amountPaid)}
+                Valor:{' '}
+                {data.payment?.amountPaid
+                  ? formatCurrencyToBrl(data.payment?.amountPaid)
+                  : ''}
               </Text>
               <Text style={styles.bottomText}>
-                Forma de pagamento: {data.payment.paymentMethod}
+                Forma de pagamento: {data.payment?.paymentMethod}
               </Text>
             </View>
           </View>
