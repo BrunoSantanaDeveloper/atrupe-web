@@ -12,7 +12,7 @@ import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Actions
-import { updateItemNew } from '@/actions/_cruds'
+import { updateItemNew, getItem } from '@/actions/_cruds'
 
 // Icons
 import {
@@ -66,9 +66,18 @@ export function PayrollActions({ data }: Props) {
   const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
     setIsLoadingPDF(true)
     try {
-      const blob = await pdf(
-        <PayrollPdf data={payrollData as unknown as PayrollPdfType} />, // TODO: Remover o as unknown as PayrollPdfType
-      ).toBlob()
+      // Buscar dados do PDF da API
+      const result = await getItem({
+        route: `/financial/salary-sheets/${payrollData.id}/pdf-data`,
+      })
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
+      const pdfData: PayrollPdfType = result.data
+
+      const blob = await pdf(<PayrollPdf data={pdfData} />).toBlob()
 
       const url = URL.createObjectURL(blob)
 
