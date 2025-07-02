@@ -104,7 +104,8 @@ export function QuotationProdDetailModal({
               return item.distance ?? 0
             case 'HH': {
               const duration = Number(item.duration || 0)
-              return duration > 60 ? duration / 60 : duration
+              // Converter minutos para horas
+              return duration / 60
             }
             default:
               return 1
@@ -208,7 +209,8 @@ export function QuotationProdDetailModal({
               return item.distance ?? 0
             case 'HH': {
               const duration = Number(item.duration || 0)
-              const hours = duration > 60 ? duration / 60 : duration
+              // Converter minutos para horas
+              const hours = duration / 60
               return hours
             }
             default:
@@ -257,7 +259,8 @@ export function QuotationProdDetailModal({
             return item.distance ?? 0
           case 'HH': {
             const duration = Number(item.duration || 0)
-            const hours = duration > 60 ? duration / 60 : duration
+            // Converter minutos para horas
+            const hours = duration / 60
             return hours
           }
           default:
