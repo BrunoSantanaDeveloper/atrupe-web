@@ -21,6 +21,45 @@ interface QuotationCategorySelectorModalProps {
   onClose: () => void
   onSelect: () => void
 }
+
+// Função para ordenar os setores com Criação primeiro e Instalação por último
+function sortSectors(
+  sectors: Array<{ id: string; name: string; icon: string }>,
+) {
+  return sectors.sort((a, b) => {
+    // Criação sempre primeiro
+    if (
+      a.name.toLowerCase().includes('criação') ||
+      a.name.toLowerCase().includes('criacao')
+    ) {
+      return -1
+    }
+    if (
+      b.name.toLowerCase().includes('criação') ||
+      b.name.toLowerCase().includes('criacao')
+    ) {
+      return 1
+    }
+
+    // Instalação sempre por último
+    if (
+      a.name.toLowerCase().includes('instalação') ||
+      a.name.toLowerCase().includes('instalacao')
+    ) {
+      return 1
+    }
+    if (
+      b.name.toLowerCase().includes('instalação') ||
+      b.name.toLowerCase().includes('instalacao')
+    ) {
+      return -1
+    }
+
+    // Para os demais, manter ordem alfabética
+    return a.name.localeCompare(b.name)
+  })
+}
+
 export function QuotationCategorySelectorModal({
   open = true,
   onClose,
@@ -35,6 +74,9 @@ export function QuotationCategorySelectorModal({
     onClose()
     onSelect()
   }
+
+  // Ordenar os dados antes de renderizar
+  const sortedData = data ? sortSectors(data) : []
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -62,7 +104,7 @@ export function QuotationCategorySelectorModal({
                 <Loader2 className="text-gray size-6 animate-spin" />
               </div>
             ) : (
-              data?.map((option) => (
+              sortedData?.map((option) => (
                 <Button
                   key={option.id}
                   type="button"
