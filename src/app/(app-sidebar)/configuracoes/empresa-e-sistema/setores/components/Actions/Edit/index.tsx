@@ -41,6 +41,9 @@ import { updateItem } from '@/actions/_cruds'
 // Consts
 import { sectorIcons } from '@/consts/sectors'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface Props extends SearchParamsType {
   open: boolean
   setOpen: (open: string) => void
@@ -62,6 +65,9 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const { getProductionStagesType } = usePlanFeatures()
+
+  const canConfigProductionStages = getProductionStagesType() === 'full'
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -134,14 +140,16 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
         <DialogFooter className="sm:justify-between">
           <div className="flex items-center">
-            <CheckboxBasic
-              name="isProductionStage"
-              label="Exibir nas etapas de produção"
-              defaultChecked={rowData?.isProductionStage}
-              onCheckedChange={(value) => {
-                setValue('isProductionStage', !!value)
-              }}
-            />
+            {canConfigProductionStages && (
+              <CheckboxBasic
+                name="isProductionStage"
+                label="Exibir nas etapas de produção"
+                defaultChecked={rowData?.isProductionStage}
+                onCheckedChange={(value) => {
+                  setValue('isProductionStage', !!value)
+                }}
+              />
+            )}
           </div>
           <div className="space-x-4">
             <DialogTrigger asChild>
