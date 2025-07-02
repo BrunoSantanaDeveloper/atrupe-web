@@ -128,6 +128,7 @@ const QuotationItemsModal: React.FC<{
                 placeholder="Buscar produto"
                 width="flex-[1_0_190px]"
                 startAdornment={<IconSearch />}
+                autoComplete="off"
               />
               <SelectSectorWithProductsField<FormData>
                 name="sectorId"

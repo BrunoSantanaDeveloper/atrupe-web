@@ -257,6 +257,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   // As inconsistências agora são tratadas no componente pai PrintQuotationDialog
   // O PDF sempre usa os valores corretos calculados
 
+  const isProduction = type === 'production'
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -273,14 +275,26 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           </View>
           <View style={styles.companyInfo}>
             <Text style={styles.companyName}>{data.company?.name}</Text>
-            <Text>{data.company?.cnpj}</Text>
+            <Text>
+              {isProduction
+                ? maskCnpj(data.company?.cnpj || '')
+                : data.company?.cnpj}
+            </Text>
             <Text>
               {data.company?.address?.street}, {data.company?.address?.number}
+              {isProduction && `, ${data.company?.address?.neighborhood}`}
             </Text>
-            <Text>
-              {data.company?.address?.neighborhood},{' '}
-              {data.company?.address?.city}, {data.company?.address?.state}.
-            </Text>
+            {!isProduction && (
+              <Text>
+                {data.company?.address?.neighborhood},{' '}
+                {data.company?.address?.city}, {data.company?.address?.state}.
+              </Text>
+            )}
+            {isProduction && (
+              <Text>
+                {data.company?.address?.city}, {data.company?.address?.state}.
+              </Text>
+            )}
           </View>
         </View>
 
@@ -298,7 +312,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <View style={styles.infoBlockRight}>
               <Text
                 style={
-                  type === 'order'
+                  type === 'order' || isProduction
                     ? styles.infoTitleService
                     : { fontWeight: 'normal' }
                 }
@@ -307,44 +321,60 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   ? 'Orçamento'
                   : type === 'order'
                     ? 'Ordem de Serviço'
-                    : 'Produção'}
+                    : 'Ficha de Produção'}
                 : {data.quotation?.seriesCode}-{data.quotation?.number}
               </Text>
               <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
-                Descrição do Serviço
+                {data.quotation?.description}
               </Text>
-              <Text>
-                Emissão: {formatToLocaleDate(data.quotation?.createdAt)}
-              </Text>
-              <Text>
-                Validade: {formatToLocaleDate(data.quotation?.dueDate)}
-              </Text>
+              {!isProduction && (
+                <>
+                  <Text>
+                    Emissão: {formatToLocaleDate(data.quotation?.createdAt)}
+                  </Text>
+                  <Text>
+                    Validade: {formatToLocaleDate(data.quotation?.dueDate)}
+                  </Text>
+                </>
+              )}
               <Text>Vendedor: {data.quotation?.seller?.name}</Text>
             </View>
           </View>
 
-          {/* Texto Introdutório */}
-          <View>
-            <Text>{data?.company.textBeforeItems}</Text>
-            <View style={styles.totalDivider} />
-          </View>
+          {/* Texto Introdutório - não mostrar para produção */}
+          {!isProduction && (
+            <View>
+              <Text>{data?.company.textBeforeItems}</Text>
+              <View style={styles.totalDivider} />
+            </View>
+          )}
+
+          {isProduction && <View style={styles.totalDivider} />}
 
           {/* Tabela de Itens */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCell, { width: '55%' }]}>
+              <Text
+                style={[
+                  styles.tableHeaderCell,
+                  { width: isProduction ? '85%' : '55%' },
+                ]}
+              >
                 ITEM
               </Text>
               <Text
                 style={[
                   styles.tableHeaderCell,
-                  { width: '10%', textAlign: 'left' },
+                  {
+                    width: isProduction ? '15%' : '10%',
+                    textAlign: isProduction ? 'center' : 'left',
+                  },
                 ]}
               >
                 QTD.
               </Text>
 
-              {printOptions.showUnitValue && (
+              {!isProduction && printOptions.showUnitValue && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -355,7 +385,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               )}
 
-              {printOptions.showDiscounts && (
+              {!isProduction && printOptions.showDiscounts && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -366,7 +396,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               )}
 
-              {printOptions.showFinalValue && (
+              {!isProduction && printOptions.showFinalValue && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -381,7 +411,13 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             {totals.correctedItems.map((item, index) => (
               <View key={item.id || index} style={styles.tableRow} wrap={false}>
                 {/* Coluna Item - Imagem e Descrição */}
-                <View style={{ width: '55%', flexDirection: 'row', gap: 8 }}>
+                <View
+                  style={{
+                    width: isProduction ? '85%' : '55%',
+                    flexDirection: 'row',
+                    gap: 8,
+                  }}
+                >
                   <View style={styles.itemImage}>
                     <PDFImage
                       src={item.image || '/img/product-placeholder.png'}
@@ -404,37 +440,41 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </Text>
                       {item.description}
                     </Text>
-                    {printOptions.showDimensions &&
+                    {(isProduction || printOptions.showDimensions) &&
                       item.composition.map((comp) => (
                         <Text key={comp.id} style={styles.itemDescription}>
-                          {comp?.name} - {comp?.quantity} {comp?.unitOfMeasure}
+                          {isProduction
+                            ? 'Descrição da composição - Medidas'
+                            : `${comp?.name} - ${comp?.quantity} ${comp?.unitOfMeasure}`}
                         </Text>
                       ))}
                   </View>
                 </View>
 
                 {/* Coluna Quantidade */}
-                <View style={{ width: '10%' }}>
-                  <Text style={{ textAlign: 'left' }}>
+                <View style={{ width: isProduction ? '15%' : '10%' }}>
+                  <Text style={{ textAlign: isProduction ? 'center' : 'left' }}>
                     {item.totalQuantity}
                   </Text>
-                  {printOptions.showDimensions &&
+                  {(isProduction || printOptions.showDimensions) &&
                     item.composition.map((comp) => (
                       <Text
                         key={comp.id}
                         style={{
-                          textAlign: 'left',
+                          textAlign: isProduction ? 'center' : 'left',
                           color: '#4B5563',
                           fontSize: 7,
                         }}
                       >
-                        {comp?.quantity} {comp?.unitOfMeasure}
+                        {isProduction
+                          ? '1 m²'
+                          : `${comp?.quantity} ${comp?.unitOfMeasure}`}
                       </Text>
                     ))}
                 </View>
 
-                {/* Coluna Valor Unitário */}
-                {printOptions.showUnitValue && (
+                {/* Colunas financeiras - apenas para não-produção */}
+                {!isProduction && printOptions.showUnitValue && (
                   <View style={{ width: '15%', lineHeight: 0.6 }}>
                     <Text style={{ textAlign: 'right' }}>
                       {formatCurrencyToBrl(item.totalUnitPrice)}
@@ -455,8 +495,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </View>
                 )}
 
-                {/* Coluna Desconto */}
-                {printOptions.showDiscounts && (
+                {!isProduction && printOptions.showDiscounts && (
                   <View style={{ width: '15%' }}>
                     <Text style={{ textAlign: 'right', lineHeight: 0.6 }}>
                       {item.discount.type === 'PERCENT'
@@ -475,8 +514,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </View>
                 )}
 
-                {/* Coluna Valor Final */}
-                {printOptions.showFinalValue && (
+                {!isProduction && printOptions.showFinalValue && (
                   <View style={{ width: '15%' }}>
                     <Text style={{ textAlign: 'right' }}>
                       {formatCurrencyToBrl(item.finalPrice)}
@@ -487,9 +525,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             ))}
           </View>
 
-          {/* Totais */}
-
-          {printOptions.showTotalValue && (
+          {/* Totais - apenas para não-produção */}
+          {!isProduction && printOptions.showTotalValue && (
             <View style={styles.totalsSection}>
               <View style={styles.totalRow}>
                 <Text>Subtotal itens</Text>
@@ -517,13 +554,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           )}
 
           {/* Entrega e Pagamento */}
-          <View style={styles.deliveryPaymentSection}>
-            <View style={{ width: '50%' }}>
+          <View
+            style={
+              isProduction ? { marginTop: 24 } : styles.deliveryPaymentSection
+            }
+          >
+            <View style={{ width: isProduction ? '100%' : '50%' }}>
               <TruckDeliveryIcon />
               <Text style={styles.sectionTitle}>Entrega</Text>
               <Text>{data.delivery?.supplier?.name}</Text>
               <Text>Até {data.delivery?.daysAfterApproval} dias úteis</Text>
               <Text>
+                {isProduction ? 'R. ' : ''}
                 {data.delivery?.clientAddress?.street},{' '}
                 {data.delivery?.clientAddress?.number},{' '}
                 {data.delivery?.clientAddress?.neighborhood},{' '}
@@ -533,41 +575,49 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               </Text>
             </View>
 
-            <View style={{ width: '50%' }}>
-              <MoneySignIcon />
-              <Text style={styles.sectionTitle}>Pagamento</Text>
-              <Text>{data.payment?.method}</Text>
-              <Text>Até {data.payment?.totalInstallments}x no pedido</Text>
-            </View>
+            {!isProduction && (
+              <View style={{ width: '50%' }}>
+                <MoneySignIcon />
+                <Text style={styles.sectionTitle}>Pagamento</Text>
+                <Text>{data.payment?.method}</Text>
+                <Text>Até {data.payment?.totalInstallments}x no pedido</Text>
+              </View>
+            )}
           </View>
 
-          <View style={{ marginTop: 5, marginBottom: 5 }}>
-            <View style={styles.totalDivider} />
-          </View>
-          {/* Texto após itens */}
-          <Text>{data.company?.textAfterItems}</Text>
+          {!isProduction && (
+            <>
+              <View style={{ marginTop: 5, marginBottom: 5 }}>
+                <View style={styles.totalDivider} />
+              </View>
+              {/* Texto após itens */}
+              <Text>{data.company?.textAfterItems}</Text>
 
-          <View style={styles.infoDate}>
-            <View>
-              <Text>Atenciosamente</Text>
-              <Text style={{ fontWeight: 'bold' }}>{data.client?.name}</Text>
-            </View>
-            <View>
-              <Text>De acordo, ____/____/______</Text>
-            </View>
-          </View>
+              <View style={styles.infoDate}>
+                <View>
+                  <Text>Atenciosamente</Text>
+                  <Text style={{ fontWeight: 'bold' }}>
+                    {data.client?.name}
+                  </Text>
+                </View>
+                <View>
+                  <Text>De acordo, ____/____/______</Text>
+                </View>
+              </View>
 
-          {/* Assinaturas */}
-          <View style={styles.signatures}>
-            <View style={styles.signatureLine}>
-              <Text>{data.client?.name}</Text>
-            </View>
-            <View style={{ width: '33%' }} />
-            <View style={styles.signatureLine}>
-              <Text>{data.company?.name}</Text>
-              <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-            </View>
-          </View>
+              {/* Assinaturas */}
+              <View style={styles.signatures}>
+                <View style={styles.signatureLine}>
+                  <Text>{data.client?.name}</Text>
+                </View>
+                <View style={{ width: '33%' }} />
+                <View style={styles.signatureLine}>
+                  <Text>{data.company?.name}</Text>
+                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
 
         {/* Número da Página */}

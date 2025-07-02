@@ -14,6 +14,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { DeliveryScheduleDateDialog } from '../Actions/ScheduleDate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { EditInstallments } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/EditInstallments'
 
 // UI
@@ -39,7 +40,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld, updateItem } from '@/actions/_cruds'
+import { getDataOld, getItem, updateItem } from '@/actions/_cruds'
 
 // Libs
 import { cn, truncateString } from '@/lib/utils'
@@ -69,6 +70,8 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 // Consts
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
+import { pdf } from '@react-pdf/renderer'
+import { toast } from 'sonner'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -77,6 +80,7 @@ interface Props extends SearchParamsType {
 export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
+  const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
 
   const { getDeliveryScheduleType } = usePlanFeatures()
   const deliveryScheduleType = getDeliveryScheduleType()
@@ -133,6 +137,49 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
       title: 'Nota Fiscal',
       description: 'Recurso indisponível no momento.',
     })
+  }
+
+  const handleGeneratePDF = async (data: DeliveryScheduleType) => {
+    const formData = {
+      showDimensions: true,
+      showUnitValue: true,
+      showDiscounts: true,
+      showFinalValue: true,
+      showTotalValue: true,
+      showPaymentDelivery: true,
+      showItemsDetails: true,
+    }
+
+    setIsLoadingPDF((prev) => [...prev, data.id])
+    try {
+      // Buscar dados do PDF da API
+      const result = await getItem({
+        route: `sale/quotation/${data.order?.quotation?.id}/pdf-data`,
+      })
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
+      const pdfData = result.data
+
+      const blob = await pdf(
+        <GeneratePdf
+          data={pdfData}
+          type="production"
+          printOptions={formData}
+        />,
+      ).toBlob()
+
+      const url = URL.createObjectURL(blob)
+
+      window.open(url, '_blank')
+    } catch (error) {
+      toast.error('Erro ao gerar PDF')
+      console.error('Erro ao gerar PDF:', error)
+    } finally {
+      setIsLoadingPDF((prev) => prev.filter((id) => id !== data?.id))
+    }
   }
 
   return (
@@ -349,6 +396,12 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                     <ActionButton
                                       Icon={IconPrinter}
                                       tooltip="Imprimir"
+                                      onClick={() =>
+                                        handleGeneratePDF(deliverySchedule)
+                                      }
+                                      isLoading={isLoadingPDF.includes(
+                                        deliverySchedule?.id,
+                                      )}
                                     />
                                     <ActionButton
                                       link={link}
