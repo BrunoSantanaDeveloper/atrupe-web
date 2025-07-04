@@ -51,6 +51,9 @@ import { cn } from '@/lib/utils'
 import type { RoleType } from '@/types/settings/role'
 import type { SearchParamsType } from '@/types/coreTypes'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Actions
 import { updateItem, getItemOld } from '@/actions/_cruds'
 
@@ -100,6 +103,100 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
 
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const {
+    hasFinancialModule,
+    getClientsType,
+    getSuppliersType,
+    getProductsType,
+    getDeliveryScheduleType,
+    canManageSectors,
+    getUserLimit,
+    getRejectionReasonsType,
+    getBudgetStatusType,
+    getSalesOrdersType,
+  } = usePlanFeatures()
+
+  const shouldShowPermission = (section: string, item: string) => {
+    // Verifica permissões do módulo financeiro
+    if (section === 'financial') {
+      if (item === 'payable') return hasFinancialModule('payable')
+      if (item === 'receivable') return hasFinancialModule('receivable')
+      if (item === 'cash_control') return hasFinancialModule('cash')
+      if (item === 'checkout') return hasFinancialModule('pdv')
+      if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
+    }
+
+    // Verifica permissões de cadastros
+    if (section === 'register') {
+      if (item === 'client') {
+        const type = getClientsType()
+        return type === 'full' || type === 'limited'
+      }
+      if (item === 'supplier') {
+        const type = getSuppliersType()
+        return type === 'full' || type === 'limited'
+      }
+      if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
+    }
+
+    // Verifica permissões de configurações financeiras
+    if (section === 'financial_settings') {
+      if (item === 'credit_limits') return false // Temporariamente desabilitado até implementação do plano full
+    }
+
+    // Verifica permissões de produtos
+    if (section === 'product_settings') {
+      return getProductsType() === 'full'
+    }
+
+    // Verifica permissões de produção
+    if (section === 'production') {
+      if (item === 'delivery_schedule') {
+        // Agenda de entrega só disponível no plano full
+        return getDeliveryScheduleType() === 'full'
+      }
+    }
+
+    // Verifica permissões de empresa e sistema
+    if (section === 'company_settings') {
+      if (item === 'measurement_standards') return canManageSectors()
+      if (item === 'users') return getUserLimit() > 0
+    }
+
+    // Verifica permissões de vendas
+    if (section === 'sales_settings') {
+      if (item === 'rejection_reasons') {
+        // Motivos de rejeição só disponível no plano full
+        return getRejectionReasonsType() === 'full'
+      }
+      if (item === 'quotation_status') {
+        // Status de orçamento só disponível no plano full
+        return getBudgetStatusType() === 'full'
+      }
+      if (item === 'series') {
+        const type = getSalesOrdersType()
+        return type === 'full' || type === 'limited'
+      }
+    }
+
+    // Verifica permissões de venda
+    if (section === 'sale') {
+      if (item === 'quick') {
+        // Venda rápida só disponível no plano full
+        return getSalesOrdersType() === 'full'
+      }
+      if (item === 'quotation') {
+        const type = getBudgetStatusType()
+        return type === 'full' || type === 'limited'
+      }
+      if (item === 'order') {
+        const type = getSalesOrdersType()
+        return type === 'full' || type === 'limited'
+      }
+    }
+
+    return true
+  }
 
   const { data: roleData, isLoading: isLoadingPermissions } = useQuery({
     queryKey: ['role-permissions', rowData?.id],
@@ -272,131 +369,144 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                     <TableBody
                       className={cn(isLoadingPermissions && 'opacity-50')}
                     >
-                      {permissionsData.map((section) => (
-                        <Fragment key={section.key}>
-                          {section.key !== 'values' && (
-                            <TableRow className="bg-gray-100">
-                              <TableCell className="text-gray-700 font-medium text-xs">
-                                {section.section}
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <CheckboxBasic
-                                  name={`check-view-${section.key}`}
-                                  className="flex-none mx-auto"
-                                  onCheckedChange={(checked) =>
-                                    handleCheckAllColumnInSection(
-                                      section.key,
-                                      section.items,
-                                      'view',
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <CheckboxBasic
-                                  name={`check-edit-${section.key}`}
-                                  className="flex-none mx-auto"
-                                  onCheckedChange={(checked) =>
-                                    handleCheckAllColumnInSection(
-                                      section.key,
-                                      section.items,
-                                      'edit',
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <CheckboxBasic
-                                  name={`check-create-${section.key}`}
-                                  className="flex-none mx-auto"
-                                  onCheckedChange={(checked) =>
-                                    handleCheckAllColumnInSection(
-                                      section.key,
-                                      section.items,
-                                      'create',
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                              </TableCell>
-                              <TableCell className="text-center">
-                                <CheckboxBasic
-                                  name={`check-delete-${section.key}`}
-                                  className="flex-none mx-auto"
-                                  onCheckedChange={(checked) =>
-                                    handleCheckAllColumnInSection(
-                                      section.key,
-                                      section.items,
-                                      'delete',
-                                      checked as boolean,
-                                    )
-                                  }
-                                />
-                              </TableCell>
-                            </TableRow>
-                          )}
-                          {section.items.map((item) => {
-                            const baseKey = `${section.key}:${item.key}`
-                            const hasOtherPermissions =
-                              form.watch(`${baseKey}.edit`) ||
-                              form.watch(`${baseKey}.create`) ||
-                              form.watch(`${baseKey}.delete`)
+                      {permissionsData.map((section) => {
+                        // Filtra os itens da seção baseado nas features do plano
+                        const filteredItems = section.items.filter((item) =>
+                          shouldShowPermission(section.key, item.key),
+                        )
 
-                            return (
-                              <TableRow key={baseKey}>
-                                <TableCell className="font-medium">
-                                  {item.name}
+                        // Se não houver itens na seção após o filtro, não exibe a seção
+                        if (filteredItems.length === 0) return null
+
+                        return (
+                          <Fragment key={section.key}>
+                            {section.key !== 'values' && (
+                              <TableRow className="bg-gray-100">
+                                <TableCell className="text-gray-700 font-medium text-xs">
+                                  {section.section}
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <FormCheckbox<FormType>
-                                    name={`${baseKey}.view`}
-                                    label=""
-                                    disabled={hasOtherPermissions}
+                                  <CheckboxBasic
+                                    name={`check-view-${section.key}`}
+                                    className="flex-none mx-auto"
+                                    onCheckedChange={(checked) =>
+                                      handleCheckAllColumnInSection(
+                                        section.key,
+                                        filteredItems,
+                                        'view',
+                                        checked as boolean,
+                                      )
+                                    }
                                   />
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <FormCheckbox<FormType>
-                                    name={`${baseKey}.edit`}
-                                    label=""
-                                    onChange={(checked) => {
-                                      if (checked) {
-                                        form.setValue(`${baseKey}.view`, true)
-                                      }
-                                    }}
+                                  <CheckboxBasic
+                                    name={`check-edit-${section.key}`}
+                                    className="flex-none mx-auto"
+                                    onCheckedChange={(checked) =>
+                                      handleCheckAllColumnInSection(
+                                        section.key,
+                                        filteredItems,
+                                        'edit',
+                                        checked as boolean,
+                                      )
+                                    }
                                   />
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <FormCheckbox<FormType>
-                                    name={`${baseKey}.create`}
-                                    label=""
-                                    onChange={(checked) => {
-                                      if (checked) {
-                                        form.setValue(`${baseKey}.view`, true)
-                                        form.setValue(`${baseKey}.edit`, true)
-                                      }
-                                    }}
+                                  <CheckboxBasic
+                                    name={`check-create-${section.key}`}
+                                    className="flex-none mx-auto"
+                                    onCheckedChange={(checked) =>
+                                      handleCheckAllColumnInSection(
+                                        section.key,
+                                        filteredItems,
+                                        'create',
+                                        checked as boolean,
+                                      )
+                                    }
                                   />
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <FormCheckbox<FormType>
-                                    name={`${baseKey}.delete`}
-                                    label=""
-                                    onChange={(checked) => {
-                                      if (checked) {
-                                        form.setValue(`${baseKey}.view`, true)
-                                        form.setValue(`${baseKey}.edit`, true)
-                                        form.setValue(`${baseKey}.create`, true)
-                                      }
-                                    }}
+                                  <CheckboxBasic
+                                    name={`check-delete-${section.key}`}
+                                    className="flex-none mx-auto"
+                                    onCheckedChange={(checked) =>
+                                      handleCheckAllColumnInSection(
+                                        section.key,
+                                        filteredItems,
+                                        'delete',
+                                        checked as boolean,
+                                      )
+                                    }
                                   />
                                 </TableCell>
                               </TableRow>
-                            )
-                          })}
-                        </Fragment>
-                      ))}
+                            )}
+                            {filteredItems.map((item) => {
+                              const baseKey = `${section.key}:${item.key}`
+                              const hasOtherPermissions =
+                                form.watch(`${baseKey}.edit`) ||
+                                form.watch(`${baseKey}.create`) ||
+                                form.watch(`${baseKey}.delete`)
+
+                              return (
+                                <TableRow key={baseKey}>
+                                  <TableCell className="font-medium">
+                                    {item.name}
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <FormCheckbox<FormType>
+                                      name={`${baseKey}.view`}
+                                      label=""
+                                      disabled={hasOtherPermissions}
+                                    />
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <FormCheckbox<FormType>
+                                      name={`${baseKey}.edit`}
+                                      label=""
+                                      onChange={(checked) => {
+                                        if (checked) {
+                                          form.setValue(`${baseKey}.view`, true)
+                                        }
+                                      }}
+                                    />
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <FormCheckbox<FormType>
+                                      name={`${baseKey}.create`}
+                                      label=""
+                                      onChange={(checked) => {
+                                        if (checked) {
+                                          form.setValue(`${baseKey}.view`, true)
+                                          form.setValue(`${baseKey}.edit`, true)
+                                        }
+                                      }}
+                                    />
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    <FormCheckbox<FormType>
+                                      name={`${baseKey}.delete`}
+                                      label=""
+                                      onChange={(checked) => {
+                                        if (checked) {
+                                          form.setValue(`${baseKey}.view`, true)
+                                          form.setValue(`${baseKey}.edit`, true)
+                                          form.setValue(
+                                            `${baseKey}.create`,
+                                            true,
+                                          )
+                                        }
+                                      }}
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })}
+                          </Fragment>
+                        )
+                      })}
                     </TableBody>
                   </Table>
                 </div>
