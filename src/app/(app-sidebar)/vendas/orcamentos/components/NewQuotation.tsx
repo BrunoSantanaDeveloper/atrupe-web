@@ -41,6 +41,7 @@ import { useQueryClient } from '@tanstack/react-query'
 
 import { useSession } from 'next-auth/react'
 import { useSeller } from '@/hooks/queries/useSeller'
+import { useSerie } from '@/hooks/queries/useSerie'
 import { QuotationType } from '@/types/sales/quotation'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { QuotationFormType, quotationSchema } from './schema'
@@ -104,6 +105,7 @@ export function NewQuotationModal({
 }: Props) {
   const { data: session } = useSession()
   const { data: sellers } = useSeller()
+  const { data: series } = useSerie(true)
   const { canManageMultipleCompanies } = usePlanFeatures()
 
   const queryClient = useQueryClient()
@@ -147,17 +149,25 @@ export function NewQuotationModal({
     }
   }, [sellers, session, form, editMode])
 
+  // Definir série de treinamento como padrão
+  useEffect(() => {
+    if (!editMode && series?.data && open) {
+      const trainingSeries = series.data.find((serie) => serie.isTraining)
+      if (trainingSeries) {
+        form.setValue('seriesId', trainingSeries.id)
+      }
+    }
+  }, [series, form, editMode, open])
+
   const { handleSubmit } = form
 
   const handleToggleModal = () => {
-    // setOpen((prev) => !prev)
     onOpenChange(false)
   }
 
   const handleCloseModal = () => {
     form.reset()
     form.clearErrors()
-    // handleToggleModal()
     onOpenChange(false)
   }
 

@@ -8,6 +8,7 @@ interface ISeries {
     description: string
     code: string
     isActive: boolean
+    isTraining: boolean
   }[]
 }
 
