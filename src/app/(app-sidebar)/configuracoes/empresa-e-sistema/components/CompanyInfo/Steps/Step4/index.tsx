@@ -17,19 +17,19 @@ export function Step4() {
       <FormInput<CompanyFormType>
         name="socialNetworks.instagram"
         label="Instagram"
-        placeholder="https://instagram.com/seu_perfil"
+        placeholder="seu_perfil"
         startAdornment={<IconBrandInstagram className="size-5" />}
       />
       <FormInput<CompanyFormType>
         name="socialNetworks.facebook"
         label="Facebook"
-        placeholder="https://facebook.com/sua_pagina"
+        placeholder="sua_pagina"
         startAdornment={<IconBrandFacebook className="size-5" />}
       />
       <FormInput<CompanyFormType>
         name="socialNetworks.linkedin"
         label="LinkedIn"
-        placeholder="https://linkedin.com/in/seu_perfil"
+        placeholder="seu_perfil"
         startAdornment={<IconBrandLinkedin className="size-5" />}
       />
     </div>

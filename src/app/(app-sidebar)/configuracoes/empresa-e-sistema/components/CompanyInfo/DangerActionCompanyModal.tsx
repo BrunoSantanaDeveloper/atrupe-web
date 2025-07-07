@@ -39,8 +39,9 @@ export function DangerActionCompanyModal(props: Props) {
           isActive: type !== 'inactive',
         },
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['companies-data'] })
+      await queryClient.invalidateQueries({ queryKey: ['company-list'] })
       onSuccess?.()
     },
   })

@@ -104,9 +104,12 @@ export function NewCompany({
       : await createItemNew({ route: '/company', data })
 
     if (result.success) {
+      // Primeiro invalidar as queries específicas para garantir que os dados sejam atualizados
+      await queryClient.invalidateQueries({ queryKey: ['companies-data'] })
+      await queryClient.invalidateQueries({ queryKey: ['company-list'] })
+
+      // Depois fechar o modal e resetar o formulário
       handleToggleModal()
-      form.reset(defaultValues)
-      await queryClient.invalidateQueries()
 
       try {
         if (editMode && companyData?.principal) {
