@@ -22,7 +22,15 @@ import {
 } from '@/lib/utils'
 
 // Icons
-import { TruckDeliveryIcon, MoneySignIcon } from '@/assets/icons/PdfIcons'
+import {
+  TruckDeliveryIcon,
+  MoneySignIcon,
+  WebsiteIcon,
+  EmailIcon,
+  InstagramIcon,
+  FacebookIcon,
+  LinkedinIcon,
+} from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
   page: {
@@ -55,11 +63,10 @@ const styles = StyleSheet.create({
     objectFit: 'contain',
   },
   companyInfo: {
-    width: '100%',
     fontSize: 8,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     justifyContent: 'center',
     gap: 4,
   },
@@ -69,10 +76,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   socialInfo: {
-    flexDirection: 'row',
-    gap: 4,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    width: '25%',
+    paddingRight: 0,
   },
   infoContainer: {
     padding: 30,
@@ -264,7 +272,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
       <Page size="A4" style={styles.page}>
         {/* Cabeçalho */}
         <View style={styles.header} fixed>
-          <View style={{ width: '100%' }}>
+          <View style={{ width: '35%' }}>
             <PDFImage
               src={
                 data.company?.logo ||
@@ -273,7 +281,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               style={styles.logo}
             />
           </View>
-          <View style={styles.companyInfo}>
+          <View style={[styles.companyInfo, { width: '50%' }]}>
             <Text style={styles.companyName}>{data.company?.name}</Text>
             <Text>
               {isProduction
@@ -294,6 +302,83 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text>
                 {data.company?.address?.city}, {data.company?.address?.state}.
               </Text>
+            )}
+          </View>
+          <View style={styles.socialInfo}>
+            {data.company?.socialNetworks?.instagram && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.instagram}
+                </Text>
+                <InstagramIcon />
+              </View>
+            )}
+            {data.company?.socialNetworks?.facebook && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.facebook}
+                </Text>
+                <FacebookIcon />
+              </View>
+            )}
+            {data.company?.socialNetworks?.linkedin && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.linkedin}
+                </Text>
+                <LinkedinIcon />
+              </View>
+            )}
+            {data.company?.siteUrl && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.siteUrl}
+                </Text>
+                <WebsiteIcon />
+              </View>
+            )}
+            {data.company?.email && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.email}
+                </Text>
+                <EmailIcon />
+              </View>
             )}
           </View>
         </View>

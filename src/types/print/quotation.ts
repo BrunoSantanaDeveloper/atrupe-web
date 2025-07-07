@@ -28,6 +28,13 @@ type CompanyType = {
   logo: string
   textBeforeItems: string
   textAfterItems: string
+  siteUrl?: string
+  email?: string
+  socialNetworks: {
+    instagram: string
+    facebook: string
+    linkedin: string
+  }
 }
 
 // Tipo para cliente
