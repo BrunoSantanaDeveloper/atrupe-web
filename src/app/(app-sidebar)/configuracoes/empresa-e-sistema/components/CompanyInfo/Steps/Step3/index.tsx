@@ -28,6 +28,8 @@ export function Step3() {
     company: {
       name: watch('general.name'),
       cnpj: maskCnpj(watch('general.cnpj')),
+      email: watch('general.email'),
+      siteUrl: watch('general.siteUrl'),
       address: {
         street: watch('address.street'),
         number: watch('address.number'),
@@ -36,6 +38,11 @@ export function Step3() {
         city: watch('address.city'),
         state: watch('address.state'),
         zipCode: watch('address.zipcode'),
+      },
+      socialNetworks: {
+        facebook: watch('socialNetworks.facebook'),
+        instagram: watch('socialNetworks.instagram'),
+        linkedin: watch('socialNetworks.linkedin'),
       },
       logo: logoUrl,
       textBeforeItems: watch('personalization.textsBeforeItems'),
