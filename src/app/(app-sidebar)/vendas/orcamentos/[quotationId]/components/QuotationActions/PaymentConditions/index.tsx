@@ -329,8 +329,8 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
               type="submit"
               form="quotation-payment-conditions"
               RightIcon={IconCircleCheck}
-              isLoading={mutation.isPending}
               disabled={isFetching > 0 || mutation.isPending}
+              isLoading={form.formState.isSubmitting}
             >
               Salvar
             </Button>

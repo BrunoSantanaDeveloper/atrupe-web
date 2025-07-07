@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 import { Step1 } from './Steps/Step1'
 import { Step2 } from './Steps/Step2'
 import { Step3 } from './Steps/Step3'
+import { Step4 } from './Steps/Step4'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { DangerActionCompanyModal } from './DangerActionCompanyModal'
 
@@ -87,6 +88,7 @@ export function NewCompany({
   const hasGeneralErrors = Boolean(errors?.general)
   const hasAddressErrors = Boolean(errors?.address)
   const hasCustomizeErrors = Boolean(errors?.personalization)
+  const hasSocialNetworksErrors = Boolean(errors?.socialNetworks)
 
   const handleToggleModal = () => {
     form.reset()
@@ -162,6 +164,11 @@ export function NewCompany({
         textsBeforeItems: company?.personalization?.textsBeforeItems ?? '',
         textsAfterItems: company?.personalization?.textsAfterItems ?? '',
       },
+      socialNetworks: {
+        instagram: company?.socialNetworks?.instagram ?? '',
+        facebook: company?.socialNetworks?.facebook ?? '',
+        linkedin: company?.socialNetworks?.linkedin ?? '',
+      },
     }
     form.reset(formData)
 
@@ -191,7 +198,7 @@ export function NewCompany({
           </DialogHeader>
           <DialogBody className="max-h-[calc(100vh-200px)]">
             <Tabs defaultValue="general">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsList className="grid w-full grid-cols-4 mb-6">
                 <TabsTrigger value="general">
                   <span className={cn(hasGeneralErrors && errorTabStyle)}>
                     Dados da empresa
@@ -200,6 +207,13 @@ export function NewCompany({
                 <TabsTrigger value="address">
                   <span className={cn(hasAddressErrors && errorTabStyle)}>
                     Endereço
+                  </span>
+                </TabsTrigger>
+                <TabsTrigger value="social">
+                  <span
+                    className={cn(hasSocialNetworksErrors && errorTabStyle)}
+                  >
+                    Redes sociais
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="customize">
@@ -222,6 +236,9 @@ export function NewCompany({
                   </TabsContent>
                   <TabsContent value="customize">
                     <Step3 />
+                  </TabsContent>
+                  <TabsContent value="social">
+                    <Step4 />
                   </TabsContent>
                 </form>
               </Form>

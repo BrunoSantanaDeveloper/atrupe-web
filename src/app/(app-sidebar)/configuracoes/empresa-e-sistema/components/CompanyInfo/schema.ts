@@ -28,6 +28,11 @@ export const companySchema = z.object({
     textsBeforeItems: z.string().optional(),
     textsAfterItems: z.string().optional(),
   }),
+  socialNetworks: z.object({
+    instagram: z.string().optional(),
+    facebook: z.string().optional(),
+    linkedin: z.string().optional(),
+  }),
 })
 export type CompanyFormType = z.infer<typeof companySchema>
 
@@ -58,6 +63,11 @@ export const defaultValues: CompanyFormType = {
     textsBeforeItems: '',
     textsAfterItems: '',
   },
+  socialNetworks: {
+    instagram: '',
+    facebook: '',
+    linkedin: '',
+  },
 }
 
 // Definição de tipos para o endereço
@@ -77,6 +87,13 @@ interface Personalization {
   favIconUrl: string | null
   textsBeforeItems: string | null
   textsAfterItems: string | null
+}
+
+// Definição de tipos para redes sociais
+interface SocialNetworks {
+  instagram: string | null
+  facebook: string | null
+  linkedin: string | null
 }
 
 // Definição de tipos para as informações gerais
@@ -99,6 +116,7 @@ export interface ICompanyData {
   general: General
   address: Address | null
   personalization: Personalization
+  socialNetworks: SocialNetworks | null
 }
 
 // Definição de tipos para o objeto principal
