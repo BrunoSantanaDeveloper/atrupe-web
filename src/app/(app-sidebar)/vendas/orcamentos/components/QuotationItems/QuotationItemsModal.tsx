@@ -153,7 +153,7 @@ const QuotationItemsModal: React.FC<{
                   <TableRow key={item.id}>
                     <Button
                       variant="raw"
-                      className="w-full h-full "
+                      className="w-full h-full px-0"
                       form="form-id"
                       onClick={() => {
                         updateQuotationData({
@@ -163,10 +163,10 @@ const QuotationItemsModal: React.FC<{
                         // form.handleSubmit(onSubmit)()
                       }}
                     >
-                      <TableCell className="w-[10%] font-normal text-gray-600 max-w-[10%] overflow-hidden">
-                        {item.code?.toUpperCase()}
+                      <TableCell className="w-[10%] font-normal text-gray-600">
+                        {item.code}
                       </TableCell>
-                      <TableCell className="w-full text-left  text-gray-900">
+                      <TableCell className="w-full text-left text-gray-900">
                         {item.name}
                       </TableCell>
                       <TableCell className="w-[10%] text-right">

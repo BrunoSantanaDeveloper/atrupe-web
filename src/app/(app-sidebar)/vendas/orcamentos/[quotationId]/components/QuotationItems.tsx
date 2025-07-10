@@ -181,7 +181,7 @@ export function QuotationItems({ data }: Props) {
                         <TableCell className="text-sm text-gray">
                           {formatCurrencyToBrl(item?.unitValue)}
                         </TableCell>
-                        <TableCell className="text-warning-600">
+                        <TableCell className="text-warning-600 text-nowrap">
                           -
                           {formatCurrencyToBrl(
                             Math.max(0, item?.totalValue - item?.finalValue),
