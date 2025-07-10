@@ -47,14 +47,14 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
     setValue('installments', updatedInstallments)
   }
 
-  // Função para recalcular a comissão quando o valor base ou desconto mudar
-  const recalculateCommission = (newBaseValue: number) => {
+  // Função para recalcular a comissão quando o valor base mudar (sempre sobre valor original)
+  const recalculateCommission = (originalBaseValue: number) => {
     // Se não houver comissão ou não for do tipo percentual, não faz nada
     if (!commission || commission.commissionType !== 'PERCENT') return
 
-    // Calcular o novo valor da comissão com base na porcentagem e no novo valor base
+    // Calcular o novo valor da comissão com base na porcentagem e no valor base original
     const commissionPercentage = commission.commissionValue / 100
-    const newCommissionTotal = newBaseValue * commissionPercentage
+    const newCommissionTotal = originalBaseValue * commissionPercentage
 
     // Atualizar o valor total da comissão
     setValue('commission.totalCommission', newCommissionTotal)
@@ -89,9 +89,7 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
       commission?.type === 'ADD' &&
       commission?.commissionType === 'PERCENT'
     ) {
-      // Valor base para comissão = valor base - desconto
-      const commissionBaseValue = newTotalValue
-      newCommissionValue = recalculateCommission(commissionBaseValue) || 0
+      newCommissionValue = recalculateCommission(baseValue) || 0
     } else if (
       commission?.type === 'ADD' &&
       commission?.commissionType === 'VALUE'
@@ -146,9 +144,7 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
       commission?.type === 'ADD' &&
       commission?.commissionType === 'PERCENT'
     ) {
-      // Valor base para comissão = valor total sem comissão
-      const commissionBaseValue = totalWithoutCommission
-      recalculateCommission(commissionBaseValue)
+      recalculateCommission(baseValue)
     } else if (
       commission?.type === 'ADD' &&
       commission?.commissionType === 'VALUE'

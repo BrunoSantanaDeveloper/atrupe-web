@@ -92,17 +92,14 @@ export function CommissionDialog({
   const paymentConditionsBaseValue =
     paymentConditionsForm.getValues('paymentConditionsBaseValue') || 0
 
-  // Valor base da comissão = (Valor base das condições de pagamento) - (desconto das condições de pagamento)
-  const commissionBaseValue =
-    paymentConditionsBaseValue -
-    (paymentConditionsForm?.getValues()?.discount?.discountTotal || 0)
-
   useEffect(() => {
     if (!open) return
 
     const currentCommission = paymentConditionsForm?.getValues()?.commission
 
-    reset(defaultCommissionValues(currentCommission, commissionBaseValue))
+    reset(
+      defaultCommissionValues(currentCommission, paymentConditionsBaseValue),
+    )
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
@@ -131,7 +128,7 @@ export function CommissionDialog({
       totalCommission = inputCommission
     } else if (commissionType === 'PERCENT') {
       const commissionPercentage = inputCommission / 100
-      totalCommission = commissionBaseValue * commissionPercentage
+      totalCommission = paymentConditionsBaseValue * commissionPercentage
     }
 
     setValue('totalCommission', totalCommission)
@@ -278,7 +275,7 @@ export function CommissionDialog({
                     } else if (commissionType === 'PERCENT') {
                       const commissionPercentage = commissionValue / 100
                       totalCommission =
-                        commissionBaseValue * commissionPercentage
+                        paymentConditionsBaseValue * commissionPercentage
                     }
 
                     setValue('totalCommission', totalCommission)
@@ -337,7 +334,7 @@ export function CommissionDialog({
                           // Calcular o valor total da comissão
                           const commissionPercentage = 0.01
                           const totalCommission =
-                            commissionBaseValue * commissionPercentage
+                            paymentConditionsBaseValue * commissionPercentage
                           setValue('totalCommission', totalCommission)
                         }
                       }}
@@ -365,7 +362,7 @@ export function CommissionDialog({
                           // Calcular o valor total da comissão
                           const commissionPercentage = 0.01
                           const totalCommission =
-                            commissionBaseValue * commissionPercentage
+                            paymentConditionsBaseValue * commissionPercentage
                           setValue('totalCommission', totalCommission)
                         }
                       }}

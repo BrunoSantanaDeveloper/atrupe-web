@@ -95,19 +95,14 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
   const installments = watch('installments')
   const hasDownPayment = watch('hasDownPayment')
   const baseValue = watch('paymentConditionsBaseValue') || 0
-  const discount = watch('discount')
 
-  // Recalcular a comissão percentual quando o valor base ou desconto mudar
+  // Recalcular a comissão percentual quando o valor base mudar (sem considerar desconto)
   useEffect(() => {
     if (!commission || commission.commissionType !== 'PERCENT') return
 
-    // Calcular o valor base para a comissão (valor base - desconto)
-    const discountTotal = discount?.discountTotal || 0
-    const commissionBaseValue = baseValue - discountTotal
-
     // Calcular o novo valor da comissão
     const commissionPercentage = commission.commissionValue / 100
-    const newCommissionTotal = commissionBaseValue * commissionPercentage
+    const newCommissionTotal = baseValue * commissionPercentage
 
     // Atualizar o valor total da comissão
     setValue('commission.totalCommission', newCommissionTotal)
@@ -138,7 +133,7 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [discount, baseValue])
+  }, [baseValue])
 
   // Valor da comissão a ser somado no valor total
   // Para comissão do tipo ADD, somamos ao valor total
