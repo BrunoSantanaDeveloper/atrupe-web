@@ -9,6 +9,8 @@ import { getItemOld } from '@/actions/_cruds'
 import { QuotationPaymentConditionsType } from './schema'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { QuotationType } from '@/types/sales/quotation'
+import { usePaymentConditions } from '@/hooks/queries/usePaymentConditions'
+import { useEffect } from 'react'
 
 const dueDate = new Date()
 
@@ -24,6 +26,12 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   const downPaymentValue = watch('downPayment.amount') || 0
   const totalValue = watch('totalValue') || 0
 
+  // Obter condições de pagamento disponíveis para a forma de pagamento selecionada
+  const { data: paymentConditions } = usePaymentConditions({
+    paymentMethodId,
+    listAll: false,
+  })
+
   const handleChangePaymentMethod = () => {
     setValue('paymentConditionId', '')
     setValue('installments', [])
@@ -34,6 +42,18 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
     setValue('mainAdditionalFee', 0)
     setValue('additionalFeeType', 'VALUE')
   }
+
+  // Selecionar automaticamente a primeira condição de pagamento quando uma forma de pagamento for selecionada
+  useEffect(() => {
+    if (paymentMethodId && paymentConditions && paymentConditions.length > 0) {
+      const firstPaymentCondition = paymentConditions[0]
+      if (firstPaymentCondition) {
+        setValue('paymentConditionId', firstPaymentCondition.id)
+        handleChangePaymentCondition(firstPaymentCondition.id)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentMethodId, paymentConditions, setValue])
 
   // Ao alterar a condição de pagamento:
   // - atualiza mínimo e máximo de parcelas, para limitar o preenchimento do campo Parcelas (installmentQty),
