@@ -3,6 +3,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { billingOptions } from '@/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/EditItem'
 
 import { QuotationPaymentConditionsType } from './schema'
+import type { QuotationType } from '@/types/sales/quotation'
 
 const typeOptions = [
   { value: 'NFE', label: 'NF-e' },
@@ -10,7 +11,18 @@ const typeOptions = [
   { value: 'OTHER', label: 'A definir' },
 ]
 
-export function TypeAndBilling() {
+interface Props {
+  quotationData: QuotationType
+}
+
+export function TypeAndBilling({ quotationData }: Props) {
+  // Filtrar billingOptions para mostrar apenas a opção atual
+  const currentBillingValue =
+    quotationData.paymentConditions?.billing || 'ON_ORDER'
+  const filteredBillingOptions = billingOptions.filter(
+    (option) => option.value === currentBillingValue,
+  )
+
   return (
     <>
       <FormSelect<QuotationPaymentConditionsType>
@@ -23,7 +35,7 @@ export function TypeAndBilling() {
       <FormSelect<QuotationPaymentConditionsType>
         name="billing"
         label="Faturamento"
-        options={billingOptions}
+        options={filteredBillingOptions}
         width="flex-[1_0_200px]"
       />
     </>

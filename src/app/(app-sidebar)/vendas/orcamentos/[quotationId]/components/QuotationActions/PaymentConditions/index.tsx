@@ -237,7 +237,7 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
               noValidate
               className="flex flex-wrap gap-4"
             >
-              <TypeAndBilling />
+              <TypeAndBilling quotationData={quotationData} />
 
               <PaymentMethodAndCondition quotationData={quotationData} />
 

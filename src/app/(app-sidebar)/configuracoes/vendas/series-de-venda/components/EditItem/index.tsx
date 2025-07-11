@@ -37,6 +37,7 @@ import type { SaleSeriesType } from '@/types/settings/saleSeries'
 import { updateItem } from '@/actions/_cruds'
 import { DisableSerieAlertDialog } from './DisableSerie'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 export const billingOptions = [
   {
@@ -65,6 +66,8 @@ interface Props {
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+
+  const { planName } = usePlanFeatures()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -107,6 +110,14 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     setOpen?.(openDialog ? 'edit' : '')
     reset({})
   }
+
+  const filteredBillingOptions =
+    planName === 'START' || planName === 'TRIAL'
+      ? billingOptions.filter(
+          (option) =>
+            option.value === 'ON_ORDER' || option.value === 'NO_INVOICE',
+        )
+      : billingOptions
 
   return (
     <PermissionGate permissions={['sales_settings:series:edit']}>
@@ -178,7 +189,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   name="billing"
                   label="Faturamento"
                   width="flex-[1_0_250px]"
-                  options={billingOptions}
+                  options={filteredBillingOptions}
                 />
                 <FormSelect<FormType>
                   name="sendToProduction"
