@@ -47,7 +47,7 @@ export function DeleteAlertDialog(props: Props) {
   })
 
   const handleDelete = async () => {
-    if (mutation.isPending || !rowData) return
+    if (mutation.isPending || !rowData || !!rowData?.employees?.length) return
 
     toast.promise(mutation.mutateAsync(), {
       loading: 'Aguarde...',
@@ -85,7 +85,7 @@ export function DeleteAlertDialog(props: Props) {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {rowData?.employees?.length
-                ? 'Ao excluir este cargo, todos os colaboradores serão desvinculados do cargo. Esta ação não pode ser desfeita.'
+                ? 'Não é possível excluir um cargo que possui colaboradores vinculados a ele.'
                 : 'Esta ação não pode ser desfeita.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -95,6 +95,7 @@ export function DeleteAlertDialog(props: Props) {
               onClick={handleDelete}
               RightIcon={IconCircleCheck}
               className={buttonVariants({ variant: 'error' })}
+              disabled={!!rowData?.employees?.length}
             >
               Excluir
             </AlertDialogAction>
