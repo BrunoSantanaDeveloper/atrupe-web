@@ -101,7 +101,7 @@ export function ResponsibilitiesTab() {
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddResponsible}>
           <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
-          Adicionar endereço
+          Adicionar responsável
         </Button>
       </div>
     </div>
