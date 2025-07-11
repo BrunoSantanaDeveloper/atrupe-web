@@ -87,9 +87,9 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     let newDiscount = 0
 
     if (discountType === 'VALUE') {
-      newDiscount = Math.max(baseValue - totalValue, 0)
+      newDiscount = baseValue - totalValue
     } else if (discountType === 'PERCENT') {
-      newDiscount = Math.max(((baseValue - totalValue) / baseValue) * 100, 0)
+      newDiscount = ((baseValue - totalValue) / baseValue) * 100
     }
 
     setValue('discount', Number(newDiscount.toFixed(4)))
@@ -104,10 +104,10 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     let newTotalValue = 0
 
     if (discountType === 'VALUE') {
-      newTotalValue = Math.max(baseValue - totalDiscount, 0)
+      newTotalValue = baseValue - totalDiscount
     } else if (discountType === 'PERCENT') {
       const discountPercentage = totalDiscount / 100
-      newTotalValue = Math.max(baseValue - baseValue * discountPercentage, 0)
+      newTotalValue = baseValue - baseValue * discountPercentage
     }
 
     setValue('finalValue', newTotalValue)
@@ -187,7 +187,6 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                 width="flex-[1_0_200px]"
                 disabled
               />
-              {/* TODO : Limitar desconto máximo, pra evitar valor total negativo */}
               {discountType === 'VALUE' ? (
                 <FormBrlInput<FormType>
                   name="discount"
@@ -209,7 +208,6 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   startAdornment={<PickValuePercentSelect />}
                 />
               )}
-              {/* TODO : Limitar valor total máximo, pra evitar desconto negativo */}
               <FormBrlInput<FormType>
                 name="finalValue"
                 label="Valor total"
