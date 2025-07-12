@@ -4,7 +4,6 @@
 import { useEffect, useState } from 'react'
 
 // UI
-import { toast } from 'sonner'
 import {
   Dialog,
   DialogBody,
@@ -36,23 +35,8 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
 
-// Hooks
-import {
-  useMeasureVariants,
-  useCurrentMeasureDefaults,
-  useUpdateMeasureDefaults,
-} from '@/hooks/queries/useMeasureDefaults'
-
 export function MeasureDefaultsDialog() {
   const [open, setOpen] = useState(false)
-
-  // Buscar variantes disponíveis e padrões atuais
-  const { data: variants, isLoading: isLoadingVariants } = useMeasureVariants()
-  const { data: currentDefaults, isLoading: isLoadingDefaults } =
-    useCurrentMeasureDefaults()
-
-  // Mutation para atualizar padrões
-  const updateMutation = useUpdateMeasureDefaults()
 
   useEffect(() => {
     if (localStorage.getItem('MeasureDialog') === 'true') {
@@ -67,55 +51,26 @@ export function MeasureDefaultsDialog() {
 
   const { handleSubmit, reset } = form
 
-  // Atualizar form quando os dados atuais forem carregados
-  useEffect(() => {
-    if (currentDefaults) {
-      reset(currentDefaults)
-    }
-  }, [currentDefaults, reset])
-
   // Criar opções dinâmicas a partir das variantes
-  const options = variants
-    ? {
-        length: variants.length.map((variant) => ({
-          label: variant.name,
-          value: variant.code,
-        })),
-        weight: variants.weight.map((variant) => ({
-          label: variant.name,
-          value: variant.code,
-        })),
-        capacity: variants.capacity.map((variant) => ({
-          label: variant.name,
-          value: variant.code,
-        })),
-      }
-    : {
-        length: [],
-        weight: [],
-        capacity: [],
-      }
+  const options = {
+    length: [],
+    weight: [],
+    capacity: [],
+  }
 
   const onSubmit = async (data: FormType) => {
-    try {
-      await updateMutation.mutateAsync(data)
-      toast.success('Padrões de medida atualizados com sucesso!')
-      handleOpenChange(false)
-    } catch (error) {
-      toast.error('Erro ao atualizar padrões de medida')
-      console.error('Erro:', error)
-    }
+    console.log(data)
   }
 
   const handleOpenChange = (value: boolean) => {
     if (!value) {
       // Resetar para valores atuais ao fechar
-      reset(currentDefaults || defaultValues)
+      reset()
     }
     setOpen(value)
   }
 
-  const isLoading = isLoadingVariants || isLoadingDefaults
+  const isLoading = false
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -202,8 +157,8 @@ export function MeasureDefaultsDialog() {
             <Button
               type="submit"
               form="measure-defaults"
-              isLoading={updateMutation.isPending}
               disabled={isLoading}
+              isLoading={form.formState.isSubmitting}
               RightIcon={IconCircleCheck}
             >
               Salvar
