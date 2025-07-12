@@ -30,7 +30,7 @@ export const modalRegistry: Record<string, React.ComponentType<unknown>> = {
   MeasureStandards: dynamic(
     () =>
       import(
-        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/Dialog'
+        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog'
       ).then((module) => ({ default: module.MeasureDefaultsDialog })),
     {
       loading: () => (

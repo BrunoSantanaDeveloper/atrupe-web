@@ -14,7 +14,7 @@ import {
   IconUserShield,
   IconSettingsCog,
 } from '@tabler/icons-react'
-import { MeasureDefaultsDialog } from '../padrao-de-medida/components/Dialog'
+import { MeasureDefaultsDialog } from '../padrao-de-medida/components/MeasureDefaultsDialog'
 
 const defaultPath = 'empresa-e-sistema'
 
