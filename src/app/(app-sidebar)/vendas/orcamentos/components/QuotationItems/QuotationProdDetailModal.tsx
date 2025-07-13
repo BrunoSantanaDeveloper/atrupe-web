@@ -469,9 +469,6 @@ export function QuotationProdDetailModal({
                         control={control}
                         index={index}
                         unitKind={item?.unitKind}
-                        unitOfMeasureId={watch(
-                          `items.${index}.unitOfMeasureId`,
-                        )}
                         onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
