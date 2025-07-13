@@ -93,7 +93,7 @@ export function SquareMeters<T extends FieldValues>({
                   <Input
                     disabled
                     placeholder={placeholder || label}
-                    value={area ? `${area} m²` : ''}
+                    value={area ? `${area} M²` : ''}
                     className={className}
                     onChange={onHasChanged}
                     inputMode="decimal"

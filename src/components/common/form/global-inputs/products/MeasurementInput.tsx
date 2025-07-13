@@ -14,7 +14,8 @@ interface MeasurementInputProps<T extends FieldValues>
   extends React.InputHTMLAttributes<HTMLInputElement> {
   control: Control<T>
   index: number
-  unitOfMeasureId: string
+  unitKind: string
+  unitOfMeasureId?: string
   onHasChanged?: () => void
 }
 
@@ -22,6 +23,7 @@ export function MeasurementInput<T extends FieldValues>({
   control,
   index,
   unitOfMeasureId,
+  unitKind,
   onHasChanged,
   ...props
 }: MeasurementInputProps<T>) {
@@ -35,9 +37,11 @@ export function MeasurementInput<T extends FieldValues>({
     width: 'flex-[1_0_130px]',
   }
 
+  console.log(unitCode)
+
   const renderComponent = () => {
-    switch (unitCode) {
-      case 'M²':
+    switch (unitKind) {
+      case 'AREA':
         return (
           <SquareMeters<T>
             {...commonProps}
@@ -49,7 +53,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'M':
+      case 'LENGTH':
         return (
           <LinearMeter<T>
             {...commonProps}
@@ -60,7 +64,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'LT':
+      case 'CAPACITY':
         return (
           <Liters<T>
             {...commonProps}
@@ -72,7 +76,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'KG':
+      case 'WEIGHT':
         return (
           <Weight<T>
             {...commonProps}
@@ -84,7 +88,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'KM':
+      case 'DISTANCE':
         return (
           <Kilometers<T>
             {...commonProps}
@@ -96,7 +100,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'HH':
+      case 'DURATION':
         return (
           <Hour<T>
             {...commonProps}
@@ -108,7 +112,7 @@ export function MeasurementInput<T extends FieldValues>({
             onHasChanged={onHasChanged}
           />
         )
-      case 'UN':
+      case 'UNITY':
       default:
         return null
     }

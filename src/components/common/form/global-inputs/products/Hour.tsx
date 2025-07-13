@@ -27,25 +27,25 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
-// Função para converter minutos em string HH:MM
-function minutesToTimeString(minutes: number): string {
-  if (!minutes || minutes <= 0) return ''
+// Função para converter segundos em string HH:MM
+function secondsToTimeString(seconds: number): string {
+  if (!seconds || seconds <= 0) return ''
 
-  const hours = Math.floor(minutes / 60)
-  const mins = minutes % 60
+  const hours = Math.floor(seconds / 3600)
+  const mins = Math.floor((seconds % 3600) / 60)
 
   return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
 }
 
-// Função para converter string HH:MM em minutos
-function timeStringToMinutes(timeString: string): number {
+// Função para converter string HH:MM em segundos
+function timeStringToSeconds(timeString: string): number {
   if (!timeString || timeString === '00:00' || timeString === '') return 0
 
   const [hours, minutes] = timeString.split(':').map(Number)
 
   if (isNaN(hours) || isNaN(minutes)) return 0
 
-  return hours * 60 + minutes
+  return hours * 3600 + minutes * 60
 }
 
 export function Hour<T extends FieldValues>({
@@ -65,7 +65,7 @@ export function Hour<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field }) => {
-        const fieldTimeString = minutesToTimeString(field.value || 0)
+        const fieldTimeString = secondsToTimeString(field.value || 0)
 
         return (
           <FormItem className={cn('flex flex-col', width)}>
@@ -85,16 +85,16 @@ export function Hour<T extends FieldValues>({
                   // Atualizar o valor de exibição imediatamente
                   setDisplayValue(maskedValue)
 
-                  // Converter para minutos e atualizar o form
-                  const minutes = timeStringToMinutes(maskedValue)
-                  field.onChange(minutes)
+                  // Converter para segundos e atualizar o form
+                  const seconds = timeStringToSeconds(maskedValue)
+                  field.onChange(seconds)
                   onHasChanged?.()
                 }}
                 onBlur={() => {
                   setIsEditing(false)
                   // O valor será sincronizado automaticamente pelo fieldTimeString
                 }}
-                endAdornment={<>h</>}
+                endAdornment={<>H</>}
                 className={className}
                 maxLength={5}
               />

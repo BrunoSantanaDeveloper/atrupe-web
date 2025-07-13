@@ -67,7 +67,7 @@ interface Props {
 const defaultItemFields = [
   {
     name: '',
-    unitOfMeasureId: '',
+    unitKind: '',
     unitCost: 0,
     salePrice: 0,
   },
@@ -171,7 +171,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
         ...item,
         id: editMode ? item.id : undefined,
         name: item?.name,
-        unitOfMeasureId: item.unitOfMeasureId,
+        unitKind: item.unitKind,
         salePrice: item.salePrice,
         unitCost: item.salePrice,
       })),
@@ -224,7 +224,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
   function handleAppendProductItems() {
     items.append({
       name: '',
-      unitOfMeasureId: '',
+      unitKind: '',
       unitCost: 0,
       salePrice: 0,
     })
@@ -297,14 +297,14 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   {items?.fields?.length === 1 && (
                     <>
                       <UnitOfMeasureField<NewProductsFormType>
-                        name="items.0.unitOfMeasureId"
+                        name="items.0.unitKind"
                         label="Unidade comercial"
                         width="flex-[1_0_225px]"
                       />
                       <MeasurementInput<NewProductsFormType>
                         control={control}
                         index={0}
-                        unitOfMeasureId={watch('items.0.unitOfMeasureId')}
+                        unitKind={watch('items.0.unitKind')}
                       />
                       <FormBrlInput<NewProductsFormType>
                         name={`items.0.salePrice`}
@@ -339,16 +339,14 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                           width="flex-[1_0_100%]"
                         />
                         <UnitOfMeasureField<NewProductsFormType>
-                          name={`items.${index}.unitOfMeasureId`}
+                          name={`items.${index}.unitKind`}
                           label="Unidade comercial"
                           width="flex-[1_0_200px]"
                         />
                         <MeasurementInput<NewProductsFormType>
                           control={control}
                           index={index}
-                          unitOfMeasureId={watch(
-                            `items.${index}.unitOfMeasureId`,
-                          )}
+                          unitKind={watch(`items.${index}.unitKind`)}
                         />
                         <FormBrlInput<NewProductsFormType>
                           name={`items.${index}.salePrice`}

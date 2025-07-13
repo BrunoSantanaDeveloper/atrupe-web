@@ -32,6 +32,7 @@ export type ProductType = {
     name: string
     productId: string
     unitOfMeasureId: string
+    unitKind: string
     width: number
     height: number
     length: number

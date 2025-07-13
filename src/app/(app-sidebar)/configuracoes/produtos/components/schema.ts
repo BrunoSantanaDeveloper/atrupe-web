@@ -29,7 +29,7 @@ export const newProductsSchema = z.object({
         .string({ required_error: 'Campo obrigatório' })
         .min(2, { message: 'Campo obrigatório' })
         .trim(),
-      unitOfMeasureId: z
+      unitKind: z
         .string({ required_error: 'Campo obrigatório' })
         .min(2, { message: 'Campo obrigatório' })
         .trim(),
@@ -144,7 +144,7 @@ export const defaultNewProductValues: NewProductsFormType = {
   items: [
     {
       name: '',
-      unitOfMeasureId: '',
+      unitKind: '',
       unitCost: 0,
       salePrice: 0,
     },

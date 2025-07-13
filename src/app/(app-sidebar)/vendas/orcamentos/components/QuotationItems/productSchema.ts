@@ -16,7 +16,7 @@ export const productSchema = z.object({
     z.object({
       id: z.string(),
       name: z.string().optional(),
-      unitOfMeasureId: z.string(),
+      unitKind: z.string(),
       quantity: z
         .preprocess((value) => Number(value), z.number())
         .refine((value) => value >= 1, {
@@ -115,7 +115,7 @@ export const defaultProductValues: ProductsFormType = {
   items: [
     {
       id: '',
-      unitOfMeasureId: '',
+      unitKind: '',
       quantity: 1,
       width: 0,
       height: 0,

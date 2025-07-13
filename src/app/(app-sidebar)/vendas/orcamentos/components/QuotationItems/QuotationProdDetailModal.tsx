@@ -123,7 +123,7 @@ export function QuotationProdDetailModal({
           quantity: item?.originalQuantity ?? null,
           salePrice: item?.totalValue ?? null,
           unitCost: item?.unitValue ?? null,
-          unitOfMeasureId: item?.unitOfMeasure?.id ?? null,
+          unitKind: item?.unitOfMeasure?.id ?? null,
           volume: item.volume ?? null,
           weight: item.weight ?? null,
           width: item.width ?? null,
@@ -192,7 +192,7 @@ export function QuotationProdDetailModal({
 
       const measurement = (): number => {
         const unitCode = unitOfMeasure?.find(
-          (unit) => unit.id === item.unitOfMeasureId,
+          (unit) => unit.id === item.unitKind,
         )?.code
 
         const basicMeasurement = (() => {
@@ -241,7 +241,7 @@ export function QuotationProdDetailModal({
     const items = watch('items') ?? []
 
     const unitCode = unitOfMeasure?.find(
-      (unit) => unit.id === item.unitOfMeasureId,
+      (unit) => unit.id === item.unitKind,
     )?.code
 
     const measurement = (): number => {
@@ -318,7 +318,7 @@ export function QuotationProdDetailModal({
         quantity: item.quantity ?? null,
         salePrice: item.salePrice,
         unitCost: item.unitCost ?? null,
-        unitOfMeasureId: item.unitOfMeasureId ?? null,
+        unitKind: item.unitKind ?? null,
         volume: item.volume ?? null,
         weight: item.weight ?? null,
         width: item.width ?? null,
@@ -366,10 +366,8 @@ export function QuotationProdDetailModal({
     }
   }
 
-  function getPriceLabel(unitOfMeasureId: string): string {
-    const label = unitOfMeasure?.find(
-      (unit) => unit.id === unitOfMeasureId,
-    )?.name
+  function getPriceLabel(unitKind: string): string {
+    const label = unitOfMeasure?.find((unit) => unit.kind === unitKind)?.name
 
     return label || ''
   }
@@ -470,7 +468,10 @@ export function QuotationProdDetailModal({
                       <MeasurementInput<ProductsFormType>
                         control={control}
                         index={index}
-                        unitOfMeasureId={item?.unitOfMeasureId}
+                        unitKind={item?.unitKind}
+                        unitOfMeasureId={watch(
+                          `items.${index}.unitOfMeasureId`,
+                        )}
                         onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
@@ -483,7 +484,7 @@ export function QuotationProdDetailModal({
                       />
                       <FormBrlInput<ProductsFormType>
                         name={`items.${index}.unitCost`}
-                        label={`Valor ${getPriceLabel(item?.unitOfMeasureId)}`}
+                        label={`Valor ${getPriceLabel(item?.unitKind)}`}
                         placeholder="0,00"
                         startAdornment={<>R$</>}
                         width="flex-[1_0_130px]"

@@ -63,7 +63,7 @@ export function LinearMeter<T extends FieldValues>({
                 onHasChanged?.()
               }}
               value={field?.value || ''}
-              endAdornment={<>m</>}
+              // endAdornment={<>MT</>}
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}

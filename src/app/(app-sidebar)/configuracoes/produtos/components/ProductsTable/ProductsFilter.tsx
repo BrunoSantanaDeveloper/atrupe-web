@@ -45,11 +45,11 @@ export function ProductsFilter({ searchParams }: SearchParamsType) {
         // onChange={(value) => handleFilter('categoryId', value)}
       />
       <SelectSectorField
-        name="unitOfMeasureId"
+        name="unitKind"
         label="Unidade de medida"
         width="w-[220px]"
-        // value={searchParams?.unitOfMeasureId || 'all'}
-        // onChange={(value) => handleFilter('unitOfMeasureId', value)}
+        // value={searchParams?.unitKind || 'all'}
+        // onChange={(value) => handleFilter('unitKind', value)}
       />
     </>
   )

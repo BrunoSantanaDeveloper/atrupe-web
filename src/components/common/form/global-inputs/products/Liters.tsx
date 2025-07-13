@@ -63,7 +63,7 @@ export function Liters<T extends FieldValues>({
                 onHasChanged?.()
               }}
               value={field?.value || ''}
-              endAdornment={<>lt</>}
+              // endAdornment={<>LT</>}
               className={className}
             />
           </FormControl>

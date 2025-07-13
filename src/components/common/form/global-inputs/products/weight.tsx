@@ -64,7 +64,7 @@ export function Weight<T extends FieldValues>({
                 onHasChanged?.()
               }}
               value={field?.value || ''}
-              endAdornment={<>kg</>}
+              // endAdornment={<>KG</>}
               className={className}
             />
           </FormControl>

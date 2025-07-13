@@ -63,7 +63,7 @@ export function Kilometers<T extends FieldValues>({
                 onHasChanged?.()
               }}
               value={field?.value || ''}
-              endAdornment={<>km</>}
+              endAdornment={<>KM</>}
               className={className}
             />
           </FormControl>

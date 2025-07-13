@@ -5,7 +5,7 @@ export interface IProductItem {
   id: string
   name: string
   productId: string
-  unitOfMeasureId: string
+  unitKind: string
   unitCost: number
   salePrice: number
   quantity: number
@@ -17,7 +17,7 @@ export interface IProduct {
   code: string
   isActive: boolean
   isStandard: boolean
-  unitOfMeasureId: string | null
+  unitKind: string | null
   unitCost: number | null
   salePrice: number | null
   quantity: number | null

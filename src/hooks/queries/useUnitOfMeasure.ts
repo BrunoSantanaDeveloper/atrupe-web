@@ -1,4 +1,4 @@
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 interface IUnitOfMeasure {
@@ -7,17 +7,18 @@ interface IUnitOfMeasure {
   code: string
   description: string | null
   isActive: boolean
-  companyId: string
+  kind: string
+  variant: string
 }
 
 const QUERY_KEY = ['unitOfMeasure']
 
 async function fetchData(): Promise<IUnitOfMeasure[]> {
-  const data = await getDataOld({
-    route: 'unitOfMeasureRoute',
+  const data = await getData({
+    route: '/unit-of-measure/defaults',
     perPage: '999999',
   })
-  return data
+  return data.data
 }
 
 export function useUnitOfMeasure() {
