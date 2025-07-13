@@ -2,6 +2,7 @@
 
 // React
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 // UI
 import {
@@ -21,7 +22,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { ConversionPreview } from './ConversionPreview'
 
 // Icons
 import {
@@ -35,6 +35,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
 
+// Hooks
+import { useUnitOfMeasureComplete } from '@/hooks/queries/useUnitOfMeasureDefaults'
+import { useUpdateUnitDefaults } from '@/hooks/queries/useUpdateUnitDefaults'
+
 export function MeasureDefaultsDialog() {
   const [open, setOpen] = useState(false)
 
@@ -44,6 +48,12 @@ export function MeasureDefaultsDialog() {
     }
   }, [])
 
+  // Query otimizada que busca todas as informações de uma só vez
+  const { data: unitData, isLoading } = useUnitOfMeasureComplete()
+
+  // Mutation
+  const updateMutation = useUpdateUnitDefaults()
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -51,26 +61,75 @@ export function MeasureDefaultsDialog() {
 
   const { handleSubmit, reset } = form
 
-  // Criar opções dinâmicas a partir das variantes
+  // Atualizar formulário quando dados carregarem
+  useEffect(() => {
+    if (unitData?.companyDefaults) {
+      reset({
+        length: unitData.companyDefaults.LENGTH,
+        weight: unitData.companyDefaults.WEIGHT,
+        capacity: unitData.companyDefaults.CAPACITY,
+      })
+    }
+  }, [unitData, reset])
+
+  // Preparar opções para selects
   const options = {
-    length: [],
-    weight: [],
-    capacity: [],
+    length:
+      unitData?.lengthVariants?.map((variant) => ({
+        value: variant.code,
+        label: `${variant.name} (${variant.code})`,
+      })) || [],
+    weight:
+      unitData?.weightVariants?.map((variant) => ({
+        value: variant.code,
+        label: `${variant.name} (${variant.code})`,
+      })) || [],
+    capacity:
+      unitData?.capacityVariants?.map((variant) => ({
+        value: variant.code,
+        label: `${variant.name} (${variant.code})`,
+      })) || [],
   }
 
   const onSubmit = async (data: FormType) => {
-    console.log(data)
+    try {
+      // Atualizar todas as unidades em paralelo
+      await Promise.all([
+        updateMutation.mutateAsync({
+          kind: 'LENGTH',
+          defaultVariant: data.length,
+        }),
+        updateMutation.mutateAsync({
+          kind: 'WEIGHT',
+          defaultVariant: data.weight,
+        }),
+        updateMutation.mutateAsync({
+          kind: 'CAPACITY',
+          defaultVariant: data.capacity,
+        }),
+      ])
+
+      toast.success('Padrões de medida atualizados com sucesso!')
+      setOpen(false)
+    } catch (error) {
+      console.error('Erro ao salvar padrões:', error)
+      toast.error('Erro ao salvar padrões de medida. Tente novamente.')
+    }
   }
 
   const handleOpenChange = (value: boolean) => {
     if (!value) {
       // Resetar para valores atuais ao fechar
-      reset()
+      if (unitData?.companyDefaults) {
+        reset({
+          length: unitData.companyDefaults.LENGTH,
+          weight: unitData.companyDefaults.WEIGHT,
+          capacity: unitData.companyDefaults.CAPACITY,
+        })
+      }
     }
     setOpen(value)
   }
-
-  const isLoading = false
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -96,16 +155,16 @@ export function MeasureDefaultsDialog() {
           {isLoading ? (
             <div className="flex flex-wrap gap-5">
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="bg-gray-300 h-4 w-20" />
+                <Skeleton className="bg-gray-300 h-10 w-full" />
               </div>
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="bg-gray-300 h-4 w-20" />
+                <Skeleton className="bg-gray-300 h-10 w-full" />
               </div>
               <div className="flex-[1_0_190px] space-y-2">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="bg-gray-300 h-4 w-20" />
+                <Skeleton className="bg-gray-300 h-10 w-full" />
               </div>
             </div>
           ) : (
@@ -137,13 +196,6 @@ export function MeasureDefaultsDialog() {
               </form>
             </Form>
           )}
-
-          {/* Preview das conversões */}
-          {!isLoading && process.env.NODE_ENV === 'development' && (
-            <div className="mt-6">
-              <ConversionPreview data={form.watch()} />
-            </div>
-          )}
         </DialogBody>
 
         <DialogFooter className="sm:justify-between">
@@ -158,7 +210,7 @@ export function MeasureDefaultsDialog() {
               type="submit"
               form="measure-defaults"
               disabled={isLoading}
-              isLoading={form.formState.isSubmitting}
+              isLoading={updateMutation.isPending}
               RightIcon={IconCircleCheck}
             >
               Salvar
