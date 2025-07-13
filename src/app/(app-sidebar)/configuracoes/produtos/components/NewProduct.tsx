@@ -193,7 +193,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
           throw new Error(result.message)
         }
 
-        await queryClient.invalidateQueries()
         toast.success('Produto atualizado com sucesso!')
       } else {
         const result = await createItemNew({
@@ -207,7 +206,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
         toast.success('Produto criado com sucesso!')
       }
-      await queryClient.invalidateQueries()
 
       if (!insertAnother) {
         handleCleanForm()
@@ -215,6 +213,8 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
       } else {
         handleCleanForm()
       }
+
+      await queryClient.invalidateQueries()
     } catch (error) {
       toast.error(
         `Erro ao ${editMode ? 'editar' : 'cadastrar'} produto: ${error instanceof Error ? error.message : 'Erro desconhecido'}`,
