@@ -319,6 +319,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                           label="Valor de venda"
                           startAdornment={<>R$</>}
                           width="flex-[1_0_140px]"
+                          disabled
                         />
                       </div>
                     </>

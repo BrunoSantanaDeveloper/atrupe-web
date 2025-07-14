@@ -41,21 +41,21 @@ interface Props<T extends FieldValues>
 function getUnitLabel(unitKind: string): string {
   switch (unitKind) {
     case 'AREA':
-      return 'Custo por M²'
+      return 'Valor M²'
     case 'LENGTH':
-      return 'Custo por Metro'
+      return 'Valor Metro'
     case 'CAPACITY':
-      return 'Custo por Litro'
+      return 'Valor Litro'
     case 'WEIGHT':
-      return 'Custo por Kg'
+      return 'Valor Kg'
     case 'DISTANCE':
-      return 'Custo por Km'
+      return 'Valor Km'
     case 'DURATION':
-      return 'Custo por Hora'
+      return 'Valor Hora'
     case 'UNITY':
       return 'Custo Unitário'
     default:
-      return 'Custo por Unidade'
+      return 'Valor Unidade'
   }
 }
 
@@ -89,8 +89,11 @@ function calculateTotalQuantity(
     case 'DISTANCE':
       return (item.distance || 0) * baseMultiplier
 
-    case 'DURATION':
-      return (item.duration || 0) * baseMultiplier
+    case 'DURATION': {
+      // duration está em segundos, converter para horas
+      const durationInHours = (item.duration || 0) / 3600
+      return durationInHours * baseMultiplier
+    }
 
     case 'UNITY':
     default:
@@ -148,21 +151,40 @@ export function UnitCostInput<T extends FieldValues>({
   // Determinar o label dinâmico
   const dynamicLabel = label || getUnitLabel(unitKind)
 
-  // Recalcular custo unitário quando preço de venda ou quantidade total mudarem
+  // Recalcular valor de venda quando quantidade total mudar (mantém valor unitário)
+  useEffect(() => {
+    const currentUnitCost = getValues(`items.${index}.unitCost`)
+    if (totalQuantity > 0 && currentUnitCost > 0) {
+      const newSalePriceInCents = Math.round(currentUnitCost * totalQuantity)
+      const currentSalePrice = getValues(`items.${index}.salePrice`)
+
+      // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
+      if (Math.abs(newSalePriceInCents - (currentSalePrice || 0)) > 1) {
+        setValue(`items.${index}.salePrice`, newSalePriceInCents, {
+          shouldValidate: false,
+          shouldDirty: true,
+        })
+      }
+    }
+  }, [totalQuantity, setValue, index, getValues])
+
+  // Recalcular custo unitário apenas quando preço de venda mudar manualmente
   useEffect(() => {
     if (totalQuantity > 0 && salePrice > 0) {
-      const calculatedUnitCost = salePrice / totalQuantity
+      // salePrice está em centavos, calculatedUnitCost deve estar em centavos também
+      const calculatedUnitCost = Math.round(salePrice / totalQuantity)
       const currentUnitCost = getValues(`items.${index}.unitCost`)
 
-      // Só atualiza se o valor for diferente para evitar loops
-      if (Math.abs(calculatedUnitCost - (currentUnitCost || 0)) > 0.001) {
+      // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
+      if (Math.abs(calculatedUnitCost - (currentUnitCost || 0)) > 1) {
         setValue(`items.${index}.unitCost`, calculatedUnitCost, {
           shouldValidate: false,
           shouldDirty: true,
         })
       }
     }
-  }, [salePrice, totalQuantity, setValue, index, getValues])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [salePrice, setValue, index, getValues])
 
   // Não renderizar se não houver unidade ou se for UNITY (unidade simples)
   if (!unitKind || unitKind === 'UNITY') {
@@ -186,13 +208,17 @@ export function UnitCostInput<T extends FieldValues>({
               placeholder={placeholder}
               prefix="R$ "
               onValueChange={(values) => {
-                const newUnitCost = values.floatValue ?? 0
-                field.onChange(newUnitCost)
+                const newUnitCostInReais = values.floatValue ?? 0
+                // Converter para centavos para manter consistência com FormBrlInput
+                const newUnitCostInCents = Math.round(newUnitCostInReais * 100)
+                field.onChange(newUnitCostInCents)
 
-                // Calcular novo preço de venda baseado no custo unitário
-                if (totalQuantity > 0 && newUnitCost > 0) {
-                  const newSalePrice = newUnitCost * totalQuantity
-                  setValue(`items.${index}.salePrice`, newSalePrice, {
+                // Calcular novo preço de venda baseado no custo unitário (ambos em centavos)
+                if (totalQuantity > 0 && newUnitCostInCents > 0) {
+                  const newSalePriceInCents = Math.round(
+                    newUnitCostInCents * totalQuantity,
+                  )
+                  setValue(`items.${index}.salePrice`, newSalePriceInCents, {
                     shouldValidate: false,
                     shouldDirty: true,
                   })
@@ -200,7 +226,7 @@ export function UnitCostInput<T extends FieldValues>({
 
                 onHasChanged?.()
               }}
-              value={field.value || ''}
+              value={field.value ? (field.value / 100).toString() : ''}
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}
