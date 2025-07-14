@@ -98,8 +98,11 @@ function calculateTotalQuantity(
     case 'WEIGHT':
       return (item.weight || 0) * baseMultiplier
 
-    case 'DISTANCE':
-      return (item.distance || 0) * baseMultiplier
+    case 'DISTANCE': {
+      // Converter metros para quilômetros para o cálculo do valor por km
+      const distanceInKilometers = (item.distance || 0) / 1000
+      return distanceInKilometers * baseMultiplier
+    }
 
     case 'DURATION': {
       // duration está em segundos, converter para horas
@@ -198,8 +201,8 @@ export function UnitCostInput<T extends FieldValues>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [salePrice, setValue, index, getValues])
 
-  // Não renderizar se não houver unidade ou se for UNITY (unidade simples)
-  if (!unitKind || unitKind === 'UNITY') {
+  // Não renderizar se não houver unidade
+  if (!unitKind) {
     return null
   }
 

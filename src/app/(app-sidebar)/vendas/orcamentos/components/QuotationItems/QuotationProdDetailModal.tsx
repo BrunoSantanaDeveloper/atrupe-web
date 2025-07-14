@@ -109,8 +109,11 @@ export function QuotationProdDetailModal({
               return item.volume ?? 0
             case 'KG':
               return item.weight ?? 0
-            case 'KM':
-              return item.distance ?? 0
+            case 'KM': {
+              // Converter metros para quilômetros
+              const distanceInMeters = item.distance ?? 0
+              return distanceInMeters / 1000
+            }
             case 'HH': {
               const duration = Number(item.duration || 0)
               // Converter segundos para horas
@@ -219,8 +222,11 @@ export function QuotationProdDetailModal({
               return item.volume ?? 0
             case 'KG':
               return item.weight ?? 0
-            case 'KM':
-              return item.distance ?? 0
+            case 'KM': {
+              // Converter metros para quilômetros
+              const distanceInMeters = item.distance ?? 0
+              return distanceInMeters / 1000
+            }
             case 'HH': {
               const duration = Number(item.duration || 0)
               // Converter segundos para horas
@@ -274,8 +280,11 @@ export function QuotationProdDetailModal({
             return item.volume ?? 0
           case 'KG':
             return item.weight ?? 0
-          case 'KM':
-            return item.distance ?? 0
+          case 'KM': {
+            // Converter metros para quilômetros
+            const distanceInMeters = item.distance ?? 0
+            return distanceInMeters / 1000
+          }
           case 'HH': {
             const duration = Number(item.duration || 0)
             // Converter segundos para horas

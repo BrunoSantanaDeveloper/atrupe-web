@@ -35,6 +35,16 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
+// Função para converter metros para quilômetros
+function metersToKilometers(meters: number): number {
+  return meters / 1000
+}
+
+// Função para converter quilômetros para metros
+function kilometersToMeters(kilometers: number): number {
+  return kilometers * 1000
+}
+
 export function Kilometers<T extends FieldValues>({
   name,
   label,
@@ -55,16 +65,24 @@ export function Kilometers<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={0}
+              decimalScale={3}
               placeholder={placeholder}
               onValueChange={(e) => {
+                const kilometersValue = e.floatValue ?? 0
+                // Converter quilômetros para metros antes de salvar
+                const metersValue = kilometersToMeters(kilometersValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(name, e.floatValue ?? (0 as any))
+                setValue(name, metersValue as any)
                 onHasChanged?.()
               }}
-              value={field?.value || ''}
+              // Converter metros para quilômetros na exibição
+              value={
+                field?.value ? metersToKilometers(field.value).toString() : ''
+              }
               endAdornment={<>KM</>}
               className={className}
+              inputMode="decimal"
+              allowedDecimalSeparators={['.', ',']}
             />
           </FormControl>
           <FormMessage />
