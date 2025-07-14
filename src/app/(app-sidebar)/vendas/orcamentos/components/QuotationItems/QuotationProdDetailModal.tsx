@@ -64,6 +64,45 @@ interface Props {
   data?: QuotationItemType
 }
 
+// Função auxiliar para calcular medida básica baseada no unitKind
+function calculateBasicMeasurement(
+  item: {
+    width?: number | null
+    height?: number | null
+    length?: number | null
+    volume?: number | null
+    weight?: number | null
+    distance?: number | null
+    duration?: number | null
+  },
+  unitKind: string,
+): number {
+  switch (unitKind) {
+    case 'AREA':
+      // item.height e item.width estão em milímetros, converter para m²
+      return calculateAreaFromMillimeters(item.width ?? 0, item.height ?? 0)
+    case 'LENGTH':
+      // item.length está em milímetros, converter para metros
+      return millimetersToMeters(item.length ?? 0)
+    case 'CAPACITY':
+      return item.volume ?? 0
+    case 'WEIGHT':
+      return item.weight ?? 0
+    case 'DISTANCE': {
+      // Converter metros para quilômetros
+      const distanceInMeters = item.distance ?? 0
+      return distanceInMeters / 1000
+    }
+    case 'DURATION': {
+      const duration = Number(item.duration || 0)
+      // Converter segundos para horas
+      return duration / 3600
+    }
+    default:
+      return 1
+  }
+}
+
 export function QuotationProdDetailModal({
   open,
   onClose,
@@ -94,35 +133,12 @@ export function QuotationProdDetailModal({
         // Calcular measurementValue inicial baseado nos dados existentes
         const unitValue = item?.unitValue ?? 0
         const quantity = item?.originalQuantity ?? 1
-        const basicMeasurement = (() => {
-          switch (item?.unitOfMeasure?.code) {
-            case 'M²':
-              // item.height e item.width estão em milímetros, converter para m²
-              return calculateAreaFromMillimeters(
-                item.width ?? 0,
-                item.height ?? 0,
-              )
-            case 'M':
-              // item.width está em milímetros, converter para metros
-              return millimetersToMeters(item.width ?? 0)
-            case 'LT':
-              return item.volume ?? 0
-            case 'KG':
-              return item.weight ?? 0
-            case 'KM': {
-              // Converter metros para quilômetros
-              const distanceInMeters = item.distance ?? 0
-              return distanceInMeters / 1000
-            }
-            case 'HH': {
-              const duration = Number(item.duration || 0)
-              // Converter segundos para horas
-              return duration / 3600
-            }
-            default:
-              return 1
-          }
-        })()
+        // Obter unitKind através do unitOfMeasure
+        const unitKind = unitOfMeasure?.find(
+          (unit) => unit.id === item?.unitOfMeasure?.id,
+        )?.kind
+
+        const basicMeasurement = calculateBasicMeasurement(item, unitKind || '')
 
         const measurementValue = unitValue * basicMeasurement * quantity
         return {
@@ -203,40 +219,7 @@ export function QuotationProdDetailModal({
       const items = watch('items') ?? []
 
       const measurement = (): number => {
-        const unitCode = unitOfMeasure?.find(
-          (unit) => unit.id === item.unitKind,
-        )?.code
-
-        const basicMeasurement = (() => {
-          switch (unitCode) {
-            case 'M²':
-              // item.height e item.width estão em milímetros, converter para m²
-              return calculateAreaFromMillimeters(
-                item.width ?? 0,
-                item.height ?? 0,
-              )
-            case 'M':
-              // item.width está em milímetros, converter para metros
-              return millimetersToMeters(item.width ?? 0)
-            case 'LT':
-              return item.volume ?? 0
-            case 'KG':
-              return item.weight ?? 0
-            case 'KM': {
-              // Converter metros para quilômetros
-              const distanceInMeters = item.distance ?? 0
-              return distanceInMeters / 1000
-            }
-            case 'HH': {
-              const duration = Number(item.duration || 0)
-              // Converter segundos para horas
-              const hours = duration / 3600
-              return hours
-            }
-            default:
-              return 1
-          }
-        })()
+        const basicMeasurement = calculateBasicMeasurement(item, item.unitKind)
 
         // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
         // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
@@ -260,41 +243,8 @@ export function QuotationProdDetailModal({
     const productQuantity = Number(watch('quantity') || 1)
     const items = watch('items') ?? []
 
-    const unitCode = unitOfMeasure?.find(
-      (unit) => unit.id === item.unitKind,
-    )?.code
-
     const measurement = (): number => {
-      const basicMeasurement = (() => {
-        switch (unitCode) {
-          case 'M²':
-            // item.height e item.width estão em milímetros, converter para m²
-            return calculateAreaFromMillimeters(
-              item.width ?? 0,
-              item.height ?? 0,
-            )
-          case 'M':
-            // item.width está em milímetros, converter para metros
-            return millimetersToMeters(item.width ?? 0)
-          case 'LT':
-            return item.volume ?? 0
-          case 'KG':
-            return item.weight ?? 0
-          case 'KM': {
-            // Converter metros para quilômetros
-            const distanceInMeters = item.distance ?? 0
-            return distanceInMeters / 1000
-          }
-          case 'HH': {
-            const duration = Number(item.duration || 0)
-            // Converter segundos para horas
-            const hours = duration / 3600
-            return hours
-          }
-          default:
-            return 1
-        }
-      })()
+      const basicMeasurement = calculateBasicMeasurement(item, item.unitKind)
 
       // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
       // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
