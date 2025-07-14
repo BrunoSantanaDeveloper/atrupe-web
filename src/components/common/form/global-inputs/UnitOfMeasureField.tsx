@@ -22,7 +22,7 @@ export function UnitOfMeasureField<T extends FieldValues>({
   const options = useMemo(() => {
     return unitOfMeasures?.map((unit) => ({
       value: unit.kind,
-      label: unit.name,
+      label: `${unit.code} - ${unit.name}`,
     }))
   }, [unitOfMeasures])
 

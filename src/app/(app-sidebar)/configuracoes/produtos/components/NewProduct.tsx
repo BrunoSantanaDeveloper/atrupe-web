@@ -30,6 +30,7 @@ import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
+import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 
 // Form
@@ -173,7 +174,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
         name: item?.name,
         unitKind: item.unitKind,
         salePrice: item.salePrice,
-        unitCost: item.salePrice,
+        unitCost: item.unitCost,
       })),
       technicalDescription: data?.technicalDescription ?? '',
       productionStages: data?.productionStages?.map((stage) => ({
@@ -264,19 +265,19 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   className="flex flex-wrap gap-5"
                   noValidate
                 >
-                  <SelectSectorField<NewProductsFormType>
+                  <SelectSectorField
                     name="sectorId"
                     label="Setor"
                     width="flex-[1_0_190px]"
                   />
-                  <SelectProductGroupWithSectorField<NewProductsFormType>
+                  <SelectProductGroupWithSectorField
                     name="categoryId"
                     label="Grupo de produtos"
                     width="flex-[1_0_190px]"
                     selectedSectorId={watch('sectorId')}
                   />
 
-                  <FormInput<NewProductsFormType>
+                  <FormInput
                     name="name"
                     label="Nome do produto"
                     width="flex-[1_0_400px]"
@@ -286,7 +287,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                       }
                     }}
                   />
-                  <FormInput<NewProductsFormType>
+                  <FormInput
                     name="code"
                     label="Código"
                     width="flex-[1_0_250px]"
@@ -296,17 +297,23 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   />
                   {items?.fields?.length === 1 && (
                     <>
-                      <UnitOfMeasureField<NewProductsFormType>
+                      <UnitOfMeasureField
                         name="items.0.unitKind"
                         label="Unidade comercial"
                         width="flex-[1_0_225px]"
                       />
-                      <MeasurementInput<NewProductsFormType>
+                      <MeasurementInput
                         control={control}
                         index={0}
                         unitKind={watch('items.0.unitKind')}
                       />
-                      <FormBrlInput<NewProductsFormType>
+                      <UnitCostInput
+                        control={control}
+                        name="items.0.unitCost"
+                        width="flex-[1_0_200px] max-w-[290px]"
+                        index={0}
+                      />
+                      <FormBrlInput
                         name={`items.0.salePrice`}
                         label="Preço de venda"
                         startAdornment={<>R$</>}
@@ -333,22 +340,28 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                             <LucideIcon icon="Trash2" className="size-5" />
                           </Button>
                         )}
-                        <FormInput<NewProductsFormType>
+                        <FormInput
                           name={`items.${index}.name`}
                           label="Nome da composição"
                           width="flex-[1_0_100%]"
                         />
-                        <UnitOfMeasureField<NewProductsFormType>
+                        <UnitOfMeasureField
                           name={`items.${index}.unitKind`}
                           label="Unidade comercial"
                           width="flex-[1_0_200px]"
                         />
-                        <MeasurementInput<NewProductsFormType>
+                        <MeasurementInput
                           control={control}
                           index={index}
                           unitKind={watch(`items.${index}.unitKind`)}
                         />
-                        <FormBrlInput<NewProductsFormType>
+                        <UnitCostInput
+                          control={control}
+                          name={`items.${index}.unitCost`}
+                          width="flex-[1_0_200px] max-w-[290px]"
+                          index={index}
+                        />
+                        <FormBrlInput
                           name={`items.${index}.salePrice`}
                           label="Preço de venda"
                           startAdornment={<>R$</>}
@@ -375,21 +388,18 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                       </Button>
                     </div>
                   )}
-                  <FormImageUpload<NewProductsFormType>
-                    control={control}
-                    name="imageUrl"
-                  />
-                  <FormTextarea<NewProductsFormType>
+                  <FormImageUpload control={control} name="imageUrl" />
+                  <FormTextarea
                     name="technicalDescription"
                     label="Descritivo técnico"
                     placeholder="Digite aqui."
                   />
                   <div className="flex gap-6">
-                    <FormSwitch<NewProductsFormType>
+                    <FormSwitch
                       name="allowEditValues"
                       label="Permitir editar valor"
                     />
-                    <FormSwitch<NewProductsFormType>
+                    <FormSwitch
                       name="allowEditDescription"
                       label="Permitir editar descrição"
                     />
