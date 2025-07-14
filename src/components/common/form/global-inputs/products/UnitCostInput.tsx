@@ -10,7 +10,11 @@ import {
 } from '@/components/ui/form'
 
 // Lib Imports
-import { cn } from '@/lib/utils'
+import {
+  cn,
+  calculateAreaFromMillimeters,
+  millimetersToMeters,
+} from '@/lib/utils'
 
 // Type Imports
 import {
@@ -73,12 +77,20 @@ function calculateTotalQuantity(
 
   switch (unitKind) {
     case 'AREA': {
-      const area = (item.width || 0) * (item.height || 0)
-      return area * baseMultiplier
+      // item.width e item.height estão em milímetros
+      // calculateAreaFromMillimeters retorna área em m²
+      const areaInSquareMeters = calculateAreaFromMillimeters(
+        item.width || 0,
+        item.height || 0,
+      )
+      return areaInSquareMeters * baseMultiplier
     }
 
-    case 'LENGTH':
-      return (item.width || item.length || 0) * baseMultiplier
+    case 'LENGTH': {
+      // Converter milímetros para metros
+      const lengthInMeters = millimetersToMeters(item.width || item.length || 0)
+      return lengthInMeters * baseMultiplier
+    }
 
     case 'CAPACITY':
       return (item.volume || 0) * baseMultiplier

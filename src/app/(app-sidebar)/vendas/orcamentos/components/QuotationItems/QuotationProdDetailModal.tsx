@@ -48,10 +48,14 @@ import {
 } from './productSchema'
 import { createItem, updateItem } from '@/actions/_cruds'
 import { toast } from 'sonner'
+import {
+  calculateAreaFromMillimeters,
+  millimetersToMeters,
+  parseCurrencyToBrl,
+} from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
-import { parseCurrencyToBrl } from '@/lib/utils'
 
 interface Props {
   open: boolean
@@ -93,9 +97,14 @@ export function QuotationProdDetailModal({
         const basicMeasurement = (() => {
           switch (item?.unitOfMeasure?.code) {
             case 'M²':
-              return (item.height ?? 0) * (item.width ?? 0)
+              // item.height e item.width estão em milímetros, converter para m²
+              return calculateAreaFromMillimeters(
+                item.width ?? 0,
+                item.height ?? 0,
+              )
             case 'M':
-              return item.width ?? 0
+              // item.width está em milímetros, converter para metros
+              return millimetersToMeters(item.width ?? 0)
             case 'LT':
               return item.volume ?? 0
             case 'KG':
@@ -198,9 +207,14 @@ export function QuotationProdDetailModal({
         const basicMeasurement = (() => {
           switch (unitCode) {
             case 'M²':
-              return (item.height ?? 0) * (item.width ?? 0)
+              // item.height e item.width estão em milímetros, converter para m²
+              return calculateAreaFromMillimeters(
+                item.width ?? 0,
+                item.height ?? 0,
+              )
             case 'M':
-              return item.width ?? 0
+              // item.width está em milímetros, converter para metros
+              return millimetersToMeters(item.width ?? 0)
             case 'LT':
               return item.volume ?? 0
             case 'KG':
@@ -248,9 +262,14 @@ export function QuotationProdDetailModal({
       const basicMeasurement = (() => {
         switch (unitCode) {
           case 'M²':
-            return (item.height ?? 0) * (item.width ?? 0)
+            // item.height e item.width estão em milímetros, converter para m²
+            return calculateAreaFromMillimeters(
+              item.width ?? 0,
+              item.height ?? 0,
+            )
           case 'M':
-            return item.width ?? 0
+            // item.width está em milímetros, converter para metros
+            return millimetersToMeters(item.width ?? 0)
           case 'LT':
             return item.volume ?? 0
           case 'KG':

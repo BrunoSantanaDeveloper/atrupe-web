@@ -246,218 +246,214 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
       requireAll={true}
     >
       <Dialog open={open} onOpenChange={handleToggleModal}>
-        {open && (
-          <DialogContent className="sm:max-w-[855px]">
-            <DialogHeader>
-              <DialogTitle>
-                <div className="flex items-center gap-4">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
-                  <span>{editMode ? 'Editar' : 'Novo'} produto</span>
-                </div>
-              </DialogTitle>
-              <DialogDescription hidden></DialogDescription>
-            </DialogHeader>
-            <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-              <Form {...form}>
-                <form
-                  id="new-product"
-                  onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-wrap gap-4"
-                  noValidate
-                >
-                  <SelectSectorField
-                    name="sectorId"
-                    label="Setor"
-                    width="flex-[1_0_190px]"
-                  />
-                  <SelectProductGroupWithSectorField
-                    name="categoryId"
-                    label="Grupo de produtos"
-                    width="flex-[1_0_190px]"
-                    selectedSectorId={watch('sectorId')}
-                  />
+        <DialogContent className="sm:max-w-[855px]">
+          <DialogHeader>
+            <DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
+                <span>{editMode ? 'Editar' : 'Novo'} produto</span>
+              </div>
+            </DialogTitle>
+            <DialogDescription hidden></DialogDescription>
+          </DialogHeader>
+          <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+            <Form {...form}>
+              <form
+                id="new-product"
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-wrap gap-4"
+                noValidate
+              >
+                <SelectSectorField
+                  name="sectorId"
+                  label="Setor"
+                  width="flex-[1_0_190px]"
+                />
+                <SelectProductGroupWithSectorField
+                  name="categoryId"
+                  label="Grupo de produtos"
+                  width="flex-[1_0_190px]"
+                  selectedSectorId={watch('sectorId')}
+                />
 
-                  <FormInput
-                    name="name"
-                    label="Nome do produto"
-                    width="flex-[1_0_400px]"
-                    additionalOnChange={(value) => {
-                      if (items?.fields?.length === 1) {
-                        form.setValue('items.0.name', String(value))
-                      }
-                    }}
-                  />
-                  <FormInput
-                    name="code"
-                    label="Código"
-                    width="flex-[1_0_250px]"
-                    additionalOnChange={(value) => {
-                      form.setValue('code', String(value).toUpperCase())
-                    }}
-                  />
-                  {items?.fields?.length === 1 && (
-                    <>
+                <FormInput
+                  name="name"
+                  label="Nome do produto"
+                  width="flex-[1_0_400px]"
+                  additionalOnChange={(value) => {
+                    if (items?.fields?.length === 1) {
+                      form.setValue('items.0.name', String(value))
+                    }
+                  }}
+                />
+                <FormInput
+                  name="code"
+                  label="Código"
+                  width="flex-[1_0_250px]"
+                  additionalOnChange={(value) => {
+                    form.setValue('code', String(value).toUpperCase())
+                  }}
+                />
+                {items?.fields?.length === 1 && (
+                  <>
+                    <UnitOfMeasureField
+                      name="items.0.unitKind"
+                      label="Unidade comercial"
+                      width="flex-[1_0_225px]"
+                    />
+                    <MeasurementInput
+                      control={control}
+                      index={0}
+                      unitKind={watch('items.0.unitKind')}
+                    />
+                    <div className="flex flex-wrap gap-4">
+                      <UnitCostInput
+                        control={control}
+                        name="items.0.unitCost"
+                        width="flex-[1_0_140px]"
+                        index={0}
+                      />
+                      <FormBrlInput
+                        name={`items.0.salePrice`}
+                        label="Valor de venda"
+                        startAdornment={<>R$</>}
+                        width="flex-[1_0_140px]"
+                        disabled
+                      />
+                    </div>
+                  </>
+                )}
+                {items?.fields?.length > 1 &&
+                  items?.fields?.map((item, index) => (
+                    <div
+                      className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
+                      key={item.id}
+                    >
+                      {index > 0 && (
+                        <Button
+                          type="button"
+                          size="iconSm"
+                          variant="neutralGhost"
+                          className="absolute top-1 right-1"
+                          onClick={() => handleRemoveCompositionProducts(index)}
+                        >
+                          <LucideIcon icon="Trash2" className="size-5" />
+                        </Button>
+                      )}
+                      <FormInput
+                        name={`items.${index}.name`}
+                        label="Nome da composição"
+                        width="flex-[1_0_100%]"
+                      />
                       <UnitOfMeasureField
-                        name="items.0.unitKind"
+                        name={`items.${index}.unitKind`}
                         label="Unidade comercial"
-                        width="flex-[1_0_225px]"
+                        width="flex-[1_0_200px]"
                       />
                       <MeasurementInput
                         control={control}
-                        index={0}
-                        unitKind={watch('items.0.unitKind')}
+                        index={index}
+                        unitKind={watch(`items.${index}.unitKind`)}
                       />
-                      <div className="flex flex-wrap gap-4">
-                        <UnitCostInput
-                          control={control}
-                          name="items.0.unitCost"
-                          width="flex-[1_0_140px]"
-                          index={0}
-                        />
-                        <FormBrlInput
-                          name={`items.0.salePrice`}
-                          label="Valor de venda"
-                          startAdornment={<>R$</>}
-                          width="flex-[1_0_140px]"
-                          disabled
-                        />
-                      </div>
-                    </>
-                  )}
-                  {items?.fields?.length > 1 &&
-                    items?.fields?.map((item, index) => (
-                      <div
-                        className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
-                        key={item.id}
-                      >
-                        {index > 0 && (
-                          <Button
-                            type="button"
-                            size="iconSm"
-                            variant="neutralGhost"
-                            className="absolute top-1 right-1"
-                            onClick={() =>
-                              handleRemoveCompositionProducts(index)
-                            }
-                          >
-                            <LucideIcon icon="Trash2" className="size-5" />
-                          </Button>
-                        )}
-                        <FormInput
-                          name={`items.${index}.name`}
-                          label="Nome da composição"
-                          width="flex-[1_0_100%]"
-                        />
-                        <UnitOfMeasureField
-                          name={`items.${index}.unitKind`}
-                          label="Unidade comercial"
-                          width="flex-[1_0_200px]"
-                        />
-                        <MeasurementInput
-                          control={control}
-                          index={index}
-                          unitKind={watch(`items.${index}.unitKind`)}
-                        />
-                        <UnitCostInput
-                          control={control}
-                          name={`items.${index}.unitCost`}
-                          width="flex-[1_0_140px]"
-                          index={index}
-                        />
-                        <FormBrlInput
-                          name={`items.${index}.salePrice`}
-                          label="Valor de venda"
-                          startAdornment={<>R$</>}
-                          width="flex-[1_0_140px]"
-                          disabled
-                        />
-                      </div>
-                    ))}
-                  {canAddComposition && (
-                    <div className="w-full">
-                      <Button
-                        type="button"
-                        variant="none"
-                        className="flex justify-center items-center mx-auto gap-3 py-8"
-                        onClick={handleAppendProductItems}
-                      >
-                        <FeaturedIcon
-                          variant="light"
-                          Icon={IconCirclePlus}
-                          rounded
-                        />
-                        <p className="text-sm text-gray-600 font-medium">
-                          Adicionar composição
-                        </p>
-                      </Button>
+                      <UnitCostInput
+                        control={control}
+                        name={`items.${index}.unitCost`}
+                        width="flex-[1_0_140px]"
+                        index={index}
+                      />
+                      <FormBrlInput
+                        name={`items.${index}.salePrice`}
+                        label="Valor de venda"
+                        startAdornment={<>R$</>}
+                        width="flex-[1_0_140px]"
+                        disabled
+                      />
                     </div>
-                  )}
-                  <FormImageUpload control={control} name="imageUrl" />
-                  <FormTextarea
-                    name="technicalDescription"
-                    label="Descritivo técnico"
-                    placeholder="Digite aqui."
-                  />
-                  <div className="flex gap-6">
-                    <FormSwitch
-                      name="allowEditValues"
-                      label="Permitir editar valor"
-                    />
-                    <FormSwitch
-                      name="allowEditDescription"
-                      label="Permitir editar descrição"
-                    />
+                  ))}
+                {canAddComposition && (
+                  <div className="w-full">
+                    <Button
+                      type="button"
+                      variant="none"
+                      className="flex justify-center items-center mx-auto gap-3 py-8"
+                      onClick={handleAppendProductItems}
+                    >
+                      <FeaturedIcon
+                        variant="light"
+                        Icon={IconCirclePlus}
+                        rounded
+                      />
+                      <p className="text-sm text-gray-600 font-medium">
+                        Adicionar composição
+                      </p>
+                    </Button>
                   </div>
-                  {canShowProductionStages && <ProductionStages />}
-                </form>
-              </Form>
-            </div>
-            <DialogFooter className="sm:justify-between">
-              <div className="flex items-center space-x-2">
-                {!editMode ? (
-                  <CheckboxBasic
-                    name="inserir-outro"
-                    label="Inserir outro depois deste"
-                    checked={editMode ? false : insertAnother}
-                    onCheckedChange={(value) => setInsertAnother(value)}
+                )}
+                <FormImageUpload control={control} name="imageUrl" />
+                <FormTextarea
+                  name="technicalDescription"
+                  label="Descritivo técnico"
+                  placeholder="Digite aqui."
+                />
+                <div className="flex gap-6">
+                  <FormSwitch
+                    name="allowEditValues"
+                    label="Permitir editar valor"
                   />
-                ) : null}
-              </div>
-              <div className="space-x-4">
+                  <FormSwitch
+                    name="allowEditDescription"
+                    label="Permitir editar descrição"
+                  />
+                </div>
+                {canShowProductionStages && <ProductionStages />}
+              </form>
+            </Form>
+          </div>
+          <DialogFooter className="sm:justify-between">
+            <div className="flex items-center space-x-2">
+              {!editMode ? (
+                <CheckboxBasic
+                  name="inserir-outro"
+                  label="Inserir outro depois deste"
+                  checked={editMode ? false : insertAnother}
+                  onCheckedChange={(value) => setInsertAnother(value)}
+                />
+              ) : null}
+            </div>
+            <div className="space-x-4">
+              <Button
+                type="button"
+                variant="neutralOutline"
+                onClick={handleToggleModal}
+              >
+                Cancelar
+              </Button>
+              {process.env.NODE_ENV === 'development' && (
                 <Button
                   type="button"
                   variant="neutralOutline"
-                  onClick={handleToggleModal}
+                  onClick={() => {
+                    form.trigger()
+                    console.info('form', form.getValues())
+                    console.info('errors', form.formState.errors)
+                  }}
                 >
-                  Cancelar
+                  Trigger
                 </Button>
-                {process.env.NODE_ENV === 'development' && (
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() => {
-                      form.trigger()
-                      console.info('form', form.getValues())
-                      console.info('errors', form.formState.errors)
-                    }}
-                  >
-                    Trigger
-                  </Button>
-                )}
-                <Button
-                  type="submit"
-                  form="new-product"
-                  RightIcon={IconCircleCheck}
-                  onClick={handleSubmit(onSubmit)}
-                  disabled={form.formState?.isSubmitting}
-                  isLoading={form.formState?.isSubmitting}
-                >
-                  Salvar
-                </Button>
-              </div>
-            </DialogFooter>
-          </DialogContent>
-        )}
+              )}
+              <Button
+                type="submit"
+                form="new-product"
+                RightIcon={IconCircleCheck}
+                onClick={handleSubmit(onSubmit)}
+                disabled={form.formState?.isSubmitting}
+                isLoading={form.formState?.isSubmitting}
+              >
+                Salvar
+              </Button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </PermissionGate>
   )

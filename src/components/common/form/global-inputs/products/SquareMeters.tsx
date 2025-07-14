@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 // Lib Imports
-import { cn } from '@/lib/utils'
+import { cn, calculateAreaFromMillimeters } from '@/lib/utils'
 import { HTMLInputTypeAttribute } from 'react'
 
 // Type Imports
@@ -50,7 +50,7 @@ export function SquareMeters<T extends FieldValues>({
 }: Props<T>) {
   const { watch } = useFormContext()
 
-  // Calcular valores de largura e altura
+  // Calcular valores de largura e altura (em milímetros do banco)
   const widthValue = watch(`items[${index}].width`) ?? 0
   const heightValue = watch(`items[${index}].height`) ?? 0
   const quantity = watch(`items[${index}].quantity`) ?? 1
@@ -60,9 +60,15 @@ export function SquareMeters<T extends FieldValues>({
   // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
   // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
   const isSimpleProduct = items.length === 1
-  const area = isSimpleProduct
-    ? widthValue * heightValue * quantity || 0
-    : widthValue * heightValue * quantity * productQuantity || 0
+
+  // Calcular área em metros quadrados a partir dos milímetros do banco
+  const areaInSquareMeters = calculateAreaFromMillimeters(
+    widthValue,
+    heightValue,
+  )
+  const totalArea = isSimpleProduct
+    ? areaInSquareMeters * quantity
+    : areaInSquareMeters * quantity * productQuantity
 
   // Subcomponente para campo de número com rótulo
   const renderLinearMeter = (fieldName: string, label: string) => (
@@ -93,7 +99,7 @@ export function SquareMeters<T extends FieldValues>({
                   <Input
                     disabled
                     placeholder={placeholder || label}
-                    value={area ? `${area} M²` : ''}
+                    value={totalArea ? `${totalArea.toFixed(3)} M²` : ''}
                     className={className}
                     onChange={onHasChanged}
                     inputMode="decimal"

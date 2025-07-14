@@ -618,3 +618,49 @@ export function correctItemDiscountValues(
 
   return item
 }
+
+/**
+ * Converte metros para milímetros
+ * @param meters - Valor em metros
+ * @returns Valor em milímetros
+ */
+export function metersToMillimeters(meters: number): number {
+  return meters * 1000
+}
+
+/**
+ * Converte milímetros para metros
+ * @param millimeters - Valor em milímetros
+ * @returns Valor em metros
+ */
+export function millimetersToMeters(millimeters: number): number {
+  return millimeters / 1000
+}
+
+/**
+ * Calcula área em metros quadrados a partir de dimensões em milímetros
+ * @param widthMm - Largura em milímetros
+ * @param heightMm - Altura em milímetros
+ * @returns Área em metros quadrados
+ */
+export function calculateAreaFromMillimeters(
+  widthMm: number,
+  heightMm: number,
+): number {
+  const widthM = millimetersToMeters(widthMm)
+  const heightM = millimetersToMeters(heightMm)
+  return widthM * heightM
+}
+
+/**
+ * Calcula área em milímetros quadrados a partir de dimensões em milímetros
+ * @param widthMm - Largura em milímetros
+ * @param heightMm - Altura em milímetros
+ * @returns Área em milímetros quadrados
+ */
+export function calculateAreaInMillimeters(
+  widthMm: number,
+  heightMm: number,
+): number {
+  return widthMm * heightMm
+}

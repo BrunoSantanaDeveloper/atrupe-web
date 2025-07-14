@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 // Lib Imports
-import { cn } from '@/lib/utils'
+import { cn, metersToMillimeters, millimetersToMeters } from '@/lib/utils'
 import { HTMLInputTypeAttribute } from 'react'
 
 // Type Imports
@@ -55,14 +55,20 @@ export function LinearMeter<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={2}
+              decimalScale={3}
               placeholder={placeholder}
               onValueChange={(e) => {
+                const metersValue = e.floatValue ?? 0
+                // Converter metros para milímetros antes de salvar
+                const millimetersValue = metersToMillimeters(metersValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(name, e.floatValue ?? (0 as any))
+                setValue(name, millimetersValue as any)
                 onHasChanged?.()
               }}
-              value={field?.value || ''}
+              // Converter milímetros para metros na exibição
+              value={
+                field?.value ? millimetersToMeters(field.value).toString() : ''
+              }
               // endAdornment={<>MT</>}
               className={className}
               inputMode="decimal"

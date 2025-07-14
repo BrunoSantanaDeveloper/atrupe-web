@@ -96,8 +96,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
                           <NewProductTriggerButton
                             editMode
                             onOpenChange={() => {
-                              setSelectedProductId(product?.id)
                               setOpenDialog('edit-product')
+                              setSelectedProductId(product?.id)
                             }}
                           />
                         </PermissionGate>
@@ -126,12 +126,13 @@ export function ProductsData({ searchParams, tabs }: Props) {
       />
       <NewProduct
         open={openDialog === 'edit-product'}
-        // key={product?.id}
         editMode
         productId={selectedProductId}
-        onOpenChange={() => {
-          setOpenDialog('')
-          setSelectedProductId('')
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenDialog('')
+            setSelectedProductId('')
+          }
         }}
       />
       {isLoading || hasData ? (
