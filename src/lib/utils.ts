@@ -149,6 +149,51 @@ export function maskTime(value: string) {
   return value
 }
 
+// Retorna o valor formatado em HH:MM:SS
+export function maskTimeWithSeconds(
+  value: string,
+  limitHours: boolean = false,
+) {
+  value = value.replace(/\D/g, '')
+
+  // Para duração, permitir mais dígitos para horas (até 4 dígitos = 9999 horas)
+  const maxLength = limitHours ? 6 : 8
+  value = value.slice(0, maxLength)
+
+  if (value.length >= 5) {
+    if (limitHours) {
+      value = value.replace(/(\d{1,2})(\d{2})(\d{2})/, '$1:$2:$3')
+    } else {
+      value = value.replace(/(\d{1,4})(\d{2})(\d{2})/, '$1:$2:$3')
+    }
+  } else if (value.length >= 3) {
+    if (limitHours) {
+      value = value.replace(/(\d{1,2})(\d{2})/, '$1:$2:')
+    } else {
+      value = value.replace(/(\d{1,4})(\d{2})/, '$1:$2:')
+    }
+  } else if (value.length >= 2) {
+    value = value.replace(/(\d{1,4})/, '$1:')
+  }
+
+  // Validar limites
+  if (value.includes(':')) {
+    const parts = value.split(':')
+    const hours = parseInt(parts[0], 10)
+    const minutes = parseInt(parts[1], 10)
+    const seconds = parseInt(parts[2], 10)
+
+    // Só limitar horas se limitHours for true (para horários de relógio)
+    if (limitHours && hours > 23) parts[0] = '23'
+    if (minutes > 59) parts[1] = '59'
+    if (seconds > 59) parts[2] = '59'
+
+    return parts.join(':')
+  }
+
+  return value
+}
+
 export function getRandomValue([min, max]: [number, number]) {
   const randomValue = (Math.random() * (max - min) + min).toFixed(2)
 

@@ -361,14 +361,15 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         <UnitCostInput
                           control={control}
                           name={`items.${index}.unitCost`}
-                          width="flex-[1_0_200px] max-w-[290px]"
+                          width="flex-[1_0_140px]"
                           index={index}
                         />
                         <FormBrlInput
                           name={`items.${index}.salePrice`}
-                          label="Preço de venda"
+                          label="Valor de venda"
                           startAdornment={<>R$</>}
-                          width="flex-[1_0_200px] max-w-[290px]"
+                          width="flex-[1_0_140px]"
+                          disabled
                         />
                       </div>
                     ))}

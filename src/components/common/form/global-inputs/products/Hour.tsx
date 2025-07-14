@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 // Lib Imports
-import { cn, maskTime } from '@/lib/utils'
+import { cn, maskTimeWithSeconds } from '@/lib/utils'
 import React, { HTMLInputTypeAttribute, useState } from 'react'
 
 // Type Imports
@@ -27,32 +27,38 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
-// Função para converter segundos em string HH:MM
+// Função para converter segundos em string HH:MM:SS
 function secondsToTimeString(seconds: number): string {
   if (!seconds || seconds <= 0) return ''
 
   const hours = Math.floor(seconds / 3600)
   const mins = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
 
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
 }
 
-// Função para converter string HH:MM em segundos
+// Função para converter string HH:MM:SS em segundos
 function timeStringToSeconds(timeString: string): number {
-  if (!timeString || timeString === '00:00' || timeString === '') return 0
+  if (!timeString || timeString === '00:00:00' || timeString === '') return 0
 
-  const [hours, minutes] = timeString.split(':').map(Number)
+  const parts = timeString.split(':').map(Number)
 
-  if (isNaN(hours) || isNaN(minutes)) return 0
+  // Suporta tanto HH:MM quanto HH:MM:SS
+  const hours = parts[0] || 0
+  const minutes = parts[1] || 0
+  const seconds = parts[2] || 0
 
-  return hours * 3600 + minutes * 60
+  if (isNaN(hours) || isNaN(minutes) || isNaN(seconds)) return 0
+
+  return hours * 3600 + minutes * 60 + seconds
 }
 
 export function Hour<T extends FieldValues>({
   name,
   label,
   control,
-  placeholder = '00:00',
+  placeholder = '00:00:00',
   width = 'flex-[1_0_100px]',
   className,
   onHasChanged,
@@ -80,7 +86,8 @@ export function Hour<T extends FieldValues>({
                 }}
                 onChange={(e) => {
                   const rawValue = e.target.value
-                  const maskedValue = maskTime(rawValue)
+                  // Passar false para permitir horas ilimitadas (para duração de serviços)
+                  const maskedValue = maskTimeWithSeconds(rawValue, false)
 
                   // Atualizar o valor de exibição imediatamente
                   setDisplayValue(maskedValue)
@@ -96,7 +103,7 @@ export function Hour<T extends FieldValues>({
                 }}
                 endAdornment={<>H</>}
                 className={className}
-                maxLength={5}
+                maxLength={10}
               />
             </FormControl>
             <FormMessage />
