@@ -168,33 +168,35 @@ export function MeasureDefaultsDialog() {
               </div>
             </div>
           ) : (
-            <Form {...form}>
-              <form
-                id="measure-defaults"
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-wrap gap-5"
-                noValidate
-              >
-                <FormSelect<FormType>
-                  name="length"
-                  label="Comprimento"
-                  width="flex-[1_0_190px]"
-                  options={options.length}
-                />
-                <FormSelect<FormType>
-                  name="weight"
-                  label="Peso"
-                  width="flex-[1_0_190px]"
-                  options={options.weight}
-                />
-                <FormSelect<FormType>
-                  name="capacity"
-                  label="Capacidade"
-                  width="flex-[1_0_190px]"
-                  options={options.capacity}
-                />
-              </form>
-            </Form>
+            unitData?.companyDefaults && (
+              <Form {...form}>
+                <form
+                  id="measure-defaults"
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="flex flex-wrap gap-5"
+                  noValidate
+                >
+                  <FormSelect<FormType>
+                    name="length"
+                    label="Comprimento"
+                    width="flex-[1_0_190px]"
+                    options={options.length}
+                  />
+                  <FormSelect<FormType>
+                    name="weight"
+                    label="Peso"
+                    width="flex-[1_0_190px]"
+                    options={options.weight}
+                  />
+                  <FormSelect<FormType>
+                    name="capacity"
+                    label="Capacidade"
+                    width="flex-[1_0_190px]"
+                    options={options.capacity}
+                  />
+                </form>
+              </Form>
+            )
           )}
         </DialogBody>
 

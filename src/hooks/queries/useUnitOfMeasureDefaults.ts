@@ -36,7 +36,7 @@ export function useCompanyUnitDefaults() {
   return { data, isError, isLoading }
 }
 
-// Hook para buscar variantes disponíveis por tipo
+// Hook para buscar variantes disponíveis por tipo (sem defaults)
 export function useUnitVariants(kind: 'LENGTH' | 'WEIGHT' | 'CAPACITY') {
   const { data, isError, isLoading } = useQuery({
     queryKey: ['unit-variants', kind],
@@ -47,6 +47,24 @@ export function useUnitVariants(kind: 'LENGTH' | 'WEIGHT' | 'CAPACITY') {
       return response.data as UnitVariant[]
     },
     staleTime: 10 * 60 * 1000, // 10 minutos
+  })
+
+  return { data, isError, isLoading }
+}
+
+// Hook para buscar variantes com defaults da empresa
+export function useUnitVariantsWithDefaults(
+  kind: 'LENGTH' | 'WEIGHT' | 'CAPACITY',
+) {
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ['unit-variants-with-defaults', kind],
+    queryFn: async () => {
+      const response = await getData({
+        route: `/unit-of-measure/variants/${kind}/with-defaults`,
+      })
+      return response.data as UnitVariant[]
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutos
   })
 
   return { data, isError, isLoading }
@@ -64,9 +82,9 @@ export function useUnitOfMeasureComplete() {
         capacityResponse,
       ] = await Promise.all([
         getData({ route: '/unit-of-measure/company-defaults' }),
-        getData({ route: '/unit-of-measure/variants/LENGTH' }),
-        getData({ route: '/unit-of-measure/variants/WEIGHT' }),
-        getData({ route: '/unit-of-measure/variants/CAPACITY' }),
+        getData({ route: '/unit-of-measure/variants/LENGTH/with-defaults' }),
+        getData({ route: '/unit-of-measure/variants/WEIGHT/with-defaults' }),
+        getData({ route: '/unit-of-measure/variants/CAPACITY/with-defaults' }),
       ])
 
       return {

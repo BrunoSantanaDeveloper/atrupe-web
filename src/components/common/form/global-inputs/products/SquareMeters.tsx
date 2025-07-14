@@ -70,7 +70,7 @@ export function SquareMeters<T extends FieldValues>({
       control={control}
       name={fieldName as Path<T>}
       label={label}
-      width="flex-[1_0_130px]"
+      width="flex-[1_0_100px]"
       onHasChanged={onHasChanged}
       {...props}
     />

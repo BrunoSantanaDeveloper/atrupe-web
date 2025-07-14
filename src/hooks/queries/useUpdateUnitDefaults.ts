@@ -22,6 +22,14 @@ export function useUpdateUnitDefaults() {
       queryClient.invalidateQueries({
         queryKey: ['company-unit-defaults'],
       })
+      // Invalidar cache das variantes com defaults
+      queryClient.invalidateQueries({
+        queryKey: ['unit-variants-with-defaults'],
+      })
+      // Invalidar cache completo
+      queryClient.invalidateQueries({
+        queryKey: ['unit-of-measure-complete'],
+      })
     },
   })
 

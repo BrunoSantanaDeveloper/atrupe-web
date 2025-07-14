@@ -103,7 +103,7 @@ export function UnitCostInput<T extends FieldValues>({
   label,
   control,
   placeholder = label,
-  width = 'flex-[1_0_200px]',
+  width = 'flex-[1_0_140px]',
   className,
   index,
   onHasChanged,

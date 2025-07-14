@@ -262,7 +262,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                 <form
                   id="new-product"
                   onSubmit={handleSubmit(onSubmit)}
-                  className="flex flex-wrap gap-5"
+                  className="flex flex-wrap gap-4"
                   noValidate
                 >
                   <SelectSectorField
@@ -307,24 +307,26 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         index={0}
                         unitKind={watch('items.0.unitKind')}
                       />
-                      <UnitCostInput
-                        control={control}
-                        name="items.0.unitCost"
-                        width="flex-[1_0_200px] max-w-[290px]"
-                        index={0}
-                      />
-                      <FormBrlInput
-                        name={`items.0.salePrice`}
-                        label="Preço de venda"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_200px] max-w-[290px]"
-                      />
+                      <div className="flex flex-wrap gap-4">
+                        <UnitCostInput
+                          control={control}
+                          name="items.0.unitCost"
+                          width="flex-[1_0_140px]"
+                          index={0}
+                        />
+                        <FormBrlInput
+                          name={`items.0.salePrice`}
+                          label="Valor de venda"
+                          startAdornment={<>R$</>}
+                          width="flex-[1_0_140px]"
+                        />
+                      </div>
                     </>
                   )}
                   {items?.fields?.length > 1 &&
                     items?.fields?.map((item, index) => (
                       <div
-                        className="flex flex-wrap gap-5 bg-white p-6 rounded-xl relative justify-start w-full"
+                        className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
                         key={item.id}
                       >
                         {index > 0 && (
