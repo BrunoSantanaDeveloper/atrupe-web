@@ -58,7 +58,7 @@ export function MeasurementInput<T extends FieldValues>({
           <LinearMeter<T>
             {...commonProps}
             {...props}
-            name={`items.${index}.width` as Path<T>}
+            name={`items.${index}.length` as Path<T>}
             label="Medida"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}

@@ -88,7 +88,7 @@ function calculateTotalQuantity(
 
     case 'LENGTH': {
       // Converter milímetros para metros
-      const lengthInMeters = millimetersToMeters(item.width || item.length || 0)
+      const lengthInMeters = millimetersToMeters(item.length || 0)
       return lengthInMeters * baseMultiplier
     }
 
