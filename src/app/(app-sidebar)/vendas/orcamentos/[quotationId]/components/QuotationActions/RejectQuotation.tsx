@@ -47,6 +47,7 @@ import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 
 interface Props {
   data: QuotationType
@@ -74,7 +75,9 @@ export function RejectQuotation({ data }: Props) {
         data: { reasonId: reason },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
     },
   })
 
@@ -95,7 +98,11 @@ export function RejectQuotation({ data }: Props) {
         {
           loading: 'Aguarde...',
           success: () => {
-            queryClient.invalidateQueries()
+            queryClient.invalidateQueries({
+              queryKey: [QUOTATION_DATA_QUERY_KEY],
+            })
+            queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+            queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
             return 'Orçamento rejeitado'
           },
           error: 'Ocorreu um erro',

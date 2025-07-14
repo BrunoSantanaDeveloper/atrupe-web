@@ -117,7 +117,8 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
     mutationFn: (id: string) =>
       updateItem('deliveryScheduleFinishRoute', id, {}),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
     },
   })
 

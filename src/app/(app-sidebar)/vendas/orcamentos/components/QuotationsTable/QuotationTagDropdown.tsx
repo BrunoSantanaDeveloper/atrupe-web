@@ -47,7 +47,8 @@ function QuotationTag({ quotation, tagsList }: Props) {
     mutationFn: (quotationStatus: { tagId: string | null }) =>
       updateItem('quotationRoute', quotation.id, quotationStatus),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
     },
   })
 

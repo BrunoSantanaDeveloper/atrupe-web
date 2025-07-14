@@ -20,6 +20,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Types
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // Actions
 import { deleteItem } from '@/actions/_cruds'
@@ -41,7 +42,7 @@ export function DeleteItemDialog({ open, setOpen, rowData }: Props) {
     mutationFn: () =>
       deleteItem('quotationRoute', `remove-product/${rowData?.id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 

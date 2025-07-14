@@ -57,6 +57,8 @@ import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
 
+import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
+
 interface Props {
   open: boolean
   onClose: () => void
@@ -311,7 +313,9 @@ export function QuotationProdDetailModal({
       })
         .then(() => {
           toast.success('Produto adicionado com sucesso!')
-          queryClient.invalidateQueries()
+          queryClient.invalidateQueries({
+            queryKey: [QUOTATION_DATA_QUERY_KEY],
+          })
           handleToggleModal()
           reset()
         })
@@ -330,7 +334,9 @@ export function QuotationProdDetailModal({
       )
         .then(() => {
           toast.success('Produto editado com sucesso!')
-          queryClient.invalidateQueries()
+          queryClient.invalidateQueries({
+            queryKey: [QUOTATION_DATA_QUERY_KEY],
+          })
           handleToggleModal()
           reset()
         })

@@ -47,6 +47,8 @@ interface Props {
   id: string
 }
 
+export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
+
 export function Quotation({ id }: Props) {
   const isMutating = useIsMutating()
   const isFetching = useIsFetching()
@@ -54,7 +56,7 @@ export function Quotation({ id }: Props) {
 
   const { data, isLoading, error } = useQuery<QuotationType>({
     staleTime: Infinity,
-    queryKey: ['quotation-data', id],
+    queryKey: [QUOTATION_DATA_QUERY_KEY, id],
     queryFn: () => getItemOld({ route: 'quotationRoute', id }),
   })
 

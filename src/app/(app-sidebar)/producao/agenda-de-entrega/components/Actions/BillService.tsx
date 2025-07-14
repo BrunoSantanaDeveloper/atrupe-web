@@ -42,7 +42,8 @@ export function BillServiceDialog({ open, rowData, setOpen }: Props) {
         customPath: `/${rowData?.order?.quotation?.id}`,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
     },
   })
 

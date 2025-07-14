@@ -41,6 +41,7 @@ import {
   IconAlertTriangle,
   IconProgressCheck,
 } from '@tabler/icons-react'
+import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 
 const alertDefaultValues = {
   title: '',
@@ -101,7 +102,9 @@ export function FinishQuotation({ data, canFinish }: Props) {
     setAlertDialog(alertDefaultValues)
     setOpen(false)
     setOpenSuccess(true)
-    queryClient.invalidateQueries()
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
   return (

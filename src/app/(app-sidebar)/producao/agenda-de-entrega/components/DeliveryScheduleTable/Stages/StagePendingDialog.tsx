@@ -63,7 +63,7 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
         notes: rowData?.status === 'PENDING' ? '' : data.pendingDescription,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       toast.success('Status alterado!')
     },
     onSettled: () => {

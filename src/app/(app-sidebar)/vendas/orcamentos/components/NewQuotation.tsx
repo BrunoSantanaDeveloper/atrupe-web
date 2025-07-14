@@ -47,6 +47,8 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { QuotationFormType, quotationSchema } from './schema'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
+import { QUOTATION_DATA_QUERY_KEY } from '../[quotationId]/components/Quotation'
+
 const serviceOptions = [
   { value: 'direct', label: 'Venda Direta' },
   {
@@ -180,7 +182,9 @@ export function NewQuotationModal({
 
       if (response.success) {
         toast.success('Orçamento atualizado com sucesso!')
-        queryClient.invalidateQueries()
+        queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+        queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+        queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
         handleCloseModal()
       } else {
         toast.error(response.message)
@@ -197,7 +201,8 @@ export function NewQuotationModal({
         }
         handleCloseModal()
         toast.success('Orçamento criado com sucesso!')
-        queryClient.invalidateQueries()
+        queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+        queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
       } else {
         console.error('error ❌', response.message)
         toast.error(

@@ -60,7 +60,7 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
     mutationFn: (data: FormType) =>
       updateItem('deliveryScheduleRoute', rowData?.id || '', data),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
     },
   })
 

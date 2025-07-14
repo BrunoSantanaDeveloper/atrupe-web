@@ -46,6 +46,7 @@ import { updateItem } from '@/actions/_cruds'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // TODO : Pegar opções em GET /quotation/delivery
 const deliveryTypeOptions = [
@@ -121,7 +122,7 @@ export function DeliveryDialog({ quotationData }: Props) {
     mutationFn: (data: FormType) =>
       updateItem('deliveryInfoRoute', deliveryInfo.id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 

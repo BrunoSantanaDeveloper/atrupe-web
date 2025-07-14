@@ -40,6 +40,7 @@ import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Libs
 import { parseCurrencyToBrl } from '@/lib/utils'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 interface Props {
   open: boolean
@@ -136,7 +137,7 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     mutationFn: (body: FormType) =>
       updateItem('quotationRoute', `update-product/${rowData?.id}`, body),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 

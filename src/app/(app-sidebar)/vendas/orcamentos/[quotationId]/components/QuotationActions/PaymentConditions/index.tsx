@@ -59,6 +59,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
 import { InstallmentQty } from './InstallmentQty'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 interface Props {
   quotationData: QuotationType
@@ -151,7 +152,7 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
         data: body,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 

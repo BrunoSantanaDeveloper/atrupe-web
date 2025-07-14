@@ -36,6 +36,7 @@ import {
   IconCircleCheck,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 
 interface Props {
   data: QuotationType
@@ -53,7 +54,9 @@ export function OpenQuotation({ data }: Props) {
         customPath: `/${data.id}/open`,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
     },
   })
 

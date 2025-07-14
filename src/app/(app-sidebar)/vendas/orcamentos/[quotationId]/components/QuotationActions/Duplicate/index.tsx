@@ -86,7 +86,8 @@ export function DuplicateDialog(props: Props) {
         data,
       }),
     onSuccess: (res) => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
       setNewQuotationId(res.id)
       setOpen(false)
       reset(defaultValues)

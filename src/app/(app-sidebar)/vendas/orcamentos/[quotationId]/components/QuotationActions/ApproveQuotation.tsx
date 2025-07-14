@@ -34,6 +34,8 @@ import { createItem } from '@/actions/_cruds'
 // Icons
 import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
 
+import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
+
 interface Props {
   data: QuotationType
 }
@@ -52,12 +54,14 @@ export function ApproveQuotation({ data }: Props) {
         customPath: `/${data.id}/approve`,
       }),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['quotation-data'] })
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: ['order-data'] })
       queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
       queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
       queryClient.invalidateQueries({ queryKey: ['order-totals'] })
       queryClient.invalidateQueries({ queryKey: ['order-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
 
       setTimeout(() => {
         router.replace(`/vendas/ordens-de-servico/${data.id}`)

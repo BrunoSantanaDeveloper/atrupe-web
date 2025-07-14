@@ -67,7 +67,7 @@ export function DeliveryScheduleDateDialog({ open, rowData, setOpen }: Props) {
     mutationFn: (body: { scheduledDate: Date; addScheduleTime: boolean }) =>
       updateItem('deliveryScheduleRoute', `${rowData?.id}`, body),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
     },
   })
   const handleSubmit = async () => {

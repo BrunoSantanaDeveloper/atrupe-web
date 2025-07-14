@@ -18,6 +18,7 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { itemNotesSchema, type ItemNotesType } from './schema'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // Icons
 import { IconBulb, IconCircleCheck } from '@tabler/icons-react'
@@ -62,7 +63,7 @@ export function ItemNotesDialog({ open, setOpen, rowData }: Props) {
     mutationFn: (data: ItemNotesType) =>
       updateItem('quotationRoute', `update-product/${rowData?.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       toast.success('Observações salvas!')
       setOpen('')
     },

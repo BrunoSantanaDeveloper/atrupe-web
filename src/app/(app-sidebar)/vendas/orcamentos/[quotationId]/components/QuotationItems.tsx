@@ -63,6 +63,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { type ModalType, useQuotation } from '@/contexts/quotationContext'
+import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 
 // Actions
 import { createItem } from '@/actions/_cruds'
@@ -91,7 +92,7 @@ export function QuotationItems({ data }: Props) {
         customPath: `/duplicate-product/${id}`,
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 

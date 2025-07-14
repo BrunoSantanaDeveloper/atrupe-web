@@ -54,7 +54,7 @@ export function StageStatusDropdown({
     mutationFn: (status: string) =>
       updateItem('productionStage', rowData.id, { status }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
       router.refresh()
     },
   })
