@@ -68,6 +68,7 @@ import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 // Actions
 import { createItem } from '@/actions/_cruds'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { Separator } from '@/components/ui/separator'
 
 interface Props {
   data: QuotationType
@@ -104,19 +105,10 @@ export function QuotationItems({ data }: Props) {
     }
   }
 
+  const items = data?.quotationItems
+
   return (
     <>
-      <QuotationCategorySelectorModal
-        open={modalType === 'sectorSelector'}
-        onSelect={() => openChangeModal(true, 'productsList')}
-      />
-      <QuotationItemsModal open={modalType === 'productsList'} />
-      <QuotationProdDetailModal open={modalType === 'productDetail'} />
-      <QuotationProdDetailModal
-        open={modalType === 'productDetailEdit'}
-        editMode={true}
-        data={rowData}
-      />
       <Card className="w-full">
         <CardHeader>
           <div className="flex gap-3 items-center">
@@ -127,256 +119,300 @@ export function QuotationItems({ data }: Props) {
           </div>
         </CardHeader>
         <CardContent className="pb-0">
-          <Accordion
-            type="multiple"
-            value={accordionValue}
-            onValueChange={setAccordionValue}
-          >
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="min-w-[390px]">Referência</TableHead>
-                  <TableHead>Unidade</TableHead>
-                  <TableHead>Qtd.</TableHead>
-                  <TableHead>Valor unitário</TableHead>
-                  <TableHead>Desconto</TableHead>
-                  <TableHead>Valor final</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody className="[&_tr:last-child]:border-b">
-                {data?.quotationItems?.map((item, index) => (
-                  <AccordionItem
-                    asChild
-                    key={item?.id + index}
-                    value={item?.id + index}
-                  >
-                    <Fragment>
-                      <TableRow
-                        className={cn(
-                          accordionValue?.includes(item?.id + index)
-                            ? 'bg-gray-100'
-                            : 'border-0',
-                        )}
+          {items?.length ? (
+            <>
+              <Accordion
+                type="multiple"
+                value={accordionValue}
+                onValueChange={setAccordionValue}
+              >
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="min-w-[390px]">
+                        Referência
+                      </TableHead>
+                      <TableHead>Unidade</TableHead>
+                      <TableHead>Qtd.</TableHead>
+                      <TableHead>Valor unitário</TableHead>
+                      <TableHead>Desconto</TableHead>
+                      <TableHead>Valor final</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody className="[&_tr:last-child]:border-b">
+                    {items?.map((item, index) => (
+                      <AccordionItem
+                        asChild
+                        key={item?.id + index}
+                        value={item?.id + index}
                       >
-                        <TableCell>
-                          <AccordionTrigger className="flex-row-reverse justify-end px-1 [&>svg]:text-gray [&>svg]:size-5 gap-3">
-                            {item?.description || '-'}
-                          </AccordionTrigger>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="blueLight">UN</Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-gray">
-                          {item?.product?.quantity || '-'}
-                        </TableCell>
-                        <TableCell className="text-sm text-gray">
-                          {formatCurrencyToBrl(item?.unitValue)}
-                        </TableCell>
-                        <TableCell className="text-warning-600 text-nowrap">
-                          -
-                          {formatCurrencyToBrl(
-                            Math.max(0, item?.totalValue - item?.finalValue),
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm text-gray">
-                          {formatCurrencyToBrl(item?.finalValue)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <TooltipProvider>
-                              <PermissionGate
-                                permissions={['sale:quotation:edit']}
-                              >
-                                <ActionButton
-                                  Icon={IconMessage}
-                                  tooltip="Observações"
-                                  onClick={() => {
-                                    setOpenDialog('notes')
-                                    setRowData(item)
-                                  }}
-                                  badge={
-                                    item?.notes ? 'warningLight' : undefined
-                                  }
-                                  disabled={actionDisabled('notes', status)}
-                                />
-                              </PermissionGate>
-
-                              <PermissionGate
-                                permissions={['sale:quotation:view']}
-                              >
-                                <ActionButton
-                                  Icon={IconPhoto}
-                                  tooltip="Imagem"
-                                  onClick={() => {
-                                    setOpenDialog('image')
-                                    setRowData(item)
-                                  }}
-                                  disabled={actionDisabled('image', status)}
-                                />
-                              </PermissionGate>
-
-                              <PermissionGate
-                                permissions={['sale:quotation:create']}
-                              >
-                                <ActionButton
-                                  Icon={IconCopy}
-                                  tooltip="Duplicar item"
-                                  onClick={() => handleDuplicateItem(item)}
-                                  disabled={actionDisabled('duplicate', status)}
-                                />
-                              </PermissionGate>
-
-                              <PermissionGate
-                                permissions={['sale:quotation:edit']}
-                              >
-                                <ActionButton
-                                  Icon={IconPencil}
-                                  tooltip="Editar item"
-                                  onClick={() => {
-                                    setRowData(item)
-                                    openChangeModal(true, 'productDetailEdit')
-                                  }}
-                                  disabled={actionDisabled('edit', status)}
-                                />
-                              </PermissionGate>
-
-                              <PermissionGate
-                                permissions={['sale:quotation:edit']}
-                              >
-                                <ActionButton
-                                  Icon={IconCoin}
-                                  tooltip="Valores"
-                                  onClick={() => {
-                                    setOpenDialog('values')
-                                    setRowData(item)
-                                  }}
-                                  disabled={actionDisabled('values', status)}
-                                />
-                              </PermissionGate>
-
-                              <PermissionGate
-                                permissions={['sale:quotation:delete']}
-                              >
-                                <ActionButton
-                                  Icon={IconTrashX}
-                                  tooltip="Excluir item"
-                                  onClick={() => {
-                                    setOpenDialog('delete')
-                                    setRowData(item)
-                                  }}
-                                  disabled={actionDisabled('delete', status)}
-                                />
-                              </PermissionGate>
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow className="bg-gray-50 border-0">
-                        <TableCell className="pl-14 py-0">
-                          <AccordionContent className="flex items-center gap-3 py-5 font-medium text-gray-600">
-                            <FeaturedIcon
-                              Icon={IconBulb}
-                              size="sm"
-                              variant="neutralLight"
-                            />
-                            {item?.product?.name}
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0">
-                          <AccordionContent className="py-4">
-                            <Badge variant="blueLight">UN</Badge>
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0 text-sm text-gray">
-                          <AccordionContent className="py-4">
-                            {item?.product?.quantity || '-'}
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0 text-sm text-gray">
-                          <AccordionContent className="py-4">
-                            {formatCurrencyToBrl(item?.product?.unitValue)}
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0 text-sm text-gray">
-                          <AccordionContent className="py-4">
-                            -
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0 text-sm text-gray">
-                          <AccordionContent className="py-4">
-                            {formatCurrencyToBrl(item?.product?.finalValue)}
-                          </AccordionContent>
-                        </TableCell>
-                        <TableCell className="py-0 text-sm text-gray">
-                          <AccordionContent className="py-4"></AccordionContent>
-                        </TableCell>
-                      </TableRow>
-                      {item?.product?.compositions?.length
-                        ? item?.product?.compositions?.map(
-                            (composition, index) => (
-                              <Fragment key={composition?.id}>
-                                <TableRow
-                                  className={cn(
-                                    item?.product?.compositions?.length ===
-                                      index + 1
-                                      ? 'border-b'
-                                      : 'border-0',
-                                    'bg-gray-50 ',
-                                  )}
-                                >
-                                  <TableCell className="pl-14 py-0">
-                                    <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
-                                      <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
-                                      {composition?.name}
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4">
-                                      <Badge variant="blueLight">
-                                        {composition?.unitOfMeasure?.code ||
-                                          '-'}
-                                      </Badge>
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4">
-                                      {composition?.quantity}
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4">
-                                      {formatCurrencyToBrl(
-                                        composition?.unitValue,
+                        <Fragment>
+                          <TableRow
+                            className={cn(
+                              accordionValue?.includes(item?.id + index)
+                                ? 'bg-gray-100'
+                                : 'border-0',
+                            )}
+                          >
+                            <TableCell>
+                              <AccordionTrigger className="flex-row-reverse justify-end px-1 [&>svg]:text-gray [&>svg]:size-5 gap-3">
+                                {item?.description || '-'}
+                              </AccordionTrigger>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="blueLight">UN</Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {item?.product?.quantity || '-'}
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {formatCurrencyToBrl(item?.unitValue)}
+                            </TableCell>
+                            <TableCell className="text-warning-600 text-nowrap">
+                              -
+                              {formatCurrencyToBrl(
+                                Math.max(
+                                  0,
+                                  item?.totalValue - item?.finalValue,
+                                ),
+                              )}
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {formatCurrencyToBrl(item?.finalValue)}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconMessage}
+                                      tooltip="Observações"
+                                      onClick={() => {
+                                        setOpenDialog('notes')
+                                        setRowData(item)
+                                      }}
+                                      badge={
+                                        item?.notes ? 'warningLight' : undefined
+                                      }
+                                      disabled={actionDisabled('notes', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:view']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPhoto}
+                                      tooltip="Imagem"
+                                      onClick={() => {
+                                        setOpenDialog('image')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled('image', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:create']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconCopy}
+                                      tooltip="Duplicar item"
+                                      onClick={() => handleDuplicateItem(item)}
+                                      disabled={actionDisabled(
+                                        'duplicate',
+                                        status,
                                       )}
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4">
-                                      -
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4">
-                                      {formatCurrencyToBrl(
-                                        composition?.totalValue,
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar item"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        openChangeModal(
+                                          true,
+                                          'productDetailEdit',
+                                        )
+                                      }}
+                                      disabled={actionDisabled('edit', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconCoin}
+                                      tooltip="Valores"
+                                      onClick={() => {
+                                        setOpenDialog('values')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'values',
+                                        status,
                                       )}
-                                    </AccordionContent>
-                                  </TableCell>
-                                  <TableCell className="py-0 text-sm text-gray">
-                                    <AccordionContent className="py-4"></AccordionContent>
-                                  </TableCell>
-                                </TableRow>
-                              </Fragment>
-                            ),
-                          )
-                        : null}
-                    </Fragment>
-                  </AccordionItem>
-                ))}
-              </TableBody>
-            </Table>
-          </Accordion>
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:delete']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconTrashX}
+                                      tooltip="Excluir item"
+                                      onClick={() => {
+                                        setOpenDialog('delete')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'delete',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                          <TableRow className="bg-gray-50 border-0">
+                            <TableCell className="pl-14 py-0">
+                              <AccordionContent className="flex items-center gap-3 py-5 font-medium text-gray-600">
+                                <FeaturedIcon
+                                  Icon={IconBulb}
+                                  size="sm"
+                                  variant="neutralLight"
+                                />
+                                {item?.product?.name}
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0">
+                              <AccordionContent className="py-4">
+                                <Badge variant="blueLight">UN</Badge>
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4">
+                                {item?.product?.quantity || '-'}
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4">
+                                {formatCurrencyToBrl(item?.product?.unitValue)}
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4">
+                                -
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4">
+                                {formatCurrencyToBrl(item?.product?.finalValue)}
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4"></AccordionContent>
+                            </TableCell>
+                          </TableRow>
+                          {item?.product?.compositions?.length
+                            ? item?.product?.compositions?.map(
+                                (composition, index) => (
+                                  <Fragment key={composition?.id}>
+                                    <TableRow
+                                      className={cn(
+                                        item?.product?.compositions?.length ===
+                                          index + 1
+                                          ? 'border-b'
+                                          : 'border-0',
+                                        'bg-gray-50 ',
+                                      )}
+                                    >
+                                      <TableCell className="pl-14 py-0">
+                                        <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
+                                          <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
+                                          {composition?.name}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          <Badge variant="blueLight">
+                                            {composition?.unitOfMeasure?.code ||
+                                              '-'}
+                                          </Badge>
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {composition?.quantity}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {formatCurrencyToBrl(
+                                            composition?.unitValue,
+                                          )}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          -
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {formatCurrencyToBrl(
+                                            composition?.totalValue,
+                                          )}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4"></AccordionContent>
+                                      </TableCell>
+                                    </TableRow>
+                                  </Fragment>
+                                ),
+                              )
+                            : null}
+                        </Fragment>
+                      </AccordionItem>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Accordion>
+
+              {/* Modal de ações do item */}
+              <ItemNotesDialog
+                open={openDialog === 'notes'}
+                setOpen={setOpenDialog}
+                quotationData={data}
+                rowData={rowData}
+              />
+              <ItemImageDialog
+                open={openDialog === 'image'}
+                setOpen={setOpenDialog}
+                quotationData={data}
+                rowData={rowData}
+              />
+              <ValuesDialog
+                open={openDialog === 'values'}
+                setOpen={setOpenDialog}
+                quotationData={data}
+                rowData={rowData}
+              />
+              <DeleteItemDialog
+                open={openDialog === 'delete'}
+                setOpen={setOpenDialog}
+                quotationData={data}
+                rowData={rowData}
+              />
+            </>
+          ) : (
+            <Separator />
+          )}
         </CardContent>
         <CardFooter className="justify-center p-0">
           <PermissionGate permissions={['sale:quotation:edit']}>
@@ -401,29 +437,17 @@ export function QuotationItems({ data }: Props) {
           </PermissionGate>
         </CardFooter>
       </Card>
-      <ItemNotesDialog
-        open={openDialog === 'notes'}
-        setOpen={setOpenDialog}
-        quotationData={data}
-        rowData={rowData}
+      {/* Modal de adicionar item */}
+      <QuotationCategorySelectorModal
+        open={modalType === 'sectorSelector'}
+        onSelect={() => openChangeModal(true, 'productsList')}
       />
-      <ItemImageDialog
-        open={openDialog === 'image'}
-        setOpen={setOpenDialog}
-        quotationData={data}
-        rowData={rowData}
-      />
-      <ValuesDialog
-        open={openDialog === 'values'}
-        setOpen={setOpenDialog}
-        quotationData={data}
-        rowData={rowData}
-      />
-      <DeleteItemDialog
-        open={openDialog === 'delete'}
-        setOpen={setOpenDialog}
-        quotationData={data}
-        rowData={rowData}
+      <QuotationItemsModal open={modalType === 'productsList'} />
+      <QuotationProdDetailModal open={modalType === 'productDetail'} />
+      <QuotationProdDetailModal
+        open={modalType === 'productDetailEdit'}
+        editMode={true}
+        data={rowData}
       />
     </>
   )
