@@ -10,11 +10,7 @@ import {
 } from '@/components/ui/form'
 
 // Lib Imports
-import {
-  cn,
-  calculateAreaFromMillimeters,
-  millimetersToMeters,
-} from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 // Type Imports
 import {
@@ -41,7 +37,7 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
-// Função para obter o label baseado na unidade
+// Função para obter o label baseado na unidade visual (amigável para o usuário)
 function getUnitLabel(unitKind: string): string {
   switch (unitKind) {
     case 'AREA':
@@ -63,7 +59,67 @@ function getUnitLabel(unitKind: string): string {
   }
 }
 
-// Função para calcular a quantidade total baseada na unidade
+// Função para converter valor unitário visual para valor por unidade bruta (mantendo em centavos)
+function convertUnitCostToRaw(
+  unitKind: string,
+  visualUnitCostInCents: number,
+): number {
+  switch (unitKind) {
+    case 'AREA':
+      // R$/m² → R$/mm² (dividir por 1.000.000)
+      return Math.round(visualUnitCostInCents / 1_000_000)
+    case 'LENGTH':
+      // R$/metro → R$/mm (dividir por 1.000)
+      return Math.round(visualUnitCostInCents / 1000)
+    case 'CAPACITY':
+      // R$/litro → R$/ml (dividir por 1.000)
+      return Math.round(visualUnitCostInCents / 1000)
+    case 'WEIGHT':
+      // R$/kg → R$/mg (dividir por 1.000.000)
+      return Math.round(visualUnitCostInCents / 1_000_000)
+    case 'DISTANCE':
+      // R$/km → R$/metro (dividir por 1.000)
+      return Math.round(visualUnitCostInCents / 1000)
+    case 'DURATION':
+      // R$/hora → R$/segundo (dividir por 3.600)
+      return Math.round(visualUnitCostInCents / 3600)
+    case 'UNITY':
+    default:
+      return visualUnitCostInCents
+  }
+}
+
+// Função para converter valor por unidade bruta para valor unitário visual (mantendo em centavos)
+function convertRawToUnitCost(
+  unitKind: string,
+  rawUnitCostInCents: number,
+): number {
+  switch (unitKind) {
+    case 'AREA':
+      // R$/mm² → R$/m² (multiplicar por 1.000.000)
+      return rawUnitCostInCents * 1_000_000
+    case 'LENGTH':
+      // R$/mm → R$/metro (multiplicar por 1.000)
+      return rawUnitCostInCents * 1000
+    case 'CAPACITY':
+      // R$/ml → R$/litro (multiplicar por 1.000)
+      return rawUnitCostInCents * 1000
+    case 'WEIGHT':
+      // R$/mg → R$/kg (multiplicar por 1.000.000)
+      return rawUnitCostInCents * 1_000_000
+    case 'DISTANCE':
+      // R$/metro → R$/km (multiplicar por 1.000)
+      return rawUnitCostInCents * 1000
+    case 'DURATION':
+      // R$/segundo → R$/hora (multiplicar por 3.600)
+      return rawUnitCostInCents * 3600
+    case 'UNITY':
+    default:
+      return rawUnitCostInCents
+  }
+}
+
+// Função para calcular a quantidade total baseada na unidade (usando valores brutos)
 function calculateTotalQuantity(
   unitKind: string,
   item: Record<string, number>,
@@ -77,37 +133,32 @@ function calculateTotalQuantity(
 
   switch (unitKind) {
     case 'AREA': {
-      // item.width e item.height estão em milímetros
-      // calculateAreaFromMillimeters retorna área em m²
-      const areaInSquareMeters = calculateAreaFromMillimeters(
-        item.width || 0,
-        item.height || 0,
-      )
-      return areaInSquareMeters * baseMultiplier
+      // Calcular diretamente em mm² (valores brutos)
+      const areaInSquareMillimeters = (item.width || 0) * (item.height || 0)
+      return areaInSquareMillimeters * baseMultiplier
     }
 
     case 'LENGTH': {
-      // Converter milímetros para metros
-      const lengthInMeters = millimetersToMeters(item.length || 0)
-      return lengthInMeters * baseMultiplier
+      // Usar comprimento em mm (valor bruto)
+      return (item.length || 0) * baseMultiplier
     }
 
     case 'CAPACITY':
+      // Usar volume em ml (valor bruto)
       return (item.volume || 0) * baseMultiplier
 
     case 'WEIGHT':
+      // Usar peso em mg (valor bruto)
       return (item.weight || 0) * baseMultiplier
 
     case 'DISTANCE': {
-      // Converter metros para quilômetros para o cálculo do valor por km
-      const distanceInKilometers = (item.distance || 0) / 1000
-      return distanceInKilometers * baseMultiplier
+      // Usar distância em metros (valor bruto)
+      return (item.distance || 0) * baseMultiplier
     }
 
     case 'DURATION': {
-      // duration está em segundos, converter para horas
-      const durationInHours = (item.duration || 0) / 3600
-      return durationInHours * baseMultiplier
+      // Usar duração em segundos (valor bruto)
+      return (item.duration || 0) * baseMultiplier
     }
 
     case 'UNITY':
@@ -166,11 +217,11 @@ export function UnitCostInput<T extends FieldValues>({
   // Determinar o label dinâmico
   const dynamicLabel = label || getUnitLabel(unitKind)
 
-  // Recalcular valor de venda quando quantidade total mudar (mantém valor unitário)
+  // Recalcular valor de venda quando quantidade total mudar (mantém valor unitário bruto)
   useEffect(() => {
-    const currentUnitCost = getValues(`items.${index}.unitCost`)
-    if (totalQuantity > 0 && currentUnitCost > 0) {
-      const newSalePriceInCents = Math.round(currentUnitCost * totalQuantity)
+    const currentRawUnitCost = getValues(`items.${index}.unitCost`)
+    if (totalQuantity > 0 && currentRawUnitCost > 0) {
+      const newSalePriceInCents = Math.round(currentRawUnitCost * totalQuantity)
       const currentSalePrice = getValues(`items.${index}.salePrice`)
 
       // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
@@ -186,13 +237,13 @@ export function UnitCostInput<T extends FieldValues>({
   // Recalcular custo unitário apenas quando preço de venda mudar manualmente
   useEffect(() => {
     if (totalQuantity > 0 && salePrice > 0) {
-      // salePrice está em centavos, calculatedUnitCost deve estar em centavos também
-      const calculatedUnitCost = Math.round(salePrice / totalQuantity)
+      // salePrice está em centavos, calculatedRawUnitCost deve estar em centavos também
+      const calculatedRawUnitCost = Math.round(salePrice / totalQuantity)
       const currentUnitCost = getValues(`items.${index}.unitCost`)
 
       // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
-      if (Math.abs(calculatedUnitCost - (currentUnitCost || 0)) > 1) {
-        setValue(`items.${index}.unitCost`, calculatedUnitCost, {
+      if (Math.abs(calculatedRawUnitCost - (currentUnitCost || 0)) > 1) {
+        setValue(`items.${index}.unitCost`, calculatedRawUnitCost, {
           shouldValidate: false,
           shouldDirty: true,
         })
@@ -223,15 +274,22 @@ export function UnitCostInput<T extends FieldValues>({
               placeholder={placeholder}
               prefix="R$ "
               onValueChange={(values) => {
-                const newUnitCostInReais = values.floatValue ?? 0
-                // Converter para centavos para manter consistência com FormBrlInput
-                const newUnitCostInCents = Math.round(newUnitCostInReais * 100)
-                field.onChange(newUnitCostInCents)
+                const visualUnitCostInReais = values.floatValue ?? 0
+                // Converter reais para centavos (como FormBrlInput)
+                const visualUnitCostInCents = Math.round(
+                  visualUnitCostInReais * 100,
+                )
+                // Converter valor visual para valor por unidade bruta (já em centavos)
+                const rawUnitCostInCents = convertUnitCostToRaw(
+                  unitKind,
+                  visualUnitCostInCents,
+                )
+                field.onChange(rawUnitCostInCents)
 
-                // Calcular novo preço de venda baseado no custo unitário (ambos em centavos)
-                if (totalQuantity > 0 && newUnitCostInCents > 0) {
+                // Calcular novo preço de venda baseado no custo unitário bruto (ambos em centavos)
+                if (totalQuantity > 0 && rawUnitCostInCents > 0) {
                   const newSalePriceInCents = Math.round(
-                    newUnitCostInCents * totalQuantity,
+                    rawUnitCostInCents * totalQuantity,
                   )
                   setValue(`items.${index}.salePrice`, newSalePriceInCents, {
                     shouldValidate: false,
@@ -241,7 +299,13 @@ export function UnitCostInput<T extends FieldValues>({
 
                 onHasChanged?.()
               }}
-              value={field.value ? (field.value / 100).toString() : ''}
+              value={
+                field.value
+                  ? (
+                      convertRawToUnitCost(unitKind, field.value) / 100
+                    ).toString()
+                  : ''
+              }
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}

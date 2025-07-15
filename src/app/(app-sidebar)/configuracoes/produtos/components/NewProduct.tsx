@@ -125,7 +125,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
   const form = useForm<NewProductsFormType>({
     resolver: zodResolver(newProductsSchema),
-    mode: 'onChange',
+    // mode: 'onChange',
     values: !editMode
       ? defaultNewProductValues
       : {
@@ -167,16 +167,29 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
   const onSubmit = async (data: NewProductsFormType) => {
     const body = {
-      ...data,
-      items: data.items?.map((item) => ({
-        ...item,
-        id: editMode ? item.id : undefined,
-        name: item?.name,
-        unitKind: item.unitKind,
-        salePrice: item.salePrice,
-        unitCost: item.unitCost,
-      })),
+      name: data.name,
+      code: data.code,
+      categoryId: data.categoryId,
+      sectorId: data.sectorId,
       technicalDescription: data?.technicalDescription ?? '',
+      allowEditValues: data.allowEditValues,
+      allowEditDescription: data.allowEditDescription,
+      imageUrl: data.imageUrl,
+      items: data.items?.map((item) => ({
+        id: editMode ? item.id : undefined,
+        name: item.name,
+        unitKind: item.unitKind,
+        unitCost: item.unitCost,
+        salePrice: item.salePrice,
+        // ✅ Valores brutos das dimensões (enviados conforme preenchidos pelo usuário)
+        width: item.width ?? null, // mm
+        height: item.height ?? null, // mm
+        length: item.length ?? null, // mm
+        weight: item.weight ?? null, // mg
+        volume: item.volume ?? null, // ml
+        distance: item.distance ?? null, // metros
+        duration: item.duration ?? null, // segundos
+      })),
       productionStages: data?.productionStages?.map((stage) => ({
         id: stage?.id,
         isActive: stage?.isActive,

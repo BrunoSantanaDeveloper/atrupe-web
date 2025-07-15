@@ -35,6 +35,16 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
+// Função para converter mililitros para litros
+function millilitersToLiters(milliliters: number): number {
+  return milliliters / 1000
+}
+
+// Função para converter litros para mililitros
+function litersToMilliliters(liters: number): number {
+  return liters * 1000
+}
+
 export function Liters<T extends FieldValues>({
   name,
   label,
@@ -55,16 +65,24 @@ export function Liters<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={0}
+              decimalScale={2}
+              allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {
+                const litersValue = e.floatValue ?? 0
+                // Converter litros para mililitros antes de salvar
+                const millilitersValue = litersToMilliliters(litersValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(name, e.floatValue ?? (0 as any))
+                setValue(name, millilitersValue as any)
                 onHasChanged?.()
               }}
-              value={field?.value || ''}
-              // endAdornment={<>LT</>}
+              // Converter mililitros para litros na exibição
+              value={
+                field?.value ? millilitersToLiters(field.value).toString() : ''
+              }
+              endAdornment={<>L</>}
               className={className}
+              inputMode="decimal"
             />
           </FormControl>
           <FormMessage />

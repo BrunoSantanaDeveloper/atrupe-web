@@ -35,6 +35,16 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
+// Função para converter miligramas para quilogramas
+function milligramsToKilograms(milligrams: number): number {
+  return milligrams / 1_000_000
+}
+
+// Função para converter quilogramas para miligramas
+function kilogramsToMilligrams(kilograms: number): number {
+  return kilograms * 1_000_000
+}
+
 export function Weight<T extends FieldValues>({
   name,
   label,
@@ -59,12 +69,20 @@ export function Weight<T extends FieldValues>({
               allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {
+                const kilogramsValue = e.floatValue ?? 0
+                // Converter quilogramas para miligramas antes de salvar
+                const milligramsValue = kilogramsToMilligrams(kilogramsValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                setValue(name, e.floatValue ?? (0 as any))
+                setValue(name, milligramsValue as any)
                 onHasChanged?.()
               }}
-              value={field?.value || ''}
-              // endAdornment={<>KG</>}
+              // Converter miligramas para quilogramas na exibição
+              value={
+                field?.value
+                  ? milligramsToKilograms(field.value).toString()
+                  : ''
+              }
+              endAdornment={<>KG</>}
               className={className}
             />
           </FormControl>

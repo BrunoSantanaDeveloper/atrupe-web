@@ -48,11 +48,7 @@ import {
 } from './productSchema'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
-import {
-  calculateAreaFromMillimeters,
-  millimetersToMeters,
-  parseCurrencyToBrl,
-} from '@/lib/utils'
+import { parseCurrencyToBrl } from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
@@ -66,8 +62,8 @@ interface Props {
   data?: QuotationItemType
 }
 
-// Função auxiliar para calcular medida básica baseada no unitKind
-function calculateBasicMeasurement(
+// Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
+function calculateRawMeasurement(
   item: {
     width?: number | null
     height?: number | null
@@ -81,25 +77,23 @@ function calculateBasicMeasurement(
 ): number {
   switch (unitKind) {
     case 'AREA':
-      // item.height e item.width estão em milímetros, converter para m²
-      return calculateAreaFromMillimeters(item.width ?? 0, item.height ?? 0)
+      // Calcular diretamente em mm² (sem conversão)
+      return (item.width ?? 0) * (item.height ?? 0)
     case 'LENGTH':
-      // item.length está em milímetros, converter para metros
-      return millimetersToMeters(item.length ?? 0)
+      // Usar comprimento em mm (sem conversão)
+      return item.length ?? 0
     case 'CAPACITY':
+      // Usar volume em ml (sem conversão)
       return item.volume ?? 0
     case 'WEIGHT':
+      // Usar peso em mg (sem conversão)
       return item.weight ?? 0
-    case 'DISTANCE': {
-      // Converter metros para quilômetros
-      const distanceInMeters = item.distance ?? 0
-      return distanceInMeters / 1000
-    }
-    case 'DURATION': {
-      const duration = Number(item.duration || 0)
-      // Converter segundos para horas
-      return duration / 3600
-    }
+    case 'DISTANCE':
+      // Usar distância em metros (sem conversão)
+      return item.distance ?? 0
+    case 'DURATION':
+      // Usar duração em segundos (sem conversão)
+      return item.duration ?? 0
     default:
       return 1
   }
@@ -140,7 +134,7 @@ export function QuotationProdDetailModal({
           (unit) => unit.id === item?.unitOfMeasure?.id,
         )?.kind
 
-        const basicMeasurement = calculateBasicMeasurement(item, unitKind || '')
+        const basicMeasurement = calculateRawMeasurement(item, unitKind || '')
 
         const measurementValue = unitValue * basicMeasurement * quantity
         return {
@@ -221,7 +215,7 @@ export function QuotationProdDetailModal({
       const items = watch('items') ?? []
 
       const measurement = (): number => {
-        const basicMeasurement = calculateBasicMeasurement(item, item.unitKind)
+        const basicMeasurement = calculateRawMeasurement(item, item.unitKind)
 
         // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
         // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
@@ -246,7 +240,7 @@ export function QuotationProdDetailModal({
     const items = watch('items') ?? []
 
     const measurement = (): number => {
-      const basicMeasurement = calculateBasicMeasurement(item, item.unitKind)
+      const basicMeasurement = calculateRawMeasurement(item, item.unitKind)
 
       // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
       // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
@@ -289,22 +283,29 @@ export function QuotationProdDetailModal({
   async function onSubmit(data: ProductsFormType) {
     setIsLoading(true)
 
+    // ✅ Enviar apenas dados brutos, sem valores calculados
     const newFormData = {
-      ...data,
+      productId: data.productId,
+      quantity: data.quantity,
+      description: data.description,
+      technicalDescription: data.technicalDescription,
+      imageUrl: data.imageUrl,
       items: data?.items?.map((item) => ({
         id: item.id ?? null,
-        distance: item.distance ?? null,
-        duration: item.duration ?? null,
-        height: item.height ?? null,
-        length: item.length ?? null,
         quantity: item.quantity ?? null,
-        salePrice: item.salePrice,
         unitCost: item.unitCost ?? null,
         unitKind: item.unitKind ?? null,
-        volume: item.volume ?? null,
-        weight: item.weight ?? null,
-        width: item.width ?? null,
+        // ✅ Valores brutos das dimensões (sem conversões)
+        width: item.width ?? null, // mm
+        height: item.height ?? null, // mm
+        length: item.length ?? null, // mm
+        weight: item.weight ?? null, // mg
+        volume: item.volume ?? null, // ml
+        distance: item.distance ?? null, // metros
+        duration: item.duration ?? null, // segundos
+        // ❌ NÃO enviar: salePrice, totalValue, measurementValue
       })),
+      // ❌ NÃO enviar: totalValue, finalValue (backend calcula)
     }
 
     if (editMode) {
