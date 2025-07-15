@@ -1,34 +1,19 @@
 'use client'
 
 // UI component Imports
-import {
-  FormItem,
-  FormField,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from '@/components/ui/form'
+import { FormItem, FormLabel, FormControl } from '@/components/ui/form'
 
 // Lib Imports
 import { cn } from '@/lib/utils'
 
 // Type Imports
-import {
-  type Path,
-  type Control,
-  type FieldValues,
-  useFormContext,
-} from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 
 // Third-party Imports
-import { NumericFormat } from 'react-number-format'
-import { Input } from '@/components/ui/input'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { useEffect } from 'react'
 
-interface Props<T extends FieldValues>
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  control: Control<T>
-  name: Path<T>
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
   placeholder?: string
   width?: string
@@ -67,22 +52,22 @@ function convertUnitCostToRaw(
   switch (unitKind) {
     case 'AREA':
       // R$/m² → R$/mm² (dividir por 1.000.000)
-      return Math.round(visualUnitCostInCents / 1_000_000)
+      return visualUnitCostInCents / 1_000_000
     case 'LENGTH':
       // R$/metro → R$/mm (dividir por 1.000)
-      return Math.round(visualUnitCostInCents / 1000)
+      return visualUnitCostInCents / 1000
     case 'CAPACITY':
       // R$/litro → R$/ml (dividir por 1.000)
-      return Math.round(visualUnitCostInCents / 1000)
+      return visualUnitCostInCents / 1000
     case 'WEIGHT':
       // R$/kg → R$/mg (dividir por 1.000.000)
-      return Math.round(visualUnitCostInCents / 1_000_000)
+      return visualUnitCostInCents / 1_000_000
     case 'DISTANCE':
       // R$/km → R$/metro (dividir por 1.000)
-      return Math.round(visualUnitCostInCents / 1000)
+      return visualUnitCostInCents / 1000
     case 'DURATION':
       // R$/hora → R$/segundo (dividir por 3.600)
-      return Math.round(visualUnitCostInCents / 3600)
+      return visualUnitCostInCents / 3600
     case 'UNITY':
     default:
       return visualUnitCostInCents
@@ -167,16 +152,14 @@ function calculateTotalQuantity(
   }
 }
 
-export function UnitCostInput<T extends FieldValues>({
-  name,
+export function UnitCostInput({
   label,
-  control,
   placeholder = label,
   width = 'flex-[1_0_140px]',
   className,
   index,
   onHasChanged,
-}: Props<T>) {
+}: Props) {
   const { watch, setValue, getValues } = useFormContext()
 
   // Valores observados para cálculo
@@ -221,7 +204,7 @@ export function UnitCostInput<T extends FieldValues>({
   useEffect(() => {
     const currentRawUnitCost = getValues(`items.${index}.unitCost`)
     if (totalQuantity > 0 && currentRawUnitCost > 0) {
-      const newSalePriceInCents = Math.round(currentRawUnitCost * totalQuantity)
+      const newSalePriceInCents = currentRawUnitCost * totalQuantity
       const currentSalePrice = getValues(`items.${index}.salePrice`)
 
       // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
@@ -238,7 +221,7 @@ export function UnitCostInput<T extends FieldValues>({
   useEffect(() => {
     if (totalQuantity > 0 && salePrice > 0) {
       // salePrice está em centavos, calculatedRawUnitCost deve estar em centavos também
-      const calculatedRawUnitCost = Math.round(salePrice / totalQuantity)
+      const calculatedRawUnitCost = salePrice / totalQuantity
       const currentUnitCost = getValues(`items.${index}.unitCost`)
 
       // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
@@ -252,68 +235,62 @@ export function UnitCostInput<T extends FieldValues>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [salePrice, setValue, index, getValues])
 
+  const rawUnitCost = watch(`items.${index}.unitCost`) ?? 0
+
+  // Sincronizar valor visual para exibição no FormBrlInput
+  useEffect(() => {
+    // const rawUnitCost = getValues(`items.${index}.unitCost`) ?? 0
+    if (rawUnitCost > 0) {
+      const visualUnitCost = convertRawToUnitCost(unitKind, rawUnitCost)
+      // Criar um campo separado para o valor visual usado pelo FormBrlInput
+      setValue(`items.${index}.visualUnitCost`, visualUnitCost, {
+        shouldValidate: false,
+        shouldDirty: false,
+      })
+    }
+  }, [rawUnitCost, unitKind, setValue, index, getValues])
+
   // Não renderizar se não houver unidade
   if (!unitKind) {
     return null
   }
 
   return (
-    <FormField
-      control={control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className={cn('flex flex-col', width)}>
-          {dynamicLabel && <FormLabel>{dynamicLabel}</FormLabel>}
-          <FormControl>
-            <NumericFormat
-              customInput={Input}
-              decimalScale={2}
-              fixedDecimalScale
-              thousandSeparator="."
-              decimalSeparator=","
-              placeholder={placeholder}
-              prefix="R$ "
-              onValueChange={(values) => {
-                const visualUnitCostInReais = values.floatValue ?? 0
-                // Converter reais para centavos (como FormBrlInput)
-                const visualUnitCostInCents = Math.round(
-                  visualUnitCostInReais * 100,
-                )
-                // Converter valor visual para valor por unidade bruta (já em centavos)
-                const rawUnitCostInCents = convertUnitCostToRaw(
-                  unitKind,
-                  visualUnitCostInCents,
-                )
-                field.onChange(rawUnitCostInCents)
+    <FormItem className={cn('flex flex-col', width)}>
+      {dynamicLabel && <FormLabel>{dynamicLabel}</FormLabel>}
+      <FormControl>
+        <FormBrlInput
+          name={`items.${index}.visualUnitCost`}
+          placeholder={placeholder}
+          className={className}
+          startAdornment={<>R$</>}
+          additionalOnChange={(visualUnitCostInCents) => {
+            if (visualUnitCostInCents !== null) {
+              // Converter valor visual para valor por unidade bruta (já em centavos)
+              const rawUnitCostInCents = convertUnitCostToRaw(
+                unitKind,
+                visualUnitCostInCents,
+              )
+              console.info('KKKKKKKK', visualUnitCostInCents / 1_000_000)
+              setValue(`items.${index}.unitCost`, rawUnitCostInCents, {
+                shouldValidate: false,
+                shouldDirty: true,
+              })
 
-                // Calcular novo preço de venda baseado no custo unitário bruto (ambos em centavos)
-                if (totalQuantity > 0 && rawUnitCostInCents > 0) {
-                  const newSalePriceInCents = Math.round(
-                    rawUnitCostInCents * totalQuantity,
-                  )
-                  setValue(`items.${index}.salePrice`, newSalePriceInCents, {
-                    shouldValidate: false,
-                    shouldDirty: true,
-                  })
-                }
-
-                onHasChanged?.()
-              }}
-              value={
-                field.value
-                  ? (
-                      convertRawToUnitCost(unitKind, field.value) / 100
-                    ).toString()
-                  : ''
+              // Calcular novo preço de venda baseado no custo unitário bruto (ambos em centavos)
+              if (totalQuantity > 0 && rawUnitCostInCents > 0) {
+                const newSalePriceInCents = rawUnitCostInCents * totalQuantity
+                setValue(`items.${index}.salePrice`, newSalePriceInCents, {
+                  shouldValidate: false,
+                  shouldDirty: true,
+                })
               }
-              className={className}
-              inputMode="decimal"
-              allowedDecimalSeparators={['.', ',']}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
+
+              onHasChanged?.()
+            }
+          }}
+        />
+      </FormControl>
+    </FormItem>
   )
 }

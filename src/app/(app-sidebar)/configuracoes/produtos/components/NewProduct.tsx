@@ -321,7 +321,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                     />
                     <div className="flex flex-wrap gap-4">
                       <UnitCostInput
-                        control={control}
                         name="items.0.unitCost"
                         width="flex-[1_0_140px]"
                         index={0}
@@ -369,7 +368,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         unitKind={watch(`items.${index}.unitKind`)}
                       />
                       <UnitCostInput
-                        control={control}
                         name={`items.${index}.unitCost`}
                         width="flex-[1_0_140px]"
                         index={index}
