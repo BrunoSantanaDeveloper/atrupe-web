@@ -311,7 +311,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   <>
                     <UnitOfMeasureField
                       name="items.0.unitKind"
-                      label="Unidade comercial"
                       width="flex-[1_0_225px]"
                     />
                     <MeasurementInput
@@ -359,7 +358,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                       />
                       <UnitOfMeasureField
                         name={`items.${index}.unitKind`}
-                        label="Unidade comercial"
                         width="flex-[1_0_200px]"
                       />
                       <MeasurementInput

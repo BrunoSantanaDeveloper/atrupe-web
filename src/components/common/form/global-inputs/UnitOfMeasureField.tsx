@@ -12,7 +12,7 @@ interface Props<T extends FieldValues> {
 
 export function UnitOfMeasureField<T extends FieldValues>({
   name,
-  label = 'Unidade de medida',
+  label = 'Unidade comercial',
   placeholder = label,
   width = 'flex-[1_0_100px]',
   ...props
