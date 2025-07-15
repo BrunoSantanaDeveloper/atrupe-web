@@ -295,8 +295,8 @@ export function QuotationProdDetailModal({
       technicalDescription: data.technicalDescription,
       imageUrl: data.imageUrl,
       items: data?.items?.map((item) => ({
-        id: editMode ? item.id : undefined,
-        name: item.name ?? null,
+        id: item.id ?? null,
+        // name: item.name ?? null,
         quantity: item.quantity ?? null,
         unitCost: item.unitCost ?? null,
         unitKind: item.unitKind ?? null,
