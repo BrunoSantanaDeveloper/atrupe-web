@@ -44,7 +44,7 @@ export function SquareMeters<T extends FieldValues>({
   placeholder = label,
   width = 'flex-[1_0_100px]',
   className,
-  index = 0,
+  index,
   onHasChanged,
   ...props
 }: Props<T>) {

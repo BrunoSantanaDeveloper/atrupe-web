@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogContent,
   DialogDescription,
+  DialogBody,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
@@ -269,7 +270,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
           </DialogHeader>
-          <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
+          <DialogBody>
             <Form {...form}>
               <form
                 id="new-product"
@@ -338,7 +339,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   items?.fields?.map((item, index) => (
                     <div
                       className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
-                      key={item.id}
+                      key={`${item.id}-${index}`}
                     >
                       {index > 0 && (
                         <Button
@@ -417,7 +418,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                 {canShowProductionStages && <ProductionStages />}
               </form>
             </Form>
-          </div>
+          </DialogBody>
           <DialogFooter className="sm:justify-between">
             <div className="flex items-center space-x-2">
               {!editMode ? (

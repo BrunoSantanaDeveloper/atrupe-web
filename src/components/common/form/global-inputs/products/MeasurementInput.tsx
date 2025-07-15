@@ -46,6 +46,7 @@ export function MeasurementInput<T extends FieldValues>({
           <SquareMeters<T>
             {...commonProps}
             {...props}
+            index={index}
             name={`items.${index}.area` as Path<T>}
             label="Área Total"
             placeholder="Digite aqui"
