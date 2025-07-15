@@ -46,7 +46,7 @@ import {
   productSchema,
   ProductsFormType,
 } from './productSchema'
-import { createItem, updateItem } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import {
   calculateAreaFromMillimeters,
@@ -287,6 +287,8 @@ export function QuotationProdDetailModal({
   }
 
   async function onSubmit(data: ProductsFormType) {
+    setIsLoading(true)
+
     const newFormData = {
       ...data,
       items: data?.items?.map((item) => ({
@@ -305,49 +307,46 @@ export function QuotationProdDetailModal({
       })),
     }
 
-    if (!editMode) {
-      createItem({
-        route: 'quotationRoute',
-        customPath: `/${quotationId}/add-product`,
+    if (editMode) {
+      const res = await updateItemNew({
+        route: `/sale/quotation/${quotationId}/update-product/${data?.productId}`,
         data: newFormData,
       })
-        .then(() => {
-          toast.success('Produto adicionado com sucesso!')
-          queryClient.invalidateQueries({
-            queryKey: [QUOTATION_DATA_QUERY_KEY],
-          })
-          handleToggleModal()
-          reset()
-        })
-        .catch((error) => {
-          console.error(error)
-          toast.error('Erro ao adicionar novo produto, tente novamente!')
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
-    } else {
-      updateItem(
-        'quotationRoute',
-        `update-product/${data?.productId}`,
-        newFormData,
-      )
-        .then(() => {
-          toast.success('Produto editado com sucesso!')
-          queryClient.invalidateQueries({
-            queryKey: [QUOTATION_DATA_QUERY_KEY],
-          })
-          handleToggleModal()
-          reset()
-        })
-        .catch((error) => {
-          console.error(error)
-          toast.error('Erro ao editar produto, tente novamente!')
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
+
+      if (!res.success) {
+        toast.error(res.message)
+        setIsLoading(false)
+        return
+      }
+
+      handleToggleModal()
+      setIsLoading(false)
+      toast.success('Produto editado com sucesso!')
+      queryClient.invalidateQueries({
+        queryKey: [QUOTATION_DATA_QUERY_KEY],
+      })
+      reset()
+      return
     }
+
+    const res = await createItemNew({
+      route: `/sale/quotation/${quotationId}/add-product`,
+      data: newFormData,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      setIsLoading(false)
+      return
+    }
+
+    handleToggleModal()
+    setIsLoading(false)
+    toast.success('Produto adicionado com sucesso!')
+    queryClient.invalidateQueries({
+      queryKey: [QUOTATION_DATA_QUERY_KEY],
+    })
+    reset()
   }
 
   function getPriceLabel(unitKind: string): string {
@@ -355,6 +354,7 @@ export function QuotationProdDetailModal({
 
     return label || ''
   }
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[90%] lg:max-w-[950px]">
