@@ -37,7 +37,9 @@ export function MeasurementInput<T extends FieldValues>({
     width: 'flex-[1_0_130px]',
   }
 
-  console.log(unitCode)
+  if (unitCode === 'TESTE') {
+    return null
+  }
 
   const renderComponent = () => {
     switch (unitKind) {

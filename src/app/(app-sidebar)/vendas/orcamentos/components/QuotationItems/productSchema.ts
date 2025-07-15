@@ -15,7 +15,7 @@ export const productSchema = z.object({
   items: z.array(
     z.object({
       id: z.string(),
-      name: z.string().optional(),
+      name: z.string().optional().nullable(),
       unitKind: z.string(),
       quantity: z
         .preprocess((value) => Number(value), z.number())
@@ -90,6 +90,7 @@ export const productSchema = z.object({
 
       unitCost: z.number(),
       salePrice: z.number(),
+      visualUnitCost: z.number().optional(),
       measurementValue: z.number().optional(),
     }),
   ),
@@ -115,6 +116,7 @@ export const defaultProductValues: ProductsFormType = {
   items: [
     {
       id: '',
+      name: '',
       unitKind: '',
       quantity: 1,
       width: 0,
@@ -126,6 +128,7 @@ export const defaultProductValues: ProductsFormType = {
       duration: 0,
       unitCost: 0,
       salePrice: 0,
+      visualUnitCost: 0,
       measurementValue: 0,
     },
   ],

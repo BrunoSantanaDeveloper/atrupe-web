@@ -200,12 +200,29 @@ export function UnitCostInput({
   // Determinar o label dinâmico
   const dynamicLabel = label || getUnitLabel(unitKind)
 
-  // Resetar valor unitário quando unidade comercial mudar
+  // Resetar valor unitário quando unidade comercial mudar (apenas se já havia uma unidade anterior)
   useEffect(() => {
+    // Só resetar se:
+    // 1. Havia uma unidade anterior (não é a primeira vez sendo definida)
+    // 2. A unidade realmente mudou de um valor válido para outro
+    const previousUnitKind = getValues(`items.${index}.previousUnitKind`)
+
+    // Se é a primeira vez definindo a unidade OU se não há mudança real, não resetar
+    if (!previousUnitKind || previousUnitKind === unitKind) {
+      // Apenas armazenar a unidade atual para próxima comparação
+      setValue(`items.${index}.previousUnitKind`, unitKind, {
+        shouldValidate: false,
+      })
+      return
+    }
+
+    // Se chegou aqui, é uma mudança real de unidade - resetar valores
     setValue(`items.${index}.unitCost`, 0)
     setValue(`items.${index}.visualUnitCost`, 0)
-    // setValue(`items.${index}.salePrice`, 0)
-  }, [unitKind, setValue, index])
+    setValue(`items.${index}.previousUnitKind`, unitKind, {
+      shouldValidate: false,
+    })
+  }, [unitKind, setValue, index, getValues])
 
   // Recalcular valor de venda quando quantidade total mudar (mantém valor unitário bruto)
   useEffect(() => {

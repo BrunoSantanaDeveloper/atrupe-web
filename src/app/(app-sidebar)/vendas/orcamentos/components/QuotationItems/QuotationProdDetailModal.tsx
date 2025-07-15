@@ -41,6 +41,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
+import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import {
   defaultProductValues,
   productSchema,
@@ -144,6 +145,7 @@ export function QuotationProdDetailModal({
           height: item.height ?? null,
           id: item.id ?? null,
           length: item.length ?? null,
+          name: item.name ?? null,
           quantity: item?.originalQuantity ?? null,
           salePrice: item?.totalValue ?? null,
           unitCost: item?.unitValue ?? null,
@@ -186,6 +188,7 @@ export function QuotationProdDetailModal({
         quantity: Number(product.quantity ?? 1),
         items: product.items.map((item) => ({
           ...item,
+          name: item.name,
           quantity: item.quantity ?? 1,
           salePrice: item.salePrice,
           unitCost: item.unitCost,
@@ -263,6 +266,7 @@ export function QuotationProdDetailModal({
   const calculateFinalValue = useCallback((): number => {
     const items = watch('items')
     let total = 0
+
     items.forEach((item, index) => {
       const { total: saleValue } = calculateSalesValue(index)
       total += saleValue
@@ -291,7 +295,8 @@ export function QuotationProdDetailModal({
       technicalDescription: data.technicalDescription,
       imageUrl: data.imageUrl,
       items: data?.items?.map((item) => ({
-        id: item.id ?? null,
+        id: editMode ? item.id : undefined,
+        name: item.name ?? null,
         quantity: item.quantity ?? null,
         unitCost: item.unitCost ?? null,
         unitKind: item.unitKind ?? null,
@@ -303,7 +308,8 @@ export function QuotationProdDetailModal({
         volume: item.volume ?? null, // ml
         distance: item.distance ?? null, // metros
         duration: item.duration ?? null, // segundos
-        // ❌ NÃO enviar: salePrice, totalValue, measurementValue
+        // ✅ Enviar salePrice para consistência com NewProduct
+        salePrice: item.salePrice ?? null,
       })),
       // ❌ NÃO enviar: totalValue, finalValue (backend calcula)
     }
@@ -464,17 +470,17 @@ export function QuotationProdDetailModal({
                           )
                         }}
                       />
-                      <FormBrlInput<ProductsFormType>
+                      <UnitCostInput
                         name={`items.${index}.unitCost`}
                         label={`Valor ${getPriceLabel(item?.unitKind)}`}
                         placeholder="0,00"
-                        startAdornment={<>R$</>}
                         width="flex-[1_0_130px]"
+                        index={index}
                         disabled={
                           product?.allowEditValues === false ||
                           data?.allowEditValues === false
                         }
-                        additionalOnChange={() => {
+                        onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)
                           setValue(`items.${index}.salePrice`, total)
