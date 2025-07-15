@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
 // UI component Imports
 import { Button } from '@/components/ui/button'
 import {
@@ -58,7 +58,6 @@ import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotati
 
 interface Props {
   open: boolean
-  onClose: () => void
   editMode?: boolean
   data?: QuotationItemType
 }
@@ -100,18 +99,15 @@ function calculateRawMeasurement(
   }
 }
 
-export function QuotationProdDetailModal({
-  open,
-  onClose,
-  editMode,
-  data,
-}: Props) {
-  const { quotationData } = useQuotation()
-  const queryClient = useQueryClient()
-  const [isLoading, setIsLoading] = useState(false)
-  const { data: product } = useProductDetail(quotationData.productId || '')
-  const { data: unitOfMeasure } = useUnitOfMeasure()
+export function QuotationProdDetailModal({ open, editMode, data }: Props) {
   const params = useParams()
+  const queryClient = useQueryClient()
+  const { quotationData, openChangeModal } = useQuotation()
+  const { data: unitOfMeasure } = useUnitOfMeasure()
+  const { data: product, isLoading } = useProductDetail(
+    quotationData.productId || '',
+  )
+
   const { quotationId } = params
 
   function parseQuotationData(data: QuotationItemType) {
@@ -165,7 +161,6 @@ export function QuotationProdDetailModal({
     values: editMode
       ? (parseQuotationData(data as QuotationItemType) as ProductsFormType)
       : defaultProductValues,
-    // values: defaultProductValues,
   })
 
   const {
@@ -178,7 +173,7 @@ export function QuotationProdDetailModal({
   } = form
 
   useEffect(() => {
-    if (product && !editMode) {
+    if (product && !editMode && open) {
       reset({
         ...product,
         productId: product.id,
@@ -195,7 +190,7 @@ export function QuotationProdDetailModal({
         })),
       })
     }
-  }, [product, reset])
+  }, [product, reset, open])
 
   const items = useFieldArray({
     control: form.control,
@@ -279,14 +274,12 @@ export function QuotationProdDetailModal({
 
   if (!open) return null
 
-  function handleToggleModal() {
-    onClose()
-    reset()
+  function handleToggleModal(open: boolean) {
+    openChangeModal(open, 'productDetail')
+    if (!open) reset()
   }
 
   async function onSubmit(data: ProductsFormType) {
-    setIsLoading(true)
-
     // ✅ Enviar apenas dados brutos, sem valores calculados
     const newFormData = {
       productId: data.productId,
@@ -322,12 +315,10 @@ export function QuotationProdDetailModal({
 
       if (!res.success) {
         toast.error(res.message)
-        setIsLoading(false)
         return
       }
 
-      handleToggleModal()
-      setIsLoading(false)
+      handleToggleModal(false)
       toast.success('Produto editado com sucesso!')
       queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
@@ -343,12 +334,10 @@ export function QuotationProdDetailModal({
 
     if (!res.success) {
       toast.error(res.message)
-      setIsLoading(false)
       return
     }
 
-    handleToggleModal()
-    setIsLoading(false)
+    handleToggleModal(false)
     toast.success('Produto adicionado com sucesso!')
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
@@ -363,13 +352,19 @@ export function QuotationProdDetailModal({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleToggleModal}>
       <DialogContent className="sm:max-w-[90%] lg:max-w-[950px]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
-              <span>{product?.name || items?.fields[0]?.name}</span>
+              {isLoading ? (
+                <span className="text-gray-400">
+                  Carregando dados do produto...
+                </span>
+              ) : (
+                <span>{product?.name || items?.fields[0]?.name}</span>
+              )}
             </div>
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -541,7 +536,7 @@ export function QuotationProdDetailModal({
             <Button
               type="button"
               variant="neutralOutline"
-              onClick={handleToggleModal}
+              onClick={() => handleToggleModal(false)}
             >
               Cancelar
             </Button>
@@ -549,11 +544,11 @@ export function QuotationProdDetailModal({
               type="submit"
               className="gap-2"
               form="new-product"
-              isLoading={isSubmitting || isLoading}
-              disabled={isSubmitting || isLoading}
+              RightIcon={IconCircleCheck}
+              disabled={isLoading}
+              isLoading={isSubmitting}
             >
               Salvar
-              {!isLoading && <IconCircleCheck />}
             </Button>
           </div>
         </DialogFooter>

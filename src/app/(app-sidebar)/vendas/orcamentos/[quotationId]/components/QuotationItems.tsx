@@ -62,7 +62,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 // Libs
 import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import { type ModalType, useQuotation } from '@/contexts/quotationContext'
+import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 
 // Actions
@@ -78,8 +78,7 @@ export function QuotationItems({ data }: Props) {
   const [rowData, setRowData] = useState<QuotationItemType>()
   const [accordionValue, setAccordionValue] = useState<string[]>()
 
-  const { isModalOpen, openModal, closeModal, modalType } = useQuotation()
-  const isModalOfType = (type: ModalType) => isModalOpen && modalType === type
+  const { openChangeModal, modalType } = useQuotation()
 
   const status = data?.status
 
@@ -108,23 +107,15 @@ export function QuotationItems({ data }: Props) {
   return (
     <>
       <QuotationCategorySelectorModal
-        open={isModalOfType('sectorSelector')}
-        onClose={closeModal}
-        onSelect={() => openModal('productsList')}
+        open={modalType === 'sectorSelector'}
+        onSelect={() => openChangeModal(true, 'productsList')}
       />
-      <QuotationItemsModal
-        open={isModalOfType('productsList')}
-        onClose={closeModal}
-      />
+      <QuotationItemsModal open={modalType === 'productsList'} />
+      <QuotationProdDetailModal open={modalType === 'productDetail'} />
       <QuotationProdDetailModal
-        open={isModalOfType('productDetail')}
-        onClose={closeModal}
-      />
-      <QuotationProdDetailModal
-        open={isModalOfType('productDetailEdit')}
+        open={modalType === 'productDetailEdit'}
         editMode={true}
         data={rowData}
-        onClose={closeModal}
       />
       <Card className="w-full">
         <CardHeader>
@@ -244,7 +235,7 @@ export function QuotationItems({ data }: Props) {
                                   tooltip="Editar item"
                                   onClick={() => {
                                     setRowData(item)
-                                    openModal('productDetailEdit')
+                                    openChangeModal(true, 'productDetailEdit')
                                   }}
                                   disabled={actionDisabled('edit', status)}
                                 />
@@ -393,7 +384,7 @@ export function QuotationItems({ data }: Props) {
               type="button"
               variant="none"
               className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
-              onClick={() => openModal('sectorSelector')}
+              onClick={() => openChangeModal(true, 'sectorSelector')}
               disabled={actionDisabled('addItem', status)}
             >
               <FeaturedIcon

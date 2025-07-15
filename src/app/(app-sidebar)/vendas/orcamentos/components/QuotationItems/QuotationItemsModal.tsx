@@ -42,10 +42,8 @@ type FormData = z.infer<typeof schema>
 
 const QuotationItemsModal: React.FC<{
   open: boolean
-  onClose: () => void
-}> = ({ open, onClose }) => {
-  const { quotationData, updateQuotationData, closeModal, openModal } =
-    useQuotation()
+}> = ({ open }) => {
+  const { quotationData, updateQuotationData, openChangeModal } = useQuotation()
 
   const { data: productsList } = useProducts()
 
@@ -92,8 +90,7 @@ const QuotationItemsModal: React.FC<{
       sectorId: data.sectorId,
       categoryId: data.categoryId,
     })
-    closeModal()
-    openModal('productDetail')
+    openChangeModal(true, 'productDetail')
   }
 
   const calculateTotalItemsPrice = useCallback((product: IProduct): number => {
@@ -103,7 +100,7 @@ const QuotationItemsModal: React.FC<{
   }, [])
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={openChangeModal}>
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader>
           <DialogTitle>

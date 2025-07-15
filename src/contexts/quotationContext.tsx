@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 
 export type ModalType =
   | 'sectorSelector'
@@ -14,12 +14,10 @@ interface QuotationData {
 }
 
 interface QuotationContextType {
-  isModalOpen: boolean
   modalType: ModalType
   quotationData: QuotationData
-  openModal: (type: ModalType) => void
-  closeModal: () => void
   updateQuotationData: (data: Partial<QuotationData>) => void
+  openChangeModal: (open: boolean, type?: ModalType) => void
 }
 
 const QuotationContext = createContext<QuotationContextType | undefined>(
@@ -27,7 +25,6 @@ const QuotationContext = createContext<QuotationContextType | undefined>(
 )
 
 export const QuotationProvider = ({ children }: { children: ReactNode }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [modalType, setModalType] = useState<ModalType>(null)
   const [quotationData, setQuotationData] = useState<QuotationData>({
     sectorId: null,
@@ -35,14 +32,12 @@ export const QuotationProvider = ({ children }: { children: ReactNode }) => {
     productId: null,
   })
 
-  const openModal = (type: ModalType) => {
-    setIsModalOpen(true)
-    setModalType(type)
-  }
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-    setModalType(null)
+  const openChangeModal = (open: boolean, type?: ModalType) => {
+    if (!open) {
+      setModalType(null)
+    } else {
+      setModalType(type || null)
+    }
   }
 
   const updateQuotationData = (data: Partial<QuotationData>) => {
@@ -51,12 +46,10 @@ export const QuotationProvider = ({ children }: { children: ReactNode }) => {
   return (
     <QuotationContext.Provider
       value={{
-        isModalOpen,
         modalType,
         quotationData,
-        openModal,
-        closeModal,
         updateQuotationData,
+        openChangeModal,
       }}
     >
       {children}

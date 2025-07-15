@@ -18,7 +18,6 @@ import { Loader2 } from 'lucide-react'
 
 interface QuotationCategorySelectorModalProps {
   open: boolean
-  onClose: () => void
   onSelect: () => void
 }
 
@@ -62,16 +61,15 @@ function sortSectors(
 
 export function QuotationCategorySelectorModal({
   open = true,
-  onClose,
   onSelect,
 }: QuotationCategorySelectorModalProps) {
   const { data, isLoading } = useSectorWithProducts()
 
-  const { updateQuotationData } = useQuotation()
+  const { updateQuotationData, openChangeModal } = useQuotation()
 
   function handleSelect(category: string) {
     updateQuotationData({ sectorId: category })
-    onClose()
+    openChangeModal(false)
     onSelect()
   }
 
@@ -79,7 +77,7 @@ export function QuotationCategorySelectorModal({
   const sortedData = data ? sortSectors(data) : []
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={openChangeModal}>
       <DialogContent className="sm:max-w-[696px]">
         <DialogHeader className="border-0">
           <DialogTitle className="flex items-center justify-center gap-4 flex-col">
