@@ -46,28 +46,27 @@ export default function ValidationPage() {
 
       processStarted.current = true
 
+      // Enviar dados para o backend e atualizar progresso simultaneamente
+      const finishSignupPromise = createItemNew({
+        route: '/user/create-password',
+        data: {
+          name: signupData?.name,
+          email: signupData?.email,
+          company: signupData?.company,
+          mobile: signupData?.mobile,
+          password: newPasswordData?.password,
+        },
+      })
+
+      let currentProgress = 0
+      while (currentProgress < 80) {
+        await new Promise((resolve) => setTimeout(resolve, 100))
+        const increment = Math.floor(Math.random() * 6)
+        currentProgress = Math.min(80, currentProgress + increment)
+        setProgress(currentProgress)
+      }
+
       try {
-        let currentProgress = 0
-
-        // Enviar dados para o backend e atualizar progresso simultaneamente
-        const finishSignupPromise = createItemNew({
-          route: '/user/create-password',
-          data: {
-            name: signupData?.name,
-            email: signupData?.email,
-            company: signupData?.company,
-            mobile: signupData?.mobile,
-            password: newPasswordData?.password,
-          },
-        })
-
-        while (currentProgress < 80) {
-          await new Promise((resolve) => setTimeout(resolve, 100))
-          const increment = Math.floor(Math.random() * 6)
-          currentProgress = Math.min(80, currentProgress + increment)
-          setProgress(currentProgress)
-        }
-
         const signupResponse = await finishSignupPromise
 
         if (!signupResponse.success) {
