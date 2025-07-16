@@ -236,6 +236,7 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
               type="submit"
               form="quotation-values"
               RightIcon={IconCircleCheck}
+              isLoading={mutation.isPending}
             >
               Salvar
             </Button>

@@ -5,6 +5,7 @@ import React, { useCallback, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -49,7 +50,7 @@ import {
 } from './productSchema'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
-import { parseCurrencyToBrl } from '@/lib/utils'
+import { parseCurrencyToBrl, cn } from '@/lib/utils'
 import { useParams } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
@@ -369,7 +370,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
-        <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto flex gap-6 ">
+        <DialogBody className={cn(isLoading && 'opacity-50')}>
           <Form {...form}>
             <form
               id="new-product"
@@ -509,7 +510,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
               </div>
             </form>
           </Form>
-        </div>
+        </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div className="flex flex-col">
             <strong className="font-semibold text-lg text-gray-900">
