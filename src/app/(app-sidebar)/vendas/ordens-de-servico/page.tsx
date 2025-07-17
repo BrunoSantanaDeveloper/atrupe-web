@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function OrdersPage({ searchParams }: SearchParamsType) {
+  const defaultTab = 'producao'
+  const status = searchParams.status || defaultTab
+
   return (
     <PermissionGate
       permissions={['sale:order:view']}
@@ -21,7 +24,7 @@ export default function OrdersPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Orders searchParams={searchParams} />
+      <Orders searchParams={{ ...searchParams, status }} />
     </PermissionGate>
   )
 }

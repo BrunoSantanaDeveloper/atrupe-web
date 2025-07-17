@@ -405,6 +405,14 @@ export function SidebarComponent(props: Props) {
             </nav>
           </ScrollArea>
 
+          {process.env.NODE_ENV === 'development' && (
+            <div className="border-t p-4">
+              <p className="text-xs text-gray-500">
+                Plano: {session.company.plan?.name}
+              </p>
+            </div>
+          )}
+
           {/* WhatsApp Link */}
           {/* <div className="border-t p-4">
             <Button

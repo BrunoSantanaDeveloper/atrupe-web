@@ -45,7 +45,7 @@ function getUnitLabel(unitKind: string): string {
 }
 
 // Função para converter valor unitário visual para valor por unidade bruta (mantendo em centavos)
-function convertUnitCostToRaw(
+export function convertUnitCostToRaw(
   unitKind: string,
   visualUnitCostInCents: number,
 ): number {
@@ -75,7 +75,7 @@ function convertUnitCostToRaw(
 }
 
 // Função para converter valor por unidade bruta para valor unitário visual (mantendo em centavos)
-function convertRawToUnitCost(
+export function convertRawToUnitCost(
   unitKind: string,
   rawUnitCostInCents: number,
 ): number {

@@ -62,8 +62,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const salesOrdersType = getSalesOrdersType()
   const showCurrentPhase = salesOrdersType === 'full'
 
-  const status =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
+  const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }
 
   const { data, isLoading } = useQuery({

@@ -87,8 +87,7 @@ export function Orders({ searchParams }: SearchParamsType) {
     },
   ]
 
-  const statusLabel =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
+  const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
   return (
     <PermissionGate permissions={['sale:order:view']}>
@@ -96,7 +95,7 @@ export function Orders({ searchParams }: SearchParamsType) {
         <Topbar
           title="Ordens de serviço"
           tabs={tabs}
-          activeTab={searchParams?.status || 'todas'}
+          activeTab={status}
           paramName="status"
           primaryCta={
             <NewQuotationTriggerButton onOpenChange={setOpenDialog} />
@@ -109,14 +108,16 @@ export function Orders({ searchParams }: SearchParamsType) {
             ) : totals?.todas && totals?.todas > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Nenhuma ordem de serviço para o status: ${statusLabel}`}
+                  title={`Nenhuma ordem de serviço para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
                   icon={IconNewsOff}
                 />
               ) : (
                 <>
+                  {/* Filters */}
                   <TableFiltersHeader searchParams={searchParams}>
                     <OrdersFilter searchParams={searchParams} />
                   </TableFiltersHeader>
+                  {/* Table */}
                   <OrdersData searchParams={searchParams} tabs={tabs} />
                 </>
               )

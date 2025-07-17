@@ -72,8 +72,7 @@ export function QuotationsData({
   const { getBudgetStatusType } = usePlanFeatures()
   const showStatusColumn = getBudgetStatusType() === 'full'
 
-  const status =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
+  const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }
 
   const { data, isLoading } = useQuery({

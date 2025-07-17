@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function QuotationsPage({ searchParams }: SearchParamsType) {
+  const defaultTab = 'digitacao'
+  const status = searchParams.status || defaultTab
+
   return (
     <PermissionGate
       permissions={['sale:quotation:view']}
@@ -21,7 +24,7 @@ export default function QuotationsPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Quotations searchParams={searchParams} />
+      <Quotations searchParams={{ ...searchParams, status }} />
     </PermissionGate>
   )
 }

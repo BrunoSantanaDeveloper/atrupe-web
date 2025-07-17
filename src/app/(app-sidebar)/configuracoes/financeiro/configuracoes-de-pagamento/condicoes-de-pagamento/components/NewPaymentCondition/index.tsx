@@ -29,7 +29,7 @@ import { SelectPaymentMethodField } from '@/components/common/form/global-inputs
 
 // Form
 import { useForm } from 'react-hook-form'
-import { FormType, schema } from './schema'
+import { FormType, MAX_INSTALLMENTS_ALLOWED, schema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { useQueryClient } from '@tanstack/react-query'
@@ -58,11 +58,13 @@ export function NewPaymentCondition({
   rowData,
 }: Props) {
   const [showDialog, setShowDialog] = useState(false)
+  const [maxInstallmentsLength, setMaxInstallmentsLength] = useState(0)
+
   const queryClient = useQueryClient()
   const { getBankTaxTransferType } = usePlanFeatures()
 
   const bankTaxTransferType = getBankTaxTransferType()
-  const isTaxFieldsDisabled = bankTaxTransferType === 'limited'
+  const isTaxFieldsEnabled = bankTaxTransferType === 'full'
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -133,7 +135,7 @@ export function NewPaymentCondition({
   }, [form, setValue])
 
   useEffect(() => {
-    if (maxInstallments > 0) {
+    if (maxInstallments > 0 && maxInstallments <= MAX_INSTALLMENTS_ALLOWED) {
       const currentInstallments = form.getValues('installments') || []
 
       const installments = Array.from(
@@ -167,6 +169,15 @@ export function NewPaymentCondition({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [acceptInstallments, receivingType, setValue])
+
+  // Debounce para renderizar parcelas
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setMaxInstallmentsLength(maxInstallments)
+    }, 500)
+
+    return () => clearTimeout(handler)
+  }, [maxInstallments])
 
   const onSubmit = async (data: FormType) => {
     const result = editMode
@@ -218,6 +229,7 @@ export function NewPaymentCondition({
               onSubmit={form.handleSubmit(onSubmit)}
               id="new-payment-condition"
               className="flex flex-wrap gap-5"
+              noValidate
             >
               <SelectPaymentMethodField name="paymentMethodId" width="w-full" />
 
@@ -236,14 +248,16 @@ export function NewPaymentCondition({
                 }}
               />
 
-              <FormSelect
-                name="costType"
-                label="Tipo do custo"
-                options={[
-                  { value: 'PERCENT', label: '% - Percentual' },
-                  { value: 'VALUE', label: 'R$ - Fixo' },
-                ]}
-              />
+              {isTaxFieldsEnabled && (
+                <FormSelect
+                  name="costType"
+                  label="Tipo do custo"
+                  options={[
+                    { value: 'PERCENT', label: '% - Percentual' },
+                    { value: 'VALUE', label: 'R$ - Fixo' },
+                  ]}
+                />
+              )}
 
               {acceptInstallments ? (
                 <>
@@ -252,7 +266,7 @@ export function NewPaymentCondition({
                     label="Parcela mínima"
                     type="number"
                     min={1}
-                    max={maxInstallments}
+                    max={maxInstallments || MAX_INSTALLMENTS_ALLOWED}
                     width="flex-[1_0_100px]"
                   />
 
@@ -261,80 +275,95 @@ export function NewPaymentCondition({
                     label="Parcela máxima"
                     type="number"
                     min={1}
+                    max={MAX_INSTALLMENTS_ALLOWED}
                     width="flex-[1_0_100px]"
+                    additionalOnChange={(e) => {
+                      const value = e as number
+                      if (value > MAX_INSTALLMENTS_ALLOWED) {
+                        setValue('maxInstallments', MAX_INSTALLMENTS_ALLOWED)
+                      } else {
+                        setValue('maxInstallments', value)
+                      }
+                    }}
                   />
 
-                  {Array.from({ length: maxInstallments }).map((_, index) => (
-                    <div key={index} className="w-full">
-                      <div className="flex flex-wrap gap-4">
-                        <p className="text-sm font-medium flex-[1_0_100px] mt-6">
-                          Parcela {index + 1}
-                        </p>
-                        {costType === 'VALUE' ? (
-                          <>
-                            <FormBrlInput
-                              key={'operatorFeeRate' + (index + 1)}
-                              name={`installments.${index}.operatorFeeRate`}
-                              label="Taxa operadora"
-                              width="flex-[1_0_100px]"
-                              startAdornment={<>R$</>}
-                              disabled={isTaxFieldsDisabled}
-                            />
-                            <FormBrlInput
-                              key={'operatorFeeTransfer' + (index + 1)}
-                              name={`installments.${index}.operatorFeeTransfer`}
-                              label="Repasse da taxa"
-                              width="flex-[1_0_100px]"
-                              startAdornment={<>R$</>}
-                              disabled={isTaxFieldsDisabled}
-                            />
-                          </>
-                        ) : (
-                          <>
-                            <FormInput
-                              key={'operatorFeeRate' + (index + 1)}
-                              type="number"
-                              name={`installments.${index}.operatorFeeRate`}
-                              label="Taxa operadora"
-                              width="flex-[1_0_100px]"
-                              endAdornment={<>%</>}
-                              disabled={isTaxFieldsDisabled}
-                            />
+                  {isTaxFieldsEnabled
+                    ? Array.from({ length: maxInstallmentsLength }).map(
+                        (_, index) => (
+                          <div key={index} className="w-full">
+                            <div className="flex flex-wrap gap-4">
+                              <p className="text-sm font-medium flex-[1_0_100px] mt-6">
+                                Parcela {index + 1}
+                              </p>
+                              {costType === 'VALUE' ? (
+                                <>
+                                  <FormBrlInput
+                                    key={'operatorFeeRate' + (index + 1)}
+                                    name={`installments.${index}.operatorFeeRate`}
+                                    label="Taxa operadora"
+                                    width="flex-[1_0_100px]"
+                                    startAdornment={<>R$</>}
+                                    disabled={!isTaxFieldsEnabled}
+                                  />
+                                  <FormBrlInput
+                                    key={'operatorFeeTransfer' + (index + 1)}
+                                    name={`installments.${index}.operatorFeeTransfer`}
+                                    label="Repasse da taxa"
+                                    width="flex-[1_0_100px]"
+                                    startAdornment={<>R$</>}
+                                    disabled={!isTaxFieldsEnabled}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  <FormInput
+                                    key={'operatorFeeRate' + (index + 1)}
+                                    type="number"
+                                    name={`installments.${index}.operatorFeeRate`}
+                                    label="Taxa operadora"
+                                    width="flex-[1_0_100px]"
+                                    endAdornment={<>%</>}
+                                    disabled={!isTaxFieldsEnabled}
+                                  />
 
-                            <FormInput
-                              key={'operatorFeeTransfer' + (index + 1)}
-                              type="number"
-                              name={`installments.${index}.operatorFeeTransfer`}
-                              label="Repasse da taxa"
-                              width="flex-[1_0_100px]"
-                              endAdornment={<>%</>}
-                              disabled={isTaxFieldsDisabled}
-                            />
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                                  <FormInput
+                                    key={'operatorFeeTransfer' + (index + 1)}
+                                    type="number"
+                                    name={`installments.${index}.operatorFeeTransfer`}
+                                    label="Repasse da taxa"
+                                    width="flex-[1_0_100px]"
+                                    endAdornment={<>%</>}
+                                    disabled={!isTaxFieldsEnabled}
+                                  />
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        ),
+                      )
+                    : null}
                 </>
               ) : costType === 'VALUE' ? (
-                <>
-                  <FormBrlInput
-                    key="operatorFeeRate1"
-                    name={`installments.0.operatorFeeRate`}
-                    label="Taxa operadora"
-                    width="flex-[1_0_100px]"
-                    startAdornment={<>R$</>}
-                    disabled={isTaxFieldsDisabled}
-                  />
-                  <FormBrlInput
-                    key="operatorFeeTransfer1"
-                    name={`installments.0.operatorFeeTransfer`}
-                    label="Repasse da taxa"
-                    width="flex-[1_0_100px]"
-                    startAdornment={<>R$</>}
-                    disabled={isTaxFieldsDisabled}
-                  />
-                </>
+                isTaxFieldsEnabled && (
+                  <>
+                    <FormBrlInput
+                      key="operatorFeeRate1"
+                      name={`installments.0.operatorFeeRate`}
+                      label="Taxa operadora"
+                      width="flex-[1_0_100px]"
+                      startAdornment={<>R$</>}
+                      disabled={!isTaxFieldsEnabled}
+                    />
+                    <FormBrlInput
+                      key="operatorFeeTransfer1"
+                      name={`installments.0.operatorFeeTransfer`}
+                      label="Repasse da taxa"
+                      width="flex-[1_0_100px]"
+                      startAdornment={<>R$</>}
+                      disabled={!isTaxFieldsEnabled}
+                    />
+                  </>
+                )
               ) : (
                 <>
                   <FormInput
@@ -344,7 +373,7 @@ export function NewPaymentCondition({
                     label="Taxa operadora"
                     width="flex-[1_0_100px]"
                     endAdornment={<>%</>}
-                    disabled={isTaxFieldsDisabled}
+                    disabled={!isTaxFieldsEnabled}
                   />
 
                   <FormInput
@@ -354,7 +383,7 @@ export function NewPaymentCondition({
                     label="Repasse da taxa"
                     width="flex-[1_0_100px]"
                     endAdornment={<>%</>}
-                    disabled={isTaxFieldsDisabled}
+                    disabled={!isTaxFieldsEnabled}
                   />
                 </>
               )}

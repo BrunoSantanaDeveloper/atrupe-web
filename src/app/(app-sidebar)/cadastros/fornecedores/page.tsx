@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function SuppliersPage({ searchParams }: SearchParamsType) {
+  const defaultTab = 'ativos'
+  const status = searchParams.status || defaultTab
+
   return (
     <PermissionGate
       permissions={['register:supplier:view']}
@@ -21,7 +24,7 @@ export default function SuppliersPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Suppliers searchParams={searchParams} />
+      <Suppliers searchParams={{ ...searchParams, status }} />
     </PermissionGate>
   )
 }

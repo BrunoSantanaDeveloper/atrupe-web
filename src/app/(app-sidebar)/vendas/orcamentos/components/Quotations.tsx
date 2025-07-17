@@ -82,8 +82,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
     },
   ]
 
-  const statusLabel =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
+  const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
   return (
     <div className="space-y-5">
@@ -92,7 +91,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
       <Topbar
         title="Orçamentos"
         tabs={tabs}
-        activeTab={searchParams?.status || 'todos'}
+        activeTab={status}
         paramName="status"
         primaryCta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
       />
@@ -103,14 +102,16 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum orçamento para o status: ${statusLabel}`}
+                title={`Nenhum orçamento para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (
               <>
+                {/* Filters */}
                 <TableFiltersHeader searchParams={searchParams}>
                   <QuotationsFilter searchParams={searchParams} />
                 </TableFiltersHeader>
+                {/* Table */}
                 <QuotationsData searchParams={searchParams} tabs={tabs} />
               </>
             )

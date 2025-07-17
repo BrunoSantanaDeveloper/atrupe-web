@@ -89,8 +89,7 @@ export function Suppliers({ searchParams }: SearchParamsType) {
     },
   ]
 
-  const statusLabel =
-    tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
+  const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
   return (
     <div className="space-y-5">
@@ -126,7 +125,7 @@ export function Suppliers({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum fornecedor para o status: ${statusLabel}`}
+                title={`Nenhum fornecedor para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
                 icon={IconBuildingCommunity}
               />
             ) : (
