@@ -353,7 +353,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               disabled={isFetching > 0 || mutation.isPending}
               isLoading={form.formState.isSubmitting}
             >
-              Salvar
+              Salvar {!!onFinish && 'e concluir'}
             </Button>
           </div>
         </DialogFooter>

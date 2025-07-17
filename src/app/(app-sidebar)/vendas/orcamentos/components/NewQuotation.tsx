@@ -285,10 +285,9 @@ export function NewQuotationModal({
               form="new-quotation"
               isLoading={form.formState.isSubmitting}
               disabled={!form.formState.isDirty}
+              RightIcon={IconArrowRight}
             >
               {!editMode ? 'Criar orçamento' : 'Salvar edição'}
-
-              <IconArrowRight />
             </Button>
           </div>
         </DialogFooter>
