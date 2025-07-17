@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -113,8 +113,50 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const deliveryType = watch('deliveryType')
   const cost = watch('cost')
+  const daysAfterApproval = watch('daysAfterApproval')
+  const estimatedDate = watch('estimatedDate')
 
   const showSupplierField = deliveryType === 'CARRIER' || cost > 0
+
+  // Sync estimated date when days after approval changes
+  useEffect(() => {
+    if (daysAfterApproval && daysAfterApproval > 0) {
+      const today = new Date()
+      const newEstimatedDate = new Date(today)
+      newEstimatedDate.setDate(today.getDate() + daysAfterApproval)
+
+      // Only update if the calculated date is different from current estimatedDate
+      const currentEstimatedTime = new Date(estimatedDate).getTime()
+      const newEstimatedTime = newEstimatedDate.getTime()
+
+      if (
+        Math.abs(currentEstimatedTime - newEstimatedTime) >
+        24 * 60 * 60 * 1000
+      ) {
+        setValue('estimatedDate', newEstimatedDate)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [daysAfterApproval, setValue])
+
+  // Sync days after approval when estimated date changes
+  useEffect(() => {
+    if (estimatedDate) {
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      const selectedDate = new Date(estimatedDate)
+      selectedDate.setHours(0, 0, 0, 0)
+
+      const diffTime = selectedDate.getTime() - today.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      // Only update if the calculated days is different from current daysAfterApproval and >= 0
+      if (diffDays >= 0 && diffDays !== daysAfterApproval) {
+        setValue('daysAfterApproval', diffDays)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estimatedDate, setValue])
 
   const queryClient = useQueryClient()
 
@@ -184,12 +226,14 @@ export function DeliveryDialog({ quotationData }: Props) {
                 name="daysAfterApproval"
                 label="Dias após aprovação"
                 type="number"
+                min={0}
                 width="flex-[1_0_200px]"
               />
               <FormDatePickerSingle
                 name="estimatedDate"
                 label="Data estimada"
                 width="flex-[1_0_200px]"
+                fromDate={new Date()}
               />
               {showSupplierField && (
                 <SupplierSelectField

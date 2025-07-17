@@ -46,6 +46,7 @@ interface Props<T extends FieldValues> {
   disabled?: boolean
   onSelect?: (value?: Date) => void
   additionalOnChange?: (value?: Date) => void
+  fromDate?: Date
 }
 
 export function FormDatePickerSingle<T extends FieldValues>({
@@ -58,6 +59,7 @@ export function FormDatePickerSingle<T extends FieldValues>({
   onSelect,
   additionalOnChange,
   disabled,
+  fromDate,
 }: Props<T>) {
   const { control } = useFormContext()
 
@@ -87,9 +89,10 @@ export function FormDatePickerSingle<T extends FieldValues>({
                     field.onChange(value)
                     additionalOnChange?.(value)
                   }}
-                  disabled={(date) =>
-                    /* date > new Date() || */ date < new Date('1900-01-01')
-                  }
+                  disabled={(date) => {
+                    const minDate = fromDate || new Date('1900-01-01')
+                    return date < minDate
+                  }}
                   initialFocus
                   defaultMonth={field.value}
                 />
@@ -116,7 +119,15 @@ export function FormDatePickerSingle<T extends FieldValues>({
           )}
         </CalendarButton>
         <PopoverContent className="w-auto p-0 rounded-xl" align="start">
-          <Calendar mode="single" selected={value} onSelect={onSelect} />
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={onSelect}
+            disabled={(date) => {
+              const minDate = fromDate || new Date('1900-01-01')
+              return date < minDate
+            }}
+          />
         </PopoverContent>
       </Popover>
     </div>
