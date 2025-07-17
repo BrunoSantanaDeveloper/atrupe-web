@@ -43,11 +43,13 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
     setValue('additionalFeeType', 'VALUE')
   }
 
+  const paymentConditionId = watch('paymentConditionId')
+
   // Selecionar automaticamente a primeira condição de pagamento quando uma forma de pagamento for selecionada
   useEffect(() => {
     if (paymentMethodId && paymentConditions && paymentConditions.length > 0) {
       const firstPaymentCondition = paymentConditions[0]
-      if (firstPaymentCondition) {
+      if (firstPaymentCondition && !paymentConditionId) {
         setValue('paymentConditionId', firstPaymentCondition.id)
         handleChangePaymentCondition(firstPaymentCondition.id)
       }

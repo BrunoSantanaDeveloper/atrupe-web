@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 
@@ -24,7 +25,9 @@ import { DownPayment } from './DownPayment'
 import { Installments } from './Installments'
 import { CommissionDialog } from './Commission'
 import { TypeAndBilling } from './TypeAndBilling'
+import { InstallmentQty } from './InstallmentQty'
 import { DiscountAndTotal } from './DiscountAndTotal'
+import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 import { PaymentMethodAndCondition } from './PaymentMethod'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FormSelect } from '@/components/common/form/FormSelect'
@@ -40,7 +43,12 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import { IconCoin, IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import {
+  IconCoin,
+  IconPencil,
+  IconCircleCheck,
+  IconProgressCheck,
+} from '@tabler/icons-react'
 
 // Third-party
 import {
@@ -58,14 +66,14 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
-import { InstallmentQty } from './InstallmentQty'
-import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
+import { CustomButton } from '@/components/common/CustomButton'
 
 interface Props {
   quotationData: QuotationType
+  onFinish?: () => void
 }
 
-export function PaymentConditionsDialog({ quotationData }: Props) {
+export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
   const [open, setOpen] = useState(false)
 
   const isFetching = useIsFetching()
@@ -192,7 +200,11 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
     try {
       await mutation.mutateAsync(body)
       toast.success('Informações de condições de pagamento salvas!')
+
+      // Se está salvando infos de pgto após tentar "Concluir Orçamento"
       setOpen(false)
+
+      onFinish?.()
     } catch (error) {
       toast.error('Erro ao salvar informações de condições de pagamento!')
     }
@@ -210,16 +222,29 @@ export function PaymentConditionsDialog({ quotationData }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <ActionButton
-          Icon={IconPencil}
-          tooltip="Editar condições de pagamento"
-          className={cn(
-            buttonVariants({ variant: 'neutralLight', size: 'icon' }),
+      <TooltipProvider>
+        <DialogTrigger asChild>
+          {onFinish ? (
+            <CustomButton
+              icon={IconProgressCheck}
+              title="Concluir orçamento"
+              iconVariant="lightBlueBorderedLight"
+            />
+          ) : (
+            <ActionButton
+              Icon={IconPencil}
+              tooltip="Editar condições de pagamento"
+              className={cn(
+                buttonVariants({ variant: 'neutralLight', size: 'icon' }),
+              )}
+              disabled={actionDisabled(
+                'paymentConditions',
+                quotationData?.status,
+              )}
+            />
           )}
-          disabled={actionDisabled('paymentConditions', quotationData?.status)}
-        />
-      </DialogTrigger>
+        </DialogTrigger>
+      </TooltipProvider>
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">

@@ -133,7 +133,7 @@ export function Main() {
                       text={`${item?.deliveryDeadline || '0'} dias`}
                     />
                   </DetailCardRowItem>
-                  <DetailCardRowItem showSeparator={false}>
+                  <DetailCardRowItem showSeparator={false} className="pb-4">
                     <TextSupportingText
                       supporting="Faturamento"
                       text={item?.billing?.label || '-'}

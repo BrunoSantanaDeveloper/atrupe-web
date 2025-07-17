@@ -11,7 +11,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogTrigger,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
@@ -42,6 +41,7 @@ import {
   IconProgressCheck,
 } from '@tabler/icons-react'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
+import { PaymentConditionsDialog } from './PaymentConditions'
 
 const alertDefaultValues = {
   title: '',
@@ -62,23 +62,16 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   const queryClient = useQueryClient()
 
+  const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition
+
   const handleClose = () => {
     setOpen(false)
   }
 
   const handleFinish = async () => {
-    const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition
-
-    if (!hasPaymentCondition) {
-      setAlertDialog({
-        title: 'Condições de pagamento não encontradas',
-        description:
-          'Por favor, configure as condições de pagamento para concluir o orçamento',
-      })
-      return
-    }
-
     setLoading(true)
+
+    setOpen(true)
 
     setAlertDialog({
       title: 'Validando orçamento...',
@@ -111,14 +104,19 @@ export function FinishQuotation({ data, canFinish }: Props) {
     <>
       {canFinish ? (
         <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogTrigger asChild>
+          {!hasPaymentCondition ? (
+            <PaymentConditionsDialog
+              quotationData={data}
+              onFinish={handleFinish}
+            />
+          ) : (
             <CustomButton
               icon={IconProgressCheck}
               title="Concluir orçamento"
               iconVariant="lightBlueBorderedLight"
               onClick={handleFinish}
             />
-          </AlertDialogTrigger>
+          )}
           <AlertDialogContent className="max-w-96">
             <AlertDialogHeader>
               <FeaturedIcon

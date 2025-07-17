@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
 import { buttonVariants } from '@/components/ui/button'
-import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
@@ -71,11 +70,9 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                 </CardTitle>
               </div>
               <div className="flex gap-3">
-                <TooltipProvider>
-                  <PermissionGate permissions={['sale:quotation:edit']}>
-                    <PaymentConditionsDialog quotationData={quotationData} />
-                  </PermissionGate>
-                </TooltipProvider>
+                <PermissionGate permissions={['sale:quotation:edit']}>
+                  <PaymentConditionsDialog quotationData={quotationData} />
+                </PermissionGate>
                 <AccordionTrigger
                   className={cn(
                     buttonVariants({
