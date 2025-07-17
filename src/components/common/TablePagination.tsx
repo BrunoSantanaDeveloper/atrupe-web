@@ -18,7 +18,6 @@ export function TablePagination({
   lastPage = 1,
 }: TablePaginationProps) {
   const currentPage = Number(searchParams?.page) || 1
-  const items = Array.from({ length: lastPage ?? 1 }, (_, i) => i + 1)
 
   const searchParamsObject = new URLSearchParams(searchParams)
 
@@ -28,9 +27,43 @@ export function TablePagination({
     return `?${params.toString()}`
   }
 
+  // Função para gerar os itens de paginação com reticências
+  function getPaginationItems() {
+    const pages: (number | 'ellipsis')[] = []
+    const delta = 1 // Quantidade de páginas antes/depois da atual
+    const range = []
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(lastPage - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i)
+    }
+    if (currentPage - delta > 2) {
+      pages.push(1, 'ellipsis', ...range)
+    } else {
+      pages.push(
+        ...Array.from(
+          { length: Math.max(currentPage + delta, 1) },
+          (_, i) => i + 1,
+        ).filter((p) => p <= lastPage),
+      )
+    }
+    if (currentPage + delta < lastPage - 1) {
+      pages.push('ellipsis', lastPage)
+    } else if (lastPage > 1 && !pages.includes(lastPage)) {
+      pages.push(lastPage)
+    }
+    // Garante que a primeira página sempre aparece
+    if (!pages.includes(1)) pages.unshift(1)
+    return pages.filter((v, i, arr) => arr.indexOf(v) === i)
+  }
+
+  const paginationItems = getPaginationItems()
+
   return (
     <Pagination>
-      <PaginationContent className="w-full justify-between">
+      <PaginationContent className="w-full justify-center gap-2 flex-nowrap overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-gray-300">
         <PaginationItem>
           <PaginationPrevious
             href={
@@ -39,17 +72,26 @@ export function TablePagination({
             className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
-        <PaginationContent>
-          {items.map((page) => (
-            <PaginationItem key={page}>
-              <PaginationLink
-                href={buildUrlWithPageParam(page)}
-                isActive={currentPage === page}
+        <PaginationContent className="gap-1 flex-nowrap">
+          {paginationItems.map((page, idx) =>
+            page === 'ellipsis' ? (
+              <span
+                key={`ellipsis-${idx}`}
+                className="px-2 text-gray-400 select-none"
               >
-                {page}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
+                ...
+              </span>
+            ) : (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href={buildUrlWithPageParam(page as number)}
+                  isActive={currentPage === page}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            ),
+          )}
         </PaginationContent>
         <PaginationItem>
           <PaginationNext
