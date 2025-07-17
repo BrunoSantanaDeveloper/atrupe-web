@@ -50,9 +50,12 @@ export function FinancialFlow({ searchParams }: Props) {
       />
       <div className="space-y-2.5">
         <Card>
+          {/* FIlter */}
           <TableFiltersHeader searchParams={searchParams}>
             <FinancialFlowFilter searchParams={searchParams} />
           </TableFiltersHeader>
+
+          {/* Totals */}
           <CardContent
             className={cn(
               'transition-all duration-300 pb-0',
@@ -65,6 +68,7 @@ export function FinancialFlow({ searchParams }: Props) {
             <TransactionsTotalsCard searchParams={searchParams} />
           </CardContent>
         </Card>
+        {/* Table */}
         <Card>
           <FinancialFlowData
             searchParams={searchParams}
