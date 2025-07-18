@@ -9,6 +9,7 @@ interface ISeries {
     code: string
     isActive: boolean
     isTraining: boolean
+    isDefault: boolean
   }[]
 }
 

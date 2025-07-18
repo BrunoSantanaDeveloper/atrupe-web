@@ -151,12 +151,12 @@ export function NewQuotationModal({
     }
   }, [sellers, session, form, editMode])
 
-  // Definir série de treinamento como padrão
+  // Definir série com isDefault como padrão
   useEffect(() => {
     if (!editMode && series?.data && open) {
-      const trainingSeries = series.data.find((serie) => serie.isTraining)
-      if (trainingSeries) {
-        form.setValue('seriesId', trainingSeries.id)
+      const defaultSerie = series.data.find((serie) => serie.isDefault)
+      if (defaultSerie) {
+        form.setValue('seriesId', defaultSerie.id)
       }
     }
   }, [series, form, editMode, open])
