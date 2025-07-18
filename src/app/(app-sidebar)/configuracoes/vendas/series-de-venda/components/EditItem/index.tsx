@@ -20,6 +20,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormSwitch } from '@/components/common/form/FormSwitch'
 
 // Icons
 import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
@@ -81,6 +82,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       billing: rowData?.billing?.value || '',
       sendToProduction: rowData?.sendToProduction?.value || '',
       productionStatus: rowData?.productionStatus?.value || '',
+      isDefault: rowData?.isDefault || false,
     },
   })
 
@@ -180,6 +182,11 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   name="deliveryDeadline"
                   label="Prazo de entrega"
                   width="flex-[1_0_250px]"
+                />
+                <FormSwitch<FormType>
+                  name="isDefault"
+                  label="Série padrão"
+                  className="flex-[1_0_250px]"
                 />
                 <Separator className="bg-gray-300" />
                 <p className="w-full text-md font-semibold text-gray-700">

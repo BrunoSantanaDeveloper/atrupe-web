@@ -80,6 +80,9 @@ export function Main() {
                       >
                         {item?.isActive ? 'Ativo' : 'Inativo'}
                       </Badge>
+                      {item?.isDefault && (
+                        <Badge variant="blueLight">Padrão</Badge>
+                      )}
                     </div>
                     <div className="flex gap-3">
                       <TooltipProvider>

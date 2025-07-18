@@ -18,6 +18,7 @@ export const schema = z.object({
     .string()
     .min(1, 'Informe o status de envio para produção'),
   productionStatus: z.string().min(1, 'Informe o status de produção'),
+  isDefault: z.boolean().default(false),
 })
 
 export type FormType = z.infer<typeof schema>

@@ -25,6 +25,7 @@ export type SaleSeriesType = {
   textAfterItems: string
   companyId: string
   isTraining: boolean
+  isDefault: boolean
 }
 
 export type ListSaleSeriessType = {
