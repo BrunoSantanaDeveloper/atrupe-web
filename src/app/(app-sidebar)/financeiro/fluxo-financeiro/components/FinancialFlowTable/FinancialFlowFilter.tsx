@@ -53,7 +53,14 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           label="Situação"
           placeholder="Selecione uma situação"
           className="w-[220px]"
-          options={[{ value: 'all', label: 'Todas' }]}
+          options={[
+            { value: 'all', label: 'Todas' },
+            { value: 'PENDING', label: 'Em aberto' },
+            { value: 'PAID', label: 'Pago' },
+            { value: 'PROVISIONED', label: 'Provisionado' },
+            { value: 'OVERDUE', label: 'Atrasado' },
+            { value: 'CANCELED', label: 'Cancelado' },
+          ]}
           value={searchParams?.status || 'all'}
           onChange={(value) => handleFilter('status', value)}
         />
