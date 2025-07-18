@@ -38,7 +38,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate permissions={['financial:flow:edit']}>
       <>
-        <FinancialFlowDatePicker />
+        <FinancialFlowDatePicker searchParams={searchParams} />
         <SelectBasic
           name="bankAccountId"
           label="Conta"

@@ -1,5 +1,8 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { parseDate } from '@internationalized/date'
+import type { DateValue } from '@react-types/datepicker'
 import {
   Button,
   DateRangePicker,
@@ -14,9 +17,48 @@ import { DateInput, dateInputStyle } from '@/components/ui/datefield-rac'
 import { Label } from '@/components/ui/label'
 import { IconCalendarWeek } from '@tabler/icons-react'
 
-export function FinancialFlowDatePicker() {
+interface FinancialFlowDatePickerProps {
+  searchParams?: Record<string, string | undefined>
+}
+
+export function FinancialFlowDatePicker({
+  searchParams,
+}: FinancialFlowDatePickerProps) {
+  const router = useRouter()
+
+  const currentStartDate = searchParams?.startDate
+    ? parseDate(searchParams.startDate)
+    : null
+  const currentEndDate = searchParams?.endDate
+    ? parseDate(searchParams.endDate)
+    : null
+
+  const handleDateChange = (
+    dateRange: { start: DateValue; end: DateValue } | null,
+  ) => {
+    const params = new URLSearchParams(searchParams as Record<string, string>)
+
+    if (dateRange?.start && dateRange?.end) {
+      params.set('startDate', dateRange.start.toString())
+      params.set('endDate', dateRange.end.toString())
+    } else {
+      params.delete('startDate')
+      params.delete('endDate')
+    }
+
+    router.push(`?${params.toString()}`)
+  }
+
   return (
-    <DateRangePicker className="*:not-first:mt-2">
+    <DateRangePicker
+      className="*:not-first:mt-2 flex flex-col"
+      value={
+        currentStartDate && currentEndDate
+          ? { start: currentStartDate, end: currentEndDate }
+          : null
+      }
+      onChange={handleDateChange}
+    >
       <Label className="mb-2">Período</Label>
       <div className="flex">
         <Group className={cn(dateInputStyle, 'pr-11 pt-3')}>
