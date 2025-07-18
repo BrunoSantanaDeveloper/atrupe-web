@@ -41,6 +41,10 @@ import type { InstallmentType } from '@/types/financial/financialFlow'
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
 
+// Hooks
+import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useBankAccount } from '@/hooks/queries/useBankAccount'
+
 interface Props {
   open: boolean
   setOpen: (value: string) => void
@@ -60,9 +64,18 @@ export function PaymentDialog({
     resolver: zodResolver(schema),
   })
 
-  const { watch, reset, handleSubmit, formState } = form
+  const { watch, reset, handleSubmit, formState, setValue } = form
 
   const queryClient = useQueryClient()
+
+  const paymentMethodId = watch('paymentMethodId')
+  const bankId = watch('bankId')
+
+  const { data: banks } = useBankFilterMethod(paymentMethodId || '')
+  const { data: bankAccounts } = useBankAccount({
+    filters: { bankId },
+    isBankRequired: true,
+  })
 
   useEffect(() => {
     reset({
@@ -74,6 +87,18 @@ export function PaymentDialog({
       amount: rowData?.value || 0,
     })
   }, [rowData, reset])
+
+  useEffect(() => {
+    if (banks && banks.length > 0 && paymentMethodId) {
+      setValue('bankId', banks[0].id)
+    }
+  }, [banks, paymentMethodId, setValue])
+
+  useEffect(() => {
+    if (bankAccounts && bankAccounts.length > 0 && bankId) {
+      setValue('bankAccountId', bankAccounts[0].id)
+    }
+  }, [bankAccounts, bankId, setValue])
 
   const onSubmit = async (data: FormType) => {
     delete data.totalValue
