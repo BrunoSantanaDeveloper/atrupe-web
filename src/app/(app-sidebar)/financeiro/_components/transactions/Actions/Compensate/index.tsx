@@ -60,7 +60,7 @@ export function CompensateDialog({
     resolver: zodResolver(schema),
   })
 
-  const { watch, reset, setValue, handleSubmit } = form
+  const { watch, reset, setValue, handleSubmit, formState } = form
 
   const queryClient = useQueryClient()
 
@@ -95,7 +95,7 @@ export function CompensateDialog({
 
     const result = await updateItemNew({
       route: `/financial/${type}/compensate/${rowData?.id}`,
-      data,
+      data: { paidDate: data.paidDate },
     })
 
     if (!result.success) {
@@ -207,7 +207,7 @@ export function CompensateDialog({
               type="submit"
               form="edit-transaction-data"
               RightIcon={IconCircleCheck}
-              isLoading={queryClient.isMutating() > 0}
+              isLoading={formState.isSubmitting}
             >
               Compensar
             </Button>
