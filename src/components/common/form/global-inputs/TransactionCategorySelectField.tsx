@@ -33,7 +33,9 @@ export function SelectTransactionCategoryField<T extends FieldValues>({
   })
 
   const options = useMemo(() => {
-    return transactionCategories?.map((category) => ({
+    if (!Array.isArray(transactionCategories)) return []
+
+    return transactionCategories.map((category) => ({
       value: category.id,
       label: `${category.code} - ${category.description}`,
     }))

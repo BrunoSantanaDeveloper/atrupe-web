@@ -28,7 +28,9 @@ export function SelectTransactionNatureField<T extends FieldValues>({
   const { data: transactionNatures } = useTransactionNature(type)
 
   const options = useMemo(() => {
-    return transactionNatures?.map((nature) => ({
+    if (!Array.isArray(transactionNatures)) return []
+
+    return transactionNatures.map((nature) => ({
       value: nature.id,
       label: `${nature.code} - ${nature.description}`,
     }))
