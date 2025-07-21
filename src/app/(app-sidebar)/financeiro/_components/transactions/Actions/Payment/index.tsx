@@ -278,7 +278,6 @@ export function PaymentDialog({
                       label="Categoria"
                       width="flex-[1_0_250px]"
                       natureId={differenceNatureId}
-                      listAll
                     />
                   </div>
                 </div>
