@@ -39,6 +39,8 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
   const handleFilter = (key: string, value: string) => {
     params.set(key, value)
 
+    params.delete('page')
+
     router.push(`?${params.toString()}`)
   }
 

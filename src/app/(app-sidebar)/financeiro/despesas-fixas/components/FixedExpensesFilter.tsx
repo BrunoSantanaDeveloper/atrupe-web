@@ -83,6 +83,8 @@ export function FixedExpensesFilter({
       params.set(key, value)
     }
 
+    params.delete('page')
+
     router.push(`?${params.toString()}`)
   }
 

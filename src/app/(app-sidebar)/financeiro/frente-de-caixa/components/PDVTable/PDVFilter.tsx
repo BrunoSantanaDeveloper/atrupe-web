@@ -22,6 +22,8 @@ export function PDVFilter({ searchParams }: SearchParamsType) {
       params.set(key, value)
     }
 
+    params.delete('page')
+
     router.push(`?${params.toString()}`)
   }
 
