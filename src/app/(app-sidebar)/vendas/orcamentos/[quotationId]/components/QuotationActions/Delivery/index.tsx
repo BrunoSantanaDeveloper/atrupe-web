@@ -1,5 +1,5 @@
 // React
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -92,6 +92,7 @@ interface Props {
 
 export function DeliveryDialog({ quotationData }: Props) {
   const [open, setOpen] = useState(false)
+  const updatingFromEffect = useRef(false)
 
   const { deliveryInfo } = quotationData
 
@@ -120,6 +121,8 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   // Sync estimated date when days after approval changes
   useEffect(() => {
+    if (updatingFromEffect.current) return
+
     if (daysAfterApproval && daysAfterApproval > 0) {
       const today = new Date()
       const newEstimatedDate = new Date(today)
@@ -133,7 +136,11 @@ export function DeliveryDialog({ quotationData }: Props) {
         Math.abs(currentEstimatedTime - newEstimatedTime) >
         24 * 60 * 60 * 1000
       ) {
+        updatingFromEffect.current = true
         setValue('estimatedDate', newEstimatedDate)
+        setTimeout(() => {
+          updatingFromEffect.current = false
+        }, 0)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -141,6 +148,8 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   // Sync days after approval when estimated date changes
   useEffect(() => {
+    if (updatingFromEffect.current) return
+
     if (estimatedDate) {
       const today = new Date()
       today.setHours(0, 0, 0, 0)
@@ -152,7 +161,11 @@ export function DeliveryDialog({ quotationData }: Props) {
 
       // Only update if the calculated days is different from current daysAfterApproval and >= 0
       if (diffDays >= 0 && diffDays !== daysAfterApproval) {
+        updatingFromEffect.current = true
         setValue('daysAfterApproval', diffDays)
+        setTimeout(() => {
+          updatingFromEffect.current = false
+        }, 0)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
