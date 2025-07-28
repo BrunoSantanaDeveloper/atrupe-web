@@ -190,7 +190,7 @@ export function MeasureDefaultsDialog() {
                   />
                   <FormSelect<FormType>
                     name="capacity"
-                    label="Capacidade"
+                    label="Volume"
                     width="flex-[1_0_190px]"
                     options={options.capacity}
                   />

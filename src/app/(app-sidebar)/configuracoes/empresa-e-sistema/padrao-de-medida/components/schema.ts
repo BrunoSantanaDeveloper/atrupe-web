@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const schema = z.object({
   length: z.string().min(1, 'Selecione uma unidade de comprimento'),
   weight: z.string().min(1, 'Selecione uma unidade de peso'),
-  capacity: z.string().min(1, 'Selecione uma unidade de capacidade'),
+  capacity: z.string().min(1, 'Selecione uma unidade de volume'),
 })
 
 export type FormType = z.infer<typeof schema>

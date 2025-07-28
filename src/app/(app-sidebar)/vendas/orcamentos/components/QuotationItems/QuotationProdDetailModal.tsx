@@ -18,6 +18,7 @@ import { Form } from '@/components/ui/form'
 // Component Imports
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 
 // Icon Imports
 import {
@@ -61,6 +62,44 @@ interface Props {
   open: boolean
   editMode?: boolean
   data?: QuotationItemType
+}
+
+// Função para inferir o unitKind baseado nas dimensões preenchidas
+function inferUnitKind(composition: {
+  width?: number | null
+  height?: number | null
+  length?: number | null
+  volume?: number | null
+  weight?: number | null
+  distance?: number | null
+  duration?: number | null
+}): string {
+  // Verificar qual dimensão está preenchida (diferente de 0 e null)
+  if (composition.volume && composition.volume > 0) {
+    return 'CAPACITY'
+  }
+  if (composition.length && composition.length > 0) {
+    return 'LENGTH'
+  }
+  if (composition.distance && composition.distance > 0) {
+    return 'DISTANCE'
+  }
+  if (composition.duration && composition.duration > 0) {
+    return 'DURATION'
+  }
+  if (composition.weight && composition.weight > 0) {
+    return 'WEIGHT'
+  }
+  if (
+    composition.width &&
+    composition.width > 0 &&
+    composition.height &&
+    composition.height > 0
+  ) {
+    return 'AREA'
+  }
+
+  return 'UNITY'
 }
 
 // Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
@@ -113,44 +152,63 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
 
   function parseQuotationData(data: QuotationItemType) {
     if (!data) return defaultProductValues
+    // console.log('🔍 parseQuotationData - dados recebidos:', data)
     const newData = {
       ...data,
       productId: data.id ?? null,
       description: data.description ?? null,
       imageUrl: data.image?.url ?? null,
       technicalDescription: data.technicalDescription ?? null,
-      quantity:
-        data?.product?.compositions?.[0]?.originalQuantity ??
-        data.product.quantity ??
-        null,
+      quantity: data.product.quantity ?? 1,
       items: data?.product?.compositions.map((item) => {
-        // Calcular measurementValue inicial baseado nos dados existentes
-        const unitValue = item?.unitValue ?? 0
-        const quantity = item?.originalQuantity ?? 1
-        // Obter unitKind através do unitOfMeasure
-        const unitKind = unitOfMeasure?.find(
-          (unit) => unit.id === item?.unitOfMeasure?.id,
-        )?.kind
+        // Inferir unitKind baseado nas dimensões preenchidas
+        const inferredUnitKind = inferUnitKind(item)
 
-        const basicMeasurement = calculateRawMeasurement(item, unitKind || '')
+        // Mapear apenas as dimensões relevantes para o tipo de unidade, outras ficam null
+        const dimensions = {
+          width: null as number | null,
+          height: null as number | null,
+          length: null as number | null,
+          volume: null as number | null,
+          weight: null as number | null,
+          distance: null as number | null,
+          duration: null as number | null,
+        }
 
-        const measurementValue = unitValue * basicMeasurement * quantity
+        // Setar apenas a dimensão relevante baseada no unitKind
+        switch (inferredUnitKind) {
+          case 'CAPACITY':
+            dimensions.volume = item.volume || null
+            break
+          case 'LENGTH':
+            dimensions.length = item.length || null
+            break
+          case 'DISTANCE':
+            dimensions.distance = item.distance || null
+            break
+          case 'DURATION':
+            dimensions.duration = item.duration || null
+            break
+          case 'WEIGHT':
+            dimensions.weight = item.weight || null
+            break
+          case 'AREA':
+            dimensions.width = item.width || null
+            dimensions.height = item.height || null
+            break
+        }
+
         return {
           ...item,
-          distance: item.distance ?? null,
-          duration: item.duration ?? null,
-          height: item.height ?? null,
+          ...dimensions,
           id: item.id ?? null,
-          length: item.length ?? null,
           name: item.name ?? null,
           quantity: item?.originalQuantity ?? null,
+          // Usar valores diretos do backend sem recalcular
           salePrice: item?.totalValue ?? null,
           unitCost: item?.unitValue ?? null,
-          unitKind: item?.unitOfMeasure?.id ?? null,
-          volume: item.volume ?? null,
-          weight: item.weight ?? null,
-          width: item.width ?? null,
-          measurementValue,
+          unitKind: inferredUnitKind ?? null,
+          // Remover measurementValue calculado - usar direto do backend ou calcular em tempo real
         }
       }),
     }
@@ -281,36 +339,47 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
   }
 
   async function onSubmit(data: ProductsFormType) {
-    // ✅ Enviar apenas dados brutos, sem valores calculados
-    const newFormData = {
+    // Função auxiliar para omitir campos null/undefined
+    // eslint-disable-next-line
+    const omitNullish = (obj: Record<string, any>) => {
+      return Object.fromEntries(
+        Object.entries(obj).filter(
+          ([_, value]) => value !== null && value !== undefined,
+        ),
+      )
+    }
+
+    // ✅ Payload ajustado conforme orientação do backend
+    const newFormData = omitNullish({
       productId: data.productId,
       quantity: data.quantity,
       description: data.description,
-      technicalDescription: data.technicalDescription,
-      imageUrl: data.imageUrl,
-      items: data?.items?.map((item) => ({
-        id: item.id ?? null,
-        // name: item.name ?? null,
-        quantity: item.quantity ?? null,
-        unitCost: item.unitCost ?? null,
-        unitKind: item.unitKind ?? null,
-        // ✅ Valores brutos das dimensões (sem conversões)
-        width: item.width ?? null, // mm
-        height: item.height ?? null, // mm
-        length: item.length ?? null, // mm
-        weight: item.weight ?? null, // mg
-        volume: item.volume ?? null, // ml
-        distance: item.distance ?? null, // metros
-        duration: item.duration ?? null, // segundos
-        // ✅ Enviar salePrice para consistência com NewProduct
-        salePrice: item.salePrice ?? null,
-      })),
-      // ❌ NÃO enviar: totalValue, finalValue (backend calcula)
-    }
+      technicalDescription: data.technicalDescription || undefined,
+      imageUrl: data.imageUrl || undefined,
+      items: data?.items?.map((item) =>
+        omitNullish({
+          id: item.id,
+          quantity: item.quantity,
+          unitCost: item.unitCost,
+          // Remover unitKind - API não atualiza este campo
+          // Valores brutos das dimensões - omitir campos null
+          width: item.width || undefined,
+          height: item.height || undefined,
+          length: item.length || undefined,
+          weight: item.weight || undefined,
+          volume: item.volume || undefined,
+          distance: item.distance || undefined,
+          duration: item.duration || undefined,
+          salePrice: item.salePrice,
+        }),
+      ),
+    })
+
+    console.log('📤 Payload enviado:', newFormData)
 
     if (editMode) {
       const res = await updateItemNew({
-        route: `/sale/quotation/${quotationId}/update-product/${data?.productId}`,
+        route: `/sale/quotation/update-product/${data?.productId}`,
         data: newFormData,
       })
 
@@ -321,7 +390,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
 
       handleToggleModal(false)
       toast.success('Produto editado com sucesso!')
-      queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
       })
       reset()
@@ -414,6 +483,11 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                       <span className="text-sm font-semibold text-gray-700 leading-4 w-[100%] my-2">
                         {item?.name}
                       </span>
+                      <UnitOfMeasureField
+                        name={`items.${index}.unitKind`}
+                        width="flex-[1_0_200px]"
+                        disabled
+                      />
                       <FormInput<ProductsFormType>
                         name={`items.${index}.quantity`}
                         label="Quantidade"
@@ -455,7 +529,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                       <MeasurementInput<ProductsFormType>
                         control={control}
                         index={index}
-                        unitKind={item?.unitKind}
+                        unitKind={watch(`items.${index}.unitKind`)}
                         onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)

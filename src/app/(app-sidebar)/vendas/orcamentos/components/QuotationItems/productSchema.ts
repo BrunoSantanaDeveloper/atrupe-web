@@ -32,15 +32,6 @@ export const productSchema = z.object({
         })
         .optional()
         .nullable(),
-      /* height: z
-        .number({
-          required_error: 'Campo obrigatório',
-          invalid_type_error: 'Altura deve ser um número',
-        })
-        .int()
-        .positive()
-        .optional()
-        .nullable(), */
       height: z.coerce.number().positive().optional().nullable(),
       length: z
         .number({
@@ -94,15 +85,6 @@ export const productSchema = z.object({
       measurementValue: z.number().optional(),
     }),
   ),
-  notes: z.string().optional().nullable(),
-  discount: z
-    .number({
-      required_error: 'Campo obrigatório',
-      invalid_type_error: 'Desconto deve ser um número',
-    })
-    .optional()
-    .nullable(),
-  discountType: z.enum(['percentual', 'valor']).optional().nullable(),
 })
 
 export type ProductsFormType = z.infer<typeof productSchema>
@@ -132,7 +114,4 @@ export const defaultProductValues: ProductsFormType = {
       measurementValue: 0,
     },
   ],
-  notes: '',
-  discount: 0,
-  discountType: 'percentual',
 }

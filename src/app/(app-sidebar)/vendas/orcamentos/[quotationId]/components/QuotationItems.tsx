@@ -64,6 +64,13 @@ import { actionDisabled } from '@/lib/quotation'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
+import {
+  calculateTotalQuantity,
+  getUnitDisplayCode,
+  generateFormattedQuantityDetails,
+  getInferredUnitCode,
+  calculateDisplayUnitValue,
+} from '@/lib/quotation-display-utils'
 
 // Actions
 import { createItem } from '@/actions/_cruds'
@@ -107,6 +114,8 @@ export function QuotationItems({ data }: Props) {
 
   const items = data?.quotationItems
 
+  console.log(items)
+
   return (
     <>
       <Card className="w-full">
@@ -129,14 +138,15 @@ export function QuotationItems({ data }: Props) {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="min-w-[390px]">
+                      <TableHead className="min-w-[300px]">
                         Referência
                       </TableHead>
-                      <TableHead>Unidade</TableHead>
-                      <TableHead>Qtd.</TableHead>
-                      <TableHead>Valor unitário</TableHead>
+                      <TableHead>Forma</TableHead>
+                      <TableHead>Detalhamento</TableHead>
+                      <TableHead>Qtd. Total</TableHead>
+                      <TableHead>Valor un.</TableHead>
                       <TableHead>Desconto</TableHead>
-                      <TableHead>Valor final</TableHead>
+                      <TableHead>Valor Final</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -164,10 +174,16 @@ export function QuotationItems({ data }: Props) {
                               <Badge variant="blueLight">UN</Badge>
                             </TableCell>
                             <TableCell className="text-sm text-gray">
-                              {item?.product?.quantity || '-'}
+                              {item?.product?.quantity || 1}
                             </TableCell>
                             <TableCell className="text-sm text-gray">
-                              {formatCurrencyToBrl(item?.unitValue)}
+                              {`${item?.product?.quantity || 1} UN`}
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {formatCurrencyToBrl(
+                                item?.finalValue /
+                                  (item?.product?.quantity || 1),
+                              )}
                             </TableCell>
                             <TableCell className="text-warning-600 text-nowrap">
                               -
@@ -296,12 +312,20 @@ export function QuotationItems({ data }: Props) {
                             </TableCell>
                             <TableCell className="py-0 text-sm text-gray">
                               <AccordionContent className="py-4">
-                                {item?.product?.quantity || '-'}
+                                {item?.product?.quantity || 1}
                               </AccordionContent>
                             </TableCell>
                             <TableCell className="py-0 text-sm text-gray">
                               <AccordionContent className="py-4">
-                                {formatCurrencyToBrl(item?.product?.unitValue)}
+                                {`${item?.product?.quantity || 1} UN`}
+                              </AccordionContent>
+                            </TableCell>
+                            <TableCell className="py-0 text-sm text-gray">
+                              <AccordionContent className="py-4">
+                                {formatCurrencyToBrl(
+                                  item?.finalValue /
+                                    (item?.product?.quantity || 1),
+                                )}
                               </AccordionContent>
                             </TableCell>
                             <TableCell className="py-0 text-sm text-gray">
@@ -340,20 +364,41 @@ export function QuotationItems({ data }: Props) {
                                       <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
                                           <Badge variant="blueLight">
-                                            {composition?.unitOfMeasure?.code ||
-                                              '-'}
+                                            {composition?.unitOfMeasure
+                                              ? getUnitDisplayCode(
+                                                  composition.unitOfMeasure,
+                                                )
+                                              : getInferredUnitCode(
+                                                  composition,
+                                                )}
                                           </Badge>
                                         </AccordionContent>
                                       </TableCell>
                                       <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
-                                          {composition?.quantity}
+                                          {generateFormattedQuantityDetails(
+                                            item.product.quantity,
+                                            composition,
+                                          )}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {
+                                            calculateTotalQuantity(
+                                              item.product.quantity,
+                                              composition,
+                                            ).formatted
+                                          }
                                         </AccordionContent>
                                       </TableCell>
                                       <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
                                           {formatCurrencyToBrl(
-                                            composition?.unitValue,
+                                            calculateDisplayUnitValue(
+                                              item.product.quantity,
+                                              composition,
+                                            ),
                                           )}
                                         </AccordionContent>
                                       </TableCell>
