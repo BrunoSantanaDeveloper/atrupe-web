@@ -69,7 +69,7 @@ export function LinearMeter<T extends FieldValues>({
               value={
                 field?.value ? millimetersToMeters(field.value).toString() : ''
               }
-              // endAdornment={<>MT</>}
+              endAdornment={<>m</>}
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}

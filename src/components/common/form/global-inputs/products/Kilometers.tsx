@@ -79,7 +79,7 @@ export function Kilometers<T extends FieldValues>({
               value={
                 field?.value ? metersToKilometers(field.value).toString() : ''
               }
-              endAdornment={<>KM</>}
+              endAdornment={<>km</>}
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}

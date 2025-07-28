@@ -80,7 +80,7 @@ export function Liters<T extends FieldValues>({
               value={
                 field?.value ? millilitersToLiters(field.value).toString() : ''
               }
-              endAdornment={<>L</>}
+              endAdornment={<>l</>}
               className={className}
               inputMode="decimal"
             />

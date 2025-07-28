@@ -5,31 +5,31 @@ import type { Path, FieldValues } from 'react-hook-form'
 const options = [
   {
     value: 'LENGTH',
-    label: 'Comprimento',
+    label: 'Comprimento (m)',
   },
   {
     value: 'WEIGHT',
-    label: 'Peso',
+    label: 'Peso (kg)',
   },
   {
     value: 'CAPACITY',
-    label: 'Volume',
+    label: 'Volume (l)',
   },
   {
     value: 'DISTANCE',
-    label: 'Distância',
+    label: 'Distância (km)',
   },
   {
     value: 'DURATION',
-    label: 'Duração',
+    label: 'Duração (h)',
   },
   {
     value: 'UNITY',
-    label: 'Unidade',
+    label: 'Unidade (un)',
   },
   {
     value: 'AREA',
-    label: 'Área',
+    label: 'Área (m²)',
   },
 ]
 

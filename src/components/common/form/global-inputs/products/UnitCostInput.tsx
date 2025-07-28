@@ -26,21 +26,21 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
 function getUnitLabel(unitKind: string): string {
   switch (unitKind) {
     case 'AREA':
-      return 'Valor M²'
+      return 'Valor m²'
     case 'LENGTH':
-      return 'Valor Metro'
+      return 'Valor metro'
     case 'CAPACITY':
-      return 'Valor Litro'
+      return 'Valor litro'
     case 'WEIGHT':
-      return 'Valor Kg'
+      return 'Valor kg'
     case 'DISTANCE':
-      return 'Valor Km'
+      return 'Valor km'
     case 'DURATION':
-      return 'Valor Hora'
+      return 'Valor hora'
     case 'UNITY':
-      return 'Custo Unitário'
+      return 'Valor unitário'
     default:
-      return 'Valor Unidade'
+      return 'Valor unidade'
   }
 }
 

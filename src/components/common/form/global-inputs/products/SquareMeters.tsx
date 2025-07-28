@@ -101,7 +101,7 @@ export function SquareMeters<T extends FieldValues>({
                     placeholder={placeholder || label}
                     value={
                       totalAreaInSquareMeters
-                        ? `${totalAreaInSquareMeters.toFixed(2)} M²`
+                        ? `${totalAreaInSquareMeters.toFixed(2)} m²`
                         : ''
                     }
                     className={className}

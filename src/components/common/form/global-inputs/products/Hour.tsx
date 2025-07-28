@@ -101,7 +101,7 @@ export function Hour<T extends FieldValues>({
                   setIsEditing(false)
                   // O valor será sincronizado automaticamente pelo fieldTimeString
                 }}
-                endAdornment={<>H</>}
+                endAdornment={<>h</>}
                 className={className}
                 maxLength={10}
               />

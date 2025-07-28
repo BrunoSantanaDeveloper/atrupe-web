@@ -290,20 +290,20 @@ function inferUnitKindFromDimensions(composition: MeasurementValues): string {
 function getUnitCodeFromKind(unitKind: string): string {
   switch (unitKind.toUpperCase()) {
     case 'AREA':
-      return 'M2'
+      return 'm²'
     case 'LENGTH':
-      return 'MT'
+      return 'mt'
     case 'CAPACITY':
-      return 'LT'
+      return 'l'
     case 'WEIGHT':
-      return 'KG'
+      return 'kg'
     case 'DISTANCE':
-      return 'KM'
+      return 'km'
     case 'DURATION':
-      return 'HR'
+      return 'h'
     case 'UNITY':
     default:
-      return 'UN'
+      return 'un'
   }
 }
 
@@ -453,7 +453,7 @@ export function calculateTotalQuantity(
           composition.height,
         )
         totalMeasurement = areaPerUnit * compositionQuantity * baseQuantity
-        unit = 'M2'
+        unit = 'm²'
       }
       break
     }
@@ -462,7 +462,7 @@ export function calculateTotalQuantity(
       if (composition.length) {
         const lengthPerUnit = millimetersToMeters(composition.length)
         totalMeasurement = lengthPerUnit * compositionQuantity * baseQuantity
-        unit = 'MT'
+        unit = 'm'
       }
       break
     }
@@ -471,7 +471,7 @@ export function calculateTotalQuantity(
       if (composition.volume) {
         const volumePerUnit = millilitersToLiters(composition.volume)
         totalMeasurement = volumePerUnit * compositionQuantity * baseQuantity
-        unit = 'LT'
+        unit = 'lt'
       }
       break
     }
@@ -480,7 +480,7 @@ export function calculateTotalQuantity(
       if (composition.weight) {
         const weightPerUnit = milligramsToKilograms(composition.weight)
         totalMeasurement = weightPerUnit * compositionQuantity * baseQuantity
-        unit = 'KG'
+        unit = 'kg'
       }
       break
     }
@@ -489,7 +489,7 @@ export function calculateTotalQuantity(
       if (composition.distance) {
         const distancePerUnit = composition.distance / 1000 // Assumindo que distance está em metros
         totalMeasurement = distancePerUnit * compositionQuantity * baseQuantity
-        unit = 'KM'
+        unit = 'km'
       }
       break
     }
@@ -500,7 +500,7 @@ export function calculateTotalQuantity(
           composition.duration * compositionQuantity * baseQuantity
         return {
           value: totalSeconds,
-          unit: 'HR',
+          unit: 'h',
           formatted: `${secondsToTimeString(totalSeconds)}`,
         }
       }
