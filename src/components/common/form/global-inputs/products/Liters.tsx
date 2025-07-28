@@ -37,16 +37,6 @@ interface Props<T extends FieldValues>
   getUnitAbbreviation?: (code: string) => string
 }
 
-// Função para converter mililitros para litros
-function millilitersToLiters(milliliters: number): number {
-  return milliliters / 1000
-}
-
-// Função para converter litros para mililitros
-function litersToMilliliters(liters: number): number {
-  return liters * 1000
-}
-
 export function Liters<T extends FieldValues>({
   name,
   label,
@@ -61,6 +51,30 @@ export function Liters<T extends FieldValues>({
   const { setValue } = useFormContext()
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
+
+  // Funções de conversão dinâmicas baseadas na unidade padrão
+  const convertToMilliliters = (value: number) => {
+    switch (defaultUnit) {
+      case 'ML':
+        return value // já em mililitros
+      case 'LT':
+        return value * 1000 // litros para mililitros
+      default:
+        return value * 1000
+    }
+  }
+
+  const convertFromMilliliters = (value: number) => {
+    switch (defaultUnit) {
+      case 'ML':
+        return value // já em mililitros
+      case 'LT':
+        return value / 1000 // mililitros para litros
+      default:
+        return value / 1000
+    }
+  }
+
   return (
     <FormField
       control={control}
@@ -75,16 +89,18 @@ export function Liters<T extends FieldValues>({
               allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {
-                const litersValue = e.floatValue ?? 0
-                // Converter litros para mililitros antes de salvar
-                const millilitersValue = litersToMilliliters(litersValue)
+                const inputValue = e.floatValue ?? 0
+                // Converter para mililitros baseado na unidade padrão
+                const millilitersValue = convertToMilliliters(inputValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setValue(name, millilitersValue as any)
                 onHasChanged?.()
               }}
-              // Converter mililitros para litros na exibição
+              // Converter mililitros para unidade padrão na exibição
               value={
-                field?.value ? millilitersToLiters(field.value).toString() : ''
+                field?.value
+                  ? convertFromMilliliters(field.value).toString()
+                  : ''
               }
               endAdornment={<>{unitAbbreviation}</>}
               className={className}

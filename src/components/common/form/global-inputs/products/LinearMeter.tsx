@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 // Lib Imports
-import { cn, metersToMillimeters, millimetersToMeters } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { HTMLInputTypeAttribute } from 'react'
 
 // Type Imports
@@ -51,6 +51,34 @@ export function LinearMeter<T extends FieldValues>({
   const { setValue } = useFormContext()
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
+
+  // Funções de conversão dinâmicas baseadas na unidade padrão
+  const convertToMillimeters = (value: number) => {
+    switch (defaultUnit) {
+      case 'MM':
+        return value // já em milímetros
+      case 'CM':
+        return value * 10 // centímetros para milímetros
+      case 'MT':
+        return value * 1000 // metros para milímetros
+      default:
+        return value * 1000
+    }
+  }
+
+  const convertFromMillimeters = (value: number) => {
+    switch (defaultUnit) {
+      case 'MM':
+        return value // já em milímetros
+      case 'CM':
+        return value / 10 // milímetros para centímetros
+      case 'MT':
+        return value / 1000 // milímetros para metros
+      default:
+        return value / 1000
+    }
+  }
+
   return (
     <FormField
       control={control}
@@ -64,16 +92,18 @@ export function LinearMeter<T extends FieldValues>({
               decimalScale={3}
               placeholder={placeholder}
               onValueChange={(e) => {
-                const metersValue = e.floatValue ?? 0
-                // Converter metros para milímetros antes de salvar
-                const millimetersValue = metersToMillimeters(metersValue)
+                const inputValue = e.floatValue ?? 0
+                // Converter para milímetros baseado na unidade padrão
+                const millimetersValue = convertToMillimeters(inputValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setValue(name, millimetersValue as any)
                 onHasChanged?.()
               }}
-              // Converter milímetros para metros na exibição
+              // Converter milímetros para unidade padrão na exibição
               value={
-                field?.value ? millimetersToMeters(field.value).toString() : ''
+                field?.value
+                  ? convertFromMillimeters(field.value).toString()
+                  : ''
               }
               endAdornment={<>{unitAbbreviation}</>}
               className={className}

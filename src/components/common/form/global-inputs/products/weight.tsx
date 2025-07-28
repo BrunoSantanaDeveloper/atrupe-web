@@ -37,16 +37,6 @@ interface Props<T extends FieldValues>
   getUnitAbbreviation?: (code: string) => string
 }
 
-// Função para converter miligramas para quilogramas
-function milligramsToKilograms(milligrams: number): number {
-  return milligrams / 1_000_000
-}
-
-// Função para converter quilogramas para miligramas
-function kilogramsToMilligrams(kilograms: number): number {
-  return kilograms * 1_000_000
-}
-
 export function Weight<T extends FieldValues>({
   name,
   label,
@@ -62,6 +52,33 @@ export function Weight<T extends FieldValues>({
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
 
+  // Funções de conversão dinâmicas baseadas na unidade padrão
+  const convertToMilligrams = (value: number) => {
+    switch (defaultUnit) {
+      case 'MG':
+        return value // já em miligramas
+      case 'GR':
+        return value * 1000 // gramas para miligramas
+      case 'KG':
+        return value * 1_000_000 // quilogramas para miligramas
+      default:
+        return value * 1_000_000
+    }
+  }
+
+  const convertFromMilligrams = (value: number) => {
+    switch (defaultUnit) {
+      case 'MG':
+        return value // já em miligramas
+      case 'GR':
+        return value / 1000 // miligramas para gramas
+      case 'KG':
+        return value / 1_000_000 // miligramas para quilogramas
+      default:
+        return value / 1_000_000
+    }
+  }
+
   return (
     <FormField
       control={control}
@@ -76,17 +93,17 @@ export function Weight<T extends FieldValues>({
               allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {
-                const kilogramsValue = e.floatValue ?? 0
-                // Converter quilogramas para miligramas antes de salvar
-                const milligramsValue = kilogramsToMilligrams(kilogramsValue)
+                const inputValue = e.floatValue ?? 0
+                // Converter para miligramas baseado na unidade padrão
+                const milligramsValue = convertToMilligrams(inputValue)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 setValue(name, milligramsValue as any)
                 onHasChanged?.()
               }}
-              // Converter miligramas para quilogramas na exibição
+              // Converter miligramas para unidade padrão na exibição
               value={
                 field?.value
-                  ? milligramsToKilograms(field.value).toString()
+                  ? convertFromMilligrams(field.value).toString()
                   : ''
               }
               endAdornment={<>{unitAbbreviation}</>}
