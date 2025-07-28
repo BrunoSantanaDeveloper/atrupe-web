@@ -530,7 +530,8 @@ export function calculateDisplayUnitValue(
   } & MeasurementValues,
 ): number {
   const totalValue = composition.totalValue || 0
-  const compositionQty = composition.quantity || composition.originalQuantity || 1
+  const compositionQty =
+    composition.quantity || composition.originalQuantity || 1
 
   // Inferir o tipo de unidade baseado nas dimensões
   const unitKind = inferUnitKindFromDimensions(composition)
