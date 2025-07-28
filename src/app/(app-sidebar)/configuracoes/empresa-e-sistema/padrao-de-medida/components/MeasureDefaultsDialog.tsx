@@ -64,11 +64,15 @@ export function MeasureDefaultsDialog() {
   // Atualizar formulário quando dados carregarem
   useEffect(() => {
     if (unitData?.companyDefaults) {
-      reset({
+      const formValues = {
         length: unitData.companyDefaults.LENGTH,
         weight: unitData.companyDefaults.WEIGHT,
         capacity: unitData.companyDefaults.CAPACITY,
-      })
+      }
+      // Usar setTimeout para garantir que o reset seja aplicado após a renderização
+      setTimeout(() => {
+        reset(formValues)
+      }, 0)
     }
   }, [unitData, reset])
 
@@ -77,17 +81,17 @@ export function MeasureDefaultsDialog() {
     length:
       unitData?.lengthVariants?.map((variant) => ({
         value: variant.code,
-        label: `${variant.name} (${variant.code})`,
+        label: variant.name,
       })) || [],
     weight:
       unitData?.weightVariants?.map((variant) => ({
         value: variant.code,
-        label: `${variant.name} (${variant.code})`,
+        label: variant.name,
       })) || [],
     capacity:
       unitData?.capacityVariants?.map((variant) => ({
         value: variant.code,
-        label: `${variant.name} (${variant.code})`,
+        label: variant.name,
       })) || [],
   }
 

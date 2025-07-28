@@ -50,7 +50,7 @@ export function MeasurementInput<T extends FieldValues>({
             {...props}
             index={index}
             name={`items.${index}.area` as Path<T>}
-            label="Área Total"
+            label="Área total"
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
@@ -73,7 +73,7 @@ export function MeasurementInput<T extends FieldValues>({
             {...commonProps}
             {...props}
             name={`items.${index}.volume` as Path<T>}
-            label="Volume"
+            label="Quantidade"
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
@@ -109,13 +109,24 @@ export function MeasurementInput<T extends FieldValues>({
             {...commonProps}
             {...props}
             name={`items.${index}.duration` as Path<T>}
-            label="Duração"
+            label="Tempo"
             placeholder="00:00"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
           />
         )
       case 'UNITY':
+        return null
+      // return (
+      //   <FormInput
+      //     type="number"
+      //     name={`items.${index}.unity` as Path<T>}
+      //     label="Quantidade"
+      //     placeholder="Digite aqui"
+      //     width={commonProps.width as string}
+      //     additionalOnChange={onHasChanged}
+      //   />
+      // )
       default:
         return null
     }

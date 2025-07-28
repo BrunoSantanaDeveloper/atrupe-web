@@ -5,7 +5,7 @@ import type { Path, FieldValues } from 'react-hook-form'
 const options = [
   {
     value: 'LENGTH',
-    label: 'Comprimento (m)',
+    label: 'Metro Linear (m)',
   },
   {
     value: 'WEIGHT',
@@ -13,7 +13,7 @@ const options = [
   },
   {
     value: 'CAPACITY',
-    label: 'Volume (l)',
+    label: 'Litro (l)',
   },
   {
     value: 'DISTANCE',
@@ -21,7 +21,7 @@ const options = [
   },
   {
     value: 'DURATION',
-    label: 'Duração (h)',
+    label: 'Tempo (h)',
   },
   {
     value: 'UNITY',
@@ -29,7 +29,7 @@ const options = [
   },
   {
     value: 'AREA',
-    label: 'Área (m²)',
+    label: 'Metro Quadrado (m²)',
   },
 ]
 
