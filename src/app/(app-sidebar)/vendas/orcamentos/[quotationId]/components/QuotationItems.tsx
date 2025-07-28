@@ -43,7 +43,6 @@ import { QuotationCategorySelectorModal } from '../../components/QuotationItems/
 import {
   IconCopy,
   IconCoin,
-  IconBulb,
   IconPhoto,
   IconTrashX,
   IconPencil,
@@ -142,6 +141,7 @@ export function QuotationItems({ data }: Props) {
                         Referência
                       </TableHead>
                       <TableHead>Forma</TableHead>
+                      <TableHead>Qtd. Item</TableHead>
                       <TableHead>Detalhamento</TableHead>
                       <TableHead>Qtd. Total</TableHead>
                       <TableHead>Valor un.</TableHead>
@@ -171,13 +171,16 @@ export function QuotationItems({ data }: Props) {
                               </AccordionTrigger>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="blueLight">UN</Badge>
+                              <Badge variant="blueLight">un</Badge>
                             </TableCell>
                             <TableCell className="text-sm text-gray">
                               {item?.product?.quantity || 1}
                             </TableCell>
                             <TableCell className="text-sm text-gray">
-                              {`${item?.product?.quantity || 1} UN`}
+                              -
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {`${item?.product?.quantity || 1} un`}
                             </TableCell>
                             <TableCell className="text-sm text-gray">
                               {formatCurrencyToBrl(
@@ -294,7 +297,7 @@ export function QuotationItems({ data }: Props) {
                               </div>
                             </TableCell>
                           </TableRow>
-                          <TableRow className="bg-gray-50 border-0">
+                          {/* <TableRow className="bg-gray-50 border-0">
                             <TableCell className="pl-14 py-0">
                               <AccordionContent className="flex items-center gap-3 py-5 font-medium text-gray-600">
                                 <FeaturedIcon
@@ -307,7 +310,7 @@ export function QuotationItems({ data }: Props) {
                             </TableCell>
                             <TableCell className="py-0">
                               <AccordionContent className="py-4">
-                                <Badge variant="blueLight">UN</Badge>
+                                <Badge variant="blueLight">un</Badge>
                               </AccordionContent>
                             </TableCell>
                             <TableCell className="py-0 text-sm text-gray">
@@ -341,7 +344,7 @@ export function QuotationItems({ data }: Props) {
                             <TableCell className="py-0 text-sm text-gray">
                               <AccordionContent className="py-4"></AccordionContent>
                             </TableCell>
-                          </TableRow>
+                          </TableRow> */}
                           {item?.product?.compositions?.length
                             ? item?.product?.compositions?.map(
                                 (composition, index) => (
@@ -376,8 +379,12 @@ export function QuotationItems({ data }: Props) {
                                       </TableCell>
                                       <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
+                                          {item.product.quantity}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
                                           {generateFormattedQuantityDetails(
-                                            item.product.quantity,
                                             composition,
                                           )}
                                         </AccordionContent>

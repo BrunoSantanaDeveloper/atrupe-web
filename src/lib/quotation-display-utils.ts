@@ -190,11 +190,11 @@ export function generateQuantityDetails(
  * Exemplo: 3x2x3x3 para área, 3x2x2 para volume
  */
 export function generateFormattedQuantityDetails(
-  itemQuantity: number,
   composition: {
     quantity?: number | null
     originalQuantity?: number | null
   } & MeasurementValues,
+  // itemQuantity?: number,
 ): string {
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
@@ -202,49 +202,50 @@ export function generateFormattedQuantityDetails(
   // Inferir tipo de unidade baseado nas dimensões preenchidas
   const unitKind = inferUnitKindFromDimensions(composition)
 
-  let details = `${itemQuantity}x${compositionQty}`
+  // let details = `${itemQuantity}x${compositionQty}`
+  let details = `${compositionQty}un `
 
   switch (unitKind) {
     case 'AREA':
       if (composition.width && composition.height) {
         const widthM = millimetersToMeters(composition.width)
         const heightM = millimetersToMeters(composition.height)
-        details += `x${widthM}x${heightM}`
+        details += `${widthM}x${heightM}`
       }
       break
 
     case 'LENGTH':
       if (composition.length) {
         const lengthM = millimetersToMeters(composition.length)
-        details += `x${lengthM}`
+        details += `${lengthM} m`
       }
       break
 
     case 'CAPACITY':
       if (composition.volume) {
         const volumeL = millilitersToLiters(composition.volume)
-        details += `x${volumeL}`
+        details += `${volumeL} l`
       }
       break
 
     case 'WEIGHT':
       if (composition.weight) {
         const weightKg = milligramsToKilograms(composition.weight)
-        details += `x${weightKg}`
+        details += `${weightKg} kg`
       }
       break
 
     case 'DISTANCE':
       if (composition.distance) {
         const distanceKm = metersToKilometers(composition.distance)
-        details += `x${distanceKm}`
+        details += `${distanceKm} km`
       }
       break
 
     case 'DURATION':
       if (composition.duration) {
         const hours = composition.duration / 3600
-        details += `x${hours.toFixed(2)}`
+        details += `${hours.toFixed(2)}`
       }
       break
 
@@ -471,7 +472,7 @@ export function calculateTotalQuantity(
       if (composition.volume) {
         const volumePerUnit = millilitersToLiters(composition.volume)
         totalMeasurement = volumePerUnit * compositionQuantity * baseQuantity
-        unit = 'lt'
+        unit = 'l'
       }
       break
     }

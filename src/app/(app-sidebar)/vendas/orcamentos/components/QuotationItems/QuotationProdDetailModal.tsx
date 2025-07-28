@@ -35,7 +35,6 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { useProductDetail } from '@/hooks/queries/useProductDetail'
 import { useQuotation } from '@/contexts/quotationContext'
 import { ProductImageUpload } from '@/components/common/form/global-inputs/ProductImageUpload'
-import { useUnitOfMeasure } from '@/hooks/queries/useUnitOfMeasure'
 import {
   Tooltip,
   TooltipContent,
@@ -143,7 +142,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
   const params = useParams()
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
-  const { data: unitOfMeasure } = useUnitOfMeasure()
+  // const { data: unitOfMeasure } = useUnitOfMeasure()
   const { data: product, isLoading } = useProductDetail(
     quotationData.productId || '',
   )
@@ -415,11 +414,11 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     reset()
   }
 
-  function getPriceLabel(unitKind: string): string {
-    const label = unitOfMeasure?.find((unit) => unit.kind === unitKind)?.name
+  // function getPriceLabel(unitKind: string): string {
+  //   const label = unitOfMeasure?.find((unit) => unit.kind === unitKind)?.name
 
-    return label || ''
-  }
+  //   return label || ''
+  // }
 
   return (
     <Dialog open={open} onOpenChange={handleToggleModal}>
@@ -542,7 +541,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                       />
                       <UnitCostInput
                         name={`items.${index}.unitCost`}
-                        label={`Valor ${getPriceLabel(item?.unitKind)}`}
+                        // label={`Valor ${getPriceLabel(item?.unitKind)}`}
                         placeholder="0,00"
                         width="flex-[1_0_130px]"
                         index={index}
