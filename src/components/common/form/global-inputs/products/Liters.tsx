@@ -33,6 +33,8 @@ interface Props<T extends FieldValues>
   type?: HTMLInputTypeAttribute | undefined
   className?: string
   onHasChanged?: () => void
+  defaultUnit?: string
+  getUnitAbbreviation?: (code: string) => string
 }
 
 // Função para converter mililitros para litros
@@ -53,8 +55,12 @@ export function Liters<T extends FieldValues>({
   width = 'flex-[1_0_100px]',
   className,
   onHasChanged,
+  defaultUnit = 'LT',
+  getUnitAbbreviation = (code) => code.toLowerCase(),
 }: Props<T>) {
   const { setValue } = useFormContext()
+
+  const unitAbbreviation = getUnitAbbreviation(defaultUnit)
   return (
     <FormField
       control={control}
@@ -80,7 +86,7 @@ export function Liters<T extends FieldValues>({
               value={
                 field?.value ? millilitersToLiters(field.value).toString() : ''
               }
-              endAdornment={<>l</>}
+              endAdornment={<>{unitAbbreviation}</>}
               className={className}
               inputMode="decimal"
             />

@@ -33,6 +33,8 @@ interface Props<T extends FieldValues>
   type?: HTMLInputTypeAttribute | undefined
   className?: string
   onHasChanged?: () => void
+  defaultUnit?: string
+  getUnitAbbreviation?: (code: string) => string
 }
 
 export function LinearMeter<T extends FieldValues>({
@@ -43,8 +45,12 @@ export function LinearMeter<T extends FieldValues>({
   width = 'flex-[1_0_100px]',
   className,
   onHasChanged,
+  defaultUnit = 'MT',
+  getUnitAbbreviation = (code) => code.toLowerCase(),
 }: Props<T>) {
   const { setValue } = useFormContext()
+
+  const unitAbbreviation = getUnitAbbreviation(defaultUnit)
   return (
     <FormField
       control={control}
@@ -69,7 +75,7 @@ export function LinearMeter<T extends FieldValues>({
               value={
                 field?.value ? millimetersToMeters(field.value).toString() : ''
               }
-              endAdornment={<>m</>}
+              endAdornment={<>{unitAbbreviation}</>}
               className={className}
               inputMode="decimal"
               allowedDecimalSeparators={['.', ',']}

@@ -5,6 +5,7 @@ import { type Control, type FieldValues, type Path } from 'react-hook-form'
 import { LinearMeter } from '@/components/common/form/global-inputs/products/LinearMeter'
 import { SquareMeters } from '@/components/common/form/global-inputs/products/SquareMeters'
 import { useUnitOfMeasure } from '@/hooks/queries/useUnitOfMeasure'
+import { useCompanyUnitDefaults } from '@/hooks/queries/useUnitOfMeasureDefaults'
 import { Liters } from './Liters'
 import { Kilometers } from './Kilometers'
 import { Hour } from './Hour'
@@ -28,6 +29,7 @@ export function MeasurementInput<T extends FieldValues>({
   ...props
 }: MeasurementInputProps<T>) {
   const { data: unitOfMeasure } = useUnitOfMeasure()
+  const { data: companyDefaults } = useCompanyUnitDefaults()
   const unitCode = unitOfMeasure?.find(
     (unit) => unit.id === unitOfMeasureId,
   )?.code
@@ -39,6 +41,24 @@ export function MeasurementInput<T extends FieldValues>({
 
   if (unitCode === 'TESTE') {
     return null
+  }
+
+  // Função para mapear códigos para abreviações
+  const getUnitAbbreviation = (code: string) => {
+    const unitMap: Record<string, string> = {
+      // Length
+      MM: 'mm',
+      CM: 'cm',
+      MT: 'm',
+      // Weight
+      MG: 'mg',
+      GR: 'g',
+      KG: 'kg',
+      // Capacity
+      ML: 'ml',
+      LT: 'l',
+    }
+    return unitMap[code] || code
   }
 
   const renderComponent = () => {
@@ -65,6 +85,8 @@ export function MeasurementInput<T extends FieldValues>({
             label="Medida"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
+            defaultUnit={companyDefaults?.LENGTH}
+            getUnitAbbreviation={getUnitAbbreviation}
           />
         )
       case 'CAPACITY':
@@ -77,6 +99,8 @@ export function MeasurementInput<T extends FieldValues>({
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
+            defaultUnit={companyDefaults?.CAPACITY}
+            getUnitAbbreviation={getUnitAbbreviation}
           />
         )
       case 'WEIGHT':
@@ -89,6 +113,8 @@ export function MeasurementInput<T extends FieldValues>({
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
+            defaultUnit={companyDefaults?.WEIGHT}
+            getUnitAbbreviation={getUnitAbbreviation}
           />
         )
       case 'DISTANCE':
@@ -116,17 +142,6 @@ export function MeasurementInput<T extends FieldValues>({
           />
         )
       case 'UNITY':
-        return null
-      // return (
-      //   <FormInput
-      //     type="number"
-      //     name={`items.${index}.unity` as Path<T>}
-      //     label="Quantidade"
-      //     placeholder="Digite aqui"
-      //     width={commonProps.width as string}
-      //     additionalOnChange={onHasChanged}
-      //   />
-      // )
       default:
         return null
     }

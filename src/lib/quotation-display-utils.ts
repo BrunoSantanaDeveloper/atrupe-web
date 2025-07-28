@@ -292,7 +292,7 @@ function getUnitCodeFromKind(unitKind: string): string {
     case 'AREA':
       return 'm²'
     case 'LENGTH':
-      return 'mt'
+      return 'm'
     case 'CAPACITY':
       return 'l'
     case 'WEIGHT':

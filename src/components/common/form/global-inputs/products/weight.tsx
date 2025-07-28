@@ -33,6 +33,8 @@ interface Props<T extends FieldValues>
   type?: HTMLInputTypeAttribute | undefined
   className?: string
   onHasChanged?: () => void
+  defaultUnit?: string
+  getUnitAbbreviation?: (code: string) => string
 }
 
 // Função para converter miligramas para quilogramas
@@ -53,8 +55,13 @@ export function Weight<T extends FieldValues>({
   width = 'flex-[1_0_100px]',
   className,
   onHasChanged,
+  defaultUnit = 'KG',
+  getUnitAbbreviation = (code) => code.toLowerCase(),
 }: Props<T>) {
   const { setValue } = useFormContext()
+
+  const unitAbbreviation = getUnitAbbreviation(defaultUnit)
+
   return (
     <FormField
       control={control}
@@ -82,7 +89,7 @@ export function Weight<T extends FieldValues>({
                   ? milligramsToKilograms(field.value).toString()
                   : ''
               }
-              endAdornment={<>KG</>}
+              endAdornment={<>{unitAbbreviation}</>}
               className={className}
             />
           </FormControl>
