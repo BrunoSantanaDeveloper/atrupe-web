@@ -8,7 +8,7 @@ interface Props<T extends FieldValues> {
   label?: string
   placeholder?: string
   width?: string
-  disabled: boolean
+  disabled?: boolean
 }
 
 export function UnitOfMeasureField<T extends FieldValues>({
