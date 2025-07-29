@@ -74,6 +74,8 @@ export function MeasurementInput<T extends FieldValues>({
             placeholder="Digite aqui"
             width={commonProps.width as string}
             onHasChanged={onHasChanged}
+            defaultUnit={companyDefaults?.LENGTH}
+            getUnitAbbreviation={getUnitAbbreviation}
           />
         )
       case 'LENGTH':

@@ -35,6 +35,8 @@ interface Props<T extends FieldValues>
   className?: string
   index?: number
   onHasChanged?: () => void
+  defaultUnit?: string
+  getUnitAbbreviation?: (code: string) => string
 }
 
 export function SquareMeters<T extends FieldValues>({
@@ -46,6 +48,8 @@ export function SquareMeters<T extends FieldValues>({
   className,
   index,
   onHasChanged,
+  defaultUnit = 'MT',
+  getUnitAbbreviation = (code) => code.toLowerCase(),
   ...props
 }: Props<T>) {
   const { watch } = useFormContext()
@@ -78,6 +82,8 @@ export function SquareMeters<T extends FieldValues>({
       label={label}
       width="flex-[1_0_100px]"
       onHasChanged={onHasChanged}
+      defaultUnit={defaultUnit}
+      getUnitAbbreviation={getUnitAbbreviation}
       {...props}
     />
   )
