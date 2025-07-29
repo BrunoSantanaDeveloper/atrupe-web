@@ -52,6 +52,20 @@ export function LinearMeter<T extends FieldValues>({
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
 
+  // Função para obter o número de casas decimais baseado na unidade
+  const getDecimalPlaces = (unit: string) => {
+    switch (unit) {
+      case 'MM':
+        return 0
+      case 'CM':
+        return 1
+      case 'MT':
+        return 3
+      default:
+        return 3
+    }
+  }
+
   // Funções de conversão dinâmicas baseadas na unidade padrão
   const convertToMillimeters = (value: number) => {
     switch (defaultUnit) {
@@ -89,7 +103,7 @@ export function LinearMeter<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={3}
+              decimalScale={getDecimalPlaces(defaultUnit)}
               placeholder={placeholder}
               onValueChange={(e) => {
                 const inputValue = e.floatValue ?? 0

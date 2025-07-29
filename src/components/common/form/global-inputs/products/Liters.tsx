@@ -52,6 +52,18 @@ export function Liters<T extends FieldValues>({
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
 
+  // Função para obter o número de casas decimais baseado na unidade
+  const getDecimalPlaces = (unit: string) => {
+    switch (unit) {
+      case 'ML':
+        return 0
+      case 'LT':
+        return 3
+      default:
+        return 3
+    }
+  }
+
   // Funções de conversão dinâmicas baseadas na unidade padrão
   const convertToMilliliters = (value: number) => {
     switch (defaultUnit) {
@@ -85,7 +97,7 @@ export function Liters<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={2}
+              decimalScale={getDecimalPlaces(defaultUnit)}
               allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {

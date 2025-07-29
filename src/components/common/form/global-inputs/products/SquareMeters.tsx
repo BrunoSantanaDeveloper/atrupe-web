@@ -54,6 +54,20 @@ export function SquareMeters<T extends FieldValues>({
 }: Props<T>) {
   const { watch } = useFormContext()
 
+  // Função para obter o número de casas decimais baseado na unidade
+  const getDecimalPlaces = (unit: string) => {
+    switch (unit) {
+      case 'MM':
+        return 0
+      case 'CM':
+        return 1
+      case 'MT':
+        return 3
+      default:
+        return 3
+    }
+  }
+
   // Calcular valores de largura e altura (em milímetros do banco)
   const widthValue = watch(`items[${index}].width`) ?? 0
   const heightValue = watch(`items[${index}].height`) ?? 0
@@ -107,7 +121,7 @@ export function SquareMeters<T extends FieldValues>({
                     placeholder={placeholder || label}
                     value={
                       totalAreaInSquareMeters
-                        ? `${totalAreaInSquareMeters.toFixed(2)} m²`
+                        ? `${totalAreaInSquareMeters.toFixed(getDecimalPlaces(defaultUnit))} ${getUnitAbbreviation(defaultUnit)}²`
                         : ''
                     }
                     className={className}

@@ -52,6 +52,20 @@ export function Weight<T extends FieldValues>({
 
   const unitAbbreviation = getUnitAbbreviation(defaultUnit)
 
+  // Função para obter o número de casas decimais baseado na unidade
+  const getDecimalPlaces = (unit: string) => {
+    switch (unit) {
+      case 'MG':
+        return 0
+      case 'GR':
+        return 1
+      case 'KG':
+        return 3
+      default:
+        return 3
+    }
+  }
+
   // Funções de conversão dinâmicas baseadas na unidade padrão
   const convertToMilligrams = (value: number) => {
     switch (defaultUnit) {
@@ -89,7 +103,7 @@ export function Weight<T extends FieldValues>({
           <FormControl>
             <NumericFormat
               customInput={Input}
-              decimalScale={3}
+              decimalScale={getDecimalPlaces(defaultUnit)}
               allowedDecimalSeparators={['.', ',']}
               placeholder={placeholder}
               onValueChange={(e) => {
