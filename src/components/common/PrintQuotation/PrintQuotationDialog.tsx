@@ -39,7 +39,11 @@ import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { useForm } from 'react-hook-form'
 
 // Utils
-import { validateQuotationTotals, formatCurrencyToBrl } from '@/lib/utils'
+import {
+  validateQuotationTotals,
+  formatCurrencyToBrl,
+  adaptNewItemsToOldFormat,
+} from '@/lib/utils'
 
 // Icon
 import {
@@ -124,8 +128,25 @@ export function PrintQuotationDialog({
         id: `${quotationId}/pdf-data`,
       })
 
+      // Verificar se quotationItems existe
+      if (
+        !quotationData.quotationItems ||
+        !Array.isArray(quotationData.quotationItems)
+      ) {
+        console.error(
+          '❌ quotationItems não encontrado ou não é um array:',
+          quotationData,
+        )
+        toast.error('Dados do orçamento inválidos')
+        return
+      }
+
       // Validar se há inconsistências nos totais
-      const validation = validateQuotationTotals(quotationData.items, {
+      const adaptedItems = adaptNewItemsToOldFormat(
+        quotationData.quotationItems,
+      )
+
+      const validation = validateQuotationTotals(adaptedItems, {
         subtotal: quotationData.total?.subtotal,
         totalDiscount: quotationData.total?.totalDiscount,
         finalTotal: quotationData.total?.finalTotal,

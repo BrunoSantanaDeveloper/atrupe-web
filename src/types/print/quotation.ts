@@ -94,30 +94,53 @@ type OrderType = {
 // Tipo para composição de item
 type CompositionItemType = {
   id: string
+  originalCompositionId: string
   name: string
-  quantity: number
   unitOfMeasure: string
-  unitPrice: number
-  totalPrice: number
+  quantity: number
+  originalQuantity: number
+  unitValue: number
+  totalValue: number
+  weight: number
+  width: number
+  height: number
+  duration: number
+  length: number
+  distance: number
+  volume: number
 }
 
-// Tipo para desconto
-type DiscountType = {
-  type: 'PERCENT' | 'VALUE'
-  value: number
-  discountedValue: number
+// Tipo para produto
+type ProductType = {
+  originalProductId: string
+  name: string
+  quantity: number
+  unitValue: number
+  finalValue: number
+  compositions: CompositionItemType[]
+}
+
+// Tipo para imagem
+type ImageType = {
+  url: string
+  original: boolean
 }
 
 // Tipo para item do orçamento
 type QuotationItemType = {
   id: string
-  image: string
   description: string
-  composition: CompositionItemType[]
-  totalQuantity: number
-  totalUnitPrice: number
-  discount: DiscountType
-  finalPrice: number
+  allowEditDescription: boolean
+  allowEditValues: boolean
+  technicalDescription: string
+  notes: string
+  discountType: 'VALUE' | 'PERCENT'
+  discount: number
+  unitValue: number
+  totalValue: number
+  finalValue: number
+  image: ImageType
+  product: ProductType
 }
 
 // Tipo para fornecedor de entrega
@@ -171,7 +194,7 @@ export type PrintQuotationType = {
   contact: ContactType
   quotation: QuotationType
   order: OrderType
-  items: QuotationItemType[]
+  quotationItems: QuotationItemType[]
   delivery: DeliveryType
   cost: CostType
   payment: PaymentType

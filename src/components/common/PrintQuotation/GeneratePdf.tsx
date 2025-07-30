@@ -19,6 +19,7 @@ import {
   maskCnpj,
   formatCurrencyToBrl,
   calculateQuotationTotals,
+  adaptNewItemsToOldFormat,
 } from '@/lib/utils'
 
 // Icons
@@ -255,8 +256,9 @@ interface Props {
 }
 
 export function GeneratePdf({ data, printOptions, type }: Props) {
-  // Calcular totais corretos baseados nos itens
-  const totals = calculateQuotationTotals(data.items)
+  // Adaptar itens da nova API para o formato antigo e calcular totais
+  const adaptedItems = adaptNewItemsToOldFormat(data.quotationItems)
+  const totals = calculateQuotationTotals(adaptedItems)
 
   // Incluir o frete no total final
   const freightPrice = data.delivery?.freightPrice || 0
@@ -283,11 +285,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           </View>
           <View style={[styles.companyInfo, { width: '50%' }]}>
             <Text style={styles.companyName}>{data.company?.name}</Text>
-            <Text>
-              {isProduction
-                ? maskCnpj(data.company?.cnpj || '')
-                : data.company?.cnpj}
-            </Text>
+            <Text>{maskCnpj(data.company?.cnpj)}</Text>
             <Text>
               {data.company?.address?.street}, {data.company?.address?.number}
               {isProduction && `, ${data.company?.address?.neighborhood}`}
@@ -493,7 +491,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               )}
             </View>
 
-            {totals.correctedItems.map((item, index) => (
+            {data.quotationItems.map((item, index) => (
               <View key={item.id || index} style={styles.tableRow} wrap={false}>
                 {/* Coluna Item - Imagem e Descrição */}
                 <View
@@ -505,7 +503,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 >
                   <View style={styles.itemImage}>
                     <PDFImage
-                      src={item.image || '/img/product-placeholder.png'}
+                      src={item.image?.url || '/img/product-placeholder.png'}
                       style={{
                         width: '100%',
                         height: '100%',
@@ -518,7 +516,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       <Text
                         style={{
                           fontWeight: 'bold',
-                          fontSize: 9,
+                          fontSize: 8,
                         }}
                       >
                         {index + 1} -{' '}
@@ -526,11 +524,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       {item.description}
                     </Text>
                     {(isProduction || printOptions.showDimensions) &&
-                      item.composition.map((comp) => (
+                      item.product.compositions.map((comp) => (
                         <Text key={comp.id} style={styles.itemDescription}>
-                          {isProduction
-                            ? 'Descrição da composição - Medidas'
-                            : `${comp?.name} - ${comp?.quantity} ${comp?.unitOfMeasure}`}
+                          {`${comp?.name} - ${comp?.quantity}${comp?.unitOfMeasure ? ` ${comp.unitOfMeasure}` : ''}`}
                         </Text>
                       ))}
                   </View>
@@ -539,10 +535,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {/* Coluna Quantidade */}
                 <View style={{ width: isProduction ? '15%' : '10%' }}>
                   <Text style={{ textAlign: isProduction ? 'center' : 'left' }}>
-                    {item.totalQuantity}
+                    {item.product.quantity}
                   </Text>
                   {(isProduction || printOptions.showDimensions) &&
-                    item.composition.map((comp) => (
+                    item.product.compositions.map((comp) => (
                       <Text
                         key={comp.id}
                         style={{
@@ -553,7 +549,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       >
                         {isProduction
                           ? '1 m²'
-                          : `${comp?.quantity} ${comp?.unitOfMeasure}`}
+                          : `${comp?.quantity}${comp?.unitOfMeasure ? ` ${comp.unitOfMeasure}` : ''}`}
                       </Text>
                     ))}
                 </View>
@@ -562,10 +558,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {!isProduction && printOptions.showUnitValue && (
                   <View style={{ width: '15%', lineHeight: 0.6 }}>
                     <Text style={{ textAlign: 'right' }}>
-                      {formatCurrencyToBrl(item.totalUnitPrice)}
+                      {formatCurrencyToBrl(
+                        item.totalValue / item.product.quantity,
+                      )}
                     </Text>
                     {printOptions.showDimensions &&
-                      item.composition.map((comp) => (
+                      item.product.compositions.map((comp) => (
                         <Text
                           key={comp.id}
                           style={{
@@ -574,7 +572,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             fontSize: 7,
                           }}
                         >
-                          {formatCurrencyToBrl(comp?.unitPrice)}
+                          {formatCurrencyToBrl(comp?.unitValue)}
                         </Text>
                       ))}
                   </View>
@@ -583,9 +581,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {!isProduction && printOptions.showDiscounts && (
                   <View style={{ width: '15%' }}>
                     <Text style={{ textAlign: 'right', lineHeight: 0.6 }}>
-                      {item.discount.type === 'PERCENT'
-                        ? `${item.discount.value}%`
-                        : formatCurrencyToBrl(item.discount.value)}
+                      {item.discountType === 'PERCENT'
+                        ? `${item.discount}%`
+                        : formatCurrencyToBrl(item.discount)}
                     </Text>
                     <Text
                       style={{
@@ -594,7 +592,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         fontSize: 7,
                       }}
                     >
-                      -{formatCurrencyToBrl(item.discount.discountedValue)}
+                      -{formatCurrencyToBrl(item.totalValue - item.finalValue)}
                     </Text>
                   </View>
                 )}
@@ -602,7 +600,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {!isProduction && printOptions.showFinalValue && (
                   <View style={{ width: '15%' }}>
                     <Text style={{ textAlign: 'right' }}>
-                      {formatCurrencyToBrl(item.finalPrice)}
+                      {formatCurrencyToBrl(item.finalValue)}
                     </Text>
                   </View>
                 )}

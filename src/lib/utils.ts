@@ -620,6 +620,111 @@ export function correctItemDiscountValues(
 }
 
 /**
+ * Tipo para representar um item de orçamento da nova API para cálculos
+ */
+export type NewQuotationItemForCalculation = {
+  id: string
+  description: string
+  image: {
+    url: string
+    original: boolean
+  }
+  product: {
+    originalProductId: string
+    name: string
+    quantity: number
+    unitValue: number
+    finalValue: number
+    compositions: Array<{
+      id: string
+      originalCompositionId: string
+      name: string
+      unitOfMeasure: string
+      quantity: number
+      originalQuantity: number
+      unitValue: number
+      totalValue: number
+      weight: number
+      width: number
+      height: number
+      duration: number
+      length: number
+      distance: number
+      volume: number
+    }>
+  }
+  discountType: 'VALUE' | 'PERCENT'
+  discount: number
+  unitValue: number
+  totalValue: number
+  finalValue: number
+}
+
+/**
+ * Adapta os itens da nova API para o formato antigo para cálculos de totais
+ * @param newItems - Array de itens da nova API
+ * @returns Array no formato antigo para cálculos
+ */
+export function adaptNewItemsToOldFormat(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  newItems: NewQuotationItemForCalculation[] | any[],
+): QuotationItemForCalculation[] {
+  if (!Array.isArray(newItems)) {
+    console.error(
+      '❌ adaptNewItemsToOldFormat: newItems não é um array:',
+      newItems,
+    )
+    return []
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return newItems.map((item: any) => {
+    try {
+      return {
+        id: item.id || '',
+        image: item.image?.url || item.image || '',
+        description: item.description || '',
+        composition: (item.product?.compositions || item.compositions || [])
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((comp: any) => ({
+            id: comp.id || '',
+            name: comp.name || '',
+            quantity: comp.quantity || 0,
+            unitOfMeasure: comp.unitOfMeasure || '',
+            unitPrice: comp.unitValue || comp.unitPrice || 0,
+            totalPrice: comp.totalValue || comp.totalPrice || 0,
+          })),
+        totalQuantity: item.product?.quantity || item.totalQuantity || 0,
+        totalUnitPrice: item.totalValue || item.totalUnitPrice || 0,
+        discount: {
+          type: (item.discountType || item.discount?.type || 'VALUE') as
+            | 'PERCENT'
+            | 'VALUE',
+          value: item.discount || item.discount?.value || 0,
+          discountedValue:
+            (item.totalValue || 0) - (item.finalValue || 0) ||
+            item.discount?.discountedValue ||
+            0,
+        },
+        finalPrice: item.finalValue || item.finalPrice || 0,
+      }
+    } catch (error) {
+      console.error('❌ Erro ao adaptar item:', item, error)
+      return {
+        id: '',
+        image: '',
+        description: '',
+        composition: [],
+        totalQuantity: 0,
+        totalUnitPrice: 0,
+        discount: { type: 'VALUE' as const, value: 0, discountedValue: 0 },
+        finalPrice: 0,
+      }
+    }
+  })
+}
+
+/**
  * Converte metros para milímetros
  * @param meters - Valor em metros
  * @returns Valor em milímetros
