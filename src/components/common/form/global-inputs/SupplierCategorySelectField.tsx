@@ -20,7 +20,7 @@ interface Props<T extends FieldValues> {
 
 export function SupplierCategorySelectField<T extends FieldValues>({
   name,
-  label = 'Categoria de fornecedor',
+  label = 'Grupo de fornecedor',
   placeholder = label,
   className = 'flex-[1_0_100px]',
   ...props
@@ -29,7 +29,7 @@ export function SupplierCategorySelectField<T extends FieldValues>({
 
   const options = useMemo(() => {
     if (isLoading) return []
-    return [{ value: 'all', label: 'Todas' }, ...supplierCategories]
+    return [{ value: 'all', label: 'Todos' }, ...supplierCategories]
   }, [supplierCategories, isLoading])
 
   return (

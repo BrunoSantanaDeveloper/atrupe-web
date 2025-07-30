@@ -101,7 +101,7 @@ export function Suppliers({ searchParams }: SearchParamsType) {
         primaryCta={
           <TooltipProvider>
             <ActionButton
-              tooltip="Categorias de fornecedores"
+              tooltip="Grupos de fornecedores"
               size="iconMd"
               variant="neutralOutline"
               Icon={IconFolders}

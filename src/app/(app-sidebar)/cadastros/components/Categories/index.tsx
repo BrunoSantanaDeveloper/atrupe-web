@@ -65,7 +65,7 @@ export function Categories({ context }: Props) {
   return (
     <div className="space-y-5">
       <Topbar
-        title={`Categorias de ${categoryLabel}`}
+        title={`Grupos de ${categoryLabel}`}
         previousPage={previousPage}
         primaryCta={<NewItemDialog context={context} />}
       />

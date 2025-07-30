@@ -1,7 +1,7 @@
 import { Categories } from '../../components/Categories'
 
 export function metadata() {
-  return { title: 'Categorias de clientes' }
+  return { title: 'Grupos de clientes' }
 }
 
 export default function ClientCategoriesPage() {

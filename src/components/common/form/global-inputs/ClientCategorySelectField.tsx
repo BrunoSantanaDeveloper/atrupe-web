@@ -20,7 +20,7 @@ interface Props<T extends FieldValues> {
 
 export function SelectClientCategoryField<T extends FieldValues>({
   name,
-  label = 'Categoria de cliente',
+  label = 'Grupo de cliente',
   placeholder = label,
   className = 'flex-[1_0_100px]',
   ...props
@@ -29,7 +29,7 @@ export function SelectClientCategoryField<T extends FieldValues>({
 
   const options = useMemo(() => {
     if (isLoading) return []
-    return [{ value: 'all', label: 'Todas' }, ...clientCategories]
+    return [{ value: 'all', label: 'Todos' }, ...clientCategories]
   }, [clientCategories, isLoading])
 
   return (

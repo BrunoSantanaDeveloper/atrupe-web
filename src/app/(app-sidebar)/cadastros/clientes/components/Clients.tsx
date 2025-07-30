@@ -97,7 +97,7 @@ export function Clients({ searchParams }: SearchParamsType) {
         primaryCta={
           <TooltipProvider>
             <ActionButton
-              tooltip="Categorias de clientes"
+              tooltip="Grupos de clientes"
               size="iconMd"
               variant="neutralOutline"
               Icon={IconFolders}

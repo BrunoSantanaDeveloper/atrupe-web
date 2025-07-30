@@ -110,14 +110,14 @@ export function NewItemDialog({
       {!editMode && (
         <DialogTrigger asChild>
           <Button type="button" LeftIcon={IconCirclePlus}>
-            Nova categoria
+            Novo grupo
           </Button>
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle>
-            {editMode ? 'Editar' : 'Nova'} categoria de {categoryLabel}
+            {editMode ? 'Editar' : 'Novo'} grupo de {categoryLabel}
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
@@ -131,7 +131,7 @@ export function NewItemDialog({
             >
               <FormInput<FormType>
                 name="name"
-                label="Nome da categoria"
+                label="Nome do grupo"
                 width="flex-[1_0_100px]"
                 maxLength={100}
               />
