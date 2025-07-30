@@ -78,7 +78,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       <FormSelect<NewClientFormType>
         name="general.category"
-        label="Categoria"
+        label="Grupo"
         options={categoryOptions}
       />
 
