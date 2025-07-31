@@ -229,13 +229,10 @@ export function NewClientModal({
     const isValid = await handleValidateAllTabs()
     if (!isValid) return
 
-    const {
-      responsibilities: _responsibilities,
-      ...dataWithoutResponsibilities
-    } = data
+    const { responsibilities, ...dataWithoutResponsibilities } = data
     let formData = {
       ...dataWithoutResponsibilities,
-      contacts: [],
+      contacts: responsibilities || [],
     }
 
     // Processa creditLimit apenas se o plano permitir
@@ -255,6 +252,8 @@ export function NewClientModal({
     if (client?.status !== 'INACTIVE') {
       formData.status = 'ACTIVE'
     }
+
+    console.log(formData)
 
     if (isSubmitting) return
 

@@ -181,6 +181,13 @@ export type QuotationType = {
     email: string
     phoneNumber: string
   }
+  contact?: {
+    id: string
+    name: string
+    email?: string
+    phone?: string
+    notes?: string
+  }
 
   deliveryInfo: DeliveryInfoType
   paymentConditions: QuotationPaymentConditionsType

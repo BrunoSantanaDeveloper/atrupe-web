@@ -25,6 +25,7 @@ import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesS
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 import { SelectCompanyField } from '@/components/common/form/global-inputs/CompanySelectField'
+import { ClientContactSelect } from '@/components/common/form/global-inputs/ClientContactSelect'
 
 // Icons
 import {
@@ -117,6 +118,7 @@ export function NewQuotationModal({
     defaultValues: {
       companyId: session?.company?.id,
       clientId: undefined,
+      contactId: '',
       description: '',
       contactType: serviceOptions[0].value,
       seriesId: '',
@@ -130,6 +132,7 @@ export function NewQuotationModal({
             label: data?.client?.name,
             value: data?.client?.id,
           } as unknown as string,
+          contactId: data?.contact?.id || '',
           description: data?.description,
           contactType: data?.contactType ?? '',
           seriesId: data?.serie.id,
@@ -214,6 +217,9 @@ export function NewQuotationModal({
 
   if (editMode && !data) return null
 
+  // @ts-expect-error any
+  const clientId = form.watch('clientId')?.value
+
   return (
     <Dialog open={open} onOpenChange={handleToggleModal}>
       <DialogContent className="sm:max-w-[696px]">
@@ -234,7 +240,22 @@ export function NewQuotationModal({
               className="flex flex-wrap gap-5"
               noValidate
             >
-              <ClientSelector name="clientId" label="Cliente" width="w-full" />
+              <ClientSelector
+                name="clientId"
+                label="Cliente"
+                width="w-full"
+                additionalOnChange={() => {
+                  // Limpar seleção de contato quando cliente mudar
+                  form.setValue('contactId', '')
+                }}
+              />
+              <ClientContactSelect
+                name="contactId"
+                label="Responsável"
+                width="w-full"
+                clientId={clientId}
+                disabled={!clientId}
+              />
               <FormInput<QuotationFormType>
                 name="description"
                 label="Descrição do serviço"
