@@ -134,7 +134,10 @@ export function QuotationSummary({ data }: Props) {
                 </DetailCardRowItem>
               )}
               {!data?.quickSale ? (
-                <DetailCardRowItem showSeparator={false}>
+                <DetailCardRowItem
+                  showSeparator={false}
+                  className="pb-4 lg:grid-cols-5"
+                >
                   <TextSupportingText
                     supporting="Cliente"
                     text={data?.client?.name || '-'}
@@ -154,6 +157,10 @@ export function QuotationSummary({ data }: Props) {
                   <TextSupportingText
                     supporting="Telefone Cliente"
                     text={data?.client?.phoneNumber || '-'}
+                  />
+                  <TextSupportingText
+                    supporting="Responsável"
+                    text={data?.contact?.name || '-'}
                   />
                 </DetailCardRowItem>
               ) : null}
