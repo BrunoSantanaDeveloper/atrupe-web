@@ -8,14 +8,17 @@ import { useRouter } from 'next/navigation'
 import { FinancialFlowDatePicker } from './DatePicker'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
 
 // Third-party
 // import { format } from 'date-fns'
 // import { ptBR } from 'date-fns/locale'
+import { useQuery } from '@tanstack/react-query'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+
+// Actions
+import { getData } from '@/actions/_cruds'
 
 export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   // const [date, setDate] = useState<Date>()
@@ -24,6 +27,28 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
+
+  const { data: paymentMethodsData } = useQuery({
+    queryKey: ['payment-methods-in-use'],
+    queryFn: () => getData({ route: '/financial/flow/payment-methods/in-use' }),
+  })
+
+  const { data: bankAccountsData } = useQuery({
+    queryKey: ['bank-accounts-in-use'],
+    queryFn: () => getData({ route: '/financial/flow/bank-accounts/in-use' }),
+  })
+
+  const paymentMethodOptions =
+    paymentMethodsData?.data?.map((method: { id: string; name: string }) => ({
+      value: method.id,
+      label: method.name,
+    })) || []
+
+  const bankAccountOptions =
+    bankAccountsData?.data?.map((account: { id: string; name: string }) => ({
+      value: account.id,
+      label: account.name,
+    })) || []
 
   const handleFilter = (key: string, value: string) => {
     if (!value || value === 'all') {
@@ -46,7 +71,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           label="Conta"
           placeholder="Selecione uma conta"
           className="w-[220px]"
-          options={[{ value: 'all', label: 'Todas' }]}
+          options={[{ value: 'all', label: 'Todas' }, ...bankAccountOptions]}
           value={searchParams?.bankAccountId || 'all'}
           onChange={(value) => handleFilter('bankAccountId', value)}
         />
@@ -66,14 +91,14 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           value={searchParams?.status || 'all'}
           onChange={(value) => handleFilter('status', value)}
         />
-        <SelectPaymentMethodField
-          noForm
+        <SelectBasic
           name="paymentMethodId"
           label="Forma de pagamento"
           placeholder="Selecione uma forma de pagamento"
-          width="w-[220px]"
+          options={[{ value: 'all', label: 'Todas' }, ...paymentMethodOptions]}
           value={searchParams?.paymentMethodId || 'all'}
-          additionalOnChange={(value) => handleFilter('paymentMethodId', value)}
+          onChange={(value) => handleFilter('paymentMethodId', value)}
+          className="w-[220px]"
         />
       </>
     </PermissionGate>
