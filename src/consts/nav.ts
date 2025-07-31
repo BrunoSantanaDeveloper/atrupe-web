@@ -105,7 +105,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       {
         icon: IconArrowsExchange,
         title: 'Fluxo financeiro',
-        path: `/financeiro/fluxo-financeiro?startDate=${new Date().toISOString().slice(0, 10)}&endDate=${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}`,
+        path: '/financeiro/fluxo-financeiro',
         permission: 'financial:flow:view',
       },
       {

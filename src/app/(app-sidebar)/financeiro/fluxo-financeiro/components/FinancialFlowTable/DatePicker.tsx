@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { parseDate } from '@internationalized/date'
 import type { DateValue } from '@react-types/datepicker'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import {
   Button,
   DateRangePicker,
@@ -16,6 +18,7 @@ import { RangeCalendar } from '@/components/ui/calendar-rac'
 import { DateInput, dateInputStyle } from '@/components/ui/datefield-rac'
 import { Label } from '@/components/ui/label'
 import { IconCalendarWeek } from '@tabler/icons-react'
+import { getData } from '@/actions/_cruds'
 
 interface FinancialFlowDatePickerProps {
   searchParams?: Record<string, string | undefined>
@@ -26,12 +29,51 @@ export function FinancialFlowDatePicker({
 }: FinancialFlowDatePickerProps) {
   const router = useRouter()
 
-  const currentStartDate = searchParams?.startDate
-    ? parseDate(searchParams.startDate)
-    : null
-  const currentEndDate = searchParams?.endDate
-    ? parseDate(searchParams.endDate)
-    : null
+  const { data: overdueData } = useQuery({
+    queryKey: ['financial-flow-overdue-last-7-days'],
+    queryFn: () => getData({ route: '/financial/flow/overdue/last-7-days' }),
+  })
+
+  const hasUrlParams = searchParams?.startDate && searchParams?.endDate
+
+  const getDefaultDateRange = () => {
+    if (hasUrlParams) {
+      return {
+        start: parseDate(searchParams.startDate!),
+        end: parseDate(searchParams.endDate!),
+      }
+    }
+
+    const today = new Date()
+    const sevenDaysFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+    if (overdueData?.data?.hasOverdue) {
+      const oldestOverdueDate = new Date(overdueData.data.oldestOverdueDate)
+      return {
+        start: parseDate(oldestOverdueDate.toISOString().slice(0, 10)),
+        end: parseDate(sevenDaysFromNow.toISOString().slice(0, 10)),
+      }
+    }
+
+    return {
+      start: parseDate(today.toISOString().slice(0, 10)),
+      end: parseDate(sevenDaysFromNow.toISOString().slice(0, 10)),
+    }
+  }
+
+  const defaultDateRange = getDefaultDateRange()
+
+  const currentStartDate = defaultDateRange.start
+  const currentEndDate = defaultDateRange.end
+
+  useEffect(() => {
+    if (!hasUrlParams && overdueData?.data) {
+      const params = new URLSearchParams(searchParams as Record<string, string>)
+      params.set('startDate', defaultDateRange.start.toString())
+      params.set('endDate', defaultDateRange.end.toString())
+      router.replace(`?${params.toString()}`)
+    }
+  }, [overdueData, hasUrlParams, defaultDateRange, router, searchParams])
 
   const handleDateChange = (
     dateRange: { start: DateValue; end: DateValue } | null,
