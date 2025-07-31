@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-export const MAX_INSTALLMENTS_ALLOWED = 240
+export const MAX_INSTALLMENTS_ALLOWED = 120
 
 export const schema = z.object({
   name: z.string().min(1, 'Campo obrigatório.'),

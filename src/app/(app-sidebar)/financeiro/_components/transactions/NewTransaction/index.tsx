@@ -41,7 +41,12 @@ import {
 // Form Imports
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useFieldArray } from 'react-hook-form'
-import { schema, defaultValues, type FormType } from './schema'
+import {
+  schema,
+  defaultValues,
+  type FormType,
+  MAX_INSTALLMENTS_ALLOWED,
+} from './schema'
 
 // Third-party
 import { addMonths } from 'date-fns'
@@ -129,8 +134,6 @@ export function NewTransaction({ type }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalValue, installmentQty])
 
-  const typePt = type === 'receivable' ? 'receita' : 'despesa'
-
   const handleOpenChange = (openDialog: boolean) => {
     if (!openDialog) {
       reset(defaultValues)
@@ -208,7 +211,7 @@ export function NewTransaction({ type }: Props) {
           variant={type === 'receivable' ? 'success' : 'error'}
           LeftIcon={type === 'receivable' ? IconTrendingUp : IconTrendingDown}
         >
-          Nova {typePt}
+          {type === 'receivable' ? 'Nova receita' : 'Nova despesa'}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[950px]">
@@ -223,7 +226,9 @@ export function NewTransaction({ type }: Props) {
                       type === 'receivable' ? IconTrendingUp : IconTrendingDown
                     }
                   />
-                  <span>Nova {typePt}</span>
+                  <span>
+                    {type === 'receivable' ? 'Nova receita' : 'Nova despesa'}
+                  </span>
                 </div>
               </DialogTitle>
               <DialogDescription hidden></DialogDescription>
@@ -289,6 +294,7 @@ export function NewTransaction({ type }: Props) {
                     label="Quantidade de parcelas"
                     width="flex-[1_0_280px]"
                     min={1}
+                    max={MAX_INSTALLMENTS_ALLOWED}
                     additionalOnChange={(value) =>
                       handleInstallmentsQuantity(Number(value))
                     }

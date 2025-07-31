@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+export const MAX_INSTALLMENTS_ALLOWED = 120
+
 export const schemas = z.any()
 
 export const schema = z.object({
@@ -18,7 +20,13 @@ export const schema = z.object({
   natureId: z.string().min(1, 'Campo obrigatório'),
   subCategoryId: z.string().min(1, 'Campo obrigatório'),
   paymentMethodId: z.string().min(1, 'Campo obrigatório'),
-  installmentQty: z.number(),
+  installmentQty: z
+    .number()
+    .min(1, 'Campo obrigatório')
+    .max(
+      MAX_INSTALLMENTS_ALLOWED,
+      `Permitido até ${MAX_INSTALLMENTS_ALLOWED} parcelas`,
+    ),
   referenceDate: z.date(),
   dueDate: z.date(), // TODO : Colocar como obrigatório
   notes: z.string(),
