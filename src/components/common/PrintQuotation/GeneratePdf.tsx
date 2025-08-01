@@ -392,6 +392,13 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text>{data.client?.email}</Text>
             </View>
 
+            <View style={styles.infoBlock}>
+              <Text>A/C</Text>
+              <Text style={styles.infoBold}>{data.contact?.name}</Text>
+              <Text>{data.contact?.phone}</Text>
+              <Text>{data.contact?.email}</Text>
+            </View>
+
             <View style={styles.infoBlockRight}>
               <Text
                 style={
