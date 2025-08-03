@@ -6,6 +6,7 @@ import { PickValuePercentSelect } from '@/components/common/PickValuePercentSele
 import { useFormContext } from 'react-hook-form'
 
 import type { QuotationPaymentConditionsType } from './schema'
+import { calculatePercentCommission } from './utils'
 
 interface Props {
   addComissionValue: number
@@ -47,14 +48,16 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
     setValue('installments', updatedInstallments)
   }
 
-  // Função para recalcular a comissão quando o valor base mudar (sempre sobre valor original)
-  const recalculateCommission = (originalBaseValue: number) => {
+  // Função para recalcular a comissão quando o valor base ou desconto mudar
+  const recalculateCommission = (newBaseValue: number) => {
     // Se não houver comissão ou não for do tipo percentual, não faz nada
     if (!commission || commission.commissionType !== 'PERCENT') return
 
-    // Calcular o novo valor da comissão com base na porcentagem e no valor base original
-    const commissionPercentage = commission.commissionValue / 100
-    const newCommissionTotal = originalBaseValue * commissionPercentage
+    // Calcular o novo valor da comissão usando a função utilitária
+    const newCommissionTotal = calculatePercentCommission(
+      newBaseValue,
+      commission.commissionValue,
+    )
 
     // Atualizar o valor total da comissão
     setValue('commission.totalCommission', newCommissionTotal)
@@ -89,7 +92,9 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
       commission?.type === 'ADD' &&
       commission?.commissionType === 'PERCENT'
     ) {
-      newCommissionValue = recalculateCommission(baseValue) || 0
+      // Valor base para comissão = valor base - desconto
+      const commissionBaseValue = newTotalValue
+      newCommissionValue = recalculateCommission(commissionBaseValue) || 0
     } else if (
       commission?.type === 'ADD' &&
       commission?.commissionType === 'VALUE'
@@ -144,7 +149,9 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
       commission?.type === 'ADD' &&
       commission?.commissionType === 'PERCENT'
     ) {
-      recalculateCommission(baseValue)
+      // Valor base para comissão = valor total sem comissão
+      const commissionBaseValue = totalWithoutCommission
+      recalculateCommission(commissionBaseValue)
     } else if (
       commission?.type === 'ADD' &&
       commission?.commissionType === 'VALUE'

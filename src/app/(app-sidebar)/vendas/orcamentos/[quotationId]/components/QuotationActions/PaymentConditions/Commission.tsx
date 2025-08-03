@@ -44,7 +44,7 @@ import {
 import { QuotationType } from '@/types/sales/quotation'
 
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { defaultCommissionValues } from './utils'
+import { defaultCommissionValues, calculatePercentCommission } from './utils'
 import { FormInput } from '@/components/common/form/FormInput'
 
 const transferOptions = [
@@ -89,17 +89,24 @@ export function CommissionDialog({
 
   const { reset, setValue, handleSubmit, watch, setError, clearErrors } = form
 
-  const paymentConditionsBaseValue =
+  // Valor base da comissão = (Valor base das condições de pagamento) - (desconto das condições de pagamento)
+  const baseValue =
     paymentConditionsForm.getValues('paymentConditionsBaseValue') || 0
+  const discountTotal =
+    paymentConditionsForm.getValues('discount.discountTotal') || 0
+  const commissionBaseValue = baseValue - discountTotal
 
   useEffect(() => {
     if (!open) return
 
     const currentCommission = paymentConditionsForm?.getValues()?.commission
 
-    reset(
-      defaultCommissionValues(currentCommission, paymentConditionsBaseValue),
+    const commissionValues = defaultCommissionValues(
+      currentCommission,
+      commissionBaseValue,
     )
+    commissionValues.baseValue = commissionBaseValue
+    reset(commissionValues)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
@@ -127,8 +134,10 @@ export function CommissionDialog({
     if (commissionType === 'VALUE') {
       totalCommission = inputCommission
     } else if (commissionType === 'PERCENT') {
-      const commissionPercentage = inputCommission / 100
-      totalCommission = paymentConditionsBaseValue * commissionPercentage
+      totalCommission = calculatePercentCommission(
+        commissionBaseValue,
+        inputCommission,
+      )
     }
 
     setValue('totalCommission', totalCommission)
@@ -273,9 +282,10 @@ export function CommissionDialog({
                     if (commissionType === 'VALUE') {
                       totalCommission = commissionValue
                     } else if (commissionType === 'PERCENT') {
-                      const commissionPercentage = commissionValue / 100
-                      totalCommission =
-                        paymentConditionsBaseValue * commissionPercentage
+                      totalCommission = calculatePercentCommission(
+                        commissionBaseValue,
+                        commissionValue,
+                      )
                     }
 
                     setValue('totalCommission', totalCommission)
@@ -332,9 +342,10 @@ export function CommissionDialog({
                         if (value === 'PERCENT') {
                           setValue('commissionValue', 1)
                           // Calcular o valor total da comissão
-                          const commissionPercentage = 0.01
-                          const totalCommission =
-                            paymentConditionsBaseValue * commissionPercentage
+                          const totalCommission = calculatePercentCommission(
+                            commissionBaseValue,
+                            1,
+                          )
                           setValue('totalCommission', totalCommission)
                         }
                       }}
@@ -360,9 +371,10 @@ export function CommissionDialog({
                         if (value === 'PERCENT') {
                           setValue('commissionValue', 1)
                           // Calcular o valor total da comissão
-                          const commissionPercentage = 0.01
-                          const totalCommission =
-                            paymentConditionsBaseValue * commissionPercentage
+                          const totalCommission = calculatePercentCommission(
+                            commissionBaseValue,
+                            1,
+                          )
                           setValue('totalCommission', totalCommission)
                         }
                       }}

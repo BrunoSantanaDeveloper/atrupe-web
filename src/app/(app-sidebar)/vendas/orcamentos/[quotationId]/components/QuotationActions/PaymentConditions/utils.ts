@@ -95,6 +95,15 @@ export function defaultValues(quotationData: QuotationType) {
 
 // ** Valor base se refere à (soma dos valores dos itens) - (desconto dos itens)
 
+// Função auxiliar para calcular comissão por porcentagem
+export const calculatePercentCommission = (
+  baseValue: number,
+  percentage: number,
+): number => {
+  const commissionPercentage = percentage / 100
+  return baseValue / (1 - commissionPercentage) - baseValue
+}
+
 export function defaultCommissionValues(
   commission: QuotationCommissionType,
   commissionBaseValue: number,
@@ -104,7 +113,7 @@ export function defaultCommissionValues(
     baseValue: commissionBaseValue || 0,
     supplierId: commission?.supplierId || '',
     transferMethod: commission?.transferMethod || 'SINGLE',
-    commissionType: commission?.commissionType || 'VALUE',
+    commissionType: commission?.commissionType || 'PERCENT',
     commissionValue: commission?.commissionValue || 0,
     totalCommission: commission?.totalCommission || 0,
   }

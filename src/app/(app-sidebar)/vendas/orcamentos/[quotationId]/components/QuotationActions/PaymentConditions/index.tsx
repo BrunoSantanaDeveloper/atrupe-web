@@ -85,7 +85,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     mode: 'onChange', // Validar ao alterar os campos
   })
 
-  const { watch, reset, setError, getValues, handleSubmit, setValue } = form
+  const { watch, reset, setError, getValues, handleSubmit } = form
 
   // Resetar valores do formulário ao abrir o modal
   useEffect(() => {
@@ -103,46 +103,6 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
   const commission = watch('commission')
   const installments = watch('installments')
   const hasDownPayment = watch('hasDownPayment')
-  const baseValue = watch('paymentConditionsBaseValue') || 0
-
-  // Recalcular a comissão percentual quando o valor base mudar (sem considerar desconto)
-  useEffect(() => {
-    if (!commission || commission.commissionType !== 'PERCENT') return
-
-    // Calcular o novo valor da comissão
-    const commissionPercentage = commission.commissionValue / 100
-    const newCommissionTotal = baseValue * commissionPercentage
-
-    // Atualizar o valor total da comissão
-    setValue('commission.totalCommission', newCommissionTotal)
-
-    // Recalcular o valor total
-    const currentTotalValue = getValues('totalValue')
-    const newTotalValue =
-      currentTotalValue -
-      (commission.type === 'ADD' ? commission.totalCommission || 0 : 0) +
-      (commission.type === 'ADD' ? newCommissionTotal : 0)
-    setValue('totalValue', newTotalValue)
-
-    // Recalcular as parcelas
-    if (installments?.length > 0) {
-      const installmentQty = getValues('installmentQty')
-      const qtyNumber = Number(installmentQty)
-      const downPaymentAmount = getValues('downPayment.amount') || 0
-      const valueToDistribute =
-        newTotalValue - (hasDownPayment === 'true' ? downPaymentAmount : 0)
-      const installmentValue = valueToDistribute / qtyNumber
-
-      const updatedInstallments = installments.map((installment) => ({
-        ...installment,
-        amount: installmentValue,
-      }))
-
-      setValue('installments', updatedInstallments)
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [baseValue])
 
   // Valor da comissão a ser somado no valor total
   // Para comissão do tipo ADD, somamos ao valor total
