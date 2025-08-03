@@ -21,6 +21,11 @@ import {
   calculateQuotationTotals,
   adaptNewItemsToOldFormat,
 } from '@/lib/utils'
+import {
+  generateFormattedQuantityDetails,
+  calculateTotalQuantity,
+  calculateDisplayUnitValue,
+} from '@/lib/quotation-display-utils'
 
 // Icons
 import {
@@ -140,7 +145,8 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
-    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    minHeight: 60,
   },
   itemImage: {
     width: 70,
@@ -237,6 +243,16 @@ const styles = StyleSheet.create({
     width: '100%',
     lineHeight: 0.7,
   },
+  unitBadge: {
+    backgroundColor: '#EFF8FF',
+    color: '#1849A9',
+    fontSize: 6,
+    fontWeight: 'medium',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    textAlign: 'center',
+  },
 })
 
 type PrintOptionsType = {
@@ -253,6 +269,40 @@ interface Props {
   data: PrintQuotationType
   printOptions: PrintOptionsType
   type: 'quotation' | 'order' | 'production'
+}
+
+// Tipo para adaptação da composição
+type CompositionItemType = {
+  id: string
+  originalCompositionId: string
+  name: string
+  unitOfMeasure: string
+  quantity: number
+  originalQuantity: number
+  unitValue: number
+  totalValue: number
+  weight: number
+  width: number
+  height: number
+  duration: number
+  length: number
+  distance: number
+  volume: number
+}
+
+// Função para adaptar composição do PDF para o formato esperado pelas funções utilitárias
+function adaptCompositionForDisplayUtils(comp: CompositionItemType) {
+  return {
+    ...comp,
+    unitOfMeasure: comp.unitOfMeasure
+      ? {
+          id: '',
+          code: comp.unitOfMeasure,
+          name: comp.unitOfMeasure,
+          kind: 'UNITY', // valor padrão, será inferido pelas funções utilitárias
+        }
+      : undefined,
+  }
 }
 
 export function GeneratePdf({ data, printOptions, type }: Props) {
@@ -447,31 +497,54 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text
                 style={[
                   styles.tableHeaderCell,
-                  { width: isProduction ? '85%' : '55%' },
+                  { width: isProduction ? '85%' : '35%' },
                 ]}
               >
-                ITEM
+                REFERÊNCIA
               </Text>
+
               <Text
                 style={[
                   styles.tableHeaderCell,
                   {
                     width: isProduction ? '15%' : '10%',
-                    textAlign: isProduction ? 'center' : 'left',
+                    textAlign: 'center',
                   },
                 ]}
               >
-                QTD.
+                {isProduction ? 'QTD.' : 'QTD. ITEM'}
               </Text>
+
+              {!isProduction && (
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    { width: '15%', textAlign: 'center' },
+                  ]}
+                >
+                  DETALHAMENTO
+                </Text>
+              )}
+
+              {!isProduction && (
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    { width: '12%', textAlign: 'center' },
+                  ]}
+                >
+                  QTD. TOTAL
+                </Text>
+              )}
 
               {!isProduction && printOptions.showUnitValue && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
-                    { width: '15%', textAlign: 'right' },
+                    { width: '9%', textAlign: 'right' },
                   ]}
                 >
-                  VALOR UNITÁRIO
+                  VALOR UN.
                 </Text>
               )}
 
@@ -479,7 +552,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <Text
                   style={[
                     styles.tableHeaderCell,
-                    { width: '15%', textAlign: 'right' },
+                    { width: '9%', textAlign: 'right' },
                   ]}
                 >
                   DESCONTO
@@ -490,7 +563,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <Text
                   style={[
                     styles.tableHeaderCell,
-                    { width: '15%', textAlign: 'right' },
+                    { width: '10%', textAlign: 'right' },
                   ]}
                 >
                   VALOR FINAL
@@ -500,10 +573,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
             {data.quotationItems.map((item, index) => (
               <View key={item.id || index} style={styles.tableRow} wrap={false}>
-                {/* Coluna Item - Imagem e Descrição */}
+                {/* Coluna Referência - Imagem e Descrição */}
                 <View
                   style={{
-                    width: isProduction ? '85%' : '55%',
+                    width: isProduction ? '85%' : '35%',
                     flexDirection: 'row',
                     gap: 8,
                   }}
@@ -520,53 +593,92 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </View>
                   <View style={styles.itemInfo}>
                     <Text style={styles.itemTitle}>
-                      <Text
-                        style={{
-                          fontWeight: 'bold',
-                          fontSize: 8,
-                        }}
-                      >
-                        {index + 1} -{' '}
-                      </Text>
-                      {item.description}
+                      {item.description || '-'}
                     </Text>
                     {(isProduction || printOptions.showDimensions) &&
                       item.product.compositions.map((comp) => (
                         <Text key={comp.id} style={styles.itemDescription}>
-                          {`${comp?.name} - ${comp?.quantity}${comp?.unitOfMeasure ? ` ${comp.unitOfMeasure}` : ''}`}
+                          {comp?.name}
                         </Text>
                       ))}
                   </View>
                 </View>
 
-                {/* Coluna Quantidade */}
+                {/* Coluna Qtd. Item */}
                 <View style={{ width: isProduction ? '15%' : '10%' }}>
-                  <Text style={{ textAlign: isProduction ? 'center' : 'left' }}>
-                    {item.product.quantity}
+                  <Text style={{ textAlign: 'center' }}>
+                    {item.product.quantity || 1}
                   </Text>
                   {(isProduction || printOptions.showDimensions) &&
                     item.product.compositions.map((comp) => (
                       <Text
                         key={comp.id}
                         style={{
-                          textAlign: isProduction ? 'center' : 'left',
+                          textAlign: 'center',
                           color: '#4B5563',
                           fontSize: 7,
                         }}
                       >
-                        {isProduction
-                          ? '1 m²'
-                          : `${comp?.quantity}${comp?.unitOfMeasure ? ` ${comp.unitOfMeasure}` : ''}`}
+                        {item.product.quantity || 1}
                       </Text>
                     ))}
                 </View>
 
+                {/* Coluna Detalhamento - apenas para não-produção */}
+                {!isProduction && (
+                  <View style={{ width: '15%' }}>
+                    <Text style={{ textAlign: 'center', fontSize: 7 }}>-</Text>
+                    {printOptions.showDimensions &&
+                      item.product.compositions.map((comp) => (
+                        <Text
+                          key={comp.id}
+                          style={{
+                            textAlign: 'center',
+                            color: '#4B5563',
+                            fontSize: 7,
+                          }}
+                        >
+                          {generateFormattedQuantityDetails(
+                            adaptCompositionForDisplayUtils(comp),
+                          )}
+                        </Text>
+                      ))}
+                  </View>
+                )}
+
+                {/* Coluna Qtd. Total - apenas para não-produção */}
+                {!isProduction && (
+                  <View style={{ width: '12%' }}>
+                    <Text style={{ textAlign: 'center', fontSize: 7 }}>
+                      {`${item.product.quantity || 1} un`}
+                    </Text>
+                    {printOptions.showDimensions &&
+                      item.product.compositions.map((comp) => (
+                        <Text
+                          key={comp.id}
+                          style={{
+                            textAlign: 'center',
+                            color: '#4B5563',
+                            fontSize: 7,
+                          }}
+                        >
+                          {
+                            calculateTotalQuantity(
+                              item.product.quantity,
+                              adaptCompositionForDisplayUtils(comp),
+                            ).formatted
+                          }
+                        </Text>
+                      ))}
+                  </View>
+                )}
+
                 {/* Colunas financeiras - apenas para não-produção */}
                 {!isProduction && printOptions.showUnitValue && (
-                  <View style={{ width: '15%', lineHeight: 0.6 }}>
+                  <View style={{ width: '9%' }}>
                     <Text style={{ textAlign: 'right' }}>
                       {formatCurrencyToBrl(
-                        item.totalValue / item.product.quantity,
+                        item.finalValue / (item.product.quantity || 1),
                       )}
                     </Text>
                     {printOptions.showDimensions &&
@@ -579,36 +691,53 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             fontSize: 7,
                           }}
                         >
-                          {formatCurrencyToBrl(comp?.unitValue)}
+                          {formatCurrencyToBrl(
+                            calculateDisplayUnitValue(
+                              item.product.quantity || 1,
+                              adaptCompositionForDisplayUtils(comp),
+                            ),
+                          )}
                         </Text>
                       ))}
                   </View>
                 )}
 
+                {/* Colunas descontos */}
                 {!isProduction && printOptions.showDiscounts && (
-                  <View style={{ width: '15%' }}>
-                    <Text style={{ textAlign: 'right', lineHeight: 0.6 }}>
-                      {item.discountType === 'PERCENT'
-                        ? `${item.discount}%`
-                        : formatCurrencyToBrl(item.discount)}
-                    </Text>
+                  <View style={{ width: '9%' }}>
                     <Text
                       style={{
                         textAlign: 'right',
-                        color: '#4B5563',
+                        color: '#DC6803',
                         fontSize: 7,
                       }}
                     >
-                      -{formatCurrencyToBrl(item.totalValue - item.finalValue)}
+                      -
+                      {formatCurrencyToBrl(
+                        Math.max(0, item.totalValue - item.finalValue),
+                      )}
                     </Text>
                   </View>
                 )}
 
                 {!isProduction && printOptions.showFinalValue && (
-                  <View style={{ width: '15%' }}>
+                  <View style={{ width: '10%' }}>
                     <Text style={{ textAlign: 'right' }}>
                       {formatCurrencyToBrl(item.finalValue)}
                     </Text>
+                    {printOptions.showDimensions &&
+                      item.product.compositions.map((comp) => (
+                        <Text
+                          key={comp.id}
+                          style={{
+                            textAlign: 'right',
+                            color: '#4B5563',
+                            fontSize: 7,
+                          }}
+                        >
+                          {formatCurrencyToBrl(comp?.totalValue || 0)}
+                        </Text>
+                      ))}
                   </View>
                 )}
               </View>

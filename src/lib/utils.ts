@@ -695,7 +695,9 @@ export function adaptNewItemsToOldFormat(
             totalPrice: comp.totalValue || comp.totalPrice || 0,
           })),
         totalQuantity: item.product?.quantity || item.totalQuantity || 0,
-        totalUnitPrice: item.totalValue || item.totalUnitPrice || 0,
+        totalUnitPrice:
+          (item.totalValue || item.totalUnitPrice || 0) /
+          (item.product?.quantity || item.totalQuantity || 1),
         discount: {
           type: (item.discountType || item.discount?.type || 'VALUE') as
             | 'PERCENT'
