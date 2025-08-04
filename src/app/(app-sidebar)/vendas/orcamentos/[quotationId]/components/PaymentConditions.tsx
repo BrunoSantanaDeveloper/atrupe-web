@@ -59,7 +59,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
 
   return (
     <Card className="w-full">
-      <Accordion type="single" collapsible>
+      <Accordion type="single" collapsible defaultValue="item-1">
         <AccordionItem value="item-1" className="p-0 m-0 border-0">
           <CardHeader>
             <div className="flex justify-between">
