@@ -73,7 +73,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
               <TableRow className="bg-gray-50">
                 <TableHead className="w-[2%]"></TableHead>
                 <TableHead className="w-[38%]">Cliente</TableHead>
-                <TableHead className="w-[20%]">Categoria</TableHead>
+                <TableHead className="w-[20%]">Grupo</TableHead>
                 <TableHead className="w-[20%]">Contato</TableHead>
                 <TableHead className="w-[10%]">Status</TableHead>
                 <TableHead className="w-[10%]"></TableHead>
@@ -88,7 +88,9 @@ export function ClientsData({ searchParams, tabs }: Props) {
                   <TableCell className="font-semibold">
                     {client?.name}
                   </TableCell>
-                  <TableCell className="text-gray">Sem categoria</TableCell>
+                  <TableCell className="text-gray">
+                    {client?.categoryRelation?.name || '-'}
+                  </TableCell>
                   <TableCell>
                     <p>{client?.phoneNumber || '-'}</p>
                     <p className="text-sm text-gray">{client?.email || '-'}</p>

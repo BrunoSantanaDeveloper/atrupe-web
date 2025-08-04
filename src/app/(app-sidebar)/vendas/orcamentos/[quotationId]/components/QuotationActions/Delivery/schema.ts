@@ -18,6 +18,7 @@ export const schema = z.object({
   cost: z.number(),
   value: z.number(),
   supplierId: z.string().transform((value) => value || null),
+  clientAddressId: z.string().optional(),
   notes: z.string().trim(),
 })
 

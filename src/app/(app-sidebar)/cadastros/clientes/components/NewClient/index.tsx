@@ -97,7 +97,7 @@ export function NewClientModal({
         rg: apiData.general?.rg || '',
         cnpj: apiData.general?.cnpj || '',
         activity: apiData.general?.activity || '',
-        category: apiData.general?.category || '',
+        categoryId: '',
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',

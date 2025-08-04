@@ -782,7 +782,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <TruckDeliveryIcon />
               <Text style={styles.sectionTitle}>Entrega</Text>
               <Text>{data.delivery?.supplier?.name}</Text>
-              <Text>Até {data.delivery?.daysAfterApproval} dias úteis</Text>
+              <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
               <Text>
                 {isProduction ? 'R. ' : ''}
                 {data.delivery?.clientAddress?.street},{' '}

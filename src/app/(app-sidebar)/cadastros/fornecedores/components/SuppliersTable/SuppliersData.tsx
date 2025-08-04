@@ -77,7 +77,7 @@ export function SuppliersData({ searchParams, tabs }: Props) {
             <TableHeader>
               <TableRow className="bg-gray-50">
                 <TableHead className="w-[50%] min-w-[250px]">Nome</TableHead>
-                <TableHead className="w-[15%]">Categoria</TableHead>
+                <TableHead className="w-[15%]">Grupo</TableHead>
                 <TableHead className="w-[13%]">Status</TableHead>
                 <TableHead className="w-[12%]">Contato</TableHead>
                 <TableHead className="w-[10%]"></TableHead>

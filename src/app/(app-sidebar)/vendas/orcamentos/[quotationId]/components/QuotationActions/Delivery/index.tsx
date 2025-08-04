@@ -25,6 +25,7 @@ import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { SupplierSelectField } from '@/components/common/form/global-inputs/SupplierSelectField'
+import { ClientAddressSelectField } from '@/components/common/form/global-inputs/ClientAddressSelectField'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -96,6 +97,8 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const { deliveryInfo } = quotationData
 
+  const clientId = quotationData.client.id
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -106,6 +109,7 @@ export function DeliveryDialog({ quotationData }: Props) {
       cost: deliveryInfo?.cost || 0,
       value: deliveryInfo?.value || 0,
       supplierId: deliveryInfo?.supplier?.id || '',
+      clientAddressId: deliveryInfo?.clientAddress?.id || '',
       notes: deliveryInfo?.notes || '',
     },
   })
@@ -262,6 +266,13 @@ export function DeliveryDialog({ quotationData }: Props) {
                   }}
                 />
               )}
+              <ClientAddressSelectField
+                name="clientAddressId"
+                label="Endereço de entrega"
+                width="w-full"
+                clientId={clientId}
+                placeholder="Selecione o endereço de entrega"
+              />
               <FormSelect
                 name="modality"
                 label="Modalidade frete"

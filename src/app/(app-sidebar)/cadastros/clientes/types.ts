@@ -23,7 +23,7 @@ export type ListClientsDataType = {
   details: CompanyDetails
   responsibleId: string
   companyId: string
-  categoryId: string
+  categoryRelation: { id: string; name: string }
 }
 
 export type ListClientsType = {

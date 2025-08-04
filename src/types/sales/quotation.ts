@@ -63,6 +63,10 @@ export type DeliveryInfoType = {
     name: string
   }
   modality: string
+  clientAddress?: {
+    id: string
+    name: string
+  }
 }
 
 export type CommissionType = {
