@@ -59,8 +59,8 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
   // Ao alterar a condição de pagamento:
   // - atualiza mínimo e máximo de parcelas, para limitar o preenchimento do campo Parcelas (installmentQty),
-  // - redefine a quantidade de parcelas inicial como o número da parcela máxima,
-  // - redefine o valor de acréscimo (taxa) referente à parcela máxima e divide pelas parcelas,
+  // - redefine a quantidade de parcelas inicial como 1x,
+  // - redefine o valor de acréscimo (taxa) referente à parcela máxima,
   // - redefine o valor de cada parcela, sendo: (Valor Total - Valor da Entrada) / quantidade de parcelas.
   // * O valor total esperado é Valor base - desconto + comissão.
   const handleChangePaymentCondition = async (paymentConditionId: string) => {
@@ -85,13 +85,13 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
     // Setar o valor de installmentQty, com delay para evitar que valor seja setado antes de existir as opções de qtt de parcelas
     setTimeout(() => {
-      setValue('installmentQty', String(maxInstallments))
+      setValue('installmentQty', '1')
     }, 100)
 
-    const newInstallments = Array.from({ length: maxInstallments }, (_, i) => ({
+    const newInstallments = Array.from({ length: 1 }, (_, i) => ({
       dueDate: addMonths(new Date(dueDate), i + 1),
-      additionalFee: additionalFee / maxInstallments,
-      amount: (totalValue - downPaymentValue) / maxInstallments,
+      additionalFee,
+      amount: totalValue - downPaymentValue,
     }))
 
     setValue('installments', newInstallments)
