@@ -183,11 +183,11 @@ export function FileUploader(props: FileUploaderProps) {
                         <span className="font-semibold text-brand-700">
                           Clique para adicionar arquivo{' '}
                         </span>
-                        {customHelpText && (
+                        {/* {customHelpText && (
                           <>
                             <br />{' '}
                           </>
-                        )}
+                        )} */}
                         ou arraste e solte o arquivo aqui
                       </p>
                       {customHelpText && (

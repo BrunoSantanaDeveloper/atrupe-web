@@ -23,12 +23,16 @@ interface Props<T extends FieldValues> {
   control: Control<T>
   name: Path<T>
   className?: string
+  maxSize?: number
+  customHelpText?: string
 }
 
 export function FormImageUpload<T extends FieldValues>({
   name,
   control,
   className,
+  maxSize = 1024 * 1024 * 1,
+  customHelpText,
 }: Props<T>) {
   const {
     handleUpload,
@@ -60,13 +64,14 @@ export function FormImageUpload<T extends FieldValues>({
                 <FileUploader
                   multiple={false}
                   maxFileCount={1}
-                  maxSize={1024 * 1024 * 1}
+                  maxSize={maxSize}
                   progresses={progresses}
                   onUpload={async (files: File[]) => {
                     const res = await handleUpload(files)
                     if (res) field.onChange(res)
                   }}
                   disabled={isUploading}
+                  customHelpText={customHelpText}
                 />
               ) : (
                 (console.info(uploadedFiles),
