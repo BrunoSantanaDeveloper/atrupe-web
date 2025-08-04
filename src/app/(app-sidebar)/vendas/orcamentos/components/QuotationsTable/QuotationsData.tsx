@@ -71,6 +71,7 @@ export function QuotationsData({
 
   const { getBudgetStatusType } = usePlanFeatures()
   const showStatusColumn = getBudgetStatusType() === 'full'
+  const isAllTab = searchParams?.status === 'todos'
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }
@@ -98,7 +99,7 @@ export function QuotationsData({
                 <TableRow className="bg-gray-50">
                   <TableHead>Referência</TableHead>
                   <TableHead>Valor</TableHead>
-                  <TableHead>Fase atual</TableHead>
+                  {isAllTab && <TableHead>Fase atual</TableHead>}
                   {showStatusColumn && <TableHead>Status</TableHead>}
                   <TableHead>Concluído em</TableHead>
                   <TableHead>Válido até</TableHead>
@@ -142,22 +143,24 @@ export function QuotationsData({
                                     0,
                                 )}
                               </TableCell>
-                              <TableCell>
-                                {quotation?.status ? (
-                                  <Badge
-                                    status
-                                    variant={
-                                      quotationsStatusObj[quotation?.status]
-                                        ?.variant || 'neutralLight'
-                                    }
-                                  >
-                                    {quotationsStatusObj[quotation?.status]
-                                      ?.text || 'Desconhecido'}
-                                  </Badge>
-                                ) : (
-                                  '-'
-                                )}
-                              </TableCell>
+                              {isAllTab && (
+                                <TableCell>
+                                  {quotation?.status ? (
+                                    <Badge
+                                      status
+                                      variant={
+                                        quotationsStatusObj[quotation?.status]
+                                          ?.variant || 'neutralLight'
+                                      }
+                                    >
+                                      {quotationsStatusObj[quotation?.status]
+                                        ?.text || 'Desconhecido'}
+                                    </Badge>
+                                  ) : (
+                                    '-'
+                                  )}
+                                </TableCell>
+                              )}
                               {showStatusColumn && (
                                 <TableCell>
                                   <QuotationTagDropdown
