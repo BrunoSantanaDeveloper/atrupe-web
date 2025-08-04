@@ -272,7 +272,7 @@ export function EditEmployeeDialog({
                   <FormImageUpload<FormType>
                     control={form.control}
                     name="signatureUrl"
-                    maxSize={1024 * 300}
+                    maxSize={1024 * 200}
                     customHelpText="PNG com fundo transparente até 200KB e 300x300px"
                   />
                 </div>

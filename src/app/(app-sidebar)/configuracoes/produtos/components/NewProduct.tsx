@@ -399,7 +399,12 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                     </Button>
                   </div>
                 )}
-                <FormImageUpload control={control} name="imageUrl" />
+                <FormImageUpload
+                  control={control}
+                  name="imageUrl"
+                  maxSize={1024 * 200}
+                  customHelpText="PNG ou JPG até 200kb e 300x300px"
+                />
                 <FormTextarea
                   name="technicalDescription"
                   label="Descritivo técnico"
