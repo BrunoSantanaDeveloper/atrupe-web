@@ -90,7 +90,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
             <CardContent>
               <DetailCardRowItem
                 showSeparator={false}
-                className="lg:grid-cols-7"
+                className="pb-4 lg:grid-cols-7"
               >
                 <TextSupportingText
                   supporting="Tipo de nota"

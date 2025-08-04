@@ -407,7 +407,6 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     }
 
     handleToggleModal(false)
-    toast.success('Produto adicionado com sucesso!')
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
     })

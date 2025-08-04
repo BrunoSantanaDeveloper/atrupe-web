@@ -49,9 +49,6 @@ export function DeleteItemDialog({ open, setOpen, rowData }: Props) {
   const handleRemove = async () => {
     toast.promise(mutation.mutateAsync(), {
       loading: 'Aguarde...',
-      success: () => {
-        return 'Item removido'
-      },
       error: 'Erro ao remover item',
     })
   }

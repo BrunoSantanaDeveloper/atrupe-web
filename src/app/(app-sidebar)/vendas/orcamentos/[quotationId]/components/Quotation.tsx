@@ -145,6 +145,9 @@ export function Quotation({ id }: Props) {
     )
   }
 
+  // Se for "Sem lançamento" (Cortesia por exemplo), não exibir condições de pagamento
+  const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
+
   return (
     <PermissionGate permissions={['sale:quotation:view']}>
       <div
@@ -173,7 +176,8 @@ export function Quotation({ id }: Props) {
             <QuotationItems data={data} />
           </QuotationProvider>
           <QuotationDelivery quotationData={data} />
-          <QuotationPaymentConditions quotationData={data} />
+          {!isNoInvoice && <QuotationPaymentConditions quotationData={data} />}
+          <div className="pb-16"></div>
         </div>
         {isMutating > 0 || isFetching > 0 ? (
           <Spinner classname="absolute top-1/2 left-1/2 size-10 -ml-5" />
