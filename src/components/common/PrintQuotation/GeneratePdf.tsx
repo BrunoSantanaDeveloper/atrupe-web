@@ -1,6 +1,12 @@
 'use client'
 
-// Component
+// Lib
+import {
+  maskCnpj,
+  formatCurrencyToBrl,
+  calculateQuotationTotals,
+  adaptNewItemsToOldFormat,
+} from '@/lib/utils'
 import {
   Page,
   Text,
@@ -9,33 +15,26 @@ import {
   StyleSheet,
   Image as PDFImage,
 } from '@react-pdf/renderer'
-
-// Types
-import { PrintQuotationType } from '@/types/print/quotation'
-
-// Utils
-import { formatToLocaleDate } from '@/lib/formatDate'
 import {
-  maskCnpj,
-  formatCurrencyToBrl,
-  calculateQuotationTotals,
-  adaptNewItemsToOldFormat,
-} from '@/lib/utils'
-import {
-  generateFormattedQuantityDetails,
   calculateTotalQuantity,
   calculateDisplayUnitValue,
+  generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
+import { formatToLocaleDate } from '@/lib/formatDate'
+
+// Types
+import type { PrintOptionsType } from './PrintQuotationDialog'
+import type { PrintQuotationType } from '@/types/print/quotation'
 
 // Icons
 import {
-  TruckDeliveryIcon,
-  MoneySignIcon,
-  WebsiteIcon,
   EmailIcon,
-  InstagramIcon,
-  FacebookIcon,
+  WebsiteIcon,
   LinkedinIcon,
+  FacebookIcon,
+  MoneySignIcon,
+  InstagramIcon,
+  TruckDeliveryIcon,
 } from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
@@ -254,16 +253,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 })
-
-type PrintOptionsType = {
-  showDimensions: boolean
-  showUnitValue: boolean
-  showDiscounts: boolean
-  showFinalValue: boolean
-  showTotalValue: boolean
-  showPaymentDelivery: boolean
-  showItemsDetails: boolean
-}
 
 interface Props {
   data: PrintQuotationType
@@ -591,6 +580,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       }}
                     />
                   </View>
+
                   <View style={styles.itemInfo}>
                     <Text style={styles.itemTitle}>
                       {item.description || '-'}

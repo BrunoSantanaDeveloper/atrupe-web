@@ -56,13 +56,14 @@ import {
 import { getItemOld } from '@/actions/_cruds'
 
 const defaultValues = {
-  showDimensions: true,
-  showUnitValue: true,
-  showDiscounts: true,
-  showFinalValue: true,
-  showTotalValue: true,
-  showPaymentDelivery: true,
-  showItemsDetails: true,
+  showImages: true, // showItem1
+  showDimensions: true, // showItem2
+  showUnitValue: true, // showItem3
+  showDiscounts: true, // showItem4
+  showFinalValue: true, // showItem5
+  showTotalValue: true, // showItem6
+  showPaymentDelivery: true, // showItem7
+  showItemsDetails: true, // showItem8
 }
 
 export type PrintOptionsType = typeof defaultValues
@@ -250,6 +251,10 @@ export function PrintQuotationDialog({
                   <p className="font-semibold text-gray-700">
                     Exibição dos itens da venda
                   </p>
+                  <FormCheckbox<PrintOptionsType>
+                    name="showImages"
+                    label="Exibir imagens"
+                  />
                   <FormCheckbox<PrintOptionsType>
                     name="showDimensions"
                     label="Exibir medidas"
