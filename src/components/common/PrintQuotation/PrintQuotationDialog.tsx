@@ -53,7 +53,7 @@ import {
 } from '@tabler/icons-react'
 
 // Store
-import { getItemOld } from '@/actions/_cruds'
+import { getItem } from '@/actions/_cruds'
 
 const defaultValues = {
   showImages: true,
@@ -124,10 +124,16 @@ export function PrintQuotationDialog({
   const onSubmit = async (formData: PrintOptionsType) => {
     try {
       setIsLoading(true)
-      const quotationData = await getItemOld({
-        route: 'quotationRoute',
-        id: `${quotationId}/pdf-data`,
+      const res = await getItem({
+        route: `/sale/quotation/${quotationId}/pdf-data`,
       })
+
+      if (!res.success) {
+        toast.error(res.message)
+        return
+      }
+
+      const quotationData = res.data
 
       // Verificar se quotationItems existe
       if (

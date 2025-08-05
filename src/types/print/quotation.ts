@@ -178,6 +178,7 @@ type PaymentType = {
   method: string
   totalInstallments: number
   installments: InstallmentType[]
+  availablePaymentMethods?: string[]
 }
 
 // Tipo para totais

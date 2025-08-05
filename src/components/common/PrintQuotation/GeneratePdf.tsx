@@ -768,28 +768,59 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               isProduction ? { marginTop: 24 } : styles.deliveryPaymentSection
             }
           >
-            <View style={{ width: isProduction ? '100%' : '50%' }}>
-              <TruckDeliveryIcon />
-              <Text style={styles.sectionTitle}>Entrega</Text>
-              <Text>{data.delivery?.supplier?.name}</Text>
-              <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
-              <Text>
-                {isProduction ? 'R. ' : ''}
-                {data.delivery?.clientAddress?.street},{' '}
-                {data.delivery?.clientAddress?.number},{' '}
-                {data.delivery?.clientAddress?.neighborhood},{' '}
-                {data.delivery?.clientAddress?.city} -{' '}
-                {data.delivery?.clientAddress?.state},{' '}
-                {data.delivery?.clientAddress?.zipCode}.
-              </Text>
-            </View>
+            {/* Seção de Entrega - só exibe se showPaymentDelivery estiver ativo */}
+            {printOptions.showPaymentDelivery && (
+              <View style={{ width: isProduction ? '100%' : '50%' }}>
+                <TruckDeliveryIcon />
+                <Text style={styles.sectionTitle}>Entrega</Text>
+                <Text>{data.delivery?.supplier?.name}</Text>
+                <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
+                <Text>
+                  {isProduction ? 'R. ' : ''}
+                  {data.delivery?.clientAddress?.street},{' '}
+                  {data.delivery?.clientAddress?.number},{' '}
+                  {data.delivery?.clientAddress?.neighborhood},{' '}
+                  {data.delivery?.clientAddress?.city} -{' '}
+                  {data.delivery?.clientAddress?.state},{' '}
+                  {data.delivery?.clientAddress?.zipCode}.
+                </Text>
+              </View>
+            )}
 
+            {/* Seção de Pagamento - apenas para não-produção */}
             {!isProduction && (
-              <View style={{ width: '50%' }}>
+              <View
+                style={{
+                  width: printOptions.showPaymentDelivery ? '50%' : '100%',
+                }}
+              >
                 <MoneySignIcon />
                 <Text style={styles.sectionTitle}>Pagamento</Text>
-                <Text>{data.payment?.method}</Text>
-                <Text>Até {data.payment?.totalInstallments}x no pedido</Text>
+
+                {printOptions.showPaymentDelivery ? (
+                  // Exibição específica quando showPaymentDelivery está ativo
+                  <>
+                    <Text>{data.payment?.method}</Text>
+                    <Text>
+                      Até {data.payment?.totalInstallments}x no pedido
+                    </Text>
+                  </>
+                ) : (
+                  // Exibição genérica quando showPaymentDelivery está desativo
+                  <>
+                    <Text>A combinar</Text>
+                    {data.payment?.availablePaymentMethods &&
+                      data.payment.availablePaymentMethods.length > 0 && (
+                        <Text style={{ marginTop: 4 }}>
+                          {data.payment.availablePaymentMethods.join(', ')}.
+                        </Text>
+                      )}
+                    <Text style={{ marginTop: 4 }}>
+                      Valores podem sofrer acréscimo conforme forma de
+                      pagamento.
+                    </Text>
+                  </>
+                )}
               </View>
             )}
           </View>
