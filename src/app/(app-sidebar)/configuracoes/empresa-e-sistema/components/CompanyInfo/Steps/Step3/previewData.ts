@@ -1,4 +1,5 @@
 export const formData = {
+  showImages: true,
   showDimensions: true,
   showUnitValue: true,
   showDiscounts: true,

@@ -141,6 +141,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
 
   const handleGeneratePDF = async (data: DeliveryScheduleType) => {
     const formData = {
+      showImages: true,
       showDimensions: true,
       showUnitValue: true,
       showDiscounts: true,
