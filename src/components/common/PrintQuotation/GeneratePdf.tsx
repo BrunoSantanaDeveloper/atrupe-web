@@ -585,7 +585,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     <Text style={styles.itemTitle}>
                       {item.description || '-'}
                     </Text>
-                    {(isProduction || printOptions.showDimensions) &&
+                    {(isProduction ||
+                      (printOptions.showDimensions &&
+                        printOptions.showItemsDetails)) &&
                       item.product.compositions.map((comp) => (
                         <Text key={comp.id} style={styles.itemDescription}>
                           {comp?.name}
@@ -599,7 +601,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   <Text style={{ textAlign: 'center' }}>
                     {item.product.quantity || 1}
                   </Text>
-                  {(isProduction || printOptions.showDimensions) &&
+                  {(isProduction ||
+                    (printOptions.showDimensions &&
+                      printOptions.showItemsDetails)) &&
                     item.product.compositions.map((comp) => (
                       <Text
                         key={comp.id}
@@ -619,6 +623,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   <View style={{ width: '15%' }}>
                     <Text style={{ textAlign: 'center', fontSize: 7 }}>-</Text>
                     {printOptions.showDimensions &&
+                      printOptions.showItemsDetails &&
                       item.product.compositions.map((comp) => (
                         <Text
                           key={comp.id}
@@ -643,6 +648,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       {`${item.product.quantity || 1} un`}
                     </Text>
                     {printOptions.showDimensions &&
+                      printOptions.showItemsDetails &&
                       item.product.compositions.map((comp) => (
                         <Text
                           key={comp.id}
@@ -672,6 +678,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       )}
                     </Text>
                     {printOptions.showDimensions &&
+                      printOptions.showItemsDetails &&
                       item.product.compositions.map((comp) => (
                         <Text
                           key={comp.id}
@@ -716,6 +723,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       {formatCurrencyToBrl(item.finalValue)}
                     </Text>
                     {printOptions.showDimensions &&
+                      printOptions.showItemsDetails &&
                       item.product.compositions.map((comp) => (
                         <Text
                           key={comp.id}
