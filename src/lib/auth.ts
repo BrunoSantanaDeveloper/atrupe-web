@@ -28,6 +28,7 @@ declare module 'next-auth' {
         active: boolean
         trialEndsAt: string
         features: string[]
+        limits: { [key: string]: number }
       }
     }
     accessToken: string
@@ -90,6 +91,7 @@ export const {
               trialEndsAt: authData.company.trialEndsAt,
               permissions: authData.permissions || [],
               features: authData.company.features || [],
+              limits: authData.company.limits || {},
             }
           }
 
@@ -165,6 +167,7 @@ export const {
           role: token.role || '',
           avatar: token.avatar || '',
           employeeId: token.employeeId || '',
+          isAdmin: token.isAdmin,
           permissions: token.permissions || [],
         },
         company: {
@@ -178,6 +181,7 @@ export const {
             active: token.subscriptionActive || false,
             trialEndsAt: token.trialEndsAt || '',
             features: token.features || [],
+            limits: token.limits || {},
           },
         },
         expires: session.expires,

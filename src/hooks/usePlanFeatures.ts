@@ -21,36 +21,18 @@ export function usePlanFeatures() {
     return features.every((feature) => hasFeature(feature))
   }
 
-  const getUserLimit = () => {
-    if (hasFeature('user_limit_5')) return 5
-    if (hasFeature('user_limit_3')) return 3
-    return 0
-  }
+  const canManageSectors = () => hasFeature('sectors_configuration')
 
-  const canManageSectors = () => hasFeature('sectors_management')
+  const canManageMultipleCompanies = () => hasFeature('multiple_companies')
 
-  const canManageMultipleCompanies = () =>
-    planName !== 'TRIAL' && planName !== 'START' // TODO: Alterar para hasFeature('multiple_companies')
+  const canManageSalesOrders = () => hasFeature('quotation_quick_sale')
 
-  const getSalesOrdersType = () => {
-    if (hasFeature('sales_orders_full')) return 'full'
-    if (hasFeature('sales_orders_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageRejectionReasons = () =>
+    hasFeature('quotation_rejection_reasons')
 
-  const getRejectionReasonsType = () => {
-    if (hasFeature('rejection_reasons_full')) return 'full'
-    if (hasFeature('rejection_reasons_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageBudgetStatus = () =>
+    hasFeature('quotation_status_configuration')
 
-  const getBudgetStatusType = () => {
-    if (hasFeature('budget_status_full')) return 'full'
-    if (hasFeature('budget_status_limited')) return 'limited'
-    return 'none'
-  }
-
-  // Financeiro
   const hasFinancialModule = (
     module: 'receivable' | 'payable' | 'cash' | 'pdv' | 'credit_limit',
   ) => {
@@ -58,72 +40,45 @@ export function usePlanFeatures() {
       receivable: 'accounts_receivable',
       payable: 'accounts_payable',
       cash: 'cash_control',
-      pdv: 'pdv',
-      credit_limit: 'credit_limit',
+      pdv: 'pdv_screen',
+      credit_limit: 'credit_limit_configuration',
     }
     return hasFeature(moduleMap[module])
   }
 
-  const getBankAccountsType = () => {
-    if (hasFeature('bank_accounts_full')) return 'full'
-    if (hasFeature('bank_accounts_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageBankAccounts = () => hasFeature('bank_account_creation')
 
-  const getBankTaxTransferType = () => {
-    if (hasFeature('bank_tax_transfer_full')) return 'full'
-    if (hasFeature('bank_tax_transfer_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageBankTaxTransfer = () =>
+    hasFeature('payment_condition_operator_fee')
 
-  const getProductsType = () => {
-    if (hasFeature('products_full')) return 'full'
-    if (hasFeature('products_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageProducts = () => hasFeature('product_composition')
 
-  const getProductionStagesType = () => {
-    if (hasFeature('production_stages_full')) return 'full'
-    if (hasFeature('production_stages_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageProductionStages = () =>
+    hasFeature('product_production_stages')
 
-  const getClientsType = () => {
-    if (hasFeature('clients_full')) return 'full'
-    if (hasFeature('clients_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageClients = () => hasFeature('client_additional_tabs')
 
-  const getSuppliersType = () => {
-    if (hasFeature('suppliers_full')) return 'full'
-    if (hasFeature('suppliers_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageSuppliers = () => hasFeature('supplier_additional_tabs')
 
-  const getDeliveryScheduleType = () => {
-    if (hasFeature('delivery_schedule_full')) return 'full'
-    if (hasFeature('delivery_schedule_limited')) return 'limited'
-    return 'none'
-  }
+  const canManageDeliverySchedule = () => hasFeature('delivery_production_tabs')
 
   return {
     planName,
     hasFeature,
     hasAnyFeature,
     hasAllFeatures,
-    getUserLimit,
     canManageSectors,
-    getSalesOrdersType,
-    getRejectionReasonsType,
-    getBudgetStatusType,
+    canManageSalesOrders,
+    canManageRejectionReasons,
+    canManageBudgetStatus,
     hasFinancialModule,
-    getBankAccountsType,
-    getBankTaxTransferType,
-    getProductsType,
-    getProductionStagesType,
-    getClientsType,
-    getSuppliersType,
-    getDeliveryScheduleType,
+    canManageBankAccounts,
+    canManageBankTaxTransfer,
+    canManageProducts,
+    canManageProductionStages,
+    canManageClients,
+    canManageSuppliers,
+    canManageDeliverySchedule,
     canManageMultipleCompanies,
   }
 }
