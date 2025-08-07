@@ -3,7 +3,7 @@
 // React
 import { useState } from 'react'
 
-// UI component
+// Components
 import {
   Dialog,
   DialogBody,
@@ -14,59 +14,56 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import {
   AlertDialog,
+  AlertDialogTitle,
   AlertDialogAction,
   AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialogContent,
+  AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
+import { pdf } from '@react-pdf/renderer'
+import { GeneratePdf } from './GeneratePdf'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-
-// Component
-import { toast } from 'sonner'
-import { pdf } from '@react-pdf/renderer'
-import { GeneratePdf } from './GeneratePdf'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 
-// Form Imports
+// Form
 import { useForm } from 'react-hook-form'
 
 // Utils
 import {
-  validateQuotationTotals,
   formatCurrencyToBrl,
+  validateQuotationTotals,
   adaptNewItemsToOldFormat,
 } from '@/lib/utils'
 
 // Icon
 import {
-  IconCircleCheck,
   IconPrinter,
+  IconCircleCheck,
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
 // Store
 import { getItem } from '@/actions/_cruds'
 
-const defaultValues = {
-  showImages: true,
-  showDimensions: true,
-  showUnitValue: true,
-  showDiscounts: true,
-  showFinalValue: true,
-  showTotalValue: true,
-  showPaymentDelivery: true,
-  showItemsDetails: true,
+export type PrintOptionsType = {
+  showImages: boolean
+  showDimensions: boolean
+  showUnitValue: boolean
+  showDiscounts: boolean
+  showFinalValue: boolean
+  showTotalValue: boolean
+  showPaymentDelivery: boolean
+  showItemsDetails: boolean
 }
-
-export type PrintOptionsType = typeof defaultValues
 
 interface Props {
   type: 'quotation' | 'order' | 'production'
@@ -99,8 +96,19 @@ export function PrintQuotationDialog({
   const [pendingPrintData, setPendingPrintData] =
     useState<PendingPrintData | null>(null)
 
+  const { canShowQuotationItemDetails } = usePlanFeatures()
+
   const form = useForm<PrintOptionsType>({
-    defaultValues,
+    defaultValues: {
+      showImages: true,
+      showDimensions: true,
+      showUnitValue: true,
+      showDiscounts: true,
+      showFinalValue: true,
+      showTotalValue: true,
+      showPaymentDelivery: true,
+      showItemsDetails: canShowQuotationItemDetails(),
+    },
   })
 
   const { handleSubmit } = form
@@ -291,10 +299,12 @@ export function PrintQuotationDialog({
                     name="showPaymentDelivery"
                     label="Exibir especificação de pagamento e entrega"
                   />
-                  <FormCheckbox<PrintOptionsType>
-                    name="showItemsDetails"
-                    label="Exibir detalhamento dos itens de venda"
-                  />
+                  {canShowQuotationItemDetails() && (
+                    <FormCheckbox<PrintOptionsType>
+                      name="showItemsDetails"
+                      label="Exibir detalhamento dos itens de venda"
+                    />
+                  )}
                 </div>
               </form>
             </Form>

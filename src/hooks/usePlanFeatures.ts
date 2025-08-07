@@ -62,6 +62,8 @@ export function usePlanFeatures() {
 
   const canManageDeliverySchedule = () => hasFeature('delivery_production_tabs')
 
+  const canShowQuotationItemDetails = () => hasFeature('pdf_show_item_details')
+
   return {
     planName,
     hasFeature,
@@ -80,5 +82,6 @@ export function usePlanFeatures() {
     canManageSuppliers,
     canManageDeliverySchedule,
     canManageMultipleCompanies,
+    canShowQuotationItemDetails,
   }
 }
