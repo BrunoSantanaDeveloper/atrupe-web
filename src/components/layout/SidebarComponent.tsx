@@ -93,8 +93,10 @@ export function SidebarComponent(props: Props) {
   const mainNavigation = getMainNavigation(userRole)
 
   const { hasPermission } = usePermissions()
-  const { getUserLimit, getRejectionReasonsType, hasFinancialModule } =
-    usePlanFeatures()
+  const { hasFinancialModule, canManageRejectionReasons } = usePlanFeatures()
+
+  // Conversão: getUserLimit usando acesso direto à sessão
+  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
   // TODO: Verificar se o usuário é admin com isAdmin
   // Função auxiliar que verifica permissão considerando admin
@@ -145,7 +147,7 @@ export function SidebarComponent(props: Props) {
 
     // Controle de Motivos de Rejeição e Cancelamento
     if (item.path?.includes('/motivos-de-rejeicao-e-cancelamento')) {
-      return getRejectionReasonsType() !== 'none'
+      return canManageRejectionReasons()
     }
 
     // Outras verificações de features podem ser adicionadas aqui

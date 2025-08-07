@@ -16,8 +16,8 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 export function BankAccounts({ searchParams }: SearchParamsType) {
-  const { getBankAccountsType } = usePlanFeatures()
-  const canCreateBankAccount = getBankAccountsType() === 'full'
+  const { canManageBankAccounts } = usePlanFeatures()
+  const canCreateBankAccount = canManageBankAccounts()
 
   return (
     <PermissionGate permissions={['financial_settings:bank_accounts:view']}>

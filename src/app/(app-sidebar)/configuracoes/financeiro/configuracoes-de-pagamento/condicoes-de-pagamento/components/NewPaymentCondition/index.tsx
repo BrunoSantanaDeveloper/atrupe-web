@@ -61,10 +61,9 @@ export function NewPaymentCondition({
   const [maxInstallmentsLength, setMaxInstallmentsLength] = useState(0)
 
   const queryClient = useQueryClient()
-  const { getBankTaxTransferType } = usePlanFeatures()
+  const { canManageBankTaxTransfer } = usePlanFeatures()
 
-  const bankTaxTransferType = getBankTaxTransferType()
-  const isTaxFieldsEnabled = bankTaxTransferType === 'full'
+  const isTaxFieldsEnabled = canManageBankTaxTransfer()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),

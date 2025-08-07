@@ -53,6 +53,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useSession } from 'next-auth/react'
 
 // Actions
 import { updateItem, getItemOld } from '@/actions/_cruds'
@@ -103,18 +104,21 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
 
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
   const {
     hasFinancialModule,
-    getClientsType,
-    getSuppliersType,
-    getProductsType,
-    getDeliveryScheduleType,
+    canManageClients,
+    canManageSuppliers,
+    canManageProducts,
+    canManageDeliverySchedule,
     canManageSectors,
-    getUserLimit,
-    getRejectionReasonsType,
-    getBudgetStatusType,
-    getSalesOrdersType,
+    canManageRejectionReasons,
+    canManageBudgetStatus,
+    canManageSalesOrders,
   } = usePlanFeatures()
+
+  // Função para obter limite de usuários da sessão
+  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
   const shouldShowPermission = (section: string, item: string) => {
     // Verifica permissões do módulo financeiro
@@ -129,12 +133,10 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     // Verifica permissões de cadastros
     if (section === 'register') {
       if (item === 'client') {
-        const type = getClientsType()
-        return type === 'full' || type === 'limited'
+        return canManageClients()
       }
       if (item === 'supplier') {
-        const type = getSuppliersType()
-        return type === 'full' || type === 'limited'
+        return canManageSuppliers()
       }
       if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
     }
@@ -146,14 +148,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
 
     // Verifica permissões de produtos
     if (section === 'product_settings') {
-      return getProductsType() === 'full'
+      return canManageProducts()
     }
 
     // Verifica permissões de produção
     if (section === 'production') {
       if (item === 'delivery_schedule') {
         // Agenda de entrega só disponível no plano full
-        return getDeliveryScheduleType() === 'full'
+        return canManageDeliverySchedule()
       }
     }
 
@@ -167,15 +169,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     if (section === 'sales_settings') {
       if (item === 'rejection_reasons') {
         // Motivos de rejeição só disponível no plano full
-        return getRejectionReasonsType() === 'full'
+        return canManageRejectionReasons()
       }
       if (item === 'quotation_status') {
         // Status de orçamento só disponível no plano full
-        return getBudgetStatusType() === 'full'
+        return canManageBudgetStatus()
       }
       if (item === 'series') {
-        const type = getSalesOrdersType()
-        return type === 'full' || type === 'limited'
+        return canManageSalesOrders()
       }
     }
 
@@ -183,15 +184,13 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     if (section === 'sale') {
       if (item === 'quick') {
         // Venda rápida só disponível no plano full
-        return getSalesOrdersType() === 'full'
+        return canManageSalesOrders()
       }
       if (item === 'quotation') {
-        const type = getBudgetStatusType()
-        return type === 'full' || type === 'limited'
+        return canManageBudgetStatus()
       }
       if (item === 'order') {
-        const type = getSalesOrdersType()
-        return type === 'full' || type === 'limited'
+        return canManageSalesOrders()
       }
     }
 

@@ -31,14 +31,14 @@ interface Props {
 
 export default function SupplierDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useSupplierById({ id: params.id })
-  const { getSuppliersType } = usePlanFeatures()
+  const { canManageSuppliers } = usePlanFeatures()
 
   const totals: { [key: string]: number } = {
     orcamentos: data?.quotationsQuantity,
     ordens: data?.ordersQuantity,
   }
 
-  const showAdvancedTabs = getSuppliersType() === 'full'
+  const showAdvancedTabs = canManageSuppliers()
 
   const allTabs: TabNavType[] = [
     {

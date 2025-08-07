@@ -65,9 +65,9 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
-  const { getProductionStagesType } = usePlanFeatures()
+  const { canManageProductionStages } = usePlanFeatures()
 
-  const canConfigProductionStages = getProductionStagesType() === 'full'
+  const canConfigProductionStages = canManageProductionStages()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),

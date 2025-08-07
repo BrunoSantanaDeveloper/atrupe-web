@@ -69,8 +69,8 @@ export function QuotationsData({
   const [rowData, setRowData] = useState<QuotationType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
 
-  const { getBudgetStatusType } = usePlanFeatures()
-  const showStatusColumn = getBudgetStatusType() === 'full'
+  const { canManageBudgetStatus } = usePlanFeatures()
+  const showStatusColumn = canManageBudgetStatus()
   const isAllTab = searchParams?.status === 'todos'
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value

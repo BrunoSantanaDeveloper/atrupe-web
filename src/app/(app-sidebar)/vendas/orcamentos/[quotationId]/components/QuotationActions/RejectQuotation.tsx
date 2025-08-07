@@ -58,7 +58,7 @@ export function RejectQuotation({ data }: Props) {
   const [reason, setReason] = useState('')
 
   const queryClient = useQueryClient()
-  const { getRejectionReasonsType } = usePlanFeatures()
+  const { canManageRejectionReasons } = usePlanFeatures()
 
   const { data: reasonList } = useCancelReason('REJECTION')
 
@@ -82,13 +82,13 @@ export function RejectQuotation({ data }: Props) {
   })
 
   // Não renderiza se não tiver acesso à funcionalidade
-  // if (getRejectionReasonsType() === 'none') {
+  // if (!canManageRejectionReasons()) {
   //   return null
   // }
 
   const handleReject = async () => {
-    // Se for limited, rejeita direto sem motivo
-    if (getRejectionReasonsType() === 'limited') {
+    // Se tiver permissão, permite rejeição
+    if (canManageRejectionReasons()) {
       toast.promise(
         createItem({
           route: 'quotationRoute',
@@ -121,8 +121,8 @@ export function RejectQuotation({ data }: Props) {
     })
   }
 
-  // Se for limited, mostra botão simples sem modal
-  if (getRejectionReasonsType() === 'limited') {
+  // Se tiver permissão, mostra botão simples sem modal
+  if (canManageRejectionReasons()) {
     return (
       <CustomButton
         icon={IconX}

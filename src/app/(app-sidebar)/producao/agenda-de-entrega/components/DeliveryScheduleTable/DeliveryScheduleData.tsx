@@ -82,8 +82,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
 
-  const { getDeliveryScheduleType } = usePlanFeatures()
-  const deliveryScheduleType = getDeliveryScheduleType()
+  const { canManageDeliverySchedule } = usePlanFeatures()
 
   const alertDialog = useAlertDialog()
 
@@ -93,8 +92,8 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
     const foundStatus =
       tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
 
-    // Se deliveryScheduleType não for 'full' e status estiver vazio, usar 'DELIVERING'
-    if (deliveryScheduleType !== 'full' && !foundStatus) {
+    // Se não puder gerenciar agenda completa e status estiver vazio, usar 'DELIVERING'
+    if (!canManageDeliverySchedule() && !foundStatus) {
       return 'DELIVERING'
     }
 
@@ -242,7 +241,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                   </div>
                                 ) : (
                                   <div className="flex gap-2 items-center">
-                                    {deliveryScheduleType === 'full' && (
+                                    {canManageDeliverySchedule() && (
                                       <div className="flex gap-2">
                                         <TooltipProvider>
                                           {deliverySchedule?.productionStages?.map(
@@ -288,7 +287,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                         'overflow-hidden transition-[width] duration-300 ease-in-out',
                                         // Para planos limitados, sempre mostrar o botão
                                         // Para planos completos, mostrar apenas quando etapas estão concluídas
-                                        deliveryScheduleType === 'limited' ||
+                                        !canManageDeliverySchedule() ||
                                           !deliverySchedule?.productionStages
                                             ?.length ||
                                           deliverySchedule?.productionStages?.every(

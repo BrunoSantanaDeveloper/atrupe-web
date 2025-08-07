@@ -86,13 +86,13 @@ async function handleGetProduct(productId: string) {
 
 function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
   const queryClient = useQueryClient()
-  const { getProductsType, getProductionStagesType } = usePlanFeatures()
+  const { canManageProducts, canManageProductionStages } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
 
   const [insertAnother, setInsertAnother] = useState(!editMode)
 
-  const canAddComposition = getProductsType() === 'full'
-  const canShowProductionStages = getProductionStagesType() === 'full'
+  const canAddComposition = canManageProducts()
+  const canShowProductionStages = canManageProductionStages()
 
   const { data: product, isLoading } = useQuery({
     staleTime: Infinity,

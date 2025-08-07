@@ -1,8 +1,14 @@
 // Components
 import { Transactions } from '@/app/(app-sidebar)/financeiro/_components/transactions/Transactions'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import type { SearchParamsType } from '@/types/coreTypes'
 import { FeatureGate } from '@/components/common/FeatureGate'
+import { UpgradeFallback } from '@/components/common/UpgradeFallback'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
+
+// Constants
+import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
@@ -12,7 +18,15 @@ export function metadata() {
 
 export default function PayablePage({ searchParams }: SearchParamsType) {
   return (
-    <FeatureGate features={['accounts_payable']} showUpgradeMessage>
+    <FeatureGate
+      features={[FEATURES.FINANCIAL.ACCOUNTS_PAYABLE]}
+      fallback={
+        <UpgradeFallback
+          title="Módulo Contas a Pagar"
+          description="O módulo de contas a pagar não está incluído no seu plano atual. Faça upgrade para gerenciar suas obrigações financeiras."
+        />
+      }
+    >
       <PermissionGate
         permissions={['financial:payable:view']}
         fallback={

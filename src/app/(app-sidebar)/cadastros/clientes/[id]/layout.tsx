@@ -29,14 +29,14 @@ interface Props {
 
 export default function ClientDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useClientById({ id: params.id })
-  const { getClientsType } = usePlanFeatures()
+  const { canManageClients } = usePlanFeatures()
 
   const totals: { [key: string]: number } = {
     orcamentos: data?.quotationsQuantity,
     ordens: data?.ordersQuantity,
   }
 
-  const showAdvancedTabs = getClientsType() === 'full'
+  const showAdvancedTabs = canManageClients()
 
   const allTabs: TabNavType[] = [
     {

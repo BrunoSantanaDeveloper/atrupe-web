@@ -58,9 +58,8 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
 
   // Hook para controle de features
-  const { getSalesOrdersType } = usePlanFeatures()
-  const salesOrdersType = getSalesOrdersType()
-  const showCurrentPhase = salesOrdersType === 'full'
+  const { canManageSalesOrders } = usePlanFeatures()
+  const showCurrentPhase = canManageSalesOrders()
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }

@@ -4,6 +4,9 @@
 import { Fragment, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Auth
+import { useSession } from 'next-auth/react'
+
 // Components
 import { NewEmployeeDialog } from './NewEmployee'
 import { NewUserDialog } from './Actions/NewUser'
@@ -17,7 +20,6 @@ import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Hooks
-import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // UI
@@ -67,8 +69,11 @@ export function TableData({ tabs, searchParams }: Props) {
   const [editUser, setEditUser] = useState(false)
 
   const router = useRouter()
-  const { getUserLimit } = usePlanFeatures()
+  const { data: session } = useSession()
   const { open: openAlertDialog } = useAlertDialog()
+
+  // Conversão: getUserLimit usando acesso direto à sessão
+  const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''

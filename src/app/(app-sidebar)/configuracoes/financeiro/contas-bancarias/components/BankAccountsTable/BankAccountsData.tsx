@@ -46,10 +46,10 @@ interface Props extends SearchParamsType {}
 export function BankAccountsData({ searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<BankAccountsType>()
-  const { getBankAccountsType } = usePlanFeatures()
+  const { canManageBankAccounts } = usePlanFeatures()
 
   const filters = { ...searchParams }
-  const canCreateBankAccount = getBankAccountsType() === 'full'
+  const canCreateBankAccount = canManageBankAccounts()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,

@@ -30,8 +30,7 @@ import { IconReportMoney } from '@tabler/icons-react'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 export function DeliverySchedule({ searchParams }: SearchParamsType) {
-  const { getDeliveryScheduleType } = usePlanFeatures()
-  const deliveryScheduleType = getDeliveryScheduleType()
+  const { canManageDeliverySchedule } = usePlanFeatures()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -84,17 +83,16 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
   ]
 
   // Filtrar abas baseado no plano
-  const filteredTabs =
-    deliveryScheduleType === 'full'
-      ? tabs
-      : tabs.filter((tab) => tab.tab !== 'producao' && tab.tab !== 'todos')
+  const filteredTabs = canManageDeliverySchedule()
+    ? tabs
+    : tabs.filter((tab) => tab.tab !== 'producao' && tab.tab !== 'todos')
 
   const statusLabel =
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
   // Determinar aba ativa - se a aba atual não existe nas filtradas, usar padrão baseado no plano
   const activeTab = (() => {
-    const defaultTab = deliveryScheduleType === 'full' ? 'todos' : 'entrega'
+    const defaultTab = canManageDeliverySchedule() ? 'todos' : 'entrega'
     const currentTab = searchParams?.status || defaultTab
     const tabExists = filteredTabs.some((tab) => tab.tab === currentTab)
     if (tabExists) return currentTab

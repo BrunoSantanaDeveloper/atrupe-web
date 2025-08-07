@@ -58,7 +58,7 @@ export function CancelOrder({ data }: Props) {
   const [reason, setReason] = useState('')
 
   const queryClient = useQueryClient()
-  const { getRejectionReasonsType } = usePlanFeatures()
+  const { canManageRejectionReasons } = usePlanFeatures()
 
   const { data: reasonList } = useCancelReason('CANCELLATION')
 
@@ -82,13 +82,13 @@ export function CancelOrder({ data }: Props) {
   })
 
   // Não renderiza se não tiver acesso à funcionalidade
-  if (getRejectionReasonsType() === 'none') {
+  if (!canManageRejectionReasons()) {
     return null
   }
 
   const handleCancel = async () => {
-    // Se for limited, cancela direto sem motivo
-    if (getRejectionReasonsType() === 'limited') {
+    // Se tiver permissão, cancela direto sem motivo
+    if (canManageRejectionReasons()) {
       toast.promise(
         createItem({
           route: 'orderRoute',
@@ -117,8 +117,8 @@ export function CancelOrder({ data }: Props) {
     })
   }
 
-  // Se for limited, mostra botão simples sem modal
-  if (getRejectionReasonsType() === 'limited') {
+  // Se tiver permissão, mostra botão simples sem modal
+  if (canManageRejectionReasons()) {
     return (
       <CustomButton
         icon={IconX}

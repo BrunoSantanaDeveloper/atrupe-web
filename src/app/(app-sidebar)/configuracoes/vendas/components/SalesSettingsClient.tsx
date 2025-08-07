@@ -20,7 +20,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 const defaultPath = 'vendas'
 
 export function SalesSettingsClient() {
-  const { getRejectionReasonsType, getBudgetStatusType } = usePlanFeatures()
+  const { canManageRejectionReasons, canManageBudgetStatus } = usePlanFeatures()
 
   const allSettings: CompanySettingsType[] = [
     {
@@ -38,7 +38,7 @@ export function SalesSettingsClient() {
           description: 'Gerencie os vendedores, suas comissões e permissões.',
           link: `${defaultPath}/perfil-de-vendedor`,
         },
-        ...(getRejectionReasonsType() === 'full'
+        ...(canManageRejectionReasons()
           ? [
               {
                 title: 'Motivos de rejeição e cancelamento',
@@ -49,7 +49,7 @@ export function SalesSettingsClient() {
               },
             ]
           : []),
-        ...(getBudgetStatusType() === 'full'
+        ...(canManageBudgetStatus()
           ? [
               {
                 title: 'Status de orçamento',
