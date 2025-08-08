@@ -5,5 +5,8 @@ import { Main } from './components/Main'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export default function Page({ searchParams }: SearchParamsType) {
-  return <Main searchParams={searchParams} />
+  const defaultTab = 'ativos'
+  const status = searchParams.status || defaultTab
+
+  return <Main searchParams={{ ...searchParams, status }} />
 }

@@ -38,8 +38,8 @@ export function Main({ searchParams }: SearchParamsType) {
   })
 
   const totals: { [key: string]: number } = {
-    ativos: data?.ACTIVE,
-    inativos: data?.INACTIVE,
+    ativos: data?.ACTIVES,
+    inativos: data?.INACTIVES,
     todos: data?.TOTAL,
   }
 
