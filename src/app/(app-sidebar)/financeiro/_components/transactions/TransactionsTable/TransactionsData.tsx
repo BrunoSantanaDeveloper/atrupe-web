@@ -342,6 +342,7 @@ export function TransactionsData({ type, searchParams }: Props) {
               open={openDialog === 'payment'}
               setOpen={setOpenDialog}
               rowData={installment}
+              transactionData={rowData}
               type={type}
             />
             <CompensateDialog

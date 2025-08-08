@@ -42,7 +42,10 @@ import {
 } from '@tabler/icons-react'
 
 // Types
-import type { InstallmentType } from '@/types/financial/financialFlow'
+import type {
+  InstallmentType,
+  TransactionListType,
+} from '@/types/financial/financialFlow'
 
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
@@ -52,13 +55,14 @@ import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
 
 // Lib
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 
 interface Props {
   open: boolean
   setOpen: (value: string) => void
   rowData?: InstallmentType
+  transactionData?: TransactionListType
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
 }
@@ -67,6 +71,7 @@ export function PaymentDialog({
   type,
   open,
   rowData,
+  transactionData,
   setOpen,
   transactionDialogOpen,
 }: Props) {
@@ -181,15 +186,21 @@ export function PaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
+  const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <DialogTitle>Pagamento</DialogTitle>
+            <div>
+              <DialogTitle className="mb-1">
+                {type === 'payable' ? 'Pagamento' : 'Recebimento'}
+              </DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>

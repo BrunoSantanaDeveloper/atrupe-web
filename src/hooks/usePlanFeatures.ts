@@ -50,6 +50,8 @@ export function usePlanFeatures() {
 
   const canDeleteBankAccount = () => hasFeature('bank_account_delete')
 
+  const canProvision = () => hasFeature('bank_account_provision')
+
   const canManageBankTaxTransfer = () =>
     hasFeature('payment_condition_operator_fee')
 
@@ -78,6 +80,7 @@ export function usePlanFeatures() {
     hasFinancialModule,
     canCreateBankAccount,
     canDeleteBankAccount,
+    canProvision,
     canManageBankTaxTransfer,
     canManageProducts,
     canManageProductionStages,

@@ -59,7 +59,7 @@ import { createItem, updateItem } from '@/actions/_cruds'
 
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-const options = [
+const paymentOptions = [
   { value: 'PAYSOFF', label: 'Compensar na baixa' },
   { value: 'PROVISION', label: 'Provisionar na baixa' },
 ]
@@ -80,7 +80,7 @@ export function NewBankAccountDialog({
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const queryClient = useQueryClient()
-  const { hasFinancialModule } = usePlanFeatures()
+  const { hasFinancialModule, canProvision } = usePlanFeatures()
 
   const paymentMethods = usePaymentMethod()
 
@@ -192,7 +192,7 @@ export function NewBankAccountDialog({
                   variant="neutralOutline"
                   Icon={IconBuildingBank}
                 />
-                <span>{editMode ? 'Editar' : 'Nova'} conta</span>
+                <span>{editMode ? 'Editar conta' : 'Nova conta'}</span>
               </div>
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
@@ -263,17 +263,19 @@ export function NewBankAccountDialog({
                                   label="Aceita recebimento"
                                   className="w-full"
                                 />
-                                <FormSelect<FormType>
-                                  name={`bankAccountCashControl.${index}.incomeType`}
-                                  options={options}
-                                  placeholder="Selecione"
-                                  width="flex-[1_0_200px]"
-                                  disabled={
-                                    !watch(
-                                      `bankAccountCashControl.${index}.acceptIncomes`,
-                                    )
-                                  }
-                                />
+                                {canProvision() && (
+                                  <FormSelect<FormType>
+                                    name={`bankAccountCashControl.${index}.incomeType`}
+                                    options={paymentOptions}
+                                    placeholder="Selecione"
+                                    width="flex-[1_0_200px]"
+                                    disabled={
+                                      !watch(
+                                        `bankAccountCashControl.${index}.acceptIncomes`,
+                                      )
+                                    }
+                                  />
+                                )}
                               </div>
                             </TableCell>
                             <TableCell>
@@ -283,17 +285,19 @@ export function NewBankAccountDialog({
                                   label="Aceita pagamento"
                                   className="w-full"
                                 />
-                                <FormSelect<FormType>
-                                  name={`bankAccountCashControl.${index}.paymentType`}
-                                  options={options}
-                                  placeholder="Selecione"
-                                  width="flex-[1_0_200px]"
-                                  disabled={
-                                    !watch(
-                                      `bankAccountCashControl.${index}.acceptPayments`,
-                                    )
-                                  }
-                                />
+                                {canProvision() && (
+                                  <FormSelect<FormType>
+                                    name={`bankAccountCashControl.${index}.paymentType`}
+                                    options={paymentOptions}
+                                    placeholder="Selecione"
+                                    width="flex-[1_0_200px]"
+                                    disabled={
+                                      !watch(
+                                        `bankAccountCashControl.${index}.acceptPayments`,
+                                      )
+                                    }
+                                  />
+                                )}
                               </div>
                             </TableCell>
                           </TableRow>
