@@ -14,10 +14,12 @@ import {
 } from '@/components/common/TableEmptyState'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SuppliersData } from './SuppliersTable/SuppliersData'
+import { SuppliersFilter } from './SuppliersTable/SuppliersFilter'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { NewSupplier, NewSupplierTriggerButton } from './NewSupplier'
+import { TableFiltersHeader } from '@/components/common/TableHeader'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -130,6 +132,9 @@ export function Suppliers({ searchParams }: SearchParamsType) {
               />
             ) : (
               <>
+                <TableFiltersHeader searchParams={searchParams}>
+                  <SuppliersFilter searchParams={searchParams} />
+                </TableFiltersHeader>
                 <SuppliersData searchParams={searchParams} tabs={tabs} />
               </>
             )

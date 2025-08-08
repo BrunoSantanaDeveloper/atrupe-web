@@ -78,7 +78,7 @@ export function NewSupplier({
         rg: apiData.general?.rg || '',
         cnpj: apiData.general?.cnpj || '',
         activity: apiData.general?.activity || '',
-        category: apiData.general?.category || '',
+        categoryId: apiData.general?.categoryId || '',
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
@@ -250,7 +250,7 @@ export function NewSupplier({
                 Cancelar
               </Button>
             </DialogTrigger>
-            <Button type="submit" form="new-supplier">
+            <Button type="submit" form="new-supplier" isLoading={isSubmitting}>
               {editMode ? 'Salvar alterações' : 'Criar fornecedor'}
             </Button>
           </div>

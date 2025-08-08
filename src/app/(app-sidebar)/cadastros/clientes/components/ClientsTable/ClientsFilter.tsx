@@ -31,7 +31,7 @@ export function ClientsFilter({ searchParams }: SearchParamsType) {
     <>
       <SelectClientCategoryField
         name="categoryId"
-        label="Categoria"
+        label="Grupo"
         className="w-[220px]"
         value={searchParams?.categoryId || 'all'}
         onChange={(value) => handleFilter('categoryId', value)}
