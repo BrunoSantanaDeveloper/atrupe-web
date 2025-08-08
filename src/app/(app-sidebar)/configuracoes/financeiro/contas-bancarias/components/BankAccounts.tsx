@@ -16,8 +16,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 export function BankAccounts({ searchParams }: SearchParamsType) {
-  const { canManageBankAccounts } = usePlanFeatures()
-  const canCreateBankAccount = canManageBankAccounts()
+  const { canCreateBankAccount } = usePlanFeatures()
 
   return (
     <PermissionGate permissions={['financial_settings:bank_accounts:view']}>
@@ -26,7 +25,7 @@ export function BankAccounts({ searchParams }: SearchParamsType) {
           title="Contas bancárias"
           previousPage="/configuracoes/financeiro"
           primaryCta={
-            canCreateBankAccount ? (
+            canCreateBankAccount() ? (
               <PermissionGate
                 permissions={['financial_settings:bank_accounts:create']}
               >

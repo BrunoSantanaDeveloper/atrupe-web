@@ -46,10 +46,9 @@ interface Props extends SearchParamsType {}
 export function BankAccountsData({ searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<BankAccountsType>()
-  const { canManageBankAccounts } = usePlanFeatures()
+  const { canCreateBankAccount, canDeleteBankAccount } = usePlanFeatures()
 
   const filters = { ...searchParams }
-  const canCreateBankAccount = canManageBankAccounts()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -121,20 +120,22 @@ export function BankAccountsData({ searchParams }: Props) {
                               }}
                             />
                           </PermissionGate>
-                          <PermissionGate
-                            permissions={[
-                              'financial_settings:bank_accounts:delete',
-                            ]}
-                          >
-                            <ActionButton
-                              Icon={IconTrash}
-                              tooltip="Excluir conta"
-                              onClick={() => {
-                                setRowData(item)
-                                setOpenDialog('delete')
-                              }}
-                            />
-                          </PermissionGate>
+                          {canDeleteBankAccount() && (
+                            <PermissionGate
+                              permissions={[
+                                'financial_settings:bank_accounts:delete',
+                              ]}
+                            >
+                              <ActionButton
+                                Icon={IconTrash}
+                                tooltip="Excluir conta"
+                                onClick={() => {
+                                  setRowData(item)
+                                  setOpenDialog('delete')
+                                }}
+                              />
+                            </PermissionGate>
+                          )}
                         </TooltipProvider>
                       </div>
                     </TableCell>
@@ -142,12 +143,14 @@ export function BankAccountsData({ searchParams }: Props) {
                 ))}
               </TableBody>
             </Table>
-            <DisableBankAccount
-              open={openDialog === 'delete'}
-              setOpen={setOpenDialog}
-              rowData={rowData}
-              searchParams={searchParams}
-            />
+            {canDeleteBankAccount() && (
+              <DisableBankAccount
+                open={openDialog === 'delete'}
+                setOpen={setOpenDialog}
+                rowData={rowData}
+                searchParams={searchParams}
+              />
+            )}
             <NewBankAccountDialog
               open={openDialog === 'edit'}
               setOpen={setOpenDialog}
@@ -160,12 +163,12 @@ export function BankAccountsData({ searchParams }: Props) {
           <ListDataTotalEmpty
             title="Nenhuma conta bancária"
             description={
-              canCreateBankAccount
+              canCreateBankAccount()
                 ? 'Cadastre sua primeira conta'
                 : 'Nenhuma conta bancária cadastrada'
             }
             cta={
-              canCreateBankAccount ? (
+              canCreateBankAccount() ? (
                 <NewBankAccountDialog searchParams={searchParams} />
               ) : undefined
             }

@@ -10,22 +10,22 @@ Este documento mapeia **absolutamente todos** os usos do hook `usePlanFeatures` 
 
 ```typescript
 return {
-  planName,                    // Nome do plano atual
-  hasFeature,                  // Verifica uma feature específica
-  hasAnyFeature,              // Verifica se tem qualquer uma das features
-  hasAllFeatures,             // Verifica se tem todas as features
-  canManageSectors,           // Pode gerenciar setores
-  canManageSalesOrders,       // Pode gerenciar ordens de venda
-  canManageRejectionReasons,  // Pode gerenciar motivos de rejeição
-  canManageBudgetStatus,      // Pode gerenciar status de orçamento
-  hasFinancialModule,         // Tem módulo financeiro (função parametrizada)
-  canManageBankAccounts,      // Pode gerenciar contas bancárias
-  canManageBankTaxTransfer,   // Pode gerenciar transferências bancárias
-  canManageProducts,          // Pode gerenciar produtos
-  canManageProductionStages,  // Pode gerenciar estágios de produção
-  canManageClients,           // Pode gerenciar clientes
-  canManageSuppliers,         // Pode gerenciar fornecedores
-  canManageDeliverySchedule,  // Pode gerenciar agenda de entrega
+  planName, // Nome do plano atual
+  hasFeature, // Verifica uma feature específica
+  hasAnyFeature, // Verifica se tem qualquer uma das features
+  hasAllFeatures, // Verifica se tem todas as features
+  canManageSectors, // Pode gerenciar setores
+  canManageSalesOrders, // Pode gerenciar ordens de venda
+  canManageRejectionReasons, // Pode gerenciar motivos de rejeição
+  canManageBudgetStatus, // Pode gerenciar status de orçamento
+  hasFinancialModule, // Tem módulo financeiro (função parametrizada)
+  canCreateBankAccount, // Pode gerenciar contas bancárias
+  canManageBankTaxTransfer, // Pode gerenciar transferências bancárias
+  canManageProducts, // Pode gerenciar produtos
+  canManageProductionStages, // Pode gerenciar estágios de produção
+  canManageClients, // Pode gerenciar clientes
+  canManageSuppliers, // Pode gerenciar fornecedores
+  canManageDeliverySchedule, // Pode gerenciar agenda de entrega
   canManageMultipleCompanies, // Pode gerenciar múltiplas empresas
 }
 ```
@@ -34,17 +34,17 @@ return {
 
 ```typescript
 // Estas funções são chamadas no código mas não existem no hook:
-getRejectionReasonsType     // Usado em 2 arquivos
-getSalesOrdersType          // Usado em 2 arquivos  
-getDeliveryScheduleType     // Usado em 2 arquivos
-getClientsType              // Usado em 1 arquivo
-getBudgetStatusType         // Usado em 2 arquivos
-getProductsType             // Usado em 1 arquivo
-getProductionStagesType     // Usado em 2 arquivos
-getSuppliersType            // Usado em 1 arquivo
-getBankTaxTransferType      // Usado em 1 arquivo
-getUserLimit                // Usado em 1 arquivo
-getBankAccountsType         // Usado em 2 arquivos
+getRejectionReasonsType // Usado em 2 arquivos
+getSalesOrdersType // Usado em 2 arquivos
+getDeliveryScheduleType // Usado em 2 arquivos
+getClientsType // Usado em 1 arquivo
+getBudgetStatusType // Usado em 2 arquivos
+getProductsType // Usado em 1 arquivo
+getProductionStagesType // Usado em 2 arquivos
+getSuppliersType // Usado em 1 arquivo
+getBankTaxTransferType // Usado em 1 arquivo
+getUserLimit // Usado em 1 arquivo
+getBankAccountsType // Usado em 2 arquivos
 ```
 
 ---
@@ -54,6 +54,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **1. Componentes de Layout**
 
 #### `src/components/layout/SidebarComponent.tsx`
+
 - **Linha:** 53, 97
 - **Funções Usadas:** Desestruturação completa do hook
 - **Propósito:** Controlar visibilidade de menus da sidebar
@@ -61,6 +62,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (impacta navegação global)
 
 #### `src/components/common/FeatureGate.tsx`
+
 - **Linha:** 3, 20
 - **Funções Usadas:** `hasAnyFeature`, `hasAllFeatures`
 - **Propósito:** Componente central de controle de features
@@ -72,6 +74,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **2. Tabelas e Listagens (5 arquivos)**
 
 #### `src/app/(app-sidebar)/vendas/orcamentos/components/QuotationsTable/QuotationsData.tsx`
+
 - **Linha:** 72
 - **Funções Usadas:** `getBudgetStatusType` ❌ (não implementada)
 - **Propósito:** Controlar colunas de status na tabela de orçamentos
@@ -79,6 +82,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (tabela principal)
 
 #### `src/app/(app-sidebar)/vendas/ordens-de-servico/components/OrdersTable/OrdersData.tsx`
+
 - **Linha:** 61
 - **Funções Usadas:** `getSalesOrdersType` ❌ (não implementada)
 - **Propósito:** Controlar funcionalidades da tabela de OS
@@ -86,6 +90,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (tabela principal)
 
 #### `src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliveryScheduleTable/DeliveryScheduleData.tsx`
+
 - **Linha:** 85
 - **Funções Usadas:** `getDeliveryScheduleType` ❌ (não implementada)
 - **Propósito:** Controlar funcionalidades da agenda de entrega
@@ -93,6 +98,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccountsTable/BankAccountsData.tsx`
+
 - **Linha:** 49
 - **Funções Usadas:** `getBankAccountsType` ❌ (não implementada)
 - **Propósito:** Controlar funcionalidades das contas bancárias
@@ -100,6 +106,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/empresa-e-sistema/colaboradores-e-usuarios/components/TableData.tsx`
+
 - **Linha:** 70
 - **Funções Usadas:** `getUserLimit` ❌ (não implementada)
 - **Propósito:** Controlar limite de usuários
@@ -111,6 +118,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **3. Formulários e Modais (8 arquivos)**
 
 #### `src/app/(app-sidebar)/cadastros/clientes/components/NewClient/index.tsx`
+
 - **Linha:** 67
 - **Funções Usadas:** `hasFinancialModule`
 - **Propósito:** Mostrar/ocultar campos financeiros no form de cliente
@@ -118,6 +126,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/produtos/components/NewProduct.tsx`
+
 - **Linha:** 89
 - **Funções Usadas:** `getProductsType` ❌, `getProductionStagesType` ❌
 - **Propósito:** Controlar funcionalidades do formulário de produtos
@@ -125,6 +134,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/vendas/orcamentos/components/NewQuotation.tsx`
+
 - **Linha:** 112
 - **Funções Usadas:** `canManageMultipleCompanies`
 - **Propósito:** Mostrar seletor de empresas
@@ -132,6 +142,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento/components/NewPaymentCondition/index.tsx`
+
 - **Linha:** 64
 - **Funções Usadas:** `getBankTaxTransferType` ❌
 - **Propósito:** Controlar configurações de pagamento
@@ -139,6 +150,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/EditItem/index.tsx`
+
 - **Linha:** 71
 - **Funções Usadas:** `planName`
 - **Propósito:** Exibir informações do plano
@@ -146,6 +158,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟢 BAIXA
 
 #### `src/app/(app-sidebar)/configuracoes/empresa-e-sistema/setores/components/Actions/Edit/index.tsx`
+
 - **Linha:** 68
 - **Funções Usadas:** `getProductionStagesType` ❌
 - **Propósito:** Controlar configurações de setores
@@ -153,6 +166,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo/NewCompanyInfo.tsx`
+
 - **Linha:** 301
 - **Funções Usadas:** `canManageMultipleCompanies`
 - **Propósito:** Permitir criação de múltiplas empresas
@@ -160,6 +174,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccountsTable/NewBankAccount/index.tsx`
+
 - **Linha:** 83
 - **Funções Usadas:** `hasFinancialModule`
 - **Propósito:** Controlar criação de contas bancárias
@@ -171,6 +186,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **4. Ações e Dialogs (3 arquivos)**
 
 #### `src/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationActions/RejectQuotation.tsx`
+
 - **Linha:** 61
 - **Funções Usadas:** `getRejectionReasonsType` ❌
 - **Propósito:** Controlar motivos de rejeição de orçamentos
@@ -178,6 +194,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (funcionalidade core)
 
 #### `src/app/(app-sidebar)/vendas/ordens-de-servico/[orderId]/components/OrderActions/CancelOrder.tsx`
+
 - **Linha:** 61
 - **Funções Usadas:** `getRejectionReasonsType` ❌
 - **Propósito:** Controlar motivos de cancelamento de OS
@@ -185,6 +202,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (funcionalidade core)
 
 #### `src/app/(app-sidebar)/configuracoes/empresa-e-sistema/cargos/components/Actions/Permissions/index.tsx`
+
 - **Linha:** 53
 - **Funções Usadas:** Importa mas uso específico não identificado
 - **Propósito:** Controlar permissões de cargos
@@ -196,6 +214,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **5. Páginas de Configuração (3 arquivos)**
 
 #### `src/app/(app-sidebar)/configuracoes/vendas/components/SalesSettingsClient.tsx`
+
 - **Linha:** 23
 - **Funções Usadas:** `getRejectionReasonsType` ❌, `getBudgetStatusType` ❌
 - **Propósito:** Controlar acesso às configurações de vendas
@@ -203,6 +222,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (controla acesso a configurações)
 
 #### `src/app/(app-sidebar)/configuracoes/financeiro/FinanceSettingsClient.tsx`
+
 - **Linha:** 26
 - **Funções Usadas:** `hasFinancialModule`
 - **Propósito:** Controlar acesso às configurações financeiras
@@ -210,6 +230,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🔥 ALTA (controla acesso a configurações)
 
 #### `src/app/(app-sidebar)/configuracoes/financeiro/contas-bancarias/components/BankAccounts.tsx`
+
 - **Linha:** 19
 - **Funções Usadas:** `getBankAccountsType` ❌
 - **Propósito:** Controlar funcionalidades das contas bancárias
@@ -221,6 +242,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **6. Layouts Dinâmicos (2 arquivos)**
 
 #### `src/app/(app-sidebar)/cadastros/clientes/[id]/layout.tsx`
+
 - **Linha:** 32
 - **Funções Usadas:** `getClientsType` ❌
 - **Propósito:** Controlar abas disponíveis no layout de cliente
@@ -228,6 +250,7 @@ getBankAccountsType         // Usado em 2 arquivos
 - **Prioridade:** 🟡 MÉDIA
 
 #### `src/app/(app-sidebar)/cadastros/fornecedores/[id]/layout.tsx`
+
 - **Linha:** 34
 - **Funções Usadas:** `getSuppliersType` ❌
 - **Propósito:** Controlar abas disponíveis no layout de fornecedor
@@ -239,6 +262,7 @@ getBankAccountsType         // Usado em 2 arquivos
 ### **7. Componentes de Produção (1 arquivo)**
 
 #### `src/app/(app-sidebar)/producao/agenda-de-entrega/components/DeliverySchedule.tsx`
+
 - **Linha:** 33
 - **Funções Usadas:** `getDeliveryScheduleType` ❌
 - **Propósito:** Controlar funcionalidades da agenda de entrega
@@ -251,19 +275,19 @@ getBankAccountsType         // Usado em 2 arquivos
 
 ### **1. Funções Não Implementadas (11 funções)**
 
-| Função | Usos | Arquivos Afetados | Impacto |
-|--------|------|-------------------|---------|
-| `getRejectionReasonsType` | 3 | RejectQuotation, CancelOrder, SalesSettings | 🔥 CRÍTICO |
-| `getSalesOrdersType` | 2 | OrdersData, ?? | 🔥 ALTO |
-| `getBudgetStatusType` | 2 | QuotationsData, SalesSettings | 🔥 ALTO |
-| `getDeliveryScheduleType` | 2 | DeliveryScheduleData, DeliverySchedule | 🟡 MÉDIO |
-| `getProductionStagesType` | 2 | NewProduct, Edit/index | 🟡 MÉDIO |
-| `getBankAccountsType` | 2 | BankAccountsData, BankAccounts | 🟡 MÉDIO |
-| `getClientsType` | 1 | clientes/[id]/layout | 🟡 MÉDIO |
-| `getProductsType` | 1 | NewProduct | 🟡 MÉDIO |
-| `getSuppliersType` | 1 | fornecedores/[id]/layout | 🟡 MÉDIO |
-| `getBankTaxTransferType` | 1 | NewPaymentCondition | 🟡 MÉDIO |
-| `getUserLimit` | 1 | TableData (usuários) | 🔥 CRÍTICO |
+| Função                    | Usos | Arquivos Afetados                           | Impacto    |
+| ------------------------- | ---- | ------------------------------------------- | ---------- |
+| `getRejectionReasonsType` | 3    | RejectQuotation, CancelOrder, SalesSettings | 🔥 CRÍTICO |
+| `getSalesOrdersType`      | 2    | OrdersData, ??                              | 🔥 ALTO    |
+| `getBudgetStatusType`     | 2    | QuotationsData, SalesSettings               | 🔥 ALTO    |
+| `getDeliveryScheduleType` | 2    | DeliveryScheduleData, DeliverySchedule      | 🟡 MÉDIO   |
+| `getProductionStagesType` | 2    | NewProduct, Edit/index                      | 🟡 MÉDIO   |
+| `getBankAccountsType`     | 2    | BankAccountsData, BankAccounts              | 🟡 MÉDIO   |
+| `getClientsType`          | 1    | clientes/[id]/layout                        | 🟡 MÉDIO   |
+| `getProductsType`         | 1    | NewProduct                                  | 🟡 MÉDIO   |
+| `getSuppliersType`        | 1    | fornecedores/[id]/layout                    | 🟡 MÉDIO   |
+| `getBankTaxTransferType`  | 1    | NewPaymentCondition                         | 🟡 MÉDIO   |
+| `getUserLimit`            | 1    | TableData (usuários)                        | 🔥 CRÍTICO |
 
 ### **2. Inconsistências de Nomenclatura**
 
@@ -314,7 +338,7 @@ const getSalesOrdersType = () => {
 ```typescript
 return {
   // Existentes...
-  
+
   // Novas funções críticas
   getRejectionReasonsType,
   getUserLimit,
@@ -339,14 +363,14 @@ return {
 export const PLAN_TYPES = {
   REJECTION_REASONS: {
     NONE: 'none',
-    BASIC: 'basic', 
-    FULL: 'full'
+    BASIC: 'basic',
+    FULL: 'full',
   },
   BUDGET_STATUS: {
     NONE: 'none',
     BASIC: 'basic',
-    FULL: 'full'
-  }
+    FULL: 'full',
+  },
   // etc...
 } as const
 ```
@@ -354,6 +378,7 @@ export const PLAN_TYPES = {
 #### **2.2. Migrar Usos Individuais**
 
 **Prioridade por arquivo:**
+
 1. **SidebarComponent.tsx** - Navegação global
 2. **QuotationsData.tsx** - Tabela principal
 3. **RejectQuotation.tsx** - Funcionalidade core
@@ -372,14 +397,14 @@ const hasFeature = (feature: string) => {
   if (session?.company?.plan?.features) {
     return session.company.plan.features.includes(feature)
   }
-  
+
   // Nova estrutura da API (quando implementada)
   if (session?.company?.plan?.planFeatures) {
     return session.company.plan.planFeatures.some(
-      pf => pf.feature.key === feature
+      (pf) => pf.feature.key === feature,
     )
   }
-  
+
   return false
 }
 ```
@@ -392,15 +417,15 @@ const getUserLimit = () => {
   if (session?.company?.limits?.max_users) {
     return session.company.limits.max_users
   }
-  
+
   // Nova estrutura da API
   if (session?.company?.plan?.planLimits) {
     const userLimit = session.company.plan.planLimits.find(
-      pl => pl.limit.key === 'max_users'
+      (pl) => pl.limit.key === 'max_users',
     )
     return userLimit?.value || 0
   }
-  
+
   return 0
 }
 ```
@@ -410,24 +435,28 @@ const getUserLimit = () => {
 ## 📋 Checklist de Implementação
 
 ### **Correções Imediatas (Esta Sprint)**
+
 - [ ] Implementar 11 funções ausentes no hook
 - [ ] Corrigir exports do hook
 - [ ] Testar funcionalidades críticas (rejeição, limites, status)
 - [ ] Validar SidebarComponent e tabelas principais
 
 ### **Padronização (Próxima Sprint)**
+
 - [ ] Criar constantes de tipos de plano
 - [ ] Migrar SidebarComponent para usar constantes
 - [ ] Migrar tabelas principais (Quotations, Orders)
 - [ ] Migrar configurações críticas (Sales, Finance)
 
 ### **Otimização (Sprint Futura)**
+
 - [ ] Implementar compatibilidade com nova API
 - [ ] Adicionar sistema de limites robusto
 - [ ] Criar testes unitários para o hook
 - [ ] Documentar padrões de uso
 
 ### **Validação e Testes**
+
 - [ ] Testar cada função implementada
 - [ ] Validar comportamento com diferentes planos
 - [ ] Verificar limites de usuários
@@ -444,6 +473,7 @@ const getUserLimit = () => {
 **Arquivos com prioridade BAIXA:** 1
 
 **Estimativa de esforço:**
+
 - Implementação das funções: 2-3 dias
 - Testes e validação: 1-2 dias
 - Migração completa: 5-8 dias
@@ -459,6 +489,6 @@ const getUserLimit = () => {
 
 ---
 
-*Mapeamento completo gerado em: ${new Date().toLocaleDateString('pt-BR')}*
+_Mapeamento completo gerado em: ${new Date().toLocaleDateString('pt-BR')}_
 
 **Este documento identifica TODOS os 24 usos do hook usePlanFeatures e revela 11 funções críticas não implementadas que estão causando erros silenciosos no sistema.**

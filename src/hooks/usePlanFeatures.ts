@@ -46,7 +46,9 @@ export function usePlanFeatures() {
     return hasFeature(moduleMap[module])
   }
 
-  const canManageBankAccounts = () => hasFeature('bank_account_creation')
+  const canCreateBankAccount = () => hasFeature('bank_account_creation')
+
+  const canDeleteBankAccount = () => hasFeature('bank_account_delete')
 
   const canManageBankTaxTransfer = () =>
     hasFeature('payment_condition_operator_fee')
@@ -74,7 +76,8 @@ export function usePlanFeatures() {
     canManageRejectionReasons,
     canManageBudgetStatus,
     hasFinancialModule,
-    canManageBankAccounts,
+    canCreateBankAccount,
+    canDeleteBankAccount,
     canManageBankTaxTransfer,
     canManageProducts,
     canManageProductionStages,
