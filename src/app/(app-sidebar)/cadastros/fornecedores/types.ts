@@ -20,7 +20,7 @@ export type ListSuppliersDataType = {
   }
   addressId: string
   companyId: string
-  category: string
+  categoryRelation: { id: string; name: string }
 }
 
 export type ListSuppliersType = {

@@ -87,6 +87,7 @@ export function NewClientModal({
 
   const transformClientData = (apiData: any): NewClientFormType => {
     if (!apiData) return defaultPersonValues
+    console.log(apiData)
     return {
       type: apiData.type || 'PERSON',
       general: {
@@ -97,7 +98,7 @@ export function NewClientModal({
         rg: apiData.general?.rg || '',
         cnpj: apiData.general?.cnpj || '',
         activity: apiData.general?.activity || '',
-        categoryId: '',
+        categoryId: apiData.general?.category?.id || '',
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',

@@ -90,7 +90,9 @@ export function SuppliersData({ searchParams, tabs }: Props) {
                     <p className="font-medium">{supplier?.name}</p>
                     <p className="text-gray">{supplier?.kind}</p>
                   </TableCell>
-                  <TableCell>{supplier?.category || '-'}</TableCell>
+                  <TableCell>
+                    {supplier?.categoryRelation?.name || '-'}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       status

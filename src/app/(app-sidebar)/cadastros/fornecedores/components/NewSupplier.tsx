@@ -78,7 +78,7 @@ export function NewSupplier({
         rg: apiData.general?.rg || '',
         cnpj: apiData.general?.cnpj || '',
         activity: apiData.general?.activity || '',
-        categoryId: apiData.general?.categoryId || '',
+        categoryId: apiData.general?.category?.id || '',
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
@@ -205,7 +205,9 @@ export function NewSupplier({
   }
 
   function handleToggleModal() {
-    handleCleanForm()
+    if (!editMode) {
+      handleCleanForm()
+    }
     onOpenChange(false)
   }
 
