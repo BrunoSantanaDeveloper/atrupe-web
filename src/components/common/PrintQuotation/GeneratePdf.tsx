@@ -117,6 +117,12 @@ const styles = StyleSheet.create({
     color: '#039855',
     marginBottom: 4,
   },
+  infoTitleProduction: {
+    fontSize: 9,
+    fontWeight: 'bold',
+    color: '#DC6803',
+    marginBottom: 4,
+  },
   infoBold: {
     fontSize: 9,
     fontWeight: 'bold',
@@ -441,9 +447,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <View style={styles.infoBlockRight}>
               <Text
                 style={
-                  type === 'order' || isProduction
+                  type === 'order'
                     ? styles.infoTitleService
-                    : { fontWeight: 'normal' }
+                    : isProduction
+                      ? styles.infoTitleProduction
+                      : { fontWeight: 'normal' }
                 }
               >
                 {type === 'quotation'

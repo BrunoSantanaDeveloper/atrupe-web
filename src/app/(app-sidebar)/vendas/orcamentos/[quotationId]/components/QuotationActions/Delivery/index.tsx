@@ -99,6 +99,8 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const clientId = quotationData.client.id
 
+  console.log(quotationData)
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
