@@ -23,6 +23,19 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
   return (
     <div className="grid grid-cols-2 gap-4">
+      {type === 'PERSON' && (
+        <>
+          <FormInput<NewClientFormType>
+            name="general.cpf"
+            label="CPF"
+            placeholder="Digite aqui"
+            additionalOnChange={(value) => {
+              setValue('general.cpf', maskCpf(String(value)) || '')
+            }}
+            maxLength={14}
+          />
+        </>
+      )}
       {type === 'COMPANY' && (
         <>
           <FormInput<NewClientFormType>
@@ -52,27 +65,18 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         placeholder="Digite aqui"
         className="col-span-2"
       />
+
+      {type === 'PERSON' && (
+        <>
+          <FormInput<NewClientFormType> name="general.rg" label="RG" />
+        </>
+      )}
       <FormInput<NewClientFormType>
         name="general.email"
         label="E-mail"
         placeholder="Digite aqui"
         type="email"
       />
-
-      {type === 'PERSON' && (
-        <>
-          <FormInput<NewClientFormType>
-            name="general.cpf"
-            label="CPF"
-            placeholder="Digite aqui"
-            additionalOnChange={(value) => {
-              setValue('general.cpf', maskCpf(String(value)) || '')
-            }}
-            maxLength={14}
-          />
-          <FormInput<NewClientFormType> name="general.rg" label="RG" />
-        </>
-      )}
 
       {/* <FormInput<NewClientFormType> name="general.activity" label="Atividade" /> */}
 
