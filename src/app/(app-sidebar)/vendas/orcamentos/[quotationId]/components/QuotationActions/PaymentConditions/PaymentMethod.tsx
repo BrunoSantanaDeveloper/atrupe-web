@@ -1,4 +1,4 @@
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
+import { SelectPaymentMethodWithConditionsField } from '@/components/common/form/global-inputs/PaymentMethodsWithConditionsSelectField'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { useFormContext } from 'react-hook-form'
@@ -99,7 +99,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
   return (
     <>
-      <SelectPaymentMethodField<QuotationPaymentConditionsType>
+      <SelectPaymentMethodWithConditionsField<QuotationPaymentConditionsType>
         name="paymentMethodId"
         label="Forma de pagamento"
         width="flex-[1_0_200px]"
