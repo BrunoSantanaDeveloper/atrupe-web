@@ -44,6 +44,8 @@ type ClientType = {
   phone: string
   email: string
   address: AddressWithTypeType
+  notes?: string
+  financialNotes?: string
 }
 
 // Tipo para contato
@@ -51,6 +53,7 @@ type ContactType = {
   name: string
   phone: string
   email: string
+  notes?: string
 }
 
 // Tipo para vendedor
@@ -147,6 +150,8 @@ type QuotationItemType = {
 type DeliverySupplierType = {
   name: string
   cnpj: string
+  notes?: string
+  financialNotes?: string
 }
 
 // Tipo para entrega
@@ -156,6 +161,7 @@ type DeliveryType = {
   clientAddress: AddressWithTypeType
   freightCost: number
   freightPrice: number
+  notes?: string
 }
 
 // Tipo para custo
@@ -179,6 +185,7 @@ type PaymentType = {
   totalInstallments: number
   installments: InstallmentType[]
   availablePaymentMethods?: string[]
+  description?: string
 }
 
 // Tipo para totais

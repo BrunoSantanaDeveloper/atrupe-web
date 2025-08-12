@@ -435,6 +435,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text>{data.client?.document?.value}</Text>
               <Text>{data.client?.phone}</Text>
               <Text>{data.client?.email}</Text>
+              {isProduction && data.client?.notes && (
+                <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                  {data.client.notes}
+                </Text>
+              )}
             </View>
 
             <View style={styles.infoBlock}>
@@ -442,6 +447,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text style={styles.infoBold}>{data.contact?.name}</Text>
               <Text>{data.contact?.phone}</Text>
               <Text>{data.contact?.email}</Text>
+              {isProduction && data.contact?.notes && (
+                <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                  {data.contact.notes}
+                </Text>
+              )}
             </View>
 
             <View style={styles.infoBlockRight}>
@@ -500,17 +510,19 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 REFERÊNCIA
               </Text>
 
-              <Text
-                style={[
-                  styles.tableHeaderCell,
-                  {
-                    width: isProduction ? '15%' : '10%',
-                    textAlign: 'center',
-                  },
-                ]}
-              >
-                {isProduction ? 'QTD.' : 'QTD. ITEM'}
-              </Text>
+              {!isProduction && (
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    {
+                      width: isProduction ? '15%' : '10%',
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  QTD. ITEM
+                </Text>
+              )}
 
               {!isProduction && (
                 <Text
@@ -523,16 +535,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               )}
 
-              {!isProduction && (
-                <Text
-                  style={[
-                    styles.tableHeaderCell,
-                    { width: '12%', textAlign: 'center' },
-                  ]}
-                >
-                  QTD. TOTAL
-                </Text>
-              )}
+              <Text
+                style={[
+                  styles.tableHeaderCell,
+                  { width: '12%', textAlign: 'center' },
+                ]}
+              >
+                QTD. TOTAL
+              </Text>
 
               {!isProduction && printOptions.showUnitValue && (
                 <Text
@@ -605,26 +615,27 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </View>
 
                 {/* Coluna Qtd. Item */}
-                <View style={{ width: isProduction ? '15%' : '10%' }}>
-                  <Text style={{ textAlign: 'center' }}>
-                    {item.product.quantity || 1}
-                  </Text>
-                  {(isProduction ||
-                    (printOptions.showDimensions &&
-                      printOptions.showItemsDetails)) &&
-                    item.product.compositions.map((comp) => (
-                      <Text
-                        key={comp.id}
-                        style={{
-                          textAlign: 'center',
-                          color: '#4B5563',
-                          fontSize: 7,
-                        }}
-                      >
-                        {item.product.quantity || 1}
-                      </Text>
-                    ))}
-                </View>
+                {!isProduction && (
+                  <View style={{ width: isProduction ? '15%' : '10%' }}>
+                    <Text style={{ textAlign: 'center' }}>
+                      {item.product.quantity || 1}
+                    </Text>
+                    {printOptions.showDimensions &&
+                      printOptions.showItemsDetails &&
+                      item.product.compositions.map((comp) => (
+                        <Text
+                          key={comp.id}
+                          style={{
+                            textAlign: 'center',
+                            color: '#4B5563',
+                            fontSize: 7,
+                          }}
+                        >
+                          {item.product.quantity || 1}
+                        </Text>
+                      ))}
+                  </View>
+                )}
 
                 {/* Coluna Detalhamento - apenas para não-produção */}
                 {!isProduction && (
@@ -649,33 +660,32 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </View>
                 )}
 
-                {/* Coluna Qtd. Total - apenas para não-produção */}
-                {!isProduction && (
-                  <View style={{ width: '12%' }}>
-                    <Text style={{ textAlign: 'center', fontSize: 7 }}>
-                      {`${item.product.quantity || 1} un`}
-                    </Text>
-                    {printOptions.showDimensions &&
-                      printOptions.showItemsDetails &&
-                      item.product.compositions.map((comp) => (
-                        <Text
-                          key={comp.id}
-                          style={{
-                            textAlign: 'center',
-                            color: '#4B5563',
-                            fontSize: 7,
-                          }}
-                        >
-                          {
-                            calculateTotalQuantity(
-                              item.product.quantity,
-                              adaptCompositionForDisplayUtils(comp),
-                            ).formatted
-                          }
-                        </Text>
-                      ))}
-                  </View>
-                )}
+                {/* Coluna Qtd. Total - sempre visível */}
+                <View style={{ width: '12%' }}>
+                  <Text style={{ textAlign: 'center', fontSize: 7 }}>
+                    {`${item.product.quantity || 1} un`}
+                  </Text>
+                  {(isProduction ||
+                    (printOptions.showDimensions &&
+                      printOptions.showItemsDetails)) &&
+                    item.product.compositions.map((comp) => (
+                      <Text
+                        key={comp.id}
+                        style={{
+                          textAlign: 'center',
+                          color: '#4B5563',
+                          fontSize: 7,
+                        }}
+                      >
+                        {
+                          calculateTotalQuantity(
+                            item.product.quantity,
+                            adaptCompositionForDisplayUtils(comp),
+                          ).formatted
+                        }
+                      </Text>
+                    ))}
+                </View>
 
                 {/* Colunas financeiras - apenas para não-produção */}
                 {!isProduction && printOptions.showUnitValue && (
@@ -800,6 +810,21 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {data.delivery?.clientAddress?.state},{' '}
                   {data.delivery?.clientAddress?.zipCode}.
                 </Text>
+                {isProduction && data.delivery?.supplier?.notes && (
+                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                    {data.delivery.supplier.notes}
+                  </Text>
+                )}
+                {isProduction && data.delivery?.supplier?.financialNotes && (
+                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                    {data.delivery.supplier.financialNotes}
+                  </Text>
+                )}
+                {isProduction && data.delivery?.notes && (
+                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                    {data.delivery.notes}
+                  </Text>
+                )}
               </View>
             )}
 
@@ -820,6 +845,20 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     <Text>
                       Até {data.payment?.totalInstallments}x no pedido
                     </Text>
+                    {data.payment?.description && (
+                      <Text
+                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
+                      >
+                        {data.payment.description}
+                      </Text>
+                    )}
+                    {data.client?.financialNotes && (
+                      <Text
+                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
+                      >
+                        {data.client.financialNotes}
+                      </Text>
+                    )}
                   </>
                 ) : (
                   // Exibição genérica quando showPaymentDelivery está desativo
@@ -835,6 +874,20 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       Valores podem sofrer acréscimo conforme forma de
                       pagamento.
                     </Text>
+                    {data.payment?.description && (
+                      <Text
+                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
+                      >
+                        {data.payment.description}
+                      </Text>
+                    )}
+                    {data.client?.financialNotes && (
+                      <Text
+                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
+                      >
+                        {data.client.financialNotes}
+                      </Text>
+                    )}
                   </>
                 )}
               </View>
