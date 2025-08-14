@@ -75,9 +75,7 @@ export function ApproveQuotation({ data }: Props) {
       success: () => {
         return 'Orçamento aprovado'
       },
-      error:
-        // 'Erro ao aprovar orçamento. Certifique-se de que as condições de pagamento estão configuradas corretamente.',
-        'Erro ao aprovar orçamento.',
+      error: 'Erro ao aprovar orçamento.',
     })
   }
 

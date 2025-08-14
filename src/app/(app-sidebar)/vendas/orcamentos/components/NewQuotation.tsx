@@ -1,9 +1,12 @@
 'use client'
 
-// React
+// Libs
 import { useEffect } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQueryClient } from '@tanstack/react-query'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
-// UI
+// Components
 import {
   Dialog,
   DialogBody,
@@ -14,8 +17,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-
-// Components
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import NewClientTriggerButton from './NewClientTriggerButton'
@@ -35,64 +36,21 @@ import {
 } from '@tabler/icons-react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
-// Third-party Imports
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
+// Consts
+import { serviceOptions } from '@/consts/quotations'
 
+// Hooks
+import { useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
-import { useSeller } from '@/hooks/queries/useSeller'
 import { useSerie } from '@/hooks/queries/useSerie'
-import { QuotationType } from '@/types/sales/quotation'
-import { createItemNew, updateItemNew } from '@/actions/_cruds'
-import { QuotationFormType, quotationSchema } from './schema'
+import { useSeller } from '@/hooks/queries/useSeller'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
-import { QUOTATION_DATA_QUERY_KEY } from '../[quotationId]/components/Quotation'
+// Types
+import type { QuotationType } from '@/types/sales/quotation'
+import { type QuotationFormType, quotationSchema } from './schema'
 
-const serviceOptions = [
-  { value: 'direct', label: 'Venda Direta' },
-  {
-    value: 'email',
-    label: 'E-mail',
-  },
-  {
-    value: 'phone',
-    label: 'Telefone',
-  },
-  {
-    value: 'whatsapp',
-    label: 'WhatsApp',
-  },
-  {
-    value: 'instagram',
-    label: 'Instagram',
-  },
-  {
-    value: 'facebook',
-    label: 'Facebook',
-  },
-  {
-    value: 'linkedin',
-    label: 'LinkedIn',
-  },
-  {
-    value: 'telegram',
-    label: 'Telegram',
-  },
-  {
-    value: 'twitter',
-    label: 'Twitter',
-  },
-  {
-    value: 'youtube',
-    label: 'YouTube',
-  },
-  {
-    value: 'other',
-    label: 'Outro',
-  },
-]
+import { QUOTATION_DATA_QUERY_KEY } from '../[quotationId]/components/Quotation'
 
 interface Props {
   editMode?: boolean

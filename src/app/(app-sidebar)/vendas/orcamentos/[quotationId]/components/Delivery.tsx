@@ -99,7 +99,10 @@ export function QuotationDelivery({ quotationData }: Props) {
                   text={formatCurrencyToBrl(Number(data?.value)) || 'R$ 0,00'}
                 />
               </DetailCardRowItem>
-              <DetailCardRowItem showSeparator={false} className="pb-4">
+              <DetailCardRowItem
+                showSeparator={false}
+                className="pb-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1 whitespace-pre-line"
+              >
                 <TextSupportingText
                   supporting="Observações"
                   text={data?.notes}
