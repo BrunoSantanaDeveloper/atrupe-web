@@ -400,6 +400,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               open={openDialog === 'view'}
               setOpen={setOpenDialog}
               rowData={installment}
+              transactionData={rowData}
               type={rowData?.type}
             />
           </>

@@ -328,6 +328,7 @@ export function TransactionDetailsDialog({
                   open={openDialog === 'view'}
                   setOpen={setOpenDialog}
                   rowData={installment}
+                  transactionData={rowData}
                   type={type}
                   transactionDialogOpen={handleOpenChange}
                 />

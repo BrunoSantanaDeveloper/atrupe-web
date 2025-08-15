@@ -20,19 +20,23 @@ import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { IconThumbUp } from '@tabler/icons-react'
 
 // Types
-import type { InstallmentType } from '@/types/financial/financialFlow'
+import type {
+  InstallmentType,
+  TransactionListType,
+} from '@/types/financial/financialFlow'
 
 // Actions
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
 
 // Utils
-import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatCurrencyToBrl, truncateString } from '@/lib/utils'
 
 interface Props {
   open: boolean
   setOpen: (value: string) => void
   rowData?: InstallmentType
+  transactionData?: TransactionListType
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
 }
@@ -41,6 +45,7 @@ export function ViewPaymentDialog({
   type,
   open,
   rowData,
+  transactionData,
   setOpen,
   transactionDialogOpen,
 }: Props) {
@@ -52,15 +57,21 @@ export function ViewPaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
+  const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <DialogTitle>Pagamento</DialogTitle>
+            <div>
+              <DialogTitle className="mb-1">
+                {type === 'payable' ? 'Pagamento' : 'Recebimento'}
+              </DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
           <DetailCardRowItem className="lg:grid-cols-3 px-0">

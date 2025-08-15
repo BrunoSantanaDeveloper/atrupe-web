@@ -305,6 +305,7 @@ export function PayrollMovement({ data }: Props) {
         open={openDialog === 'view'}
         setOpen={setOpenDialog}
         rowData={installment}
+        transactionData={rowData}
         type="payable"
       />
     </>

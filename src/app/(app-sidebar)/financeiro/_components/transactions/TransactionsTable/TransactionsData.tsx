@@ -355,6 +355,7 @@ export function TransactionsData({ type, searchParams }: Props) {
             <ViewPaymentDialog
               open={openDialog === 'view'}
               setOpen={setOpenDialog}
+              transactionData={rowData}
               rowData={installment}
               type={type}
             />
