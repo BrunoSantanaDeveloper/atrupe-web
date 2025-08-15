@@ -48,7 +48,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, useFieldArray } from 'react-hook-form'
 
 // Lib
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
 
 // Third-party
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -186,6 +186,8 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
     }
   }
 
+  const description = `${rowData?.client?.name || rowData?.supplier?.name} - ${truncateString(40, rowData?.description)}`
+
   return (
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -193,13 +195,13 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <DialogHeader>
-                <DialogTitle>
-                  <div className="flex items-center gap-4">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
-                    <span>Editar parcelas</span>
+                <div className="flex items-center gap-4">
+                  <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
+                  <div>
+                    <DialogTitle className="mb-1">Editar parcelas</DialogTitle>
+                    <DialogDescription>{description}</DialogDescription>
                   </div>
-                </DialogTitle>
-                <DialogDescription hidden></DialogDescription>
+                </div>
               </DialogHeader>
               <div className="flex flex-wrap">
                 <DialogBody className="w-full">

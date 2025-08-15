@@ -103,15 +103,19 @@ export function TransactionDetailsDialog({
 
   const data: TransactionDetailsType = installmentData?.data
 
+  const description = `${rowData?.client?.name || rowData?.supplier?.name} - ${truncateString(40, rowData?.description)}`
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-            <DialogTitle>Movimentação</DialogTitle>
+            <div>
+              <DialogTitle className="mb-1">Movimentação</DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
