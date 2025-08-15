@@ -45,6 +45,10 @@ import { updateItemNew } from '@/actions/_cruds'
 import { useEffect } from 'react'
 import { truncateString } from '@/lib/utils'
 
+// Hooks
+import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useBankAccount } from '@/hooks/queries/useBankAccount'
+
 interface Props {
   open: boolean
   setOpen: (value: string) => void
@@ -70,6 +74,15 @@ export function CompensateDialog({
 
   const queryClient = useQueryClient()
 
+  const paymentMethodId = watch('paymentMethodId')
+  const bankId = watch('bankId')
+
+  const { data: banks } = useBankFilterMethod(paymentMethodId || '')
+  const { data: bankAccounts } = useBankAccount({
+    filters: { bankId: bankId || undefined },
+    isBankRequired: true,
+  })
+
   useEffect(() => {
     if (!rowData || !open) {
       reset({})
@@ -82,19 +95,38 @@ export function CompensateDialog({
         : undefined,
       compensateDate: new Date(),
       paymentMethodId: rowData?.paymentMethod?.id || '',
-      bankId: rowData?.bank?.id || '',
-      bankAccountId: rowData?.bankAccount?.id || '',
+      bankId: '',
+      bankAccountId: '',
       totalValue: rowData?.value || 0,
       amount: rowData?.paidValue || 0,
     })
+  }, [open, rowData, reset])
 
-    const timeoutId = setTimeout(() => {
-      setValue('bankAccountId', rowData?.bankAccount?.id || '')
-    }, 2000)
+  // Seleciona automaticamente o banco quando há método de pagamento e bancos disponíveis
+  useEffect(() => {
+    if (banks && banks.length > 0 && paymentMethodId && !bankId) {
+      const defaultBank = rowData?.bank?.id
+        ? banks.find((bank) => bank.id === rowData.bank?.id)
+        : banks[0]
 
-    return () => clearTimeout(timeoutId)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, rowData])
+      if (defaultBank) {
+        setValue('bankId', defaultBank.id)
+      }
+    }
+  }, [banks, paymentMethodId, setValue, bankId, rowData?.bank?.id])
+
+  // Seleciona automaticamente a conta quando há banco e contas disponíveis
+  useEffect(() => {
+    if (bankAccounts && bankAccounts.length > 0 && bankId) {
+      const defaultAccount = rowData?.bankAccount?.id
+        ? bankAccounts.find((account) => account.id === rowData.bankAccount?.id)
+        : bankAccounts[0]
+
+      if (defaultAccount) {
+        setValue('bankAccountId', defaultAccount.id)
+      }
+    }
+  }, [bankAccounts, bankId, setValue, rowData?.bankAccount?.id])
 
   const onSubmit = async (data: FormType) => {
     if (!rowData?.id || !type) return

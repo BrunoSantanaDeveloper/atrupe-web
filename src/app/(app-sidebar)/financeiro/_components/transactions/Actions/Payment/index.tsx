@@ -1,5 +1,5 @@
 // React
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -104,24 +104,40 @@ export function PaymentDialog({
   // Se há diferença, determina se os campos de centro de custos são obrigatórios
   const hasDifference = difference !== 0
 
-  useEffect(() => {
-    reset({
-      paidDate: new Date(),
-      paymentMethodId: rowData?.paymentMethod?.id || '',
-      bankId: '',
-      bankAccountId: '',
-      totalValue: rowData?.value || 0,
-      amount: rowData?.value || 0,
-      differenceNatureId: '',
-      differenceCategoryId: '',
-    })
-  }, [rowData, reset])
+  // Calcula o tipo da diferença atual
+  const differenceType = useMemo(() => {
+    if (difference === 0) return null
+    return (type === 'payable' && difference > 0) ||
+      (type === 'receivable' && difference < 0)
+      ? 'payable'
+      : 'receivable'
+  }, [difference, type])
+
+  // Ref para rastrear o tipo anterior da diferença
+  const previousDifferenceTypeRef = useRef<string | null>(null)
 
   useEffect(() => {
-    if (banks && banks.length > 0 && paymentMethodId) {
+    if (open) {
+      reset({
+        paidDate: new Date(),
+        paymentMethodId: rowData?.paymentMethod?.id || '',
+        bankId: '',
+        bankAccountId: '',
+        totalValue: rowData?.value || 0,
+        amount: rowData?.value || 0,
+        differenceNatureId: '',
+        differenceCategoryId: '',
+      })
+      // Reset do ref quando modal abre
+      previousDifferenceTypeRef.current = null
+    }
+  }, [open, rowData, reset])
+
+  useEffect(() => {
+    if (banks && banks.length > 0 && paymentMethodId && !bankId) {
       setValue('bankId', banks[0].id)
     }
-  }, [banks, paymentMethodId, setValue])
+  }, [banks, paymentMethodId, setValue, bankId])
 
   useEffect(() => {
     if (bankAccounts && bankAccounts.length > 0 && bankId) {
@@ -133,6 +149,19 @@ export function PaymentDialog({
   useEffect(() => {
     setValue('differenceCategoryId', '')
   }, [differenceNatureId, setValue])
+
+  // Limpa natureza e categoria quando o tipo da diferença muda (receita/despesa)
+  useEffect(() => {
+    if (
+      previousDifferenceTypeRef.current !== null &&
+      previousDifferenceTypeRef.current !== differenceType &&
+      differenceType !== null
+    ) {
+      setValue('differenceNatureId', '')
+      setValue('differenceCategoryId', '')
+    }
+    previousDifferenceTypeRef.current = differenceType
+  }, [differenceType, setValue])
 
   const onSubmit = async (data: FormType) => {
     // Se há diferença, validar se os campos necessários foram preenchidos
@@ -257,14 +286,20 @@ export function PaymentDialog({
                   <div
                     className={cn(
                       'flex justify-between gap-5 rounded-lg p-3 mb-4',
-                      difference < 0
+                      (type === 'payable' && difference > 0) ||
+                        (type === 'receivable' && difference < 0)
                         ? 'bg-error-200 text-error-900'
                         : 'bg-success-200 text-success-900',
                     )}
                   >
                     <div className="flex items-center gap-2">
                       <FeaturedIcon
-                        variant={difference < 0 ? 'errorLight' : 'successLight'}
+                        variant={
+                          (type === 'payable' && difference > 0) ||
+                          (type === 'receivable' && difference < 0)
+                            ? 'errorLight'
+                            : 'successLight'
+                        }
                         size="xs"
                         Icon={IconCornerRightDown}
                       />
@@ -282,7 +317,12 @@ export function PaymentDialog({
                       name="differenceNatureId"
                       label="Natureza"
                       width="flex-[1_0_250px]"
-                      type={difference < 0 ? 'payable' : 'receivable'}
+                      type={
+                        (type === 'payable' && difference > 0) ||
+                        (type === 'receivable' && difference < 0)
+                          ? 'payable'
+                          : 'receivable'
+                      }
                     />
                     <SelectTransactionCategoryField
                       name="differenceCategoryId"
