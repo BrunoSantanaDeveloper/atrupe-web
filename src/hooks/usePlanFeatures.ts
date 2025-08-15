@@ -68,6 +68,8 @@ export function usePlanFeatures() {
 
   const canShowQuotationItemDetails = () => hasFeature('pdf_show_item_details')
 
+  const canCreatePaymentDifference = () => hasFeature('payment_difference')
+
   return {
     planName,
     hasFeature,
@@ -89,5 +91,6 @@ export function usePlanFeatures() {
     canManageDeliverySchedule,
     canManageMultipleCompanies,
     canShowQuotationItemDetails,
+    canCreatePaymentDifference,
   }
 }

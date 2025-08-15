@@ -51,8 +51,10 @@ import type {
 import { updateItemNew } from '@/actions/_cruds'
 
 // Hooks
-import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useAlertDialog } from '@/store/useAlertDialog'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
+import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
 
 // Lib
 import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
@@ -82,6 +84,10 @@ export function PaymentDialog({
   const { watch, reset, handleSubmit, formState, setValue } = form
 
   const queryClient = useQueryClient()
+
+  const alertDialog = useAlertDialog()
+
+  const { canCreatePaymentDifference } = usePlanFeatures()
 
   const paymentMethodId = watch('paymentMethodId')
   const bankId = watch('bankId')
@@ -163,31 +169,25 @@ export function PaymentDialog({
     previousDifferenceTypeRef.current = differenceType
   }, [differenceType, setValue])
 
-  const onSubmit = async (data: FormType) => {
-    // Se há diferença, validar se os campos necessários foram preenchidos
-    if (
-      hasDifference &&
-      (!data.differenceNatureId || !data.differenceCategoryId)
-    ) {
-      toast.error('Selecione a natureza e categoria para a diferença')
-      return
-    }
+  const paymentLabel = type === 'payable' ? 'Valor pago' : 'Valor recebido'
 
+  const submitPayment = async (data: FormType) => {
     delete data.totalValue
     delete data.bankId
 
-    // Adicionar dados da diferença se necessário
+    // Adicionar dados da diferença se necessário (apenas se tem feature)
     const submitData = {
       ...data,
-      ...(hasDifference && {
-        difference,
-        differenceNatureId: data.differenceNatureId,
-        differenceCategoryId: data.differenceCategoryId,
-      }),
+      ...(hasDifference &&
+        canCreatePaymentDifference() && {
+          difference,
+          differenceNatureId: data.differenceNatureId,
+          differenceCategoryId: data.differenceCategoryId,
+        }),
     }
 
-    // Remover campos de diferença se não há diferença
-    if (!hasDifference) {
+    // Remover campos de diferença se não há diferença ou não tem feature
+    if (!hasDifference || !canCreatePaymentDifference()) {
       delete submitData.differenceNatureId
       delete submitData.differenceCategoryId
     }
@@ -205,6 +205,37 @@ export function PaymentDialog({
     } else {
       toast.error(response.message)
     }
+  }
+
+  const onSubmit = async (data: FormType) => {
+    if (hasDifference && !canCreatePaymentDifference()) {
+      const confirmed = await alertDialog.open({
+        title: 'Alterar valor?',
+        description: `O ${paymentLabel.toLowerCase()} é diferente do valor da parcela. Deseja alterar o valor da movimentação?`,
+        cancelLabel: 'Voltar',
+        confirmLabel: 'Alterar',
+        confirmVariant: 'default',
+        toastMsg: {
+          loading: `Aguarde...`,
+          success: `Valor alterado!`,
+          error: `Erro ao processar pagamento.`,
+        },
+      })
+
+      if (!confirmed) return
+    }
+
+    // Se há diferença e tem feature, validar se os campos necessários foram preenchidos
+    if (
+      hasDifference &&
+      canCreatePaymentDifference() &&
+      (!data.differenceNatureId || !data.differenceCategoryId)
+    ) {
+      toast.error('Selecione a natureza e categoria para a diferença')
+      return
+    }
+
+    await submitPayment(data)
   }
 
   const handlePrintReceipt = () => {
@@ -285,7 +316,7 @@ export function PaymentDialog({
                 <div className="w-full p-4 border rounded-lg bg-gray-50">
                   <div
                     className={cn(
-                      'flex justify-between gap-5 rounded-lg p-3 mb-4',
+                      'flex justify-between gap-5 rounded-lg p-3',
                       (type === 'payable' && difference > 0) ||
                         (type === 'receivable' && difference < 0)
                         ? 'bg-error-200 text-error-900'
@@ -310,27 +341,31 @@ export function PaymentDialog({
                     </p>
                   </div>
 
-                  <Separator className="my-5" />
+                  {canCreatePaymentDifference() && (
+                    <>
+                      <Separator className="my-5" />
 
-                  <div className="flex flex-wrap gap-4">
-                    <SelectTransactionNatureField
-                      name="differenceNatureId"
-                      label="Natureza"
-                      width="flex-[1_0_250px]"
-                      type={
-                        (type === 'payable' && difference > 0) ||
-                        (type === 'receivable' && difference < 0)
-                          ? 'payable'
-                          : 'receivable'
-                      }
-                    />
-                    <SelectTransactionCategoryField
-                      name="differenceCategoryId"
-                      label="Categoria"
-                      width="flex-[1_0_250px]"
-                      natureId={differenceNatureId}
-                    />
-                  </div>
+                      <div className="flex flex-wrap gap-4">
+                        <SelectTransactionNatureField
+                          name="differenceNatureId"
+                          label="Natureza"
+                          width="flex-[1_0_250px]"
+                          type={
+                            (type === 'payable' && difference > 0) ||
+                            (type === 'receivable' && difference < 0)
+                              ? 'payable'
+                              : 'receivable'
+                          }
+                        />
+                        <SelectTransactionCategoryField
+                          name="differenceCategoryId"
+                          label="Categoria"
+                          width="flex-[1_0_250px]"
+                          natureId={differenceNatureId}
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </form>
