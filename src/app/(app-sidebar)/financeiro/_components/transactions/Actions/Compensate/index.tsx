@@ -33,13 +33,17 @@ import { useQueryClient } from '@tanstack/react-query'
 import { IconCircleCheck, IconThumbUp } from '@tabler/icons-react'
 
 // Types
-import type { InstallmentType } from '@/types/financial/financialFlow'
+import type {
+  InstallmentType,
+  TransactionListType,
+} from '@/types/financial/financialFlow'
 
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
 
 // Utils
 import { useEffect } from 'react'
+import { truncateString } from '@/lib/utils'
 
 interface Props {
   open: boolean
@@ -47,12 +51,14 @@ interface Props {
   rowData?: InstallmentType
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
+  transactionData?: TransactionListType
 }
 
 export function CompensateDialog({
   type,
   open,
   rowData,
+  transactionData,
   setOpen,
   transactionDialogOpen,
 }: Props) {
@@ -117,15 +123,21 @@ export function CompensateDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
+  const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <DialogTitle>Pagamento</DialogTitle>
+            <div>
+              <DialogTitle className="mb-1">
+                {type === 'payable' ? 'Pagamento' : 'Recebimento'}
+              </DialogTitle>
+              <DialogDescription>{description}</DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
@@ -177,7 +189,7 @@ export function CompensateDialog({
               <FormBrlInput
                 name="amount"
                 placeholder="0,00"
-                label="Valor pago"
+                label={type === 'payable' ? 'Valor pago' : 'Valor recebido'}
                 startAdornment={<>R$</>}
                 width="flex-[1_0_250px]"
                 disabled

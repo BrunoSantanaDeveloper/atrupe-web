@@ -312,6 +312,7 @@ export function TransactionDetailsDialog({
                   open={openDialog === 'payment'}
                   setOpen={setOpenDialog}
                   rowData={installment}
+                  transactionData={rowData}
                   type={type}
                   transactionDialogOpen={handleOpenChange}
                 />
@@ -319,6 +320,7 @@ export function TransactionDetailsDialog({
                   open={openDialog === 'compensate'}
                   setOpen={setOpenDialog}
                   rowData={installment}
+                  transactionData={rowData}
                   type={type}
                   transactionDialogOpen={handleOpenChange}
                 />

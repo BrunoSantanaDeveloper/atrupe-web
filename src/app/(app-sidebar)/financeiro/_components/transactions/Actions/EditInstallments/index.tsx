@@ -405,7 +405,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                       {formatCurrencyToBrl(data?.totalPaid)}
                     </p>
                     <p className="text-sm font-medium text-gray-700">
-                      Valor pago
+                      {type === 'payable' ? 'Valor pago' : 'Valor recebido'}
                     </p>
                   </div>
                 </div>

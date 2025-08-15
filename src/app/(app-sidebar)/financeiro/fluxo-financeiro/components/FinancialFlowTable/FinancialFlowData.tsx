@@ -386,13 +386,14 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               open={openDialog === 'payment'}
               setOpen={setOpenDialog}
               rowData={installment}
-              type={rowData?.type}
               transactionData={rowData}
+              type={rowData?.type}
             />
             <CompensateDialog
               open={openDialog === 'compensate'}
               setOpen={setOpenDialog}
               rowData={installment}
+              transactionData={rowData}
               type={rowData?.type}
             />
             <ViewPaymentDialog

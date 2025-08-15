@@ -291,12 +291,14 @@ export function PayrollMovement({ data }: Props) {
         open={openDialog === 'payment'}
         setOpen={setOpenDialog}
         rowData={installment}
+        transactionData={rowData}
         type="payable"
       />
       <CompensateDialog
         open={openDialog === 'compensate'}
         setOpen={setOpenDialog}
         rowData={installment}
+        transactionData={rowData}
         type="payable"
       />
       <ViewPaymentDialog

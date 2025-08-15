@@ -186,8 +186,6 @@ export function PaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
-  console.log(transactionData)
-
   const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
 
   return (
@@ -248,7 +246,7 @@ export function PaymentDialog({
               <FormBrlInput
                 name="amount"
                 placeholder="0,00"
-                label="Valor pago"
+                label={type === 'payable' ? 'Valor pago' : 'Valor recebido'}
                 startAdornment={<>R$</>}
                 width="flex-[1_0_250px]"
               />
