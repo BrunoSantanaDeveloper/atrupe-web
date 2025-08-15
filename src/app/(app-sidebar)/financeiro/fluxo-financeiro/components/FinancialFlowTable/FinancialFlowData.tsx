@@ -387,6 +387,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               setOpen={setOpenDialog}
               rowData={installment}
               type={rowData?.type}
+              transactionData={rowData}
             />
             <CompensateDialog
               open={openDialog === 'compensate'}
