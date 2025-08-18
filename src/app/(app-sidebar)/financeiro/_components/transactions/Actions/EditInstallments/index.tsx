@@ -190,19 +190,19 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent className="sm:max-w-[950px]">
+          <DialogHeader>
+            <div className="flex items-center gap-4">
+              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
+              <div className="min-w-0">
+                <DialogTitle className="mb-1">Editar parcelas</DialogTitle>
+                <DialogDescription className="truncate">
+                  {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-              <DialogHeader>
-                <div className="flex items-center gap-4">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
-                  <div className="min-w-0 flex-1">
-                    <DialogTitle className="mb-1">Editar parcelas</DialogTitle>
-                    <DialogDescription className="truncate">
-                      {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
               <div className="flex flex-wrap">
                 <DialogBody className="w-full">
                   {isLoading ? (
