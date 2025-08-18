@@ -1,4 +1,4 @@
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 interface ITransactionNature {
@@ -13,12 +13,11 @@ async function fetchData(
 ): Promise<ITransactionNature[]> {
   if (!type) return []
 
-  const data = await getDataOld({
-    route: 'accountsPlanRoute',
-    customPath: `/natures/${type}`,
+  const data = await getData({
+    route: `/financial/nature/natures/${type}`,
     perPage: '999999',
   })
-  return data
+  return data.data
 }
 
 export function useTransactionNature(type?: 'receivable' | 'payable') {

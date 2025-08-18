@@ -30,9 +30,19 @@ export function SelectTransactionNatureField<T extends FieldValues>({
   const options = useMemo(() => {
     if (!Array.isArray(transactionNatures)) return []
 
-    return transactionNatures.map((nature) => ({
+    const sorted = transactionNatures.sort((a, b) => {
+      const endItems = ['Sócios']
+      const aIsEnd = endItems.includes(a.description)
+      const bIsEnd = endItems.includes(b.description)
+
+      if (aIsEnd && !bIsEnd) return 1
+      if (!aIsEnd && bIsEnd) return -1
+      return 0
+    })
+
+    return sorted.map((nature) => ({
       value: nature.id,
-      label: `${nature.code} - ${nature.description}`,
+      label: nature.description,
     }))
   }, [transactionNatures])
 

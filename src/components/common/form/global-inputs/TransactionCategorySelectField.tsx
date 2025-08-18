@@ -37,7 +37,7 @@ export function SelectTransactionCategoryField<T extends FieldValues>({
 
     return transactionCategories.map((category) => ({
       value: category.id,
-      label: `${category.code} - ${category.description}`,
+      label: category.description,
     }))
   }, [transactionCategories])
 
