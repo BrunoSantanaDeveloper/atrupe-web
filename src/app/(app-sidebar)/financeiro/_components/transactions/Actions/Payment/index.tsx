@@ -199,7 +199,9 @@ export function PaymentDialog({
 
     if (response.success) {
       queryClient.invalidateQueries()
-      toast.success('Pagamento confirmado!')
+      toast.success(
+        `${type === 'payable' ? 'Pagamento confirmado!' : 'Recebimento confirmado!'}`,
+      )
       handleOpenChange(false)
       transactionDialogOpen?.(false)
     } else {
@@ -218,7 +220,7 @@ export function PaymentDialog({
         toastMsg: {
           loading: `Aguarde...`,
           success: `Valor alterado!`,
-          error: `Erro ao processar pagamento.`,
+          error: `Erro ao processar ${type === 'payable' ? 'pagamento' : 'recebimento'}.`,
         },
       })
 
@@ -272,7 +274,11 @@ export function PaymentDialog({
             >
               <FormDatePickerSingle
                 name="paidDate"
-                label="Data do pagamento"
+                label={
+                  type === 'payable'
+                    ? 'Data do pagamento'
+                    : 'Data do recebimento'
+                }
                 width="flex-[1_0_250px]"
               />
               <SelectAvailablePaymentMethodField
@@ -395,7 +401,9 @@ export function PaymentDialog({
               RightIcon={IconCircleCheck}
               isLoading={formState.isSubmitting}
             >
-              Confirmar pagamento
+              {type === 'payable'
+                ? 'Confirmar pagamento'
+                : 'Confirmar recebimento'}
             </Button>
           </div>
         </DialogFooter>

@@ -142,7 +142,9 @@ export function CompensateDialog({
     }
 
     queryClient.invalidateQueries()
-    toast.success('Pagamento confirmado!')
+    toast.success(
+      `${type === 'payable' ? 'Pagamento compensado!' : 'Recebimento compensado!'}`,
+    )
     handleOpenChange(false)
     transactionDialogOpen?.(false)
   }
@@ -181,7 +183,11 @@ export function CompensateDialog({
             >
               <FormDatePickerSingle
                 name="paidDate"
-                label="Data do pagamento"
+                label={
+                  type === 'payable'
+                    ? 'Data do pagamento'
+                    : 'Data do recebimento'
+                }
                 width="flex-[1_0_150px]"
                 disabled
               />
