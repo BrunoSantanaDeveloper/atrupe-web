@@ -107,15 +107,13 @@ export function TransactionDetailsDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-            <div className="min-w-0">
-              <DialogTitle className="mb-1">Movimentação</DialogTitle>
-              <DialogDescription className="truncate">
-                {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
-              </DialogDescription>
+          <DialogTitle>
+            <div className="flex items-center gap-4">
+              <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
+              <span>Movimentação</span>
             </div>
-          </div>
+          </DialogTitle>
+          <DialogDescription className="sr-only"></DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
@@ -295,7 +293,7 @@ export function TransactionDetailsDialog({
             >
               Voltar
             </Button>
-            {rowData?.status === 'CANCELED' && false && (
+            {rowData?.status === 'CANCELED' && (
               <Button type="button" onClick={handleUndoCancel}>
                 Desfazer cancelamento
               </Button>

@@ -61,19 +61,33 @@ export function ViewPaymentDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <div className="min-w-0">
-              <DialogTitle className="mb-1">
-                {type === 'payable' ? 'Pagamento' : 'Recebimento'}
-              </DialogTitle>
-              <DialogDescription className="truncate">
-                {`${transactionData?.client?.name || transactionData?.supplier?.name} - ${transactionData?.description}`}
-              </DialogDescription>
+          <DialogTitle>
+            <div className="flex items-center gap-4">
+              <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
+              {type === 'payable' ? 'Pagamento' : 'Recebimento'}
             </div>
-          </div>
+          </DialogTitle>
+          <DialogDescription className="sr-only"></DialogDescription>
         </DialogHeader>
         <DialogBody>
+          <DetailCardRowItem className="lg:grid-cols-3 px-0">
+            {type === 'receivable' ? (
+              <TextSupportingText
+                supporting="Cliente"
+                text={transactionData?.client?.name}
+              />
+            ) : (
+              <TextSupportingText
+                supporting="Fornecedor"
+                text={transactionData?.supplier?.name}
+              />
+            )}
+            <TextSupportingText
+              containerClassName="lg:col-span-2"
+              supporting="Descrição"
+              text={transactionData?.description}
+            />
+          </DetailCardRowItem>
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             <TextSupportingText
               supporting="Forma de pagamento"
