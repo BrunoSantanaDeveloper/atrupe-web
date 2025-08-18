@@ -46,7 +46,7 @@ import {
 
 // Lib
 import { formatToLocaleDate } from '@/lib/formatDate'
-import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Consts
 import { transactionStatus } from '@/consts/receivables'
@@ -103,17 +103,17 @@ export function TransactionDetailsDialog({
 
   const data: TransactionDetailsType = installmentData?.data
 
-  const description = `${rowData?.client?.name || rowData?.supplier?.name} - ${truncateString(40, rowData?.description)}`
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-            <div>
+            <div className="min-w-0">
               <DialogTitle className="mb-1">Movimentação</DialogTitle>
-              <DialogDescription>{description}</DialogDescription>
+              <DialogDescription className="truncate">
+                {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -132,7 +132,7 @@ export function TransactionDetailsDialog({
             )}
             <TextSupportingText
               supporting="Descrição"
-              text={truncateString(30, rowData?.description)}
+              text={rowData?.description}
             />
             <TextSupportingText supporting="Tipo de NF" text={''} />
           </DetailCardRowItem>

@@ -57,7 +57,7 @@ import { useBankAccount } from '@/hooks/queries/useBankAccount'
 import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
 
 // Lib
-import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 
 interface Props {
@@ -248,19 +248,19 @@ export function PaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
-  const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <div>
+            <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {type === 'payable' ? 'Pagamento' : 'Recebimento'}
               </DialogTitle>
-              <DialogDescription>{description}</DialogDescription>
+              <DialogDescription className="truncate">
+                {`${transactionData?.client?.name || transactionData?.supplier?.name} - ${transactionData?.description}`}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>

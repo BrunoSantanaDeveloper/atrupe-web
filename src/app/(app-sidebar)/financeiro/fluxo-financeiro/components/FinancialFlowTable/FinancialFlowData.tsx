@@ -42,7 +42,7 @@ import { getData } from '@/actions/_cruds'
 
 // Libs
 import { formatToWeekDate } from '@/lib/formatDate'
-import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -60,6 +60,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Consts
 import { transactionStatus } from '@/consts/receivables'
+import { Badge } from '@/components/ui/badge'
 
 interface Props extends SearchParamsType {
   showTotals: boolean
@@ -91,7 +92,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead>Referência</TableHead>
+                  <TableHead className="max-w-96">Referência</TableHead>
                   <TableHead></TableHead>
                   <TableHead>Valor</TableHead>
                   <TableHead>Realizado</TableHead>
@@ -182,16 +183,24 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                     </TableRow>
                     {group?.transactions?.length
                       ? group?.transactions.map((item) => {
-                          const description = `${truncateString(80, item?.description)}`
                           const currentInstallment = item?.currentInstallment
 
                           return (
-                            <TableRow key={item?.id}>
-                              <TableCell>
+                            <TableRow key={item?.id} className="text-nowrap">
+                              <TableCell className="max-w-96">
                                 <p className="font-medium">
                                   {item?.client?.name || item?.supplier?.name}
                                 </p>
-                                <p className="text-gray">{description}</p>
+                                <div className="flex gap-2">
+                                  {item?.status === 'CANCELED' && (
+                                    <Badge size="sm" variant="errorLight">
+                                      Cancelado
+                                    </Badge>
+                                  )}
+                                  <p className="text-gray truncate">
+                                    {item?.description}
+                                  </p>
+                                </div>
                               </TableCell>
                               <TableCell className="text-gray-600">
                                 {`${currentInstallment?.installmentNumber} / ${item?.installmentsQuantity}`}

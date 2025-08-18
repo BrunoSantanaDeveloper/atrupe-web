@@ -33,8 +33,6 @@ import { updateItemNew } from '@/actions/_cruds'
 // Types
 import type { TransactionListType } from '@/types/financial/financialFlow'
 
-import { truncateString } from '@/lib/utils'
-
 interface Props {
   open: boolean
   setOpen: (value: string) => void
@@ -73,17 +71,17 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
     setOpen(openDialog ? 'notes' : '')
   }
 
-  const description = `${rowData?.client?.name || rowData?.supplier?.name} - ${truncateString(40, rowData?.description)}`
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconNotes} />
-            <div>
+            <div className="min-w-0">
               <DialogTitle className="mb-1">Observação</DialogTitle>
-              <DialogDescription>{description}</DialogDescription>
+              <DialogDescription className="truncate">
+                {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>

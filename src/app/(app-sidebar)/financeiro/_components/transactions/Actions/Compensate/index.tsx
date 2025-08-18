@@ -43,7 +43,6 @@ import { updateItemNew } from '@/actions/_cruds'
 
 // Utils
 import { useEffect } from 'react'
-import { truncateString } from '@/lib/utils'
 
 // Hooks
 import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
@@ -157,19 +156,19 @@ export function CompensateDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
-  const description = `${transactionData?.client?.name || transactionData?.supplier?.name} - ${truncateString(40, transactionData?.description)}`
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-            <div>
+            <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {type === 'payable' ? 'Pagamento' : 'Recebimento'}
               </DialogTitle>
-              <DialogDescription>{description}</DialogDescription>
+              <DialogDescription className="truncate">
+                {`${transactionData?.client?.name || transactionData?.supplier?.name} - ${transactionData?.description}`}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
