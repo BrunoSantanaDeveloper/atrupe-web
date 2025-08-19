@@ -603,6 +603,26 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     <Text style={styles.itemTitle}>
                       {item.description || '-'}
                     </Text>
+                    {isProduction && item.technicalDescription && (
+                      <Text
+                        style={[
+                          styles.itemDescription,
+                          { color: '#059669', fontWeight: 'medium' },
+                        ]}
+                      >
+                        {item.technicalDescription}
+                      </Text>
+                    )}
+                    {isProduction && item.notes && (
+                      <Text
+                        style={[
+                          styles.itemDescription,
+                          { color: '#DC6803', fontStyle: 'italic' },
+                        ]}
+                      >
+                        Obs: {item.notes}
+                      </Text>
+                    )}
                     {(isProduction ||
                       (printOptions.showDimensions &&
                         printOptions.showItemsDetails)) &&
@@ -825,6 +845,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {data.delivery.notes}
                   </Text>
                 )}
+              </View>
+            )}
+
+            {/* Seção de Pagamento Auxiliar - apenas para produção */}
+            {isProduction && data.payment?.description && (
+              <View style={{ width: '100%', marginTop: 16 }}>
+                <Text style={styles.sectionTitle}>Condições de Pagamento</Text>
+                <Text style={{ fontSize: 7, color: '#6B7280' }}>
+                  {data.payment.description}
+                </Text>
               </View>
             )}
 
