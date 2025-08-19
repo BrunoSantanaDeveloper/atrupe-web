@@ -332,18 +332,36 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <Text style={styles.companyName}>{data.company?.name}</Text>
             <Text>{maskCnpj(data.company?.cnpj)}</Text>
             <Text>
-              {data.company?.address?.street}, {data.company?.address?.number}
-              {isProduction && `, ${data.company?.address?.neighborhood}`}
+              {[
+                data.company?.address?.street,
+                data.company?.address?.number,
+                isProduction ? data.company?.address?.neighborhood : null,
+              ]
+                .filter(Boolean)
+                .join(', ')}
             </Text>
             {!isProduction && (
               <Text>
-                {data.company?.address?.neighborhood},{' '}
-                {data.company?.address?.city}, {data.company?.address?.state}.
+                {[
+                  data.company?.address?.neighborhood,
+                  data.company?.address?.city,
+                  data.company?.address?.state,
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
+                {data.company?.address?.city || data.company?.address?.state
+                  ? '.'
+                  : ''}
               </Text>
             )}
             {isProduction && (
               <Text>
-                {data.company?.address?.city}, {data.company?.address?.state}.
+                {[data.company?.address?.city, data.company?.address?.state]
+                  .filter(Boolean)
+                  .join(', ')}
+                {data.company?.address?.city || data.company?.address?.state
+                  ? '.'
+                  : ''}
               </Text>
             )}
           </View>
@@ -823,12 +841,20 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
                 <Text>
                   {isProduction ? 'R. ' : ''}
-                  {data.delivery?.clientAddress?.street},{' '}
-                  {data.delivery?.clientAddress?.number},{' '}
-                  {data.delivery?.clientAddress?.neighborhood},{' '}
-                  {data.delivery?.clientAddress?.city} -{' '}
-                  {data.delivery?.clientAddress?.state},{' '}
-                  {data.delivery?.clientAddress?.zipCode}.
+                  {[
+                    data.delivery?.clientAddress?.street,
+                    data.delivery?.clientAddress?.number,
+                    data.delivery?.clientAddress?.neighborhood,
+                    `${data.delivery?.clientAddress?.city}${
+                      data.delivery?.clientAddress?.state
+                        ? ` - ${data.delivery?.clientAddress?.state}`
+                        : ''
+                    }`,
+                    data.delivery?.clientAddress?.zipCode,
+                  ]
+                    .filter(Boolean)
+                    .join(', ')}
+                  .
                 </Text>
                 {isProduction && data.delivery?.supplier?.notes && (
                   <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>

@@ -203,7 +203,7 @@ export function generateFormattedQuantityDetails(
   const unitKind = inferUnitKindFromDimensions(composition)
 
   // let details = `${itemQuantity}x${compositionQty}`
-  let details = `${compositionQty}un `
+  let details = `${compositionQty} un `
 
   switch (unitKind) {
     case 'AREA':

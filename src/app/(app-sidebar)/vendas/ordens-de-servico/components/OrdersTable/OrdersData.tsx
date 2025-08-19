@@ -34,7 +34,7 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld } from '@/actions/_cruds'
 
 // Libs
-import { formatCurrencyToBrl, truncateString } from '@/lib/utils'
+import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
@@ -86,7 +86,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead>Referência</TableHead>
+                  <TableHead className="max-w-96">Referência</TableHead>
                   <TableHead>Valor</TableHead>
                   <TableHead>Vendedor</TableHead>
                   {showCurrentPhase && <TableHead>Fase atual</TableHead>}
@@ -108,10 +108,11 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                       ? group?.orders.map((order) => {
                           const link = `/vendas/ordens-de-servico/${order?.id}`
                           const quotation = order?.quotation
-                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${truncateString(80, quotation?.description)}`
+                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+
                           return (
-                            <TableRow key={order?.id}>
-                              <TableCell>
+                            <TableRow key={order?.id} className="text-nowrap">
+                              <TableCell className="max-w-96">
                                 <p className="font-medium">
                                   {quotation?.client?.name ||
                                     'Cliente não informado'}
@@ -120,7 +121,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                   href={link}
                                   className="text-gray hover:opacity-80 active:opacity-95 transition-opacity"
                                 >
-                                  {description}
+                                  <p className="truncate">{description}</p>
                                 </Link>
                               </TableCell>
                               <TableCell className="text-success-700 text-nowrap">

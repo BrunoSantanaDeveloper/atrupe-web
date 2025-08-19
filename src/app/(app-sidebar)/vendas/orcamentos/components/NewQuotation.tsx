@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogContent,
   DialogDescription,
+  DialogClose,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
@@ -83,22 +84,25 @@ export function NewQuotationModal({
       sellerId: '',
       quickSale: false,
     },
-    values: data
-      ? {
-          companyId: data?.company?.id,
-          clientId: {
-            label: data?.client?.name,
-            value: data?.client?.id,
-          } as unknown as string,
-          contactId: data?.contact?.id || '',
-          description: data?.description,
-          contactType: data?.contactType ?? '',
-          seriesId: data?.serie.id,
-          sellerId: data?.seller?.id,
-          quickSale: data?.quickSale,
-        }
-      : undefined,
   })
+
+  useEffect(() => {
+    if (data && open) {
+      form.reset({
+        companyId: data?.company?.id,
+        clientId: {
+          label: data?.client?.name,
+          value: data?.client?.id,
+        } as unknown as string,
+        contactId: data?.contact?.id || '',
+        description: data?.description,
+        contactType: data?.contactType ?? '',
+        seriesId: data?.serie.id || '',
+        sellerId: data?.seller?.id || '',
+        quickSale: !!data?.quickSale,
+      })
+    }
+  }, [open, data, form])
 
   useEffect(() => {
     if (sellers && session?.user?.employeeId && !editMode) {
@@ -124,53 +128,52 @@ export function NewQuotationModal({
 
   const { handleSubmit } = form
 
-  const handleToggleModal = () => {
-    onOpenChange(false)
-  }
-
-  const handleCloseModal = () => {
-    form.reset()
-    form.clearErrors()
-    onOpenChange(false)
+  const handleToggleModal = (open: boolean) => {
+    if (!open) {
+      form.reset()
+      form.clearErrors()
+    }
+    onOpenChange(open)
   }
 
   const onSubmit = async (formData: QuotationFormType) => {
     if (editMode) {
-      const response = await updateItemNew({
+      const res = await updateItemNew({
         route: `/sale/quotation/${data?.id}`,
         data: formData,
       })
 
-      if (response.success) {
-        toast.success('Orçamento atualizado com sucesso!')
-        queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-        queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-        queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-        handleCloseModal()
-      } else {
-        toast.error(response.message)
+      if (!res.success) {
+        toast.error(res.message)
+        return
       }
-    } else {
-      const response = await createItemNew({
-        route: '/sale/quotation',
-        data: formData,
-      })
 
-      if (response.success) {
-        if (response.data?.id) {
-          window.location.href = `/vendas/orcamentos/${response.data.id}`
-        }
-        handleCloseModal()
-        toast.success('Orçamento criado com sucesso!')
-        queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-        queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-      } else {
-        console.error('error ❌', response.message)
-        toast.error(
-          response.message || 'Erro ao criar orçamento, tente novamente',
-        )
-      }
+      toast.success('Orçamento atualizado com sucesso!')
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+      handleToggleModal(false)
+      return
     }
+
+    const res = await createItemNew({
+      route: '/sale/quotation',
+      data: formData,
+    })
+
+    if (!res.success) {
+      toast.error(res.message || 'Erro ao criar orçamento, tente novamente')
+      return
+    }
+
+    if (res.data?.id) {
+      window.location.href = `/vendas/orcamentos/${res.data.id}`
+    }
+
+    handleToggleModal(false)
+    toast.success('Orçamento criado com sucesso!')
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
   if (editMode && !data) return null
@@ -251,13 +254,24 @@ export function NewQuotationModal({
             {!editMode && <NewClientTriggerButton />}
           </div>
           <div className="space-x-4">
-            <Button
-              type="button"
-              variant="neutralOutline"
-              onClick={handleCloseModal}
-            >
-              Cancelar
-            </Button>
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                type="button"
+                variant="warningLight"
+                onClick={() => {
+                  form.trigger()
+                  console.info(form.getValues())
+                  console.info(form.formState.errors)
+                }}
+              >
+                Teste
+              </Button>
+            )}
+            <DialogClose>
+              <Button type="button" variant="neutralOutline">
+                Cancelar
+              </Button>
+            </DialogClose>
             <Button
               type="submit"
               className="gap-2"

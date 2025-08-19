@@ -34,7 +34,7 @@ export function ClientContactSelect({
   useEffect(() => {
     if (!clientId) {
       setContacts([])
-      form.setValue(name, null)
+      form.setValue(name, '')
       return
     }
 
@@ -44,10 +44,10 @@ export function ClientContactSelect({
           route: `/client/${clientId}/contacts`,
         })
 
-        console.log('response', response)
-
         if (response.success && response.data) {
           setContacts(response.data || [])
+
+          form.setValue(name, response.data[0].id || '')
         } else {
           setContacts([])
         }
@@ -59,8 +59,6 @@ export function ClientContactSelect({
 
     fetchContacts()
   }, [clientId, form, name])
-
-  console.log(contacts)
 
   const options = useMemo(() => {
     return contacts?.map((contact) => ({

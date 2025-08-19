@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconBulb } from '@tabler/icons-react'
+import { IconPackage } from '@tabler/icons-react'
 
 // Types
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
@@ -44,8 +44,8 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[348px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBulb} />
-            <DialogTitle>{rowData?.product?.name}</DialogTitle>
+            <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
+            <DialogTitle>{rowData?.description}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>

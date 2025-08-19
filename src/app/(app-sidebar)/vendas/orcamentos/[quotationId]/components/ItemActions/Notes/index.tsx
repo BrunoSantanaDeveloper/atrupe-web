@@ -1,5 +1,4 @@
 // UI
-import { toast } from 'sonner'
 import {
   Dialog,
   DialogBody,
@@ -21,7 +20,7 @@ import { itemNotesSchema, type ItemNotesType } from './schema'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // Icons
-import { IconBulb, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck, IconPackage } from '@tabler/icons-react'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -64,7 +63,6 @@ export function ItemNotesDialog({ open, setOpen, rowData }: Props) {
       updateItem('quotationRoute', `update-product/${rowData?.id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-      toast.success('Observações salvas!')
       setOpen('')
     },
   })
@@ -82,8 +80,8 @@ export function ItemNotesDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBulb} />
-            <DialogTitle>{rowData?.product?.name}</DialogTitle>
+            <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
+            <DialogTitle>{rowData?.description}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>

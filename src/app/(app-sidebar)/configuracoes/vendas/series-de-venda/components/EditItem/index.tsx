@@ -174,13 +174,13 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                 <FormInput<FormType>
                   type="number"
                   name="proposalValidity"
-                  label="Validade da proposta"
+                  label="Validade da proposta (dias)"
                   width="flex-[1_0_250px]"
                 />
                 <FormInput<FormType>
                   type="number"
                   name="deliveryDeadline"
-                  label="Prazo de entrega"
+                  label="Prazo de entrega (dias)"
                   width="flex-[1_0_250px]"
                 />
                 <FormSwitch<FormType>

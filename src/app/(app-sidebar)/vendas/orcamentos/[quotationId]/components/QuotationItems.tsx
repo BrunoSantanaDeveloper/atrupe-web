@@ -24,7 +24,6 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
@@ -65,10 +64,8 @@ import { useQuotation } from '@/contexts/quotationContext'
 import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 import {
   calculateTotalQuantity,
-  getUnitDisplayCode,
-  generateFormattedQuantityDetails,
-  getInferredUnitCode,
   calculateDisplayUnitValue,
+  generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 
 // Actions
@@ -138,7 +135,7 @@ export function QuotationItems({ data }: Props) {
                       <TableHead className="min-w-[300px]">
                         Referência
                       </TableHead>
-                      <TableHead>Forma</TableHead>
+                      {/* <TableHead>Forma</TableHead> */}
                       <TableHead>Qtd. Item</TableHead>
                       <TableHead>Detalhamento</TableHead>
                       <TableHead>Qtd. Total</TableHead>
@@ -168,9 +165,9 @@ export function QuotationItems({ data }: Props) {
                                 {item?.description || '-'}
                               </AccordionTrigger>
                             </TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                               <Badge variant="blueLight">un</Badge>
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell className="text-sm text-gray">
                               {item?.product?.quantity || 1}
                             </TableCell>
@@ -362,7 +359,7 @@ export function QuotationItems({ data }: Props) {
                                           {composition?.name}
                                         </AccordionContent>
                                       </TableCell>
-                                      <TableCell className="py-0 text-sm text-gray">
+                                      {/* <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
                                           <Badge variant="blueLight">
                                             {composition?.unitOfMeasure
@@ -374,7 +371,7 @@ export function QuotationItems({ data }: Props) {
                                                 )}
                                           </Badge>
                                         </AccordionContent>
-                                      </TableCell>
+                                      </TableCell> */}
                                       <TableCell className="py-0 text-sm text-gray">
                                         <AccordionContent className="py-4">
                                           {item.product.quantity}

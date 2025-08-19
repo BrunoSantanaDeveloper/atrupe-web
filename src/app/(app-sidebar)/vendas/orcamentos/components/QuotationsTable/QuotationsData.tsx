@@ -38,7 +38,7 @@ import type {
 import { getDataOld } from '@/actions/_cruds'
 
 // Libs
-import { truncateString, formatCurrencyToBrl } from '@/lib/utils'
+import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
@@ -120,7 +120,8 @@ export function QuotationsData({
                     {group?.quotations?.length
                       ? group?.quotations.map((quotation) => {
                           const link = `/vendas/orcamentos/${quotation?.id}`
-                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${truncateString(80, quotation?.description)}`
+                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+
                           return (
                             <TableRow key={quotation?.id}>
                               <TableCell>
@@ -130,7 +131,7 @@ export function QuotationsData({
                                 </p>
                                 <Link
                                   href={link}
-                                  className="text-gray hover:opacity-80 active:opacity-95 transition-opacity"
+                                  className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
                                 >
                                   {description} {quotation?.quickSale && '⚡'}
                                 </Link>
