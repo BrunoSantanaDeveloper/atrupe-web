@@ -90,6 +90,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
             <CardContent>
               <DetailCardRowItem
                 showSeparator={false}
+                // showSeparator={!!data?.description}
                 className="pb-4 lg:grid-cols-7"
               >
                 <TextSupportingText
@@ -121,6 +122,17 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                   text={formatCurrencyToBrl(total)}
                 />
               </DetailCardRowItem>
+              {/* {data?.description && (
+                <DetailCardRowItem
+                  showSeparator={false}
+                  className="pb-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1 whitespace-pre-line"
+                >
+                  <TextSupportingText
+                    supporting="Observações"
+                    text={data?.description}
+                  />
+                </DetailCardRowItem>
+              )} */}
             </CardContent>
           </AccordionContent>
         </AccordionItem>

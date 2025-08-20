@@ -7,6 +7,7 @@ export const ordersStatusObj: {
   PENDING: { text: 'Aguardando', variant: 'neutralLight' },
   IN_PRODUCTION: { text: 'Em produção', variant: 'blueLight' },
   COMPLETED: { text: 'Concluida', variant: 'successLight' },
+  DONE: { text: 'Completo', variant: 'successLight' },
   FINISHED: { text: 'Finalizada', variant: 'successLight' },
   CANCELED: { text: 'Cancelada', variant: 'errorLight' },
   DELIVERING: { text: 'Em entrega', variant: 'neutralLight' },
