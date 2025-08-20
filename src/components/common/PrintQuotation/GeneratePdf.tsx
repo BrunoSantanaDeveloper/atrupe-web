@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
   itemInfo: {
     flex: 1,
     marginLeft: 8,
+    gap: 4,
   },
   itemTitle: {
     fontSize: 8,
@@ -453,11 +454,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text>{data.client?.document?.value}</Text>
               <Text>{data.client?.phone}</Text>
               <Text>{data.client?.email}</Text>
-              {isProduction && data.client?.notes && (
+              {/* {isProduction && data.client?.notes && (
                 <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
                   {data.client.notes}
                 </Text>
-              )}
+              )} */}
             </View>
 
             <View style={styles.infoBlock}>
@@ -465,11 +466,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text style={styles.infoBold}>{data.contact?.name}</Text>
               <Text>{data.contact?.phone}</Text>
               <Text>{data.contact?.email}</Text>
-              {isProduction && data.contact?.notes && (
+              {/* {isProduction && data.contact?.notes && (
                 <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
                   {data.contact.notes}
                 </Text>
-              )}
+              )} */}
             </View>
 
             <View style={styles.infoBlockRight}>
@@ -638,7 +639,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           { color: '#DC6803', fontStyle: 'italic' },
                         ]}
                       >
-                        Obs: {item.notes}
+                        {item.notes}
                       </Text>
                     )}
                     {(isProduction ||
@@ -840,10 +841,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <Text>{data.delivery?.supplier?.name}</Text>
                 <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
                 <Text>
-                  {isProduction ? 'R. ' : ''}
                   {[
                     data.delivery?.clientAddress?.street,
                     data.delivery?.clientAddress?.number,
+                    data.delivery?.clientAddress?.complement,
                     data.delivery?.clientAddress?.neighborhood,
                     `${data.delivery?.clientAddress?.city}${
                       data.delivery?.clientAddress?.state
@@ -856,11 +857,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     .join(', ')}
                   .
                 </Text>
-                {isProduction && data.delivery?.supplier?.notes && (
+                {/* {isProduction && data.delivery?.supplier?.notes && (
                   <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
                     {data.delivery.supplier.notes}
                   </Text>
-                )}
+                )} */}
                 {isProduction && data.delivery?.supplier?.financialNotes && (
                   <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
                     {data.delivery.supplier.financialNotes}
@@ -871,16 +872,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {data.delivery.notes}
                   </Text>
                 )}
-              </View>
-            )}
-
-            {/* Seção de Pagamento Auxiliar - apenas para produção */}
-            {isProduction && data.payment?.description && (
-              <View style={{ width: '100%', marginTop: 16 }}>
-                <Text style={styles.sectionTitle}>Condições de Pagamento</Text>
-                <Text style={{ fontSize: 7, color: '#6B7280' }}>
-                  {data.payment.description}
-                </Text>
               </View>
             )}
 
