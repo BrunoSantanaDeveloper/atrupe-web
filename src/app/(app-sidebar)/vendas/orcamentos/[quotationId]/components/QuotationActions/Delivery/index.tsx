@@ -43,7 +43,7 @@ import { cn } from '@/lib/utils'
 import { actionDisabled } from '@/lib/quotation'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -99,8 +99,6 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const clientId = quotationData.client.id
 
-  console.log(quotationData)
-
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -112,6 +110,15 @@ export function DeliveryDialog({ quotationData }: Props) {
       value: deliveryInfo?.value || 0,
       supplierId: deliveryInfo?.supplier?.id || '',
       clientAddressId: deliveryInfo?.clientAddress?.id || '',
+      customAddress: {
+        street: '',
+        number: '',
+        complement: '',
+        neighborhood: '',
+        city: '',
+        state: '',
+        zipCode: '',
+      },
       notes: deliveryInfo?.notes || '',
     },
   })
@@ -122,8 +129,10 @@ export function DeliveryDialog({ quotationData }: Props) {
   const cost = watch('cost')
   const daysAfterApproval = watch('daysAfterApproval')
   const estimatedDate = watch('estimatedDate')
+  const clientAddressId = watch('clientAddressId')
 
   const showSupplierField = deliveryType === 'CARRIER' || cost > 0
+  const showCustomAddressFields = clientAddressId === 'custom'
 
   // Sync estimated date when days after approval changes
   useEffect(() => {
@@ -181,13 +190,16 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: FormType) =>
-      updateItem('deliveryInfoRoute', deliveryInfo.id, data),
+      updateItemNew({ route: `/quotation/delivery/${deliveryInfo.id}`, data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
   })
 
   const onSubmit = async (data: FormType) => {
+    console.log(data)
+    return
+
     if (
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
       !data.supplierId
@@ -275,6 +287,45 @@ export function DeliveryDialog({ quotationData }: Props) {
                 clientId={clientId}
                 placeholder="Selecione o endereço de entrega"
               />
+              {showCustomAddressFields && (
+                <>
+                  <FormInput
+                    name="customAddress.zipCode"
+                    label="CEP"
+                    width="flex-[1_0_120px]"
+                  />
+                  <FormInput
+                    name="customAddress.state"
+                    label="Estado"
+                    width="flex-[1_0_100px]"
+                  />
+                  <FormInput
+                    name="customAddress.city"
+                    label="Cidade"
+                    width="flex-[1_0_150px]"
+                  />
+                  <FormInput
+                    name="customAddress.neighborhood"
+                    label="Bairro"
+                    width="flex-[1_0_150px]"
+                  />
+                  <FormInput
+                    name="customAddress.number"
+                    label="Número"
+                    width="flex-[1_0_100px]"
+                  />
+                  <FormInput
+                    name="customAddress.street"
+                    label="Rua"
+                    width="flex-[2_0_200px]"
+                  />
+                  <FormInput
+                    name="customAddress.complement"
+                    label="Complemento"
+                    width="flex-[1_0_150px]"
+                  />
+                </>
+              )}
               <FormSelect
                 name="modality"
                 label="Modalidade frete"

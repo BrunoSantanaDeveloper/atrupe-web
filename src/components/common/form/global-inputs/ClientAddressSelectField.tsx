@@ -20,11 +20,16 @@ export function ClientAddressSelectField({
 }: Props) {
   const { data: addresses, isLoading } = useClientAddresses({ clientId })
 
-  const options =
-    addresses?.map((address) => ({
+  const options = [
+    ...(addresses?.map((address) => ({
       value: address.id,
       label: `${address.street}, ${address.number} - ${address.neighborhood}, ${address.city}/${address.state}`,
-    })) || []
+    })) || []),
+    {
+      value: 'custom',
+      label: 'Outro (endereço personalizado)',
+    },
+  ]
 
   const isEmpty = !isLoading && options.length === 0
 

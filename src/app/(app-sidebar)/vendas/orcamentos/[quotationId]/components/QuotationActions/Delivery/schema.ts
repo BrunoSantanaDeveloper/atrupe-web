@@ -19,6 +19,17 @@ export const schema = z.object({
   value: z.number(),
   supplierId: z.string().transform((value) => value || null),
   clientAddressId: z.string().optional(),
+  customAddress: z
+    .object({
+      zipCode: z.string().optional(),
+      state: z.string().optional(),
+      city: z.string().optional(),
+      neighborhood: z.string().optional(),
+      street: z.string().optional(),
+      number: z.string().optional(),
+      complement: z.string().optional(),
+    })
+    .optional(),
   notes: z.string().trim(),
 })
 

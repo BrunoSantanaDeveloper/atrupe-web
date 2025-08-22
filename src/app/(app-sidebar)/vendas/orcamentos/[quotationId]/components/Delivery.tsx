@@ -40,8 +40,6 @@ interface Props {
 export function QuotationDelivery({ quotationData }: Props) {
   const data = quotationData?.deliveryInfo
 
-  console.log('AAAAAA', data)
-
   return (
     <Card className="w-full">
       <Accordion type="single" collapsible defaultValue="item-1">

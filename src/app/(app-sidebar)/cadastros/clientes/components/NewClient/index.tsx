@@ -87,7 +87,6 @@ export function NewClientModal({
 
   const transformClientData = (apiData: any): NewClientFormType => {
     if (!apiData) return defaultPersonValues
-    console.log(apiData)
     return {
       type: apiData.type || 'PERSON',
       general: {
@@ -253,8 +252,6 @@ export function NewClientModal({
     if (client?.status !== 'INACTIVE') {
       formData.status = 'ACTIVE'
     }
-
-    console.log(formData)
 
     if (isSubmitting) return
 
