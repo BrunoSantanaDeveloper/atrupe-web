@@ -50,10 +50,11 @@ const options = [
 interface Props {
   rowData?: TransactionDetailsType
   type?: 'receivable' | 'payable'
+  onTransactionCancel?: () => void
 }
 
 export function CancelAlertDialog(props: Props) {
-  const { rowData, type } = props
+  const { rowData, type, onTransactionCancel } = props
 
   const router = useRouter()
 
@@ -77,8 +78,9 @@ export function CancelAlertDialog(props: Props) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Movimentação cancelada!') // TODO : atualizar status no modal
+      toast.success('Movimentação cancelada!')
       router.refresh()
+      onTransactionCancel?.()
     },
   })
 

@@ -53,6 +53,7 @@ import { transactionStatus } from '@/consts/receivables'
 
 import { getItem, createItemNew } from '@/actions/_cruds'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 interface Props {
   open: boolean
@@ -70,6 +71,7 @@ export function TransactionDetailsDialog({
   const [openDialog, setOpenDialog] = useState('')
   const [installment, setInstallment] = useState<InstallmentType>()
   const queryClient = useQueryClient()
+  const alertDialog = useAlertDialog()
 
   const { data: installmentData, isLoading: isLoadingInstallment } = useQuery({
     queryKey: ['installment-details', rowData?.id],
@@ -87,18 +89,24 @@ export function TransactionDetailsDialog({
   const handleUndoCancel = async () => {
     if (!rowData?.id || !type) return
 
-    try {
-      const result = await createItemNew({
-        route: `/financial/${type}/${rowData.id}/undo-cancel`,
-      })
+    await alertDialog.open({
+      title: 'Desfazer cancelamento',
+      description:
+        'Tem certeza que deseja desfazer o cancelamento desta movimentação?',
+      confirmLabel: 'Desfazer cancelamento',
+      cancelLabel: 'Voltar',
+      confirmVariant: 'default',
+      onConfirm: async () => {
+        const result = await createItemNew({
+          route: `/financial/${type}/${rowData.id}/undo-cancel`,
+        })
 
-      if (result.success) {
-        queryClient.invalidateQueries()
-        handleOpenChange(false)
-      }
-    } catch (error) {
-      console.error('Erro ao desfazer cancelamento:', error)
-    }
+        if (result.success) {
+          queryClient.invalidateQueries()
+          handleOpenChange(false)
+        }
+      },
+    })
   }
 
   const data: TransactionDetailsType = installmentData?.data
@@ -300,7 +308,11 @@ export function TransactionDetailsDialog({
             )}
             {open && rowData?.status !== 'CANCELED' && (
               <>
-                <CancelAlertDialog rowData={data} type={type} />
+                <CancelAlertDialog
+                  rowData={data}
+                  type={type}
+                  onTransactionCancel={() => handleOpenChange(false)}
+                />
                 <EditTransactionData
                   rowData={data}
                   type={type}
