@@ -21,7 +21,7 @@ export const schema = z.object({
   clientAddressId: z.string().optional(),
   customAddress: z
     .object({
-      zipCode: z.string().optional(),
+      zipcode: z.string().optional(),
       state: z.string().optional(),
       city: z.string().optional(),
       neighborhood: z.string().optional(),

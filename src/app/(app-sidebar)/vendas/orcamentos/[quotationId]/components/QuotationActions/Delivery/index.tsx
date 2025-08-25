@@ -109,16 +109,22 @@ export function DeliveryDialog({ quotationData }: Props) {
       cost: deliveryInfo?.cost || 0,
       value: deliveryInfo?.value || 0,
       supplierId: deliveryInfo?.supplier?.id || '',
-      clientAddressId: deliveryInfo?.clientAddress?.id || '',
-      customAddress: {
-        street: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zipCode: '',
-      },
+      clientAddressId:
+        deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
+          ? 'custom'
+          : deliveryInfo?.clientAddress?.id || '',
+      customAddress:
+        deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
+          ? {
+              street: deliveryInfo?.clientAddress?.street || '',
+              number: deliveryInfo?.clientAddress?.number || '',
+              complement: deliveryInfo?.clientAddress?.complement || '',
+              neighborhood: deliveryInfo?.clientAddress?.neighborhood || '',
+              city: deliveryInfo?.clientAddress?.city || '',
+              state: deliveryInfo?.clientAddress?.state || '',
+              zipcode: deliveryInfo?.clientAddress?.zipcode || '',
+            }
+          : {},
       notes: deliveryInfo?.notes || '',
     },
   })
@@ -197,8 +203,7 @@ export function DeliveryDialog({ quotationData }: Props) {
   })
 
   const onSubmit = async (data: FormType) => {
-    console.log(data)
-    return
+    console.log('submit:', data)
 
     if (
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
@@ -290,7 +295,7 @@ export function DeliveryDialog({ quotationData }: Props) {
               {showCustomAddressFields && (
                 <>
                   <FormInput
-                    name="customAddress.zipCode"
+                    name="customAddress.zipcode"
                     label="CEP"
                     width="flex-[1_0_120px]"
                   />

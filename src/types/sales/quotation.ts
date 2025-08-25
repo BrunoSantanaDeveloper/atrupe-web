@@ -65,7 +65,14 @@ export type DeliveryInfoType = {
   modality: string
   clientAddress?: {
     id: string
-    name: string
+    street: string
+    number: string
+    complement: string
+    neighborhood: string
+    city: string
+    state: string
+    zipcode: string
+    type: string
   }
 }
 
