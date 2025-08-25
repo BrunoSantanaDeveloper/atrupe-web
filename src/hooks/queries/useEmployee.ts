@@ -1,4 +1,4 @@
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 interface IEmployees {
@@ -7,8 +7,8 @@ interface IEmployees {
 }
 
 async function fetchData(): Promise<IEmployees[]> {
-  const data = await getDataOld({ route: 'sellerProfileEmployeeRoute' })
-  return data
+  const data = await getData({ route: 'employee/list' })
+  return data.data
 }
 
 export function useEmployee() {
@@ -17,5 +17,6 @@ export function useEmployee() {
     queryFn: fetchData,
     staleTime: Infinity,
   })
+  console.log('KKK', data)
   return { data, isError, isLoading }
 }
