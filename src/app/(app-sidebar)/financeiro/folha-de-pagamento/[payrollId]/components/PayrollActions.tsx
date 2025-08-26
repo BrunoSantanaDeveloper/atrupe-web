@@ -16,6 +16,7 @@ import { updateItemNew, getItem } from '@/actions/_cruds'
 
 // Icons
 import {
+  IconRestore,
   IconPrinter,
   IconCircleCheck,
   IconAlertTriangle,
@@ -24,6 +25,7 @@ import {
 // Types
 import { PayrollDetailType, PayrollPdfType } from '@/types/financial/payroll'
 import { useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 
 interface Props {
   data: PayrollDetailType
@@ -33,10 +35,16 @@ export function PayrollActions({ data }: Props) {
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
   const { open: openAlertDialog } = useAlertDialog()
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
 
-  const handleClosePayroll = async () => {
+  const handleTogglePayroll = async () => {
+    const isOpen = data.status === 'OPEN'
+    const newStatus = isOpen ? 'CLOSED' : 'OPEN'
+    const action = isOpen ? 'fechar' : 'abrir'
+    const actionPast = isOpen ? 'fechada' : 'aberta'
+
     await openAlertDialog({
-      title: 'Fechar folha para edições?',
+      title: `${action === 'fechar' ? 'Fechar' : 'Abrir'} folha ${action === 'fechar' ? 'para' : 'para'} edições?`,
       confirmLabel: 'Sim',
       Icon: IconAlertTriangle,
       iconVariant: 'warningBorderedLight',
@@ -45,7 +53,7 @@ export function PayrollActions({ data }: Props) {
           route: '/financial/salary-sheets/toggle',
           data: {
             salarySheetId: data.id,
-            status: 'CLOSED',
+            status: newStatus,
           },
         })
 
@@ -56,9 +64,9 @@ export function PayrollActions({ data }: Props) {
         queryClient.invalidateQueries()
       },
       toastMsg: {
-        loading: 'Fechando folha...',
-        success: 'Folha fechada com sucesso!',
-        error: 'Erro ao fechar folha',
+        loading: `${action === 'fechar' ? 'Fechando' : 'Abrindo'} folha...`,
+        success: `Folha ${actionPast} com sucesso!`,
+        error: `Erro ao ${action} folha`,
       },
     })
   }
@@ -101,16 +109,25 @@ export function PayrollActions({ data }: Props) {
             onClick={() => handleGeneratePDF(data)}
           />
         </PermissionGate>
-        {data?.status === 'OPEN' && (
-          <PermissionGate permissions={['financial:payroll:edit']}>
+        <PermissionGate permissions={['financial:payroll:edit']}>
+          {data.status === 'OPEN' ? (
             <CustomButton
               icon={IconCircleCheck}
               title="Fechar folha"
               iconVariant="successLight"
-              onClick={handleClosePayroll}
+              onClick={handleTogglePayroll}
             />
-          </PermissionGate>
-        )}
+          ) : (
+            session?.user?.role === 'Admin' && (
+              <CustomButton
+                icon={IconRestore}
+                title="Reabrir folha"
+                iconVariant="lightBlueBorderedLight"
+                onClick={handleTogglePayroll}
+              />
+            )
+          )}
+        </PermissionGate>
       </div>
     </>
   )

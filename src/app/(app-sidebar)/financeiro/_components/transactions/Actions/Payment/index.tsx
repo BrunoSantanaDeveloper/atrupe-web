@@ -259,7 +259,7 @@ export function PaymentDialog({
                 {type === 'payable' ? 'Pagamento' : 'Recebimento'}
               </DialogTitle>
               <DialogDescription className="truncate">
-                {`${transactionData?.client?.name || transactionData?.supplier?.name} - ${transactionData?.description}`}
+                {`${transactionData?.client?.name || transactionData?.supplier?.name || ''} - ${transactionData?.description || ''}`}
               </DialogDescription>
             </div>
           </div>

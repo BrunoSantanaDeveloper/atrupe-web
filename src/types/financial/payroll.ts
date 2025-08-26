@@ -22,13 +22,39 @@ export interface PayrollItemType {
   payables: TransactionListType
 }
 
-export interface PayrollMovementType {
+export interface FinancialTransactionType {
   id: string
-  reference: string
-  status: 'COMPLETED' | 'PENDING'
-  dueDate: string
-  completedDate?: string
+  type: 'OUTCOME' | 'INCOME'
   amount: number
+  description: string
+  transactionDate: string
+  reason: string
+  status: 'PENDING' | 'PAID' | 'CANCELED'
+  relatedPayable?: {
+    id: string
+    description: string
+    totalAmount: number
+  }
+  relatedInstallment?: {
+    id: string
+    installmentNumber: number
+    amount: number
+    status: string
+  }
+  cashRegister?: {
+    id: string
+    description: string
+    bankAccount: {
+      id: string
+      name: string
+      bank: {
+        id: string
+        name: string
+        code: string
+      }
+    }
+  } | null
+  createdAt?: string
 }
 
 export interface PayrollDetailType {
@@ -43,7 +69,7 @@ export interface PayrollDetailType {
   }
   items: PayrollItemType[]
   balance: number
-  movements: PayrollMovementType[]
+  financialTransactions: FinancialTransactionType[]
 }
 
 export type PayrollPdfType = {

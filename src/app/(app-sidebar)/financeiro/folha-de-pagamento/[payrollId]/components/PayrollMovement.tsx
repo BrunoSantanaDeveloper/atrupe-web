@@ -32,7 +32,7 @@ import { IconSearch, IconWallet, IconHistory } from '@tabler/icons-react'
 // Types
 import {
   PayrollDetailType,
-  PayrollMovementType,
+  FinancialTransactionType,
 } from '@/types/financial/payroll'
 import type {
   TransactionListType,
@@ -55,64 +55,81 @@ export function PayrollMovement({ data }: Props) {
   const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
 
-  const movementList = data?.movements || []
-  const hasData = movementList.length
+  const transactionList = data?.financialTransactions || []
+  const hasData = transactionList.length
 
-  // Converte PayrollMovementType para TransactionListType
+  // Converte FinancialTransactionType para TransactionListType
   const convertToTransactionData = (
-    movement: PayrollMovementType,
+    transaction: FinancialTransactionType,
   ): TransactionListType => {
+    const isPaid = transaction.status === 'PAID'
     return {
-      id: movement.id,
+      id: transaction.id,
       type: 'payable' as const,
-      totalValue: movement.amount,
-      totalPaid: movement.status === 'COMPLETED' ? movement.amount : 0,
-      description: movement.reference,
+      totalValue: transaction.amount,
+      totalPaid: isPaid ? transaction.amount : 0,
+      description: transaction.description,
       supplier: {
         id: data?.employee?.id || '',
         name: data?.employee?.name || '',
       },
       installmentsQuantity: 1,
       currentInstallment: {
-        id: movement.id,
-        installmentNumber: 1,
-        status: movement.status === 'COMPLETED' ? 'PAID' : 'PENDING',
+        id: transaction.id,
+        installmentNumber:
+          transaction.relatedInstallment?.installmentNumber || 1,
+        status:
+          transaction.relatedInstallment?.status ||
+          transaction.status ||
+          'PENDING',
         paymentMethod: { id: '', name: 'N/A' },
-        bank: { id: '', name: 'N/A' },
-        bankAccount: { id: '', name: 'N/A' },
-        value: movement.amount,
-        amount: movement.amount,
+        bank: {
+          id: transaction.cashRegister?.bankAccount?.bank?.id || '',
+          name: transaction.cashRegister?.bankAccount?.bank?.name || 'N/A',
+        },
+        bankAccount: {
+          id: transaction.cashRegister?.bankAccount?.id || '',
+          name: transaction.cashRegister?.bankAccount?.name || 'N/A',
+        },
+        value: transaction.amount,
+        amount: transaction.amount,
         additionalFee: 0,
-        dueDate: new Date(movement.dueDate),
-        paidValue: movement.status === 'COMPLETED' ? movement.amount : 0,
-        paymentDate: movement.completedDate
-          ? new Date(movement.completedDate)
-          : undefined,
+        dueDate: new Date(transaction.transactionDate),
+        paidValue: isPaid ? transaction.amount : 0,
+        paymentDate: isPaid ? new Date(transaction.transactionDate) : undefined,
       },
-      notes: '',
-      status: movement.status === 'COMPLETED' ? 'PAID' : 'PENDING',
+      notes: transaction.reason || '',
+      status: transaction.status === 'PAID' ? 'PAID' : 'PENDING',
     } as TransactionListType
   }
 
-  // Converte PayrollMovementType para InstallmentType
+  // Converte FinancialTransactionType para InstallmentType
   const convertToInstallmentData = (
-    movement: PayrollMovementType,
+    transaction: FinancialTransactionType,
   ): InstallmentType => {
+    const isPaid = transaction.status === 'PAID'
     return {
-      id: movement.id,
-      installmentNumber: 1,
-      status: movement.status === 'COMPLETED' ? 'PAID' : 'PENDING',
+      id: transaction.id,
+      installmentNumber: transaction.relatedInstallment?.installmentNumber || 1,
+      status:
+        transaction.relatedInstallment?.status ||
+        transaction.status ||
+        'PENDING',
       paymentMethod: { id: '', name: 'N/A' },
-      bank: { id: '', name: 'N/A' },
-      bankAccount: { id: '', name: 'N/A' },
-      value: movement.amount,
-      amount: movement.amount,
+      bank: {
+        id: transaction.cashRegister?.bankAccount?.bank?.id || '',
+        name: transaction.cashRegister?.bankAccount?.bank?.name || 'N/A',
+      },
+      bankAccount: {
+        id: transaction.cashRegister?.bankAccount?.id || '',
+        name: transaction.cashRegister?.bankAccount?.name || 'N/A',
+      },
+      value: transaction.amount,
+      amount: transaction.amount,
       additionalFee: 0,
-      dueDate: new Date(movement.dueDate),
-      paidValue: movement.status === 'COMPLETED' ? movement.amount : 0,
-      paymentDate: movement.completedDate
-        ? new Date(movement.completedDate)
-        : undefined,
+      dueDate: new Date(transaction.transactionDate),
+      paidValue: isPaid ? transaction.amount : 0,
+      paymentDate: isPaid ? new Date(transaction.transactionDate) : undefined,
     } as InstallmentType
   }
 
@@ -141,21 +158,25 @@ export function PayrollMovement({ data }: Props) {
             </TableHeader>
             <TableBody className="[&_tr:last-child]:border-b">
               {hasData ? (
-                movementList.map((item) => {
+                transactionList.map((item) => {
                   return (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <div className="font-medium">{item.reference}</div>
+                        <div className="font-medium">{item.description}</div>
                         <div className="text-sm text-gray-600">
-                          163 - Folha 11/24 - Salário
+                          {item.reason}
                         </div>
                       </TableCell>
                       <TableCell>
                         <Badge
-                          variant={financialFlowStatusObj[item.status].variant}
+                          variant={
+                            financialFlowStatusObj[item.status]?.variant ||
+                            'neutral'
+                          }
                           status
                         >
-                          {financialFlowStatusObj[item.status].text}
+                          {financialFlowStatusObj[item.status]?.text ||
+                            item.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -163,16 +184,30 @@ export function PayrollMovement({ data }: Props) {
                           {formatCurrencyToBrl(item.amount)}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {item.dueDate || '00/00/0000'}
+                          {new Date(item.transactionDate).toLocaleDateString(
+                            'pt-BR',
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="text-gray-600">-</div>
-                        <div className="text-sm text-gray-600">-</div>
+                        <div className="text-gray-600">
+                          {item.status === 'PAID'
+                            ? formatCurrencyToBrl(item.amount)
+                            : '-'}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          {item.status === 'PAID'
+                            ? new Date(item.transactionDate).toLocaleDateString(
+                                'pt-BR',
+                              )
+                            : '-'}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">
-                          {formatCurrencyToBrl(item.amount)}
+                          {item.status === 'PENDING'
+                            ? formatCurrencyToBrl(item.amount)
+                            : '-'}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -211,28 +246,24 @@ export function PayrollMovement({ data }: Props) {
                                 Icon={
                                   transactionStatus[
                                     convertToInstallmentData(item)?.status ||
-                                      'UNKNOWN'
+                                      'PENDING'
                                   ]?.icon
                                 }
                                 tooltip={
                                   transactionStatus[
                                     convertToInstallmentData(item)?.status ||
-                                      'UNKNOWN'
+                                      'PENDING'
                                   ]?.tooltip
                                 }
                                 variant={
                                   transactionStatus[
                                     convertToInstallmentData(item)?.status ||
-                                      'UNKNOWN'
+                                      'PENDING'
                                   ]?.button
                                 }
                                 onClick={() => {
                                   const currentInstallment =
                                     convertToInstallmentData(item)
-
-                                  if (currentInstallment?.status === 'CANCELED')
-                                    return
-
                                   setRowData(convertToTransactionData(item))
                                   setInstallment(currentInstallment)
 
@@ -240,17 +271,11 @@ export function PayrollMovement({ data }: Props) {
                                     case 'PENDING':
                                       setOpenDialog('payment')
                                       break
-                                    case 'PROVISIONED':
-                                      setOpenDialog('compensate')
-                                      break
                                     case 'PAID':
                                       setOpenDialog('view')
                                       break
-                                    case 'OVERDUE':
-                                      setOpenDialog('payment')
-                                      break
                                     default:
-                                      setOpenDialog('')
+                                      setOpenDialog('view')
                                       break
                                   }
                                 }}
