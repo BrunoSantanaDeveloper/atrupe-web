@@ -239,6 +239,17 @@ const styles = StyleSheet.create({
     right: 16,
     fontSize: 8,
   },
+  watermark: {
+    position: 'absolute',
+    top: '30%',
+    left: '30%',
+    transform: 'translate(-50%, -50%) rotate(-45deg)',
+    fontSize: 100,
+    color: '#E5E7EB',
+    opacity: 0.3,
+    fontWeight: 'bold',
+    zIndex: 1,
+  },
   infoDate: {
     display: 'flex',
     flexDirection: 'row',
@@ -314,10 +325,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   // O PDF sempre usa os valores corretos calculados
 
   const isProduction = type === 'production'
+  const showWatermark = data.quotation?.status === 'OPEN'
 
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        {/* Marca d'água - apenas se status for OPEN */}
+        {showWatermark && (
+          <Text style={styles.watermark} fixed>
+            ABERTO
+          </Text>
+        )}
+
         {/* Cabeçalho */}
         <View style={styles.header} fixed>
           <View style={{ width: '35%' }}>

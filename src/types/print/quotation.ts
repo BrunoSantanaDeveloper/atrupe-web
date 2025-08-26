@@ -64,6 +64,7 @@ type SellerType = {
 
 // Tipo para status do orçamento
 type QuotationStatusType =
+  | 'OPEN'
   | 'DRAFT'
   | 'PENDING'
   | 'APPROVED'
