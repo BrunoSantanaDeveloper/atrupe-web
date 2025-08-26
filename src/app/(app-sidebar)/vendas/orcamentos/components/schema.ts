@@ -12,7 +12,7 @@ export const quotationSchema = z.object({
       message: 'Selecione um cliente',
     })
     .transform((value) => value!.value),
-  contactId: z.string().min(1, { message: 'Selecione um responsável' }),
+  contactId: z.string(),
   description: z.string(),
   contactType: z.string(),
   seriesId: z.string().min(1, { message: 'Selecione uma série' }),
