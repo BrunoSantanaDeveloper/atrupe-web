@@ -865,7 +865,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     data.delivery?.clientAddress?.number,
                     data.delivery?.clientAddress?.complement,
                     data.delivery?.clientAddress?.neighborhood,
-                    `${data.delivery?.clientAddress?.city}${
+                    `${data.delivery?.clientAddress?.city || ''}${
                       data.delivery?.clientAddress?.state
                         ? ` - ${data.delivery?.clientAddress?.state}`
                         : ''

@@ -176,7 +176,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
         </AlertDialogContent>
       </AlertDialog>
       <PrintQuotationDialog
-        type="order"
+        type="quotation"
         quotationId={data?.id}
         open={openPrint}
         onOpenChange={setOpenPrint}
