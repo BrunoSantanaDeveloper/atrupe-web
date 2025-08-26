@@ -29,9 +29,9 @@ export function ClientSelector({
       label={label}
       width={width}
       placeholder={placeholder}
-      route="clientRoute"
+      route="/client"
       icon={User}
-      minChars={3}
+      minChars={1}
       emptyMessage="Nenhum cliente encontrado"
       loadingMessage="Buscando clientes..."
       additionalOnChange={additionalOnChange}

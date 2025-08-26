@@ -29,7 +29,7 @@ export function SupplierSelector({
       label={label}
       width={width}
       placeholder={placeholder}
-      route="supplierRoute"
+      route="/supplier"
       icon={User}
       minChars={3}
       emptyMessage="Nenhum fornecedor encontrado"

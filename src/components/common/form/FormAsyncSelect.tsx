@@ -14,7 +14,7 @@ import { User, ChevronDown, LucideIcon } from 'lucide-react'
 
 // Lib
 import { cn } from '@/lib/utils'
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import AsyncSelect from 'react-select/async'
 import { useFormContext } from 'react-hook-form'
 import { MenuProps, GroupBase } from 'react-select'
@@ -33,16 +33,43 @@ export interface SelectOption {
   [key: string]: unknown // Permite dados adicionais
 }
 
+// Função para buscar os últimos itens modificados (defaultOptions)
+async function fetchRecentEntities<T extends EntityBase>(
+  route: string,
+  mapFunction?: (entity: T) => SelectOption,
+): Promise<SelectOption[]> {
+  const data = await getData({
+    route,
+    filters: {
+      orderBy: 'updatedAt',
+      orderDirection: 'desc',
+      limit: '5',
+    },
+  })
+
+  // Função padrão de mapeamento
+  const defaultMapper = (entity: T): SelectOption => ({
+    value: entity.id,
+    label: entity.name,
+  })
+
+  // Usar a função de mapeamento personalizada ou a padrão
+  const mapper = mapFunction || defaultMapper
+
+  return (data?.data || []).map(mapper)
+}
+
 // Função genérica para buscar entidades
 async function fetchEntities<T extends EntityBase>(
   query: string,
   route: string,
   filterField: string = 'search',
+  minChars: number,
   mapFunction?: (entity: T) => SelectOption,
 ): Promise<SelectOption[]> {
-  if (query.length < 3) return []
+  if (query.length < minChars) return []
 
-  const data = await getDataOld({
+  const data = await getData({
     route,
     filters: { [filterField]: query },
     perPage: '9999',
@@ -123,7 +150,10 @@ export function FormAsyncSelect<T extends EntityBase = EntityBase>({
 
   // Função de carregamento específica para esta instância
   const loadOptions = (query: string) =>
-    fetchEntities<T>(query, route, filterField, mapFunction)
+    fetchEntities<T>(query, route, filterField, minChars, mapFunction)
+
+  // Função para carregar opções padrão (últimos itens modificados)
+  const loadDefaultOptions = () => fetchRecentEntities<T>(route, mapFunction)
 
   // Handler para processar mudanças no select
   const handleChange = (selectedOption: SelectOption | null) => {
@@ -145,8 +175,12 @@ export function FormAsyncSelect<T extends EntityBase = EntityBase>({
               <Icon className="size-5 text-gray absolute z-10 left-3.5 top-1/2 -translate-y-1/2" />
               <AsyncSelect
                 cacheOptions
-                defaultOptions
-                loadOptions={loadOptions}
+                defaultOptions={true}
+                loadOptions={(query) =>
+                  query.length >= minChars
+                    ? loadOptions(query)
+                    : loadDefaultOptions()
+                }
                 noOptionsMessage={({ inputValue }) =>
                   inputValue.length < minChars
                     ? `Digite pelo menos ${minChars} caracteres`

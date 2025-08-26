@@ -41,7 +41,7 @@ export function EmployeeSelector({
       label={label}
       width={width}
       placeholder={placeholder}
-      route="employeeRoute"
+      route="/employee"
       icon={UserRound}
       minChars={2}
       emptyMessage="Nenhum funcionário encontrado"
