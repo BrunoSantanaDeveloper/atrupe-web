@@ -52,10 +52,7 @@ const NewClientForm = () => {
   const onSubmit: SubmitHandler<NewClientFormType> = async (data) => {
     const res = await createItemNew({
       route: '/client/pre-register',
-      data: {
-        ...data,
-        // categoryId: null,
-      },
+      data,
     })
 
     if (!res.success) {
@@ -107,9 +104,13 @@ const NewClientForm = () => {
           >
             Cancelar
           </Button>
-          <Button type="submit" className="gap-2" form="new-client">
+          <Button
+            type="submit"
+            className="gap-2"
+            form="new-client"
+            RightIcon={ArrowRight}
+          >
             Cadastrar cliente
-            <ArrowRight />
           </Button>
         </div>
       </DialogFooter>

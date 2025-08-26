@@ -24,30 +24,6 @@ export function PersonFields() {
   return (
     <>
       <FormInput
-        name="name"
-        label="Nome"
-        placeholder="Digite aqui"
-        width="w-full"
-      />
-      <FormInput
-        name="email"
-        label="Email"
-        placeholder="Digite aqui"
-        width="flex-[1_0_300px]"
-      />
-      <FormSelect
-        name="category"
-        label="Categoria"
-        width="flex-[1_0_300px]"
-        options={categoryOptions}
-      />
-      <FormInput
-        name="rg"
-        label="RG"
-        placeholder="Digite aqui"
-        width="flex-[1_0_300px]"
-      />
-      <FormInput
         name="cpf"
         label="CPF"
         placeholder="Digite aqui"
@@ -71,6 +47,30 @@ export function PersonFields() {
             clearErrors('cpf')
           }
         }}
+      />
+      <FormInput
+        name="name"
+        label="Nome"
+        placeholder="Digite aqui"
+        width="flex-[1_0_300px]"
+      />
+      <FormInput
+        name="email"
+        label="Email"
+        placeholder="Digite aqui"
+        width="flex-[1_0_300px]"
+      />
+      <FormSelect
+        name="category"
+        label="Categoria"
+        width="flex-[1_0_300px]"
+        options={categoryOptions}
+      />
+      <FormInput
+        name="rg"
+        label="RG"
+        placeholder="Digite aqui"
+        width="flex-[1_0_300px]"
       />
 
       <FormInput

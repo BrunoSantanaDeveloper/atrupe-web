@@ -40,9 +40,6 @@ import { IconReportMoney, IconExternalLink } from '@tabler/icons-react'
 import { quotationsStatusObj } from '@/consts/quotations'
 import { QuotationProvider } from '@/contexts/quotationContext'
 
-// Hooks
-import { usePreviousUrl } from '@/hooks/usePreviousUrl'
-
 interface Props {
   id: string
 }
@@ -50,9 +47,10 @@ interface Props {
 export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
 
 export function Quotation({ id }: Props) {
+  const previousUrl = '/vendas/orcamentos' // TODO : incluir parametros de busca anteriores se houver
+
   const isMutating = useIsMutating()
   const isFetching = useIsFetching()
-  const previousUrl = usePreviousUrl('/vendas/orcamentos')
 
   const { data, isLoading, error } = useQuery<QuotationType>({
     staleTime: Infinity,
