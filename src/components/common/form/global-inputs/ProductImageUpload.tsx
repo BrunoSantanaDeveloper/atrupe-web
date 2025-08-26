@@ -98,6 +98,7 @@ export function ProductImageUpload<T extends FieldValues>({
             </Badge> */}
             <div></div>
             <Button
+              type="button"
               size="iconSm"
               variant="neutralLight"
               onClick={handleDelete}

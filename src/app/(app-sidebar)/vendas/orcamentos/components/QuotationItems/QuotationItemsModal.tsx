@@ -1,5 +1,5 @@
 // React
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useEffect } from 'react'
 
 // UI
 import {
@@ -45,7 +45,14 @@ const QuotationItemsModal: React.FC<{
 }> = ({ open }) => {
   const { quotationData, updateQuotationData, openChangeModal } = useQuotation()
 
-  const { data: productsList } = useProducts()
+  const { data: productsList, refetch } = useProducts()
+
+  // Revalida a lista de produtos sempre que o modal abrir
+  useEffect(() => {
+    if (open) {
+      refetch()
+    }
+  }, [open, refetch])
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),

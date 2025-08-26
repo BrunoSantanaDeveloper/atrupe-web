@@ -55,11 +55,11 @@ async function fetchData(filters: ProductFilters): Promise<IProduct[]> {
 export function useProducts(filters: ProductFilters = {}) {
   const queryKey = [QUERY_KEY, PER_PAGE, filters]
 
-  const { data, isError, isLoading } = useQuery({
+  const { data, isError, isLoading, refetch } = useQuery({
     queryKey,
     queryFn: () => fetchData(filters),
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000, // 5 minutos
   })
 
-  return { data, isError, isLoading }
+  return { data, isError, isLoading, refetch }
 }

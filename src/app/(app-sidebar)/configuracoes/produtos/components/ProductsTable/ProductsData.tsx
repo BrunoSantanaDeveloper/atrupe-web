@@ -67,7 +67,12 @@ export function ProductsData({ searchParams, tabs }: Props) {
     mutationFn: (productId: string) =>
       deleteItemNew({ route: `/product/${productId}` }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-list'] })
+      queryClient.invalidateQueries({
+        queryKey: ['product-list'],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['product-totals'],
+      })
     },
   })
 
@@ -75,7 +80,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const hasData = products.length
 
   const handleDisableProduct = async (id: string) => {
-    const result = await alertDialog.open({
+    await alertDialog.open({
       title: 'Desativar produto',
       description: 'Tem certeza de que deseja desativar este produto?',
       confirmLabel: 'Desativar',
@@ -92,10 +97,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
         error: 'Erro ao desativar produto',
       },
     })
-
-    if (!result) {
-      // Ação cancelada pelo usuário
-    }
   }
 
   return (
