@@ -9,7 +9,7 @@ import { HandleValidateCpf } from '@/lib/validateDocs'
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 
 export function PersonFields() {
-  const { watch, setValue, setError, setFocus, clearErrors } =
+  const { watch, setValue, setError, clearErrors } =
     useFormContext<NewClientFormType>()
 
   const { data } = useCheckCpf(watch('cpf')?.replace(/\D/g, '') ?? '')
@@ -32,19 +32,19 @@ export function PersonFields() {
         additionalOnChange={(value) => {
           const cpf = maskCpf(String(value).replace(/\D/g, ''))
           setValue('cpf', cpf)
+          clearErrors('cpf')
         }}
         onBlur={(e) => {
-          const cpfIsValid = HandleValidateCpf(
-            String(e?.target?.value).replace(/\D/g, ''),
-          )
+          const value = e.target.value
+          if (value.length < 1) return
+
+          const cpfIsValid = HandleValidateCpf(String(value).replace(/\D/g, ''))
+
           if (!cpfIsValid) {
             setError('cpf', {
               type: 'custom',
               message: 'CPF inválido',
             })
-            setFocus('cpf')
-          } else {
-            clearErrors('cpf')
           }
         }}
       />

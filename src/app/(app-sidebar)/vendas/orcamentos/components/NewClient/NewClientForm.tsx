@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
+import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowRight } from 'lucide-react'
 
@@ -31,7 +31,13 @@ const NewClientForm = () => {
     defaultValues: defaultPersonValues,
   })
 
-  const { handleSubmit, watch, setValue, reset } = form
+  const {
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = form
 
   const handleToggleModal = () => {
     handleCleanForm()
@@ -49,7 +55,7 @@ const NewClientForm = () => {
     reset(type === 'PERSON' ? defaultPersonValues : defaultCompanyValues)
   }
 
-  const onSubmit: SubmitHandler<NewClientFormType> = async (data) => {
+  const onSubmit = async (data: NewClientFormType) => {
     const res = await createItemNew({
       route: '/client/pre-register',
       data,
@@ -77,14 +83,14 @@ const NewClientForm = () => {
           >
             <div className="w-full h-16 flex gap-4">
               <ClientTypeToggleButton
-                key={'person'}
+                key="person"
                 title="Pessoa Física"
                 onClick={() => handleUpdateClient('PERSON')}
                 isActive={clientType === 'PERSON'}
                 Icon={IconUser}
               />
               <ClientTypeToggleButton
-                key={'company'}
+                key="company"
                 title="Pessoa Jurídica"
                 onClick={() => handleUpdateClient('COMPANY')}
                 isActive={clientType === 'COMPANY'}
@@ -109,6 +115,8 @@ const NewClientForm = () => {
             className="gap-2"
             form="new-client"
             RightIcon={ArrowRight}
+            disabled={Object.keys(errors).length > 0}
+            // disabled={!form.formState.isValid}
           >
             Cadastrar cliente
           </Button>

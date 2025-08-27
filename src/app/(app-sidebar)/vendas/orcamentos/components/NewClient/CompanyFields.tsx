@@ -8,7 +8,7 @@ import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 import { useMemo } from 'react'
 
 export function CompanyFields() {
-  const { setValue, setError, setFocus, clearErrors } =
+  const { setValue, setError, clearErrors } =
     useFormContext<NewClientFormType>()
 
   const { data: categoryData } = useCategoryOptions('CLIENT')
@@ -25,19 +25,21 @@ export function CompanyFields() {
         additionalOnChange={(value) => {
           const cnpj = maskCnpj(String(value).replace(/\D/g, ''))
           setValue('cnpj', cnpj)
+          clearErrors('cnpj')
         }}
         onBlur={(e) => {
+          const value = e.target.value
+          if (value.length < 1) return
+
           const cnpjIsValid = HandleValidateCnpj(
-            String(e?.target?.value).replace(/\D/g, ''),
+            String(value).replace(/\D/g, ''),
           )
+
           if (!cnpjIsValid) {
             setError('cnpj', {
               type: 'custom',
               message: 'CNPJ inválido',
             })
-            setFocus('cnpj')
-          } else {
-            clearErrors('cnpj')
           }
         }}
         placeholder="Digite aqui"

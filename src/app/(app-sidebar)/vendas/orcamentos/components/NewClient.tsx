@@ -31,7 +31,9 @@ function NewClient() {
               <span>Novo cliente</span>
             </div>
           </DialogTitle>
-          <DialogDescription hidden></DialogDescription>
+          <DialogDescription className="sr-only">
+            Pré-cadastro de cliente
+          </DialogDescription>
         </DialogHeader>
         <NewClientForm />
       </DialogContent>
