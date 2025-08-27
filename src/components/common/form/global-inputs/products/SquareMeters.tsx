@@ -58,11 +58,11 @@ export function SquareMeters<T extends FieldValues>({
   const getDecimalPlaces = (unit: string) => {
     switch (unit) {
       case 'MM':
-        return 0
+        return 3
       case 'CM':
         return 1
       case 'MT':
-        return 3
+        return 0
       default:
         return 3
     }
@@ -121,7 +121,7 @@ export function SquareMeters<T extends FieldValues>({
                     placeholder={placeholder || label}
                     value={
                       totalAreaInSquareMeters
-                        ? `${totalAreaInSquareMeters.toFixed(getDecimalPlaces(defaultUnit))} ${getUnitAbbreviation(defaultUnit)}²`
+                        ? `${totalAreaInSquareMeters.toFixed(getDecimalPlaces(defaultUnit)).replace('.', ',')} m²`
                         : ''
                     }
                     className={className}
