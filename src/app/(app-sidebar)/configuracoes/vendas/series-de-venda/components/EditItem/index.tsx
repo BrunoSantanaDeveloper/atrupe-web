@@ -29,13 +29,13 @@ import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { schema, type FormType } from './schema'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import type { SaleSeriesType } from '@/types/settings/saleSeries'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 import { DisableSerieAlertDialog } from './DisableSerie'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -59,6 +59,14 @@ export const billingOptions = [
   },
 ]
 
+const productionStatusOptions = [
+  { value: 'MANAGE_PRODUCTION', label: 'Gerenciar produção' },
+  {
+    value: 'PRODUCTION_COMPLETED',
+    label: 'Produção concluída',
+  },
+]
+
 interface Props {
   open?: boolean
   setOpen?: (value: string) => void
@@ -68,7 +76,8 @@ interface Props {
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
 
-  const { planName } = usePlanFeatures()
+  const { canBillOnDeliveryAndCheckout, canManageDeliverySchedule } =
+    usePlanFeatures()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -88,24 +97,20 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
   const { handleSubmit, reset } = form
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem('saleSeriesRoute', rowData?.id || '', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      toast.success('Sucesso!')
-      handleOpenChange(false)
-    },
-    onError: (err) => {
-      console.error(err)
-      toast.error('Ocorreu um erro.')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
     delete data.currentBudgetNumber
 
-    await mutation.mutateAsync(data)
+    const res = await updateItemNew({
+      route: `/sale/series/${rowData?.id}`,
+      data,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+    }
+
+    queryClient.invalidateQueries()
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (openDialog: boolean) => {
@@ -113,13 +118,18 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
     reset({})
   }
 
-  const filteredBillingOptions =
-    planName === 'START' || planName === 'TRIAL'
-      ? billingOptions.filter(
-          (option) =>
-            option.value === 'ON_ORDER' || option.value === 'NO_INVOICE',
-        )
-      : billingOptions
+  const filteredBillingOptions = !canBillOnDeliveryAndCheckout()
+    ? billingOptions.filter(
+        (option) =>
+          option.value === 'ON_ORDER' || option.value === 'NO_INVOICE',
+      )
+    : billingOptions
+
+  const filterProductionStatusOptions = !canManageDeliverySchedule()
+    ? productionStatusOptions.filter(
+        (option) => option.value === 'PRODUCTION_COMPLETED',
+      )
+    : productionStatusOptions
 
   return (
     <PermissionGate permissions={['sales_settings:series:edit']}>
@@ -208,13 +218,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   name="productionStatus"
                   label="Status de produção"
                   width="flex-[1_0_250px]"
-                  options={[
-                    { value: 'MANAGE_PRODUCTION', label: 'Gerenciar produção' },
-                    {
-                      value: 'PRODUCTION_COMPLETED',
-                      label: 'Produção concluída',
-                    },
-                  ]}
+                  options={filterProductionStatusOptions}
                 />
               </form>
             </Form>
@@ -235,7 +239,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
               <Button
                 type="submit"
                 form="submit-form"
-                isLoading={mutation.isPending}
+                isLoading={form.formState.isSubmitting}
                 RightIcon={IconCircleCheck}
               >
                 Salvar

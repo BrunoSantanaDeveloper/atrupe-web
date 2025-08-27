@@ -70,6 +70,9 @@ export function usePlanFeatures() {
 
   const canCreatePaymentDifference = () => hasFeature('payment_difference')
 
+  const canBillOnDeliveryAndCheckout = () =>
+    hasFeature('can_bill_on_delivery_and_checkout')
+
   return {
     planName,
     hasFeature,
@@ -92,5 +95,6 @@ export function usePlanFeatures() {
     canManageMultipleCompanies,
     canShowQuotationItemDetails,
     canCreatePaymentDifference,
+    canBillOnDeliveryAndCheckout,
   }
 }
