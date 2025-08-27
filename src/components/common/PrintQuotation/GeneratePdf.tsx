@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
     left: '30%',
     transform: 'translate(-50%, -50%) rotate(-45deg)',
     fontSize: 100,
-    color: '#E5E7EB',
-    opacity: 0.3,
+    color: '#000000',
+    opacity: 0.1,
     fontWeight: 'bold',
     zIndex: 1,
   },
@@ -333,7 +333,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
         {/* Marca d'água - apenas se status for OPEN */}
         {showWatermark && (
           <Text style={styles.watermark} fixed>
-            ABERTO
+            PRÉVIA
           </Text>
         )}
 
