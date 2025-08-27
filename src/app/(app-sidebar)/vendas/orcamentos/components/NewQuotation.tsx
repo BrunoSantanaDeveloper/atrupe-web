@@ -46,6 +46,7 @@ import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useNewClientStore } from '../store/useNewClientStore'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
@@ -69,6 +70,7 @@ export function NewQuotationModal({
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
   const { canManageMultipleCompanies } = usePlanFeatures()
+  const { setOnClientCreated } = useNewClientStore()
 
   const queryClient = useQueryClient()
 
@@ -125,6 +127,17 @@ export function NewQuotationModal({
       }
     }
   }, [series, form, editMode, open])
+
+  // Definir callback para quando cliente for criado
+  useEffect(() => {
+    if (open && !editMode) {
+      setOnClientCreated((newClient) => {
+        form.setValue('clientId', newClient as unknown as string)
+      })
+    } else {
+      setOnClientCreated(undefined)
+    }
+  }, [open, editMode, setOnClientCreated, form])
 
   const { handleSubmit } = form
 

@@ -24,7 +24,7 @@ import { toast } from 'sonner'
 type ClientType = 'PERSON' | 'COMPANY'
 
 const NewClientForm = () => {
-  const { onToggleModalVisibility } = useNewClientStore()
+  const { onToggleModalVisibility, onClientCreated } = useNewClientStore()
 
   const form = useForm<NewClientFormType>({
     resolver: zodResolver(newClientSchema),
@@ -65,6 +65,13 @@ const NewClientForm = () => {
       toast.error(res.message)
       return
     }
+
+    const newClient = {
+      value: res.data.id,
+      label: res.data.name,
+    }
+
+    onClientCreated?.(newClient)
 
     toast.success('Cliente cadastrado com sucesso!')
     handleCleanForm()
