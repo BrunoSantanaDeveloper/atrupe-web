@@ -33,13 +33,13 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 // Icons
 import { IconX, IconAlertCircle } from '@tabler/icons-react'
@@ -67,62 +67,27 @@ export function RejectQuotation({ data }: Props) {
     return reasonList?.find((item) => item.type === 'REJECTION')?.reasons || []
   }, [reasonList])
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      createItem({
-        route: 'quotationRoute',
-        customPath: `/${data.id}/reject`,
-        data: { reasonId: reason },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-    },
-  })
-
-  // Não renderiza se não tiver acesso à funcionalidade
-  // if (!canManageRejectionReasons()) {
-  //   return null
-  // }
-
   const handleReject = async () => {
-    // Se tiver permissão, permite rejeição
-    if (canManageRejectionReasons()) {
-      toast.promise(
-        createItem({
-          route: 'quotationRoute',
-          customPath: `/${data.id}/reject`,
-          data: {},
-        }),
-        {
-          loading: 'Aguarde...',
-          success: () => {
-            queryClient.invalidateQueries({
-              queryKey: [QUOTATION_DATA_QUERY_KEY],
-            })
-            queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-            queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-            return 'Orçamento rejeitado'
-          },
-          error: 'Ocorreu um erro',
-        },
-      )
-      return
+    const requestObj: { route: string; data?: { reasonId: string } } = {
+      route: `/sale/quotation/${data.id}/reject`,
+      data: { reasonId: reason },
     }
 
-    // Lógica normal para full (com motivo)
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Orçamento rejeitado'
-      },
-      error: 'Ocorreu um erro',
-    })
+    if (!reason) delete requestObj.data
+
+    const res = await createItemNew(requestObj)
+
+    if (!res.success) {
+      toast.error(res.message)
+    }
+
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
-  // Se tiver permissão, mostra botão simples sem modal
-  if (canManageRejectionReasons()) {
+  // Se não tiver permissão, mostra botão simples sem modal
+  if (!canManageRejectionReasons()) {
     return (
       <CustomButton
         icon={IconX}
