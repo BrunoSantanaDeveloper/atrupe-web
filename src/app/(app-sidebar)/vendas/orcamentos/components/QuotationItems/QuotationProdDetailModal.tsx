@@ -267,6 +267,11 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     if (!open) reset()
   }
 
+  const canEditValue = product?.allowEditValues || data?.allowEditValues
+
+  const canEditDescription =
+    product?.allowEditDescription || data?.allowEditDescription
+
   async function onSubmit(data: ProductsFormType) {
     // Função auxiliar para omitir campos null/undefined
     // eslint-disable-next-line
@@ -283,13 +288,15 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       productId: data.productId,
       quantity: data.quantity,
       description: data.description,
-      technicalDescription: data.technicalDescription || undefined,
+      technicalDescription: canEditDescription
+        ? data.technicalDescription || undefined
+        : undefined,
       imageUrl: data.imageUrl || undefined,
       items: data?.items?.map((item) =>
         omitNullish({
           id: item.id,
           quantity: item.quantity,
-          unitCost: item.unitCost,
+          unitCost: canEditValue ? item.unitCost : undefined,
           // Remover unitKind - API não atualiza este campo
           // Valores brutos das dimensões - omitir campos null
           width: item.width || undefined,
@@ -470,15 +477,13 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                       />
                       <UnitCostInput
                         name={`items.${index}.unitCost`}
-                        // label={`Valor ${getPriceLabel(item?.unitKind)}`}
                         placeholder="0,00"
                         width="flex-[1_0_130px]"
                         index={index}
-                        disabled={
-                          product?.allowEditValues === false ||
-                          data?.allowEditValues === false
-                        }
+                        disabled={!canEditValue}
                         onHasChanged={() => {
+                          if (!canEditValue) return
+
                           const { total, measurementValue } =
                             calculateSalesValue(index)
                           setValue(`items.${index}.salePrice`, total)
@@ -504,10 +509,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                   name="technicalDescription"
                   label="Descritivo técnico"
                   placeholder="Digite aqui"
-                  disabled={
-                    product?.allowEditDescription === false ||
-                    data?.allowEditDescription === false
-                  }
+                  disabled={!canEditDescription}
                 />
               </div>
             </form>

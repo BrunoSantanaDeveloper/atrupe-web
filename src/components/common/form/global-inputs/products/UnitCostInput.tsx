@@ -289,8 +289,10 @@ export function UnitCostInput({
           placeholder={placeholder}
           className={className}
           startAdornment={<>R$</>}
-          {...props}
+          disabled={props.disabled}
           additionalOnChange={(visualUnitCostInCents) => {
+            if (props.disabled) return
+
             if (visualUnitCostInCents !== null) {
               // Converter valor visual para valor por unidade bruta (já em centavos)
               const rawUnitCostInCents = convertUnitCostToRaw(

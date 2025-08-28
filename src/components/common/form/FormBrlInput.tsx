@@ -70,6 +70,8 @@ export function FormBrlInput<T extends FieldValues>({
               endAdornment={endAdornment}
               value={formatCurrency(field.value || 0)}
               onChange={(e) => {
+                if (props.disabled) return
+
                 const value = e.target.value
                 const parsedValue = parseCurrency(value)
                 field.onChange(parsedValue)
