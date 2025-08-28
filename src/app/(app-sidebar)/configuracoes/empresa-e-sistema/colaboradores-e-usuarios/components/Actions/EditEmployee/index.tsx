@@ -96,7 +96,6 @@ export function EditEmployeeDialog({
     onSuccess: () => {
       queryClient.invalidateQueries()
       handleOpenChange(false)
-      toast.success('Sucesso!')
     },
     onError: (error) => {
       console.error(error)

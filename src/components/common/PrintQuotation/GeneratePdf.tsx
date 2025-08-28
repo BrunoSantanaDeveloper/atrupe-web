@@ -232,6 +232,16 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     paddingTop: 4,
     alignItems: 'center',
+    position: 'relative',
+  },
+  signatureImage: {
+    position: 'absolute',
+    top: -30,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 80,
+    height: 40,
+    objectFit: 'contain',
   },
   pageNumber: {
     position: 'absolute',
@@ -987,6 +997,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </View>
                 <View style={{ width: '33%' }} />
                 <View style={styles.signatureLine}>
+                  {data.quotation?.seller?.signature && (
+                    <PDFImage
+                      src={data.quotation.seller.signature}
+                      style={styles.signatureImage}
+                    />
+                  )}
                   <Text>{data.company?.name}</Text>
                   <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
                 </View>
