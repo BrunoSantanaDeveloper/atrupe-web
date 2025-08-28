@@ -296,7 +296,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
         omitNullish({
           id: item.id,
           quantity: item.quantity,
-          unitCost: canEditValue ? item.unitCost : undefined,
+          unitCost: item.unitCost,
           // Remover unitKind - API não atualiza este campo
           // Valores brutos das dimensões - omitir campos null
           width: item.width || undefined,
