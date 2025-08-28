@@ -111,6 +111,9 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
 
   const { quotationId } = params
 
+  // console.info('PRODUCT: ', product)
+  // console.info('DATA: ', data)
+
   function parseQuotationData(data: QuotationItemType) {
     if (!data) return defaultProductValues
     const newData = {
@@ -125,7 +128,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
           ...item,
           id: item.id ?? null,
           name: item.name ?? null,
-          quantity: item?.originalQuantity ?? null,
+          quantity: item?.quantity ?? null,
           // Usar valores diretos do backend sem recalcular
           salePrice: item?.totalValue ?? null,
           unitCost: item?.unitValue ?? null,
@@ -311,7 +314,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       ),
     })
 
-    console.info('📤 Payload enviado:', newFormData)
+    // console.info('SUBMIT:', newFormData)
 
     if (editMode) {
       const res = await updateItemNew({
