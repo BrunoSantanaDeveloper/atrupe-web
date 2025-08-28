@@ -17,6 +17,5 @@ export function useEmployee() {
     queryFn: fetchData,
     staleTime: Infinity,
   })
-  console.log('KKK', data)
   return { data, isError, isLoading }
 }

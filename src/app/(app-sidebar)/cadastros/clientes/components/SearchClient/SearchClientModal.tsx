@@ -59,7 +59,7 @@ export function SearchClientModal({
   } = form
 
   const handleSubmit = (data: SearchClientFormType) => {
-    console.log('data', data)
+    return data
   }
 
   return (

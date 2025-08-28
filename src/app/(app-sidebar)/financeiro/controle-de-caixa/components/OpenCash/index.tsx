@@ -43,8 +43,6 @@ import type { SearchParamsType } from '@/types/coreTypes'
 interface Props extends SearchParamsType {}
 
 export function OpenCashDialog(props: Props) {
-  console.info('❗', props)
-
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
 
@@ -76,6 +74,7 @@ export function OpenCashDialog(props: Props) {
   }
 
   const onSubmit = (data: FormType) => {
+    console.info('❗', props)
     toast.promise(mutation.mutateAsync(data), {
       loading: 'Aguarde...',
       success: 'Sucesso!',

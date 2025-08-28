@@ -72,9 +72,6 @@ const defaultRoute: { [key: string]: string } = {
   roleRoute: '/role',
   userRoute: '/user',
 
-  // assinaturas e planos
-  planSubscriptionRoute: '/plan/subscription',
-
   sectorRoute: '/sector',
   sectorWithProductsRoute: '/sector/with-products',
   contactRoute: '/contact',

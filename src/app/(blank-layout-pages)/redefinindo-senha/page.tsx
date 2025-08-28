@@ -34,9 +34,7 @@ export default function ResetingPasswordPage() {
   useEffect(() => {
     const sendData = async () => {
       if (processStarted.current || hasRedirected) {
-        console.log(
-          'Processo já iniciado anteriormente, ignorando chamada duplicada',
-        )
+        // Processo já iniciado anteriormente, ignorando chamada duplicada
         return
       }
 
@@ -85,7 +83,7 @@ export default function ResetingPasswordPage() {
     }
 
     if (!hasRedirected) {
-      console.log('Componente montado, iniciando processo')
+      // Componente montado, iniciando processo
       sendData()
     }
   }, [

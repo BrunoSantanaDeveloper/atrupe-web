@@ -7,7 +7,6 @@ import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { useSession } from 'next-auth/react'
 import { useForm, FormProvider } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useToast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 
 // New imports
@@ -23,8 +22,9 @@ import {
 import { Plan, PersonType, StateOption, CityOption } from '@/types/subscription'
 import { adaptPlansToNewFormat } from '@/lib/planAdapter'
 import { planos } from './components/plans'
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 import { IconCoin } from '@tabler/icons-react'
+import { toast } from 'sonner'
 
 export default function ContratarPage() {
   // Convert old plans format to new format - Fix the type assertion
@@ -32,7 +32,6 @@ export default function ContratarPage() {
   const plans: Plan[] = adaptPlansToNewFormat(planos as any)
 
   const { data: session } = useSession()
-  const { toast } = useToast()
   const router = useRouter()
 
   // Form state
@@ -161,11 +160,7 @@ export default function ContratarPage() {
 
   const handleSubmit = async (data: SubscriptionFormData) => {
     if (!selectedPlanId || !session?.company?.id) {
-      toast({
-        variant: 'error', // Fix: change from 'destructive' to 'error'
-        title: 'Erro',
-        description: 'Selecione um plano e garanta que a empresa está logada.',
-      })
+      toast.error('Selecione um plano e garanta que a empresa está logada.')
       return
     }
 
@@ -208,19 +203,17 @@ export default function ContratarPage() {
 
     try {
       // ✅ Usar a estrutura @actions correta
-      const result = await createItem({
-        route: 'planSubscriptionRoute',
-        customPath: `/${selectedPlanId}/${session.company.id}`,
+      const res = await createItemNew({
+        route: `/plan/subscription/${selectedPlanId}/${session.company.id}`,
         data: payload,
       })
 
-      console.log('Resposta da inscrição:', result)
+      if (!res.success) {
+        toast.error(res.message || 'Erro!')
+        return
+      }
 
-      toast({
-        title: 'Sucesso!',
-        description: 'Plano contratado com sucesso.',
-        variant: 'default',
-      })
+      toast.success('Plano contratado com sucesso.')
 
       // Redirecionar para página de ativação
       router.push('/assinatura/ativar/start')
@@ -252,13 +245,7 @@ export default function ContratarPage() {
         }
       }
 
-      console.log('🛑 Detalhes do erro:', err)
-
-      toast({
-        variant: 'error',
-        title: 'Erro na contratação',
-        description: errorMessage,
-      })
+      toast.error(errorMessage)
     } finally {
       setIsLoading(false)
     }

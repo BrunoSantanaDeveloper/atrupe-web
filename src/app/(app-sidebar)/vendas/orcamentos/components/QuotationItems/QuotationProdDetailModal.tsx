@@ -113,7 +113,6 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
 
   function parseQuotationData(data: QuotationItemType) {
     if (!data) return defaultProductValues
-    console.log('🔍 parseQuotationData - dados recebidos:', data)
     const newData = {
       ...data,
       productId: data.id ?? null,
@@ -305,7 +304,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       ),
     })
 
-    console.log('📤 Payload enviado:', newFormData)
+    console.info('📤 Payload enviado:', newFormData)
 
     if (editMode) {
       const res = await updateItemNew({
@@ -530,8 +529,8 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                 variant="outline"
                 onClick={() => {
                   form.trigger()
-                  console.log('Form values:', form.getValues())
-                  console.log('Form errors:', form.formState.errors)
+                  console.info('Form values:', form.getValues())
+                  console.info('Form errors:', form.formState.errors)
                 }}
               >
                 Teste

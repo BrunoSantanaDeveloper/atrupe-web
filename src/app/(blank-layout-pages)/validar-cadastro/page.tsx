@@ -38,9 +38,7 @@ export default function ValidationPage() {
     const sendData = async () => {
       // Evitar execução duplicada
       if (processStarted.current) {
-        console.log(
-          'Processo já iniciado anteriormente, ignorando chamada duplicada',
-        )
+        // Processo já iniciado anteriormente, ignorando chamada duplicada
         return
       }
 
@@ -125,12 +123,11 @@ export default function ValidationPage() {
       }
     }
 
-    // Iniciar envio dos dados
-    console.log('Componente montado, iniciando processo')
+    // Iniciar envio dos dados. Componente montado, iniciando processo
     sendData()
 
     return () => {
-      console.log('Componente desmontado, cancelando operações')
+      // Componente desmontado, cancelando operações
       isMounted = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
