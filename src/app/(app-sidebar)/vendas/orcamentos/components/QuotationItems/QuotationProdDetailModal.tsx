@@ -63,44 +63,6 @@ interface Props {
   data?: QuotationItemType
 }
 
-// Função para inferir o unitKind baseado nas dimensões preenchidas
-function inferUnitKind(composition: {
-  width?: number | null
-  height?: number | null
-  length?: number | null
-  volume?: number | null
-  weight?: number | null
-  distance?: number | null
-  duration?: number | null
-}): string {
-  // Verificar qual dimensão está preenchida (diferente de 0 e null)
-  if (composition.volume && composition.volume > 0) {
-    return 'CAPACITY'
-  }
-  if (composition.length && composition.length > 0) {
-    return 'LENGTH'
-  }
-  if (composition.distance && composition.distance > 0) {
-    return 'DISTANCE'
-  }
-  if (composition.duration && composition.duration > 0) {
-    return 'DURATION'
-  }
-  if (composition.weight && composition.weight > 0) {
-    return 'WEIGHT'
-  }
-  if (
-    composition.width &&
-    composition.width > 0 &&
-    composition.height &&
-    composition.height > 0
-  ) {
-    return 'AREA'
-  }
-
-  return 'UNITY'
-}
-
 // Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
 function calculateRawMeasurement(
   item: {
@@ -151,7 +113,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
 
   function parseQuotationData(data: QuotationItemType) {
     if (!data) return defaultProductValues
-    // console.log('🔍 parseQuotationData - dados recebidos:', data)
+    console.log('🔍 parseQuotationData - dados recebidos:', data)
     const newData = {
       ...data,
       productId: data.id ?? null,
@@ -160,54 +122,23 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       technicalDescription: data.technicalDescription ?? null,
       quantity: data.product.quantity ?? 1,
       items: data?.product?.compositions.map((item) => {
-        // Inferir unitKind baseado nas dimensões preenchidas
-        const inferredUnitKind = inferUnitKind(item)
-
-        // Mapear apenas as dimensões relevantes para o tipo de unidade, outras ficam null
-        const dimensions = {
-          width: null as number | null,
-          height: null as number | null,
-          length: null as number | null,
-          volume: null as number | null,
-          weight: null as number | null,
-          distance: null as number | null,
-          duration: null as number | null,
-        }
-
-        // Setar apenas a dimensão relevante baseada no unitKind
-        switch (inferredUnitKind) {
-          case 'CAPACITY':
-            dimensions.volume = item.volume || null
-            break
-          case 'LENGTH':
-            dimensions.length = item.length || null
-            break
-          case 'DISTANCE':
-            dimensions.distance = item.distance || null
-            break
-          case 'DURATION':
-            dimensions.duration = item.duration || null
-            break
-          case 'WEIGHT':
-            dimensions.weight = item.weight || null
-            break
-          case 'AREA':
-            dimensions.width = item.width || null
-            dimensions.height = item.height || null
-            break
-        }
-
         return {
           ...item,
-          ...dimensions,
           id: item.id ?? null,
           name: item.name ?? null,
           quantity: item?.originalQuantity ?? null,
           // Usar valores diretos do backend sem recalcular
           salePrice: item?.totalValue ?? null,
           unitCost: item?.unitValue ?? null,
-          unitKind: inferredUnitKind ?? null,
-          // Remover measurementValue calculado - usar direto do backend ou calcular em tempo real
+          unitKind: item.unitKind ?? null,
+          // Manter as dimensões originais da API
+          width: item.width || null,
+          height: item.height || null,
+          length: item.length || null,
+          volume: item.volume || null,
+          weight: item.weight || null,
+          distance: item.distance || null,
+          duration: item.duration || null,
         }
       }),
     }

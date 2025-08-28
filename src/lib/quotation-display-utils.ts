@@ -29,6 +29,7 @@ export type MeasurementValues = {
   weight?: number | null
   distance?: number | null
   duration?: number | null
+  unitKind?: string
 }
 
 export type UnitOfMeasure = {
@@ -126,8 +127,8 @@ export function generateQuantityDetails(
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
 
-  // Inferir tipo de unidade baseado nas dimensões preenchidas
-  const unitKind = inferUnitKindFromDimensions(composition)
+  // Usar unitKind da API
+  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
 
   let dimensionDetails = ''
 
@@ -199,8 +200,8 @@ export function generateFormattedQuantityDetails(
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
 
-  // Inferir tipo de unidade baseado nas dimensões preenchidas
-  const unitKind = inferUnitKindFromDimensions(composition)
+  // Usar unitKind da API
+  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
 
   // let details = `${itemQuantity}x${compositionQty}`
   let details = `${compositionQty} un `
@@ -262,27 +263,8 @@ export function generateFormattedQuantityDetails(
  * Obtém o código da unidade inferido das dimensões
  */
 export function getInferredUnitCode(composition: MeasurementValues): string {
-  const unitKind = inferUnitKindFromDimensions(composition)
+  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
   return getUnitCodeFromKind(unitKind)
-}
-
-/**
- * Infere o tipo de unidade baseado nas dimensões preenchidas
- */
-function inferUnitKindFromDimensions(composition: MeasurementValues): string {
-  if (composition.volume && composition.volume > 0) return 'CAPACITY'
-  if (composition.length && composition.length > 0) return 'LENGTH'
-  if (composition.distance && composition.distance > 0) return 'DISTANCE'
-  if (composition.duration && composition.duration > 0) return 'DURATION'
-  if (composition.weight && composition.weight > 0) return 'WEIGHT'
-  if (
-    composition.width &&
-    composition.width > 0 &&
-    composition.height &&
-    composition.height > 0
-  )
-    return 'AREA'
-  return 'UNITY'
 }
 
 /**
@@ -418,19 +400,16 @@ export function calculateTotalQuantity(
   composition: {
     quantity?: number | null
     originalQuantity?: number | null
-    unitOfMeasure?: UnitOfMeasure
+    unitCode?: string
   } & MeasurementValues,
 ): { value: number; unit: string; formatted: string } {
   const baseQuantity = itemQuantity || 1
   const compositionQuantity =
     composition.quantity || composition.originalQuantity || 1
 
-  // Inferir o tipo de unidade baseado nas dimensões se unitOfMeasure não estiver disponível
-  const unitKind =
-    composition.unitOfMeasure?.kind?.toUpperCase() ||
-    inferUnitKindFromDimensions(composition)
-  const unitCode =
-    composition.unitOfMeasure?.code || getUnitCodeFromKind(unitKind)
+  // Usar unitKind da API
+  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
+  const unitCode = composition.unitCode || getUnitCodeFromKind(unitKind)
 
   // Para produtos simples (unity), multiplicar as quantidades
   if (unitKind === 'UNITY' || !unitKind) {
@@ -534,8 +513,8 @@ export function calculateDisplayUnitValue(
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
 
-  // Inferir o tipo de unidade baseado nas dimensões
-  const unitKind = inferUnitKindFromDimensions(composition)
+  // Usar unitKind da API
+  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
 
   switch (unitKind) {
     case 'AREA': {

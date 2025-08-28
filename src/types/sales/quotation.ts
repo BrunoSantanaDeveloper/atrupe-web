@@ -27,6 +27,7 @@ export type QuotationItemType = {
       originalCompositionId: string
       originalQuantity?: number
       name: string
+      unitKind: string
       unitOfMeasure: {
         id: string
         name: string

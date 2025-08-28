@@ -183,13 +183,13 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
         unitCost: item.unitCost,
         salePrice: item.salePrice,
         // ✅ Valores brutos das dimensões (enviados conforme preenchidos pelo usuário)
-        width: item.width ?? null, // mm
-        height: item.height ?? null, // mm
-        length: item.length ?? null, // mm
-        weight: item.weight ?? null, // mg
-        volume: item.volume ?? null, // ml
-        distance: item.distance ?? null, // metros
-        duration: item.duration ?? null, // segundos
+        width: item.unitKind === 'AREA' ? item.width || null : null, // mm
+        height: item.unitKind === 'AREA' ? item.height || null : null, // mm
+        length: item.unitKind === 'LENGTH' ? item.length || null : null, // mm
+        weight: item.unitKind === 'WEIGHT' ? item.weight || null : null, // mg
+        volume: item.unitKind === 'CAPACITY' ? item.volume || null : null, // ml
+        distance: item.unitKind === 'DISTANCE' ? item.distance || null : null, // metros
+        duration: item.unitKind === 'DURATION' ? item.duration || null : null, // segundos
       })),
       productionStages: data?.productionStages?.map((stage) => ({
         id: stage?.id,
