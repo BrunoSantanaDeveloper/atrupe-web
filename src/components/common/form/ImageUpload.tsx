@@ -44,13 +44,10 @@ export function FormImageUpload<T extends FieldValues>({
   const { _formValues } = control
 
   useEffect(() => {
-    if (_formValues.images === undefined) {
-      setUploadedFiles('')
+    if (_formValues[name] && typeof _formValues[name] === 'string') {
+      setUploadedFiles(_formValues[name])
     }
-    return () => {
-      setUploadedFiles('')
-    }
-  }, [_formValues.images, setUploadedFiles])
+  }, [_formValues, name, setUploadedFiles])
 
   return (
     <FormField
@@ -60,7 +57,7 @@ export function FormImageUpload<T extends FieldValues>({
         <FormItem className={cn('w-full', className)}>
           <FormControl>
             <>
-              {!uploadedFiles?.length || !field.value ? (
+              {!uploadedFiles || !field.value ? (
                 <FileUploader
                   multiple={false}
                   maxFileCount={1}
