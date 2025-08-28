@@ -159,6 +159,7 @@ export function UnitCostInput({
   className,
   index,
   onHasChanged,
+  ...props
 }: Props) {
   const { watch, setValue, getValues } = useFormContext()
 
@@ -288,6 +289,7 @@ export function UnitCostInput({
           placeholder={placeholder}
           className={className}
           startAdornment={<>R$</>}
+          {...props}
           additionalOnChange={(visualUnitCostInCents) => {
             if (visualUnitCostInCents !== null) {
               // Converter valor visual para valor por unidade bruta (já em centavos)
