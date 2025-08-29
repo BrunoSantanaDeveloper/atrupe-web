@@ -483,7 +483,8 @@ export type QuotationItemForCalculation = {
  */
 export function calculateQuotationTotals(items: QuotationItemForCalculation[]) {
   // Corrigir valores de desconto inconsistentes primeiro
-  const correctedItems = items.map((item) => correctItemDiscountValues(item))
+  // const correctedItems = items.map((item) => correctItemDiscountValues(item))
+  const correctedItems = items // TEMP: usar dados da API sem "correção"
 
   const subtotal = correctedItems.reduce(
     (sum, item) => sum + item.totalUnitPrice * item.totalQuantity,
@@ -495,7 +496,11 @@ export function calculateQuotationTotals(items: QuotationItemForCalculation[]) {
     0,
   )
 
-  const finalTotal = subtotal - totalDiscount
+  // Para itens com desconto já aplicado em totalUnitPrice, finalTotal = soma dos finalPrice
+  const finalTotal = correctedItems.reduce(
+    (sum, item) => sum + item.finalPrice,
+    0,
+  )
 
   const discountPercentage = calculateTotalDiscountPercentage(
     subtotal,
@@ -513,7 +518,7 @@ export function calculateQuotationTotals(items: QuotationItemForCalculation[]) {
       subtotal: formatCurrencyToBrl(subtotal),
       totalDiscount: formatCurrencyToBrl(totalDiscount),
       finalTotal: formatCurrencyToBrl(finalTotal),
-      discountLabel: `(${discountPercentage}%) -${formatCurrencyToBrl(totalDiscount)}`,
+      discountLabel: formatCurrencyToBrl(totalDiscount),
     },
   }
 }
@@ -680,6 +685,10 @@ export function adaptNewItemsToOldFormat(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return newItems.map((item: any) => {
     try {
+      const quantity = item.product?.quantity || item.totalQuantity || 1
+      const finalValue = item.finalValue || item.finalPrice || 0
+      const totalUnitPrice = finalValue / quantity
+
       return {
         id: item.id || '',
         image: item.image?.url || item.image || '',
@@ -694,10 +703,8 @@ export function adaptNewItemsToOldFormat(
             unitPrice: comp.unitValue || comp.unitPrice || 0,
             totalPrice: comp.totalValue || comp.totalPrice || 0,
           })),
-        totalQuantity: item.product?.quantity || item.totalQuantity || 0,
-        totalUnitPrice:
-          (item.totalValue || item.totalUnitPrice || 0) /
-          (item.product?.quantity || item.totalQuantity || 1),
+        totalQuantity: quantity,
+        totalUnitPrice,
         discount: {
           type: (item.discountType || item.discount?.type || 'VALUE') as
             | 'PERCENT'
