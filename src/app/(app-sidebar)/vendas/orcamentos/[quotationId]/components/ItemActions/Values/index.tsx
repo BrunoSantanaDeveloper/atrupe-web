@@ -33,7 +33,7 @@ import { IconCircleCheck, IconCoin } from '@tabler/icons-react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
@@ -135,7 +135,10 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   // Atualiza os valores no submit
   const mutation = useMutation({
     mutationFn: (body: FormType) =>
-      updateItem('quotationRoute', `update-product/${rowData?.id}`, body),
+      updateItemNew({
+        route: `/sale/quotation/update-product/${rowData?.id}`,
+        data: body,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     },
@@ -151,9 +154,13 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     delete data.finalValue
 
     try {
-      await mutation.mutateAsync(data)
-      toast.success('Valores atualizados!')
-      setOpen('')
+      const result = await mutation.mutateAsync(data)
+      if (result.success) {
+        toast.success('Valores atualizados!')
+        setOpen('')
+      } else {
+        toast.error(result.message || 'Erro ao atualizar os valores!')
+      }
     } catch (error) {
       toast.error('Erro ao atualizar os valores!')
     }
