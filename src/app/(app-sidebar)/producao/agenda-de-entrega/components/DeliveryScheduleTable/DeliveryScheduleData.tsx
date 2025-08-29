@@ -26,6 +26,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -47,11 +48,11 @@ import { cn, truncateString } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
+import { pdf } from '@react-pdf/renderer'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
 // Icons
 import {
-  // IconUserUp,
   IconSearch,
   IconPrinter,
   IconMoneybag,
@@ -59,7 +60,6 @@ import {
   IconRefreshDot,
   IconCircleCheck,
   IconQuestionMark,
-  // IconPackageExport,
   IconCalendarRepeat,
 } from '@tabler/icons-react'
 import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
@@ -70,8 +70,6 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 // Consts
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
-import { pdf } from '@react-pdf/renderer'
-import { toast } from 'sonner'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
