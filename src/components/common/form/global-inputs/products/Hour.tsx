@@ -9,7 +9,7 @@ import {
 import { Input } from '@/components/ui/input'
 
 // Lib Imports
-import { cn, maskTimeWithSeconds } from '@/lib/utils'
+import { cn, maskDuration } from '@/lib/utils'
 import React, { HTMLInputTypeAttribute, useState } from 'react'
 
 // Type Imports
@@ -27,20 +27,33 @@ interface Props<T extends FieldValues>
   onHasChanged?: () => void
 }
 
-// Função para converter segundos em string HH:MM:SS
-function secondsToTimeString(seconds: number): string {
+// Função para converter segundos em string HH:MM ou HH:MM:SS
+function secondsToTimeString(
+  seconds: number,
+  includeSeconds: boolean = false,
+): string {
   if (!seconds || seconds <= 0) return ''
 
   const hours = Math.floor(seconds / 3600)
   const mins = Math.floor((seconds % 3600) / 60)
   const secs = seconds % 60
 
-  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  if (includeSeconds) {
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`
 }
 
-// Função para converter string HH:MM:SS em segundos
+// Função para converter string HH:MM ou HH:MM:SS em segundos
 function timeStringToSeconds(timeString: string): number {
-  if (!timeString || timeString === '00:00:00' || timeString === '') return 0
+  if (
+    !timeString ||
+    timeString === '00:00' ||
+    timeString === '00:00:00' ||
+    timeString === ''
+  )
+    return 0
 
   const parts = timeString.split(':').map(Number)
 
@@ -58,7 +71,7 @@ export function Hour<T extends FieldValues>({
   name,
   label,
   control,
-  placeholder = '00:00:00',
+  placeholder,
   width = 'flex-[1_0_100px]',
   className,
   onHasChanged,
@@ -66,19 +79,26 @@ export function Hour<T extends FieldValues>({
   const [isEditing, setIsEditing] = useState(false)
   const [displayValue, setDisplayValue] = useState('')
 
+  const canUseSeconds = false
+
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        const fieldTimeString = secondsToTimeString(field.value || 0)
+        const fieldTimeString = secondsToTimeString(
+          field.value || 0,
+          canUseSeconds,
+        )
 
         return (
           <FormItem className={cn('flex flex-col', width)}>
             {label ? <FormLabel>{label}</FormLabel> : null}
             <FormControl>
               <Input
-                placeholder={placeholder}
+                placeholder={
+                  placeholder || (canUseSeconds ? '00:00:00' : '00:00')
+                }
                 value={isEditing ? displayValue : fieldTimeString}
                 onFocus={() => {
                   setIsEditing(true)
@@ -86,8 +106,12 @@ export function Hour<T extends FieldValues>({
                 }}
                 onChange={(e) => {
                   const rawValue = e.target.value
-                  // Passar false para permitir horas ilimitadas (para duração de serviços)
-                  const maskedValue = maskTimeWithSeconds(rawValue, false)
+                  // Passar false para permitir horas ilimitadas e false para não incluir segundos
+                  const maskedValue = maskDuration(
+                    rawValue,
+                    false,
+                    canUseSeconds,
+                  )
 
                   // Atualizar o valor de exibição imediatamente
                   setDisplayValue(maskedValue)
@@ -103,7 +127,7 @@ export function Hour<T extends FieldValues>({
                 }}
                 endAdornment={<>h</>}
                 className={className}
-                maxLength={10}
+                maxLength={canUseSeconds ? 8 : 5}
               />
             </FormControl>
             <FormMessage />
