@@ -203,6 +203,8 @@ export function DeliveryDialog({ quotationData }: Props) {
   })
 
   const onSubmit = async (data: FormType) => {
+    if (actionDisabled('delivery', quotationData?.status)) return
+
     if (
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
       !data.supplierId

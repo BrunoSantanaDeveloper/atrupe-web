@@ -7,8 +7,8 @@ export const actionRules: { [key: string]: string[] } = {
   values: ['OPEN'],
   delete: ['OPEN'],
   addItem: ['OPEN'],
-  delivery: ['OPEN', 'DONE'],
-  paymentConditions: ['OPEN', 'DONE'],
+  delivery: ['OPEN'],
+  paymentConditions: ['OPEN'],
   editQuotation: ['OPEN'],
   duplicateQuotation: ['ALL'],
 }
