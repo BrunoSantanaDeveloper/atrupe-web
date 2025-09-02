@@ -196,7 +196,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
               <div className="min-w-0">
                 <DialogTitle className="mb-1">Editar parcelas</DialogTitle>
                 <DialogDescription className="truncate">
-                  {`${rowData?.client?.name || rowData?.supplier?.name} - ${rowData?.description}`}
+                  {`${rowData?.client?.name || rowData?.supplier?.name || ''} - ${rowData?.description}`}
                 </DialogDescription>
               </div>
             </div>

@@ -70,24 +70,34 @@ export function Main({ searchParams }: SearchParamsType) {
   const payrollData: ListPayrollConfigType[] = data?.data || []
   const hasData = payrollData.length
 
-  const handleToggleSetItem = async (id: string, isSet: boolean) => {
-    const data = { isSet } as { isSet: boolean; amount?: number }
+  const handleToggleSetItem = async (item: PayrollConfigItemType) => {
+    const { id, isSet } = item
 
-    if (!isSet) {
+    const newIsSet = !isSet
+
+    const data = { isSet: newIsSet } as { isSet: boolean; amount?: number }
+
+    if (!newIsSet) {
       data.amount = 0
     }
 
     setIsLoadingAction(id)
 
-    const result = await updateItemNew({
+    const res = await updateItemNew({
       route: `/financial/salaries/${id}`,
       data,
     })
 
-    if (result.success) {
-      queryClient.invalidateQueries()
-    } else {
-      toast.error(result.message)
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+
+    if (newIsSet) {
+      setRowData(item)
+      setOpenDialog('edit')
     }
 
     await new Promise((resolve) => setTimeout(resolve, 600))
@@ -204,10 +214,7 @@ export function Main({ searchParams }: SearchParamsType) {
                                     Icon={item?.isSet ? IconMinus : IconPlus}
                                     isLoading={isLoadingAction === item?.id}
                                     onClick={() => {
-                                      handleToggleSetItem(
-                                        item?.id,
-                                        !item?.isSet,
-                                      )
+                                      handleToggleSetItem(item)
                                     }}
                                   />
                                   <ActionButton
