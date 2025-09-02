@@ -159,6 +159,7 @@ type DeliverySupplierType = {
 type DeliveryType = {
   supplier: DeliverySupplierType
   daysAfterApproval: number
+  estimatedDate: string
   clientAddress: AddressWithTypeType
   freightCost: number
   freightPrice: number
