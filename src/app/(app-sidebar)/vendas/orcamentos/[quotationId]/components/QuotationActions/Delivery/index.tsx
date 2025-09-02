@@ -66,16 +66,18 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const clientId = quotationData.client.id
 
+  const defaultEstimatedDate = deliveryInfo?.timeFrame
+    ? new Date(
+        new Date().setDate(new Date().getDate() + deliveryInfo.timeFrame),
+      )
+    : null
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
       deliveryType: deliveryInfo?.type || '',
       daysAfterApproval: deliveryInfo?.timeFrame || 0,
-      estimatedDate: deliveryInfo?.timeFrame
-        ? new Date(
-            new Date().setDate(new Date().getDate() + deliveryInfo.timeFrame),
-          )
-        : null,
+      estimatedDate: defaultEstimatedDate,
       modality: deliveryInfo?.modality || '',
       cost: deliveryInfo?.cost || 0,
       value: deliveryInfo?.value || 0,
@@ -191,11 +193,10 @@ export function DeliveryDialog({ quotationData }: Props) {
                 min={0}
                 width="flex-[1_0_200px]"
                 additionalOnChange={(value) => {
-                  if (value) {
-                    const newDate = new Date()
-                    newDate.setDate(newDate.getDate() + Number(value))
-                    setValue('estimatedDate', newDate)
-                  }
+                  const daysAfterApproval = value || 0
+                  const newDate = new Date()
+                  newDate.setDate(newDate.getDate() + Number(daysAfterApproval))
+                  setValue('estimatedDate', newDate)
                 }}
               />
               <FormDatePickerSingle
@@ -204,13 +205,19 @@ export function DeliveryDialog({ quotationData }: Props) {
                 width="flex-[1_0_200px]"
                 // fromDate={new Date()}
                 additionalOnChange={(value) => {
-                  if (value instanceof Date && !isNaN(value.getTime())) {
-                    const today = new Date()
-                    today.setHours(0, 0, 0, 0)
-                    const diffMs = value.getTime() - today.getTime()
-                    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
-                    setValue('daysAfterApproval', diffDays)
-                  }
+                  const estimatedDate =
+                    value instanceof Date && !isNaN(value.getTime())
+                      ? value
+                      : defaultEstimatedDate
+
+                  if (!estimatedDate) return
+
+                  const today = new Date()
+                  today.setHours(0, 0, 0, 0)
+                  defaultEstimatedDate?.setHours(0, 0, 0, 0)
+                  const diffMs = estimatedDate.getTime() - today.getTime()
+                  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+                  setValue('daysAfterApproval', diffDays)
                 }}
               />
               {showSupplierField && (
