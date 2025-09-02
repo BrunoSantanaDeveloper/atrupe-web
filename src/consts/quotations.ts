@@ -80,3 +80,41 @@ export const serviceOptions = [
     label: 'Outro',
   },
 ]
+
+// TODO : Pegar opções em GET /quotation/delivery
+export const deliveryTypeOptions = [
+  {
+    value: 'INSTALLATION',
+    label: 'Entrega na instalação',
+  },
+  { value: 'CARRIER', label: 'Transportadora' },
+  { value: 'PICKUP', label: 'Cliente retira' },
+]
+
+export const deliveryModalityOptions = [
+  { value: 'Indefinida', label: 'Indefinida' },
+  {
+    value: 'Contratação do frete por conta do remetente (CIF)',
+    label: 'Contratação do frete por conta do remetente (CIF)',
+  },
+  {
+    value: 'Contratação do frete por conta do destinatário (FOB)',
+    label: 'Contratação do frete por conta do destinatário (FOB)',
+  },
+  {
+    value: 'Contratação do frete por conta de terceiros',
+    label: 'Contratação do frete por conta de terceiros',
+  },
+  {
+    value: 'Transporte próprio por conta do remetente',
+    label: 'Transporte próprio por conta do remetente',
+  },
+  {
+    value: 'Transporte próprio por conta do destinatário',
+    label: 'Transporte próprio por conta do destinatário',
+  },
+  {
+    value: 'Sem ocorrência de transporte',
+    label: 'Sem ocorrência de transporte',
+  },
+]

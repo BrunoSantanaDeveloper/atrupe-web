@@ -3,17 +3,8 @@ import { z } from 'zod'
 
 export const schema = z.object({
   deliveryType: z.string().nullable(),
-  daysAfterApproval: z.coerce.number().positive('Dia deve ser positivo'),
-  estimatedDate: z.coerce.date().refine(
-    (date) => {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      return date >= today
-    },
-    {
-      message: 'A data estimada deve ser hoje ou uma data futura',
-    },
-  ),
+  daysAfterApproval: z.coerce.number(),
+  estimatedDate: z.coerce.date().optional().nullable(),
   modality: z.string(),
   cost: z.number(),
   value: z.number(),

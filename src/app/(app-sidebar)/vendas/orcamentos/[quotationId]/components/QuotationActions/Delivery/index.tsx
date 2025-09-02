@@ -1,5 +1,5 @@
 // React
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -36,7 +36,7 @@ import { schema, type FormType } from './schema'
 import { IconBox, IconPencil, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -49,43 +49,11 @@ import { updateItemNew } from '@/actions/_cruds'
 import { QuotationType } from '@/types/sales/quotation'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
-// TODO : Pegar opções em GET /quotation/delivery
-const deliveryTypeOptions = [
-  {
-    value: 'INSTALLATION',
-    label: 'Entrega na instalação',
-  },
-  { value: 'CARRIER', label: 'Transportadora' },
-  { value: 'PICKUP', label: 'Cliente retira' },
-]
-
-const deliveryModalityOptions = [
-  { value: 'Indefinida', label: 'Indefinida' },
-  {
-    value: 'Contratação do frete por conta do remetente (CIF)',
-    label: 'Contratação do frete por conta do remetente (CIF)',
-  },
-  {
-    value: 'Contratação do frete por conta do destinatário (FOB)',
-    label: 'Contratação do frete por conta do destinatário (FOB)',
-  },
-  {
-    value: 'Contratação do frete por conta de terceiros',
-    label: 'Contratação do frete por conta de terceiros',
-  },
-  {
-    value: 'Transporte próprio por conta do remetente',
-    label: 'Transporte próprio por conta do remetente',
-  },
-  {
-    value: 'Transporte próprio por conta do destinatário',
-    label: 'Transporte próprio por conta do destinatário',
-  },
-  {
-    value: 'Sem ocorrência de transporte',
-    label: 'Sem ocorrência de transporte',
-  },
-]
+// Consts
+import {
+  deliveryTypeOptions,
+  deliveryModalityOptions,
+} from '@/consts/quotations'
 
 interface Props {
   quotationData: QuotationType
@@ -93,7 +61,6 @@ interface Props {
 
 export function DeliveryDialog({ quotationData }: Props) {
   const [open, setOpen] = useState(false)
-  const updatingFromEffect = useRef(false)
 
   const { deliveryInfo } = quotationData
 
@@ -104,7 +71,11 @@ export function DeliveryDialog({ quotationData }: Props) {
     defaultValues: {
       deliveryType: deliveryInfo?.type || '',
       daysAfterApproval: deliveryInfo?.timeFrame || 0,
-      estimatedDate: deliveryInfo?.estimateDate || new Date(),
+      estimatedDate: deliveryInfo?.timeFrame
+        ? new Date(
+            new Date().setDate(new Date().getDate() + deliveryInfo.timeFrame),
+          )
+        : null,
       modality: deliveryInfo?.modality || '',
       cost: deliveryInfo?.cost || 0,
       value: deliveryInfo?.value || 0,
@@ -129,81 +100,21 @@ export function DeliveryDialog({ quotationData }: Props) {
     },
   })
 
-  const { handleSubmit, setValue, watch, setError } = form
+  const { handleSubmit, setValue, watch, reset, setError } = form
 
   const deliveryType = watch('deliveryType')
   const cost = watch('cost')
-  const daysAfterApproval = watch('daysAfterApproval')
-  const estimatedDate = watch('estimatedDate')
   const clientAddressId = watch('clientAddressId')
 
   const showSupplierField = deliveryType === 'CARRIER' || cost > 0
   const showCustomAddressFields = clientAddressId === 'custom'
 
-  // Sync estimated date when days after approval changes
-  useEffect(() => {
-    if (updatingFromEffect.current) return
-
-    if (daysAfterApproval && daysAfterApproval > 0) {
-      const today = new Date()
-      const newEstimatedDate = new Date(today)
-      newEstimatedDate.setDate(today.getDate() + daysAfterApproval)
-
-      // Only update if the calculated date is different from current estimatedDate
-      const currentEstimatedTime = new Date(estimatedDate).getTime()
-      const newEstimatedTime = newEstimatedDate.getTime()
-
-      if (
-        Math.abs(currentEstimatedTime - newEstimatedTime) >
-        24 * 60 * 60 * 1000
-      ) {
-        updatingFromEffect.current = true
-        setValue('estimatedDate', newEstimatedDate)
-        setTimeout(() => {
-          updatingFromEffect.current = false
-        }, 0)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daysAfterApproval, setValue])
-
-  // Sync days after approval when estimated date changes
-  useEffect(() => {
-    if (updatingFromEffect.current) return
-
-    if (estimatedDate) {
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const selectedDate = new Date(estimatedDate)
-      selectedDate.setHours(0, 0, 0, 0)
-
-      const diffTime = selectedDate.getTime() - today.getTime()
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-      // Only update if the calculated days is different from current daysAfterApproval and >= 0
-      if (diffDays >= 0 && diffDays !== daysAfterApproval) {
-        updatingFromEffect.current = true
-        setValue('daysAfterApproval', diffDays)
-        setTimeout(() => {
-          updatingFromEffect.current = false
-        }, 0)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estimatedDate, setValue])
-
   const queryClient = useQueryClient()
-
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItemNew({ route: `/quotation/delivery/${deliveryInfo.id}`, data }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-    },
-  })
 
   const onSubmit = async (data: FormType) => {
     if (actionDisabled('delivery', quotationData?.status)) return
+
+    delete data.estimatedDate
 
     if (
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
@@ -216,16 +127,31 @@ export function DeliveryDialog({ quotationData }: Props) {
     }
 
     try {
-      await mutation.mutateAsync(data)
-      toast.success('Informações de entrega salvas!')
-      setOpen(false)
+      const res = await updateItemNew({
+        route: `/quotation/delivery/${deliveryInfo.id}`,
+        data,
+      })
+
+      if (!res.success) {
+        toast.error(res.message)
+        return
+      }
+
+      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      reset()
+      handleOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar informações de entrega!')
     }
   }
 
+  const handleOpenChange = (open: boolean) => {
+    if (!open) reset()
+    setOpen(open)
+  }
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <ActionButton
           Icon={IconPencil}
@@ -264,12 +190,30 @@ export function DeliveryDialog({ quotationData }: Props) {
                 type="number"
                 min={0}
                 width="flex-[1_0_200px]"
+                additionalOnChange={(value) => {
+                  if (value) {
+                    const newDate = new Date()
+                    newDate.setDate(newDate.getDate() + Number(value))
+                    setValue('estimatedDate', newDate, { shouldValidate: true })
+                  }
+                }}
               />
               <FormDatePickerSingle
                 name="estimatedDate"
                 label="Data estimada"
                 width="flex-[1_0_200px]"
-                fromDate={new Date()}
+                // fromDate={new Date()}
+                additionalOnChange={(value) => {
+                  if (value instanceof Date && !isNaN(value.getTime())) {
+                    const today = new Date()
+                    today.setHours(0, 0, 0, 0)
+                    const diffMs = value.getTime() - today.getTime()
+                    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+                    setValue('daysAfterApproval', diffDays, {
+                      shouldValidate: true,
+                    })
+                  }
+                }}
               />
               {showSupplierField && (
                 <SupplierSelectField
