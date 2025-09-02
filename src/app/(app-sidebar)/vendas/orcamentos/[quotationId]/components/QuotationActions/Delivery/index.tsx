@@ -1,5 +1,5 @@
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -66,43 +66,48 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const clientId = quotationData.client.id
 
-  const defaultEstimatedDate = deliveryInfo?.timeFrame
-    ? new Date(
-        new Date().setDate(new Date().getDate() + deliveryInfo.timeFrame),
-      )
-    : null
-
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      deliveryType: deliveryInfo?.type || '',
-      daysAfterApproval: deliveryInfo?.timeFrame || 0,
-      estimatedDate: defaultEstimatedDate,
-      modality: deliveryInfo?.modality || '',
-      cost: deliveryInfo?.cost || 0,
-      value: deliveryInfo?.value || 0,
-      supplierId: deliveryInfo?.supplier?.id || '',
-      clientAddressId:
-        deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
-          ? 'custom'
-          : deliveryInfo?.clientAddress?.id || '',
-      customAddress:
-        deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
-          ? {
-              street: deliveryInfo?.clientAddress?.street || '',
-              number: deliveryInfo?.clientAddress?.number || '',
-              complement: deliveryInfo?.clientAddress?.complement || '',
-              neighborhood: deliveryInfo?.clientAddress?.neighborhood || '',
-              city: deliveryInfo?.clientAddress?.city || '',
-              state: deliveryInfo?.clientAddress?.state || '',
-              zipcode: deliveryInfo?.clientAddress?.zipcode || '',
-            }
-          : {},
-      notes: deliveryInfo?.notes || '',
-    },
   })
 
   const { handleSubmit, setValue, watch, reset, setError } = form
+
+  useEffect(() => {
+    if (open) {
+      const defaultEstimatedDate = deliveryInfo?.timeFrame
+        ? new Date(
+            new Date().setDate(new Date().getDate() + deliveryInfo.timeFrame),
+          )
+        : null
+
+      reset({
+        deliveryType: deliveryInfo?.type || '',
+        daysAfterApproval: deliveryInfo?.timeFrame || 0,
+        estimatedDate: defaultEstimatedDate,
+        modality: deliveryInfo?.modality || '',
+        cost: deliveryInfo?.cost || 0,
+        value: deliveryInfo?.value || 0,
+        supplierId: deliveryInfo?.supplier?.id || '',
+        clientAddressId:
+          deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
+            ? 'custom'
+            : deliveryInfo?.clientAddress?.id || '',
+        customAddress:
+          deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
+            ? {
+                street: deliveryInfo?.clientAddress?.street || '',
+                number: deliveryInfo?.clientAddress?.number || '',
+                complement: deliveryInfo?.clientAddress?.complement || '',
+                neighborhood: deliveryInfo?.clientAddress?.neighborhood || '',
+                city: deliveryInfo?.clientAddress?.city || '',
+                state: deliveryInfo?.clientAddress?.state || '',
+                zipcode: deliveryInfo?.clientAddress?.zipcode || '',
+              }
+            : {},
+        notes: deliveryInfo?.notes || '',
+      })
+    }
+  }, [reset, deliveryInfo, open])
 
   const deliveryType = watch('deliveryType')
   const cost = watch('cost')
@@ -140,7 +145,6 @@ export function DeliveryDialog({ quotationData }: Props) {
       }
 
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-      reset()
       handleOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar informações de entrega!')
@@ -148,7 +152,7 @@ export function DeliveryDialog({ quotationData }: Props) {
   }
 
   const handleOpenChange = (open: boolean) => {
-    if (!open) reset()
+    // if (!open) reset()
     setOpen(open)
   }
 
@@ -205,6 +209,14 @@ export function DeliveryDialog({ quotationData }: Props) {
                 width="flex-[1_0_200px]"
                 // fromDate={new Date()}
                 additionalOnChange={(value) => {
+                  const defaultEstimatedDate = deliveryInfo?.timeFrame
+                    ? new Date(
+                        new Date().setDate(
+                          new Date().getDate() + deliveryInfo.timeFrame,
+                        ),
+                      )
+                    : null
+
                   const estimatedDate =
                     value instanceof Date && !isNaN(value.getTime())
                       ? value
