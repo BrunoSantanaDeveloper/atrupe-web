@@ -1,3 +1,6 @@
+// React
+import { useState, useEffect } from 'react'
+
 // UI
 import {
   Accordion,
@@ -33,6 +36,18 @@ interface Props {
 }
 
 export function QuotationPaymentConditions({ quotationData }: Props) {
+  // Accordion deve estar aberto por padrão se existe pelo menos um item no orçamento
+  const quotationHasItems = !!quotationData.quotationItems.length
+
+  const [accordionValue, setAccordionValue] = useState<string | undefined>(
+    quotationHasItems ? 'item-1' : undefined,
+  )
+
+  // Reage às mudanças do quotationHasItems
+  useEffect(() => {
+    setAccordionValue(quotationHasItems ? 'item-1' : undefined)
+  }, [quotationHasItems])
+
   if (!quotationData) return
 
   const data = quotationData.paymentConditions
@@ -57,15 +72,13 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
 
   const total = finalValue + deliveryValue
 
-  // Accordion deve estar aberto por padrão se existe pelo menos um item no orçamento
-  const quotationHasItems = !!quotationData.quotationItems.length
-
   return (
     <Card className="w-full">
       <Accordion
         type="single"
         collapsible
-        defaultValue={quotationHasItems ? 'item-1' : undefined}
+        value={accordionValue}
+        onValueChange={setAccordionValue}
       >
         <AccordionItem value="item-1" className="p-0 m-0 border-0">
           <CardHeader>
