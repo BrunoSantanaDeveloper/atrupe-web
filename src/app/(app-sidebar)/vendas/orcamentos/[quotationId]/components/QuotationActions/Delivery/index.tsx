@@ -194,7 +194,7 @@ export function DeliveryDialog({ quotationData }: Props) {
                   if (value) {
                     const newDate = new Date()
                     newDate.setDate(newDate.getDate() + Number(value))
-                    setValue('estimatedDate', newDate, { shouldValidate: true })
+                    setValue('estimatedDate', newDate)
                   }
                 }}
               />
@@ -209,9 +209,7 @@ export function DeliveryDialog({ quotationData }: Props) {
                     today.setHours(0, 0, 0, 0)
                     const diffMs = value.getTime() - today.getTime()
                     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
-                    setValue('daysAfterApproval', diffDays, {
-                      shouldValidate: true,
-                    })
+                    setValue('daysAfterApproval', diffDays)
                   }
                 }}
               />
