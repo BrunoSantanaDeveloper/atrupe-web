@@ -30,10 +30,7 @@ import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_compon
 import { IconSearch, IconWallet, IconHistory } from '@tabler/icons-react'
 
 // Types
-import {
-  PayrollDetailType,
-  FinancialTransactionType,
-} from '@/types/financial/payroll'
+import { PayrollDetailType } from '@/types/financial/payroll'
 import type {
   TransactionListType,
   InstallmentType,
@@ -58,81 +55,6 @@ export function PayrollMovement({ data }: Props) {
   const transactionList = data?.financialTransactions || []
   const hasData = transactionList.length
 
-  // Converte FinancialTransactionType para TransactionListType
-  const convertToTransactionData = (
-    transaction: FinancialTransactionType,
-  ): TransactionListType => {
-    const isPaid = transaction.status === 'PAID'
-    return {
-      id: transaction.id,
-      type: 'payable' as const,
-      totalValue: transaction.amount,
-      totalPaid: isPaid ? transaction.amount : 0,
-      description: transaction.description,
-      supplier: {
-        id: data?.employee?.id || '',
-        name: data?.employee?.name || '',
-      },
-      installmentsQuantity: 1,
-      currentInstallment: {
-        id: transaction.id,
-        installmentNumber:
-          transaction.relatedInstallment?.installmentNumber || 1,
-        status:
-          transaction.relatedInstallment?.status ||
-          transaction.status ||
-          'PENDING',
-        paymentMethod: { id: '', name: 'N/A' },
-        bank: {
-          id: transaction.cashRegister?.bankAccount?.bank?.id || '',
-          name: transaction.cashRegister?.bankAccount?.bank?.name || 'N/A',
-        },
-        bankAccount: {
-          id: transaction.cashRegister?.bankAccount?.id || '',
-          name: transaction.cashRegister?.bankAccount?.name || 'N/A',
-        },
-        value: transaction.amount,
-        amount: transaction.amount,
-        additionalFee: 0,
-        dueDate: new Date(transaction.transactionDate),
-        paidValue: isPaid ? transaction.amount : 0,
-        paymentDate: isPaid ? new Date(transaction.transactionDate) : undefined,
-      },
-      notes: transaction.reason || '',
-      status: transaction.status === 'PAID' ? 'PAID' : 'PENDING',
-    } as TransactionListType
-  }
-
-  // Converte FinancialTransactionType para InstallmentType
-  const convertToInstallmentData = (
-    transaction: FinancialTransactionType,
-  ): InstallmentType => {
-    const isPaid = transaction.status === 'PAID'
-    return {
-      id: transaction.id,
-      installmentNumber: transaction.relatedInstallment?.installmentNumber || 1,
-      status:
-        transaction.relatedInstallment?.status ||
-        transaction.status ||
-        'PENDING',
-      paymentMethod: { id: '', name: 'N/A' },
-      bank: {
-        id: transaction.cashRegister?.bankAccount?.bank?.id || '',
-        name: transaction.cashRegister?.bankAccount?.bank?.name || 'N/A',
-      },
-      bankAccount: {
-        id: transaction.cashRegister?.bankAccount?.id || '',
-        name: transaction.cashRegister?.bankAccount?.name || 'N/A',
-      },
-      value: transaction.amount,
-      amount: transaction.amount,
-      additionalFee: 0,
-      dueDate: new Date(transaction.transactionDate),
-      paidValue: isPaid ? transaction.amount : 0,
-      paymentDate: isPaid ? new Date(transaction.transactionDate) : undefined,
-    } as InstallmentType
-  }
-
   return (
     <>
       <Card className="w-full">
@@ -144,7 +66,7 @@ export function PayrollMovement({ data }: Props) {
             </CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="pb-4">
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
@@ -220,7 +142,6 @@ export function PayrollMovement({ data }: Props) {
                                 Icon={IconSearch}
                                 tooltip="Detalhes da movimentação"
                                 onClick={() => {
-                                  setRowData(convertToTransactionData(item))
                                   setOpenDialog('transaction')
                                 }}
                               />
@@ -233,7 +154,6 @@ export function PayrollMovement({ data }: Props) {
                                 Icon={IconHistory}
                                 tooltip="Histórico"
                                 onClick={() => {
-                                  setRowData(convertToTransactionData(item))
                                   setOpenDialog('history')
                                 }}
                               />
@@ -244,30 +164,22 @@ export function PayrollMovement({ data }: Props) {
                             >
                               <ActionButton
                                 Icon={
-                                  transactionStatus[
-                                    convertToInstallmentData(item)?.status ||
-                                      'PENDING'
-                                  ]?.icon
+                                  transactionStatus[item?.status || 'PENDING']
+                                    ?.icon
                                 }
                                 tooltip={
-                                  transactionStatus[
-                                    convertToInstallmentData(item)?.status ||
-                                      'PENDING'
-                                  ]?.tooltip
+                                  transactionStatus[item?.status || 'PENDING']
+                                    ?.tooltip
                                 }
                                 variant={
-                                  transactionStatus[
-                                    convertToInstallmentData(item)?.status ||
-                                      'PENDING'
-                                  ]?.button
+                                  transactionStatus[item?.status || 'PENDING']
+                                    ?.button
                                 }
                                 onClick={() => {
-                                  const currentInstallment =
-                                    convertToInstallmentData(item)
-                                  setRowData(convertToTransactionData(item))
-                                  setInstallment(currentInstallment)
+                                  setRowData(undefined)
+                                  setInstallment(undefined)
 
-                                  switch (currentInstallment?.status) {
+                                  switch (item?.status) {
                                     case 'PENDING':
                                       setOpenDialog('payment')
                                       break
