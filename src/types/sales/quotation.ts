@@ -75,6 +75,8 @@ export type DeliveryInfoType = {
     zipcode: string
     type: string
   }
+  createdAt: string
+  updatedAt: string
 }
 
 export type CommissionType = {

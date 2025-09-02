@@ -40,9 +40,16 @@ interface Props {
 export function QuotationDelivery({ quotationData }: Props) {
   const data = quotationData?.deliveryInfo
 
+  // Accordion deve estar aberto por padrão se já foi alterado alguma vez
+  const isUpdated = data.createdAt !== data.updatedAt
+
   return (
     <Card className="w-full">
-      <Accordion type="single" collapsible defaultValue="item-1">
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue={isUpdated ? 'item-1' : undefined}
+      >
         <AccordionItem value="item-1" className="p-0 m-0 border-0">
           <CardHeader>
             <div className="flex justify-between">

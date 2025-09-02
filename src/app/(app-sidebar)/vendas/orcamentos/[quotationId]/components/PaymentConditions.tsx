@@ -57,9 +57,16 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
 
   const total = finalValue + deliveryValue
 
+  // Accordion deve estar aberto por padrão se existe pelo menos um item no orçamento
+  const quotationHasItems = !!quotationData.quotationItems.length
+
   return (
     <Card className="w-full">
-      <Accordion type="single" collapsible defaultValue="item-1">
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue={quotationHasItems ? 'item-1' : undefined}
+      >
         <AccordionItem value="item-1" className="p-0 m-0 border-0">
           <CardHeader>
             <div className="flex justify-between">
