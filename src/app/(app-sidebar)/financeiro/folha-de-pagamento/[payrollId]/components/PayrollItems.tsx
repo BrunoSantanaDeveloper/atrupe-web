@@ -30,8 +30,6 @@ import { NewItemDialog } from './NewItem'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { PaymentDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/Payment'
-import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails'
 
 // Icons
 import {
@@ -39,8 +37,6 @@ import {
   IconCash,
   IconEyeOff,
   IconPencil,
-  IconSearch,
-  IconThumbUp,
   IconPrinter,
   IconCirclePlus,
   IconLayoutGrid,
@@ -177,36 +173,13 @@ export function PayrollItems({ data }: Props) {
                       <div className="flex justify-end gap-1">
                         <TooltipProvider>
                           {isAdvance && (
-                            <>
-                              <ActionButton
-                                Icon={IconThumbUp}
-                                tooltip="Pagamento"
-                                variant="successGhost"
-                                onClick={() => {
-                                  setRowData(item)
-                                  setIsAdvance(isAdvance)
-                                  setOpenDialog('payment')
-                                }}
-                                disabled={data?.status === 'CLOSED'}
-                              />
-                              <ActionButton
-                                Icon={IconSearch}
-                                tooltip="Ver movimentação"
-                                onClick={() => {
-                                  setRowData(item)
-                                  setIsAdvance(true)
-                                  setOpenDialog('transaction')
-                                }}
-                                disabled={data?.status === 'CLOSED'}
-                              />
-                              <ActionButton
-                                Icon={IconPrinter}
-                                tooltip="Imprimir"
-                                onClick={() => handleGeneratePDF(data)}
-                                disabled={data?.status === 'CLOSED'}
-                                isLoading={isLoadingPDF}
-                              />
-                            </>
+                            <ActionButton
+                              Icon={IconPrinter}
+                              tooltip="Imprimir"
+                              onClick={() => handleGeneratePDF(data)}
+                              disabled={data?.status === 'CLOSED'}
+                              isLoading={isLoadingPDF}
+                            />
                           )}
                           <ActionButton
                             Icon={IconPencil}
@@ -232,7 +205,7 @@ export function PayrollItems({ data }: Props) {
             <Button
               type="button"
               variant="none"
-              className="flex justify-center items-center h-full gap-3 py-8 flex-1"
+              className="flex justify-center items-center h-full gap-3 py-8 flex-1 rounded-none"
               onClick={() => {
                 setRowData(undefined)
                 setIsAdvance(false)
@@ -255,7 +228,7 @@ export function PayrollItems({ data }: Props) {
             <Button
               type="button"
               variant="none"
-              className="flex justify-center items-center h-full gap-3 py-8 flex-1"
+              className="flex justify-center items-center h-full gap-3 py-8 flex-1 rounded-none"
               onClick={() => {
                 setRowData(undefined)
                 setIsAdvance(true)
@@ -285,20 +258,6 @@ export function PayrollItems({ data }: Props) {
         payrollId={data?.id}
         rowData={rowData}
         isAdvance={isAdvance}
-      />
-
-      <PaymentDialog
-        open={openDialog === 'payment'}
-        setOpen={setOpenDialog}
-        type="payable"
-        rowData={undefined} // TODO: Corrigir
-      />
-
-      <TransactionDetailsDialog
-        open={openDialog === 'transaction'}
-        setOpen={setOpenDialog}
-        type="payable"
-        rowData={rowData?.payables}
       />
     </>
   )

@@ -37,6 +37,10 @@ export type TransactionListType = {
     id: string
     name: string
   }
+  employee?: {
+    id: string
+    name: string
+  }
   installmentsQuantity: number
   currentInstallment: InstallmentType
   notes: string

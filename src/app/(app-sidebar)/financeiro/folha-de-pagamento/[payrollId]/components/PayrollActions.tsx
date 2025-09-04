@@ -109,25 +109,28 @@ export function PayrollActions({ data }: Props) {
             onClick={() => handleGeneratePDF(data)}
           />
         </PermissionGate>
-        <PermissionGate permissions={['financial:payroll:edit']}>
-          {data.status === 'OPEN' ? (
+        {data.status === 'OPEN' ? (
+          <PermissionGate permissions={['financial:payroll:edit']}>
             <CustomButton
               icon={IconCircleCheck}
               title="Fechar folha"
               iconVariant="successLight"
               onClick={handleTogglePayroll}
             />
-          ) : (
-            session?.user?.role === 'Admin' && (
+          </PermissionGate>
+        ) : (
+          // TODO: Ajustar permissão para reabrir folha
+          session?.user?.role === 'Admin' && (
+            <PermissionGate permissions={['financial:payroll:delete']}>
               <CustomButton
                 icon={IconRestore}
                 title="Reabrir folha"
                 iconVariant="lightBlueBorderedLight"
                 onClick={handleTogglePayroll}
               />
-            )
-          )}
-        </PermissionGate>
+            </PermissionGate>
+          )
+        )}
       </div>
     </>
   )
