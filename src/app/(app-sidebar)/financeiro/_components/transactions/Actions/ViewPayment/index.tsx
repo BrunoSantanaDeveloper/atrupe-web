@@ -79,7 +79,10 @@ export function ViewPaymentDialog({
             ) : (
               <TextSupportingText
                 supporting="Fornecedor"
-                text={transactionData?.supplier?.name}
+                text={
+                  transactionData?.supplier?.name ||
+                  transactionData?.employee?.name
+                }
               />
             )}
             <TextSupportingText

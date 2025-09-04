@@ -133,7 +133,7 @@ export function TransactionDetailsDialog({
             ) : (
               <TextSupportingText
                 supporting="Fornecedor"
-                text={rowData?.supplier?.name}
+                text={rowData?.supplier?.name || rowData?.employee?.name}
               />
             )}
             <TextSupportingText

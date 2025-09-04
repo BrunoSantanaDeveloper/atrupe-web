@@ -65,8 +65,7 @@ export function PayrollFilter({
 
     if (month && !isNaN(Number(month)) && year && !isNaN(Number(year))) {
       // Se ambos os parâmetros existem e são válidos, usa eles
-      // Converter de 1-12 (mês do ano) para 0-11 (índice do array)
-      setCurrentMonth(Number(month) - 1)
+      setCurrentMonth(Number(month))
       setCurrentYear(Number(year))
     } else {
       // Se não há parâmetros válidos, usa o mês atual
@@ -104,8 +103,8 @@ export function PayrollFilter({
     setCurrentMonth(newMonth)
     setCurrentYear(newYear)
 
-    // Atualizar URL - converter de 0-11 (índice do array) para 1-12 (mês do ano)
-    handleFilter('month', (newMonth + 1).toString())
+    // Atualizar URL
+    handleFilter('month', newMonth.toString())
     handleFilter('year', newYear.toString())
   }
 
@@ -115,8 +114,8 @@ export function PayrollFilter({
     setCurrentMonth(Number(month))
     setCurrentYear(Number(year))
 
-    // Converter de 0-11 (índice do array) para 1-12 (mês do ano)
-    handleFilter('month', (Number(month) + 1).toString())
+    // Atualizar URL
+    handleFilter('month', month)
     handleFilter('year', year)
   }
 

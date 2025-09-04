@@ -30,37 +30,19 @@ import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_compon
 import { IconSearch, IconWallet, IconHistory } from '@tabler/icons-react'
 
 // Types
-import { PayrollDetailType } from '@/types/financial/payroll'
 import type {
-  TransactionListType,
   InstallmentType,
+  TransactionListType,
 } from '@/types/financial/financialFlow'
+import type { PayrollDetailType } from '@/types/financial/payroll'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { financialFlowStatusObj } from '@/consts/financial'
+import { formatToLocaleDate } from '@/lib/formatDate'
 
 // Consts
 import { transactionStatus } from '@/consts/receivables'
-
-interface PayrollTransaction {
-  type: 'payable' | 'receivable'
-  id: string
-  totalValue: number
-  totalPaid: number
-  description: string
-  employee?: {
-    id: string
-    name: string
-  }
-  subCategory: null
-  nature: null
-  installmentsQuantity: number
-  period: string
-  notes: string
-  status: string
-  currentInstallment?: InstallmentType
-}
+import { financialFlowStatusObj } from '@/consts/financial'
 
 interface Props {
   data: PayrollDetailType
@@ -68,11 +50,10 @@ interface Props {
 
 export function PayrollMovement({ data }: Props) {
   const [openDialog, setOpenDialog] = useState('')
-  const [rowData, setRowData] = useState<PayrollTransaction>()
+  const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
 
-  const transactionList = (data?.financialTransactions ||
-    []) as PayrollTransaction[]
+  const transactionList = data?.financialTransactions || []
   const hasData = transactionList.length
 
   return (
@@ -104,63 +85,53 @@ export function PayrollMovement({ data }: Props) {
                   return (
                     <TableRow key={item.id}>
                       <TableCell>
-                        <div className="font-medium">{item.description}</div>
-                        <div className="text-sm text-gray-600">
-                          {item.employee?.name}
-                        </div>
+                        <p className="font-medium">{item?.employee?.name}</p>
+                        <p className="text-gray truncate">
+                          {item?.description}
+                        </p>
                       </TableCell>
                       <TableCell>
                         <Badge
                           variant={
                             financialFlowStatusObj[
-                              item.currentInstallment?.status || item.status
+                              item.currentInstallment?.status
                             ]?.variant || 'neutral'
                           }
                           status
                         >
                           {financialFlowStatusObj[
-                            item.currentInstallment?.status || item.status
-                          ]?.text ||
-                            item.currentInstallment?.status ||
-                            item.status}
+                            item.currentInstallment?.status
+                          ]?.text || item.currentInstallment?.status}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">
-                          {formatCurrencyToBrl(
-                            item.currentInstallment?.value || item.totalValue,
-                          )}
+                          {formatCurrencyToBrl(item.currentInstallment?.value)}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {item.currentInstallment?.dueDate
-                            ? new Date(
-                                item.currentInstallment.dueDate,
-                              ).toLocaleDateString('pt-BR')
-                            : '-'}
+                          {formatToLocaleDate(item.currentInstallment?.dueDate)}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="text-gray-600">
                           {item.currentInstallment?.status === 'PAID'
                             ? formatCurrencyToBrl(
-                                item.currentInstallment?.paidValue || 0,
+                                item.currentInstallment?.paidValue,
                               )
                             : '-'}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {item.currentInstallment?.paymentDate
-                            ? new Date(
-                                item.currentInstallment.paymentDate,
-                              ).toLocaleDateString('pt-BR')
-                            : '-'}
+                          {formatToLocaleDate(
+                            item.currentInstallment?.paymentDate,
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="font-medium">
-                          {item.currentInstallment?.status === 'PENDING'
+                          {item.currentInstallment?.status === 'PENDING' ||
+                          item.status === 'PENDING'
                             ? formatCurrencyToBrl(
-                                (item.currentInstallment?.value ||
-                                  item.totalValue) -
+                                item.currentInstallment?.value -
                                   (item.currentInstallment?.paidValue || 0),
                               )
                             : '-'}
@@ -258,33 +229,33 @@ export function PayrollMovement({ data }: Props) {
       <TransactionDetailsDialog
         open={openDialog === 'transaction'}
         setOpen={setOpenDialog}
-        rowData={rowData as TransactionListType}
+        rowData={rowData}
         type="payable"
       />
       <TransactionHistoryDialog
         open={openDialog === 'history'}
         setOpen={setOpenDialog}
-        rowData={rowData as TransactionListType}
+        rowData={rowData}
       />
       <PaymentDialog
         open={openDialog === 'payment'}
         setOpen={setOpenDialog}
         rowData={installment}
-        transactionData={rowData as TransactionListType}
+        transactionData={rowData}
         type="payable"
       />
       <CompensateDialog
         open={openDialog === 'compensate'}
         setOpen={setOpenDialog}
         rowData={installment}
-        transactionData={rowData as TransactionListType}
+        transactionData={rowData}
         type="payable"
       />
       <ViewPaymentDialog
         open={openDialog === 'view'}
         setOpen={setOpenDialog}
         rowData={installment}
-        transactionData={rowData as TransactionListType}
+        transactionData={rowData}
         type="payable"
       />
     </>

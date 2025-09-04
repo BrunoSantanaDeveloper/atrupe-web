@@ -151,7 +151,9 @@ export function TransactionsData({ type, searchParams }: Props) {
                             <TableRow key={item?.id}>
                               <TableCell>
                                 <p className="font-medium">
-                                  {item?.client?.name || item?.supplier?.name}
+                                  {item?.client?.name ||
+                                    item?.supplier?.name ||
+                                    item?.employee?.name}
                                 </p>
                                 <p className="text-gray">{description}</p>
                               </TableCell>

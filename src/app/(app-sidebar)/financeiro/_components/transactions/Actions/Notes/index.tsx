@@ -80,7 +80,7 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
             <div className="min-w-0">
               <DialogTitle className="mb-1">Observação</DialogTitle>
               <DialogDescription className="truncate">
-                {`${rowData?.client?.name || rowData?.supplier?.name || ''} - ${rowData?.description}`}
+                {`${rowData?.client?.name || rowData?.supplier?.name || rowData?.employee?.name || ''} - ${rowData?.description}`}
               </DialogDescription>
             </div>
           </div>

@@ -97,9 +97,7 @@ export function Payroll({ searchParams }: SearchParamsType) {
     const currentMonth = new Date().getMonth()
     const currentYear = new Date().getFullYear()
 
-    const month = searchParams.month
-      ? Number(searchParams.month) - 1
-      : currentMonth
+    const month = searchParams.month ? Number(searchParams.month) : currentMonth
     const year = searchParams.year ? Number(searchParams.year) : currentYear
 
     const data = {

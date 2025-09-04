@@ -189,7 +189,9 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                             <TableRow key={item?.id} className="text-nowrap">
                               <TableCell className="max-w-96">
                                 <p className="font-medium">
-                                  {item?.client?.name || item?.supplier?.name}
+                                  {item?.client?.name ||
+                                    item?.supplier?.name ||
+                                    item?.employee?.name}
                                 </p>
                                 <div className="flex gap-2">
                                   {item?.status === 'CANCELED' && (

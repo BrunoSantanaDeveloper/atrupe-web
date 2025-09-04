@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function PayrollPage({ searchParams }: SearchParamsType) {
+  const month = searchParams.month || String(new Date().getMonth())
+  const year = searchParams.year || String(new Date().getFullYear())
+
   return (
     <PermissionGate
       permissions={['financial:payroll:view']}
@@ -21,7 +24,7 @@ export default function PayrollPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Payroll searchParams={searchParams} />
+      <Payroll searchParams={{ ...searchParams, month, year }} />
     </PermissionGate>
   )
 }
