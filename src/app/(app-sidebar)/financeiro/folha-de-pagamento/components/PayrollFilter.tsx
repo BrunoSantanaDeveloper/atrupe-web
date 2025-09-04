@@ -150,15 +150,11 @@ export function PayrollFilter({
           : 'Deseja lançar a folha de pagamento selecionada?',
       cancelLabel: 'Voltar',
       confirmLabel: 'Lançar',
-      onConfirm: () => {
-        generateTransaction(selectedIds)
+      toastMsg: undefined,
+      onConfirm: async () => {
+        await generateTransaction(selectedIds)
         setSelectedIds([])
         queryClient.invalidateQueries()
-      },
-      toastMsg: {
-        loading: 'Aguarde...',
-        success: 'Lançamentos enviados aguardando processamento...',
-        error: 'Erro ao lançar folhas de pagamento',
       },
     })
   }

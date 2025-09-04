@@ -172,7 +172,6 @@ export function PayrollItems({ data }: Props) {
                               Icon={IconPrinter}
                               tooltip="Imprimir"
                               onClick={() => handleGeneratePDF(data)}
-                              disabled={data?.status === 'CLOSED'}
                               isLoading={isLoadingPDF}
                             />
                           )}

@@ -106,23 +106,42 @@ export function Payroll({ searchParams }: SearchParamsType) {
       year,
     }
 
-    const response = await createItemNew({
+    const res = await createItemNew({
       route: '/financial/salary-sheets',
       data,
     })
 
-    if (response.success) {
-      toast.success('Lançamento realizado com sucesso')
-      queryClient.invalidateQueries()
-    } else {
-      toast.error('Erro ao lançar folha de pagamento')
+    if (!res.success) {
+      toast.error(res.message)
+      return false
     }
+
+    const { data: resData } = res
+    const { success, skipped = 0, errors = [] } = resData || {}
+    const totalWithIssues = (skipped || 0) + errors.length
+
+    if (totalWithIssues === 0) {
+      toast.success('Todas as folhas foram lançadas com sucesso')
+    } else {
+      const successCount = success || 0
+      if (successCount > 0) {
+        toast.warning(
+          `${successCount} folhas lançadas, ${totalWithIssues} não foram lançadas`,
+        )
+      } else {
+        toast.error(
+          'Erro ao lançar folha. Verifique se colaborador possui configurações de salário definidas',
+        )
+      }
+    }
+
+    queryClient.invalidateQueries()
 
     await new Promise((resolve) => setTimeout(resolve, 600))
 
     setIsGenerating([])
 
-    return response.success
+    return res.success
   }
 
   return (
