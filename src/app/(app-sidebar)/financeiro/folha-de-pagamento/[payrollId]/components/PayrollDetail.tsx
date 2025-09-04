@@ -97,7 +97,7 @@ export function PayrollDetail({ payrollId }: Props) {
         )}
       >
         <Topbar
-          title={`Folha de pagamento ${payrollData?.month.toString().padStart(2, '0')}/${payrollData?.year.toString().slice(-2)}`}
+          title={`Folha de pagamento ${(payrollData?.month + 1).toString().padStart(2, '0')}/${payrollData?.year.toString().slice(-2)}`}
           supportText={payrollData?.employee?.name || ''}
           previousPage={previousUrl}
           badge={{
