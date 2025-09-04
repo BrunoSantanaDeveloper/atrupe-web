@@ -129,9 +129,15 @@ export function Payroll({ searchParams }: SearchParamsType) {
           `${successCount} folhas lançadas, ${totalWithIssues} não foram lançadas`,
         )
       } else {
-        toast.error(
-          'Erro ao lançar folha. Verifique se colaborador possui configurações de salário definidas',
-        )
+        if (errors.length > 0) {
+          toast.error(
+            'Erro ao lançar folha. Verifique se colaborador possui configurações de salário definidas',
+          )
+        } else if (skipped > 0) {
+          toast.warning(
+            'Já existe uma folha de pagamento lançada para o colaborador',
+          )
+        }
       }
     }
 
