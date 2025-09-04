@@ -17,10 +17,10 @@ export type InstallmentType = {
   value: number
   amount: number
   additionalFee: number
-  dueDate: string
+  dueDate: Date
   paidValue: number
-  paymentDate?: string
-  compensateDate?: string
+  paymentDate?: Date
+  compensateDate?: Date
 }
 
 export type TransactionListType = {
