@@ -139,18 +139,7 @@ export function PayrollItems({ data }: Props) {
                 return (
                   <TableRow key={item.id}>
                     <TableCell>
-                      {item.type === 'ADVANCE' ? (
-                        <div>
-                          <p className="font-medium">{data?.employee?.name}</p>
-                          <p className="text-sm text-gray-600">
-                            Folha {data?.month.toString().padStart(2, '0')}/
-                            {data?.year.toString().slice(-2)} -{' '}
-                            {item.description}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="font-medium">{item.description}</p>
-                      )}
+                      <p className="font-medium">{item.description}</p>
                     </TableCell>
                     <TableCell>
                       <Badge variant={typeConfig.variant}>
@@ -158,7 +147,13 @@ export function PayrollItems({ data }: Props) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="font-medium">
+                      <div
+                        className={
+                          item.type === 'INCREASE'
+                            ? 'text-success-700'
+                            : 'text-error-700'
+                        }
+                      >
                         {showValues
                           ? formatCurrencyToBrl(item.amount)
                           : '********'}
