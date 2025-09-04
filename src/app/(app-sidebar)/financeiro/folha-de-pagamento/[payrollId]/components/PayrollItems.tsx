@@ -159,9 +159,7 @@ export function PayrollItems({ data }: Props) {
                           : '********'}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {showValues
-                          ? formatToLocaleDateTime(item.paidAt)
-                          : '********'}
+                        {formatToLocaleDateTime(item.createdAt)}
                       </div>
                     </TableCell>
                     <TableCell>
