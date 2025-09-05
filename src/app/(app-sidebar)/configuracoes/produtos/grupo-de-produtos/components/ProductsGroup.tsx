@@ -37,7 +37,11 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['product-group-totals'],
-    queryFn: () => getDataOld({ route: 'productGroupTotalsRoute' }),
+    queryFn: () =>
+      getDataOld({
+        route: 'productGroupTotalsRoute',
+        filters: { kind: 'PRODUCT' },
+      }),
   })
 
   const totals: { [key: string]: number } = {

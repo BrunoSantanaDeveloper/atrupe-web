@@ -52,7 +52,7 @@ export function ProductsGroupData({ searchParams, tabs }: Props) {
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || 'ACTIVE'
 
-  const filters = { ...searchParams, status }
+  const filters = { ...searchParams, status, kind: 'PRODUCT' }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
