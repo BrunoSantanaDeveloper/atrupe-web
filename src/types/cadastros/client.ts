@@ -29,7 +29,7 @@ export type ClientInfoType = {
     rg: string
     cnpj: string
     activity: string
-    category: string
+    category: { name: string }
     phone: string
     mobile: string
     notes: string

@@ -36,7 +36,7 @@ export function ClientSummary({ data }: Props) {
           /> */}
           <TextSupportingText
             supporting="Categoria"
-            text={data?.general?.category}
+            text={typeof data?.general?.category?.name}
           />
         </DetailCardRowItem>
 
@@ -70,10 +70,7 @@ export function ClientSummary({ data }: Props) {
             icon={IconUserStar}
           >
             <DetailCardRowItem>
-              <TextSupportingText
-                supporting="Cargo"
-                text={contact.name || ''}
-              />
+              <TextSupportingText supporting="Nome" text={contact.name || ''} />
               <TextSupportingText
                 supporting="E-mail"
                 text={contact.email || ''}
