@@ -32,11 +32,15 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
   const handleSearch = (e: React.SyntheticEvent) => {
     e.preventDefault()
 
-    if (!search) {
+    const query = search.trim()
+
+    if (!query) {
       params.delete('search')
     } else {
-      params.set('search', search)
+      params.set('search', query)
     }
+
+    params.delete('page')
 
     router.push(`?${params.toString()}`)
   }
