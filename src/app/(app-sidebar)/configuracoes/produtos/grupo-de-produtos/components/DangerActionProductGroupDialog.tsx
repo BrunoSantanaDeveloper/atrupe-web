@@ -1,4 +1,4 @@
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
 import { buttonVariants } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 interface Props {
@@ -27,28 +27,29 @@ export function DangerActionProductGroupDialog(props: Props) {
 
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      updateItem('productGroupRoute', groupId, {
-        isActive: type !== 'inactive',
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['productGroup', groupId],
-      })
-      queryClient.invalidateQueries({ queryKey: ['product-group-list', {}] })
-      onSuccess?.()
-    },
-  })
-
   const handleInactive = async () => {
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return `Grupo ${type === 'inactive' ? 'inativada' : 'ativada'} com sucesso`
-      },
-      error: `Erro ao ${type === 'inactive' ? 'inativar' : 'ativar'} grupo`,
+    const res = await updateItemNew({
+      route: `/category/${groupId}`,
+      data: { isActive: type !== 'inactive' },
     })
+
+    if (!res.success) {
+      toast.error(
+        res.message ||
+          `Erro ao ${type === 'inactive' ? 'inativar grupo' : 'ativar grupo'}`,
+      )
+      return
+    }
+
+    toast.success(
+      `Grupo ${type === 'inactive' ? 'inativado com sucesso' : 'ativado com sucesso'}`,
+    )
+
+    queryClient.invalidateQueries({
+      queryKey: ['productGroup', groupId],
+    })
+    queryClient.invalidateQueries({ queryKey: ['product-group-list', {}] })
+    onSuccess?.()
   }
 
   return (
