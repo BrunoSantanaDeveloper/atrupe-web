@@ -38,10 +38,10 @@ import {
 } from '@tabler/icons-react'
 
 // Actions
-import { getDataOld, updateItem } from '@/actions/_cruds'
+import { getDataOld, updateItemNew } from '@/actions/_cruds'
 
 // Third-party
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { sectorIcons } from '@/consts/sectors'
 
@@ -50,6 +50,7 @@ interface Props extends SearchParamsType {}
 export function Main({ searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<ListSectorDataType>()
+  const [isSwitching, setIsSwitching] = useState<string[]>([])
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -67,26 +68,27 @@ export function Main({ searchParams }: Props) {
 
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: (params: { id: string; value: boolean }) =>
-      updateItem('sectorRoute', params.id, { isActive: params.value }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-    },
-  })
-
   const handleSwitchChange = async (
     id: string,
     value: boolean,
     kind?: string,
   ) => {
-    if (mutation.isPending || kind === 'ADMINISTRATIVE') return
+    if (isSwitching.includes(id) || kind === 'ADMINISTRATIVE') return
 
-    toast.promise(mutation.mutateAsync({ id, value }), {
-      loading: 'Aguarde...',
-      success: 'Status atualizado!',
-      error: 'Ocorreu um erro',
+    setIsSwitching((prev) => [...prev, id])
+
+    const res = await updateItemNew({
+      route: `/sector/${id}`,
+      data: { isActive: value },
     })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+    setIsSwitching((prev) => prev.filter((switchingId) => switchingId !== id))
   }
 
   return (
@@ -151,8 +153,7 @@ export function Main({ searchParams }: Props) {
                                       )
                                     }
                                     disabled={
-                                      (mutation.isPending &&
-                                        mutation.variables?.id === item.id) ||
+                                      isSwitching.includes(item.id) ||
                                       item?.kind === 'ADMINISTRATIVE'
                                     }
                                   />
