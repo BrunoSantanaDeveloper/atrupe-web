@@ -68,8 +68,9 @@ export function SignupForm() {
     // Armazenar dados do formulário no store
     setSignupData(data)
 
-    // Reiniciar o countdown
-    setCountdown(120)
+    // Usar o tempo retornado pela API ou 120 como fallback
+    const countdownTime = res.data?.canResendIn || 120
+    setCountdown(countdownTime)
 
     router.replace('/cadastro/verificar-email')
   }
