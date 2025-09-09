@@ -34,7 +34,7 @@ import {
   defaultPersonValues,
   newSupplierSchema,
 } from './NewSuppiler/schema'
-import { createItem, getItemOld, updateItem } from '@/actions/_cruds'
+import { getItemOld, createItemNew, updateItemNew } from '@/actions/_cruds'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -45,7 +45,7 @@ interface Props {
   supplierId?: string
 }
 
-async function handleGetSupplier(supplierId: string) {
+async function fetchSupplier(supplierId: string) {
   if (!supplierId) return
   const supplier = await getItemOld({ route: 'supplierRoute', id: supplierId })
   return supplier
@@ -63,7 +63,7 @@ export function NewSupplier({
   const { data: supplier, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['supplier', supplierId],
-    queryFn: () => handleGetSupplier(supplierId ?? ''),
+    queryFn: () => fetchSupplier(supplierId ?? ''),
   })
 
   const transformSupplierData = (apiData: any): NewSupplierFormType => {
@@ -129,26 +129,27 @@ export function NewSupplier({
   const form = useForm<NewSupplierFormType>({
     resolver: zodResolver(newSupplierSchema),
     defaultValues: defaultPersonValues,
-    // mode: 'all',
   })
 
   useEffect(() => {
-    if (supplier) {
+    if (supplier && open) {
       const transformedData = transformSupplierData(supplier)
       form.reset(transformedData) // Atualizando o formulário com os dados transformados
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supplier])
+  }, [supplier, open])
 
   if (editMode && isLoading) return <></>
 
   const {
     handleSubmit,
-    reset,
     formState: { isSubmitting },
+    reset,
   } = form
 
   const onSubmit = async (data: NewSupplierFormType) => {
+    if (isSubmitting) return
+
     const formData = {
       ...data,
       contacts: data.responsibilities,
@@ -156,63 +157,40 @@ export function NewSupplier({
     }
     delete formData.responsibilities
 
-    try {
-      if (isSubmitting) return
+    if (editMode) {
+      const res = await updateItemNew({
+        route: `/supplier/${supplierId}`,
+        data: formData,
+      })
 
-      if (editMode) {
-        await updateItem('supplierRoute', supplierId ?? '', formData)
-          .then(() => {
-            queryClient.invalidateQueries()
-          })
-          .catch((error) => {
-            console.error(error)
-            return error
-          })
-      } else {
-        await createItem({
-          route: 'supplierRoute',
-          data: formData,
-        })
-          .then(() => {
-            queryClient.invalidateQueries()
-          })
-          .catch((error) => {
-            console.error(error)
-            return error
-          })
+      if (!res.success) {
+        toast.error(res.message || 'Erro ao editar fornecedor')
+        return
       }
 
-      toast.success(
-        editMode
-          ? 'Fornecedor atualizado com sucesso!'
-          : 'Fornecedor cadastrado com sucesso!',
-      )
+      toast.success('Fornecedor atualizado com sucesso!')
+      queryClient.invalidateQueries()
+    } else {
+      const res = await createItemNew({
+        route: '/supplier',
+        data: formData,
+      })
 
-      handleCleanForm()
-      handleToggleModal()
-    } catch (error) {
-      console.error('Submission Error:', error)
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : `Erro ao ${editMode ? 'atualizar' : 'cadastrar'} Fornecedor`,
-      )
+      if (!res.success) {
+        toast.error(res.message || 'Erro ao criar fornecedor')
+        return
+      }
+
+      toast.success('Fornecedor criado com sucesso!')
+      queryClient.invalidateQueries()
     }
-  }
 
-  function handleCleanForm() {
+    onOpenChange(false)
     reset(defaultPersonValues)
   }
 
-  function handleToggleModal() {
-    if (!editMode) {
-      handleCleanForm()
-    }
-    onOpenChange(false)
-  }
-
   return (
-    <Dialog open={open} onOpenChange={handleToggleModal}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader>
           <DialogTitle>
