@@ -18,7 +18,15 @@ import { formatToLocaleDate } from '@/lib/formatDate'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
 
 // Icons
-import { MoneySignIcon, CalendarDollarIcon } from '@/assets/icons/PdfIcons'
+import {
+  MoneySignIcon,
+  CalendarDollarIcon,
+  EmailIcon,
+  WebsiteIcon,
+  LinkedinIcon,
+  FacebookIcon,
+  InstagramIcon,
+} from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
   page: {
@@ -42,29 +50,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#F2F4F7',
-    padding: 24,
+    padding: 30,
     height: 76,
   },
   logo: {
-    width: 60,
-    height: 60,
+    width: 80,
+    height: 80,
     objectFit: 'contain',
   },
   companyInfo: {
     fontSize: 8,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    gap: 2,
+    gap: 4,
   },
   companyName: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
     marginBottom: 2,
   },
+  socialInfo: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    width: '25%',
+    paddingRight: 0,
+  },
   infoContainer: {
-    padding: 24,
+    padding: 30,
     paddingTop: 0,
   },
   title: {
@@ -98,9 +113,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 5,
     borderTopWidth: 1,
-    borderTopColor: '#374151',
+    borderTopColor: '#344054',
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#D0D5DD',
     fontWeight: 'bold',
   },
   tableHeaderCell: {
@@ -112,7 +127,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: 5,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#D0D5DD',
   },
   tableCell: {
     fontSize: 9,
@@ -141,7 +156,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 5,
     borderBottomWidth: 1,
-    borderBottomColor: '#374151',
+    borderBottomColor: '#344054',
   },
   totalLabel: {
     fontSize: 9,
@@ -196,6 +211,11 @@ const styles = StyleSheet.create({
     color: '#374151',
     marginTop: 2,
   },
+  divider: {
+    borderTopWidth: 1,
+    borderColor: '#344054',
+    marginVertical: 10,
+  },
 })
 
 interface Props {
@@ -208,17 +228,112 @@ export function PayrollPdf({ data }: Props) {
       <Page size="A4" style={styles.page}>
         {/* Cabeçalho */}
         <View style={styles.header} fixed>
-          <PDFImage src={data.company.logo} style={styles.logo} />
-          <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>{data.company.name}</Text>
-            <Text>{maskCnpj(data.company.cnpj)}</Text>
+          <View style={{ width: '35%' }}>
+            <PDFImage
+              src={
+                data.company?.logo ||
+                '/src/assets/icons/companyIconPlaceholder.png'
+              }
+              style={styles.logo}
+            />
+          </View>
+          <View style={[styles.companyInfo, { width: '50%' }]}>
+            <Text style={styles.companyName}>{data.company?.name}</Text>
+            <Text>{maskCnpj(data.company?.cnpj)}</Text>
             <Text>
-              {data.company.address.street}, {data.company.address.number}
+              {[data.company?.address?.street, data.company?.address?.number]
+                .filter(Boolean)
+                .join(', ')}
             </Text>
             <Text>
-              {data.company.address.neighborhood}, {data.company.address.city},{' '}
-              {data.company.address.state}.
+              {[
+                data.company?.address?.neighborhood,
+                data.company?.address?.city,
+                data.company?.address?.state,
+              ]
+                .filter(Boolean)
+                .join(', ')}
+              {data.company?.address?.city || data.company?.address?.state
+                ? '.'
+                : ''}
             </Text>
+          </View>
+          <View style={styles.socialInfo}>
+            {data.company?.socialNetworks?.instagram && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.instagram}
+                </Text>
+                <InstagramIcon />
+              </View>
+            )}
+            {data.company?.socialNetworks?.facebook && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.facebook}
+                </Text>
+                <FacebookIcon />
+              </View>
+            )}
+            {data.company?.socialNetworks?.linkedin && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.socialNetworks?.linkedin}
+                </Text>
+                <LinkedinIcon />
+              </View>
+            )}
+            {data.company?.siteUrl && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.siteUrl}
+                </Text>
+                <WebsiteIcon />
+              </View>
+            )}
+            {data.company?.email && (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'flex-end',
+                }}
+              >
+                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+                  {data.company?.email}
+                </Text>
+                <EmailIcon />
+              </View>
+            )}
           </View>
         </View>
 
@@ -285,14 +400,16 @@ export function PayrollPdf({ data }: Props) {
               <Text style={styles.bottomTitle}>Data</Text>
               <Text style={styles.bottomText}>
                 Vencimento em:{' '}
-                {data.payment?.dueDate
-                  ? formatToLocaleDate(data.payment.dueDate)
+                {data.payables?.[0]?.installments?.[0]?.dueDate
+                  ? formatToLocaleDate(data.payables[0].installments[0].dueDate)
                   : ''}
               </Text>
               <Text style={styles.bottomText}>
                 Pagamento em:{' '}
-                {data.payment?.paidAt
-                  ? formatToLocaleDate(data.payment.paidAt)
+                {data.payables?.[0]?.installments?.[0]?.paidDate
+                  ? formatToLocaleDate(
+                      data.payables[0].installments[0].paidDate,
+                    )
                   : ''}
               </Text>
             </View>
@@ -301,15 +418,21 @@ export function PayrollPdf({ data }: Props) {
               <Text style={styles.bottomTitle}>Pagamento</Text>
               <Text style={styles.bottomText}>
                 Valor:{' '}
-                {data.payment?.amountPaid
-                  ? formatCurrencyToBrl(data.payment?.amountPaid)
+                {data.payables?.[0]?.installments?.[0]?.paidAmount
+                  ? formatCurrencyToBrl(
+                      data.payables[0].installments[0].paidAmount,
+                    )
                   : ''}
               </Text>
               <Text style={styles.bottomText}>
-                Forma de pagamento: {data.payment?.paymentMethod}
+                Forma de pagamento:{' '}
+                {data.payables?.[0]?.installments?.[0]?.paymentMethod || ''}
               </Text>
             </View>
           </View>
+
+          {/* Linha divisória */}
+          <View style={styles.divider} />
         </View>
 
         {/* Número da Página */}

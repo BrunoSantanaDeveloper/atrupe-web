@@ -42,13 +42,22 @@ export type PayrollPdfType = {
     name: string
     cnpj: string
     email: string
+    phone: string
+    siteUrl: string
     logo: string
+    socialNetworks: {
+      instagram: string
+      facebook: string
+      linkedin: string
+    }
     address: {
       street: string
       number: string
+      complement: string
       neighborhood: string
       city: string
       state: string
+      zipCode: string
     }
   }
   employeeName: string
@@ -60,10 +69,19 @@ export type PayrollPdfType = {
     amount: number
   }[]
   netSalary: number
-  payment: {
-    dueDate: string
-    paidAt: string
-    amountPaid: number
-    paymentMethod: string
-  }
+  payables: {
+    id: string
+    description: string
+    totalAmount: number
+    installments: {
+      id: string
+      installmentNumber: number
+      dueDate: string
+      amount: number
+      status: string
+      paidDate: string | null
+      paidAmount: number | null
+      paymentMethod: string | null
+    }[]
+  }[]
 }
