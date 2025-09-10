@@ -123,6 +123,25 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#374151',
   },
+  tableHeaderCellAdvance: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#374151',
+    width: '75%',
+  },
+  tableHeaderCellType: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#374151',
+    width: '25%',
+  },
+  tableHeaderCellValue: {
+    fontSize: 7,
+    fontWeight: 'bold',
+    color: '#374151',
+    width: '25%',
+    textAlign: 'right',
+  },
   tableRow: {
     flexDirection: 'row',
     paddingVertical: 5,
@@ -135,6 +154,11 @@ const styles = StyleSheet.create({
   },
   referenceCell: {
     width: '50%',
+    fontSize: 9,
+    color: '#111827',
+  },
+  referenceCellAdvance: {
+    width: '75%',
     fontSize: 9,
     color: '#111827',
   },
@@ -216,13 +240,38 @@ const styles = StyleSheet.create({
     borderColor: '#344054',
     marginVertical: 10,
   },
+  infoDate: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginTop: 20,
+    gap: 10,
+    width: '100%',
+    lineHeight: 0.7,
+  },
+  signatures: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 50,
+  },
+  signatureLine: {
+    width: '33%',
+    borderTopWidth: 1,
+    borderColor: '#000000',
+    paddingTop: 4,
+    alignItems: 'center',
+    position: 'relative',
+  },
 })
 
 interface Props {
   data: PayrollPdfType
+  type?: 'payroll' | 'advance'
 }
 
-export function PayrollPdf({ data }: Props) {
+export function PayrollPdf({ data, type = 'payroll' }: Props) {
+  const isAdvance = type === 'advance'
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -340,7 +389,11 @@ export function PayrollPdf({ data }: Props) {
         <View style={styles.infoContainer}>
           {/* Linha do título e colaborador */}
           <View style={styles.infoRow}>
-            <Text style={styles.title}>Controle de Folha de Pagamento</Text>
+            <Text style={styles.title}>
+              {isAdvance
+                ? 'Adiantamento de salário'
+                : 'Controle de Folha de Pagamento'}
+            </Text>
             <View style={styles.collaboratorBlock}>
               <Text style={styles.collaboratorName}>{data.employeeName}</Text>
               <Text style={styles.collaboratorRef}>
@@ -352,31 +405,40 @@ export function PayrollPdf({ data }: Props) {
           {/* Tabela de Itens */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderCell, { width: '50%' }]}>
+              <Text
+                style={
+                  isAdvance
+                    ? styles.tableHeaderCellAdvance
+                    : styles.tableHeaderCell
+                }
+              >
                 REFERÊNCIA
               </Text>
-              <Text style={[styles.tableHeaderCell, { width: '25%' }]}>
-                TIPO
-              </Text>
-              <Text
-                style={[
-                  styles.tableHeaderCell,
-                  { width: '25%', textAlign: 'right' },
-                ]}
-              >
-                VALOR
-              </Text>
+              {!isAdvance && (
+                <Text style={styles.tableHeaderCellType}>TIPO</Text>
+              )}
+              <Text style={styles.tableHeaderCellValue}>VALOR</Text>
             </View>
             {data.items.map((item, index) => (
               <View key={item.id || index} style={styles.tableRow}>
-                <Text style={styles.referenceCell}>{item.description}</Text>
-                <Text style={styles.typeCell}>
-                  {item.type === 'INCREASE'
-                    ? 'Acréscimo'
-                    : item.type === 'DISCOUNT'
-                      ? 'Desconto'
-                      : 'Adiantamento'}
+                <Text
+                  style={
+                    isAdvance
+                      ? styles.referenceCellAdvance
+                      : styles.referenceCell
+                  }
+                >
+                  {item.description}
                 </Text>
+                {!isAdvance && (
+                  <Text style={styles.typeCell}>
+                    {item.type === 'INCREASE'
+                      ? 'Acréscimo'
+                      : item.type === 'DISCOUNT'
+                        ? 'Desconto'
+                        : 'Adiantamento'}
+                  </Text>
+                )}
                 <Text style={styles.valueCell}>
                   {item.type === 'DISCOUNT' ? '-' : ''}
                   {formatCurrencyToBrl(item.amount)}
@@ -387,7 +449,9 @@ export function PayrollPdf({ data }: Props) {
 
           {/* Total a Pagar */}
           <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Salário a pagar</Text>
+            <Text style={styles.totalLabel}>
+              {isAdvance ? 'Total a pagar' : 'Salário a pagar'}
+            </Text>
             <Text style={styles.totalValue}>
               {formatCurrencyToBrl(data.netSalary)}
             </Text>
@@ -431,8 +495,32 @@ export function PayrollPdf({ data }: Props) {
             </View>
           </View>
 
-          {/* Linha divisória */}
-          <View style={styles.divider} />
+          {/* Seção de acordo e assinaturas - apenas para adiantamento */}
+          {isAdvance && (
+            <>
+              <View style={styles.infoDate}>
+                <View />
+                <View>
+                  <Text>De acordo, ____/____/______</Text>
+                </View>
+              </View>
+
+              {/* Assinaturas */}
+              <View style={styles.signatures}>
+                <View style={styles.signatureLine}>
+                  <Text>{data.employeeName}</Text>
+                </View>
+                <View style={{ width: '33%' }} />
+                <View style={styles.signatureLine}>
+                  <Text>{data.company?.name}</Text>
+                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                </View>
+              </View>
+            </>
+          )}
+
+          {/* Linha divisória - apenas para folha de pagamento */}
+          {!isAdvance && <View style={styles.divider} />}
         </View>
 
         {/* Número da Página */}

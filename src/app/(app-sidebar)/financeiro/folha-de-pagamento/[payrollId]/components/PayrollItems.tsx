@@ -51,6 +51,7 @@ import type {
 
 // Libs
 import { pdf } from '@react-pdf/renderer'
+import { getItem } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDateTime } from '@/lib/formatDate'
 
@@ -68,11 +69,23 @@ export function PayrollItems({ data }: Props) {
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
   const [showValues, setShowValues] = useState(true)
 
-  const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
+  const handleGeneratePDF = async (itemId: string) => {
     setIsLoadingPDF(true)
     try {
+      // Buscar dados do PDF da API
+      const result = await getItem({
+        route: `/financial/salary-sheets/item/${itemId}/advance-pdf-data`,
+      })
+
+      console.log(result)
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
+      const pdfData: PayrollPdfType = result.data
       const blob = await pdf(
-        <PayrollPdf data={payrollData as unknown as PayrollPdfType} />, // TODO: Remover o as unknown as PayrollPdfType
+        <PayrollPdf data={pdfData} type="advance" />,
       ).toBlob()
 
       const url = URL.createObjectURL(blob)
@@ -169,7 +182,7 @@ export function PayrollItems({ data }: Props) {
                             <ActionButton
                               Icon={IconPrinter}
                               tooltip="Imprimir"
-                              onClick={() => handleGeneratePDF(data)}
+                              onClick={() => handleGeneratePDF(item.id)}
                               isLoading={isLoadingPDF}
                             />
                           )}
