@@ -35,7 +35,7 @@ export function SupplierSummary({ data }: Props) {
           /> */}
           <TextSupportingText
             supporting="Categoria"
-            text={data?.general?.category}
+            text={data?.general?.category?.name}
           />
         </DetailCardRowItem>
 
