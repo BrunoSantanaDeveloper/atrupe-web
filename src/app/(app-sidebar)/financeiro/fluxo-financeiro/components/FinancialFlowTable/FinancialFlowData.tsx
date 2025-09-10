@@ -82,6 +82,8 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
   const transactionData: TransactionDataType[] = data?.data || []
   const hasData = transactionData.length
 
+  console.log(transactionData)
+
   return (
     <>
       <CardContent>
@@ -184,6 +186,8 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                     {group?.transactions?.length
                       ? group?.transactions.map((item) => {
                           const currentInstallment = item?.currentInstallment
+                          const editDisabled =
+                            item?.expenseSource === 'EMPLOYEE'
 
                           return (
                             <TableRow key={item?.id} className="text-nowrap">
@@ -266,9 +270,11 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                         Icon={IconRefreshDot}
                                         tooltip="Editar parcelas"
                                         onClick={() => {
+                                          if (editDisabled) return
                                           setRowData(item)
                                           setOpenDialog('edit-installments')
                                         }}
+                                        disabled={editDisabled}
                                       />
                                     </PermissionGate>
 

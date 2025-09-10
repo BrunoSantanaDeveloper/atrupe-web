@@ -146,6 +146,8 @@ export function TransactionsData({ type, searchParams }: Props) {
                       ? group?.transactions.map((item) => {
                           const description = `${truncateString(80, item?.description)}`
                           const currentInstallment = item?.currentInstallment
+                          const editDisabled =
+                            item?.expenseSource === 'EMPLOYEE'
 
                           return (
                             <TableRow key={item?.id}>
@@ -211,9 +213,12 @@ export function TransactionsData({ type, searchParams }: Props) {
                                         Icon={IconRefreshDot}
                                         tooltip="Editar parcelas"
                                         onClick={() => {
+                                          if (editDisabled) return
+
                                           setRowData(item)
                                           setOpenDialog('edit-installments')
                                         }}
+                                        disabled={editDisabled}
                                       />
                                     </PermissionGate>
                                     <PermissionGate

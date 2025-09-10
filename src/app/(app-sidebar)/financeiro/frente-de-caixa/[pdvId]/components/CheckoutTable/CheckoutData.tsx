@@ -176,6 +176,9 @@ export function CheckoutData({ searchParams, tabs, id }: Props) {
                                         setRowData(register)
                                         setOpenDialog('edit-installments')
                                       }}
+                                      // disabled={
+                                      //   item?.expenseSource === 'EMPLOYEE'
+                                      // }
                                     />
                                     <ActionButton
                                       Icon={IconMessage}

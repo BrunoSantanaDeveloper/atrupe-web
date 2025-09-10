@@ -45,6 +45,8 @@ export type TransactionListType = {
   currentInstallment: InstallmentType
   notes: string
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
+  expenseSource: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
+  isSatisfied: boolean
 }
 
 export type TransactionDetailsType = {

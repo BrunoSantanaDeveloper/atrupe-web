@@ -328,6 +328,9 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                           setRowData(deliverySchedule)
                                           setOpenDialog('edit-installments')
                                         }}
+                                        // disabled={
+                                        //   item?.expenseSource === 'EMPLOYEE'
+                                        // }
                                       />
                                     ) : (
                                       <ActionButton
