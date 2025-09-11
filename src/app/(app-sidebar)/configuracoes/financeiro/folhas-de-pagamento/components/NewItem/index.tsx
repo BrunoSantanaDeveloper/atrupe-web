@@ -126,15 +126,15 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
                 />
                 <FormSelect
                   name="type"
-                  label="Tipo"
+                  label="Operação em folha"
                   options={[
                     {
                       value: 'INCREASE',
-                      label: 'Acréscimo',
+                      label: 'Lançar acréscimo',
                     },
                     {
                       value: 'DISCOUNT',
-                      label: 'Desconto',
+                      label: 'Lançar desconto',
                     },
                   ]}
                   width="flex-[1_0_300px]"

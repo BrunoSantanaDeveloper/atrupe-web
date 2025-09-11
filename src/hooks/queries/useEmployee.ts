@@ -7,7 +7,7 @@ interface IEmployees {
 }
 
 async function fetchData(): Promise<IEmployees[]> {
-  const data = await getData({ route: 'employee/list' })
+  const data = await getData({ route: '/employee/list' })
   return data.data
 }
 
