@@ -34,20 +34,17 @@ import type {
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { getData, updateItemNew, deleteItemNew } from '@/actions/_cruds'
+import { getData, updateItemNew } from '@/actions/_cruds'
 
 // Third-party
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconMinus, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react'
+import { IconMinus, IconPencil, IconPlus } from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { toast } from 'sonner'
-
-// Store
-import { useAlertDialog } from '@/store/useAlertDialog'
 
 export function Main({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
@@ -55,7 +52,6 @@ export function Main({ searchParams }: SearchParamsType) {
   const [isLoadingAction, setIsLoadingAction] = useState('')
 
   const queryClient = useQueryClient()
-  const { open: openAlertDialog } = useAlertDialog()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -102,37 +98,6 @@ export function Main({ searchParams }: SearchParamsType) {
 
     await new Promise((resolve) => setTimeout(resolve, 600))
 
-    setIsLoadingAction('')
-  }
-
-  const handleDeleteItem = async (item: PayrollConfigItemType) => {
-    await openAlertDialog({
-      title: 'Excluir item de custo',
-      description: `Tem certeza que deseja excluir o item "${item?.reference}"? Esta ação irá remover este item de custo para TODOS os colaboradores e não pode ser desfeita.`,
-      confirmLabel: 'Excluir',
-      cancelLabel: 'Cancelar',
-      Icon: IconTrash,
-      iconVariant: 'errorBorderedLight',
-      confirmVariant: 'error',
-      toastMsg: {
-        loading: 'Excluindo item de custo...',
-        success: 'Item de custo excluído com sucesso!',
-        error: 'Erro ao excluir item de custo',
-      },
-      onConfirm: async () => {
-        const result = await deleteItemNew({
-          route: `/financial/salaries/${item?.id}/all`,
-        })
-
-        if (result.success) {
-          queryClient.invalidateQueries()
-        } else {
-          throw new Error(result.message)
-        }
-      },
-    })
-
-    // Remove o loading independentemente do resultado
     setIsLoadingAction('')
   }
 
@@ -215,18 +180,6 @@ export function Main({ searchParams }: SearchParamsType) {
                                     isLoading={isLoadingAction === item?.id}
                                     onClick={() => {
                                       handleToggleSetItem(item)
-                                    }}
-                                  />
-                                  <ActionButton
-                                    tooltip="Excluir item de custo"
-                                    variant="neutralGhost"
-                                    Icon={IconTrash}
-                                    isLoading={
-                                      isLoadingAction === `delete-${item?.id}`
-                                    }
-                                    onClick={() => {
-                                      setIsLoadingAction(`delete-${item?.id}`)
-                                      handleDeleteItem(item)
                                     }}
                                   />
                                 </TooltipProvider>

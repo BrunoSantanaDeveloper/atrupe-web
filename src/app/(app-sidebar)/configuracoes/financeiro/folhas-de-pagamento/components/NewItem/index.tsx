@@ -30,7 +30,7 @@ import { IconCirclePlus, IconCircleCheck } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -68,31 +68,24 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
     }
   }, [editMode, rowData, form, open])
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      editMode
-        ? updateItemNew({
-            route: `/financial/salaries/${rowData?.id}`,
-            data,
-          })
-        : createItemNew({
-            route: '/financial/salaries',
-            data,
-          }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    const result = await mutation.mutateAsync(data)
+    const result = editMode
+      ? await updateItemNew({
+          route: `/financial/salaries/${rowData?.id}`,
+          data,
+        })
+      : await createItemNew({
+          route: '/financial/salaries',
+          data,
+        })
 
-    if (result.success) {
-      toast.success(result.message)
-      handleOpenChange(false)
-    } else {
+    if (!result.success) {
       toast.error(result.message)
+      return
     }
+
+    queryClient.invalidateQueries()
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (openDialog: boolean) => {
