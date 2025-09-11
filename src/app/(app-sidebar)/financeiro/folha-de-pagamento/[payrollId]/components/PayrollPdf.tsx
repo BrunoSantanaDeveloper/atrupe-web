@@ -16,6 +16,7 @@ import { PayrollPdfType } from '@/types/financial/payroll'
 // Utils
 import { formatToLocaleDate } from '@/lib/formatDate'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
+import { numberToWords } from '@/lib/numberToWords'
 
 // Icons
 import {
@@ -263,6 +264,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
   },
+  advanceTextContainer: {
+    marginBottom: 15,
+    lineHeight: 0.7,
+  },
+  advanceParagraph: {
+    fontSize: 9,
+    textAlign: 'justify',
+  },
+  clarityTextContainer: {
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  clarityParagraph: {
+    fontSize: 9,
+    textAlign: 'justify',
+  },
 })
 
 interface Props {
@@ -402,6 +419,29 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
             </View>
           </View>
 
+          {/* Texto de adiantamento de salário */}
+          {isAdvance && (
+            <View style={styles.advanceTextContainer}>
+              <Text style={styles.advanceParagraph}>
+                Recibi(emos) de {data.company?.name} o valor de{' '}
+                {formatCurrencyToBrl(data.netSalary)} (
+                {numberToWords(data.netSalary, true)}) na data de{' '}
+                {new Date(
+                  data.payables?.[0]?.installments?.[0]?.dueDate || new Date(),
+                ).getDate()}{' '}
+                de{' '}
+                {new Date(
+                  data.payables?.[0]?.installments?.[0]?.dueDate || new Date(),
+                ).toLocaleDateString('pt-BR', { month: 'long' })}{' '}
+                de{' '}
+                {new Date(
+                  data.payables?.[0]?.installments?.[0]?.dueDate || new Date(),
+                ).getFullYear()}{' '}
+                correspondente aos itens descritos abaixo:
+              </Text>
+            </View>
+          )}
+
           {/* Tabela de Itens */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
@@ -498,6 +538,12 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
           {/* Seção de acordo e assinaturas - apenas para adiantamento */}
           {isAdvance && (
             <>
+              <View style={styles.clarityTextContainer}>
+                <Text style={styles.clarityParagraph}>
+                  e para clareza, firmo(amos) o presente.
+                </Text>
+              </View>
+
               <View style={styles.infoDate}>
                 <View />
                 <View>
