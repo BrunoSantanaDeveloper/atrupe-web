@@ -77,6 +77,7 @@ export type TransactionDetailsType = {
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
   installments: InstallmentType[]
   isSale: boolean
+  expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
 }
 
 export type TransactionDataType = {

@@ -132,7 +132,11 @@ export function TransactionDetailsDialog({
               />
             ) : (
               <TextSupportingText
-                supporting="Fornecedor"
+                supporting={
+                  rowData?.expenseSource === 'EMPLOYEE'
+                    ? 'Colaborador'
+                    : 'Fornecedor'
+                }
                 text={rowData?.supplier?.name || rowData?.employee?.name}
               />
             )}

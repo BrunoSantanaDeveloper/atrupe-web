@@ -133,32 +133,36 @@ export function EditTransactionData({
               noValidate
               className="flex flex-wrap gap-5"
             >
-              {type === 'receivable' ? (
-                <ClientSelectField<FormType>
-                  name="clientId"
-                  label="Cliente"
-                  width="w-full"
-                  onChange={(e) => {
-                    setValue('clientId', e)
-                  }}
-                  defaultValues={{
-                    id: rowData?.client?.id || '',
-                    name: rowData?.client?.name || '',
-                  }}
-                />
-              ) : (
-                <SupplierSelectField<FormType>
-                  name="supplierId"
-                  label="Fornecedor"
-                  width="w-full"
-                  onChange={(e) => {
-                    setValue('supplierId', e)
-                  }}
-                  defaultValues={{
-                    id: rowData?.supplier?.id || '',
-                    name: rowData?.supplier?.name || '',
-                  }}
-                />
+              {rowData?.expenseSource !== 'EMPLOYEE' && (
+                <>
+                  {type === 'receivable' ? (
+                    <ClientSelectField<FormType>
+                      name="clientId"
+                      label="Cliente"
+                      width="w-full"
+                      onChange={(e) => {
+                        setValue('clientId', e)
+                      }}
+                      defaultValues={{
+                        id: rowData?.client?.id || '',
+                        name: rowData?.client?.name || '',
+                      }}
+                    />
+                  ) : (
+                    <SupplierSelectField<FormType>
+                      name="supplierId"
+                      label="Fornecedor"
+                      width="w-full"
+                      onChange={(e) => {
+                        setValue('supplierId', e)
+                      }}
+                      defaultValues={{
+                        id: rowData?.supplier?.id || '',
+                        name: rowData?.supplier?.name || '',
+                      }}
+                    />
+                  )}
+                </>
               )}
               <FormInput<FormType>
                 name="description"
