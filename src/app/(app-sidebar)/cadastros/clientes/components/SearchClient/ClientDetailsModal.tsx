@@ -12,19 +12,24 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { TextSearchIcon } from 'lucide-react'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
+import { IconArrowRight } from '@tabler/icons-react'
 
 export interface ClientData {
-  cnpj: string
-  razaoSocial: string
-  nomeFantasia: string
-  telefone: string
-  email: string
-  cep: string
-  estado: string
-  cidade: string
-  bairro: string
-  rua: string
-  numero: string
+  document: string
+  documentType: 'CPF' | 'CNPJ'
+  name: string
+  legalName?: string
+  phone?: string
+  birthdate?: string
+  motherName?: string
+  address: {
+    street: string
+    city: string
+    state: string
+    zipcode: string
+    country: string
+    neighborhood: string
+  }
 }
 
 interface ClientDetailsModalProps {
@@ -50,45 +55,83 @@ export function ClientDetailsModal({
                 rounded
                 Icon={TextSearchIcon}
               />
-              <DialogTitle>Informações do CNPJ</DialogTitle>
+              <DialogTitle>
+                Informações do {clientData.documentType}
+              </DialogTitle>
             </div>
           </div>
         </DialogHeader>
 
         <DialogBody className="mt-0 pt-0">
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
-            <TextSupportingText supporting="CNPJ" text={clientData.cnpj} />
             <TextSupportingText
-              supporting="Razão Social"
-              text={clientData.razaoSocial}
+              supporting={clientData.documentType}
+              text={clientData.document}
             />
-            <TextSupportingText
-              supporting="Nome Fantasia"
-              text={clientData.nomeFantasia}
-            />
+            {clientData.documentType === 'CNPJ' ? (
+              <>
+                <TextSupportingText
+                  supporting="Razão Social"
+                  text={clientData.legalName}
+                />
+                <TextSupportingText
+                  supporting="Nome Fantasia"
+                  text={clientData.name}
+                />
+              </>
+            ) : (
+              <>
+                <TextSupportingText supporting="Nome" text={clientData.name} />
+                <TextSupportingText
+                  supporting="Data de Nascimento"
+                  text={clientData.birthdate}
+                />
+              </>
+            )}
           </DetailCardRowItem>
 
+          {clientData.documentType === 'CPF' && clientData.motherName && (
+            <DetailCardRowItem className="lg:grid-cols-3 px-0">
+              <TextSupportingText
+                supporting="Nome da Mãe"
+                text={clientData.motherName}
+              />
+            </DetailCardRowItem>
+          )}
+
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
+            {clientData.phone && (
+              <TextSupportingText
+                supporting="Telefone"
+                text={clientData.phone}
+              />
+            )}
             <TextSupportingText
-              supporting="Telefone"
-              text={clientData.telefone}
+              supporting="CEP"
+              text={clientData.address.zipcode}
             />
-            <TextSupportingText supporting="E-mail" text={clientData.email} />
-            <TextSupportingText supporting="CEP" text={clientData.cep} />
+            <TextSupportingText
+              supporting="Estado"
+              text={clientData.address.state}
+            />
           </DetailCardRowItem>
 
           <DetailCardRowItem
             className="lg:grid-cols-3 px-0"
             showSeparator={false}
           >
-            <TextSupportingText supporting="Estado" text={clientData.estado} />
-            <TextSupportingText supporting="Cidade" text={clientData.cidade} />
-            <TextSupportingText supporting="Bairro" text={clientData.bairro} />
-          </DetailCardRowItem>
-
-          <DetailCardRowItem className="lg:grid-cols-2 px-0">
-            <TextSupportingText supporting="Rua" text={clientData.rua} />
-            <TextSupportingText supporting="Número" text={clientData.numero} />
+            <TextSupportingText
+              supporting="Cidade"
+              text={clientData.address.city}
+            />
+            <TextSupportingText
+              supporting="Bairro"
+              text={clientData.address.neighborhood}
+            />
+            <TextSupportingText
+              supporting="Rua"
+              text={clientData.address.street}
+            />
           </DetailCardRowItem>
         </DialogBody>
 
@@ -96,9 +139,7 @@ export function ClientDetailsModal({
           <DialogClose asChild>
             <Button variant="neutralOutline">Cancelar</Button>
           </DialogClose>
-          <Button className="bg-green-600 hover:bg-green-700">
-            Cadastrar →
-          </Button>
+          <Button RightIcon={IconArrowRight}>Cadastrar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

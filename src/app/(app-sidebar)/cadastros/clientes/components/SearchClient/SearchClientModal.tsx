@@ -69,10 +69,11 @@ export function SearchClientModal({
   const handleSubmit = async (data: SearchClientFormType) => {
     if (Object.keys(errors).length > 0) return
 
-    const isCNPJ = data.cpfOrCnpj.length === 14
+    const cleanDocument = data.cpfOrCnpj.replace(/[.\-/]/g, '')
+    const isCNPJ = cleanDocument.length === 14
     const route = isCNPJ
-      ? `/utils/company/${data.cpfOrCnpj}`
-      : `/utils/people/${data.cpfOrCnpj}`
+      ? `/utils/company/${cleanDocument}`
+      : `/utils/people/${cleanDocument}`
 
     const res = await getItem({
       route,
@@ -88,19 +89,37 @@ export function SearchClientModal({
       return
     }
 
-    const fetchedClientData = {
-      cnpj: res.data.cnpj || data.cpfOrCnpj,
-      razaoSocial: res.data.razaoSocial || res.data.razao_social || '',
-      nomeFantasia: res.data.nomeFantasia || res.data.nome_fantasia || '',
-      telefone: res.data.telefone || '',
-      email: res.data.email || '',
-      cep: res.data.cep || '',
-      estado: res.data.estado || '',
-      cidade: res.data.cidade || '',
-      bairro: res.data.bairro || '',
-      rua: res.data.rua || '',
-      numero: res.data.numero || '',
-    }
+    const fetchedClientData: ClientData = isCNPJ
+      ? {
+          document: res.data.cnpj || cleanDocument,
+          documentType: 'CNPJ',
+          name: res.data.name || '',
+          legalName: res.data.legalName || '',
+          phone: res.data.phone || '',
+          address: {
+            street: res.data.address?.street || '',
+            city: res.data.address?.city || '',
+            state: res.data.address?.state || '',
+            zipcode: res.data.address?.zipcode || '',
+            country: res.data.address?.country || '',
+            neighborhood: res.data.address?.neighborhood || '',
+          },
+        }
+      : {
+          document: res.data.cpf || cleanDocument,
+          documentType: 'CPF',
+          name: res.data.name || '',
+          birthdate: res.data.birthdate || '',
+          motherName: res.data.motherName || '',
+          address: {
+            street: res.data.address?.street || '',
+            city: res.data.address?.city || '',
+            state: res.data.address?.state || '',
+            zipcode: res.data.address?.zipcode || '',
+            country: res.data.address?.country || '',
+            neighborhood: res.data.address?.neighborhood || '',
+          },
+        }
 
     setClientData(fetchedClientData)
     setShowClientDetails(true)
