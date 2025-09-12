@@ -24,7 +24,7 @@ export function CpfOrCnpjField<T extends FieldValues>({
   width = 'flex-[1_0_100px]',
   ...props
 }: Props<T>) {
-  const { setValue, setError, setFocus, clearErrors } = useFormContext<T>()
+  const { setValue, setError, clearErrors } = useFormContext<T>()
 
   return (
     <FormInput<T>
@@ -54,7 +54,6 @@ export function CpfOrCnpjField<T extends FieldValues>({
               type: 'custom',
               message: 'Documento inválido',
             })
-            setFocus(name)
           } else {
             clearErrors(name)
           }
@@ -65,7 +64,6 @@ export function CpfOrCnpjField<T extends FieldValues>({
               type: 'custom',
               message: 'Documento inválido',
             })
-            setFocus(name)
           } else {
             clearErrors(name)
           }

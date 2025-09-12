@@ -13,7 +13,8 @@ import {
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2, SearchIcon, TextSearchIcon } from 'lucide-react'
+import { IconSearch } from '@tabler/icons-react'
+import { TextSearchIcon } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -55,10 +56,13 @@ export function SearchClientModal({
   })
 
   const {
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = form
 
   const handleSubmit = (data: SearchClientFormType) => {
+    if (Object.keys(errors).length > 0) return
+
+    // Buscar dados pelo número do documento.
     return data
   }
 
@@ -83,11 +87,7 @@ export function SearchClientModal({
         <DialogBody className="mt-0 pt-0">
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <CpfOrCnpjField
-                name="cpfOrCnpj"
-                placeholder="Digite aqui"
-                label=""
-              />
+              <CpfOrCnpjField name="cpfOrCnpj" placeholder="Digite aqui" />
             </form>
           </FormProvider>
         </DialogBody>
@@ -106,12 +106,10 @@ export function SearchClientModal({
               onClick={() => {
                 form.handleSubmit(handleSubmit)()
               }}
+              RightIcon={IconSearch}
+              isLoading={isSubmitting}
             >
               Consultar
-              {isSubmitting && (
-                <Loader2 className="w-5 h-5 ml-1 animate-spin" />
-              )}
-              {!isSubmitting && <SearchIcon className="w-5 h-5 ml-1" />}
             </Button>
           </div>
         </DialogFooter>
