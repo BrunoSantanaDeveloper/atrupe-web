@@ -55,9 +55,10 @@ import {
 import { createItemNew, getItemOld, updateItemNew } from '@/actions/_cruds'
 
 // Hooks
+import { useSector } from '@/hooks/queries/useSector'
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useSector } from '@/hooks/queries/useSector'
 
 interface Props {
   editMode?: boolean
@@ -91,6 +92,8 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
   const [insertAnother, setInsertAnother] = useState(!editMode)
 
+  const alertDialog = useAlertDialog()
+
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
 
@@ -100,6 +103,8 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     queryFn: () => handleGetProduct(productId ?? ''),
     enabled: !!productId,
   })
+
+  const isActive = product?.isActive ?? true
 
   // Filtrar etapas de produção para manter apenas as dos setores ativos, preservando isActive
   const getFilteredProductionStages = () => {
@@ -247,6 +252,40 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
 
   function handleRemoveCompositionProducts(index: number) {
     items.remove(index)
+  }
+
+  const handleToggleStatus = async () => {
+    if (!productId) return
+
+    const confirmed = await alertDialog.open({
+      title: `Deseja ${isActive ? 'inativar' : 'ativar'} este produto?`,
+      description: isActive
+        ? 'O produto ficará indisponível para novos orçamentos e vendas.'
+        : 'O produto ficará disponível novamente para orçamentos e vendas.',
+      confirmLabel: isActive ? 'Inativar' : 'Ativar',
+      confirmVariant: isActive ? 'error' : 'default',
+      onConfirm: async () => {
+        const result = await createItemNew({
+          route: `/product/${productId}/toggle-status`,
+          data: {
+            isActive: !isActive,
+          },
+        })
+
+        if (!result.success) {
+          throw new Error(result.message)
+        }
+      },
+      toastMsg: {
+        loading: 'Aguarde...',
+        success: `Produto ${isActive ? 'inativado' : 'ativado'} com sucesso!`,
+        error: `Erro ao ${isActive ? 'inativar' : 'ativar'} produto`,
+      },
+    })
+
+    if (confirmed) {
+      await queryClient.invalidateQueries()
+    }
   }
 
   return (
@@ -433,7 +472,15 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   checked={editMode ? false : insertAnother}
                   onCheckedChange={(value) => setInsertAnother(value)}
                 />
-              ) : null}
+              ) : (
+                <Button
+                  type="button"
+                  variant={isActive ? 'error' : 'default'}
+                  onClick={handleToggleStatus}
+                >
+                  {isActive ? 'Inativar' : 'Ativar'}
+                </Button>
+              )}
             </div>
             <div className="space-x-4">
               <Button

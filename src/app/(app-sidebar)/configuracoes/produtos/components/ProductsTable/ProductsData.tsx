@@ -10,9 +10,6 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-// Store
-import { useAlertDialog } from '@/store/useAlertDialog'
-
 // UI
 import {
   Table,
@@ -31,16 +28,14 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld, deleteItemNew } from '@/actions/_cruds'
+import { getDataOld } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
-import { ActionButton } from '@/components/common/ActionButton'
-import { IconForbid2 } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -49,9 +44,6 @@ interface Props extends SearchParamsType {
 export function ProductsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
-
-  const queryClient = useQueryClient()
-  const alertDialog = useAlertDialog()
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -63,41 +55,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
 
-  const deleteMutation = useMutation({
-    mutationFn: (productId: string) =>
-      deleteItemNew({ route: `/product/${productId}` }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['product-list'],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['product-totals'],
-      })
-    },
-  })
-
   const products: ProductListType[] = data?.data || []
   const hasData = products.length
-
-  const handleDisableProduct = async (id: string) => {
-    await alertDialog.open({
-      title: 'Desativar produto',
-      description: 'Tem certeza de que deseja desativar este produto?',
-      confirmLabel: 'Desativar',
-      cancelLabel: 'Cancelar',
-      iconVariant: 'warningBorderedLight',
-      onConfirm: async () => {
-        setSelectedProductId(id)
-        await deleteMutation.mutateAsync(id)
-        setSelectedProductId('')
-      },
-      toastMsg: {
-        loading: 'Desativando produto...',
-        success: 'Produto desativado com sucesso!',
-        error: 'Erro ao desativar produto',
-      },
-    })
-  }
 
   return (
     <>
@@ -143,17 +102,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
                             }}
                           />
                         </PermissionGate>
-                        {process.env.NODE_ENV === 'development' && (
-                          <ActionButton
-                            tooltip="Desativar produto"
-                            variant="neutralGhost"
-                            Icon={IconForbid2}
-                            isLoading={selectedProductId === product?.id}
-                            onClick={() => {
-                              handleDisableProduct(product?.id)
-                            }}
-                          />
-                        )}
                       </TooltipProvider>
                     </div>
                   </TableCell>
