@@ -32,6 +32,7 @@ import { getDataOld } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -84,7 +85,14 @@ export function ProductsData({ searchParams, tabs }: Props) {
                     <Badge variant="neutralLight">{product?.sectorName}</Badge>
                   </TableCell>
                   <TableCell className="text-success-700">
-                    {formatCurrencyToBrl(product?.salePrice)}
+                    {(() => {
+                      const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
+                      const visualUnitCost = convertRawToUnitCost(
+                        unitKind,
+                        product?.unitCost || 0,
+                      )
+                      return formatCurrencyToBrl(visualUnitCost)
+                    })()}
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">

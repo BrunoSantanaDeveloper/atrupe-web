@@ -6,6 +6,14 @@ export type ProductListType = {
   unitOfMeasureCode: string
   unitCost: number
   salePrice: number
+  items?: {
+    unitCost: number
+    salePrice: number
+    unitKind: string
+    unitOfMeasure: {
+      name: string
+    }
+  }[]
 }
 
 export type ProductType = {
