@@ -349,29 +349,53 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                 />
                 {items?.fields?.length === 1 && (
                   <>
-                    <UnitOfMeasureField
-                      name="items.0.unitKind"
-                      width="flex-[1_0_225px]"
-                    />
-                    <MeasurementInput
-                      control={control}
-                      index={0}
-                      unitKind={watch('items.0.unitKind')}
-                    />
-                    <div className="flex flex-wrap gap-4">
+                    {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
+                    <div className="flex flex-wrap gap-4 w-full h-20">
+                      <UnitOfMeasureField
+                        name="items.0.unitKind"
+                        width="flex-[1_0_225px]"
+                      />
                       <UnitCostInput
                         name="items.0.unitCost"
                         width="flex-[1_0_140px]"
                         index={0}
                       />
+                    </div>
+
+                    {/* Seção "Padrão de medidas do produto" */}
+                    {watch('items.0.unitKind') &&
+                      watch('items.0.unitKind') !== 'UNITY' && (
+                        <div className="w-full">
+                          <h4 className="text-md font-semibold text-gray-700 mb-4">
+                            Padrão de medidas do produto
+                          </h4>
+                          <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
+                            <MeasurementInput
+                              control={control}
+                              index={0}
+                              unitKind={watch('items.0.unitKind')}
+                            />
+                            <FormBrlInput
+                              name={`items.0.salePrice`}
+                              label="Valor"
+                              startAdornment={<>R$</>}
+                              width="flex-[1_0_140px]"
+                              disabled
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                    {/* Para unidade, mostrar apenas o valor total */}
+                    {watch('items.0.unitKind') === 'UNITY' && (
                       <FormBrlInput
                         name={`items.0.salePrice`}
-                        label="Valor de venda"
+                        label="Valor"
                         startAdornment={<>R$</>}
                         width="flex-[1_0_140px]"
                         disabled
                       />
-                    </div>
+                    )}
                   </>
                 )}
                 {items?.fields?.length > 1 &&
@@ -396,27 +420,54 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         label="Nome da composição"
                         width="flex-[1_0_100%]"
                       />
-                      <UnitOfMeasureField
-                        name={`items.${index}.unitKind`}
-                        width="flex-[1_0_200px]"
-                      />
-                      <MeasurementInput
-                        control={control}
-                        index={index}
-                        unitKind={watch(`items.${index}.unitKind`)}
-                      />
-                      <UnitCostInput
-                        name={`items.${index}.unitCost`}
-                        width="flex-[1_0_140px]"
-                        index={index}
-                      />
-                      <FormBrlInput
-                        name={`items.${index}.salePrice`}
-                        label="Valor de venda"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_140px]"
-                        disabled
-                      />
+
+                      {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
+                      <div className="flex flex-wrap gap-4 w-full">
+                        <UnitOfMeasureField
+                          name={`items.${index}.unitKind`}
+                          width="flex-[1_0_200px]"
+                        />
+                        <UnitCostInput
+                          name={`items.${index}.unitCost`}
+                          width="flex-[1_0_140px]"
+                          index={index}
+                        />
+                      </div>
+
+                      {/* Seção "Padrão de medidas do produto" */}
+                      {watch(`items.${index}.unitKind`) &&
+                        watch(`items.${index}.unitKind`) !== 'UNITY' && (
+                          <div className="w-full">
+                            <h4 className="text-sm font-medium text-gray-900 mb-3">
+                              Padrão de medidas do produto
+                            </h4>
+                            <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
+                              <MeasurementInput
+                                control={control}
+                                index={index}
+                                unitKind={watch(`items.${index}.unitKind`)}
+                              />
+                              <FormBrlInput
+                                name={`items.${index}.salePrice`}
+                                label="Valor"
+                                startAdornment={<>R$</>}
+                                width="flex-[1_0_140px]"
+                                disabled
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                      {/* Para unidade, mostrar apenas o valor total */}
+                      {watch(`items.${index}.unitKind`) === 'UNITY' && (
+                        <FormBrlInput
+                          name={`items.${index}.salePrice`}
+                          label="Valor"
+                          startAdornment={<>R$</>}
+                          width="flex-[1_0_140px]"
+                          disabled
+                        />
+                      )}
                     </div>
                   ))}
                 {canAddComposition && (
