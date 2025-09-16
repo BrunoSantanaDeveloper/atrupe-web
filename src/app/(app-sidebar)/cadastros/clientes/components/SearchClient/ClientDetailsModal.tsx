@@ -13,6 +13,19 @@ import { TextSearchIcon } from 'lucide-react'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
 import { IconArrowRight } from '@tabler/icons-react'
+import { maskCpfCnpj, MaskPhoneNumber, maskCep } from '@/lib/utils'
+
+function formatBirthdate(dateString?: string): string {
+  if (!dateString) return ''
+
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date)
+}
 
 export interface ClientData {
   document: string
@@ -45,16 +58,11 @@ export function ClientDetailsModal({
 }: ClientDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[800px]">
+      <DialogContent className="max-w-[830px]">
         <DialogHeader className="border-none">
           <div className="flex items-center justify-between mb-6 border-b pb-4">
             <div className="flex items-center gap-3">
-              <FeaturedIcon
-                variant="successBorderedLight"
-                className="w-8 h-8"
-                rounded
-                Icon={TextSearchIcon}
-              />
+              <FeaturedIcon variant="neutralOutline" Icon={TextSearchIcon} />
               <DialogTitle>
                 Informações do {clientData.documentType}
               </DialogTitle>
@@ -66,7 +74,7 @@ export function ClientDetailsModal({
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             <TextSupportingText
               supporting={clientData.documentType}
-              text={clientData.document}
+              text={maskCpfCnpj(clientData.document)}
             />
             {clientData.documentType === 'CNPJ' ? (
               <>
@@ -84,7 +92,7 @@ export function ClientDetailsModal({
                 <TextSupportingText supporting="Nome" text={clientData.name} />
                 <TextSupportingText
                   supporting="Data de Nascimento"
-                  text={clientData.birthdate}
+                  text={formatBirthdate(clientData.birthdate)}
                 />
               </>
             )}
@@ -103,12 +111,12 @@ export function ClientDetailsModal({
             {clientData.phone && (
               <TextSupportingText
                 supporting="Telefone"
-                text={clientData.phone}
+                text={MaskPhoneNumber(clientData.phone)}
               />
             )}
             <TextSupportingText
               supporting="CEP"
-              text={clientData.address.zipcode}
+              text={maskCep(clientData.address.zipcode)}
             />
             <TextSupportingText
               supporting="Estado"

@@ -126,6 +126,15 @@ export function MaskPhoneNumber(phone?: string | number | null) {
 }
 
 // Retorna o valor formatado em HH:MM
+export function maskCep(value: string) {
+  value = value.replace(/\D/g, '')
+  if (!value) return ''
+  if (value.length <= 5) {
+    return value.replace(/(\d{2})(\d{3})/, '$1.$2')
+  }
+  return value.replace(/(\d{2})(\d{3})(\d{3})/, '$1.$2-$3')
+}
+
 export function maskTime(value: string) {
   value = value.replace(/\D/g, '')
 

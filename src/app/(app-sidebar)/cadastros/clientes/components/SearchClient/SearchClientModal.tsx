@@ -23,10 +23,7 @@ import { toast } from 'sonner'
 import { ClientDetailsModal, type ClientData } from './ClientDetailsModal'
 
 const searchClientSchema = z.object({
-  cpfOrCnpj: z
-    .string()
-    .min(13, { message: 'CPF ou CNPJ é obrigatório' })
-    .max(14, { message: 'CPF ou CNPJ é obrigatório' }),
+  cpfOrCnpj: z.string(),
 })
 
 type SearchClientFormType = z.infer<typeof searchClientSchema>
@@ -63,10 +60,11 @@ export function SearchClientModal({
   })
 
   const {
+    handleSubmit,
     formState: { isSubmitting, errors },
   } = form
 
-  const handleSubmit = async (data: SearchClientFormType) => {
+  const onSubmit = async (data: SearchClientFormType) => {
     if (Object.keys(errors).length > 0) return
 
     const cleanDocument = data.cpfOrCnpj.replace(/[.\-/]/g, '')
@@ -134,12 +132,14 @@ export function SearchClientModal({
             <div className="flex flex-col items-center gap-4">
               <FeaturedIcon
                 variant="successBorderedLight"
-                className="w-12 h-12"
+                size="lg"
                 rounded
                 Icon={TextSearchIcon}
               />
 
-              <DialogTitle>Consultar dados de cliente</DialogTitle>
+              <DialogTitle className="pr-0">
+                Consultar dados de cliente
+              </DialogTitle>
               <DialogDescription className="text-center">
                 Informe o CNPJ ou CPF
               </DialogDescription>
@@ -147,7 +147,7 @@ export function SearchClientModal({
           </DialogHeader>
           <DialogBody className="mt-0 pt-0">
             <FormProvider {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)}>
+              <form onSubmit={handleSubmit(onSubmit)} id="document-check">
                 <CpfOrCnpjField name="cpfOrCnpj" placeholder="Digite aqui" />
               </form>
             </FormProvider>
@@ -162,11 +162,7 @@ export function SearchClientModal({
 
               <Button
                 type="submit"
-                form="new-client-form-abc"
-                disabled={isSubmitting}
-                onClick={() => {
-                  form.handleSubmit(handleSubmit)()
-                }}
+                form="document-check"
                 RightIcon={IconSearch}
                 isLoading={isSubmitting}
               >
