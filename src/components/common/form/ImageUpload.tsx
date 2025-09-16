@@ -31,7 +31,7 @@ export function FormImageUpload<T extends FieldValues>({
   name,
   control,
   className,
-  maxSize = 1024 * 1024 * 1,
+  maxSize = 1024 * 50,
   customHelpText,
 }: Props<T>) {
   const {

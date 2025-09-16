@@ -54,7 +54,7 @@ export function FileUploader(props: FileUploaderProps) {
     accept = {
       'image/*': [],
     },
-    maxSize = 1024 * 1024 * 20, // 20MB
+    maxSize = 1024 * 50, // 50KB
     maxFileCount = 1,
     multiple = false,
     disabled = false,

@@ -470,8 +470,8 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                 <FormImageUpload
                   control={control}
                   name="imageUrl"
-                  maxSize={1024 * 200}
-                  customHelpText="PNG ou JPG até 200kb e 300x300px"
+                  maxSize={1024 * 50}
+                  customHelpText="PNG ou JPG até 50KB e 400x250px"
                 />
                 <FormTextarea
                   name="technicalDescription"

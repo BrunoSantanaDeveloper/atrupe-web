@@ -163,6 +163,8 @@ export function MyProfileDialog() {
               <ProductImageUpload<FormType>
                 control={form.control}
                 name="avatarUrl"
+                maxSize={1024 * 50} // 50KB
+                customHelpText="Imagem até 50 KB e 300x300px"
               />
             </div>
 

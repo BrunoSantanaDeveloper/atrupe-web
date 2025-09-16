@@ -35,7 +35,7 @@ export function ProductImageUpload<T extends FieldValues>({
   className,
   maxHeight,
   customHelpText,
-  maxSize = 1024 * 1024 * 1, // 1MB
+  maxSize = 1024 * 50, // 50KB
 }: Props<T>) {
   const {
     handleUpload,

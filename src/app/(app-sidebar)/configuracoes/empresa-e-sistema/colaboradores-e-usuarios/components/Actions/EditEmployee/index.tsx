@@ -150,8 +150,8 @@ export function EditEmployeeDialog({
                   <ProductImageUpload<FormType>
                     control={form.control}
                     name="avatarUrl"
-                    maxSize={1024 * 300} // 300KB
-                    customHelpText="Imagem até 300 KB e 300x300px"
+                    maxSize={1024 * 50} // 50KB
+                    customHelpText="Imagem até 50 KB e 300x300px"
                   />
                 </div>
 
@@ -271,8 +271,8 @@ export function EditEmployeeDialog({
                   <FormImageUpload<FormType>
                     control={form.control}
                     name="signatureUrl"
-                    maxSize={1024 * 200}
-                    customHelpText="PNG com fundo transparente até 200KB e 300x300px"
+                    maxSize={1024 * 50}
+                    customHelpText="PNG com fundo transparente até 50KB e 400x250px"
                   />
                 </div>
               </form>

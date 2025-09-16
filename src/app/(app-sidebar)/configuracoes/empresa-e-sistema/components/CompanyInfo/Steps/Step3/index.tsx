@@ -73,16 +73,16 @@ export function Step3() {
         <LogoUpload
           title="Logotipo"
           description="Será aplicado no menu lateral da plataforma, orçamentos e relatórios."
-          customHelpText="PNG com fundo transparente até 200KB e 300x80px"
           name="personalization.logoUrl"
           imageUrl={logoUrl ?? undefined}
+          customHelpText="PNG com fundo transparente até 50KB e 150x40px"
         />
         <LogoUpload
           title="Favicon"
           description="Será aplicado na aba do navegador. Utilize apenas o símbolo da sua marca."
-          customHelpText="PNG com até 200KB e 50x50px"
           name="personalization.favIconUrl"
           imageUrl={favIconUrl ?? undefined}
+          customHelpText="PNG com fundo transparente até 50KB e 40x40px"
         />
       </div>
       <div className="border border-gray-300 w-full my-7" />
@@ -145,7 +145,7 @@ function LogoUpload({
           className="w-full h-full"
           maxHeight="!max-h-[200px]"
           customHelpText={customHelpText}
-          maxSize={1024 * 200} // 200kb
+          maxSize={1024 * 50} // 50kb
         />
       )}
       {imageUrl && imageUrl.length > 0 && (
