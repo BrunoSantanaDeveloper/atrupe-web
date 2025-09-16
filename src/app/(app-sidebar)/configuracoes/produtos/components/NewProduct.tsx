@@ -385,17 +385,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                           </div>
                         </div>
                       )}
-
-                    {/* Para unidade, mostrar apenas o valor total */}
-                    {/* {watch('items.0.unitKind') === 'UNITY' && (
-                      <FormBrlInput
-                        name={`items.0.salePrice`}
-                        label="Valor"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_140px]"
-                        disabled
-                      />
-                    )} */}
                   </>
                 )}
                 {items?.fields?.length > 1 &&
@@ -457,17 +446,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                             </div>
                           </div>
                         )}
-
-                      {/* Para unidade, mostrar apenas o valor total */}
-                      {/* {watch(`items.${index}.unitKind`) === 'UNITY' && (
-                        <FormBrlInput
-                          name={`items.${index}.salePrice`}
-                          label="Valor"
-                          startAdornment={<>R$</>}
-                          width="flex-[1_0_140px]"
-                          disabled
-                        />
-                      )} */}
                     </div>
                   ))}
                 {canAddComposition && (
@@ -558,7 +536,6 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                 type="submit"
                 form="new-product"
                 RightIcon={IconCircleCheck}
-                onClick={handleSubmit(onSubmit)}
                 disabled={form.formState?.isSubmitting}
                 isLoading={form.formState?.isSubmitting}
               >
