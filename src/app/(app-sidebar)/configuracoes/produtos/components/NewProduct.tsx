@@ -387,7 +387,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                       )}
 
                     {/* Para unidade, mostrar apenas o valor total */}
-                    {watch('items.0.unitKind') === 'UNITY' && (
+                    {/* {watch('items.0.unitKind') === 'UNITY' && (
                       <FormBrlInput
                         name={`items.0.salePrice`}
                         label="Valor"
@@ -395,7 +395,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         width="flex-[1_0_140px]"
                         disabled
                       />
-                    )}
+                    )} */}
                   </>
                 )}
                 {items?.fields?.length > 1 &&
@@ -459,7 +459,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                         )}
 
                       {/* Para unidade, mostrar apenas o valor total */}
-                      {watch(`items.${index}.unitKind`) === 'UNITY' && (
+                      {/* {watch(`items.${index}.unitKind`) === 'UNITY' && (
                         <FormBrlInput
                           name={`items.${index}.salePrice`}
                           label="Valor"
@@ -467,7 +467,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                           width="flex-[1_0_140px]"
                           disabled
                         />
-                      )}
+                      )} */}
                     </div>
                   ))}
                 {canAddComposition && (
