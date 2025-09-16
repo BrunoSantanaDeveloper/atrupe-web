@@ -1,7 +1,6 @@
 'use client'
 
 // React
-// import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 // Components
@@ -10,8 +9,6 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Third-party
-// import { format } from 'date-fns'
-// import { ptBR } from 'date-fns/locale'
 import { useQuery } from '@tanstack/react-query'
 
 // Types
@@ -21,8 +18,6 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { getData } from '@/actions/_cruds'
 
 export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
-  // const [date, setDate] = useState<Date>()
-
   const router = useRouter()
 
   const searchParamsObject = new URLSearchParams(searchParams)
