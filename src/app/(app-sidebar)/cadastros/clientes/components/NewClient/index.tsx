@@ -55,6 +55,7 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   clientId?: string
+  prefilledData?: NewClientFormType
 }
 
 export function NewClientModal({
@@ -62,6 +63,7 @@ export function NewClientModal({
   clientId,
   open,
   onOpenChange,
+  prefilledData,
 }: Props) {
   const queryClient = useQueryClient()
   const { hasFinancialModule } = usePlanFeatures()
@@ -196,9 +198,11 @@ export function NewClientModal({
     if (client) {
       const transformedData = transformClientData(client)
       form.reset(transformedData) // Atualizando o formulário com os dados transformados
+    } else if (prefilledData && !editMode) {
+      form.reset(prefilledData) // Preenche o formulário com dados pré-definidos
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [client])
+  }, [client, prefilledData])
 
   if (editMode && isLoading) return <></>
 

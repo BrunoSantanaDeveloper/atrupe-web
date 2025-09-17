@@ -20,7 +20,10 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { ClientDetailsModal, type ClientData } from './ClientDetailsModal'
+import {
+  ClientDetailsModalWithNewClient,
+  type ClientData,
+} from './ClientDetailsModal'
 
 const searchClientSchema = z.object({
   cpfOrCnpj: z.string(),
@@ -174,7 +177,7 @@ export function SearchClientModal({
       </Dialog>
 
       {clientData && (
-        <ClientDetailsModal
+        <ClientDetailsModalWithNewClient
           open={showClientDetails}
           onOpenChange={setShowClientDetails}
           clientData={clientData}
