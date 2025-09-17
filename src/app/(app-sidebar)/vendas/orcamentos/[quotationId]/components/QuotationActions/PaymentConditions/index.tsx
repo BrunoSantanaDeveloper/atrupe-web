@@ -290,10 +290,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               addComissionValue={addComissionValue}
             />
 
-            <CommissionDialog
-              paymentConditionsForm={form}
-              quotationData={quotationData}
-            />
+            <CommissionDialog paymentConditionsForm={form} />
           </div>
           <div className="space-x-4">
             {process.env.NODE_ENV === 'development' && (

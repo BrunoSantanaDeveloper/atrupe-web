@@ -21,7 +21,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { PickValuePercentSelect } from '@/components/common/PickValuePercentSelect'
-import { SupplierSelectField } from '@/components/common/form/global-inputs/SupplierSelectField'
+import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 
 // Form
 import {
@@ -39,9 +39,6 @@ import {
   IconMinus,
   IconPlus,
 } from '@tabler/icons-react'
-
-// Types
-import { QuotationType } from '@/types/sales/quotation'
 
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { defaultCommissionValues, calculatePercentCommission } from './utils'
@@ -73,14 +70,10 @@ const toggleOptions = [
 ]
 
 interface Props {
-  quotationData: QuotationType
   paymentConditionsForm: UseFormReturn<QuotationPaymentConditionsType>
 }
 
-export function CommissionDialog({
-  quotationData,
-  paymentConditionsForm,
-}: Props) {
+export function CommissionDialog({ paymentConditionsForm }: Props) {
   const [open, setOpen] = useState(false)
 
   const form = useForm<QuotationCommissionType>({
@@ -175,8 +168,8 @@ export function CommissionDialog({
       return
     }
 
-    if (!data.supplierId) {
-      setError('supplierId', {
+    if (!data.supplier?.value) {
+      setError('supplier', {
         message: 'Fornecedor obrigatório',
       })
       return
@@ -185,7 +178,7 @@ export function CommissionDialog({
     // Criar objeto de comissão
     const commission = {
       type: data.type,
-      supplierId: data.supplierId,
+      supplierId: data.supplier.value,
       transferMethod: data.transferMethod,
       commissionType: data.commissionType,
       commissionValue: data.commissionValue || 0,
@@ -259,7 +252,7 @@ export function CommissionDialog({
           </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
-        <DialogBody>
+        <DialogBody className="overflow-y-visible pr-6">
           <Form {...form}>
             <form
               id="quotation-commissions"
@@ -293,21 +286,12 @@ export function CommissionDialog({
                 }}
               />
 
-              <SupplierSelectField
-                name="supplierId"
+              <SupplierSelector
+                name="supplier"
                 label="Fornecedor"
                 width="w-full"
-                onChange={(e) => {
-                  setValue('supplierId', e)
-                  clearErrors('supplierId')
-                }}
-                defaultValues={{
-                  id:
-                    quotationData?.paymentConditions?.commission?.supplier
-                      ?.id || '',
-                  name:
-                    quotationData?.paymentConditions?.commission?.supplier
-                      ?.name || '',
+                additionalOnChange={() => {
+                  clearErrors('supplier')
                 }}
               />
               <FormBrlInput
