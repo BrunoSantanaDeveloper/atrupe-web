@@ -5,7 +5,8 @@ import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
+import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -14,12 +15,53 @@ interface Props {
 
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue } = useFormContext<NewClientFormType>()
+  const { searchByDocument } = useDocumentSearch()
 
   const { data: categoryData } = useCategoryOptions(
     context === 'supplier' ? 'SUPPLIER' : 'CLIENT',
   )
 
   const categoryOptions = useMemo(() => categoryData || [], [categoryData])
+
+  const handleDocumentChange = useCallback(
+    async (document: string, documentType: 'CPF' | 'CNPJ') => {
+      const cleanDocument = document.replace(/[.\-/]/g, '')
+
+      // Only search when document is complete
+      const isComplete =
+        (documentType === 'CPF' && cleanDocument.length === 11) ||
+        (documentType === 'CNPJ' && cleanDocument.length === 14)
+
+      if (!isComplete) return
+
+      const searchData = await searchByDocument(cleanDocument)
+
+      if (searchData) {
+        // Fill general data
+        setValue('general.name', searchData.name)
+        if (searchData.phone) {
+          setValue('general.phone', searchData.phone)
+        }
+        if (searchData.rg) {
+          setValue('general.rg', searchData.rg)
+        }
+
+        if (documentType === 'CNPJ' && searchData.corporateName) {
+          setValue('general.corporateName', searchData.corporateName)
+        }
+
+        // Fill address data if available
+        if (searchData.address) {
+          setValue('addresses.0.street', searchData.address.street)
+          setValue('addresses.0.city', searchData.address.city)
+          setValue('addresses.0.state', searchData.address.state)
+          setValue('addresses.0.zipcode', searchData.address.zipcode)
+          setValue('addresses.0.neighborhood', searchData.address.neighborhood)
+        }
+      }
+    },
+    [setValue, searchByDocument],
+  )
 
   return (
     <div className="grid grid-cols-2 gap-4">
@@ -30,7 +72,11 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             label="CPF"
             placeholder="Digite aqui"
             additionalOnChange={(value) => {
-              setValue('general.cpf', maskCpf(String(value)) || '')
+              const maskedValue = maskCpf(String(value)) || ''
+              setValue('general.cpf', maskedValue)
+            }}
+            onBlur={(e) => {
+              handleDocumentChange(e.target.value, 'CPF')
             }}
             maxLength={14}
           />
@@ -43,7 +89,11 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             label="CNPJ"
             placeholder="Digite aqui"
             additionalOnChange={(value) => {
-              setValue('general.cnpj', maskCnpj(String(value)) || '')
+              const maskedValue = maskCnpj(String(value)) || ''
+              setValue('general.cnpj', maskedValue)
+            }}
+            onBlur={(e) => {
+              handleDocumentChange(e.target.value, 'CNPJ')
             }}
             maxLength={18}
           />
