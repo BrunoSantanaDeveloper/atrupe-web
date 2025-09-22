@@ -31,18 +31,21 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, getItem } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
+import { toast } from 'sonner'
+import { pdf } from '@react-pdf/renderer'
 import { useQuery } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
 // Icons
 import { IconPrinter, IconSearch } from '@tabler/icons-react'
+import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
 // Hooks
@@ -56,6 +59,7 @@ interface Props extends SearchParamsType {
 export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
+  const [isLoadingProductionPDF, setIsLoadingProductionPDF] = useState(false)
 
   // Hook para controle de features
   const { canManageSalesOrders } = usePlanFeatures()
@@ -63,6 +67,48 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }
+
+  const handleGenerateProductionPDF = async (order: OrderType) => {
+    const formData = {
+      showImages: true,
+      showDimensions: true,
+      showUnitValue: true,
+      showDiscounts: true,
+      showFinalValue: true,
+      showTotalValue: true,
+      showPaymentDelivery: true,
+      showItemsDetails: true,
+    }
+
+    setIsLoadingProductionPDF(true)
+    try {
+      const result = await getItem({
+        route: `sale/quotation/${order?.quotation?.id}/pdf-data`,
+      })
+
+      if (!result.success) {
+        throw new Error(result.message)
+      }
+
+      const pdfData = result.data
+
+      const blob = await pdf(
+        <GeneratePdf
+          data={pdfData}
+          type="production"
+          printOptions={formData}
+        />,
+      ).toBlob()
+
+      const url = URL.createObjectURL(blob)
+      window.open(url, '_blank')
+    } catch (error) {
+      toast.error('Erro ao gerar ficha de produção')
+      console.error('Erro ao gerar PDF:', error)
+    } finally {
+      setIsLoadingProductionPDF(false)
+    }
+  }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -163,11 +209,23 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                     >
                                       <ActionButton
                                         Icon={IconPrinter}
-                                        tooltip="Imprimir"
+                                        tooltip="Via do cliente"
                                         onClick={() => {
                                           setRowData(order)
                                           setOpenPrintDialog(true)
                                         }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:order:view']}
+                                    >
+                                      <ActionButton
+                                        Icon={IconPrinter}
+                                        tooltip="Ficha de produção"
+                                        isLoading={isLoadingProductionPDF}
+                                        onClick={() =>
+                                          handleGenerateProductionPDF(order)
+                                        }
                                       />
                                     </PermissionGate>
                                   </TooltipProvider>
