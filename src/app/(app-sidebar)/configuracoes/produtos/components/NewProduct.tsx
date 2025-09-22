@@ -180,7 +180,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
       technicalDescription: data?.technicalDescription ?? '',
       allowEditValues: data.allowEditValues,
       allowEditDescription: data.allowEditDescription,
-      imageUrl: data.imageUrl,
+      imageUrl: data.imageUrl || null,
       items: data.items?.map((item) => ({
         id: editMode ? item.id : undefined,
         name: item.name,
