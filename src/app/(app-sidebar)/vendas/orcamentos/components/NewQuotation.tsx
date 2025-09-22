@@ -223,23 +223,10 @@ export function NewQuotationModal({
                   form.setValue('contactId', '')
                 }}
               />
-              <ClientContactSelect
-                name="contactId"
-                label="Responsável"
-                width="w-full"
-                clientId={clientId}
-                disabled={!clientId}
-              />
               <FormInput<QuotationFormType>
                 name="description"
                 label="Descrição do serviço"
                 width="w-full"
-              />
-              <SelectCompanyField<QuotationFormType>
-                name="companyId"
-                label="Empresa"
-                width="flex-[1_0_300px]"
-                disabled={editMode || !canManageMultipleCompanies()}
               />
               <SelectSerieField
                 name="seriesId"
@@ -259,6 +246,21 @@ export function NewQuotationModal({
                 width="flex-[1_0_300px]"
                 placeholder={data?.seller?.name}
               />
+              <ClientContactSelect
+                name="contactId"
+                label="Responsável"
+                width="flex-[1_0_300px]"
+                clientId={clientId}
+                disabled={!clientId}
+              />
+              {canManageMultipleCompanies() && (
+                <SelectCompanyField<QuotationFormType>
+                  name="companyId"
+                  label="Empresa"
+                  width="flex-[1_0_300px]"
+                  disabled={editMode}
+                />
+              )}
             </form>
           </Form>
         </DialogBody>
