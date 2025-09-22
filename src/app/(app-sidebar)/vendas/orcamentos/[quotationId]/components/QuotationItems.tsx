@@ -110,6 +110,8 @@ export function QuotationItems({ data }: Props) {
 
   const items = data?.quotationItems
 
+  console.log(items)
+
   return (
     <>
       <Card className="w-full">
@@ -158,7 +160,7 @@ export function QuotationItems({ data }: Props) {
                         return (
                           <Fragment key={item?.id + index}>
                             {/* Linha única para produtos simples - dados da composição diretamente */}
-                            <TableRow className="bg-gray-50 border-b">
+                            <TableRow className="border-b">
                               <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
                                 {composition?.name}
                               </TableCell>
@@ -178,7 +180,7 @@ export function QuotationItems({ data }: Props) {
                               </TableCell>
                               <TableCell className="py-4 text-sm text-gray">
                                 {formatCurrencyToBrl(
-                                  item?.finalValue /
+                                  item?.totalValue /
                                     (item?.product?.quantity || 1),
                                 )}
                               </TableCell>
@@ -339,7 +341,7 @@ export function QuotationItems({ data }: Props) {
                               </TableCell>
                               <TableCell className="text-sm text-gray">
                                 {formatCurrencyToBrl(
-                                  item?.finalValue /
+                                  item?.totalValue /
                                     (item?.product?.quantity || 1),
                                 )}
                               </TableCell>

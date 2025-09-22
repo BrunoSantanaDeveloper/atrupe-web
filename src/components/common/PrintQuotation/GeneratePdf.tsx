@@ -280,6 +280,128 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     textAlign: 'center',
   },
+  // Estilos para colunas da tabela
+  columnReference: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  columnReferenceProduction: {
+    width: '85%',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  columnReferenceNormal: {
+    width: '35%',
+    flexDirection: 'row',
+    gap: 8,
+  },
+  columnQtyItem: {
+    width: '10%',
+  },
+  columnQtyItemProduction: {
+    width: '15%',
+  },
+  columnDetails: {
+    width: '15%',
+  },
+  columnQtyTotal: {
+    width: '12%',
+  },
+  columnUnitValue: {
+    width: '9%',
+  },
+  columnDiscount: {
+    width: '9%',
+  },
+  columnFinalValue: {
+    width: '10%',
+  },
+  // Estilos para textos das colunas
+  textCenter: {
+    textAlign: 'center',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
+  textCenterSmall: {
+    textAlign: 'center',
+    fontSize: 7,
+  },
+  textRightSmall: {
+    textAlign: 'right',
+    fontSize: 7,
+  },
+  textComposition: {
+    textAlign: 'center',
+    color: '#4B5563',
+    fontSize: 7,
+  },
+  textDiscount: {
+    textAlign: 'right',
+    color: '#DC6803',
+    fontSize: 7,
+  },
+  // Estilos para imagens
+  itemImageFull: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  // Estilos para layouts flexíveis
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    justifyContent: 'flex-end',
+  },
+  companyInfoLarge: {
+    fontSize: 8,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: 4,
+    width: '50%',
+  },
+  companyLogoContainer: {
+    width: '35%',
+  },
+  // Estilos para textos específicos
+  textSmallGray: {
+    fontSize: 7,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  textBold: {
+    fontWeight: 'bold',
+  },
+  textBoldWithMargin: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  // Estilos para containers específicos
+  deliveryContainer: {
+    width: '100%',
+  },
+  deliveryContainerHalf: {
+    width: '50%',
+  },
+  paymentContainer: {
+    marginTop: 4,
+  },
+  signatureSpacing: {
+    width: '33%',
+  },
+  dividerContainer: {
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  paymentContainerConditional: {
+    width: '50%',
+  },
+  paymentContainerFull: {
+    width: '100%',
+  },
 })
 
 interface Props {
@@ -309,14 +431,32 @@ type CompositionItemType = {
 
 // Função para adaptar composição do PDF para o formato esperado pelas funções utilitárias
 function adaptCompositionForDisplayUtils(comp: CompositionItemType) {
+  // Inferir o tipo de unidade baseado nas dimensões disponíveis
+  let unitKind = 'UNITY'
+
+  if (comp.width && comp.height) {
+    unitKind = 'AREA'
+  } else if (comp.length) {
+    unitKind = 'LENGTH'
+  } else if (comp.volume) {
+    unitKind = 'CAPACITY'
+  } else if (comp.weight) {
+    unitKind = 'WEIGHT'
+  } else if (comp.distance) {
+    unitKind = 'DISTANCE'
+  } else if (comp.duration) {
+    unitKind = 'DURATION'
+  }
+
   return {
     ...comp,
+    unitKind, // Adicionar unitKind inferido
     unitOfMeasure: comp.unitOfMeasure
       ? {
           id: '',
           code: comp.unitOfMeasure,
           name: comp.unitOfMeasure,
-          kind: 'UNITY', // valor padrão, será inferido pelas funções utilitárias
+          kind: unitKind,
         }
       : undefined,
   }
@@ -349,7 +489,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
         {/* Cabeçalho */}
         <View style={styles.header} fixed>
-          <View style={{ width: '35%' }}>
+          <View style={styles.companyLogoContainer}>
             <PDFImage
               src={
                 data.company?.logo ||
@@ -358,7 +498,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               style={styles.logo}
             />
           </View>
-          <View style={[styles.companyInfo, { width: '50%' }]}>
+          <View style={styles.companyInfoLarge}>
             <Text style={styles.companyName}>{data.company?.name}</Text>
             <Text>{maskCnpj(data.company?.cnpj)}</Text>
             <Text>
@@ -397,77 +537,40 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           </View>
           <View style={styles.socialInfo}>
             {data.company?.socialNetworks?.instagram && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+              <View style={styles.flexRow}>
+                <Text style={styles.textRightSmall}>
                   {data.company?.socialNetworks?.instagram}
                 </Text>
                 <InstagramIcon />
               </View>
             )}
             {data.company?.socialNetworks?.facebook && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+              <View style={styles.flexRow}>
+                <Text style={styles.textRightSmall}>
                   {data.company?.socialNetworks?.facebook}
                 </Text>
                 <FacebookIcon />
               </View>
             )}
             {data.company?.socialNetworks?.linkedin && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+              <View style={styles.flexRow}>
+                <Text style={styles.textRightSmall}>
                   {data.company?.socialNetworks?.linkedin}
                 </Text>
                 <LinkedinIcon />
               </View>
             )}
             {data.company?.siteUrl && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
+              <View style={styles.flexRow}>
+                <Text style={styles.textRightSmall}>
                   {data.company?.siteUrl}
                 </Text>
                 <WebsiteIcon />
               </View>
             )}
             {data.company?.email && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.email}
-                </Text>
+              <View style={styles.flexRow}>
+                <Text style={styles.textRightSmall}>{data.company?.email}</Text>
                 <EmailIcon />
               </View>
             )}
@@ -519,7 +622,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     : 'Ficha de Produção'}
                 : {data.quotation?.seriesCode}-{data.quotation?.number}
               </Text>
-              <Text style={{ fontWeight: 'bold', marginBottom: 4 }}>
+              <Text style={styles.textBoldWithMargin}>
                 {data.quotation?.description}
               </Text>
               {!isProduction && (
@@ -626,206 +729,297 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               )}
             </View>
 
-            {data.quotationItems.map((item, index) => (
-              <View key={item.id || index} style={styles.tableRow} wrap={false}>
-                {/* Coluna Referência - Imagem e Descrição */}
+            {data.quotationItems.map((item, index) => {
+              const isComposite = item.product.compositions.length > 1
+
+              // Para produtos simples (1 composição), renderizar apenas a linha da composição
+              if (!isComposite && item.product.compositions.length === 1) {
+                const composition = item.product.compositions[0]
+
+                return (
+                  <View
+                    key={item.id || index}
+                    style={styles.tableRow}
+                    wrap={false}
+                  >
+                    {/* Coluna Referência - Nome da composição diretamente */}
+                    <View
+                      style={
+                        isProduction
+                          ? styles.columnReferenceProduction
+                          : styles.columnReferenceNormal
+                      }
+                    >
+                      <View style={styles.itemImage}>
+                        <PDFImage
+                          src={
+                            item.image?.url || '/img/product-placeholder.png'
+                          }
+                          style={styles.itemImageFull}
+                        />
+                      </View>
+
+                      <View style={styles.itemInfo}>
+                        <Text style={styles.itemTitle}>
+                          {composition?.name || '-'}
+                        </Text>
+                        {isProduction && item.technicalDescription && (
+                          <Text
+                            style={[
+                              styles.itemDescription,
+                              { color: '#059669', fontWeight: 'medium' },
+                            ]}
+                          >
+                            {item.technicalDescription}
+                          </Text>
+                        )}
+                        {isProduction && item.notes && (
+                          <Text
+                            style={[
+                              styles.itemDescription,
+                              { color: '#DC6803', fontStyle: 'italic' },
+                            ]}
+                          >
+                            {item.notes}
+                          </Text>
+                        )}
+                      </View>
+                    </View>
+
+                    {/* Qtd. Item */}
+                    {!isProduction && (
+                      <View style={styles.columnQtyItem}>
+                        <Text style={styles.textCenter}>
+                          {item.product.quantity || 1}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Detalhamento */}
+                    {!isProduction && (
+                      <View style={styles.columnDetails}>
+                        <Text style={styles.textCenterSmall}>
+                          {generateFormattedQuantityDetails(
+                            adaptCompositionForDisplayUtils(composition),
+                          )}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Qtd. Total */}
+                    <View style={styles.columnQtyTotal}>
+                      <Text style={styles.textCenterSmall}>
+                        {
+                          calculateTotalQuantity(
+                            item.product.quantity,
+                            adaptCompositionForDisplayUtils(composition),
+                          ).formatted
+                        }
+                      </Text>
+                    </View>
+
+                    {/* Valor Un. - valor do item dividido pela quantidade */}
+                    {!isProduction && printOptions.showUnitValue && (
+                      <View style={styles.columnUnitValue}>
+                        <Text style={styles.textRight}>
+                          {formatCurrencyToBrl(
+                            item.totalValue / (item.product.quantity || 1),
+                          )}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Desconto - desconto do item */}
+                    {!isProduction && printOptions.showDiscounts && (
+                      <View style={styles.columnDiscount}>
+                        <Text style={styles.textDiscount}>
+                          -
+                          {formatCurrencyToBrl(
+                            Math.max(0, item.totalValue - item.finalValue),
+                          )}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Valor Final - valor final do item */}
+                    {!isProduction && printOptions.showFinalValue && (
+                      <View style={styles.columnFinalValue}>
+                        <Text style={styles.textRight}>
+                          {formatCurrencyToBrl(item.finalValue)}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                )
+              }
+
+              // Para produtos compostos, manter comportamento atual
+              return (
                 <View
-                  style={{
-                    width: isProduction ? '85%' : '35%',
-                    flexDirection: 'row',
-                    gap: 8,
-                  }}
+                  key={item.id || index}
+                  style={styles.tableRow}
+                  wrap={false}
                 >
-                  <View style={styles.itemImage}>
-                    <PDFImage
-                      src={item.image?.url || '/img/product-placeholder.png'}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                      }}
-                    />
+                  {/* Coluna Referência - Imagem e Descrição do item */}
+                  <View
+                    style={
+                      isProduction
+                        ? styles.columnReferenceProduction
+                        : styles.columnReferenceNormal
+                    }
+                  >
+                    <View style={styles.itemImage}>
+                      <PDFImage
+                        src={item.image?.url || '/img/product-placeholder.png'}
+                        style={styles.itemImageFull}
+                      />
+                    </View>
+
+                    <View style={styles.itemInfo}>
+                      <Text style={styles.itemTitle}>
+                        {item.description || '-'}
+                      </Text>
+                      {isProduction && item.technicalDescription && (
+                        <Text
+                          style={[
+                            styles.itemDescription,
+                            { color: '#059669', fontWeight: 'medium' },
+                          ]}
+                        >
+                          {item.technicalDescription}
+                        </Text>
+                      )}
+                      {isProduction && item.notes && (
+                        <Text
+                          style={[
+                            styles.itemDescription,
+                            { color: '#DC6803', fontStyle: 'italic' },
+                          ]}
+                        >
+                          {item.notes}
+                        </Text>
+                      )}
+                      {(isProduction ||
+                        (printOptions.showDimensions &&
+                          printOptions.showItemsDetails)) &&
+                        item.product.compositions.map((comp) => (
+                          <Text key={comp.id} style={styles.itemDescription}>
+                            {comp?.name}
+                          </Text>
+                        ))}
+                    </View>
                   </View>
 
-                  <View style={styles.itemInfo}>
-                    <Text style={styles.itemTitle}>
-                      {item.description || '-'}
+                  {/* Coluna Qtd. Item */}
+                  {!isProduction && (
+                    <View
+                      style={
+                        isProduction
+                          ? styles.columnQtyItemProduction
+                          : styles.columnQtyItem
+                      }
+                    >
+                      <Text style={styles.textCenter}>
+                        {item.product.quantity || 1}
+                      </Text>
+                      {printOptions.showDimensions &&
+                        printOptions.showItemsDetails &&
+                        item.product.compositions.map((comp) => (
+                          <Text key={comp.id} style={styles.textComposition}>
+                            {item.product.quantity || 1}
+                          </Text>
+                        ))}
+                    </View>
+                  )}
+
+                  {/* Coluna Detalhamento - apenas para não-produção */}
+                  {!isProduction && (
+                    <View style={styles.columnDetails}>
+                      <Text style={styles.textCenterSmall}>-</Text>
+                      {printOptions.showDimensions &&
+                        printOptions.showItemsDetails &&
+                        item.product.compositions.map((comp) => (
+                          <Text key={comp.id} style={styles.textComposition}>
+                            {generateFormattedQuantityDetails(
+                              adaptCompositionForDisplayUtils(comp),
+                            )}
+                          </Text>
+                        ))}
+                    </View>
+                  )}
+
+                  {/* Coluna Qtd. Total - sempre visível */}
+                  <View style={styles.columnQtyTotal}>
+                    <Text style={styles.textCenterSmall}>
+                      {`${item.product.quantity || 1} un`}
                     </Text>
-                    {isProduction && item.technicalDescription && (
-                      <Text
-                        style={[
-                          styles.itemDescription,
-                          { color: '#059669', fontWeight: 'medium' },
-                        ]}
-                      >
-                        {item.technicalDescription}
-                      </Text>
-                    )}
-                    {isProduction && item.notes && (
-                      <Text
-                        style={[
-                          styles.itemDescription,
-                          { color: '#DC6803', fontStyle: 'italic' },
-                        ]}
-                      >
-                        {item.notes}
-                      </Text>
-                    )}
                     {(isProduction ||
                       (printOptions.showDimensions &&
                         printOptions.showItemsDetails)) &&
                       item.product.compositions.map((comp) => (
-                        <Text key={comp.id} style={styles.itemDescription}>
-                          {comp?.name}
-                        </Text>
-                      ))}
-                  </View>
-                </View>
-
-                {/* Coluna Qtd. Item */}
-                {!isProduction && (
-                  <View style={{ width: isProduction ? '15%' : '10%' }}>
-                    <Text style={{ textAlign: 'center' }}>
-                      {item.product.quantity || 1}
-                    </Text>
-                    {printOptions.showDimensions &&
-                      printOptions.showItemsDetails &&
-                      item.product.compositions.map((comp) => (
-                        <Text
-                          key={comp.id}
-                          style={{
-                            textAlign: 'center',
-                            color: '#4B5563',
-                            fontSize: 7,
-                          }}
-                        >
-                          {item.product.quantity || 1}
-                        </Text>
-                      ))}
-                  </View>
-                )}
-
-                {/* Coluna Detalhamento - apenas para não-produção */}
-                {!isProduction && (
-                  <View style={{ width: '15%' }}>
-                    <Text style={{ textAlign: 'center', fontSize: 7 }}>-</Text>
-                    {printOptions.showDimensions &&
-                      printOptions.showItemsDetails &&
-                      item.product.compositions.map((comp) => (
-                        <Text
-                          key={comp.id}
-                          style={{
-                            textAlign: 'center',
-                            color: '#4B5563',
-                            fontSize: 7,
-                          }}
-                        >
-                          {generateFormattedQuantityDetails(
-                            adaptCompositionForDisplayUtils(comp),
-                          )}
-                        </Text>
-                      ))}
-                  </View>
-                )}
-
-                {/* Coluna Qtd. Total - sempre visível */}
-                <View style={{ width: '12%' }}>
-                  <Text style={{ textAlign: 'center', fontSize: 7 }}>
-                    {`${item.product.quantity || 1} un`}
-                  </Text>
-                  {(isProduction ||
-                    (printOptions.showDimensions &&
-                      printOptions.showItemsDetails)) &&
-                    item.product.compositions.map((comp) => (
-                      <Text
-                        key={comp.id}
-                        style={{
-                          textAlign: 'center',
-                          color: '#4B5563',
-                          fontSize: 7,
-                        }}
-                      >
-                        {
-                          calculateTotalQuantity(
-                            item.product.quantity,
-                            adaptCompositionForDisplayUtils(comp),
-                          ).formatted
-                        }
-                      </Text>
-                    ))}
-                </View>
-
-                {/* Colunas financeiras - apenas para não-produção */}
-                {!isProduction && printOptions.showUnitValue && (
-                  <View style={{ width: '9%' }}>
-                    <Text style={{ textAlign: 'right' }}>
-                      {formatCurrencyToBrl(
-                        item.finalValue / (item.product.quantity || 1),
-                      )}
-                    </Text>
-                    {printOptions.showDimensions &&
-                      printOptions.showItemsDetails &&
-                      item.product.compositions.map((comp) => (
-                        <Text
-                          key={comp.id}
-                          style={{
-                            textAlign: 'right',
-                            color: '#4B5563',
-                            fontSize: 7,
-                          }}
-                        >
-                          {formatCurrencyToBrl(
-                            calculateDisplayUnitValue(
-                              item.product.quantity || 1,
+                        <Text key={comp.id} style={styles.textComposition}>
+                          {
+                            calculateTotalQuantity(
+                              item.product.quantity,
                               adaptCompositionForDisplayUtils(comp),
-                            ),
-                          )}
+                            ).formatted
+                          }
                         </Text>
                       ))}
                   </View>
-                )}
 
-                {/* Colunas descontos */}
-                {!isProduction && printOptions.showDiscounts && (
-                  <View style={{ width: '9%' }}>
-                    <Text
-                      style={{
-                        textAlign: 'right',
-                        color: '#DC6803',
-                        fontSize: 7,
-                      }}
-                    >
-                      -
-                      {formatCurrencyToBrl(
-                        Math.max(0, item.totalValue - item.finalValue),
-                      )}
-                    </Text>
-                  </View>
-                )}
+                  {/* Colunas financeiras - apenas para não-produção */}
+                  {!isProduction && printOptions.showUnitValue && (
+                    <View style={styles.columnUnitValue}>
+                      <Text style={styles.textRight}>
+                        {formatCurrencyToBrl(
+                          item.totalValue / (item.product.quantity || 1),
+                        )}
+                      </Text>
+                      {printOptions.showDimensions &&
+                        printOptions.showItemsDetails &&
+                        item.product.compositions.map((comp) => (
+                          <Text key={comp.id} style={styles.textComposition}>
+                            {formatCurrencyToBrl(
+                              calculateDisplayUnitValue(
+                                item.product.quantity || 1,
+                                adaptCompositionForDisplayUtils(comp),
+                              ),
+                            )}
+                          </Text>
+                        ))}
+                    </View>
+                  )}
 
-                {!isProduction && printOptions.showFinalValue && (
-                  <View style={{ width: '10%' }}>
-                    <Text style={{ textAlign: 'right' }}>
-                      {formatCurrencyToBrl(item.finalValue)}
-                    </Text>
-                    {printOptions.showDimensions &&
-                      printOptions.showItemsDetails &&
-                      item.product.compositions.map((comp) => (
-                        <Text
-                          key={comp.id}
-                          style={{
-                            textAlign: 'right',
-                            color: '#4B5563',
-                            fontSize: 7,
-                          }}
-                        >
-                          {formatCurrencyToBrl(comp?.totalValue || 0)}
-                        </Text>
-                      ))}
-                  </View>
-                )}
-              </View>
-            ))}
+                  {/* Colunas descontos */}
+                  {!isProduction && printOptions.showDiscounts && (
+                    <View style={styles.columnDiscount}>
+                      <Text style={styles.textDiscount}>
+                        -
+                        {formatCurrencyToBrl(
+                          Math.max(0, item.totalValue - item.finalValue),
+                        )}
+                      </Text>
+                    </View>
+                  )}
+
+                  {!isProduction && printOptions.showFinalValue && (
+                    <View style={styles.columnFinalValue}>
+                      <Text style={styles.textRight}>
+                        {formatCurrencyToBrl(item.finalValue)}
+                      </Text>
+                      {printOptions.showDimensions &&
+                        printOptions.showItemsDetails &&
+                        item.product.compositions.map((comp) => (
+                          <Text key={comp.id} style={styles.textComposition}>
+                            {formatCurrencyToBrl(comp?.totalValue || 0)}
+                          </Text>
+                        ))}
+                    </View>
+                  )}
+                </View>
+              )
+            })}
           </View>
 
           {/* Totais - apenas para não-produção */}
@@ -847,8 +1041,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               </View>
 
               <View style={styles.totalRowFinal}>
-                <Text style={{ fontWeight: 'bold' }}>Total</Text>
-                <Text style={{ fontWeight: 'bold' }}>
+                <Text style={styles.textBold}>Total</Text>
+                <Text style={styles.textBold}>
                   {formatCurrencyToBrl(finalTotalWithFreight)}
                 </Text>
               </View>
@@ -864,7 +1058,13 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           >
             {/* Seção de Entrega - só exibe se showPaymentDelivery estiver ativo */}
             {printOptions.showPaymentDelivery && (
-              <View style={{ width: isProduction ? '100%' : '50%' }}>
+              <View
+                style={
+                  isProduction
+                    ? styles.deliveryContainer
+                    : styles.deliveryContainerHalf
+                }
+              >
                 <TruckDeliveryIcon />
                 <Text style={styles.sectionTitle}>Entrega</Text>
                 <Text>{data.delivery?.supplier?.name}</Text>
@@ -899,12 +1099,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </Text>
                 )} */}
                 {isProduction && data.delivery?.supplier?.financialNotes && (
-                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                  <Text style={styles.textSmallGray}>
                     {data.delivery.supplier.financialNotes}
                   </Text>
                 )}
                 {isProduction && data.delivery?.notes && (
-                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
+                  <Text style={styles.textSmallGray}>
                     {data.delivery.notes}
                   </Text>
                 )}
@@ -914,9 +1114,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             {/* Seção de Pagamento - apenas para não-produção */}
             {!isProduction && (
               <View
-                style={{
-                  width: printOptions.showPaymentDelivery ? '50%' : '100%',
-                }}
+                style={
+                  printOptions.showPaymentDelivery
+                    ? styles.paymentContainerConditional
+                    : styles.paymentContainerFull
+                }
               >
                 <MoneySignIcon />
                 <Text style={styles.sectionTitle}>Pagamento</Text>
@@ -929,16 +1131,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       Até {data.payment?.totalInstallments}x no pedido
                     </Text>
                     {data.payment?.description && (
-                      <Text
-                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
-                      >
+                      <Text style={styles.textSmallGray}>
                         {data.payment.description}
                       </Text>
                     )}
                     {data.client?.financialNotes && (
-                      <Text
-                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
-                      >
+                      <Text style={styles.textSmallGray}>
                         {data.client.financialNotes}
                       </Text>
                     )}
@@ -949,25 +1147,21 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     <Text>A combinar</Text>
                     {data.payment?.availablePaymentMethods &&
                       data.payment.availablePaymentMethods.length > 0 && (
-                        <Text style={{ marginTop: 4 }}>
+                        <Text style={styles.paymentContainer}>
                           {data.payment.availablePaymentMethods.join(', ')}.
                         </Text>
                       )}
-                    <Text style={{ marginTop: 4 }}>
+                    <Text style={styles.paymentContainer}>
                       Valores podem sofrer acréscimo conforme forma de
                       pagamento.
                     </Text>
                     {data.payment?.description && (
-                      <Text
-                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
-                      >
+                      <Text style={styles.textSmallGray}>
                         {data.payment.description}
                       </Text>
                     )}
                     {data.client?.financialNotes && (
-                      <Text
-                        style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}
-                      >
+                      <Text style={styles.textSmallGray}>
                         {data.client.financialNotes}
                       </Text>
                     )}
@@ -979,7 +1173,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
           {!isProduction && (
             <>
-              <View style={{ marginTop: 5, marginBottom: 5 }}>
+              <View style={styles.dividerContainer}>
                 <View style={styles.totalDivider} />
               </View>
               {/* Texto após itens */}
@@ -988,9 +1182,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <View style={styles.infoDate}>
                 <View>
                   <Text>Atenciosamente</Text>
-                  <Text style={{ fontWeight: 'bold' }}>
-                    {data.client?.name}
-                  </Text>
+                  <Text style={styles.textBold}>{data.client?.name}</Text>
                 </View>
                 <View>
                   <Text>De acordo, ____/____/______</Text>
@@ -1002,7 +1194,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <View style={styles.signatureLine}>
                   <Text>{data.client?.name}</Text>
                 </View>
-                <View style={{ width: '33%' }} />
+                <View style={styles.signatureSpacing} />
                 <View style={styles.signatureLine}>
                   {data.quotation?.seller?.signature && (
                     <PDFImage
