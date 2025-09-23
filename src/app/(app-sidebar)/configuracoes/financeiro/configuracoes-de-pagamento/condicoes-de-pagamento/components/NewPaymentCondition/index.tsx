@@ -63,7 +63,7 @@ export function NewPaymentCondition({
   const queryClient = useQueryClient()
   const { canManageBankTaxTransfer } = usePlanFeatures()
 
-  const isTaxFieldsEnabled = canManageBankTaxTransfer()
+  const canManageTaxInput = canManageBankTaxTransfer()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -218,7 +218,11 @@ export function NewPaymentCondition({
           <DialogTitle>
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
-              <span>{editMode ? 'Editar' : 'Nova'} condição de pagamento</span>
+              <span>
+                {editMode
+                  ? 'Editar condição de pagamento'
+                  : 'Nova condição de pagamento'}{' '}
+              </span>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -247,7 +251,7 @@ export function NewPaymentCondition({
                 }}
               />
 
-              {isTaxFieldsEnabled && (
+              {canManageTaxInput && (
                 <FormSelect
                   name="costType"
                   label="Tipo do custo"
@@ -286,7 +290,7 @@ export function NewPaymentCondition({
                     }}
                   />
 
-                  {isTaxFieldsEnabled
+                  {canManageTaxInput
                     ? Array.from({ length: maxInstallmentsLength }).map(
                         (_, index) => (
                           <div key={index} className="w-full">
@@ -302,7 +306,7 @@ export function NewPaymentCondition({
                                     label="Taxa operadora"
                                     width="flex-[1_0_100px]"
                                     startAdornment={<>R$</>}
-                                    disabled={!isTaxFieldsEnabled}
+                                    disabled={!canManageTaxInput}
                                   />
                                   <FormBrlInput
                                     key={'operatorFeeTransfer' + (index + 1)}
@@ -310,7 +314,7 @@ export function NewPaymentCondition({
                                     label="Repasse da taxa"
                                     width="flex-[1_0_100px]"
                                     startAdornment={<>R$</>}
-                                    disabled={!isTaxFieldsEnabled}
+                                    disabled={!canManageTaxInput}
                                   />
                                 </>
                               ) : (
@@ -322,7 +326,7 @@ export function NewPaymentCondition({
                                     label="Taxa operadora"
                                     width="flex-[1_0_100px]"
                                     endAdornment={<>%</>}
-                                    disabled={!isTaxFieldsEnabled}
+                                    disabled={!canManageTaxInput}
                                   />
 
                                   <FormInput
@@ -332,7 +336,7 @@ export function NewPaymentCondition({
                                     label="Repasse da taxa"
                                     width="flex-[1_0_100px]"
                                     endAdornment={<>%</>}
-                                    disabled={!isTaxFieldsEnabled}
+                                    disabled={!canManageTaxInput}
                                   />
                                 </>
                               )}
@@ -343,7 +347,7 @@ export function NewPaymentCondition({
                     : null}
                 </>
               ) : costType === 'VALUE' ? (
-                isTaxFieldsEnabled && (
+                canManageTaxInput && (
                   <>
                     <FormBrlInput
                       key="operatorFeeRate1"
@@ -351,7 +355,7 @@ export function NewPaymentCondition({
                       label="Taxa operadora"
                       width="flex-[1_0_100px]"
                       startAdornment={<>R$</>}
-                      disabled={!isTaxFieldsEnabled}
+                      disabled={!canManageTaxInput}
                     />
                     <FormBrlInput
                       key="operatorFeeTransfer1"
@@ -359,32 +363,34 @@ export function NewPaymentCondition({
                       label="Repasse da taxa"
                       width="flex-[1_0_100px]"
                       startAdornment={<>R$</>}
-                      disabled={!isTaxFieldsEnabled}
+                      disabled={!canManageTaxInput}
                     />
                   </>
                 )
               ) : (
-                <>
-                  <FormInput
-                    key="operatorFeeRate1"
-                    type="number"
-                    name={`installments.0.operatorFeeRate`}
-                    label="Taxa operadora"
-                    width="flex-[1_0_100px]"
-                    endAdornment={<>%</>}
-                    disabled={!isTaxFieldsEnabled}
-                  />
+                canManageTaxInput && (
+                  <>
+                    <FormInput
+                      key="operatorFeeRate1"
+                      type="number"
+                      name={`installments.0.operatorFeeRate`}
+                      label="Taxa operadora"
+                      width="flex-[1_0_100px]"
+                      endAdornment={<>%</>}
+                      disabled={!canManageTaxInput}
+                    />
 
-                  <FormInput
-                    key="operatorFeeTransfer1"
-                    type="number"
-                    name={`installments.0.operatorFeeTransfer`}
-                    label="Repasse da taxa"
-                    width="flex-[1_0_100px]"
-                    endAdornment={<>%</>}
-                    disabled={!isTaxFieldsEnabled}
-                  />
-                </>
+                    <FormInput
+                      key="operatorFeeTransfer1"
+                      type="number"
+                      name={`installments.0.operatorFeeTransfer`}
+                      label="Repasse da taxa"
+                      width="flex-[1_0_100px]"
+                      endAdornment={<>%</>}
+                      disabled={!canManageTaxInput}
+                    />
+                  </>
+                )
               )}
 
               <p className="w-full font-semibold">Recebimento</p>
