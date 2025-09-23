@@ -34,7 +34,10 @@ export function defaultValues(quotationData: QuotationType) {
     commission: quotationData.paymentConditions?.commission
       ? {
           type: quotationData.paymentConditions?.commission.type,
-          supplierId: quotationData.paymentConditions?.commission.supplier.id,
+          supplier: {
+            label: quotationData.paymentConditions?.commission.supplier.name,
+            value: quotationData.paymentConditions?.commission.supplier.id,
+          },
           transferMethod:
             quotationData.paymentConditions?.commission.transferMethod,
           commissionType:

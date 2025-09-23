@@ -65,8 +65,8 @@ export const quotationCommissionSchema = z.object({
     .nullable(),
   supplier: z
     .object({
-      label: z.string(),
       value: z.string(),
+      label: z.string(),
     })
     .nullable(),
   baseValue: z.any().optional().nullable(),
