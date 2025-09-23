@@ -30,27 +30,26 @@ export function FinanceSettingsClient() {
       category: 'Financeiro',
       items: [
         {
-          title: 'Bancos e contas',
+          title: 'Configuração de Bancos e Contas',
           icon: IconBuildingBank,
           description: 'Cadastre as contas bancárias da sua empresa',
           link: `${defaultPath}/contas-bancarias`,
         },
         {
-          title: 'Configurações de pagamento',
+          title: 'Configuração de Pagamentos',
           icon: IconCreditCardPay,
-          description:
-            'Cadastre as formas e condições de pagamento da sua empresa',
+          description: 'Cadastre as condições de pagamento da sua empresa',
           link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
         },
         {
-          title: 'Plano de contas',
+          title: 'Configuração do Plano de Contas',
           icon: IconCoins,
           description:
             'Defina a relação de códigos e classificações para registrar as movimentações financeiras da empresa',
           link: `${defaultPath}/plano-de-contas`,
         },
         {
-          title: 'Despesas fixas',
+          title: 'Cadastro das Despesas Fixas',
           icon: IconCalendarDollar,
           description:
             'Cadastre as despesas regulares de acordo com a sua recorrência',
@@ -60,7 +59,7 @@ export function FinanceSettingsClient() {
         ...(hasFinancialModule('credit_limit')
           ? [
               {
-                title: 'Limite de crédito',
+                title: 'Configuração do Limite de Crédito',
                 icon: IconFoldUp,
                 description:
                   'Defina o padrão de limite de crédito para os clientes',
@@ -69,7 +68,7 @@ export function FinanceSettingsClient() {
             ]
           : []),
         {
-          title: 'Folha de pagamento',
+          title: 'Configuração da Folha de Pagamento',
           icon: IconFileDollar,
           description: 'Gerencie os custos por colaborador',
           link: `${defaultPath}/folhas-de-pagamento`,
