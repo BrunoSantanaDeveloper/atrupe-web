@@ -178,7 +178,7 @@ export function CommissionDialog({ paymentConditionsForm }: Props) {
     // Criar objeto de comissão
     const commission = {
       type: data.type,
-      supplierId: data.supplier.value,
+      supplier: data.supplier,
       transferMethod: data.transferMethod,
       commissionType: data.commissionType,
       commissionValue: data.commissionValue || 0,

@@ -63,10 +63,12 @@ export const quotationCommissionSchema = z.object({
     })
     .optional()
     .nullable(),
-  supplier: z.object({
-    label: z.string(),
-    value: z.string(),
-  }),
+  supplier: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .nullable(),
   baseValue: z.any().optional().nullable(),
   transferMethod: z.string().optional(),
   commissionType: z.string().optional(),

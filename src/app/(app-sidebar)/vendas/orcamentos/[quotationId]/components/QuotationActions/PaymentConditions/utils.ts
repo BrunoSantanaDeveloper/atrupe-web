@@ -111,7 +111,7 @@ export function defaultCommissionValues(
   return {
     type: commission?.type || 'ADD',
     baseValue: commissionBaseValue || 0,
-    supplierId: commission?.supplier?.value
+    supplier: commission?.supplier?.value
       ? { value: commission.supplier.value, label: commission.supplier.label }
       : null,
     transferMethod: commission?.transferMethod || 'SINGLE',
