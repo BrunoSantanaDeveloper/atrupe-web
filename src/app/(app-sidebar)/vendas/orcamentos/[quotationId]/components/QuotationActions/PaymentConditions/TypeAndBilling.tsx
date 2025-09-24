@@ -1,4 +1,5 @@
 // Components
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { billingOptions } from '@/app/(app-sidebar)/configuracoes/vendas/series-de-venda/components/EditItem'
 
@@ -16,6 +17,8 @@ interface Props {
 }
 
 export function TypeAndBilling({ quotationData }: Props) {
+  const { canBillOnDeliveryAndCheckout } = usePlanFeatures()
+
   // Filtrar billingOptions para mostrar apenas a opção atual
   const currentBillingValue =
     quotationData.paymentConditions?.billing || 'ON_ORDER'
@@ -37,6 +40,7 @@ export function TypeAndBilling({ quotationData }: Props) {
         label="Faturamento"
         options={filteredBillingOptions}
         width="flex-[1_0_200px]"
+        disabled={!canBillOnDeliveryAndCheckout()}
       />
     </>
   )
