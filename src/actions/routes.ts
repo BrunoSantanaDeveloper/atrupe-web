@@ -19,7 +19,6 @@ const defaultRoute: { [key: string]: string } = {
   accountsPlanRoute: '/financial/nature',
   fixedExpensesConfigRoute: '/financial/scheduled-expense',
   fixedExpensesConfigTotalsRoute: '/financial/scheduled-expense/quantity',
-  payrollConfigRoute: '/financial/salaries',
 
   // orçamentos
   sellersRoute: '/sellers',

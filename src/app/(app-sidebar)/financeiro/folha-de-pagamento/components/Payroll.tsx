@@ -56,7 +56,7 @@ export function Payroll({ searchParams }: SearchParamsType) {
     staleTime: Infinity,
     queryKey: ['payroll-list', searchParams],
     queryFn: () =>
-      getData({ route: '/financial/salary-sheets', filters: searchParams }),
+      getData({ route: '/financial/payroll', filters: searchParams }),
   })
 
   const payrollList: PayrollListType[] = data?.data || []
@@ -107,7 +107,7 @@ export function Payroll({ searchParams }: SearchParamsType) {
     }
 
     const res = await createItemNew({
-      route: '/financial/salary-sheets',
+      route: '/financial/payroll',
       data,
     })
 

@@ -50,7 +50,7 @@ export function PayrollActions({ data }: Props) {
       iconVariant: 'warningBorderedLight',
       onConfirm: async () => {
         const result = await updateItemNew({
-          route: '/financial/salary-sheets/toggle',
+          route: '/financial/payroll/toggle',
           data: {
             salarySheetId: data.id,
             status: newStatus,
@@ -76,7 +76,7 @@ export function PayrollActions({ data }: Props) {
     try {
       // Buscar dados do PDF da API
       const result = await getItem({
-        route: `/financial/salary-sheets/${payrollData.id}/pdf-data`,
+        route: `/financial/payroll/${payrollData.id}/pdf-data`,
       })
 
       if (!result.success) {

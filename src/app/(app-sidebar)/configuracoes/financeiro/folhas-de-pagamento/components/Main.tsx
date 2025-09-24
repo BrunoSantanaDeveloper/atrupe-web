@@ -28,8 +28,8 @@ import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 
 // Types
 import type {
-  ListPayrollConfigType,
-  PayrollConfigItemType,
+  ListPayrollSetupType,
+  PayrollSetupItemType,
 } from '@/types/settings/payroll'
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -48,7 +48,7 @@ import { toast } from 'sonner'
 
 export function Main({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
-  const [rowData, setRowData] = useState<PayrollConfigItemType>()
+  const [rowData, setRowData] = useState<PayrollSetupItemType>()
   const [isLoadingAction, setIsLoadingAction] = useState('')
 
   const queryClient = useQueryClient()
@@ -58,15 +58,15 @@ export function Main({ searchParams }: SearchParamsType) {
     queryKey: ['payroll-config-list', searchParams],
     queryFn: () =>
       getData({
-        route: '/financial/salaries',
+        route: '/financial/payroll-setup',
         filters: searchParams,
       }),
   })
 
-  const payrollData: ListPayrollConfigType[] = data?.data || []
+  const payrollData: ListPayrollSetupType[] = data?.data || []
   const hasData = payrollData.length
 
-  const handleToggleSetItem = async (item: PayrollConfigItemType) => {
+  const handleToggleSetItem = async (item: PayrollSetupItemType) => {
     const { id, isSet } = item
 
     const newIsSet = !isSet
@@ -80,7 +80,7 @@ export function Main({ searchParams }: SearchParamsType) {
     setIsLoadingAction(id)
 
     const res = await updateItemNew({
-      route: `/financial/salaries/${id}`,
+      route: `/financial/payroll-setup/${id}`,
       data,
     })
 
@@ -144,7 +144,7 @@ export function Main({ searchParams }: SearchParamsType) {
                         {employee?.items.map((item) => (
                           <TableRow key={item?.id}>
                             <TableCell className="text-gray-600">
-                              {item?.reference || '-'}
+                              {item?.name || '-'}
                             </TableCell>
                             <TableCell className="text-success-600">
                               {item?.type === 'INCREASE' && item?.isSet

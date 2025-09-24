@@ -36,13 +36,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Types
-import type { PayrollConfigItemType } from '@/types/settings/payroll'
+import type { PayrollSetupItemType } from '@/types/settings/payroll'
 
 interface Props {
   editMode?: boolean
   open?: boolean
   setOpen?: (value: string) => void
-  rowData?: PayrollConfigItemType
+  rowData?: PayrollSetupItemType
 }
 
 export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
@@ -61,7 +61,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
   useEffect(() => {
     if (editMode && rowData && open) {
       form.reset({
-        reference: rowData?.reference || '',
+        name: rowData?.name || '',
         amount: rowData?.amount || 0,
         type: rowData?.type || '',
       })
@@ -71,11 +71,11 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
   const onSubmit = async (data: FormType) => {
     const result = editMode
       ? await updateItemNew({
-          route: `/financial/salaries/${rowData?.id}`,
+          route: `/financial/payroll-setup/${rowData?.id}`,
           data,
         })
       : await createItemNew({
-          route: '/financial/salaries',
+          route: '/financial/payroll-setup',
           data,
         })
 
@@ -119,7 +119,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
             >
               <div className="grid gap-4 py-4">
                 <FormInput
-                  name="reference"
+                  name="name"
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"

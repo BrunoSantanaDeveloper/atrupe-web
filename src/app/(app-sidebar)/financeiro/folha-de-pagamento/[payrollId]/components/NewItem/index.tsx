@@ -91,11 +91,11 @@ export function NewItemDialog({
 
     const res = editMode
       ? await updateItemNew({
-          route: '/financial/salary-sheets/item',
+          route: '/financial/payroll/item',
           data,
         })
       : await createItemNew({
-          route: '/financial/salary-sheets/item',
+          route: '/financial/payroll/item',
           data,
         })
 

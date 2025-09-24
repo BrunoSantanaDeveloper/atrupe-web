@@ -42,7 +42,7 @@ export function PayrollDetail({ payrollId }: Props) {
   const { data, isLoading, error } = useQuery({
     staleTime: Infinity,
     queryKey: ['payroll-data', payrollId],
-    queryFn: () => getItem({ route: `/financial/salary-sheets/${payrollId}` }),
+    queryFn: () => getItem({ route: `/financial/payroll/${payrollId}` }),
   })
 
   if (isLoading) {

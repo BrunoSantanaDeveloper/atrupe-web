@@ -1,15 +1,14 @@
-export type PayrollConfigItemType = {
+export type PayrollSetupItemType = {
   id: string
-  reference: string
+  name: string
   amount: number
-  date: string
-  type: 'INCREASE' | 'DISCOUNT'
+  type: 'INCREASE' | 'DISCOUNT' | 'ADVANCE'
   isSet: boolean
   createdAt: string
   updatedAt: string
 }
 
-export type ListPayrollConfigType = {
+export type ListPayrollSetupType = {
   id: string
   name: string
   avatarUrl: string
@@ -17,11 +16,11 @@ export type ListPayrollConfigType = {
   roleId: string
   roleName: string
   sectorName: string
-  items: PayrollConfigItemType[]
+  items: PayrollSetupItemType[]
 }
 
-export type PayrollConfigType = {
-  data: ListPayrollConfigType[]
+export type PayrollSetupType = {
+  data: ListPayrollSetupType[]
   total: number
   totalPages: number
 }

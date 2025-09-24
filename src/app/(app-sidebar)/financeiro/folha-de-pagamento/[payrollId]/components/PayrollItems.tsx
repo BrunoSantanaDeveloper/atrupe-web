@@ -74,7 +74,7 @@ export function PayrollItems({ data }: Props) {
     try {
       // Buscar dados do PDF da API
       const result = await getItem({
-        route: `/financial/salary-sheets/item/${itemId}/advance-pdf-data`,
+        route: `/financial/payroll/item/${itemId}/advance-pdf-data`,
       })
 
       console.log(result)
