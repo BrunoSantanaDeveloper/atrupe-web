@@ -299,7 +299,7 @@ export function PaymentDialog({
                 label="Conta"
                 width="flex-[1_0_250px]"
                 bankId={watch('bankId')}
-                disabled={!watch('bankId') || !canCreateBankAccount()}
+                // disabled={!watch('bankId') || !canCreateBankAccount()}
               />
               <FormBrlInput
                 name="totalValue"
