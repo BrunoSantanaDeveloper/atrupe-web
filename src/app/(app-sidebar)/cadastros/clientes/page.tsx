@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function ClientsPage({ searchParams }: SearchParamsType) {
+  const defaultTab = 'regularizados'
+  const status = searchParams.status || defaultTab
+
   return (
     <PermissionGate
       permissions={['register:client:view']}
@@ -21,7 +24,7 @@ export default function ClientsPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Clients searchParams={searchParams} />
+      <Clients searchParams={{ ...searchParams, status }} />
     </PermissionGate>
   )
 }
