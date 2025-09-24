@@ -110,8 +110,6 @@ export function QuotationItems({ data }: Props) {
 
   const items = data?.quotationItems
 
-  console.log(items)
-
   return (
     <>
       <Card className="w-full">

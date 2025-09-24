@@ -21,6 +21,7 @@ import {
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 import { formatToLocaleDate } from '@/lib/formatDate'
+import { getProxiedImageUrl } from '@/lib/image-proxy'
 
 // Types
 import type { PrintOptionsType } from './PrintQuotationDialog'
@@ -492,7 +493,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           <View style={styles.companyLogoContainer}>
             <PDFImage
               src={
-                data.company?.logo ||
+                getProxiedImageUrl(data.company?.logo) ||
                 '/src/assets/icons/companyIconPlaceholder.png'
               }
               style={styles.logo}
@@ -752,9 +753,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     >
                       <View style={styles.itemImage}>
                         <PDFImage
-                          src={
-                            item.image?.url || '/img/product-placeholder.png'
-                          }
+                          src={getProxiedImageUrl(item.image?.url)}
                           style={styles.itemImageFull}
                         />
                       </View>
@@ -870,7 +869,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   >
                     <View style={styles.itemImage}>
                       <PDFImage
-                        src={item.image?.url || '/img/product-placeholder.png'}
+                        src={getProxiedImageUrl(item.image?.url)}
                         style={styles.itemImageFull}
                       />
                     </View>
@@ -1198,7 +1197,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <View style={styles.signatureLine}>
                   {data.quotation?.seller?.signature && (
                     <PDFImage
-                      src={data.quotation.seller.signature}
+                      src={getProxiedImageUrl(data.quotation.seller.signature)}
                       style={styles.signatureImage}
                     />
                   )}

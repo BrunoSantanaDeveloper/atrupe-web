@@ -82,8 +82,6 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
   const transactionData: TransactionDataType[] = data?.data || []
   const hasData = transactionData.length
 
-  console.log(transactionData)
-
   return (
     <>
       <CardContent>

@@ -77,8 +77,6 @@ export function PayrollItems({ data }: Props) {
         route: `/financial/payroll/item/${itemId}/advance-pdf-data`,
       })
 
-      console.log(result)
-
       if (!result.success) {
         throw new Error(result.message)
       }
