@@ -434,6 +434,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
         rowData={data}
         submitData={newInstallmentData}
         type={type}
+        onCloseParentDialog={() => handleOpenChange(false)}
       />
     </>
   )

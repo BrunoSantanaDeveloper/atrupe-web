@@ -1,8 +1,5 @@
 'use client'
 
-// Next
-import { useRouter } from 'next/navigation'
-
 // UI
 import { toast } from 'sonner'
 import {
@@ -54,10 +51,12 @@ interface Props {
   rowData?: TransactionDetailsType
   type?: 'receivable' | 'payable'
   submitData: EditFormType
+  onCloseParentDialog?: () => void
 }
 
 export function ChangeTotalValueAlertDialog(props: Props) {
-  const { open, rowData, setOpen, type, submitData } = props
+  const { open, rowData, setOpen, type, submitData, onCloseParentDialog } =
+    props
 
   const newTotal = submitData?.installments?.reduce(
     (acc, curr) => acc + curr.amount,
@@ -74,8 +73,6 @@ export function ChangeTotalValueAlertDialog(props: Props) {
 
   const { handleSubmit } = form
 
-  const router = useRouter()
-
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
@@ -84,7 +81,8 @@ export function ChangeTotalValueAlertDialog(props: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries()
       toast.success('Movimentação alterada!')
-      router.refresh()
+      handleOpenChange(false)
+      onCloseParentDialog?.()
     },
   })
 
