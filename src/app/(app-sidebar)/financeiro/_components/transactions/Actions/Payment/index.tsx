@@ -87,7 +87,7 @@ export function PaymentDialog({
 
   const alertDialog = useAlertDialog()
 
-  const { canCreatePaymentDifference } = usePlanFeatures()
+  const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
 
   const paymentMethodId = watch('paymentMethodId')
   const bankId = watch('bankId')
@@ -292,14 +292,14 @@ export function PaymentDialog({
                 label="Banco"
                 width="flex-[1_0_250px]"
                 methodId={watch('paymentMethodId')}
-                disabled={!watch('paymentMethodId')}
+                disabled={!watch('paymentMethodId') || !canCreateBankAccount()}
               />
               <SelectBankAccountField
                 name="bankAccountId"
                 label="Conta"
                 width="flex-[1_0_250px]"
                 bankId={watch('bankId')}
-                disabled={!watch('bankId')}
+                disabled={!watch('bankId') || !canCreateBankAccount()}
               />
               <FormBrlInput
                 name="totalValue"

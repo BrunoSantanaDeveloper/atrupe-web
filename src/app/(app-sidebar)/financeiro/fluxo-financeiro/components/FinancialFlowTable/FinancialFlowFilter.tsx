@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 
 // Components
 import { FinancialFlowDatePicker } from './DatePicker'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -22,6 +23,8 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
+
+  const { canCreateBankAccount } = usePlanFeatures()
 
   const { data: paymentMethodsData } = useQuery({
     queryKey: ['payment-methods-in-use'],
@@ -61,15 +64,17 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
     <PermissionGate permissions={['financial:flow:edit']}>
       <>
         <FinancialFlowDatePicker searchParams={searchParams} />
-        <SelectBasic
-          name="bankAccountId"
-          label="Conta"
-          placeholder="Selecione uma conta"
-          className="w-[220px]"
-          options={[{ value: 'all', label: 'Todas' }, ...bankAccountOptions]}
-          value={searchParams?.bankAccountId || 'all'}
-          onChange={(value) => handleFilter('bankAccountId', value)}
-        />
+        {canCreateBankAccount() && (
+          <SelectBasic
+            name="bankAccountId"
+            label="Conta"
+            placeholder="Selecione uma conta"
+            className="w-[220px]"
+            options={[{ value: 'all', label: 'Todas' }, ...bankAccountOptions]}
+            value={searchParams?.bankAccountId || 'all'}
+            onChange={(value) => handleFilter('bankAccountId', value)}
+          />
+        )}
         <SelectBasic
           name="status"
           label="Situação"
