@@ -17,6 +17,7 @@ import { PayrollPdfType } from '@/types/financial/payroll'
 import { formatToLocaleDate } from '@/lib/formatDate'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
 import { numberToWords } from '@/lib/numberToWords'
+import { getProxiedImageUrl } from '@/lib/image-proxy'
 
 // Icons
 import {
@@ -297,7 +298,7 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
           <View style={{ width: '35%' }}>
             <PDFImage
               src={
-                data.company?.logo ||
+                getProxiedImageUrl(data.company?.logo) ||
                 '/src/assets/icons/companyIconPlaceholder.png'
               }
               style={styles.logo}
