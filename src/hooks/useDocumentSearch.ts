@@ -2,6 +2,7 @@ import { getItem } from '@/actions/_cruds'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { capitalize } from '@/lib/utils'
 
 export interface DocumentSearchData {
   document: string
@@ -58,36 +59,36 @@ const fetchDocumentData = async (
     ? {
         document: res.data.cnpj || cleanDocument,
         documentType: 'CNPJ',
-        name: res.data.name || '',
-        legalName: res.data.legalName || '',
-        corporateName: res.data.legalName || '',
+        name: capitalize(res.data.name),
+        legalName: capitalize(res.data.legalName),
+        corporateName: capitalize(res.data.legalName),
         phone: res.data.phone || '',
         address: {
-          street: res.data.address?.street || '',
-          city: res.data.address?.city || '',
+          street: capitalize(res.data.address?.street),
+          city: capitalize(res.data.address?.city),
           state: res.data.address?.state || '',
           zipcode: res.data.address?.zipcode || '',
           country: res.data.address?.country || '',
-          neighborhood: res.data.address?.neighborhood || '',
+          neighborhood: capitalize(res.data.address?.neighborhood),
         },
       }
     : {
         document: res.data.cpf || cleanDocument,
         documentType: 'CPF',
-        name: res.data.name || '',
+        name: capitalize(res.data.name),
         birthdate: res.data.birthdate || '',
-        motherName: res.data.motherName || '',
+        motherName: capitalize(res.data.motherName),
         rg: res.data.rg || '',
         rgIssuingAgency: res.data.rgIssuingAgency || '',
         rgIssuingState: res.data.rgIssuingState || '',
         phone: res.data.phone || '',
         address: {
-          street: res.data.address?.street || '',
-          city: res.data.address?.city || '',
+          street: capitalize(res.data.address?.street),
+          city: capitalize(res.data.address?.city),
           state: res.data.address?.state || '',
           zipcode: res.data.address?.zipcode || '',
           country: res.data.address?.country || '',
-          neighborhood: res.data.address?.neighborhood || '',
+          neighborhood: capitalize(res.data.address?.neighborhood),
         },
       }
 

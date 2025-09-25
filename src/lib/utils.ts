@@ -811,3 +811,12 @@ export function calculateAreaInMillimeters(
 ): number {
   return widthMm * heightMm
 }
+
+export function capitalize(text?: string): string {
+  if (!text) return ''
+
+  return text
+    .split(/(\s|\.|\/|-)/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('')
+}
