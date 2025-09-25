@@ -98,6 +98,9 @@ export function NewClientModal({
         cpf: apiData.general?.cpf || '',
         rg: apiData.general?.rg || '',
         cnpj: apiData.general?.cnpj || '',
+        birthdate: apiData.general?.birthdate
+          ? new Date(apiData.general.birthdate + 'T00:00:00')
+          : undefined,
         activity: apiData.general?.activity || '',
         categoryId: apiData.general?.category?.id || '',
         phone: apiData.general?.phone || '',

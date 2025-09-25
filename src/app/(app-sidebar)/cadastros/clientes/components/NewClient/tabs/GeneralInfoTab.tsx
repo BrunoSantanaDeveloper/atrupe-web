@@ -1,6 +1,7 @@
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
@@ -34,6 +35,18 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       if (!isComplete) return
 
+      // Reset fields before searching
+      setValue('general.name', '')
+      setValue('general.phone', '')
+      setValue('general.rg', '')
+      setValue('general.birthdate', undefined)
+      setValue('general.corporateName', '')
+      setValue('addresses.0.street', '')
+      setValue('addresses.0.city', '')
+      setValue('addresses.0.state', '')
+      setValue('addresses.0.zipcode', '')
+      setValue('addresses.0.neighborhood', '')
+
       const searchData = await searchByDocument(cleanDocument)
 
       if (searchData) {
@@ -45,11 +58,15 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         if (searchData.rg) {
           setValue('general.rg', searchData.rg)
         }
-
+        if (searchData.birthdate) {
+          const date = new Date(
+            searchData.birthdate.split('T')[0] + 'T12:00:00',
+          )
+          setValue('general.birthdate', date)
+        }
         if (documentType === 'CNPJ' && searchData.corporateName) {
           setValue('general.corporateName', searchData.corporateName)
         }
-
         // Fill address data if available
         if (searchData.address) {
           setValue('addresses.0.street', searchData.address.street)
@@ -118,6 +135,12 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       {type === 'PERSON' && (
         <>
+          <FormDatePickerSingle<NewClientFormType>
+            name="general.birthdate"
+            label="Data de nascimento"
+            placeholder="Selecione a data"
+            defaultMonth={new Date(1990, 0, 1)}
+          />
           <FormInput<NewClientFormType> name="general.rg" label="RG" />
         </>
       )}

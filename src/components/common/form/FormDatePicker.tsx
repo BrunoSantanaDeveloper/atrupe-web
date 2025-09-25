@@ -47,6 +47,7 @@ interface Props<T extends FieldValues> {
   onSelect?: (value?: Date) => void
   additionalOnChange?: (value?: Date) => void
   fromDate?: Date
+  defaultMonth?: Date
 }
 
 export function FormDatePickerSingle<T extends FieldValues>({
@@ -60,6 +61,7 @@ export function FormDatePickerSingle<T extends FieldValues>({
   additionalOnChange,
   disabled,
   fromDate,
+  defaultMonth,
 }: Props<T>) {
   const { control } = useFormContext()
 
@@ -94,7 +96,7 @@ export function FormDatePickerSingle<T extends FieldValues>({
                     return date < minDate
                   }}
                   initialFocus
-                  defaultMonth={field.value}
+                  defaultMonth={field.value || defaultMonth}
                 />
               </PopoverContent>
             </Popover>
@@ -127,6 +129,7 @@ export function FormDatePickerSingle<T extends FieldValues>({
               const minDate = fromDate || new Date('1900-01-01')
               return date < minDate
             }}
+            defaultMonth={value || defaultMonth}
           />
         </PopoverContent>
       </Popover>

@@ -1,4 +1,3 @@
-import { getItem } from '@/actions/_cruds'
 import { ActionButton } from '@/components/common/ActionButton'
 import { CpfOrCnpjField } from '@/components/common/form/global-inputs/CpfOrCnpjField'
 import { Button } from '@/components/ui/button'
@@ -19,7 +18,7 @@ import { TextSearchIcon } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState } from 'react'
-import { toast } from 'sonner'
+import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 import {
   ClientDetailsModalWithNewClient,
   type ClientData,
@@ -57,6 +56,7 @@ export function SearchClientModal({
 }) {
   const [showClientDetails, setShowClientDetails] = useState(false)
   const [clientData, setClientData] = useState<ClientData | null>(null)
+  const { searchByDocument } = useDocumentSearch()
 
   const form = useForm<SearchClientFormType>({
     resolver: zodResolver(searchClientSchema),
@@ -70,59 +70,13 @@ export function SearchClientModal({
   const onSubmit = async (data: SearchClientFormType) => {
     if (Object.keys(errors).length > 0) return
 
-    const cleanDocument = data.cpfOrCnpj.replace(/[.\-/]/g, '')
-    const isCNPJ = cleanDocument.length === 14
-    const route = isCNPJ
-      ? `/utils/company/${cleanDocument}`
-      : `/utils/people/${cleanDocument}`
+    const searchData = await searchByDocument(data.cpfOrCnpj)
 
-    const res = await getItem({
-      route,
-    })
-
-    if (!res.success) {
-      toast.error(res.message)
+    if (!searchData) {
       return
     }
 
-    if (!res.data) {
-      toast.error('Nenhum dado recebido')
-      return
-    }
-
-    const fetchedClientData: ClientData = isCNPJ
-      ? {
-          document: res.data.cnpj || cleanDocument,
-          documentType: 'CNPJ',
-          name: res.data.name || '',
-          legalName: res.data.legalName || '',
-          phone: res.data.phone || '',
-          address: {
-            street: res.data.address?.street || '',
-            city: res.data.address?.city || '',
-            state: res.data.address?.state || '',
-            zipcode: res.data.address?.zipcode || '',
-            country: res.data.address?.country || '',
-            neighborhood: res.data.address?.neighborhood || '',
-          },
-        }
-      : {
-          document: res.data.cpf || cleanDocument,
-          documentType: 'CPF',
-          name: res.data.name || '',
-          birthdate: res.data.birthdate || '',
-          motherName: res.data.motherName || '',
-          address: {
-            street: res.data.address?.street || '',
-            city: res.data.address?.city || '',
-            state: res.data.address?.state || '',
-            zipcode: res.data.address?.zipcode || '',
-            country: res.data.address?.country || '',
-            neighborhood: res.data.address?.neighborhood || '',
-          },
-        }
-
-    setClientData(fetchedClientData)
+    setClientData(searchData as ClientData)
     setShowClientDetails(true)
     onOpenChange(false)
   }
