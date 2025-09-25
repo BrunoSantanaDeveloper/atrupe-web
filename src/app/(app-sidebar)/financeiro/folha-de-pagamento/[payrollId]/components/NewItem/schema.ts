@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const schema = z.object({
   id: z.string().optional(),
-  salarySheetId: z.string().optional(),
+  payrollId: z.string().optional(),
   description: z
     .string()
     .min(1, 'Referência é obrigatória')

@@ -82,7 +82,7 @@ export function NewItemDialog({
     if (editMode) {
       data.id = rowData?.id
     } else {
-      data.salarySheetId = payrollId
+      data.payrollId = payrollId
     }
 
     if (isAdvance) {

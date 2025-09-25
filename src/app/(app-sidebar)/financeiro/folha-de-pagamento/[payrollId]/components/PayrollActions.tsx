@@ -52,7 +52,7 @@ export function PayrollActions({ data }: Props) {
         const result = await updateItemNew({
           route: '/financial/payroll/toggle',
           data: {
-            salarySheetId: data.id,
+            payrollId: data.id,
             status: newStatus,
           },
         })
