@@ -6,7 +6,7 @@ const cashControlSchema = z.object({
   paymentType: z.string(), // PROVISION | PAYSOFF
   acceptIncomes: z.boolean(),
   incomeType: z.string(), // PROVISION | PAYSOFF
-  paymentMethodId: z.string(),
+  paymentConditionId: z.string(),
 })
 
 export const schema = z.object({

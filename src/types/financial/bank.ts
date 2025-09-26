@@ -19,15 +19,10 @@ export type BankAccountsType = {
     paymentType: string
     acceptIncomes: boolean
     incomeType: string
-    paymentMethodId: string
     bankAccountId: string
-    paymentMethod: {
+    paymentCondition?: {
       id: string
       name: string
-      description: null
-      createdAt: string
-      isActive: boolean
-      companyId: string
     }
   }[]
   cashRegister: {

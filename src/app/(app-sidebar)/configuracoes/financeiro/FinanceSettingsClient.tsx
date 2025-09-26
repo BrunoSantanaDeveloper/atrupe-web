@@ -30,16 +30,16 @@ export function FinanceSettingsClient() {
       category: 'Financeiro',
       items: [
         {
-          title: 'Configuração de Bancos e Contas',
-          icon: IconBuildingBank,
-          description: 'Cadastre as contas bancárias da sua empresa',
-          link: `${defaultPath}/contas-bancarias`,
-        },
-        {
           title: 'Configuração de Pagamentos',
           icon: IconCreditCardPay,
           description: 'Cadastre as condições de pagamento da sua empresa',
           link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
+        },
+        {
+          title: 'Configuração de Bancos e Contas',
+          icon: IconBuildingBank,
+          description: 'Cadastre as contas bancárias da sua empresa',
+          link: `${defaultPath}/contas-bancarias`,
         },
         {
           title: 'Configuração do Plano de Contas',

@@ -44,18 +44,18 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { schema, type FormType } from './schema'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { BankAccountsType } from '@/types/financial/bank'
 
 // Hooks
-import { usePaymentMethod } from '@/hooks/queries/usePaymentMethods'
+import { usePaymentConditions } from '@/hooks/queries/usePaymentConditions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Actions
-import { createItem, updateItem } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -82,18 +82,20 @@ export function NewBankAccountDialog({
   const queryClient = useQueryClient()
   const { hasFinancialModule, canProvision } = usePlanFeatures()
 
-  const paymentMethods = usePaymentMethod()
+  const paymentConditions = usePaymentConditions({ listAll: true })
 
   const bankAccountCashControl = useMemo(
     () =>
-      paymentMethods.data?.map((item) => ({
-        acceptIncomes: false,
-        incomeType: 'PAYSOFF',
-        acceptPayments: false,
-        paymentType: 'PAYSOFF',
-        paymentMethodId: item.id,
-      })) || [],
-    [paymentMethods.data],
+      paymentConditions.data?.flatMap((paymentMethodGroup) =>
+        paymentMethodGroup.conditions.map((condition) => ({
+          acceptIncomes: false,
+          incomeType: 'PAYSOFF',
+          acceptPayments: false,
+          paymentType: 'PAYSOFF',
+          paymentConditionId: condition.id,
+        })),
+      ) || [],
+    [paymentConditions.data],
   )
 
   const formValues = useMemo(() => {
@@ -109,6 +111,7 @@ export function NewBankAccountDialog({
             acceptIncomes: item.acceptIncomes || false,
             paymentType: item.paymentType || 'PAYSOFF',
             incomeType: item.incomeType || 'PAYSOFF',
+            paymentConditionId: item.paymentCondition?.id || '',
           }))
         : bankAccountCashControl,
     }
@@ -119,7 +122,7 @@ export function NewBankAccountDialog({
     values: formValues,
   })
 
-  const { handleSubmit, control, watch } = form
+  const { handleSubmit, control, watch, reset } = form
 
   const { fields } = useFieldArray({
     name: 'bankAccountCashControl',
@@ -128,42 +131,27 @@ export function NewBankAccountDialog({
 
   useEffect(() => setDialogOpen(open ?? false), [open])
 
-  // const handleResetForm = () => {
-  //   if (editMode) {
-  //     reset(formValues)
-  //   } else {
-  //     reset({ ...defaultValues, bankAccountCashControl })
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (paymentMethods.data) handleResetForm()
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [paymentMethods.data])
-
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      editMode
-        ? updateItem('bankAccountRoute', rowData?.id || '', data)
-        : createItem({ route: 'bankAccountRoute', data }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      toast.success('Sucesso!')
-      handleOpenChange(false)
-    },
-    onError: (err) => {
-      console.error('❌', err)
-      toast.error('Ocorreu um erro.')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    await mutation.mutateAsync(data)
+    const res = editMode
+      ? await updateItemNew({ route: `/bank/account/${rowData?.id}`, data })
+      : await createItemNew({ route: '/bank/account', data })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+    toast.success('Sucesso!')
+    handleOpenChange(false)
   }
 
-  const handleOpenChange = (value: boolean) => {
-    setOpen?.(value ? 'edit' : '')
-    setDialogOpen(value)
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      reset(formValues)
+    }
+    setOpen?.(open ? 'edit' : '')
+    setDialogOpen(open)
   }
 
   return (
@@ -246,15 +234,17 @@ export function NewBankAccountDialog({
                     </TableHeader>
                     <TableBody>
                       {fields?.map((field, index) => {
-                        const paymentMethod =
-                          paymentMethods?.data?.find((item) => {
-                            return item.id === field.paymentMethodId
-                          })?.name || 'Desconhecido'
+                        // Buscar condição de pagamento pelo ID
+                        const condition = paymentConditions.data
+                          ?.flatMap((group) => group.conditions)
+                          .find((cond) => cond.id === field.paymentConditionId)
+
+                        const displayName = condition?.name || 'Desconhecido'
 
                         return (
                           <TableRow key={field.id}>
                             <TableCell className="font-semibold text-gray-700">
-                              {paymentMethod}
+                              {displayName}
                             </TableCell>
                             <TableCell>
                               <div className="space-y-2">
