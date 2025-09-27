@@ -7,33 +7,21 @@ import type {
   ListPaymentConditionsType,
 } from '@/types/settings/paymentCondition'
 
-async function fetchData(
-  paymentMethodId: string,
-  listAll: boolean,
-): Promise<ListPaymentConditionsType[] | PaymentConditionsType[]> {
-  if (!paymentMethodId && !listAll) return []
-
+async function fetchData(): Promise<
+  ListPaymentConditionsType[] | PaymentConditionsType[]
+> {
   const data = await getDataOld({
     route: 'paymentConditionRoute',
     perPage: '999999',
-    filters: { paymentMethodId },
   })
 
-  if (listAll) return data.data as ListPaymentConditionsType[]
-
-  return (data.data[0]?.conditions ?? []) as PaymentConditionsType[]
+  return (data.data || []) as PaymentConditionsType[]
 }
 
-export function usePaymentConditions<T extends boolean>({
-  paymentMethodId,
-  listAll,
-}: {
-  paymentMethodId?: string
-  listAll?: T
-}) {
+export function usePaymentConditions<T extends boolean>() {
   const { data, isError, isLoading } = useQuery({
-    queryKey: ['payment-conditions-select', paymentMethodId],
-    queryFn: () => fetchData(paymentMethodId ?? '', listAll ?? false),
+    queryKey: ['payment-conditions-select'],
+    queryFn: () => fetchData(),
     staleTime: Infinity,
   })
   return {

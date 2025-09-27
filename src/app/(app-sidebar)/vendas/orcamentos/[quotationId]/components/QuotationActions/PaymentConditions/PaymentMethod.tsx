@@ -1,4 +1,3 @@
-import { SelectPaymentMethodWithConditionsField } from '@/components/common/form/global-inputs/PaymentMethodsWithConditionsSelectField'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { useFormContext } from 'react-hook-form'
@@ -9,8 +8,6 @@ import { getItemOld } from '@/actions/_cruds'
 import { QuotationPaymentConditionsType } from './schema'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { QuotationType } from '@/types/sales/quotation'
-import { usePaymentConditions } from '@/hooks/queries/usePaymentConditions'
-import { useEffect } from 'react'
 
 const dueDate = new Date()
 
@@ -22,40 +19,8 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   const form = useFormContext<QuotationPaymentConditionsType>()
   const { setValue, watch, clearErrors } = form
 
-  const paymentMethodId = watch('paymentMethodId')
   const downPaymentValue = watch('downPayment.amount') || 0
   const totalValue = watch('totalValue') || 0
-
-  // Obter condições de pagamento disponíveis para a forma de pagamento selecionada
-  const { data: paymentConditions } = usePaymentConditions({
-    paymentMethodId,
-    listAll: false,
-  })
-
-  const handleChangePaymentMethod = () => {
-    setValue('paymentConditionId', '')
-    setValue('installments', [])
-
-    setValue('minInstallmentQty', 0)
-    setValue('maxInstallmentQty', 0)
-    setValue('installmentQty', '1')
-    setValue('mainAdditionalFee', 0)
-    setValue('additionalFeeType', 'VALUE')
-  }
-
-  const paymentConditionId = watch('paymentConditionId')
-
-  // Selecionar automaticamente a primeira condição de pagamento quando uma forma de pagamento for selecionada
-  useEffect(() => {
-    if (paymentMethodId && paymentConditions && paymentConditions.length > 0) {
-      const firstPaymentCondition = paymentConditions[0]
-      if (firstPaymentCondition && !paymentConditionId) {
-        setValue('paymentConditionId', firstPaymentCondition.id)
-        handleChangePaymentCondition(firstPaymentCondition.id)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paymentMethodId, paymentConditions, setValue])
 
   // Ao alterar a condição de pagamento:
   // - atualiza mínimo e máximo de parcelas, para limitar o preenchimento do campo Parcelas (installmentQty),
@@ -97,21 +62,11 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   }
 
   return (
-    <>
-      <SelectPaymentMethodWithConditionsField<QuotationPaymentConditionsType>
-        name="paymentMethodId"
-        label="Forma de pagamento"
-        width="flex-[1_0_200px]"
-        additionalOnChange={handleChangePaymentMethod}
-      />
-
-      <PaymentConditionsSelectField<QuotationPaymentConditionsType>
-        name="paymentConditionId"
-        label="Condição de Pagamento"
-        width="flex-[1_0_200px]"
-        paymentMethodId={paymentMethodId}
-        onChange={handleChangePaymentCondition}
-      />
-    </>
+    <PaymentConditionsSelectField<QuotationPaymentConditionsType>
+      name="paymentConditionId"
+      label="Condição de Pagamento"
+      width="flex-[1_0_200px]"
+      onChange={handleChangePaymentCondition}
+    />
   )
 }

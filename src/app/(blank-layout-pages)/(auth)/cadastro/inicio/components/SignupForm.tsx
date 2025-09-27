@@ -88,6 +88,7 @@ export function SignupForm() {
           label="Nome completo"
           placeholder="Digite aqui"
           width="w-full"
+          autoFocus
         />
 
         <FormInput

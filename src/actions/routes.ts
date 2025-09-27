@@ -14,7 +14,6 @@ const defaultRoute: { [key: string]: string } = {
   bankAccountRoute: '/bank/account',
   paymentMethodRoute: '/payment/method',
   paymentConditionRoute: '/payment/condition',
-  downPaymentConditionRoute: '/payment/condition/down-condition',
   accountsPlanTotalsRoute: '/financial/nature/quantity',
   accountsPlanRoute: '/financial/nature',
   fixedExpensesConfigRoute: '/financial/scheduled-expense',

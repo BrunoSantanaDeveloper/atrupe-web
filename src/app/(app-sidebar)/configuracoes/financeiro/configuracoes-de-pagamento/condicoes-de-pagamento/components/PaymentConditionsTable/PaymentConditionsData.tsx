@@ -50,7 +50,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
 
   const alertDialog = useAlertDialog()
 
-  const filters = { ...searchParams }
+  const filters = { ...searchParams, grouped: 'true' }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,

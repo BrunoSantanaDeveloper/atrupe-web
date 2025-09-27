@@ -59,6 +59,7 @@ export function NewPasswordForm({ onSubmit }: Props) {
               label="Senha"
               type={showPassword ? 'text' : 'password'}
               className="pr-11"
+              autoFocus
             />
             <Button
               type="button"

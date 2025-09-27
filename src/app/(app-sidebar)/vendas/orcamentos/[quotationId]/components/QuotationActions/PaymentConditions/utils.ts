@@ -83,7 +83,7 @@ export function defaultValues(quotationData: QuotationType) {
     // finalValue: quotationData.paymentConditions?.finalValue || 0,
 
     minInstallmentQty: quotationData.paymentConditions?.minInstallmentQty || 1,
-    maxInstallmentQty: quotationData.paymentConditions?.maxInstallmentQty || 24,
+    maxInstallmentQty: quotationData.paymentConditions?.maxInstallmentQty || 1,
     mainAdditionalFee: quotationData.paymentConditions?.mainAdditionalFee || 0,
     additionalFeeType:
       quotationData.paymentConditions?.additionalFeeType || 'VALUE',

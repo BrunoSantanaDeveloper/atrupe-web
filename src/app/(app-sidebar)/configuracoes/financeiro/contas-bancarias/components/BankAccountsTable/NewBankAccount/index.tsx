@@ -148,7 +148,7 @@ export function NewBankAccountDialog({
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      reset(formValues)
+      setTimeout(() => reset(formValues), 300)
     }
     setOpen?.(open ? 'edit' : '')
     setDialogOpen(open)

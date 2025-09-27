@@ -6,7 +6,7 @@ import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 
 import { useFormContext } from 'react-hook-form'
 import type { QuotationPaymentConditionsType } from './schema'
-import { DownPaymentConditionsSelectField } from '@/components/common/form/global-inputs/DownPaymentConditionsSelectField'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 export function DownPayment() {
   const form = useFormContext<QuotationPaymentConditionsType>()
@@ -64,7 +64,7 @@ export function DownPayment() {
         width="flex-[1_0_130px]"
       />
       {/* TODO : Filtrar condições de pagamento permitidas para a entrada */}
-      <DownPaymentConditionsSelectField<QuotationPaymentConditionsType>
+      <PaymentConditionsSelectField<QuotationPaymentConditionsType>
         name={`downPayment.paymentConditionId`}
         label="Forma de pagamento"
         width="flex-[1_0_200px]"

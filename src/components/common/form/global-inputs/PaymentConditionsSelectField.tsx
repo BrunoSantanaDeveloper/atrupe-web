@@ -14,7 +14,6 @@ interface Props<T extends FieldValues> {
   label?: string
   placeholder?: string
   width?: string
-  paymentMethodId: string
   onChange?: (value: string) => void
 }
 
@@ -23,19 +22,16 @@ export function PaymentConditionsSelectField<T extends FieldValues>({
   label = 'Condição de pagamento',
   placeholder = label,
   width = 'flex-[1_0_100px]',
-  paymentMethodId,
   onChange,
   ...props
 }: Props<T>) {
-  const { data: paymentConditions } = usePaymentConditions({
-    paymentMethodId,
-    listAll: false,
-  })
+  const { data: paymentConditions } = usePaymentConditions()
 
   const options = useMemo(() => {
     if (!paymentConditions) return []
 
-    return paymentConditions?.map((paymentCondition) => ({
+    // eslint-disable-next-line
+    return (paymentConditions as any[])?.map((paymentCondition) => ({
       value: paymentCondition.id,
       label: paymentCondition.name,
     }))
