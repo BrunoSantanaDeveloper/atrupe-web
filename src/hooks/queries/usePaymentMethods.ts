@@ -1,4 +1,4 @@
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 interface IPaymentMethods {
@@ -9,11 +9,11 @@ interface IPaymentMethods {
 const PER_PAGE = '999999'
 
 async function fetchData(): Promise<IPaymentMethods[]> {
-  const data = await getDataOld({
-    route: 'paymentMethodRoute',
+  const res = await getData({
+    route: '/payment/method',
     perPage: PER_PAGE,
   })
-  return data.data.filter((item: { isActive: boolean }) => item.isActive)
+  return res.data.filter((item: { isActive: boolean }) => item.isActive)
 }
 
 export function usePaymentMethod() {

@@ -1,6 +1,5 @@
 export type PaymentConditionsType = {
   id: string
-  isActive: boolean
   name: string
   acceptInstallments: boolean
   costType: 'PERCENT' | 'VALUE'
@@ -14,13 +13,12 @@ export type PaymentConditionsType = {
     dueDate: Date
     operatorFeeRate: number
     operatorFeeTransfer: number
+    paymentConditionId: string
   }[]
   paymentMethod: {
     id: string
     name: string
   }
-  receivementType: string
-  receivementDays: number
   // para orçamento
   type: string
   billing: string
@@ -47,31 +45,3 @@ export type ListPaymentConditionsType = {
   }
   conditions: PaymentConditionsType[]
 }
-
-// export type PaymentConditionsType = {
-//   id: string
-//   type: string
-//   billing: string
-//   discount: number
-//   downPayment: number
-//   paymentMethod: {
-//     id: string
-//     name: string
-//   }
-//   paymentCondition: {
-//     id: string
-//     name: string
-//   }
-//   commission: {
-//     type: string
-//     supplierId: string
-//     transferMethod: string
-//     commissionType: string
-//     commissionValue: number
-//     totalCommision: number
-//     baseValue: number
-//   }
-//   totalValue: number
-//   finalValue: number
-//   description: string
-// }

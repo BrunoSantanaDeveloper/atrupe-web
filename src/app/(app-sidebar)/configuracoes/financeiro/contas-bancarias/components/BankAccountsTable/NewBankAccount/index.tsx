@@ -82,20 +82,18 @@ export function NewBankAccountDialog({
   const queryClient = useQueryClient()
   const { hasFinancialModule, canProvision } = usePlanFeatures()
 
-  const paymentConditions = usePaymentConditions({ listAll: true })
+  const { data: paymentConditions } = usePaymentConditions()
 
   const bankAccountCashControl = useMemo(
     () =>
-      paymentConditions.data?.flatMap((paymentMethodGroup) =>
-        paymentMethodGroup.conditions.map((condition) => ({
-          acceptIncomes: false,
-          incomeType: 'PAYSOFF',
-          acceptPayments: false,
-          paymentType: 'PAYSOFF',
-          paymentConditionId: condition.id,
-        })),
-      ) || [],
-    [paymentConditions.data],
+      paymentConditions?.map((condition) => ({
+        acceptIncomes: false,
+        incomeType: 'PAYSOFF',
+        acceptPayments: false,
+        paymentType: 'PAYSOFF',
+        paymentConditionId: condition.id,
+      })) || [],
+    [paymentConditions],
   )
 
   const formValues = useMemo(() => {
@@ -235,9 +233,9 @@ export function NewBankAccountDialog({
                     <TableBody>
                       {fields?.map((field, index) => {
                         // Buscar condição de pagamento pelo ID
-                        const condition = paymentConditions.data
-                          ?.flatMap((group) => group.conditions)
-                          .find((cond) => cond.id === field.paymentConditionId)
+                        const condition = paymentConditions?.find(
+                          (cond) => cond.id === field.paymentConditionId,
+                        )
 
                         const displayName = condition?.name || 'Desconhecido'
 

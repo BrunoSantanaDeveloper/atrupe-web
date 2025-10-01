@@ -12,8 +12,7 @@ const defaultRoute: { [key: string]: string } = {
   // configurações de financeiro
   bankRoute: '/bank',
   bankAccountRoute: '/bank/account',
-  paymentMethodRoute: '/payment/method',
-  paymentConditionRoute: '/payment/condition',
+  // paymentConditionRoute: '/payment/condition',
   accountsPlanTotalsRoute: '/financial/nature/quantity',
   accountsPlanRoute: '/financial/nature',
   fixedExpensesConfigRoute: '/financial/scheduled-expense',
@@ -50,7 +49,6 @@ const defaultRoute: { [key: string]: string } = {
   payableRoute: '/financial/payable',
   creditLimitRoute: '/financial/credit-limit',
   transactionCategoryRoute: '/financial/nature/sub-category',
-  bankMethodRoute: '/bank/method', // /bank/method/:methodId
   fixedExpensesListRoute: '/financial/scheduled-expense/grouped-by-supplier',
 
   // Controle de caixa

@@ -7,7 +7,7 @@ import { FormSelect, SelectBasic } from '../FormSelect'
 import type { Path, FieldValues } from 'react-hook-form'
 
 // Hooks
-import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 interface Props<T extends FieldValues> {
   name: Path<T>
@@ -17,23 +17,23 @@ interface Props<T extends FieldValues> {
   noForm?: boolean
   value?: string
   onChange?: (value: string) => void
-  methodId?: string
+  conditionId?: string
   disabled?: boolean
 }
 
-export function SelectBankFilterMethodField<T extends FieldValues>({
+export function SelectBankFilterConditionField<T extends FieldValues>({
   name,
   label = 'Banco',
   placeholder = label,
   width = 'flex-[1_0_100px]',
   value,
   onChange,
-  methodId,
+  conditionId,
   noForm,
   disabled,
   ...props
 }: Props<T>) {
-  const { data: banks } = useBankFilterMethod(methodId || '')
+  const { data: banks } = useBankFilterCondition(conditionId || '')
 
   const options = useMemo(() => {
     return banks?.map((bank) => ({

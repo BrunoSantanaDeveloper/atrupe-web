@@ -18,8 +18,8 @@ import { UnpayInstallment } from '../UnpayInstallment'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
-import { SelectBankFilterMethodField } from '@/components/common/form/global-inputs/BanksFilterMethodSelectField'
+import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
+import { AvailablePaymentConditionsSelectField } from '@/components/common/form/global-inputs/AvailablePaymentConditionsSelectField'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -45,7 +45,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import { useEffect } from 'react'
 
 // Hooks
-import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
 
 interface Props {
@@ -73,10 +73,10 @@ export function CompensateDialog({
 
   const queryClient = useQueryClient()
 
-  const paymentMethodId = watch('paymentMethodId')
+  const paymentConditionId = watch('paymentConditionId')
   const bankId = watch('bankId')
 
-  const { data: banks } = useBankFilterMethod(paymentMethodId || '')
+  const { data: banks } = useBankFilterCondition(paymentConditionId || '')
   const { data: bankAccounts } = useBankAccount({
     filters: { bankId: bankId || undefined },
     isBankRequired: true,
@@ -93,7 +93,7 @@ export function CompensateDialog({
         ? new Date(rowData?.paymentDate)
         : undefined,
       compensateDate: new Date(),
-      paymentMethodId: rowData?.paymentMethod?.id || '',
+      paymentConditionId: rowData?.paymentCondition?.id || '',
       bankId: '',
       bankAccountId: '',
       totalValue: rowData?.value || 0,
@@ -103,7 +103,7 @@ export function CompensateDialog({
 
   // Seleciona automaticamente o banco quando há método de pagamento e bancos disponíveis
   useEffect(() => {
-    if (banks && banks.length > 0 && paymentMethodId && !bankId) {
+    if (banks && banks.length > 0 && paymentConditionId && !bankId) {
       const defaultBank = rowData?.bank?.id
         ? banks.find((bank) => bank.id === rowData.bank?.id)
         : banks[0]
@@ -112,7 +112,7 @@ export function CompensateDialog({
         setValue('bankId', defaultBank.id)
       }
     }
-  }, [banks, paymentMethodId, setValue, bankId, rowData?.bank?.id])
+  }, [banks, paymentConditionId, setValue, bankId, rowData?.bank?.id])
 
   // Seleciona automaticamente a conta quando há banco e contas disponíveis
   useEffect(() => {
@@ -195,17 +195,18 @@ export function CompensateDialog({
                 label="Data da compensação"
                 width="flex-[1_0_150px]"
               />
-              <SelectPaymentMethodField
-                name="paymentMethodId"
+              <AvailablePaymentConditionsSelectField
+                name="paymentConditionId"
                 label="Forma de pagamento"
                 width="flex-[1_0_150px]"
+                type={type}
                 disabled
               />
-              <SelectBankFilterMethodField
+              <SelectBankFilterConditionField
                 name="bankId"
                 label="Banco"
                 width="flex-[1_0_250px]"
-                methodId={watch('paymentMethodId') || ''}
+                conditionId={watch('paymentConditionId') || ''}
                 disabled
               />
               <SelectBankAccountField

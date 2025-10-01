@@ -21,9 +21,9 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
-import { SelectBankFilterMethodField } from '@/components/common/form/global-inputs/BanksFilterMethodSelectField'
-import { SelectAvailablePaymentMethodField } from '@/components/common/form/global-inputs/AvailablePaymentMethodsSelectField'
+import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
+import { AvailablePaymentConditionsSelectField } from '@/components/common/form/global-inputs/AvailablePaymentConditionsSelectField'
 import { SelectTransactionCategoryField } from '@/components/common/form/global-inputs/TransactionCategorySelectField'
 
 // Form
@@ -54,7 +54,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
-import { useBankFilterMethod } from '@/hooks/queries/useBankFilterMethod'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 // Lib
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -89,13 +89,13 @@ export function PaymentDialog({
 
   const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
 
-  const paymentMethodId = watch('paymentMethodId')
+  const paymentConditionId = watch('paymentConditionId')
   const bankId = watch('bankId')
   const totalValue = watch('totalValue')
   const amount = watch('amount')
   const differenceNatureId = watch('differenceNatureId') || ''
 
-  const { data: banks } = useBankFilterMethod(paymentMethodId || '')
+  const { data: banks } = useBankFilterCondition(paymentConditionId || '')
   const { data: bankAccounts } = useBankAccount({
     filters: { bankId },
     isBankRequired: true,
@@ -126,7 +126,7 @@ export function PaymentDialog({
     if (open) {
       reset({
         paidDate: new Date(),
-        paymentMethodId: rowData?.paymentMethod?.id || '',
+        paymentConditionId: rowData?.paymentCondition?.id || '',
         bankId: '',
         bankAccountId: '',
         totalValue: rowData?.value || 0,
@@ -140,10 +140,10 @@ export function PaymentDialog({
   }, [open, rowData, reset])
 
   useEffect(() => {
-    if (banks && banks.length > 0 && paymentMethodId && !bankId) {
+    if (banks && banks.length > 0 && paymentConditionId && !bankId) {
       setValue('bankId', banks[0].id)
     }
-  }, [banks, paymentMethodId, setValue, bankId])
+  }, [banks, paymentConditionId, setValue, bankId])
 
   useEffect(() => {
     if (bankAccounts && bankAccounts.length > 0 && bankId) {
@@ -281,18 +281,20 @@ export function PaymentDialog({
                 }
                 width="flex-[1_0_250px]"
               />
-              <SelectAvailablePaymentMethodField
-                name="paymentMethodId"
+              <AvailablePaymentConditionsSelectField
+                name="paymentConditionId"
                 label="Forma de pagamento"
                 width="flex-[1_0_250px]"
                 type={type}
               />
-              <SelectBankFilterMethodField
+              <SelectBankFilterConditionField
                 name="bankId"
                 label="Banco"
                 width="flex-[1_0_250px]"
-                methodId={watch('paymentMethodId')}
-                disabled={!watch('paymentMethodId') || !canCreateBankAccount()}
+                conditionId={watch('paymentConditionId')}
+                disabled={
+                  !watch('paymentConditionId') || canCreateBankAccount()
+                }
               />
               <SelectBankAccountField
                 name="bankAccountId"

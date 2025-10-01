@@ -2,7 +2,7 @@ export type InstallmentType = {
   id: string
   installmentNumber: number
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
-  paymentMethod: {
+  paymentCondition: {
     id: string
     name: string
   }

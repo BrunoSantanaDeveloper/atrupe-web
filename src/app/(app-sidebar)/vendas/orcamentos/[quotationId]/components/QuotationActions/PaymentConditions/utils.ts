@@ -21,7 +21,6 @@ export function defaultValues(quotationData: QuotationType) {
   return {
     type: quotationData.paymentConditions?.type || 'NFE',
     billing: quotationData.paymentConditions?.billing || 'ON_ORDER',
-    paymentMethodId: quotationData.paymentConditions?.paymentMethod?.id || '',
     paymentConditionId:
       quotationData.paymentConditions?.paymentCondition?.id || '',
     installmentQty: String(

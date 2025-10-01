@@ -1,24 +1,26 @@
 import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
-interface IPaymentMethodsWithConditions {
+interface IBanks {
   id: string
   name: string
+  code: string
 }
 
-const PER_PAGE = '999999'
+async function fetchData(conditionId: string): Promise<IBanks[]> {
+  if (!conditionId) return []
 
-async function fetchData(): Promise<IPaymentMethodsWithConditions[]> {
   const data = await getData({
-    route: '/payment/method/with-conditions',
+    route: `/bank/condition/${conditionId}`,
+    perPage: '9999',
   })
   return data.data.filter((item: { isActive: boolean }) => item.isActive)
 }
 
-export function usePaymentMethodsWithConditions() {
+export function useBankFilterCondition(conditionId: string) {
   const { data, isError, isLoading } = useQuery({
-    queryKey: ['payment-method-with-conditions-list', PER_PAGE],
-    queryFn: fetchData,
+    queryKey: ['bank-filter-condition', conditionId],
+    queryFn: () => fetchData(conditionId),
     staleTime: Infinity,
   })
   return { data, isError, isLoading }

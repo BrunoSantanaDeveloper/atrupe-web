@@ -81,7 +81,6 @@ export type ClientFinanceType = {
   id: string
   referencia: string
   bank: string
-  method: string
   status: string
   value: string
   date: string

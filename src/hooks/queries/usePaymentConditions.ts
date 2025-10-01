@@ -1,33 +1,26 @@
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Types
-import type {
-  PaymentConditionsType,
-  ListPaymentConditionsType,
-} from '@/types/settings/paymentCondition'
+import type { PaymentConditionsType } from '@/types/settings/paymentCondition'
 
-async function fetchData(): Promise<
-  ListPaymentConditionsType[] | PaymentConditionsType[]
-> {
-  const data = await getDataOld({
-    route: 'paymentConditionRoute',
-    perPage: '999999',
+async function fetchData(): Promise<PaymentConditionsType[]> {
+  const res = await getData({
+    route: '/payment/condition',
+    perPage: '9999',
   })
 
-  return (data.data || []) as PaymentConditionsType[]
+  return (res.data || []) as PaymentConditionsType[]
 }
 
-export function usePaymentConditions<T extends boolean>() {
+export function usePaymentConditions() {
   const { data, isError, isLoading } = useQuery({
     queryKey: ['payment-conditions-select'],
     queryFn: () => fetchData(),
     staleTime: Infinity,
   })
   return {
-    data: data as T extends true
-      ? ListPaymentConditionsType[]
-      : PaymentConditionsType[],
+    data: data || [],
     isError,
     isLoading,
   }

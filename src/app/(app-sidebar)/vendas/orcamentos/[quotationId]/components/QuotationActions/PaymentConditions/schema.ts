@@ -4,7 +4,6 @@ import { z } from 'zod'
 export const quotationPaymentConditionsSchema = z.object({
   type: z.string().min(1, 'Campo obrigatório'),
   billing: z.string(),
-  paymentMethodId: z.string(),
   paymentConditionId: z.string().min(1, 'Campo obrigatório'),
   installmentQty: z.string().optional(),
   hasDownPayment: z.string(),

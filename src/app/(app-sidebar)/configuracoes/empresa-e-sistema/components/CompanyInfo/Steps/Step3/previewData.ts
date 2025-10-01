@@ -144,7 +144,6 @@ export const quotationExampleData: any = {
   },
   payment: {
     condition: 'Pix',
-    method: 'Pix',
     description: null,
     totalInstallments: 1,
     installments: [
@@ -154,10 +153,8 @@ export const quotationExampleData: any = {
           new Date().setDate(new Date().getDate() + 31),
         ).toISOString(),
         value: 6000,
-        paymentMethod: 'Pix',
       },
     ],
-    availablePaymentMethods: [],
   },
   total: {
     subtotal: 3000,
