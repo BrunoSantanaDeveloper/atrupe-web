@@ -32,7 +32,7 @@ import type {
 import { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { deleteItem, getDataOld } from '@/actions/_cruds'
+import { deleteItemNew, getData } from '@/actions/_cruds'
 
 // Third-party
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -55,7 +55,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['payment-condition-list', searchParams],
-    queryFn: () => getDataOld({ route: 'paymentConditionRoute', filters }),
+    queryFn: () => getData({ route: '/payment/condition', filters }),
   })
 
   const paymentConditions: ListPaymentConditionsType[] = data?.data || []
@@ -63,7 +63,8 @@ export function PaymentConditionsData({ searchParams }: Props) {
 
   // Desativar condição
   const mutation = useMutation({
-    mutationFn: (id: string) => deleteItem('paymentConditionRoute', id),
+    mutationFn: (id: string) =>
+      deleteItemNew({ route: `/payment/condition/${id}` }),
     onSuccess: () => {
       queryClient.invalidateQueries()
     },
@@ -77,7 +78,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
       confirmVariant: 'error',
       confirmLabel: 'Inativar',
       onConfirm: async () => {
-        return await mutation.mutateAsync(id)
+        await mutation.mutateAsync(id)
       },
       toastMsg: {
         loading: `Aguarde...`,

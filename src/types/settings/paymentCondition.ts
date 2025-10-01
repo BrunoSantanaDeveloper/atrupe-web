@@ -1,6 +1,7 @@
 export type PaymentConditionsType = {
   id: string
   name: string
+  isActive: boolean
   acceptInstallments: boolean
   costType: 'PERCENT' | 'VALUE'
   minInstallments: number

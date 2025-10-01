@@ -66,7 +66,6 @@ type CreditLimitFormType = z.infer<typeof creditLimitSchema>
 export function CreditLimit() {
   const [open, setOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'person' | 'company'>('person')
-  // const { data: paymentConditions } = usePaymentConditionsFullList()
   const queryClient = useQueryClient()
 
   const { data: creditLimit } = useQuery<CreditLimitFormType>({

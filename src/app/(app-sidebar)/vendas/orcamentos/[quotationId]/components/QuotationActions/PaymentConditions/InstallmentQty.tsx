@@ -3,9 +3,10 @@ import { useFormContext } from 'react-hook-form'
 
 import { QuotationPaymentConditionsType } from './schema'
 import { addMonths } from 'date-fns'
-import { getItemOld } from '@/actions/_cruds'
+import { getItem } from '@/actions/_cruds'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 const dueDate = new Date()
 
@@ -57,10 +58,15 @@ export function InstallmentQty() {
 
     // Recalcular parcelas de acordo com número de parcelas selecionado
     // Primeiro, pegar a taxa de acréscimo de acordo com a quantidade de parcelas
-    const data: PaymentConditionsType = await getItemOld({
-      route: 'paymentConditionRoute',
-      id: paymentConditionId,
+    const res = await getItem({
+      route: `/payment/condition/${paymentConditionId}`,
     })
+
+    if (!res.success) {
+      toast.error(res.message)
+    }
+
+    const data: PaymentConditionsType = res.data
 
     const additionalFee =
       data?.installments[qtyNumber - 1]?.operatorFeeTransfer || 0

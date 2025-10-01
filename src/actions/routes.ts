@@ -12,7 +12,6 @@ const defaultRoute: { [key: string]: string } = {
   // configurações de financeiro
   bankRoute: '/bank',
   bankAccountRoute: '/bank/account',
-  // paymentConditionRoute: '/payment/condition',
   accountsPlanTotalsRoute: '/financial/nature/quantity',
   accountsPlanRoute: '/financial/nature',
   fixedExpensesConfigRoute: '/financial/scheduled-expense',

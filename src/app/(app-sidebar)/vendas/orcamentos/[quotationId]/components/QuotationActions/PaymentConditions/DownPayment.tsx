@@ -1,12 +1,13 @@
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
-import { getItemOld } from '@/actions/_cruds'
+import { getItem } from '@/actions/_cruds'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 
 import { useFormContext } from 'react-hook-form'
 import type { QuotationPaymentConditionsType } from './schema'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
+import { toast } from 'sonner'
 
 export function DownPayment() {
   const form = useFormContext<QuotationPaymentConditionsType>()
@@ -20,10 +21,15 @@ export function DownPayment() {
   const handleChangePaymentCondition = async (paymentConditionId: string) => {
     clearErrors('downPayment.paymentConditionId')
 
-    const data: PaymentConditionsType = await getItemOld({
-      route: 'paymentConditionRoute',
-      id: paymentConditionId,
+    const res = await getItem({
+      route: `/payment/condition/${paymentConditionId}`,
     })
+
+    if (!res.success) {
+      toast.error(res.message)
+    }
+
+    const data: PaymentConditionsType = res.data
 
     const additionalFee = data?.installments[0]?.operatorFeeTransfer || 0
     setValue('downPayment.additionalFee', additionalFee)

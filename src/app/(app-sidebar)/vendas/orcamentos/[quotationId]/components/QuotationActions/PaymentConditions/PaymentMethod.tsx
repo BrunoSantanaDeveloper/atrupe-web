@@ -3,11 +3,12 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import { useFormContext } from 'react-hook-form'
 
 import { addMonths } from 'date-fns'
-import { getItemOld } from '@/actions/_cruds'
+import { getItem } from '@/actions/_cruds'
 
 import { QuotationPaymentConditionsType } from './schema'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { QuotationType } from '@/types/sales/quotation'
+import { toast } from 'sonner'
 
 const dueDate = new Date()
 
@@ -31,10 +32,16 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   const handleChangePaymentCondition = async (paymentConditionId: string) => {
     clearErrors('paymentConditionId')
 
-    const data: PaymentConditionsType = await getItemOld({
-      route: 'paymentConditionRoute',
-      id: paymentConditionId,
+    // Busca a condição de pagamento selecionada para obter o mínimo e máximo de parcelas
+    const res = await getItem({
+      route: `/payment/condition/${paymentConditionId}`,
     })
+
+    if (!res.success) {
+      toast.error(res.message)
+    }
+
+    const data: PaymentConditionsType = res.data
 
     const minInstallments = data?.minInstallments || 1
     const maxInstallments = data?.maxInstallments || 1
