@@ -22,7 +22,9 @@ export function defaultValues(quotationData: QuotationType) {
     type: quotationData.paymentConditions?.type || 'NFE',
     billing: quotationData.paymentConditions?.billing || 'ON_ORDER',
     paymentConditionId:
-      quotationData.paymentConditions?.paymentCondition?.id || '',
+      (quotationData.paymentConditions?.installmentQty > 0 && // TODO: Remover
+        quotationData.paymentConditions?.paymentCondition?.id) ||
+      '',
     installmentQty: String(
       quotationData.paymentConditions?.installmentQty || '1',
     ),
