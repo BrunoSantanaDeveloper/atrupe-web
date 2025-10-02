@@ -283,7 +283,7 @@ export function PaymentDialog({
               />
               <AvailablePaymentConditionsSelectField
                 name="paymentConditionId"
-                label="Forma de pagamento"
+                label="Condição de pagamento"
                 width="flex-[1_0_250px]"
                 type={type}
               />

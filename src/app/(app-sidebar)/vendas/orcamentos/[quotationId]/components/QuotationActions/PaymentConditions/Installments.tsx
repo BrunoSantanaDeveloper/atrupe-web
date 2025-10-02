@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { Separator } from '@/components/ui/separator'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { QuotationPaymentConditionsType } from './schema'
 
@@ -79,9 +79,9 @@ export function Installments() {
           label="Vencimento"
           width="flex-[1_0_130px]"
         />
-        <SelectPaymentMethodField<QuotationPaymentConditionsType>
-          name="paymentMethodId"
-          label="Forma de pagamento"
+        <PaymentConditionsSelectField<QuotationPaymentConditionsType>
+          name="paymentConditionId"
+          label="Condição de pagamento"
           width="flex-[1_0_200px]"
           disabled
         />

@@ -124,10 +124,6 @@ export type QuotationPaymentConditionsType = {
     additionalFee: number
     amount: number
   }
-  paymentMethod: {
-    id: string
-    name: string
-  }
   paymentCondition: {
     id: string
     name: string
@@ -139,7 +135,7 @@ export type QuotationPaymentConditionsType = {
   installments: {
     id: string
     dueDate: Date
-    paymentMethodId: string
+    paymentConditionId: string
     additionalFee: number
     amount: number
   }[]

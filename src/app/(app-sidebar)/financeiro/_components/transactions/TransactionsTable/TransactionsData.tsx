@@ -172,7 +172,7 @@ export function TransactionsData({ type, searchParams }: Props) {
                                 {formatCurrencyToBrl(currentInstallment?.value)}
                               </TableCell>
                               <TableCell className="text-gray-600">
-                                {currentInstallment?.paymentMethod?.name}
+                                {currentInstallment?.paymentCondition?.name}
                               </TableCell>
                               <TableCell>
                                 <div className="flex justify-end gap-1">

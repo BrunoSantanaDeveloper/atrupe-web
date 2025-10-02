@@ -100,7 +100,7 @@ export function NewTransaction({ type }: Props) {
       for (let i = fields.length; i < quantity; i++) {
         append({
           dueDate: addMonths(new Date(getValues('dueDate') || ''), i),
-          paymentMethodId: getValues('paymentMethodId') || '',
+          paymentConditionId: getValues('paymentConditionId') || '',
           amount: 0,
         })
       }
@@ -279,12 +279,15 @@ export function NewTransaction({ type }: Props) {
                     natureId={watch('natureId')}
                   />
                   <SelectPaymentMethodField
-                    name="paymentMethodId"
-                    label="Forma de pagamento"
+                    name="paymentConditionId"
+                    label="Condição de pagamento"
                     width="flex-[1_0_280px]"
                     additionalOnChange={(value) => {
                       fields.forEach((_, index) => {
-                        setValue(`installments.${index}.paymentMethodId`, value)
+                        setValue(
+                          `installments.${index}.paymentConditionId`,
+                          value,
+                        )
                       })
                     }}
                   />

@@ -92,12 +92,12 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           onChange={(value) => handleFilter('status', value)}
         />
         <SelectBasic
-          name="paymentMethodId"
-          label="Forma de pagamento"
+          name="paymentConditionId"
+          label="Condição de pagamento"
           placeholder="Selecione uma forma de pagamento"
           options={[{ value: 'all', label: 'Todas' }, ...paymentMethodOptions]}
-          value={searchParams?.paymentMethodId || 'all'}
-          onChange={(value) => handleFilter('paymentMethodId', value)}
+          value={searchParams?.paymentConditionId || 'all'}
+          onChange={(value) => handleFilter('paymentConditionId', value)}
           className="w-[220px]"
         />
       </>

@@ -30,7 +30,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { ChangeTotalValueAlertDialog } from './ChangeValue/ChangeValueAlert'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Icons
 import {
@@ -119,7 +119,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
         dueDate: item?.dueDate
           ? new Date(item?.dueDate)
           : (null as unknown as Date),
-        paymentMethodId: item?.paymentMethod?.id || '',
+        paymentCondition: item?.paymentCondition?.id || '',
       }
     })
 
@@ -276,9 +276,9 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                                 label="Vencimento"
                                 width="flex-[1_0_130px]"
                               />
-                              <SelectPaymentMethodField
-                                name={`installments.${index}.paymentMethodId`}
-                                label="Forma de pagamento"
+                              <PaymentConditionsSelectField
+                                name={`installments.${index}.paymentConditionId`}
+                                label="Condição de pagamento"
                                 width="flex-[1_0_200px]"
                               />
                               <FormBrlInput
@@ -371,7 +371,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
 
                           append({
                             dueDate: null as unknown as Date,
-                            paymentMethodId: '',
+                            paymentConditionId: '',
                             amount: 0,
                             additionalFee: 0,
                           })

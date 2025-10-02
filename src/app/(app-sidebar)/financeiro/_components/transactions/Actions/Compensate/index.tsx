@@ -197,7 +197,7 @@ export function CompensateDialog({
               />
               <AvailablePaymentConditionsSelectField
                 name="paymentConditionId"
-                label="Forma de pagamento"
+                label="Condição de pagamento"
                 width="flex-[1_0_150px]"
                 type={type}
                 disabled

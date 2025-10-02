@@ -228,7 +228,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                   {currentInstallment?.bankAccount?.name}
                                 </p>
                                 <p className="text-gray">
-                                  {currentInstallment?.paymentMethod?.name ||
+                                  {currentInstallment?.paymentCondition?.name ||
                                     '-'}
                                 </p>
                               </TableCell>

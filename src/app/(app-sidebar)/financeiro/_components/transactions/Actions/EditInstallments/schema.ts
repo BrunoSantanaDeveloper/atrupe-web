@@ -8,7 +8,7 @@ export const schema = z.object({
       amount: z.number(),
       additionalFee: z.number().optional(),
       dueDate: z.date({ invalid_type_error: 'Selecione uma data' }),
-      paymentMethodId: z.string().min(1, 'Campo obrigatório'),
+      paymentConditionId: z.string().min(1, 'Campo obrigatório'),
     }),
   ),
 })

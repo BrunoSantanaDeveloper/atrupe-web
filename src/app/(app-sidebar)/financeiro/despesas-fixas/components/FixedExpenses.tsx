@@ -257,7 +257,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
         id: hasPayable ? payable.id : item.id,
         installmentNumber: 1,
         status: isPaid ? 'PAID' : ('PENDING' as const),
-        paymentMethod: {
+        paymentCondition: {
           id: '',
           name: '',
         },

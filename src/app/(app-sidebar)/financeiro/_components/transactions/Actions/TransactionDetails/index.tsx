@@ -197,8 +197,8 @@ export function TransactionDetailsDialog({
                             isCurrent && 'font-medium text-gray-900',
                           )}
                         >
-                          {item?.paymentMethod?.name} {item?.installmentNumber}/
-                          {data?.installmentQty}
+                          {item?.paymentCondition?.name}{' '}
+                          {item?.installmentNumber}/{data?.installmentQty}
                         </TableCell>
                         <TableCell>
                           <div>

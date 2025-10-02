@@ -177,7 +177,7 @@ type InstallmentType = {
   number: string
   dueDate: string
   value: number
-  paymentMethod: string
+  paymentCondition: string
 }
 
 // Tipo para pagamento

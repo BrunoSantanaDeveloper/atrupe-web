@@ -55,12 +55,14 @@ export function TransactionsFilter({ searchParams }: SearchParamsType) {
       /> */}
       <SelectPaymentMethodField
         noForm
-        name="paymentMethodId"
-        label="Forma de pagamento"
+        name="paymentConditionId"
+        label="Condição de pagamento"
         placeholder="Selecione uma forma de pagamento"
         width="w-[220px]"
-        value={searchParams?.paymentMethodId || 'all'}
-        additionalOnChange={(value) => handleFilter('paymentMethodId', value)}
+        value={searchParams?.paymentConditionId || 'all'}
+        additionalOnChange={(value) =>
+          handleFilter('paymentConditionId', value)
+        }
       />
     </>
   )

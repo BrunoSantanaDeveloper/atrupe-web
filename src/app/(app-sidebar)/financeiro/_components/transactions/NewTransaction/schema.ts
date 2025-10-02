@@ -19,7 +19,7 @@ export const schema = z.object({
   description: z.string(),
   natureId: z.string().min(1, 'Campo obrigatório'),
   subCategoryId: z.string().min(1, 'Campo obrigatório'),
-  paymentMethodId: z.string().min(1, 'Campo obrigatório'),
+  paymentConditionId: z.string().min(1, 'Campo obrigatório'),
   installmentQty: z
     .number()
     .min(1, 'Campo obrigatório')
@@ -34,7 +34,7 @@ export const schema = z.object({
   installments: z.array(
     z.object({
       dueDate: z.date(),
-      paymentMethodId: z.string().min(1, 'Campo obrigatório'),
+      paymentConditionId: z.string().min(1, 'Campo obrigatório'),
       amount: z.number(),
       status: z.string().optional(),
       paidDate: z.date().optional(),
@@ -50,7 +50,7 @@ export const defaultValues = {
   description: '',
   natureId: '',
   subCategoryId: '',
-  paymentMethodId: '',
+  paymentConditionId: '',
   installmentQty: 1,
   referenceDate: new Date(),
   dueDate: new Date(),
@@ -59,7 +59,7 @@ export const defaultValues = {
   installments: [
     {
       dueDate: new Date(),
-      paymentMethodId: '',
+      paymentConditionId: '',
       amount: 0,
     },
   ],

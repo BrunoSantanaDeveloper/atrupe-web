@@ -531,7 +531,7 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
               </Text>
               <Text style={styles.bottomText}>
                 Forma de pagamento:{' '}
-                {data.payables?.[0]?.installments?.[0]?.paymentMethod || ''}
+                {data.payables?.[0]?.installments?.[0]?.paymentCondition || ''}
               </Text>
             </View>
           </View>

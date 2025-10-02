@@ -81,7 +81,7 @@ export type PayrollPdfType = {
       status: string
       paidDate: string | null
       paidAmount: number | null
-      paymentMethod: string | null
+      paymentCondition: string | null
     }[]
   }[]
 }
