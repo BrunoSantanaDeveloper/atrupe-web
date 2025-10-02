@@ -119,7 +119,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
         dueDate: item?.dueDate
           ? new Date(item?.dueDate)
           : (null as unknown as Date),
-        paymentCondition: item?.paymentCondition?.id || '',
+        paymentConditionId: item?.paymentCondition?.id || '',
       }
     })
 
