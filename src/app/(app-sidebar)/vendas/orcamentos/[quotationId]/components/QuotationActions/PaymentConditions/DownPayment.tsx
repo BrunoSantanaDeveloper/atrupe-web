@@ -74,7 +74,7 @@ export function DownPayment() {
         name={`downPayment.paymentConditionId`}
         label="Condição de pagamento"
         width="flex-[1_0_200px]"
-        onChange={handleChangePaymentCondition}
+        additionalOnChange={handleChangePaymentCondition}
       />
       <FormBrlInput<QuotationPaymentConditionsType>
         name={`downPayment.additionalFee`}

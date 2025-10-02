@@ -18,7 +18,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -83,7 +83,7 @@ export function InstallmentsForm({
               label="Vencimento"
               width="flex-[1_0_130px]"
             />
-            <SelectPaymentMethodField
+            <PaymentConditionsSelectField
               name={`installments.${index}.paymentConditionId`}
               label="Condição de pagamento"
               width="flex-[1_0_200px]"

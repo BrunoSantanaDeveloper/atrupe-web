@@ -15,7 +15,7 @@ interface Props<T extends FieldValues> {
   label?: string
   placeholder?: string
   width?: string
-  onChange?: (value: string) => void
+  additionalOnChange?: (value: string) => void
   disabled?: boolean
 }
 
@@ -25,7 +25,7 @@ export function AvailablePaymentConditionsSelectField<T extends FieldValues>({
   label = 'Forma de pagamento',
   placeholder = label,
   width = 'flex-[1_0_100px]',
-  onChange,
+  additionalOnChange,
   disabled,
   ...props
 }: Props<T>) {
@@ -48,7 +48,7 @@ export function AvailablePaymentConditionsSelectField<T extends FieldValues>({
       placeholder={placeholder}
       options={options ?? []}
       width={width}
-      additionalOnChange={onChange}
+      additionalOnChange={additionalOnChange}
       disabled={disabled}
       {...props}
     />

@@ -27,8 +27,8 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
-import { SelectPaymentMethodField } from '@/components/common/form/global-inputs/PaymentMethodsSelectField'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 import { SelectTransactionCategoryField } from '@/components/common/form/global-inputs/TransactionCategorySelectField'
 
 // Icons
@@ -278,7 +278,7 @@ export function NewTransaction({ type }: Props) {
                     width="flex-[1_0_280px]"
                     natureId={watch('natureId')}
                   />
-                  <SelectPaymentMethodField
+                  <PaymentConditionsSelectField
                     name="paymentConditionId"
                     label="Condição de pagamento"
                     width="flex-[1_0_280px]"

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 
 // UI component Imports
-import { FormSelect } from '../FormSelect'
+import { FormSelect, SelectBasic } from '../FormSelect'
 
 // Type Imports
 import { type Path, type FieldValues } from 'react-hook-form'
@@ -14,7 +14,9 @@ interface Props<T extends FieldValues> {
   label?: string
   placeholder?: string
   width?: string
-  onChange?: (value: string) => void
+  noForm?: boolean
+  value?: string
+  additionalOnChange?: (value: string) => void
   disabled?: boolean
 }
 
@@ -23,7 +25,9 @@ export function PaymentConditionsSelectField<T extends FieldValues>({
   label = 'Forma de pagamento',
   placeholder = label,
   width = 'flex-[1_0_100px]',
-  onChange,
+  value,
+  noForm,
+  additionalOnChange,
   disabled,
   ...props
 }: Props<T>) {
@@ -38,6 +42,21 @@ export function PaymentConditionsSelectField<T extends FieldValues>({
     }))
   }, [paymentConditions])
 
+  if (noForm)
+    return (
+      <SelectBasic
+        name={name}
+        label={label}
+        placeholder={placeholder}
+        options={[{ value: 'all', label: 'Todas' }, ...(options || [])]}
+        value={value}
+        onChange={additionalOnChange}
+        className={width}
+        disabled={disabled}
+        {...props}
+      />
+    )
+
   return (
     <FormSelect<T>
       name={name}
@@ -45,7 +64,7 @@ export function PaymentConditionsSelectField<T extends FieldValues>({
       placeholder={placeholder}
       options={options ?? []}
       width={width}
-      additionalOnChange={onChange}
+      additionalOnChange={additionalOnChange}
       disabled={disabled}
       {...props}
     />
