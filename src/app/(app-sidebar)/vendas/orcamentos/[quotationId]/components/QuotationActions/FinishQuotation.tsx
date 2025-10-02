@@ -63,7 +63,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
   const queryClient = useQueryClient()
 
   // Se tiver pendente de configurar as condições de pagamento, abrir o modal direto antes de concluir
-  const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition
+  const hasInstallments = data?.paymentConditions?.installmentQty > 0
 
   // Se for "Sem lançamento" (Cortesia por exemplo), não verificar se existem condições de pagamento
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
@@ -108,7 +108,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
     <>
       {canFinish ? (
         <AlertDialog open={open} onOpenChange={setOpen}>
-          {hasPaymentCondition || isNoInvoice ? (
+          {hasInstallments || isNoInvoice ? (
             <CustomButton
               icon={IconProgressCheck}
               title="Concluir orçamento"

@@ -85,6 +85,8 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     mode: 'onChange', // Validar ao alterar os campos
   })
 
+  console.log(quotationData)
+
   const { watch, reset, setError, getValues, handleSubmit } = form
 
   // Resetar valores do formulário ao abrir o modal
