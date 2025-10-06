@@ -292,7 +292,10 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               addComissionValue={addComissionValue}
             />
 
-            <CommissionDialog paymentConditionsForm={form} />
+            <CommissionDialog
+              paymentConditionsForm={form}
+              disabled={isFetching > 0 || mutation.isPending}
+            />
           </div>
           <div className="space-x-4">
             {process.env.NODE_ENV === 'development' && (
@@ -301,7 +304,11 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               </Button>
             )}
             <DialogTrigger asChild>
-              <Button type="button" variant="neutralOutline">
+              <Button
+                type="button"
+                variant="neutralOutline"
+                disabled={isFetching > 0 || mutation.isPending}
+              >
                 Cancelar
               </Button>
             </DialogTrigger>

@@ -71,9 +71,10 @@ const toggleOptions = [
 
 interface Props {
   paymentConditionsForm: UseFormReturn<QuotationPaymentConditionsType>
+  disabled?: boolean
 }
 
-export function CommissionDialog({ paymentConditionsForm }: Props) {
+export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
   const [open, setOpen] = useState(false)
 
   const form = useForm<QuotationCommissionType>({
@@ -240,7 +241,12 @@ export function CommissionDialog({ paymentConditionsForm }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" LeftIcon={IconCurrencyDollar}>
+        <Button
+          type="button"
+          variant="outline"
+          LeftIcon={IconCurrencyDollar}
+          disabled={disabled}
+        >
           Adicionar comissão
         </Button>
       </DialogTrigger>
