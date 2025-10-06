@@ -51,11 +51,7 @@ import {
 } from '@tabler/icons-react'
 
 // Third-party
-import {
-  useMutation,
-  useIsFetching,
-  useQueryClient,
-} from '@tanstack/react-query'
+import { useIsFetching, useQueryClient } from '@tanstack/react-query'
 
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
@@ -85,9 +81,14 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     mode: 'onChange', // Validar ao alterar os campos
   })
 
-  console.log(quotationData)
-
-  const { watch, reset, setError, getValues, handleSubmit } = form
+  const {
+    watch,
+    reset,
+    setError,
+    getValues,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form
 
   // Resetar valores do formulário ao abrir o modal
   useEffect(() => {
@@ -113,18 +114,6 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     commission?.type === 'ADD' ? commission?.totalCommission || 0 : 0
 
   // ##################################################################################
-
-  // Faz a requisição para atualizar condições de pagamento
-  const mutation = useMutation({
-    mutationFn: (body: QuotationPaymentConditionsType) =>
-      updateItemNew({
-        route: `/quotation/payment/${quotationData.id}`,
-        data: body,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-    },
-  })
 
   // Refinar dados para o body da requisição
   const refineData = (data: QuotationPaymentConditionsType) => {
@@ -159,17 +148,20 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
 
     if (!body) return
 
-    try {
-      await mutation.mutateAsync(body)
-      toast.success('Informações de condições de pagamento salvas!')
+    const res = await updateItemNew({
+      route: `/quotation/payment/${quotationData.id}`,
+      data: body,
+    })
 
-      // Se está salvando infos de pgto após tentar "Concluir Orçamento"
-      setOpen(false)
-
-      onFinish?.()
-    } catch (error) {
-      toast.error('Erro ao salvar informações de condições de pagamento!')
+    if (!res.success) {
+      toast.error(res.message)
+      return
     }
+
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+
+    // Se está salvando infos de pgto após tentar "Concluir Orçamento"
+    setOpen(false)
   }
 
   const onTest = async () => {
@@ -181,6 +173,8 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     console.info('Refined data: ', data)
     console.info('Errors: ', form.formState.errors)
   }
+
+  const isBusy = isSubmitting || isFetching > 0
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -292,10 +286,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               addComissionValue={addComissionValue}
             />
 
-            <CommissionDialog
-              paymentConditionsForm={form}
-              disabled={isFetching > 0 || mutation.isPending}
-            />
+            <CommissionDialog paymentConditionsForm={form} disabled={isBusy} />
           </div>
           <div className="space-x-4">
             {process.env.NODE_ENV === 'development' && (
@@ -304,11 +295,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               </Button>
             )}
             <DialogTrigger asChild>
-              <Button
-                type="button"
-                variant="neutralOutline"
-                disabled={isFetching > 0 || mutation.isPending}
-              >
+              <Button type="button" variant="neutralOutline" disabled={isBusy}>
                 Cancelar
               </Button>
             </DialogTrigger>
@@ -316,8 +303,8 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               type="submit"
               form="quotation-payment-conditions"
               RightIcon={IconCircleCheck}
-              disabled={isFetching > 0 || mutation.isPending}
-              isLoading={form.formState.isSubmitting}
+              disabled={isBusy}
+              isLoading={isSubmitting}
             >
               Salvar {!!onFinish && 'e concluir'}
             </Button>
