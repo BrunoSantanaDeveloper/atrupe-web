@@ -18,14 +18,14 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Type
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { DeliveryScheduleType } from '@/types/production/deliverySchedule'
 
 // Action
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 interface Props extends SearchParamsType {
   open: boolean
@@ -35,26 +35,22 @@ interface Props extends SearchParamsType {
 export function BillServiceDialog({ open, rowData, setOpen }: Props) {
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      createItem({
-        route: 'deliveryScheduleBillingRoute',
-        customPath: `/${rowData?.order?.quotation?.id}`,
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
-      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
-    },
-  })
-
   const handleBill = async () => {
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Serviço faturado!'
-      },
-      error: 'Ocorreu um erro',
+    const quotationId = rowData?.order?.quotation?.id
+
+    const res = await createItemNew({
+      route: `/sale/quotation/${quotationId}/bill`,
     })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    toast.success('Serviço faturado')
+
+    queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+    queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
   }
 
   const handleOpenChange = (openDialog: boolean) => {

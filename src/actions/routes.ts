@@ -58,7 +58,6 @@ const defaultRoute: { [key: string]: string } = {
   deliveryScheduleTotalsRoute: '/sale/delivery-schedule/quantity',
   deliveryScheduleRoute: '/sale/delivery-schedule',
   productionStage: '/sale/production-stage',
-  deliveryScheduleBillingRoute: '/sale/delivery-schedule/bill',
   deliveryScheduleFinishRoute: '/sale/delivery-schedule/finish',
 
   // colaboradores e usuários

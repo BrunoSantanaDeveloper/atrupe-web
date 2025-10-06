@@ -23,13 +23,13 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 // Icons
 import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
@@ -47,36 +47,29 @@ export function ApproveQuotation({ data }: Props) {
 
   const router = useRouter()
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      createItem({
-        route: 'quotationRoute',
-        customPath: `/${data.id}/approve`,
-      }),
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
-      queryClient.invalidateQueries({ queryKey: ['order-data'] })
-      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-      queryClient.invalidateQueries({ queryKey: ['order-totals'] })
-      queryClient.invalidateQueries({ queryKey: ['order-list'] })
-      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
-      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
-
-      setTimeout(() => {
-        router.replace(`/vendas/ordens-de-servico/${data.id}`)
-      }, 100)
-    },
-  })
-
   const handleApprove = async () => {
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Orçamento aprovado'
-      },
-      error: 'Erro ao aprovar orçamento.',
+    const res = await createItemNew({
+      route: `/sale/quotation/${data.id}/approve`,
     })
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    toast.success('Orçamento aprovado')
+
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: ['order-data'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['order-totals'] })
+    queryClient.invalidateQueries({ queryKey: ['order-list'] })
+    queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+    queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
+
+    setTimeout(() => {
+      router.replace(`/vendas/ordens-de-servico/${data.id}`)
+    }, 500)
   }
 
   return (
