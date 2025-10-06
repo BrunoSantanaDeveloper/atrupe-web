@@ -11,7 +11,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import { AvailablePaymentConditionsSelectField } from '@/components/common/form/global-inputs/AvailablePaymentConditionsSelectField'
+import { InUsePaymentConditionsSelectField } from '@/components/common/form/global-inputs/InUsePaymentConditionsSelectField'
 
 export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
@@ -64,7 +64,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           value={searchParams?.status || 'all'}
           onChange={(value) => handleFilter('status', value)}
         />
-        <AvailablePaymentConditionsSelectField
+        <InUsePaymentConditionsSelectField
           noForm
           name="paymentConditionId"
           placeholder="Selecione uma forma de pagamento"
@@ -72,7 +72,6 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           additionalOnChange={(value) =>
             handleFilter('paymentConditionId', value)
           }
-          type="payable"
           width="w-[220px]"
         />
       </>
