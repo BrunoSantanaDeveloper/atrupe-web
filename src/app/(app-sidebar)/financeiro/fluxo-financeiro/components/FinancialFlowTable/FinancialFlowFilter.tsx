@@ -12,6 +12,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import { InUsePaymentConditionsSelectField } from '@/components/common/form/global-inputs/InUsePaymentConditionsSelectField'
+import { InUseBankAccountsSelectField } from '@/components/common/form/global-inputs/InUseBankAccountsSelectField'
 
 export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
@@ -38,14 +39,13 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
       <>
         <FinancialFlowDatePicker searchParams={searchParams} />
         {canCreateBankAccount() && (
-          <SelectBasic
+          <InUseBankAccountsSelectField
+            noForm
             name="bankAccountId"
-            label="Conta"
             placeholder="Selecione uma conta"
-            className="w-[220px]"
-            options={[{ value: 'all', label: 'Todas' }]} // TODO: Criar select Para contas de banco em uso
             value={searchParams?.bankAccountId || 'all'}
-            onChange={(value) => handleFilter('bankAccountId', value)}
+            additionalOnChange={(value) => handleFilter('bankAccountId', value)}
+            width="w-[220px]"
           />
         )}
         <SelectBasic
