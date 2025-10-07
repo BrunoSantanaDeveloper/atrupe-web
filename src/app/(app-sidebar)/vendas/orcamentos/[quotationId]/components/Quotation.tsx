@@ -167,7 +167,7 @@ export function Quotation({ id }: Props) {
           }
           label={data?.quickSale ? 'Venda Rápida' : ''}
         />
-        <div className="space-y-3">
+        <div className="space-y-3 pb-20">
           <QuotationActions data={data} />
           <QuotationSummary data={data} />
           <QuotationProvider>
@@ -175,7 +175,6 @@ export function Quotation({ id }: Props) {
           </QuotationProvider>
           <QuotationDelivery quotationData={data} />
           {!isNoInvoice && <QuotationPaymentConditions quotationData={data} />}
-          <div className="pb-16"></div>
         </div>
         {isMutating > 0 || isFetching > 0 ? (
           <Spinner classname="absolute top-1/2 left-1/2 size-10 -ml-5" />

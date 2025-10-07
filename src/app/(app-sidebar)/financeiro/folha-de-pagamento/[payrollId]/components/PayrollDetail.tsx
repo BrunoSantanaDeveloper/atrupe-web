@@ -105,7 +105,7 @@ export function PayrollDetail({ payrollId }: Props) {
             variant: payrollStatusObj[payrollData?.status]?.variant,
           }}
         />
-        <div className="space-y-3">
+        <div className="space-y-3 pb-20">
           <PayrollActions data={payrollData} />
           <PayrollItems data={payrollData} />
           <PayrollMovement data={payrollData} />

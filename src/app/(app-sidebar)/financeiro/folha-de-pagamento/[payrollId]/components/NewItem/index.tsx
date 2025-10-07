@@ -79,23 +79,17 @@ export function NewItemDialog({
   }, [editMode, rowData, open])
 
   const onSubmit = async (data: FormType) => {
-    if (editMode) {
-      data.id = rowData?.id
-    } else {
-      data.payrollId = payrollId
-    }
-
     if (isAdvance) {
       data.type = 'ADVANCE'
     }
 
     const res = editMode
       ? await updateItemNew({
-          route: '/financial/payroll/item',
+          route: `/financial/payroll/item/${rowData?.id}`,
           data,
         })
       : await createItemNew({
-          route: '/financial/payroll/item',
+          route: `/financial/payroll/item/${payrollId}`,
           data,
         })
 

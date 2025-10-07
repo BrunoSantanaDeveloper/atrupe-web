@@ -121,7 +121,11 @@ export function Payroll({ searchParams }: SearchParamsType) {
     const totalWithIssues = (skipped || 0) + errors.length
 
     if (totalWithIssues === 0) {
-      toast.success('Todas as folhas foram lançadas com sucesso')
+      if (employeeIds.length > 1) {
+        toast.success('Todas as folhas selecionadas foram abertas')
+      } else {
+        toast.success('Folha de pagamento aberta')
+      }
     } else {
       const successCount = success || 0
       if (successCount > 0) {
