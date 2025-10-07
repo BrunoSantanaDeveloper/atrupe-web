@@ -204,7 +204,7 @@ export function PayrollMovement({ data }: Props) {
                                       break
                                   }
                                 }}
-                                disabled={data?.status === 'CLOSED'}
+                                // disabled={data?.status === 'CLOSED'}
                               />
                             </PermissionGate>
                           </TooltipProvider>
