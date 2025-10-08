@@ -51,7 +51,7 @@ export function Main() {
     queryFn: () => getDataOld({ route: 'quotationStatusRoute' }),
   })
 
-  const statuses: QuotationStatusType[] = data?.quotationTag || []
+  const statuses: QuotationStatusType[] = data?.quotationTags || []
   const hasData = statuses.length
 
   return (
