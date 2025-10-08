@@ -14,7 +14,7 @@ async function fetchData(): Promise<QuotationStatusType[]> {
     route: 'quotationStatusRoute',
     perPage: PER_PAGE,
   })
-  return data.statusQuotations
+  return data.quotationTag
 }
 
 export function useQuotationTag() {

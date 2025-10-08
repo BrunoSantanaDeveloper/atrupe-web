@@ -2,7 +2,7 @@
 // React
 import { Fragment, useState } from 'react'
 
-// Component Imports
+// Components
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
@@ -51,7 +51,7 @@ export function Main() {
     queryFn: () => getDataOld({ route: 'quotationStatusRoute' }),
   })
 
-  const statuses: QuotationStatusType[] = data?.statusQuotations || []
+  const statuses: QuotationStatusType[] = data?.quotationTag || []
   const hasData = statuses.length
 
   return (

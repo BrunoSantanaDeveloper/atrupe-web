@@ -5,7 +5,7 @@ export type QuotationStatusType = {
 }
 
 export type ListQuotationStatussType = {
-  statusQuotations: QuotationStatusType[]
+  quotationTag: QuotationStatusType[]
   total: number
   page: number
   limit: number
