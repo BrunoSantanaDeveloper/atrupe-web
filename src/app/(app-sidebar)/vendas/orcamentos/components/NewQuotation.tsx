@@ -22,12 +22,12 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import NewClientTriggerButton from './NewClientTriggerButton'
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
 import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 import { SelectCompanyField } from '@/components/common/form/global-inputs/CompanySelectField'
 import { ClientContactSelect } from '@/components/common/form/global-inputs/ClientContactSelect'
+import { SelectContactSourceField } from '@/components/common/form/global-inputs/ContactSourcesSelectField'
 
 // Icons
 import {
@@ -36,9 +36,6 @@ import {
   IconReportMoney,
 } from '@tabler/icons-react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-
-// Consts
-import { serviceOptions } from '@/consts/quotations'
 
 // Hooks
 import { useForm } from 'react-hook-form'
@@ -81,7 +78,7 @@ export function NewQuotationModal({
       clientId: undefined,
       contactId: '',
       description: '',
-      contactType: serviceOptions[0].value,
+      contactSource: '',
       seriesId: '',
       sellerId: '',
       quickSale: false,
@@ -98,7 +95,7 @@ export function NewQuotationModal({
         } as unknown as string,
         contactId: data?.contact?.id || '',
         description: data?.description,
-        contactType: data?.contactType ?? '',
+        contactSource: data?.contactSource ?? '',
         seriesId: data?.serie.id || '',
         sellerId: data?.seller?.id || '',
         quickSale: !!data?.quickSale,
@@ -234,10 +231,9 @@ export function NewQuotationModal({
                 width="flex-[1_0_300px]"
                 disabled={editMode}
               />
-              <FormSelect<QuotationFormType>
-                name="contactType"
+              <SelectContactSourceField<QuotationFormType>
+                name="contactSource"
                 label="Atendimento"
-                options={serviceOptions}
                 width="flex-[1_0_300px]"
               />
               <SelectSellerField
