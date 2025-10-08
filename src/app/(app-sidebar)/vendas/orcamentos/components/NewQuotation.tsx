@@ -44,6 +44,7 @@ import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useNewClientStore } from '../store/useNewClientStore'
+import { useContactSources } from '@/hooks/queries/useContactSources'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
@@ -66,6 +67,7 @@ export function NewQuotationModal({
   const { data: session } = useSession()
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
+  const { data: contactSources } = useContactSources()
   const { canManageMultipleCompanies } = usePlanFeatures()
   const { setOnClientCreated } = useNewClientStore()
 
@@ -78,7 +80,7 @@ export function NewQuotationModal({
       clientId: undefined,
       contactId: '',
       description: '',
-      contactSource: '',
+      contactSourceId: '',
       seriesId: '',
       sellerId: '',
       quickSale: false,
@@ -95,7 +97,7 @@ export function NewQuotationModal({
         } as unknown as string,
         contactId: data?.contact?.id || '',
         description: data?.description,
-        contactSource: data?.contactSource ?? '',
+        contactSourceId: data?.contactSource?.id ?? '',
         seriesId: data?.serie.id || '',
         sellerId: data?.seller?.id || '',
         quickSale: !!data?.quickSale,
@@ -135,6 +137,18 @@ export function NewQuotationModal({
       setOnClientCreated(undefined)
     }
   }, [open, editMode, setOnClientCreated, form])
+
+  // Definir "Venda direta" como contactSource padrão
+  useEffect(() => {
+    if (!editMode && contactSources && open) {
+      const vendaDireta = contactSources.find(
+        (source) => source.name === 'Venda Direta',
+      )
+      if (vendaDireta) {
+        form.setValue('contactSourceId', vendaDireta.id)
+      }
+    }
+  }, [contactSources, form, editMode, open])
 
   const { handleSubmit } = form
 
@@ -232,7 +246,7 @@ export function NewQuotationModal({
                 disabled={editMode}
               />
               <SelectContactSourceField<QuotationFormType>
-                name="contactSource"
+                name="contactSourceId"
                 label="Atendimento"
                 width="flex-[1_0_300px]"
               />

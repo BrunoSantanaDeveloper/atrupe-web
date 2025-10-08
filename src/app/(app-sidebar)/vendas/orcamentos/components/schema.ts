@@ -14,7 +14,7 @@ export const quotationSchema = z.object({
     .transform((value) => value!.value),
   contactId: z.string(),
   description: z.string(),
-  contactSource: z.string(),
+  contactSourceId: z.string(),
   seriesId: z.string().min(1, { message: 'Selecione uma série' }),
   sellerId: z.string().min(1, { message: 'Selecione um vendedor' }),
   quickSale: z.boolean().default(false),

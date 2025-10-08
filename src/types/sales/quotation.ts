@@ -152,7 +152,7 @@ export type QuotationPaymentConditionsType = {
 export type QuotationType = {
   id: string
   orderId: string
-  contactSource?: string
+  contactSource?: { id: string; name: string }
   createdAt: Date
   updatedAt: Date
   dueDate: Date
