@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 import { Loader2 } from 'lucide-react'
-import { ClientSummary } from './components/Summary'
+import { ClientData } from './components/ClientData'
 import { useClientById } from '@/hooks/queries/useClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -25,7 +25,7 @@ export default function ClientDataPage({ params }: Props) {
       }
     >
       <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
-        <ClientSummary data={data} />
+        <ClientData data={data} />
       </Suspense>
     </PermissionGate>
   )

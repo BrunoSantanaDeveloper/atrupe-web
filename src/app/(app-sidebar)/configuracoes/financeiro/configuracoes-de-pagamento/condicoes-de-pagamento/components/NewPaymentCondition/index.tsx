@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTrigger,
   DialogContent,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
@@ -225,6 +226,9 @@ export function NewPaymentCondition({
               </span>
             </div>
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Condição de pagamento
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
