@@ -33,6 +33,7 @@ import { OrderType } from '@/types/sales/order'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 import { financialFlowStatusObj } from '@/consts/financial'
+import { formatToLocaleDate } from '@/lib/formatDate'
 
 interface Props {
   data: OrderType
@@ -212,13 +213,13 @@ export function OrderFinancial({ data }: Props) {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <p className="text-success-700">
+                          <p className="text-error-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
                           <p className="text-gray">{item.dueDate}</p>
                         </TableCell>
                         <TableCell>
-                          <p className="text-success-700">
+                          <p className="text-error-700">
                             {formatCurrencyToBrl(item.paidAmount)}
                           </p>
                           <p className="text-gray">{item.paidDate || '-'}</p>
@@ -242,7 +243,7 @@ export function OrderFinancial({ data }: Props) {
                       colSpan={5}
                       className="text-gray font-medium text-xs py-3"
                     >
-                      Frete
+                      Entrega
                     </TableCell>
                   </TableRow>
                   {!hasDeliveries ? (
@@ -251,7 +252,7 @@ export function OrderFinancial({ data }: Props) {
                         colSpan={5}
                         className="text-center text-gray-500"
                       >
-                        Nenhum frete registrado
+                        Nenhuma despesa de entrega registrada
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -273,13 +274,15 @@ export function OrderFinancial({ data }: Props) {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <p className="text-success-700">
+                          <p className="text-error-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
-                          <p className="text-gray">{item.dueDate}</p>
+                          <p className="text-gray">
+                            {formatToLocaleDate(item.dueDate)}
+                          </p>
                         </TableCell>
                         <TableCell>
-                          <p className="text-success-700">
+                          <p className="text-error-700">
                             {formatCurrencyToBrl(item.paidAmount)}
                           </p>
                           <p className="text-gray">{item.paidDate || '-'}</p>
