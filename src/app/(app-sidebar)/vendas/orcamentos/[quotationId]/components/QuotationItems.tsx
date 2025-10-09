@@ -34,7 +34,7 @@ import { ItemImageDialog } from './ItemActions/Image'
 import { DeleteItemDialog } from './ItemActions/Delete'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
-import QuotationItemsModal from '../../components/QuotationItems/QuotationItemsModal'
+import { QuotationItemsModal } from '../../components/QuotationItems/QuotationItemsModal'
 import { QuotationProdDetailModal } from '../../components/QuotationItems/QuotationProdDetailModal'
 import { QuotationCategorySelectorModal } from '../../components/QuotationItems/QuotationCategorySelectorModal'
 

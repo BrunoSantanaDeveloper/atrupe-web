@@ -14,9 +14,9 @@ import { OrderFinancial } from './Financial'
 import { OrderActions } from './OrderActions'
 import { Topbar } from '@/components/common/Topbar'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
-import { QuotationSummary } from '../../../orcamentos/[quotationId]/components/Summary'
-import { QuotationDelivery } from '../../../orcamentos/[quotationId]/components/Delivery'
-import { QuotationPaymentConditions } from '../../../orcamentos/[quotationId]/components/PaymentConditions'
+import { QuotationSummary } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Summary'
+import { QuotationDelivery } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Delivery'
+import { QuotationPaymentConditions } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/PaymentConditions'
 
 // Lib
 import { cn } from '@/lib/utils'

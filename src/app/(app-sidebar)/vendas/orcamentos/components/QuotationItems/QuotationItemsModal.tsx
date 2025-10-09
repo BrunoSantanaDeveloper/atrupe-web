@@ -40,9 +40,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-const QuotationItemsModal: React.FC<{
-  open: boolean
-}> = ({ open }) => {
+export function QuotationItemsModal({ open }: { open: boolean }) {
   const { quotationData, updateQuotationData, openChangeModal } = useQuotation()
 
   const { data: productsList, refetch } = useProducts()
@@ -210,5 +208,3 @@ const QuotationItemsModal: React.FC<{
     </Dialog>
   )
 }
-
-export default QuotationItemsModal
