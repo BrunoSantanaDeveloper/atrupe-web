@@ -149,7 +149,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     if (!body) return
 
     const res = await updateItemNew({
-      route: `/quotation/payment/${quotationData.id}`,
+      route: `sale/quotation/payment/${quotationData.id}`,
       data: body,
     })
 

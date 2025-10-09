@@ -366,10 +366,10 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                     {watch('items.0.unitKind') &&
                       watch('items.0.unitKind') !== 'UNITY' && (
                         <div className="w-full">
-                          <h4 className="text-md font-semibold text-gray-700 mb-4">
+                          <h4 className="text-md font-semibold text-gray-700 mb-2">
                             Padrão de medidas do produto
                           </h4>
-                          <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
+                          <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">
                             <MeasurementInput
                               control={control}
                               index={0}
