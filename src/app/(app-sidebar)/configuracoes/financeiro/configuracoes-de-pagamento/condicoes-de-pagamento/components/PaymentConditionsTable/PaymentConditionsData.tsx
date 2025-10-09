@@ -55,7 +55,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['payment-condition-list', searchParams],
-    queryFn: () => getData({ route: '/payment/condition', filters }),
+    queryFn: () => getData({ route: '/payment-condition', filters }),
   })
 
   const paymentConditions: ListPaymentConditionsType[] = data?.data || []
@@ -64,7 +64,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
   // Desativar condição
   const mutation = useMutation({
     mutationFn: (id: string) =>
-      deleteItemNew({ route: `/payment/condition/${id}` }),
+      deleteItemNew({ route: `/payment-condition/${id}` }),
     onSuccess: () => {
       queryClient.invalidateQueries()
     },

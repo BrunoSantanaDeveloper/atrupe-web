@@ -182,11 +182,11 @@ export function NewPaymentCondition({
   const onSubmit = async (data: FormType) => {
     const result = editMode
       ? await updateItemNew({
-          route: `/payment/condition/${rowData?.id}`,
+          route: `/payment-condition/${rowData?.id}`,
           data,
         })
       : await createItemNew({
-          route: '/payment/condition',
+          route: '/payment-condition',
           data,
         })
 

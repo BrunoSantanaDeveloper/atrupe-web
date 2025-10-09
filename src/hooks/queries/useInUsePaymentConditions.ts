@@ -6,7 +6,7 @@ import type { PaymentConditionsType } from '@/types/settings/paymentCondition'
 
 async function fetchData(): Promise<PaymentConditionsType[]> {
   const res = await getData({
-    route: '/payment/condition/in-use',
+    route: '/payment-condition/in-use',
   })
 
   console.log('adsf', res)

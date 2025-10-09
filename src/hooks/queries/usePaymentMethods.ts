@@ -10,7 +10,7 @@ const PER_PAGE = '999999'
 
 async function fetchData(): Promise<IPaymentMethods[]> {
   const res = await getData({
-    route: '/payment/method',
+    route: '/payment-method',
     perPage: PER_PAGE,
   })
   return res.data.filter((item: { isActive: boolean }) => item.isActive)

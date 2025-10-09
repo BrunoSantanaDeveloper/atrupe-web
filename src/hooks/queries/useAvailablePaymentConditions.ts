@@ -10,7 +10,7 @@ async function fetchData(
   if (!type) return []
 
   const res = await getData({
-    route: `/payment/condition/available/${type}`,
+    route: `/payment-condition/available/${type}`,
   })
 
   return (res.data || []) as PaymentConditionsType[]

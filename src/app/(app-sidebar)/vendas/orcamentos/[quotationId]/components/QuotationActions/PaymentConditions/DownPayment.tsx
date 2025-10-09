@@ -22,7 +22,7 @@ export function DownPayment() {
     clearErrors('downPayment.paymentConditionId')
 
     const res = await getItem({
-      route: `/payment/condition/${paymentConditionId}`,
+      route: `/payment-condition/${paymentConditionId}`,
     })
 
     if (!res.success) {

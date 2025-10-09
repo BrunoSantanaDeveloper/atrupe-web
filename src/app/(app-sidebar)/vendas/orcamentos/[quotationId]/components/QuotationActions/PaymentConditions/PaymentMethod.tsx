@@ -34,7 +34,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
     // Busca a condição de pagamento selecionada para obter o mínimo e máximo de parcelas
     const res = await getItem({
-      route: `/payment/condition/${paymentConditionId}`,
+      route: `/payment-condition/${paymentConditionId}`,
     })
 
     if (!res.success) {

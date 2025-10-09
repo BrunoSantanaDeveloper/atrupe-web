@@ -59,7 +59,7 @@ export function InstallmentQty() {
     // Recalcular parcelas de acordo com número de parcelas selecionado
     // Primeiro, pegar a taxa de acréscimo de acordo com a quantidade de parcelas
     const res = await getItem({
-      route: `/payment/condition/${paymentConditionId}`,
+      route: `/payment-condition/${paymentConditionId}`,
     })
 
     if (!res.success) {
