@@ -55,13 +55,6 @@ export function QuotationSummary({ data }: Props) {
               </div>
               <div className="flex gap-3">
                 <TooltipProvider>
-                  {/* <ActionButton
-                    Icon={IconReceipt2}
-                    tooltip="Previsão de custos"
-                    className={cn(
-                      buttonVariants({ variant: 'neutralLight', size: 'icon' }),
-                    )}
-                  /> */}
                   <DuplicateDialog quotationData={data} />
                   <Button
                     type="button"
@@ -125,12 +118,20 @@ export function QuotationSummary({ data }: Props) {
                     supporting="Validade da proposta"
                     text={formatToLocaleDateTime(data?.dueDate) || '-'}
                   />
+                  {/* TODO : Adicionar data de rejeição */}
+                  <TextSupportingText supporting="Data de rejeição" text="-" />
+                </DetailCardRowItem>
+              )}
+              {data?.status === 'APPROVED' && (
+                <DetailCardRowItem>
+                  <TextSupportingText
+                    supporting="Data de conclusão"
+                    text={formatToLocaleDateTime(data?.finishedAt) || '-'}
+                  />
                   <TextSupportingText
                     supporting="Data de aprovação"
                     text={formatToLocaleDateTime(data?.approvedAt) || '-'}
                   />
-                  {/* TODO : Adicionar data de rejeição */}
-                  <TextSupportingText supporting="Data de rejeição" text="-" />
                 </DetailCardRowItem>
               )}
               {!data?.quickSale ? (

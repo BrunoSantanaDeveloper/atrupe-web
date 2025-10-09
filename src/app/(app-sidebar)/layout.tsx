@@ -11,7 +11,7 @@ export default async function AppLayout({ children }: PropsWithChildren) {
       <TrialExpiredAlert />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <main className="flex-1 bg-gray-100 pl-6 pr-2 py-4 overflow-y-auto">
+        <main className="flex-1 bg-gray-100 pl-6 pr-2 py-4 overflow-y-auto pb-20">
           {children}
         </main>
       </div>

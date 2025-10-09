@@ -167,7 +167,7 @@ export function Quotation({ id }: Props) {
           }
           label={data?.quickSale ? 'Venda Rápida' : ''}
         />
-        <div className="space-y-3 pb-20">
+        <div className="space-y-3">
           <QuotationActions data={data} />
           <QuotationSummary data={data} />
           <QuotationProvider>
