@@ -6,6 +6,7 @@ import { Inter } from 'next/font/google'
 // Components
 import { Toaster } from '@/components/ui/sonner'
 // import { TailwindIndicator } from '@/components/TailwindIndicator'
+import { DevEnvAlert } from '@/components/DevEnvAlert'
 import { GlobalAlertDialog } from '@/components/common/GlobalAlertDialog'
 
 // Styles
@@ -46,6 +47,7 @@ export default async function RootLayout({
     <html lang="pt-BR">
       <body className={`${inter.className} min-h-screen flex flex-col`}>
         <Providers session={session}>
+          <DevEnvAlert />
           {children}
           <Toaster />
           <GlobalAlertDialog />

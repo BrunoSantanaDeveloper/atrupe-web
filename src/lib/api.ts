@@ -5,7 +5,7 @@ import axios, { AxiosError } from 'axios'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiUrl = process.env.API_URL
 
 // Função auxiliar para verificar se deve encerrar a sessão
 const shouldEndSession = (error: AxiosError | Error): boolean => {
