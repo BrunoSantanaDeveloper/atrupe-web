@@ -23,7 +23,7 @@ export default function SignupPage() {
       <CardHeader className="p-0 mb-8 text-center">
         <CardTitle className="text-xl font-bold">Vamos começar!</CardTitle>
         <CardDescription>
-          Crie sua conta e experimente grátis por 7 dias!
+          Crie sua conta e experimente grátis por 30 dias!
         </CardDescription>
       </CardHeader>
       <CardContent>
