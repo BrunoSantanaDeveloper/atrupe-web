@@ -12,7 +12,7 @@ export function DevEnvAlert() {
   if (!isDevEnv || !isVisible) return null
 
   return (
-    <div className="border-b bg-warning-50 border-warning-200">
+    <div className="border-b bg-warning-50 border-warning-200 fixed top-0 left-0 w-full opacity-70 z-50">
       <div className="flex flex-wrap items-center justify-center gap-4 py-2 px-4 relative">
         <IconCode className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
         <div className="flex flex-col flex-shrink-0">
