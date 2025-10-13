@@ -33,7 +33,6 @@ import { OrderType } from '@/types/sales/order'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 import { financialFlowStatusObj } from '@/consts/financial'
-import { formatToLocaleDate } from '@/lib/formatDate'
 
 interface Props {
   data: OrderType
@@ -277,9 +276,7 @@ export function OrderFinancial({ data }: Props) {
                           <p className="text-error-700">
                             {formatCurrencyToBrl(item.dueAmount)}
                           </p>
-                          <p className="text-gray">
-                            {formatToLocaleDate(item.dueDate)}
-                          </p>
+                          <p className="text-gray">{item.dueDate}</p>
                         </TableCell>
                         <TableCell>
                           <p className="text-error-700">
