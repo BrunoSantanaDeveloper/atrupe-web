@@ -67,9 +67,13 @@ export function ApproveQuotation({ data }: Props) {
     queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
     queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
 
-    setTimeout(() => {
-      router.replace(`/vendas/ordens-de-servico/${data.id}`)
-    }, 500)
+    const orderId = res?.data?.id
+
+    if (orderId) {
+      setTimeout(() => {
+        router.replace(`/vendas/ordens-de-servico/${orderId}`)
+      }, 100)
+    }
   }
 
   return (

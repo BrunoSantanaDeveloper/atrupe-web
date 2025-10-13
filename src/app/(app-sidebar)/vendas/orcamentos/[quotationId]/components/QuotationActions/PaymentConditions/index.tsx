@@ -160,8 +160,10 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
 
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
 
-    // Se está salvando infos de pgto após tentar "Concluir Orçamento"
     setOpen(false)
+
+    // Se está salvando infos de pgto após tentar "Concluir Orçamento"
+    onFinish?.()
   }
 
   const onTest = async () => {
