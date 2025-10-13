@@ -9,8 +9,11 @@ async function fetchData({
   filters: { bankId?: string; cashControl?: boolean }
   isBankRequired?: boolean
 }): Promise<BankAccountsType[]> {
-  // if (isBankRequired && !filters.bankId) return []
-  if (!isBankRequired) delete filters.bankId
+  if (!isBankRequired) {
+    delete filters.bankId
+  } else if (!filters.bankId) {
+    return []
+  }
 
   const data = await getDataOld({
     route: 'bankAccountRoute',

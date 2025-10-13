@@ -53,8 +53,8 @@ import { addMonths } from 'date-fns'
 
 // Lib
 import { cn } from '@/lib/utils'
-import { createItem } from '@/actions/_cruds'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createItemNew } from '@/actions/_cruds'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import { SearchParamsType } from '@/types/coreTypes'
@@ -82,6 +82,7 @@ export function NewTransaction({ type }: Props) {
     getValues,
     clearErrors,
     handleSubmit,
+    formState: { isSubmitting },
   } = form
 
   const { append, fields, remove } = useFieldArray({
@@ -94,7 +95,7 @@ export function NewTransaction({ type }: Props) {
   const installmentQty = watch('installmentQty')
 
   const handleInstallmentsQuantity = (quantity: number) => {
-    if (quantity > 1) setValue('received', false)
+    if (quantity > 1) setValue('paid', false)
 
     if (quantity > fields.length) {
       for (let i = fields.length; i < quantity; i++) {
@@ -157,16 +158,6 @@ export function NewTransaction({ type }: Props) {
 
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    mutationFn: (data: any) => createItem({ route: `${type}Route`, data }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      handleOpenChange(false)
-      toast.success('Sucesso')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
     if (handleRefreshBalance() !== 0) {
       setError('totalValue', {
@@ -195,12 +186,20 @@ export function NewTransaction({ type }: Props) {
       natureId: data.natureId,
     }
 
-    if (data.received && data.installmentQty === 1) {
+    if (data.paid && data.installmentQty === 1) {
       body.installments[0].status = 'PAID'
       body.installments[0].paidDate = new Date()
     }
 
-    await mutation.mutateAsync(body)
+    const res = await createItemNew({ route: `/financial/${type}`, data: body })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+    handleOpenChange(false)
   }
 
   return (
@@ -338,7 +337,7 @@ export function NewTransaction({ type }: Props) {
               <div className="flex items-center">
                 {fields.length <= 1 && (
                   <FormSwitch
-                    name="received"
+                    name="paid"
                     label={`Marcar como ${type === 'receivable' ? 'recebido' : 'pago'}`}
                   />
                 )}
@@ -365,7 +364,7 @@ export function NewTransaction({ type }: Props) {
                 <Button
                   type="submit"
                   RightIcon={IconCircleCheck}
-                  isLoading={mutation.isPending}
+                  isLoading={isSubmitting}
                 >
                   Salvar
                 </Button>

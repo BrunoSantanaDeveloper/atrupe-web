@@ -53,8 +53,6 @@ import { updateItemNew } from '@/actions/_cruds'
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
-import { useBankAccount } from '@/hooks/queries/useBankAccount'
-import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 // Lib
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -89,17 +87,9 @@ export function PaymentDialog({
 
   const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
 
-  const paymentConditionId = watch('paymentConditionId')
-  const bankId = watch('bankId')
-  const totalValue = watch('totalValue')
-  const amount = watch('amount')
+  const totalValue = watch('totalValue') || 0
+  const amount = watch('amount') || 0
   const differenceNatureId = watch('differenceNatureId') || ''
-
-  const { data: banks } = useBankFilterCondition(paymentConditionId || '')
-  const { data: bankAccounts } = useBankAccount({
-    filters: { bankId },
-    isBankRequired: true,
-  })
 
   // Calcula a diferença entre valor pago e valor original
   const difference = useMemo(() => {
@@ -127,29 +117,34 @@ export function PaymentDialog({
       reset({
         paidDate: new Date(),
         paymentConditionId: rowData?.paymentCondition?.id || '',
-        bankId: '',
-        bankAccountId: '',
+        bankId: rowData?.bank?.id,
+        bankAccountId: rowData?.bankAccount?.id,
         totalValue: rowData?.value || 0,
         amount: rowData?.value || 0,
         differenceNatureId: '',
         differenceCategoryId: '',
       })
+
+      // Sistema de retry para definir bankAccountId
+      const setBankAccountWithRetry = (delay: number) => {
+        setTimeout(() => {
+          const bankAccountId = watch('bankAccountId')
+
+          if (!bankAccountId && rowData?.bankAccount?.id) {
+            setValue('bankAccountId', rowData.bankAccount.id)
+            // Se ainda não definiu, tenta novamente após 200ms
+            setBankAccountWithRetry(200)
+          }
+        }, delay)
+      }
+
+      // Inicia com 100ms
+      setBankAccountWithRetry(100)
+
       // Reset do ref quando modal abre
       previousDifferenceTypeRef.current = null
     }
-  }, [open, rowData, reset])
-
-  useEffect(() => {
-    if (banks && banks.length > 0 && paymentConditionId && !bankId) {
-      setValue('bankId', banks[0].id)
-    }
-  }, [banks, paymentConditionId, setValue, bankId])
-
-  useEffect(() => {
-    if (bankAccounts && bankAccounts.length > 0 && bankId) {
-      setValue('bankAccountId', bankAccounts[0].id)
-    }
-  }, [bankAccounts, bankId, setValue])
+  }, [open, rowData, reset, setValue, watch])
 
   // Limpa a categoria quando a natureza é alterada
   useEffect(() => {
@@ -293,7 +288,7 @@ export function PaymentDialog({
                 width="flex-[1_0_250px]"
                 conditionId={watch('paymentConditionId')}
                 disabled={
-                  !watch('paymentConditionId') || canCreateBankAccount()
+                  !watch('paymentConditionId') || !canCreateBankAccount()
                 }
               />
               <SelectBankAccountField
@@ -301,7 +296,7 @@ export function PaymentDialog({
                 label="Conta"
                 width="flex-[1_0_250px]"
                 bankId={watch('bankId')}
-                // disabled={!watch('bankId') || !canCreateBankAccount()}
+                disabled={!watch('bankId') || !canCreateBankAccount()}
               />
               <FormBrlInput
                 name="totalValue"

@@ -9,8 +9,6 @@ async function fetchData(): Promise<PaymentConditionsType[]> {
     route: '/payment-condition/in-use',
   })
 
-  console.log('adsf', res)
-
   return (res.data || []) as PaymentConditionsType[]
 }
 

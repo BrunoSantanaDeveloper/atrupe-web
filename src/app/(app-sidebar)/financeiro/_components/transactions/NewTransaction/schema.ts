@@ -30,7 +30,7 @@ export const schema = z.object({
   referenceDate: z.date(),
   dueDate: z.date(), // TODO : Colocar como obrigatório
   notes: z.string(),
-  received: z.boolean().optional(),
+  paid: z.boolean().optional(),
   installments: z.array(
     z.object({
       dueDate: z.date(),
@@ -55,7 +55,7 @@ export const defaultValues = {
   referenceDate: new Date(),
   dueDate: new Date(),
   notes: '',
-  received: false,
+  paid: false,
   installments: [
     {
       dueDate: new Date(),
