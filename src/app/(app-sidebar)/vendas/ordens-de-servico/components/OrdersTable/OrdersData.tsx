@@ -59,7 +59,7 @@ interface Props extends SearchParamsType {
 export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
-  const [isLoadingProductionPDF, setIsLoadingProductionPDF] = useState(false)
+  const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
   const { canManageSalesOrders } = usePlanFeatures()
@@ -80,7 +80,8 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
       showItemsDetails: true,
     }
 
-    setIsLoadingProductionPDF(true)
+    setLoadingProdPDF([...loadingProdPDF, order.id])
+
     try {
       const result = await getItem({
         route: `sale/quotation/${order?.quotation?.id}/pdf-data`,
@@ -106,7 +107,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
       toast.error('Erro ao gerar ficha de produção')
       console.error('Erro ao gerar PDF:', error)
     } finally {
-      setIsLoadingProductionPDF(false)
+      setLoadingProdPDF([])
     }
   }
 
@@ -222,7 +223,9 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                       <ActionButton
                                         Icon={IconPrinter}
                                         tooltip="Ficha de produção"
-                                        isLoading={isLoadingProductionPDF}
+                                        isLoading={loadingProdPDF.includes(
+                                          order?.id,
+                                        )}
                                         onClick={() =>
                                           handleGenerateProductionPDF(order)
                                         }
