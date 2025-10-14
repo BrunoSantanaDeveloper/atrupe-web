@@ -8,7 +8,13 @@ export const schema = z.object({
   modality: z.string(),
   cost: z.number(),
   value: z.number(),
-  supplierId: z.string().transform((value) => value || null),
+  supplierId: z
+    .object({
+      value: z.string(),
+      label: z.string(),
+    })
+    .transform((value) => value?.value)
+    .nullable(),
   clientAddressId: z.string().optional(),
   customAddress: z
     .object({

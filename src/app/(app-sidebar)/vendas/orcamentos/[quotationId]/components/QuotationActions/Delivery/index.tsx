@@ -24,7 +24,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
-import { SupplierSelectField } from '@/components/common/form/global-inputs/SupplierSelectField'
+import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { ClientAddressSelectField } from '@/components/common/form/global-inputs/ClientAddressSelectField'
 
 // Form
@@ -70,7 +70,7 @@ export function DeliveryDialog({ quotationData }: Props) {
     resolver: zodResolver(schema),
   })
 
-  const { handleSubmit, setValue, watch, reset, setError } = form
+  const { handleSubmit, setValue, clearErrors, watch, reset, setError } = form
 
   useEffect(() => {
     if (open) {
@@ -87,7 +87,12 @@ export function DeliveryDialog({ quotationData }: Props) {
         modality: deliveryInfo?.modality || '',
         cost: deliveryInfo?.cost || 0,
         value: deliveryInfo?.value || 0,
-        supplierId: deliveryInfo?.supplier?.id || '',
+        supplierId: deliveryInfo?.supplier
+          ? ({
+              value: deliveryInfo?.supplier?.id,
+              label: deliveryInfo?.supplier?.name,
+            } as unknown as string)
+          : null,
         clientAddressId:
           deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
             ? 'custom'
@@ -120,6 +125,10 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const onSubmit = async (data: FormType) => {
     if (actionDisabled('delivery', quotationData?.status)) return
+
+    if (!showSupplierField) {
+      data.supplierId = null
+    }
 
     delete data.estimatedDate
 
@@ -233,16 +242,12 @@ export function DeliveryDialog({ quotationData }: Props) {
                 }}
               />
               {showSupplierField && (
-                <SupplierSelectField
+                <SupplierSelector
                   name="supplierId"
                   label="Fornecedor"
                   width="w-full"
-                  onChange={(e) => {
-                    setValue('supplierId', e)
-                  }}
-                  defaultValues={{
-                    id: deliveryInfo?.supplier?.id || '',
-                    name: deliveryInfo?.supplier?.name || '',
+                  additionalOnChange={() => {
+                    clearErrors('supplierId')
                   }}
                 />
               )}
