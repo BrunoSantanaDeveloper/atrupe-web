@@ -124,6 +124,7 @@ const styles = StyleSheet.create({
     fontSize: 7,
     fontWeight: 'bold',
     color: '#374151',
+    width: '50%',
   },
   tableHeaderCellAdvance: {
     fontSize: 7,
