@@ -19,8 +19,8 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
-import { ClientSelectField } from '@/components/common/form/global-inputs/ClientSelectorField'
-import { SupplierSelectField } from '@/components/common/form/global-inputs/SupplierSelectField'
+import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
+import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
 import { SelectTransactionCategoryField } from '@/components/common/form/global-inputs/TransactionCategorySelectField'
 
@@ -33,12 +33,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { IconCircleCheck, IconPencil } from '@tabler/icons-react'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import { TransactionDetailsType } from '@/types/financial/financialFlow'
 
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 interface Props {
   rowData?: TransactionDetailsType
@@ -56,15 +56,25 @@ export function EditTransactionData({
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
-      clientId: rowData?.client?.id || '',
-      supplierId: rowData?.supplier?.id || '',
+      clientId: rowData?.client
+        ? ({
+            value: rowData?.client?.id,
+            label: rowData?.client?.name,
+          } as unknown as string)
+        : null,
+      supplierId: rowData?.supplier
+        ? ({
+            value: rowData?.supplier?.id,
+            label: rowData?.supplier?.name,
+          } as unknown as string)
+        : null,
       description: rowData?.description || '',
       natureId: rowData?.nature?.id || '',
       subCategoryId: rowData?.subCategory?.id || '',
     },
   })
 
-  const { watch, reset, setValue, handleSubmit } = form
+  const { watch, reset, handleSubmit } = form
 
   const queryClient = useQueryClient()
 
@@ -75,28 +85,24 @@ export function EditTransactionData({
     }
 
     reset({
-      clientId: rowData?.client?.id || '',
-      supplierId: rowData?.supplier?.id || '',
+      clientId: rowData?.client
+        ? ({
+            value: rowData?.client?.id,
+            label: rowData?.client?.name,
+          } as unknown as string)
+        : null,
+      supplierId: rowData?.supplier
+        ? ({
+            value: rowData?.supplier?.id,
+            label: rowData?.supplier?.name,
+          } as unknown as string)
+        : null,
       description: rowData?.description || '',
       natureId: rowData?.nature?.id || '',
       subCategoryId: rowData?.subCategory?.id || '',
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
-
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem(`${type}Route`, rowData?.id || '', data),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      toast.success('Dados alterados!')
-      handleOpenChange(false)
-      transactionDialogOpen(false)
-    },
-    onError: () => {
-      toast.error('Ocorreu um erro!')
-    },
-  })
 
   const onSubmit = async (data: FormType) => {
     if (type === 'receivable') delete data.supplierId
@@ -105,7 +111,20 @@ export function EditTransactionData({
     if (!data.natureId) delete data.natureId
     if (!data.subCategoryId) delete data.subCategoryId
 
-    await mutation.mutateAsync(data)
+    const res = await updateItemNew({
+      route: `/financial/${type}/${rowData?.id}`,
+      data,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+    toast.success('Dados alterados!')
+    handleOpenChange(false)
+    transactionDialogOpen(false)
   }
 
   const handleOpenChange = (openDialog: boolean) => {
@@ -136,30 +155,16 @@ export function EditTransactionData({
               {rowData?.expenseSource !== 'EMPLOYEE' && (
                 <>
                   {type === 'receivable' ? (
-                    <ClientSelectField<FormType>
+                    <ClientSelector
                       name="clientId"
                       label="Cliente"
                       width="w-full"
-                      onChange={(e) => {
-                        setValue('clientId', e)
-                      }}
-                      defaultValues={{
-                        id: rowData?.client?.id || '',
-                        name: rowData?.client?.name || '',
-                      }}
                     />
                   ) : (
-                    <SupplierSelectField<FormType>
+                    <SupplierSelector
                       name="supplierId"
                       label="Fornecedor"
                       width="w-full"
-                      onChange={(e) => {
-                        setValue('supplierId', e)
-                      }}
-                      defaultValues={{
-                        id: rowData?.supplier?.id || '',
-                        name: rowData?.supplier?.name || '',
-                      }}
                     />
                   )}
                 </>

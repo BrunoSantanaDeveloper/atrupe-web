@@ -45,7 +45,6 @@ const defaultRoute: { [key: string]: string } = {
   finFlowTotalsRoute: '/financial/flow/totals',
   finFlowListRoute: '/financial/flow',
   receivableRoute: '/financial/receivable',
-  payableRoute: '/financial/payable',
   creditLimitRoute: '/financial/credit-limit',
   transactionCategoryRoute: '/financial/nature/sub-category',
   fixedExpensesListRoute: '/financial/scheduled-expense/grouped-by-supplier',

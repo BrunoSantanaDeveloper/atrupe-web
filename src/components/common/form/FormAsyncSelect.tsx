@@ -59,6 +59,7 @@ async function fetchRecentEntities<T extends EntityBase>(
   return (data?.data || []).map(mapper)
 }
 
+// TODO: usar tanstack pra cache
 // Função genérica para buscar entidades
 async function fetchEntities<T extends EntityBase>(
   query: string,

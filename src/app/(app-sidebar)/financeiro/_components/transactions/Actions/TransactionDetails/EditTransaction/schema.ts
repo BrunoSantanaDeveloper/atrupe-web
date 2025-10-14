@@ -2,8 +2,22 @@
 import { z } from 'zod'
 
 export const schema = z.object({
-  clientId: z.string().optional(),
-  supplierId: z.string().optional(),
+  clientId: z
+    .object({
+      value: z.string(),
+      label: z.string(),
+    })
+    .transform((value) => value?.value)
+    .nullable()
+    .optional(),
+  supplierId: z
+    .object({
+      value: z.string(),
+      label: z.string(),
+    })
+    .transform((value) => value?.value)
+    .nullable()
+    .optional(),
   description: z.string().trim(),
   subCategoryId: z.string().optional(),
   natureId: z.string().optional(),
