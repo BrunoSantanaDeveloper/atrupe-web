@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
+import pro from '@/assets/images/pro-logo.png'
 import lite from '@/assets/images/lite-logo.png'
 import start from '@/assets/images/start-logo.png'
 import { Separator } from '@/components/ui/separator'
@@ -269,6 +270,80 @@ export function PlanCard() {
                     <br /> - Redução significativa nas perdas financeiras;{' '}
                     <br /> - Melhor controle sobre vendas/compras; <br /> -
                     Decisões comerciais mais assertivas graças ao CRM integrado.
+                  </p>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </CardContent>
+      </Card>
+      <Card className="w-full">
+        <CardHeader>
+          <div className="flex justify-between">
+            <div className="flex gap-4 items-center">
+              <span className="flex items-center justify-center h-5 min-w-5 rounded-full bg-gray-100 text-white border border-gray-300 check-icon transition-colors">
+                <IconCheck size={12} className="stroke-[4px] stroke-gray-100" />
+              </span>
+              <Image src={pro} alt="plano" priority />
+              <Badge variant="orangeLight">Em breve</Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <Separator />
+        <CardContent>
+          <Accordion type="multiple">
+            <AccordionItem value="item-1" className="p-6 m-0 border-0">
+              <div className="flex justify-between">
+                <div className="flex gap-3 items-center">
+                  <p className="text-gray-700 font-semibold text-base">
+                    Conceito
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  ></AccordionTrigger>
+                </div>
+              </div>
+              <AccordionContent className="space-y-4 pt-4">
+                <p className="text-gray-600">
+                  Essa é a grande virada! Com a estabilidade financeira
+                  consolidada, é hora de aprofundar o conhecimento sobre custos
+                  e estruturar os processos para maior eficiência.
+                </p>
+                <div className="space-y-3">
+                  <p className="text-gray-700 font-medium">Objetivo</p>
+                  <p className="text-gray-600">
+                    Compreender os custos reais e criar padrões para processos e
+                    orçamentos.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-gray-700 font-medium">Principais Ações</p>
+                  <p className="text-gray-600">
+                    - Cadastro detalhado de custos: mão de obra, materiais e
+                    equipamentos. <br /> - Identificação de trabalhos mais
+                    lucrativos e eliminação de serviços deficitários. <br /> -
+                    Padronização de processos de trabalho, criando fluxos claros
+                    para orçamentos e produção. <br /> - Delegação de funções
+                    antes centralizadas no dono da empresa baseada nesses
+                    processos.
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <p className="text-gray-700 font-medium">
+                    Resultados Esperados
+                  </p>
+                  <p className="text-gray-600">
+                    A empresa ganha clareza sobre sua operação, reduz sua linha
+                    de produtos para focar no que é mais lucrativo e padroniza
+                    processos, diminuindo a dependência exclusiva do dono.
                   </p>
                 </div>
               </AccordionContent>
