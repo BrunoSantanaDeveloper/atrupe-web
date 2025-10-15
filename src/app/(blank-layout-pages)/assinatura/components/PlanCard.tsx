@@ -197,7 +197,7 @@ export function PlanCard() {
                 <span className="flex items-center justify-center h-5 min-w-5 rounded-full bg-gray-100 text-white border border-gray-300 check-icon transition-colors">
                   <IconCheck
                     size={12}
-                    className="stroke-[4px] stroke-gray-100"
+                    className="text-gray-100 flex-shrink-0 stroke-[3px]"
                   />
                 </span>
                 <Image src={plan.logo} alt="plano" priority />

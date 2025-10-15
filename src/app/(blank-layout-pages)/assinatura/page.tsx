@@ -11,19 +11,25 @@ import {
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionContent,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
 import { PlanCard } from './components/PlanCard'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { FormInput } from '@/components/common/form/FormInput'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
-import { formatCurrencyToBrl } from '@/lib/utils'
 
 const toggleOptions = [
   {
@@ -141,7 +147,46 @@ export default function SubscriptionPage() {
                 Contrate recursos adicionais para impulsionar o seu plano.
               </p>
               <Card>
-                <CardContent className="p-6"></CardContent>
+                <CardHeader>
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <Checkbox />
+                      <span className="text-lg font-semibold">Acme</span>
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl text-gray-700 font-semibold">
+                        {formatCurrencyToBrl(7000)}
+                      </span>
+                      <span className="text-sm text-gray"> /mês</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Accordion type="multiple">
+                    <AccordionItem value="item-1" className="p-6 m-0 border-0">
+                      <div className="flex justify-between">
+                        <div className="flex gap-3 items-center">
+                          <p className="text-gray-700 font-semibold text-base">
+                            Funcionalidades
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <AccordionTrigger
+                            className={cn(
+                              buttonVariants({
+                                variant: 'neutralLight',
+                                size: 'icon',
+                              }),
+                              'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                            )}
+                          ></AccordionTrigger>
+                        </div>
+                      </div>
+                      <AccordionContent></AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
               </Card>
             </div>
 
@@ -300,7 +345,7 @@ export default function SubscriptionPage() {
                 <CardContent className="p-6 pt-2 space-y-8">
                   <Separator />
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <IconCheck
                           size={16}
@@ -315,7 +360,7 @@ export default function SubscriptionPage() {
                         <span className="text-gray">/mês</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <IconCheck
                           size={16}
@@ -332,7 +377,7 @@ export default function SubscriptionPage() {
                         <span className="text-gray">/mês</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <IconCheck
                           size={16}
@@ -351,7 +396,7 @@ export default function SubscriptionPage() {
                     </div>
                   </div>
                   <Separator />
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-2">
                     <span className="text-sm text-gray-700 font-semibold">
                       Total
                     </span>
