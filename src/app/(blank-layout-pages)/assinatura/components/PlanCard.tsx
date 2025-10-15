@@ -1,7 +1,6 @@
 'use client'
 
-import Image, { StaticImageData } from 'next/image'
-import { cn } from '@/lib/utils'
+import { useState } from 'react'
 import {
   Accordion,
   AccordionItem,
@@ -12,20 +11,24 @@ import { Badge } from '@/components/ui/badge'
 import pro from '@/assets/images/pro-logo.png'
 import lite from '@/assets/images/lite-logo.png'
 import start from '@/assets/images/start-logo.png'
+import Image, { StaticImageData } from 'next/image'
 import { Separator } from '@/components/ui/separator'
-import { buttonVariants } from '@/components/ui/button'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { IconCheck, IconPlayerPlayFilled } from '@tabler/icons-react'
+import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
 
 interface PlanFeature {
   title: string
   items: string[]
+  videoUrl?: string
 }
 
 interface Plan {
   id: string
   logo: StaticImageData
-  price?: string
+  price?: number
   badge?: {
     text: string
     variant: 'light' | 'orangeLight'
@@ -46,7 +49,7 @@ const plans: Plan[] = [
   {
     id: 'start',
     logo: start,
-    price: 'R$ 115,00',
+    price: 11500,
     sections: {
       concept: {
         description:
@@ -73,10 +76,12 @@ const plans: Plan[] = [
             'Perfis de usuário',
             'Setores',
           ],
+          videoUrl: 'https://vimeo.com/495579294',
         },
         {
           title: 'Vendas',
           items: ['Orçamentos', 'Ordens de serviço'],
+          videoUrl: 'https://vimeo.com/495579294',
         },
         {
           title: 'Financeiro',
@@ -87,14 +92,17 @@ const plans: Plan[] = [
             'Folha de pagamento (Simplificada)',
             'Plano de contas',
           ],
+          videoUrl: 'https://vimeo.com/495579294',
         },
         {
           title: 'Produtos',
           items: ['Produtos sem composição'],
+          videoUrl: 'https://vimeo.com/495579294',
         },
         {
           title: 'Cadastros',
           items: ['Clientes (Simplificado)', 'Fornecedores (Simplificado)'],
+          videoUrl: 'https://vimeo.com/495579294',
         },
       ],
     },
@@ -102,7 +110,7 @@ const plans: Plan[] = [
   {
     id: 'lite',
     logo: lite,
-    price: 'R$ 230,00',
+    price: 23000,
     badge: {
       text: 'Próximo nível',
       variant: 'light',
@@ -165,6 +173,20 @@ const plans: Plan[] = [
 ]
 
 export function PlanCard() {
+  const [videoDialog, setVideoDialog] = useState<{
+    open: boolean
+    url: string
+    title: string
+  }>({
+    open: false,
+    url: '',
+    title: '',
+  })
+
+  const handleOpenVideo = (url: string, title: string) => {
+    setVideoDialog({ open: true, url, title })
+  }
+
   return (
     <>
       {plans.map((plan) => (
@@ -186,7 +208,7 @@ export function PlanCard() {
               {plan.price && (
                 <div className="flex gap-1">
                   <p className="text-xl text-gray-700 font-semibold">
-                    {plan.price}
+                    {formatCurrencyToBrl(plan.price)}
                   </p>
                   <span className="text-sm text-gray mt-[5px]"> /mês</span>
                 </div>
@@ -315,12 +337,22 @@ export function PlanCard() {
                             <p className="text-gray-700 font-medium">
                               {feature.title}
                             </p>
-                            <Badge
-                              variant="neutralLight"
-                              LeftIcon={IconPlayerPlayFilled}
-                            >
-                              Ver vídeo
-                            </Badge>
+                            {feature.videoUrl && (
+                              <Button type="button" variant="none" size="badge">
+                                <Badge
+                                  variant="neutralLight"
+                                  LeftIcon={IconPlayerPlayFilled}
+                                  onClick={() =>
+                                    handleOpenVideo(
+                                      feature.videoUrl!,
+                                      feature.title,
+                                    )
+                                  }
+                                >
+                                  Ver vídeo
+                                </Badge>
+                              </Button>
+                            )}
                           </div>
                           <ul className="space-y-2">
                             {feature.items.map((item, itemIndex) => (
@@ -346,6 +378,13 @@ export function PlanCard() {
           </CardContent>
         </Card>
       ))}
+
+      <VideoDialog
+        open={videoDialog.open}
+        onOpenChange={(open) => setVideoDialog((prev) => ({ ...prev, open }))}
+        video={videoDialog.url}
+        title={videoDialog.title}
+      />
     </>
   )
 }
