@@ -8,6 +8,7 @@ import {
   IconBuildingCommunity,
 } from '@tabler/icons-react'
 import Link from 'next/link'
+import { useState } from 'react'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
@@ -15,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormInput } from '@/components/common/form/FormInput'
+import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
@@ -67,6 +69,8 @@ const schema = z.discriminatedUnion('type', [schemaPF, schemaPJ])
 type FormType = z.infer<typeof schema>
 
 export default function SubscriptionPage() {
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -78,6 +82,8 @@ export default function SubscriptionPage() {
   const selectedType = watch('type')
 
   const onSubmit = (data: FormType) => {
+    if (!agreedToTerms) return
+
     console.log(data)
   }
 
@@ -288,19 +294,24 @@ export default function SubscriptionPage() {
               <Card>
                 <CardContent className="p-6 space-y-6">
                   <div className="flex items-start gap-2 pt-4">
-                    <Checkbox id="terms" />
+                    <Checkbox
+                      id="terms"
+                      checked={agreedToTerms}
+                      onCheckedChange={(checked) => {
+                        setAgreedToTerms(checked as boolean)
+                      }}
+                    />
                     <label htmlFor="terms" className="text-sm text-gray-700">
                       Estou de acordo com os{' '}
-                      <button className="text-brand font-medium hover:underline">
-                        Termos de Contratação
-                      </button>{' '}
-                      da Atrupe.
+                      <SubscriptionTerms onAgreeChange={setAgreedToTerms} /> da
+                      Atrupe.
                     </label>
                   </div>
                   <Button
                     type="submit"
                     form="subscription-form"
                     className="w-full"
+                    disabled={!agreedToTerms}
                   >
                     Avançar
                     <IconArrowRight />
