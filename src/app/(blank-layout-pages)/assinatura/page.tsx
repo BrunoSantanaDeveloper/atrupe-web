@@ -31,16 +31,51 @@ const toggleOptions = [
   },
 ]
 
-const schema = z.any()
+const baseSchema = z.object({
+  type: z.enum(['PF', 'PJ']),
+  // Campos comuns
+  email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
+  telefone: z.string().optional(),
+  celular: z.string().min(1, 'Celular é obrigatório'),
+  cep: z.string().min(1, 'CEP é obrigatório'),
+  estado: z.string().min(1, 'Estado é obrigatório'),
+  cidade: z.string().min(1, 'Cidade é obrigatória'),
+  bairro: z.string().min(1, 'Bairro é obrigatório'),
+  numero: z.string().min(1, 'Número é obrigatório'),
+  rua: z.string().min(1, 'Rua é obrigatória'),
+  complemento: z.string().optional(),
+})
+
+const schemaPF = baseSchema.extend({
+  type: z.literal('PF'),
+  name: z.string().min(1, 'Nome completo é obrigatório'),
+  cpf: z.string().min(1, 'CPF é obrigatório'),
+})
+
+const schemaPJ = baseSchema.extend({
+  type: z.literal('PJ'),
+  razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
+  cnpj: z.string().min(1, 'CNPJ é obrigatório'),
+  nomeResponsavel: z
+    .string()
+    .min(1, 'Nome completo do responsável é obrigatório'),
+  cpfResponsavel: z.string().min(1, 'CPF do responsável é obrigatório'),
+})
+
+const schema = z.discriminatedUnion('type', [schemaPF, schemaPJ])
 
 type FormType = z.infer<typeof schema>
 
 export default function SubscriptionPage() {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      type: 'PF',
+    },
   })
 
-  const { setValue, handleSubmit } = form
+  const { handleSubmit, watch } = form
+  const selectedType = watch('type')
 
   const onSubmit = (data: FormType) => {
     console.log(data)
@@ -122,26 +157,115 @@ export default function SubscriptionPage() {
                 <CardContent className="p-6">
                   <Form {...form}>
                     <form
-                      id="form-data"
+                      id="subscription-form"
                       onSubmit={handleSubmit(onSubmit)}
                       noValidate
-                      className="flex flex-wrap gap-4"
+                      className="flex flex-wrap gap-5"
                     >
-                      <FormToggleCard
-                        options={toggleOptions}
-                        onChange={(value) => {
-                          setValue('type', value as 'PF' | 'PJ')
-                        }}
-                      />
+                      <FormToggleCard options={toggleOptions} />
+
+                      {/* Campos específicos por tipo */}
+                      {selectedType === 'PF' ? (
+                        <>
+                          <FormInput
+                            name="name"
+                            label="Nome completo"
+                            width="w-full mt-2"
+                          />
+                          <div className="flex w-full flex-wrap gap-5">
+                            <FormInput
+                              name="cpf"
+                              label="CPF"
+                              width="flex-[1_1_300px]"
+                            />
+                            <FormInput
+                              name="email"
+                              label="E-mail"
+                              width="flex-[1_1_300px]"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <FormInput
+                            name="razaoSocial"
+                            label="Razão social"
+                            width="w-full mt-2"
+                          />
+                          <FormInput name="cnpj" label="CNPJ" width="w-full" />
+                          <FormInput
+                            name="nomeResponsavel"
+                            label="Nome completo do responsável"
+                            width="w-full"
+                          />
+                          <div className="flex w-full flex-wrap gap-5">
+                            <FormInput
+                              name="cpfResponsavel"
+                              label="CPF do responsável"
+                              width="flex-[1_1_300px]"
+                            />
+                            <FormInput
+                              name="email"
+                              label="E-mail"
+                              width="flex-[1_1_300px]"
+                            />
+                          </div>
+                        </>
+                      )}
+
+                      {/* Campos comuns */}
+                      <div className="flex w-full flex-wrap gap-5">
+                        <FormInput
+                          name="telefone"
+                          label="Telefone"
+                          width="flex-[1_1_300px]"
+                        />
+                        <FormInput
+                          name="celular"
+                          label="Celular"
+                          width="flex-[1_1_300px]"
+                        />
+                      </div>
+                      <div className="flex w-full flex-wrap gap-5">
+                        <FormInput
+                          name="cep"
+                          label="CEP"
+                          width="flex-[1_1_300px]"
+                        />
+                        <FormInput
+                          name="estado"
+                          label="Estado"
+                          width="flex-[1_1_300px]"
+                        />
+                      </div>
+                      <div className="flex w-full flex-wrap gap-5">
+                        <FormInput
+                          name="cidade"
+                          label="Cidade"
+                          width="flex-[1_1_300px]"
+                        />
+                        <FormInput
+                          name="bairro"
+                          label="Bairro"
+                          width="flex-[1_1_300px]"
+                        />
+                      </div>
+                      <div className="flex w-full flex-wrap gap-5">
+                        <FormInput
+                          name="numero"
+                          label="Número"
+                          width="flex-[1_0_100px]"
+                        />
+                        <FormInput
+                          name="rua"
+                          label="Rua"
+                          width="flex-[1_1_400px]"
+                        />
+                      </div>
                       <FormInput
-                        name="name"
-                        label="Nome completo"
+                        name="complemento"
+                        label="Complemento"
                         width="w-full"
-                      />
-                      <FormInput
-                        name="cpf"
-                        label="CPF"
-                        width="flex-[1_0_200px]"
                       />
                     </form>
                   </Form>
@@ -173,7 +297,11 @@ export default function SubscriptionPage() {
                       da Atrupe.
                     </label>
                   </div>
-                  <Button className="w-full">
+                  <Button
+                    type="submit"
+                    form="subscription-form"
+                    className="w-full"
+                  >
                     Avançar
                     <IconArrowRight />
                   </Button>
