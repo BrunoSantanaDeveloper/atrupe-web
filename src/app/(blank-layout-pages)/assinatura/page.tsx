@@ -3,19 +3,32 @@
 import { z } from 'zod'
 import {
   IconUser,
+  IconCheck,
   IconArrowLeft,
   IconArrowRight,
+  IconPlayerPlayFilled,
   IconBuildingCommunity,
 } from '@tabler/icons-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
+import { cn } from '@/lib/utils'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionContent,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import start from '@/assets/images/start-logo.png'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormInput } from '@/components/common/form/FormInput'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
@@ -122,8 +135,196 @@ export default function SubscriptionPage() {
               <p className="text-sm text-gray-600 mb-4">
                 Escolha o plano mais compatível com o seu negócio.
               </p>
-              <Card>
-                <CardContent className="p-6"></CardContent>
+              <Card className="w-full">
+                <CardHeader>
+                  <div className="flex justify-between">
+                    <div className="flex gap-4 items-center">
+                      <span className="flex items-center justify-center h-5 min-w-5 rounded-full bg-gray-100 text-white border border-gray-300 check-icon transition-colors">
+                        <IconCheck
+                          size={12}
+                          className="stroke-[4px] stroke-gray-100"
+                        />
+                      </span>
+                      <Image src={start} alt="plano" priority />
+                    </div>
+                    <div className="flex gap-1">
+                      <p className="text-xl text-gray-700 font-semibold">
+                        R$ 115,00
+                      </p>
+                      <span className="text-sm text-gray mt-[5px]"> /mês</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <Separator />
+                <CardContent>
+                  <Accordion type="multiple">
+                    <AccordionItem value="item-1" className="p-6 m-0 border-0">
+                      <div className="flex justify-between">
+                        <div className="flex gap-3 items-center">
+                          <p className="text-gray-700 font-semibold text-base">
+                            Conceito
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <AccordionTrigger
+                            className={cn(
+                              buttonVariants({
+                                variant: 'neutralLight',
+                                size: 'icon',
+                              }),
+                              'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                            )}
+                          ></AccordionTrigger>
+                        </div>
+                      </div>
+                      <AccordionContent className="space-y-4 pt-4">
+                        <p className="text-gray-600">
+                          Na jornada da excelência, tudo começa com a
+                          organização e estruturação das informações. Esse ponto
+                          de partida cria as bases para que o negócio avance de
+                          forma organizada e profissional.
+                        </p>
+                        <div className="space-y-3">
+                          <p className="text-gray-700 font-medium">Objetivo</p>
+                          <p className="text-gray-600">
+                            Digitalizar e estruturar as informações principais,
+                            garantindo um início profissional e funcional.
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <p className="text-gray-700 font-medium">
+                            Principais Ações
+                          </p>
+                          <p className="text-gray-600">
+                            - Cadastro de clientes, fornecedores, colaboradores
+                            e produtos. <br /> - Organização financeira básica:
+                            plano de contas, despesas fixas, folha de pagamento
+                            e receitas. <br /> - Implementação de um sistema
+                            simples para emissão de pedidos, controle financeiro
+                            básico e aparência profissional.
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <p className="text-gray-700 font-medium">
+                            Resultados Esperados
+                          </p>
+                          <p className="text-gray-600">
+                            A empresa sai do improviso, garantindo que nenhum
+                            trabalho seja esquecido, com informações organizadas
+                            e uma imagem mais profissional.
+                          </p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                    <Separator />
+                    <AccordionItem value="item-2" className="p-6 m-0 border-0">
+                      <div className="flex justify-between">
+                        <div className="flex gap-3 items-center">
+                          <p className="text-gray-700 font-semibold text-base">
+                            Funcionalidades
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <AccordionTrigger
+                            className={cn(
+                              buttonVariants({
+                                variant: 'neutralLight',
+                                size: 'icon',
+                              }),
+                              'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                            )}
+                          ></AccordionTrigger>
+                        </div>
+                      </div>
+                      <AccordionContent className="space-y-4 pt-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-700 font-medium">
+                              Empresa e sistema
+                            </p>
+                            <Badge
+                              variant="neutralLight"
+                              LeftIcon={IconPlayerPlayFilled}
+                            >
+                              Ver vídeo
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600">
+                            - 3 usuários <br /> - Cadastro de 1 CNPJ <br /> -
+                            Padrões de medida <br /> - Cadastro de colaboradores
+                            <br /> - Perfis de usuário <br /> - Setores
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-700 font-medium">Vendas</p>
+                            <Badge
+                              variant="neutralLight"
+                              LeftIcon={IconPlayerPlayFilled}
+                            >
+                              Ver vídeo
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600">
+                            - Orçamentos <br /> - Ordens de serviço
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-700 font-medium">
+                              Financeiro
+                            </p>
+                            <Badge
+                              variant="neutralLight"
+                              LeftIcon={IconPlayerPlayFilled}
+                            >
+                              Ver vídeo
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600">
+                            - Fluxo financeiro <br /> - Formas de pagamento
+                            <br /> - Despesas fixas <br /> - Folha de pagamento
+                            (Simplificada)
+                            <br /> - Plano de contas
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-700 font-medium">
+                              Produtos
+                            </p>
+                            <Badge
+                              variant="neutralLight"
+                              LeftIcon={IconPlayerPlayFilled}
+                            >
+                              Ver vídeo
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600">
+                            - Produtos sem composição
+                          </p>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <p className="text-gray-700 font-medium">
+                              Cadastros
+                            </p>
+                            <Badge
+                              variant="neutralLight"
+                              LeftIcon={IconPlayerPlayFilled}
+                            >
+                              Ver vídeo
+                            </Badge>
+                          </div>
+                          <p className="text-gray-600">
+                            - Clientes (Simplificado) <br /> - Fornecedores
+                            (Simplificado)
+                          </p>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
               </Card>
             </div>
 
