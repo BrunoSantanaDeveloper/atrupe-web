@@ -19,7 +19,7 @@ import { IconCheck, IconPlayerPlayFilled } from '@tabler/icons-react'
 
 interface PlanFeature {
   title: string
-  content: string
+  items: string[]
 }
 
 interface Plan {
@@ -34,8 +34,9 @@ interface Plan {
     concept?: {
       description: string
       objective: string
-      mainActions: string
-      expectedResults: string
+      mainActions: string[]
+      expectedResults: { text?: string; list?: string[] }
+      footer?: string
     }
     features?: PlanFeature[]
   }
@@ -52,34 +53,48 @@ const plans: Plan[] = [
           'Na jornada da excelência, tudo começa com a organização e estruturação das informações. Esse ponto de partida cria as bases para que o negócio avance de forma organizada e profissional.',
         objective:
           'Digitalizar e estruturar as informações principais, garantindo um início profissional e funcional.',
-        mainActions:
-          '- Cadastro de clientes, fornecedores, colaboradores e produtos. <br /> - Organização financeira básica: plano de contas, despesas fixas, folha de pagamento e receitas. <br /> - Implementação de um sistema simples para emissão de pedidos, controle financeiro básico e aparência profissional.',
-        expectedResults:
-          'A empresa sai do improviso, garantindo que nenhum trabalho seja esquecido, com informações organizadas e uma imagem mais profissional.',
+        mainActions: [
+          'Cadastro de clientes, fornecedores, colaboradores e produtos.',
+          'Organização financeira básica: plano de contas, despesas fixas, folha de pagamento e receitas.',
+          'Implementação de um sistema simples para emissão de pedidos, controle financeiro básico e aparência profissional.',
+        ],
+        expectedResults: {
+          text: 'A empresa sai do improviso, garantindo que nenhum trabalho seja esquecido, com informações organizadas e uma imagem mais profissional.',
+        },
       },
       features: [
         {
           title: 'Empresa e sistema',
-          content:
-            '- 3 usuários <br /> - Cadastro de 1 CNPJ <br /> - Padrões de medida <br /> - Cadastro de colaboradores<br /> - Perfis de usuário <br /> - Setores',
+          items: [
+            '3 usuários',
+            'Cadastro de 1 CNPJ',
+            'Padrões de medida',
+            'Cadastro de colaboradores',
+            'Perfis de usuário',
+            'Setores',
+          ],
         },
         {
           title: 'Vendas',
-          content: '- Orçamentos <br /> - Ordens de serviço',
+          items: ['Orçamentos', 'Ordens de serviço'],
         },
         {
           title: 'Financeiro',
-          content:
-            '- Fluxo financeiro <br /> - Formas de pagamento<br /> - Despesas fixas <br /> - Folha de pagamento (Simplificada)<br /> - Plano de contas',
+          items: [
+            'Fluxo financeiro',
+            'Formas de pagamento',
+            'Despesas fixas',
+            'Folha de pagamento (Simplificada)',
+            'Plano de contas',
+          ],
         },
         {
           title: 'Produtos',
-          content: '- Produtos sem composição',
+          items: ['Produtos sem composição'],
         },
         {
           title: 'Cadastros',
-          content:
-            '- Clientes (Simplificado) <br /> - Fornecedores (Simplificado)',
+          items: ['Clientes (Simplificado)', 'Fornecedores (Simplificado)'],
         },
       ],
     },
@@ -98,10 +113,27 @@ const plans: Plan[] = [
           'Com as bases lançadas na Etapa Start, o próximo passo é fortalecer a estabilidade financeira e comercial do negócio por meio de ferramentas mais robustas.',
         objective:
           'Aprofundar o controle financeiro da empresa enquanto integra informações comerciais (CRM) para facilitar tomadas de decisão estratégicas.',
-        mainActions:
-          '- Cadastro de produtos com composições básicas. <br /> - Controle financeiro avançado: <br /> - Separação por contas bancárias. <br /> - Definição de limites de crédito para clientes. <br /> - Opção para repasse automático das taxas financeiras. <br /> - Introdução ao CRM (Gestão Comercial):<br /> - Status das negociações em andamento. <br /> - Motivos dos cancelamentos registrados no sistema. <br /> - Histórico completo dos clientes.',
-        expectedResults:
-          'A empresa ganha previsibilidade financeira: <br /><br /> - Redução significativa nas perdas financeiras; <br /> - Melhor controle sobre vendas/compras; <br /> - Decisões comerciais mais assertivas graças ao CRM integrado.',
+        mainActions: [
+          'Cadastro de produtos com composições básicas.',
+          'Controle financeiro avançado:',
+          'Separação por contas bancárias.',
+          'Definição de limites de crédito para clientes.',
+          'Opção para repasse automático das taxas financeiras.',
+          'Introdução ao CRM (Gestão Comercial):',
+          'Status das negociações em andamento.',
+          'Motivos dos cancelamentos registrados no sistema.',
+          'Histórico completo dos clientes.',
+        ],
+        expectedResults: {
+          text: 'A empresa ganha previsibilidade financeira:',
+          list: [
+            'Redução significativa nas perdas financeiras;',
+            'Melhor controle sobre vendas/compras;',
+            'Decisões comerciais mais assertivas graças ao CRM integrado.',
+          ],
+        },
+        footer:
+          'As informações cadastradas aqui evoluem diretamente pra próxima etapa — sem retrabalho!',
       },
     },
   },
@@ -118,10 +150,15 @@ const plans: Plan[] = [
           'Essa é a grande virada! Com a estabilidade financeira consolidada, é hora de aprofundar o conhecimento sobre custos e estruturar os processos para maior eficiência.',
         objective:
           'Compreender os custos reais e criar padrões para processos e orçamentos.',
-        mainActions:
-          '- Cadastro detalhado de custos: mão de obra, materiais e equipamentos. <br /> - Identificação de trabalhos mais lucrativos e eliminação de serviços deficitários. <br /> - Padronização de processos de trabalho, criando fluxos claros para orçamentos e produção. <br /> - Delegação de funções antes centralizadas no dono da empresa baseada nesses processos.',
-        expectedResults:
-          'A empresa ganha clareza sobre sua operação, reduz sua linha de produtos para focar no que é mais lucrativo e padroniza processos, diminuindo a dependência exclusiva do dono.',
+        mainActions: [
+          'Cadastro detalhado de custos: mão de obra, materiais e equipamentos.',
+          'Identificação de trabalhos mais lucrativos e eliminação de serviços deficitários.',
+          'Padronização de processos de trabalho, criando fluxos claros para orçamentos e produção.',
+          'Delegação de funções antes centralizadas no dono da empresa baseada nesses processos.',
+        ],
+        expectedResults: {
+          text: 'A empresa ganha clareza sobre sua operação, reduz sua linha de produtos para focar no que é mais lucrativo e padroniza processos, diminuindo a dependência exclusiva do dono.',
+        },
       },
     },
   },
@@ -180,43 +217,72 @@ export function PlanCard() {
                     </div>
                   </div>
                   <AccordionContent className="space-y-4 pt-4">
-                    <p
-                      className="text-gray-600"
-                      dangerouslySetInnerHTML={{
-                        __html: plan.sections.concept.description,
-                      }}
-                    />
+                    <p className="text-gray-600">
+                      {plan.sections.concept.description}
+                    </p>
                     <div className="space-y-3">
                       <p className="text-gray-700 font-medium">Objetivo</p>
-                      <p
-                        className="text-gray-600"
-                        dangerouslySetInnerHTML={{
-                          __html: plan.sections.concept.objective,
-                        }}
-                      />
+                      <p className="text-gray-600">
+                        {plan.sections.concept.objective}
+                      </p>
                     </div>
                     <div className="space-y-3">
                       <p className="text-gray-700 font-medium">
                         Principais Ações
                       </p>
-                      <p
-                        className="text-gray-600"
-                        dangerouslySetInnerHTML={{
-                          __html: plan.sections.concept.mainActions,
-                        }}
-                      />
+                      <ul className="space-y-2">
+                        {plan.sections.concept.mainActions.map(
+                          (action, index) => (
+                            <li
+                              key={index}
+                              className="text-gray-600 flex gap-2 items-start"
+                            >
+                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
+                              <span>{action}</span>
+                            </li>
+                          ),
+                        )}
+                      </ul>
                     </div>
                     <div className="space-y-3">
                       <p className="text-gray-700 font-medium">
                         Resultados Esperados
                       </p>
-                      <p
-                        className="text-gray-600"
-                        dangerouslySetInnerHTML={{
-                          __html: plan.sections.concept.expectedResults,
-                        }}
-                      />
+                      {typeof plan.sections.concept.expectedResults ===
+                      'string' ? (
+                        <p className="text-gray-600">
+                          {plan.sections.concept.expectedResults}
+                        </p>
+                      ) : (
+                        <>
+                          {plan.sections.concept.expectedResults.text && (
+                            <p className="text-gray-600">
+                              {plan.sections.concept.expectedResults.text}
+                            </p>
+                          )}
+                          <ul className="space-y-2">
+                            {plan.sections.concept.expectedResults.list
+                              ?.length &&
+                              plan.sections.concept.expectedResults.list.map(
+                                (result, index) => (
+                                  <li
+                                    key={index}
+                                    className="text-gray-600 flex gap-2 items-start"
+                                  >
+                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
+                                    <span>{result}</span>
+                                  </li>
+                                ),
+                              )}
+                          </ul>
+                        </>
+                      )}
                     </div>
+                    {plan.sections.concept.footer && (
+                      <p className="text-gray-600 font-semibold pt-2">
+                        {plan.sections.concept.footer}
+                      </p>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               )}
@@ -256,12 +322,20 @@ export function PlanCard() {
                               Ver vídeo
                             </Badge>
                           </div>
-                          <p
-                            className="text-gray-600"
-                            dangerouslySetInnerHTML={{
-                              __html: feature.content,
-                            }}
-                          />
+                          <ul className="space-y-2">
+                            {feature.items.map((item, itemIndex) => (
+                              <li
+                                key={itemIndex}
+                                className="text-gray-600 flex gap-2 items-start"
+                              >
+                                <IconCheck
+                                  size={16}
+                                  className="text-brand-400 mt-0.5 flex-shrink-0 stroke-[3px]"
+                                />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       ))}
                     </AccordionContent>
