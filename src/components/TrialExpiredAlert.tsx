@@ -67,7 +67,7 @@ export async function TrialExpiredAlert() {
           </span>
         </div>
         <Button asChild size="md" RightIcon={IconArrowNarrowRight}>
-          <Link href="/assinatura/contratar">Contratar</Link>
+          <Link href="/assinatura">Contratar</Link>
         </Button>
       </div>
     </div>

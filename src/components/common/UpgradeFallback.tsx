@@ -15,7 +15,7 @@ interface UpgradeFallbackProps {
 export function UpgradeFallback({
   title = 'Funcionalidade Bloqueada',
   description = 'Esta funcionalidade não está incluída no seu plano atual. Faça upgrade para acessar esta feature.',
-  redirectTo = '/assinatura/contratar',
+  redirectTo = '/assinatura',
   className = '',
 }: UpgradeFallbackProps) {
   return (

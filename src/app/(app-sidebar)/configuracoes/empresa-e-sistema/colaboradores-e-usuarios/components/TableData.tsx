@@ -116,7 +116,7 @@ export function TableData({ tabs, searchParams }: Props) {
         cancelLabel: 'Entendi',
         iconVariant: 'warningBorderedLight',
         onConfirm: () => {
-          router.push('/assinatura/contratar')
+          router.push('/assinatura')
         },
         toastMsg: {
           success: 'Redirecionando para a página de upgrade...',
