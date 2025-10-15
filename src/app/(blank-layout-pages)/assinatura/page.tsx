@@ -4,7 +4,9 @@ import { z } from 'zod'
 import {
   IconUser,
   IconCoin,
+  IconPlus,
   IconCheck,
+  IconMinus,
   IconArrowLeft,
   IconArrowRight,
   IconBuildingCommunity,
@@ -25,6 +27,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
@@ -200,7 +203,34 @@ export default function SubscriptionPage() {
                 time.
               </p>
               <Card>
-                <CardContent className="p-6"></CardContent>
+                <CardContent className="flex justify-between items-center p-6">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl text-gray-700 font-semibold">
+                      {formatCurrencyToBrl(1500)}
+                    </span>
+                    <span className="text-sm text-gray"> /mês por usuário</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      size="iconMd"
+                      aria-label="Mês anterior"
+                      RightIcon={IconMinus}
+                      disabled
+                    />
+                    <Input
+                      inputMode="numeric"
+                      className="w-16"
+                      defaultValue={0}
+                    />
+                    <Button
+                      type="button"
+                      size="iconMd"
+                      aria-label="Próximo mês"
+                      RightIcon={IconPlus}
+                    />
+                  </div>
+                </CardContent>
               </Card>
             </div>
 

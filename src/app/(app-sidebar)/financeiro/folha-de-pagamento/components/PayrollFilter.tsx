@@ -163,6 +163,7 @@ export function PayrollFilter({
     <>
       <div className="flex items-end gap-2">
         <Button
+          type="button"
           variant="neutralOutline"
           size="iconMd"
           onClick={() => navigateMonth('prev')}
@@ -181,6 +182,7 @@ export function PayrollFilter({
         />
 
         <Button
+          type="button"
           variant="neutralOutline"
           size="iconMd"
           onClick={() => navigateMonth('next')}
