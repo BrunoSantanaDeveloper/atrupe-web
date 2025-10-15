@@ -82,9 +82,12 @@ export default function SubscriptionPage() {
   const selectedType = watch('type')
 
   const onSubmit = (data: FormType) => {
-    if (!agreedToTerms) return
+    const body = {
+      agreedToTerms,
+      data,
+    }
 
-    console.log(data)
+    console.log(body)
   }
 
   return (
@@ -297,8 +300,8 @@ export default function SubscriptionPage() {
                     <Checkbox
                       id="terms"
                       checked={agreedToTerms}
-                      onCheckedChange={(checked) => {
-                        setAgreedToTerms(checked as boolean)
+                      onCheckedChange={(checked: boolean) => {
+                        setAgreedToTerms(checked)
                       }}
                     />
                     <label htmlFor="terms" className="text-sm text-gray-700">

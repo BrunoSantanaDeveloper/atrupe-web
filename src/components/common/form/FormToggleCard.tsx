@@ -34,7 +34,7 @@ export default function FormToggleCard({ options, onChange }: Props) {
             type="single"
             value={field.value}
             onValueChange={(value) => {
-              field.onChange(value)
+              if (value) field.onChange(value)
               onChange?.(value)
             }}
             className="gap-4 w-full"
