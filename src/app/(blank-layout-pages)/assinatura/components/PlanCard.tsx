@@ -230,14 +230,14 @@ export function PlanCard() {
                       <p className="text-gray-700 font-medium">
                         Principais Ações
                       </p>
-                      <ul className="space-y-2">
+                      <ul className="pl-2">
                         {plan.sections.concept.mainActions.map(
                           (action, index) => (
                             <li
                               key={index}
                               className="text-gray-600 flex gap-2 items-start"
                             >
-                              <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
+                              <span className="inline-block w-1 h-1 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
                               <span>{action}</span>
                             </li>
                           ),
@@ -260,7 +260,7 @@ export function PlanCard() {
                               {plan.sections.concept.expectedResults.text}
                             </p>
                           )}
-                          <ul className="space-y-2">
+                          <ul className="pl-2">
                             {plan.sections.concept.expectedResults.list
                               ?.length &&
                               plan.sections.concept.expectedResults.list.map(
@@ -269,7 +269,7 @@ export function PlanCard() {
                                     key={index}
                                     className="text-gray-600 flex gap-2 items-start"
                                   >
-                                    <span className="inline-block w-1.5 h-1.5 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
+                                    <span className="inline-block w-1 h-1 rounded-full bg-gray-600 mt-2 flex-shrink-0" />
                                     <span>{result}</span>
                                   </li>
                                 ),
