@@ -14,7 +14,7 @@ import { IconCheck, IconProps } from '@tabler/icons-react'
 interface Props {
   options: {
     label: string
-    description: string
+    description?: string
     value: string
     icon: React.ComponentType<IconProps>
   }[]
@@ -29,7 +29,7 @@ export default function FormToggleCard({ options, onChange }: Props) {
       control={control}
       name="type"
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="w-full">
           <ToggleGroup
             type="single"
             value={field.value}
@@ -55,9 +55,11 @@ export default function FormToggleCard({ options, onChange }: Props) {
                     />
                     <div className="toggle-label">
                       <p className="text-brand-800">{option.label}</p>
-                      <p className="text-brand font-normal">
-                        {option.description}
-                      </p>
+                      {option.description && (
+                        <p className="text-brand font-normal">
+                          {option.description}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <span className="flex items-center justify-center h-4 min-w-4 rounded-full bg-white text-white border border-gray-300 check-icon transition-colors">

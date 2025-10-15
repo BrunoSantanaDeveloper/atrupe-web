@@ -1,13 +1,51 @@
 'use client'
 
+import { z } from 'zod'
+import {
+  IconUser,
+  IconArrowLeft,
+  IconArrowRight,
+  IconBuildingCommunity,
+} from '@tabler/icons-react'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
+import { useForm } from 'react-hook-form'
+import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FormInput } from '@/components/common/form/FormInput'
+import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
+const toggleOptions = [
+  {
+    label: 'Pessoa Física',
+    value: 'PF',
+    icon: IconUser,
+  },
+  {
+    label: 'Pessoa Jurídica',
+    value: 'PJ',
+    icon: IconBuildingCommunity,
+  },
+]
+
+const schema = z.any()
+
+type FormType = z.infer<typeof schema>
+
 export default function SubscriptionPage() {
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
+  })
+
+  const { setValue, handleSubmit } = form
+
+  const onSubmit = (data: FormType) => {
+    console.log(data)
+  }
+
   return (
     <div className="w-full bg-gray-100">
       <header className="flex flex-wrap justify-between gap-2 bg-white px-6 py-4">
@@ -81,7 +119,33 @@ export default function SubscriptionPage() {
                 Informações para emissão de suas Notas Fiscais.
               </p>
               <Card>
-                <CardContent className="p-6"></CardContent>
+                <CardContent className="p-6">
+                  <Form {...form}>
+                    <form
+                      id="form-data"
+                      onSubmit={handleSubmit(onSubmit)}
+                      noValidate
+                      className="flex flex-wrap gap-4"
+                    >
+                      <FormToggleCard
+                        options={toggleOptions}
+                        onChange={(value) => {
+                          setValue('type', value as 'PF' | 'PJ')
+                        }}
+                      />
+                      <FormInput
+                        name="name"
+                        label="Nome completo"
+                        width="w-full"
+                      />
+                      <FormInput
+                        name="cpf"
+                        label="CPF"
+                        width="flex-[1_0_200px]"
+                      />
+                    </form>
+                  </Form>
+                </CardContent>
               </Card>
             </div>
           </div>
