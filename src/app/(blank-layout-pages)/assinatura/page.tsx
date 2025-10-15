@@ -3,6 +3,8 @@
 import { z } from 'zod'
 import {
   IconUser,
+  IconCoin,
+  IconCheck,
   IconArrowLeft,
   IconArrowRight,
   IconBuildingCommunity,
@@ -15,11 +17,13 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { PlanCard } from './components/PlanCard'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 const toggleOptions = [
   {
@@ -293,7 +297,75 @@ export default function SubscriptionPage() {
                     Resumo da assinatura
                   </CardTitle>
                 </CardHeader>
-                <CardContent></CardContent>
+                <CardContent className="p-6 pt-2 space-y-8">
+                  <Separator />
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <IconCheck
+                          size={16}
+                          className="text-brand-400 stroke-[3px]"
+                        />
+                        <span className="text-gray text-sm">Atrupe Start</span>
+                      </div>
+                      <div className="flex items-baseline gap-1 text-sm">
+                        <span className="text-gray-600 font-semibold">
+                          {formatCurrencyToBrl(11500)}
+                        </span>
+                        <span className="text-gray">/mês</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <IconCheck
+                          size={16}
+                          className="text-brand-400 stroke-[3px]"
+                        />
+                        <span className="text-gray text-sm">
+                          Módulo de Nota Fiscal
+                        </span>
+                      </div>
+                      <div className="flex items-baseline gap-1 text-sm">
+                        <span className="text-gray-600 font-semibold">
+                          {formatCurrencyToBrl(7000)}
+                        </span>
+                        <span className="text-gray">/mês</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <IconCheck
+                          size={16}
+                          className="text-brand-400 stroke-[3px]"
+                        />
+                        <span className="text-gray text-sm">
+                          2 Usuários adicionais
+                        </span>
+                      </div>
+                      <div className="flex items-baseline gap-1 text-sm">
+                        <span className="text-gray-600 font-semibold">
+                          {formatCurrencyToBrl(3000)}
+                        </span>
+                        <span className="text-gray">/mês</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700 font-semibold">
+                      Total
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <IconCoin className="text-blue" />
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-gray-700 font-bold text-lg">
+                          {formatCurrencyToBrl(11500 + 7000 + 3000)}
+                        </span>
+                        <span className="text-sm text-gray">/mês</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 space-y-6">

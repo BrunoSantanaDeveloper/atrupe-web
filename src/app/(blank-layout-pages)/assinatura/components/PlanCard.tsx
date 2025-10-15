@@ -206,11 +206,11 @@ export function PlanCard() {
                 )}
               </div>
               {plan.price && (
-                <div className="flex gap-1">
-                  <p className="text-xl text-gray-700 font-semibold">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-xl text-gray-700 font-semibold">
                     {formatCurrencyToBrl(plan.price)}
-                  </p>
-                  <span className="text-sm text-gray mt-[5px]"> /mês</span>
+                  </span>
+                  <span className="text-sm text-gray"> /mês</span>
                 </div>
               )}
             </div>
