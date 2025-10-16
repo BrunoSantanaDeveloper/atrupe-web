@@ -23,6 +23,7 @@ import {
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
+import { createItemNew } from '@/actions/_cruds'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -33,6 +34,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
+import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 const toggleOptions = [
@@ -52,21 +54,21 @@ const baseSchema = z.object({
   type: z.enum(['PF', 'PJ']),
   // Campos comuns
   email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
-  telefone: z.string().optional(),
-  celular: z.string().min(1, 'Celular é obrigatório'),
-  cep: z.string().min(1, 'CEP é obrigatório'),
-  estado: z.string().min(1, 'Estado é obrigatório'),
-  cidade: z.string().min(1, 'Cidade é obrigatória'),
-  bairro: z.string().min(1, 'Bairro é obrigatório'),
-  numero: z.string().min(1, 'Número é obrigatório'),
-  rua: z.string().min(1, 'Rua é obrigatória'),
-  complemento: z.string().optional(),
+  phone: z.string().optional(),
+  mobile: z.string().min(1, 'Celular é obrigatório'),
+  zipCode: z.string().min(1, 'CEP é obrigatório'),
+  state: z.string().min(1, 'Estado é obrigatório'),
+  city: z.string().min(1, 'Cidade é obrigatória'),
+  neighborhood: z.string().min(1, 'Bairro é obrigatório'),
+  number: z.string(),
+  street: z.string().min(1, 'Rua é obrigatória'),
+  complement: z.string().optional(),
 })
 
 const schemaPF = baseSchema.extend({
   type: z.literal('PF'),
   name: z.string().min(1, 'Nome completo é obrigatório'),
-  cpf: z.string().min(1, 'CPF é obrigatório'),
+  taxId: z.string().min(1, 'CPF é obrigatório'),
 })
 
 const schemaPJ = baseSchema.extend({
@@ -96,10 +98,23 @@ export default function SubscriptionPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       type: 'PF',
+      name: '',
+      taxId: '',
+      email: '',
+      phone: '',
+      mobile: '',
+      zipCode: '',
+      state: '',
+      city: '',
+      neighborhood: '',
+      number: '',
+      street: '',
+      complement: '',
     },
   })
 
   const { handleSubmit, watch } = form
+
   const selectedType = watch('type')
 
   const additionalUsersTotal = additionalUsers * ADDITIONAL_USER_PRICE
@@ -110,7 +125,7 @@ export default function SubscriptionPage() {
     (nfModule ? NF_MODULE_PRICE : 0) +
     additionalUsersTotal
 
-  const onSubmit = (data: FormType) => {
+  const onSubmit = async (data: FormType) => {
     if (!selectedPlan) {
       toast.warning('Por favor, selecione um plano')
       return
@@ -129,7 +144,17 @@ export default function SubscriptionPage() {
       agreedToTerms,
     }
 
-    console.log(body)
+    const res = await createItemNew({
+      route: '/plan/subscription',
+      data: body,
+    })
+
+    if (!res.success) {
+      toast.error(res.message || 'Erro!')
+      return
+    }
+
+    toast.success(res.message)
   }
 
   return (
@@ -190,7 +215,9 @@ export default function SubscriptionPage() {
                           setNfModule(checked)
                         }}
                       />
-                      <span className="text-lg font-semibold">Acme</span>
+                      <span className="text-lg text-gray-700 font-semibold">
+                        Acme
+                      </span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="text-xl text-gray-700 font-semibold">
@@ -308,7 +335,7 @@ export default function SubscriptionPage() {
                           />
                           <div className="flex w-full flex-wrap gap-5">
                             <FormInput
-                              name="cpf"
+                              name="taxId"
                               label="CPF"
                               width="flex-[1_1_300px]"
                             />
@@ -350,54 +377,60 @@ export default function SubscriptionPage() {
                       {/* Campos comuns */}
                       <div className="flex w-full flex-wrap gap-5">
                         <FormInput
-                          name="telefone"
+                          name="phone"
                           label="Telefone"
                           width="flex-[1_1_300px]"
                         />
                         <FormInput
-                          name="celular"
+                          name="mobile"
                           label="Celular"
                           width="flex-[1_1_300px]"
                         />
                       </div>
                       <div className="flex w-full flex-wrap gap-5">
-                        <FormInput
-                          name="cep"
+                        <FormInputZipCode
+                          name="zipCode"
                           label="CEP"
                           width="flex-[1_1_300px]"
+                          addressFields={{
+                            street: 'street',
+                            neighborhood: 'neighborhood',
+                            city: 'city',
+                            state: 'state',
+                          }}
                         />
                         <FormInput
-                          name="estado"
+                          name="state"
                           label="Estado"
                           width="flex-[1_1_300px]"
                         />
                       </div>
                       <div className="flex w-full flex-wrap gap-5">
                         <FormInput
-                          name="cidade"
+                          name="city"
                           label="Cidade"
                           width="flex-[1_1_300px]"
                         />
                         <FormInput
-                          name="bairro"
+                          name="neighborhood"
                           label="Bairro"
                           width="flex-[1_1_300px]"
                         />
                       </div>
                       <div className="flex w-full flex-wrap gap-5">
                         <FormInput
-                          name="numero"
+                          name="number"
                           label="Número"
                           width="flex-[1_0_100px]"
                         />
                         <FormInput
-                          name="rua"
+                          name="street"
                           label="Rua"
                           width="flex-[1_1_400px]"
                         />
                       </div>
                       <FormInput
-                        name="complemento"
+                        name="complement"
                         label="Complemento"
                         width="w-full"
                       />
