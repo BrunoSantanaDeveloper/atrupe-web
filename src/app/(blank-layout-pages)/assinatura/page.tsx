@@ -1,6 +1,7 @@
 'use client'
 
 import { z } from 'zod'
+import Link from 'next/link'
 import {
   IconUser,
   IconCoin,
@@ -11,7 +12,13 @@ import {
   IconArrowRight,
   IconBuildingCommunity,
 } from '@tabler/icons-react'
-import Link from 'next/link'
+import {
+  Card,
+  CardTitle,
+  CardHeader,
+  CardContent,
+  CardDescription,
+} from '@/components/ui/card'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import {
@@ -23,6 +30,8 @@ import {
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
+import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { createItemNew } from '@/actions/_cruds'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
@@ -32,10 +41,10 @@ import { Input } from '@/components/ui/input-uncontrolled'
 import { PlanCard, Plan, plans } from './components/PlanCard'
 import { FormInput } from '@/components/common/form/FormInput'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { ProgressCircle } from '@/components/ui/progress-circle'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import FormToggleCard from '@/components/common/form/FormToggleCard'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
-import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 const toggleOptions = [
   {
@@ -93,6 +102,12 @@ export default function SubscriptionPage() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0])
   const [additionalUsers, setAdditionalUsers] = useState(0)
   const [nfModule, setNfModule] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
+  const [progress, setProgress] = useState(0)
+
+  const router = useRouter()
+
+  const { data: session, update } = useSession()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -131,6 +146,8 @@ export default function SubscriptionPage() {
       return
     }
 
+    setIsValidating(true)
+
     const body = {
       plan: {
         id: selectedPlan.id,
@@ -151,10 +168,62 @@ export default function SubscriptionPage() {
 
     if (!res.success) {
       toast.error(res.message || 'Erro!')
+      setIsValidating(false)
+      setProgress(0)
       return
     }
 
-    toast.success(res.message)
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setProgress(50)
+    toast.success('Plano contratado com sucesso!')
+
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Atualizar a sessão local com os novos dados
+      if (session?.company?.id) {
+        await update({
+          company: {
+            plan: {
+              name: selectedPlan.name,
+              features: res.data.features,
+            },
+          },
+        })
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar dados da empresa:', error)
+      router.replace('/logout')
+      toast.warning('Faça o login novamente')
+    }
+
+    setProgress(100)
+
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
+    router.replace('/')
+  }
+
+  if (isValidating) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center gap-8 w-full">
+          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
+            <CardHeader className="p-0 mb-8 text-center">
+              <CardTitle className="text-xl font-bold">
+                Validando dados
+              </CardTitle>
+              <CardDescription>
+                Estamos atualizando as informações da sua assinatura.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-4">
+              <ProgressCircle value={progress} size={180} />
+            </CardContent>
+          </Card>
+          <Logo text width={154} />
+        </div>
+      </div>
+    )
   }
 
   return (
