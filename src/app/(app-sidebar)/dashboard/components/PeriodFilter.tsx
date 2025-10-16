@@ -13,7 +13,7 @@ export function PeriodFilter() {
     <div className="flex gap-1">
       <Button
         type="button"
-        size="badge"
+        size="none"
         variant="none"
         onClick={() => setPeriod('30 dias')}
       >
@@ -26,7 +26,7 @@ export function PeriodFilter() {
       </Button>
       <Button
         type="button"
-        size="badge"
+        size="none"
         variant="none"
         onClick={() => setPeriod('6 meses')}
       >
@@ -39,7 +39,7 @@ export function PeriodFilter() {
       </Button>
       <Button
         type="button"
-        size="badge"
+        size="none"
         variant="none"
         onClick={() => setPeriod('1 ano')}
       >

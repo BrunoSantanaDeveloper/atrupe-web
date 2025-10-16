@@ -10,6 +10,8 @@ import {
 import { Badge } from '@/components/ui/badge'
 import pro from '@/assets/images/pro-logo.png'
 import lite from '@/assets/images/lite-logo.png'
+import full from '@/assets/images/full-logo.png'
+import elite from '@/assets/images/elite-logo.png'
 import start from '@/assets/images/start-logo.png'
 import Image, { StaticImageData } from 'next/image'
 import { Separator } from '@/components/ui/separator'
@@ -25,10 +27,12 @@ interface PlanFeature {
   videoUrl?: string
 }
 
-interface Plan {
+export interface Plan {
   id: string
+  name: string
   logo: StaticImageData
   price?: number
+  isActive: boolean
   badge?: {
     text: string
     variant: 'light' | 'orangeLight'
@@ -45,11 +49,13 @@ interface Plan {
   }
 }
 
-const plans: Plan[] = [
+export const plans: Plan[] = [
   {
-    id: 'start',
+    id: '1',
+    name: 'Start',
     logo: start,
     price: 11500,
+    isActive: true,
     sections: {
       concept: {
         description:
@@ -108,9 +114,11 @@ const plans: Plan[] = [
     },
   },
   {
-    id: 'lite',
+    id: '2',
+    name: 'Lite',
     logo: lite,
     price: 23000,
+    isActive: true,
     badge: {
       text: 'Próximo nível',
       variant: 'light',
@@ -130,7 +138,7 @@ const plans: Plan[] = [
           'Introdução ao CRM (Gestão Comercial):',
           'Status das negociações em andamento.',
           'Motivos dos cancelamentos registrados no sistema.',
-          'Histórico completo dos clientes.',
+          'Histórico completo dos clientes:',
         ],
         expectedResults: {
           text: 'A empresa ganha previsibilidade financeira:',
@@ -146,8 +154,11 @@ const plans: Plan[] = [
     },
   },
   {
-    id: 'pro',
+    id: '3',
+    name: 'Pro',
     logo: pro,
+    price: undefined,
+    isActive: false,
     badge: {
       text: 'Em breve',
       variant: 'orangeLight',
@@ -170,9 +181,81 @@ const plans: Plan[] = [
       },
     },
   },
+  {
+    id: '4',
+    name: 'Elite',
+    logo: elite,
+    price: undefined,
+    isActive: false,
+    badge: {
+      text: 'Em breve',
+      variant: 'orangeLight',
+    },
+    sections: {
+      concept: {
+        description:
+          'Nesta etapa, a empresa passa a contar com um gerenciador de produção exclusivo, desenvolvido para atender às necessidades específicas de empresas de comunicação visual e gráficas.',
+        objective:
+          'Integrar todos os setores ao sistema, garantindo um gerenciamento eficiente da produção com base em dados reais.',
+        mainActions: [
+          'Implementação do gerenciador de produção:',
+          'Adaptável à estrutura específica da empresa.',
+          'Baseado nas composições detalhadas dos produtos criadas na Etapa 3.',
+          'Treinamento direcionado:',
+          'Cada setor aprende como usar o sistema dentro das suas funções específicas.',
+          'Análise avançada da produtividade:',
+          'Medição precisa por setor.',
+          'Avaliação individual dos colaboradores com base nos tempos estimados versus realizados.',
+        ],
+        expectedResults: {
+          list: [
+            'Produção totalmente integrada entre os setores;',
+            'Redução de erros operacionais;',
+            'Identificação clara de gargalos produtivos (setores ou indivíduos);',
+            'Melhor aproveitamento dos recursos disponíveis (tempo, máquinas e materiais).',
+          ],
+        },
+        footer:
+          'O gerenciador foi projetado exclusivamente para empresas gráficas e de comunicação visual, oferecendo flexibilidade máxima sem complicações desnecessárias!',
+      },
+    },
+  },
+  {
+    id: '5',
+    name: 'Full',
+    logo: full,
+    price: undefined,
+    isActive: false,
+    badge: {
+      text: 'Em breve',
+      variant: 'orangeLight',
+    },
+    sections: {
+      concept: {
+        description:
+          'No ponto mais avançado da jornada, o foco é integrar todas as etapas anteriores para um gerenciamento completo e eficiente de estoque.',
+        objective:
+          'Garantir que o estoque seja gerido com precisão, evitando desperdícios e alinhando-o às demandas da produção.',
+        mainActions: [
+          'Entrada de materiais correta no sistema.',
+          'Composição detalhada dos trabalhos, considerando aproveitamento e substituição de materiais na produção.',
+          'Integração com o gerenciamento de produção para rastrear o uso real de materiais.',
+          'Análise de custos estimados versus realizados, com ajustes nos processos para melhorias futuras.',
+        ],
+        expectedResults: {
+          text: 'A empresa atinge excelência operacional, com controle total sobre custos, estoques e processos, resultando em mais eficiência e lucratividade.',
+        },
+      },
+    },
+  },
 ]
 
-export function PlanCard() {
+interface PlanCardProps {
+  selectedPlan: Plan | null
+  onSelectPlan: (plan: Plan) => void
+}
+
+export function PlanCard({ selectedPlan, onSelectPlan }: PlanCardProps) {
   const [videoDialog, setVideoDialog] = useState<{
     open: boolean
     url: string
@@ -187,32 +270,56 @@ export function PlanCard() {
     setVideoDialog({ open: true, url, title })
   }
 
+  const isDisabled = (plan: Plan) => !plan.isActive
+  const isSelected = (plan: Plan) => selectedPlan?.id === plan.id
+
+  const handleCheckClick = (
+    plan: Plan,
+    e: React.MouseEvent<HTMLButtonElement>,
+  ) => {
+    e.stopPropagation()
+    if (plan.isActive) {
+      onSelectPlan(plan)
+    }
+  }
+
   return (
     <>
       {plans.map((plan) => (
-        <Card key={plan.id} className="w-full">
+        <Card
+          key={plan.id}
+          className={cn(
+            'w-full transition-colors',
+            isSelected(plan) && 'outline outline-1 outline-brand-200',
+          )}
+        >
           <CardHeader>
             <div className="flex justify-between">
               <div className="flex gap-4 items-center">
-                <span className="flex items-center justify-center h-5 min-w-5 rounded-full bg-gray-100 text-white border border-gray-300 check-icon transition-colors">
-                  <IconCheck
-                    size={12}
-                    className="text-gray-100 flex-shrink-0 stroke-[3px]"
-                  />
-                </span>
+                <Button
+                  type="button"
+                  variant={isSelected(plan) ? 'default' : 'neutralLight'}
+                  size="iconXs"
+                  rounded="full"
+                  RightIcon={isSelected(plan) ? IconCheck : undefined}
+                  onClick={(e) => handleCheckClick(plan, e)}
+                  disabled={isDisabled(plan)}
+                  aria-label={`Selecionar plano ${plan.name}`}
+                  className={cn(!isSelected(plan) && 'border border-gray-300')}
+                />
                 <Image src={plan.logo} alt="plano" priority />
                 {plan.badge && (
                   <Badge variant={plan.badge.variant}>{plan.badge.text}</Badge>
                 )}
               </div>
-              {plan.price && (
+              {plan.price ? (
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl text-gray-700 font-semibold">
                     {formatCurrencyToBrl(plan.price)}
                   </span>
                   <span className="text-sm text-gray"> /mês</span>
                 </div>
-              )}
+              ) : null}
             </div>
           </CardHeader>
           <Separator />
@@ -338,7 +445,7 @@ export function PlanCard() {
                               {feature.title}
                             </p>
                             {feature.videoUrl && (
-                              <Button type="button" variant="none" size="badge">
+                              <Button type="button" variant="none" size="none">
                                 <Badge
                                   variant="neutralLight"
                                   LeftIcon={IconPlayerPlayFilled}

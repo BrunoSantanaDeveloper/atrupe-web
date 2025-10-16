@@ -12,6 +12,7 @@ import {
   IconBuildingCommunity,
 } from '@tabler/icons-react'
 import Link from 'next/link'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import {
   Accordion,
@@ -22,12 +23,12 @@ import {
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
-import { PlanCard } from './components/PlanCard'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Input } from '@/components/ui/input-uncontrolled'
+import { PlanCard, Plan, plans } from './components/PlanCard'
 import { FormInput } from '@/components/common/form/FormInput'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
@@ -82,8 +83,14 @@ const schema = z.discriminatedUnion('type', [schemaPF, schemaPJ])
 
 type FormType = z.infer<typeof schema>
 
+const NF_MODULE_PRICE = 7000
+const ADDITIONAL_USER_PRICE = 1500
+
 export default function SubscriptionPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0])
+  const [additionalUsers, setAdditionalUsers] = useState(0)
+  const [nfModule, setNfModule] = useState(false)
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -95,10 +102,31 @@ export default function SubscriptionPage() {
   const { handleSubmit, watch } = form
   const selectedType = watch('type')
 
+  const additionalUsersTotal = additionalUsers * ADDITIONAL_USER_PRICE
+
+  // Cálculo do total
+  const totalPrice =
+    (selectedPlan?.price || 0) +
+    (nfModule ? NF_MODULE_PRICE : 0) +
+    additionalUsersTotal
+
   const onSubmit = (data: FormType) => {
+    if (!selectedPlan) {
+      toast.warning('Por favor, selecione um plano')
+      return
+    }
+
     const body = {
+      plan: {
+        id: selectedPlan.id,
+        name: selectedPlan.name,
+        price: selectedPlan.price,
+      },
+      nfModule,
+      additionalUsers,
+      totalPrice,
+      customerData: data,
       agreedToTerms,
-      data,
     }
 
     console.log(body)
@@ -137,7 +165,10 @@ export default function SubscriptionPage() {
                 Escolha o plano mais compatível com o seu negócio.
               </p>
               <div className="space-y-4">
-                <PlanCard />
+                <PlanCard
+                  selectedPlan={selectedPlan}
+                  onSelectPlan={setSelectedPlan}
+                />
               </div>
             </div>
 
@@ -153,12 +184,17 @@ export default function SubscriptionPage() {
                 <CardHeader>
                   <div className="flex justify-between">
                     <div className="flex gap-4 items-center">
-                      <Checkbox />
+                      <Checkbox
+                        checked={nfModule}
+                        onCheckedChange={(checked: boolean) => {
+                          setNfModule(checked)
+                        }}
+                      />
                       <span className="text-lg font-semibold">Acme</span>
                     </div>
                     <div className="flex items-baseline gap-1">
                       <span className="text-xl text-gray-700 font-semibold">
-                        {formatCurrencyToBrl(7000)}
+                        {formatCurrencyToBrl(NF_MODULE_PRICE)}
                       </span>
                       <span className="text-sm text-gray"> /mês</span>
                     </div>
@@ -206,7 +242,7 @@ export default function SubscriptionPage() {
                 <CardContent className="flex justify-between items-center p-6">
                   <div className="flex items-baseline gap-1">
                     <span className="text-xl text-gray-700 font-semibold">
-                      {formatCurrencyToBrl(1500)}
+                      {formatCurrencyToBrl(ADDITIONAL_USER_PRICE)}
                     </span>
                     <span className="text-sm text-gray"> /mês por usuário</span>
                   </div>
@@ -214,20 +250,29 @@ export default function SubscriptionPage() {
                     <Button
                       type="button"
                       size="iconMd"
-                      aria-label="Mês anterior"
+                      aria-label="Remover usuário"
                       RightIcon={IconMinus}
-                      disabled
+                      disabled={additionalUsers === 0}
+                      onClick={() => {
+                        setAdditionalUsers((prev) => Math.max(0, prev - 1))
+                      }}
                     />
                     <Input
                       inputMode="numeric"
-                      className="w-16"
-                      defaultValue={0}
+                      className="w-16 text-center"
+                      value={additionalUsers}
+                      onChange={(e) => {
+                        setAdditionalUsers(Number(e.target.value))
+                      }}
                     />
                     <Button
                       type="button"
                       size="iconMd"
-                      aria-label="Próximo mês"
+                      aria-label="Adicionar usuário"
                       RightIcon={IconPlus}
+                      onClick={() => {
+                        setAdditionalUsers((prev) => prev + 1)
+                      }}
                     />
                   </div>
                 </CardContent>
@@ -375,55 +420,73 @@ export default function SubscriptionPage() {
                 <CardContent className="p-6 pt-2 space-y-8">
                   <Separator />
                   <div className="space-y-6">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <IconCheck
-                          size={16}
-                          className="text-brand-400 stroke-[3px]"
-                        />
-                        <span className="text-gray text-sm">Atrupe Start</span>
+                    {selectedPlan && (
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <IconCheck
+                            size={16}
+                            className="text-brand-400 stroke-[3px]"
+                          />
+                          <span className="text-gray text-sm">
+                            Atrupe {selectedPlan.name}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-1 text-sm">
+                          <span className="text-gray-600 font-semibold">
+                            {formatCurrencyToBrl(selectedPlan.price || 0)}
+                          </span>
+                          <span className="text-gray">/mês</span>
+                        </div>
                       </div>
-                      <div className="flex items-baseline gap-1 text-sm">
-                        <span className="text-gray-600 font-semibold">
-                          {formatCurrencyToBrl(11500)}
-                        </span>
-                        <span className="text-gray">/mês</span>
+                    )}
+                    {nfModule && (
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <IconCheck
+                            size={16}
+                            className="text-brand-400 stroke-[3px]"
+                          />
+                          <span className="text-gray text-sm">
+                            Módulo de Nota Fiscal
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-1 text-sm">
+                          <span className="text-gray-600 font-semibold">
+                            {formatCurrencyToBrl(NF_MODULE_PRICE)}
+                          </span>
+                          <span className="text-gray">/mês</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <IconCheck
-                          size={16}
-                          className="text-brand-400 stroke-[3px]"
-                        />
-                        <span className="text-gray text-sm">
-                          Módulo de Nota Fiscal
-                        </span>
+                    )}
+                    {additionalUsers > 0 && (
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
+                          <IconCheck
+                            size={16}
+                            className="text-brand-400 stroke-[3px]"
+                          />
+                          <span className="text-gray text-sm">
+                            {additionalUsers}{' '}
+                            {additionalUsers === 1
+                              ? 'Usuário adicional'
+                              : 'Usuários adicionais'}
+                          </span>
+                        </div>
+                        <div className="flex items-baseline gap-1 text-sm">
+                          <span className="text-gray-600 font-semibold">
+                            {formatCurrencyToBrl(additionalUsersTotal)}
+                          </span>
+                          <span className="text-gray">/mês</span>
+                        </div>
                       </div>
-                      <div className="flex items-baseline gap-1 text-sm">
-                        <span className="text-gray-600 font-semibold">
-                          {formatCurrencyToBrl(7000)}
-                        </span>
-                        <span className="text-gray">/mês</span>
+                    )}
+                    {!selectedPlan && !nfModule && additionalUsers === 0 && (
+                      <div className="text-center py-4">
+                        <p className="text-gray text-sm">
+                          Selecione um plano para ver o resumo
+                        </p>
                       </div>
-                    </div>
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
-                        <IconCheck
-                          size={16}
-                          className="text-brand-400 stroke-[3px]"
-                        />
-                        <span className="text-gray text-sm">
-                          2 Usuários adicionais
-                        </span>
-                      </div>
-                      <div className="flex items-baseline gap-1 text-sm">
-                        <span className="text-gray-600 font-semibold">
-                          {formatCurrencyToBrl(3000)}
-                        </span>
-                        <span className="text-gray">/mês</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between gap-2">
@@ -434,7 +497,7 @@ export default function SubscriptionPage() {
                       <IconCoin className="text-blue" />
                       <div className="flex items-baseline gap-1">
                         <span className="text-gray-700 font-bold text-lg">
-                          {formatCurrencyToBrl(11500 + 7000 + 3000)}
+                          {formatCurrencyToBrl(totalPrice)}
                         </span>
                         <span className="text-sm text-gray">/mês</span>
                       </div>

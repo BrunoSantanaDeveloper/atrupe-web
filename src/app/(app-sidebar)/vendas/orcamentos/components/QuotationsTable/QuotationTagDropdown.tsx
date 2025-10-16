@@ -73,7 +73,7 @@ function QuotationTag({ quotation, tagsList }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button type="button" size="badge" variant="none">
+        <Button type="button" size="none" variant="none">
           <Badge
             size={status ? 'default' : 'roundSm'}
             LeftIcon={status ? undefined : IconPlus}
