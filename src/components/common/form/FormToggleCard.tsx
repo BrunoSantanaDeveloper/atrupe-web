@@ -21,7 +21,7 @@ interface Props {
   onChange?: (value: string) => void
 }
 
-export default function FormToggleCard({ options, onChange }: Props) {
+export function FormToggleCard({ options, onChange }: Props) {
   const { control } = useFormContext()
 
   return (

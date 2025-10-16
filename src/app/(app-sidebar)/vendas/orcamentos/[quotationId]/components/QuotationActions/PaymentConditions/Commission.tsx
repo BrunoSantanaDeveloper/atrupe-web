@@ -19,7 +19,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import FormToggleCard from '@/components/common/form/FormToggleCard'
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { PickValuePercentSelect } from '@/components/common/PickValuePercentSelect'
 import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 

@@ -12,7 +12,7 @@ import { AddressTab } from './tabs/AddressTab'
 import { ResponsibilitiesTab } from './tabs/ResponsibilitiesTab'
 import { CreditLimitTab } from './tabs/CreditLimitTab'
 import { useFormContext } from 'react-hook-form'
-import FormToggleCard from '@/components/common/form/FormToggleCard'
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { toast } from 'sonner'
 
 interface Props {

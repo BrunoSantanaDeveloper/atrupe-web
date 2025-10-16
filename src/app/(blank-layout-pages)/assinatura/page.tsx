@@ -21,32 +21,27 @@ import {
 } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { useState } from 'react'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
+import { formatCurrencyToBrl } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { PlanCard, Plan, plans } from './components/PlanCard'
+import { ModuleCard, modules } from './components/ModuleCard'
 import { FormInput } from '@/components/common/form/FormInput'
-import { Button, buttonVariants } from '@/components/ui/button'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
-import FormToggleCard from '@/components/common/form/FormToggleCard'
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 
-const toggleOptions = [
+const personTypeOptions = [
   {
     label: 'Pessoa Física',
     value: 'PF',
@@ -94,14 +89,13 @@ const schema = z.discriminatedUnion('type', [schemaPF, schemaPJ])
 
 type FormType = z.infer<typeof schema>
 
-const NF_MODULE_PRICE = 7000
 const ADDITIONAL_USER_PRICE = 1500
 
 export default function SubscriptionPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0])
+  const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
-  const [nfModule, setNfModule] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
   const [progress, setProgress] = useState(0)
 
@@ -130,15 +124,27 @@ export default function SubscriptionPage() {
 
   const { handleSubmit, watch } = form
 
-  const selectedType = watch('type')
+  const selectedPersonType = watch('type')
+
+  const handleToggleModule = (moduleId: string) => {
+    setSelectedModules((prev) =>
+      prev.includes(moduleId)
+        ? prev.filter((id) => id !== moduleId)
+        : [...prev, moduleId],
+    )
+  }
+
+  // Cálculo do total dos módulos
+  const modulesTotal = selectedModules.reduce((total, moduleId) => {
+    const selectedModule = modules.find((m) => m.id === moduleId)
+    return total + (selectedModule?.price || 0)
+  }, 0)
 
   const additionalUsersTotal = additionalUsers * ADDITIONAL_USER_PRICE
 
   // Cálculo do total
   const totalPrice =
-    (selectedPlan?.price || 0) +
-    (nfModule ? NF_MODULE_PRICE : 0) +
-    additionalUsersTotal
+    (selectedPlan?.price || 0) + modulesTotal + additionalUsersTotal
 
   const onSubmit = async (data: FormType) => {
     if (!selectedPlan) {
@@ -154,7 +160,14 @@ export default function SubscriptionPage() {
         name: selectedPlan.name,
         price: selectedPlan.price,
       },
-      nfModule,
+      modules: selectedModules.map((moduleId) => {
+        const selectedModule = modules.find((m) => m.id === moduleId)
+        return {
+          id: selectedModule?.id,
+          name: selectedModule?.name,
+          price: selectedModule?.price,
+        }
+      }),
       additionalUsers,
       totalPrice,
       customerData: data,
@@ -266,63 +279,20 @@ export default function SubscriptionPage() {
               </div>
             </div>
 
-            {/* Nota Fiscal Section */}
+            {/* Módulos Adicionais Section */}
             <div>
               <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                Nota Fiscal
+                Módulos adicionais
               </h2>
               <p className="text-sm text-gray-600 mb-4">
                 Contrate recursos adicionais para impulsionar o seu plano.
               </p>
-              <Card>
-                <CardHeader>
-                  <div className="flex justify-between">
-                    <div className="flex gap-4 items-center">
-                      <Checkbox
-                        checked={nfModule}
-                        onCheckedChange={(checked: boolean) => {
-                          setNfModule(checked)
-                        }}
-                      />
-                      <span className="text-lg text-gray-700 font-semibold">
-                        Acme
-                      </span>
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xl text-gray-700 font-semibold">
-                        {formatCurrencyToBrl(NF_MODULE_PRICE)}
-                      </span>
-                      <span className="text-sm text-gray"> /mês</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <Separator />
-                <CardContent>
-                  <Accordion type="multiple">
-                    <AccordionItem value="item-1" className="p-6 m-0 border-0">
-                      <div className="flex justify-between">
-                        <div className="flex gap-3 items-center">
-                          <p className="text-gray-700 font-semibold text-base">
-                            Funcionalidades
-                          </p>
-                        </div>
-                        <div className="flex gap-3">
-                          <AccordionTrigger
-                            className={cn(
-                              buttonVariants({
-                                variant: 'neutralLight',
-                                size: 'icon',
-                              }),
-                              'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                            )}
-                          ></AccordionTrigger>
-                        </div>
-                      </div>
-                      <AccordionContent></AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                </CardContent>
-              </Card>
+              <div className="space-y-4">
+                <ModuleCard
+                  selectedModules={selectedModules}
+                  onToggleModule={handleToggleModule}
+                />
+              </div>
             </div>
 
             {/* Usuários adicionais Section */}
@@ -392,10 +362,10 @@ export default function SubscriptionPage() {
                       noValidate
                       className="flex flex-wrap gap-5"
                     >
-                      <FormToggleCard options={toggleOptions} />
+                      <FormToggleCard options={personTypeOptions} />
 
                       {/* Campos específicos por tipo */}
-                      {selectedType === 'PF' ? (
+                      {selectedPersonType === 'PF' ? (
                         <>
                           <FormInput
                             name="name"
@@ -541,25 +511,36 @@ export default function SubscriptionPage() {
                         </div>
                       </div>
                     )}
-                    {nfModule && (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <IconCheck
-                            size={16}
-                            className="text-brand-400 stroke-[3px]"
-                          />
-                          <span className="text-gray text-sm">
-                            Módulo de Nota Fiscal
-                          </span>
+                    {selectedModules.map((moduleId) => {
+                      const selectedModule = modules.find(
+                        (m) => m.id === moduleId,
+                      )
+
+                      if (!selectedModule) return null
+
+                      return (
+                        <div
+                          key={moduleId}
+                          className="flex items-center justify-between gap-2"
+                        >
+                          <div className="flex items-center gap-2">
+                            <IconCheck
+                              size={16}
+                              className="text-brand-400 stroke-[3px]"
+                            />
+                            <span className="text-gray text-sm">
+                              Módulo {selectedModule.name}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline gap-1 text-sm">
+                            <span className="text-gray-600 font-semibold">
+                              {formatCurrencyToBrl(selectedModule.price)}
+                            </span>
+                            <span className="text-gray">/mês</span>
+                          </div>
                         </div>
-                        <div className="flex items-baseline gap-1 text-sm">
-                          <span className="text-gray-600 font-semibold">
-                            {formatCurrencyToBrl(NF_MODULE_PRICE)}
-                          </span>
-                          <span className="text-gray">/mês</span>
-                        </div>
-                      </div>
-                    )}
+                      )
+                    })}
                     {additionalUsers > 0 && (
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
@@ -582,13 +563,15 @@ export default function SubscriptionPage() {
                         </div>
                       </div>
                     )}
-                    {!selectedPlan && !nfModule && additionalUsers === 0 && (
-                      <div className="text-center py-4">
-                        <p className="text-gray text-sm">
-                          Selecione um plano para ver o resumo
-                        </p>
-                      </div>
-                    )}
+                    {!selectedPlan &&
+                      selectedModules.length === 0 &&
+                      additionalUsers === 0 && (
+                        <div className="text-center py-4">
+                          <p className="text-gray text-sm">
+                            Selecione um plano para ver o resumo
+                          </p>
+                        </div>
+                      )}
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between gap-2">

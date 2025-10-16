@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { IconUser, IconBuilding } from '@tabler/icons-react'
 
 import { useFormContext } from 'react-hook-form'
-import FormToggleCard from '@/components/common/form/FormToggleCard'
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import {
   NewClientFormType,
   defaultCompanyValues,
