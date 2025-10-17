@@ -20,27 +20,30 @@ import {
   CardDescription,
 } from '@/components/ui/card'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { modules } from '@/consts/plans'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { modules, plans } from '@/consts/plans'
 import { Button } from '@/components/ui/button'
+import { useQuery } from '@tanstack/react-query'
 import { PlanCard } from './components/PlanCard'
-import { createItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
+import type { VisualPlanType } from '@/types/plans'
 import { ModuleCard } from './components/ModuleCard'
+import { useState, useEffect, useMemo } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { createItemNew, getData } from '@/actions/_cruds'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const personTypeOptions = [
   {
@@ -94,7 +97,7 @@ const ADDITIONAL_USER_PRICE = 1500
 
 export default function SubscriptionPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
-  const [selectedPlanId, setSelectedPlanId] = useState<string>(plans[0].id)
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('')
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
   const [isValidating, setIsValidating] = useState(false)
@@ -103,6 +106,36 @@ export default function SubscriptionPage() {
   const router = useRouter()
 
   const { data: session, update } = useSession()
+
+  // Buscar planos da API
+  const { data: plansResponse, isLoading: isLoadingPlans } = useQuery({
+    queryKey: ['subscription-plans'],
+    queryFn: async () => {
+      const response = await getData({
+        route: '/plan/public/subscription',
+      })
+
+      if (!response.success) {
+        toast.error(response.message || 'Erro ao carregar planos')
+        return []
+      }
+
+      return response.data || []
+    },
+  })
+
+  const plans: VisualPlanType[] = useMemo(
+    () => plansResponse || [],
+    [plansResponse],
+  )
+
+  // Definir o primeiro plano como selecionado quando os dados forem carregados
+  useEffect(() => {
+    if (plans.length > 0 && !selectedPlanId) {
+      setSelectedPlanId(plans[0].id)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plans])
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -254,6 +287,7 @@ export default function SubscriptionPage() {
                   plans={plans}
                   selectedPlanId={selectedPlanId}
                   onSelectPlan={setSelectedPlanId}
+                  isLoading={isLoadingPlans}
                 />
               </div>
             </div>
@@ -543,15 +577,22 @@ export default function SubscriptionPage() {
                         </div>
                       </div>
                     )}
-                    {!selectedPlanId &&
+                    {isLoadingPlans ? (
+                      <div className="flex justify-between">
+                        <Skeleton className="h-5 w-24" />
+                        <Skeleton className="h-5 w-24" />
+                      </div>
+                    ) : (
+                      !selectedPlanId &&
                       selectedModules.length === 0 &&
                       additionalUsers === 0 && (
-                        <div className="text-center py-4">
+                        <div>
                           <p className="text-gray text-sm">
-                            Selecione um plano para ver o resumo
+                            Selecione um plano
                           </p>
                         </div>
-                      )}
+                      )
+                    )}
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between gap-2">

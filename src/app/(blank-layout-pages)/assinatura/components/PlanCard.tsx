@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/accordion'
 import { Badge } from '@/components/ui/badge'
 import { VisualPlanType } from '@/types/plans'
+import { Skeleton } from '@/components/ui/skeleton'
 import Image, { StaticImageData } from 'next/image'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -41,12 +42,14 @@ interface PlanCardProps {
   plans: VisualPlanType[]
   selectedPlanId: string
   onSelectPlan: (planId: string) => void
+  isLoading?: boolean
 }
 
 export function PlanCard({
   plans,
   selectedPlanId,
   onSelectPlan,
+  isLoading = false,
 }: PlanCardProps) {
   const [videoDialog, setVideoDialog] = useState<{
     open: boolean
@@ -73,6 +76,52 @@ export function PlanCard({
     if (plan.isActive) {
       onSelectPlan(plan.id)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <>
+        {[1, 2, 3].map((index) => (
+          <Card key={index} className="w-full">
+            <CardHeader className="pb-[18px]">
+              <div className="flex justify-between items-center">
+                <div className="flex gap-4 items-center">
+                  <Skeleton className="h-6 w-6 rounded-full" />
+                  <Skeleton className="h-8 w-32" />
+                </div>
+                <Skeleton className="h-6 w-24" />
+              </div>
+            </CardHeader>
+            <Separator />
+            <CardContent>
+              <div>
+                <div className="flex justify-between items-center p-6">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-10 w-10 rounded-md" />
+                </div>
+                <Separator />
+                <div className="flex justify-between items-center p-6">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-10 w-10 rounded-md" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </>
+    )
+  }
+
+  if (plans.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-center py-8">
+            <p className="text-gray-600">Nenhum plano disponível no momento.</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (
