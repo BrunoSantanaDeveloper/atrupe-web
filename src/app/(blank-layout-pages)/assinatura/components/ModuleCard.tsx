@@ -6,55 +6,34 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { ModuleType } from '@/types/plans'
+import { IconCheck } from '@tabler/icons-react'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
-import { IconCheck } from '@tabler/icons-react'
-import { Checkbox } from '@/components/ui/checkbox'
-
-interface ModuleFeature {
-  title?: string
-  items: string[]
-}
-
-export interface Module {
-  id: string
-  name: string
-  price: number
-  description: string
-  features: ModuleFeature[]
-}
-
-export const modules: Module[] = [
-  {
-    id: '1',
-    name: 'Nota Fiscal',
-    price: 7000,
-    description:
-      'Emita notas fiscais eletrônicas diretamente pelo sistema, com total integração ao financeiro.',
-    features: [
-      {
-        items: [
-          'NF-e (Nota Fiscal Eletrônica)',
-          'NFS-e (Nota Fiscal de Serviço Eletrônica)',
-          'NFC-e (Nota Fiscal de Consumidor Eletrônica)',
-        ],
-      },
-    ],
-  },
-]
 
 interface ModuleCardProps {
+  modules: ModuleType[]
   selectedModules: string[]
-  onToggleModule: (moduleId: string) => void
+  onSelectModule: React.Dispatch<React.SetStateAction<string[]>>
 }
 
 export function ModuleCard({
+  modules,
   selectedModules,
-  onToggleModule,
+  onSelectModule,
 }: ModuleCardProps) {
   const isSelected = (moduleId: string) => selectedModules.includes(moduleId)
+
+  const handleToggleModule = (moduleId: string) => {
+    onSelectModule((prev) =>
+      prev.includes(moduleId)
+        ? prev.filter((id) => id !== moduleId)
+        : [...prev, moduleId],
+    )
+  }
 
   return (
     <>
@@ -71,7 +50,7 @@ export function ModuleCard({
               <div className="flex gap-4 items-center">
                 <Checkbox
                   checked={isSelected(module.id)}
-                  onCheckedChange={() => onToggleModule(module.id)}
+                  onCheckedChange={() => handleToggleModule(module.id)}
                 />
                 <span className="text-lg text-gray-700 font-semibold">
                   {module.name}

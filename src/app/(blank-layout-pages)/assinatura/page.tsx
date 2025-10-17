@@ -26,15 +26,16 @@ import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { modules, plans } from '@/consts/plans'
 import { Button } from '@/components/ui/button'
+import { PlanCard } from './components/PlanCard'
 import { createItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { Checkbox } from '@/components/ui/checkbox'
+import { ModuleCard } from './components/ModuleCard'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input-uncontrolled'
-import { PlanCard, Plan, plans } from './components/PlanCard'
-import { ModuleCard, modules } from './components/ModuleCard'
 import { FormInput } from '@/components/common/form/FormInput'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
@@ -93,7 +94,7 @@ const ADDITIONAL_USER_PRICE = 1500
 
 export default function SubscriptionPage() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
-  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(plans[0])
+  const [selectedPlanId, setSelectedPlanId] = useState<string>(plans[0].id)
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
   const [isValidating, setIsValidating] = useState(false)
@@ -126,14 +127,6 @@ export default function SubscriptionPage() {
 
   const selectedPersonType = watch('type')
 
-  const handleToggleModule = (moduleId: string) => {
-    setSelectedModules((prev) =>
-      prev.includes(moduleId)
-        ? prev.filter((id) => id !== moduleId)
-        : [...prev, moduleId],
-    )
-  }
-
   // Cálculo do total dos módulos
   const modulesTotal = selectedModules.reduce((total, moduleId) => {
     const selectedModule = modules.find((m) => m.id === moduleId)
@@ -142,12 +135,14 @@ export default function SubscriptionPage() {
 
   const additionalUsersTotal = additionalUsers * ADDITIONAL_USER_PRICE
 
+  const selectedPlan = plans.find((plan) => plan.id === selectedPlanId)
+
   // Cálculo do total
   const totalPrice =
     (selectedPlan?.price || 0) + modulesTotal + additionalUsersTotal
 
   const onSubmit = async (customerData: FormType) => {
-    if (!selectedPlan) {
+    if (!selectedPlanId) {
       toast.warning('Por favor, selecione um plano')
       return
     }
@@ -155,21 +150,9 @@ export default function SubscriptionPage() {
     setIsValidating(true)
 
     const body = {
-      plan: {
-        id: selectedPlan.id,
-        name: selectedPlan.name,
-        price: selectedPlan.price,
-      },
-      modules: selectedModules.map((moduleId) => {
-        const selectedModule = modules.find((m) => m.id === moduleId)
-        return {
-          id: selectedModule?.id,
-          name: selectedModule?.name,
-          price: selectedModule?.price,
-        }
-      }),
+      selectedPlanId,
+      selectedModules,
       additionalUsers,
-      totalPrice,
       customerData,
       agreedToTerms,
     }
@@ -194,7 +177,7 @@ export default function SubscriptionPage() {
         await update({
           company: {
             plan: {
-              name: selectedPlan.name,
+              name: selectedPlan?.name,
               features: res.data.features,
             },
           },
@@ -268,8 +251,9 @@ export default function SubscriptionPage() {
               </p>
               <div className="space-y-4">
                 <PlanCard
-                  selectedPlan={selectedPlan}
-                  onSelectPlan={setSelectedPlan}
+                  plans={plans}
+                  selectedPlanId={selectedPlanId}
+                  onSelectPlan={setSelectedPlanId}
                 />
               </div>
             </div>
@@ -284,8 +268,9 @@ export default function SubscriptionPage() {
               </p>
               <div className="space-y-4">
                 <ModuleCard
+                  modules={modules}
                   selectedModules={selectedModules}
-                  onToggleModule={handleToggleModule}
+                  onSelectModule={setSelectedModules}
                 />
               </div>
             </div>
@@ -487,7 +472,7 @@ export default function SubscriptionPage() {
                 <CardContent className="p-6 pt-2 space-y-8">
                   <Separator />
                   <div className="space-y-6">
-                    {selectedPlan && (
+                    {selectedPlanId && (
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <IconCheck
@@ -495,12 +480,12 @@ export default function SubscriptionPage() {
                             className="text-brand-400 stroke-[3px]"
                           />
                           <span className="text-gray text-sm">
-                            Atrupe {selectedPlan.name}
+                            Atrupe {selectedPlan?.name}
                           </span>
                         </div>
                         <div className="flex items-baseline gap-1 text-sm">
                           <span className="text-gray-600 font-semibold">
-                            {formatCurrencyToBrl(selectedPlan.price || 0)}
+                            {formatCurrencyToBrl(selectedPlan?.price || 0)}
                           </span>
                           <span className="text-gray">/mês</span>
                         </div>
@@ -558,7 +543,7 @@ export default function SubscriptionPage() {
                         </div>
                       </div>
                     )}
-                    {!selectedPlan &&
+                    {!selectedPlanId &&
                       selectedModules.length === 0 &&
                       additionalUsers === 0 && (
                         <div className="text-center py-4">
