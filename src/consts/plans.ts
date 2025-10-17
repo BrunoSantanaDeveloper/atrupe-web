@@ -3,8 +3,8 @@ import { ModuleType, VisualPlanType } from '@/types/plans'
 export const plans: VisualPlanType[] = [
   {
     id: '9de3b31a-5e19-4735-89d0-2eef57ac0010',
-    name: 'START',
-    price: 11500,
+    name: 'Start',
+    basePrice: 11500,
     isActive: true,
     sections: {
       concept: {
@@ -65,8 +65,8 @@ export const plans: VisualPlanType[] = [
   },
   {
     id: 'bfd8690f-846c-4a7c-82d6-6bd9c2546c83',
-    name: 'LITE',
-    price: 23000,
+    name: 'Lite',
+    basePrice: 23000,
     isActive: true,
     badge: {
       text: 'Próximo nível',
@@ -104,8 +104,8 @@ export const plans: VisualPlanType[] = [
   },
   {
     id: '6c55c147-a82d-4698-8e82-5c4e1e3d3e95',
-    name: 'PRO',
-    price: undefined,
+    name: 'Pro',
+    basePrice: 0,
     isActive: false,
     badge: {
       text: 'Em breve',
@@ -130,9 +130,9 @@ export const plans: VisualPlanType[] = [
     },
   },
   {
-    id: '39e1cd16-25b9-40e2-a650-7183c5458627',
-    name: 'ELITE',
-    price: undefined,
+    id: 'uuid()',
+    name: 'Elite',
+    basePrice: 0,
     isActive: false,
     badge: {
       text: 'Em breve',
@@ -169,8 +169,8 @@ export const plans: VisualPlanType[] = [
   },
   {
     id: '73293adc-25c8-463a-8815-5088811496c6',
-    name: 'FULL',
-    price: undefined,
+    name: 'Full',
+    basePrice: 0,
     isActive: false,
     badge: {
       text: 'Em breve',

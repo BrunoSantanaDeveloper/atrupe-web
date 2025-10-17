@@ -25,16 +25,16 @@ import start from '@/assets/images/start-logo.png'
 import atrupe from '@/assets/images/atrupe-logo.png'
 
 const planLogos: Record<string, StaticImageData> = {
-  START: start,
-  LITE: lite,
-  PRO: pro,
-  ELITE: elite,
-  FULL: full,
+  start,
+  lite,
+  pro,
+  elite,
+  full,
 }
 
 // TODO: Implementar logos dos planos no backend, receber url de cada logo
 function getPlanLogo(planName: string) {
-  return planLogos[planName] || atrupe
+  return planLogos[planName.toLowerCase()] || atrupe
 }
 
 interface PlanCardProps {
@@ -109,10 +109,10 @@ export function PlanCard({
                   <Badge variant={plan.badge.variant}>{plan.badge.text}</Badge>
                 )}
               </div>
-              {plan.price ? (
+              {plan.basePrice ? (
                 <div className="flex items-baseline gap-1">
                   <span className="text-xl text-gray-700 font-semibold">
-                    {formatCurrencyToBrl(plan.price)}
+                    {formatCurrencyToBrl(plan.basePrice)}
                   </span>
                   <span className="text-sm text-gray"> /mês</span>
                 </div>

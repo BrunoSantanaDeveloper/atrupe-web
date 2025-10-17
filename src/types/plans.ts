@@ -29,7 +29,7 @@ interface VisualPlanFeatureType {
 export interface VisualPlanType {
   id: string
   name: string
-  price?: number
+  basePrice?: number
   isActive: boolean
   badge?: {
     text: string

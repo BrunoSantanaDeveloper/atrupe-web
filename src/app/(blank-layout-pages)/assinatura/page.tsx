@@ -139,7 +139,7 @@ export default function SubscriptionPage() {
 
   // Cálculo do total
   const totalPrice =
-    (selectedPlan?.price || 0) + modulesTotal + additionalUsersTotal
+    (selectedPlan?.basePrice || 0) + modulesTotal + additionalUsersTotal
 
   const onSubmit = async (customerData: FormType) => {
     if (!selectedPlanId) {
@@ -485,7 +485,7 @@ export default function SubscriptionPage() {
                         </div>
                         <div className="flex items-baseline gap-1 text-sm">
                           <span className="text-gray-600 font-semibold">
-                            {formatCurrencyToBrl(selectedPlan?.price || 0)}
+                            {formatCurrencyToBrl(selectedPlan?.basePrice || 0)}
                           </span>
                           <span className="text-gray">/mês</span>
                         </div>
