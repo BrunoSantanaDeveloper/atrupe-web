@@ -146,7 +146,7 @@ export default function SubscriptionPage() {
   const totalPrice =
     (selectedPlan?.price || 0) + modulesTotal + additionalUsersTotal
 
-  const onSubmit = async (data: FormType) => {
+  const onSubmit = async (customerData: FormType) => {
     if (!selectedPlan) {
       toast.warning('Por favor, selecione um plano')
       return
@@ -170,7 +170,7 @@ export default function SubscriptionPage() {
       }),
       additionalUsers,
       totalPrice,
-      customerData: data,
+      customerData,
       agreedToTerms,
     }
 
@@ -186,11 +186,8 @@ export default function SubscriptionPage() {
       return
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setProgress(50)
     toast.success('Plano contratado com sucesso!')
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
     try {
       // Atualizar a sessão local com os novos dados
       if (session?.company?.id) {
@@ -210,8 +207,6 @@ export default function SubscriptionPage() {
     }
 
     setProgress(100)
-
-    await new Promise((resolve) => setTimeout(resolve, 500))
 
     router.replace('/')
   }

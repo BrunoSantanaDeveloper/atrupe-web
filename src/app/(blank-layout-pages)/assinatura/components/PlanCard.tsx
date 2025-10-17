@@ -52,7 +52,7 @@ export interface Plan {
 export const plans: Plan[] = [
   {
     id: '1',
-    name: 'Start',
+    name: 'START',
     logo: start,
     price: 11500,
     isActive: true,
@@ -115,7 +115,7 @@ export const plans: Plan[] = [
   },
   {
     id: '2',
-    name: 'Lite',
+    name: 'LITE',
     logo: lite,
     price: 23000,
     isActive: true,
@@ -155,7 +155,7 @@ export const plans: Plan[] = [
   },
   {
     id: '3',
-    name: 'Pro',
+    name: 'PRO',
     logo: pro,
     price: undefined,
     isActive: false,
@@ -183,7 +183,7 @@ export const plans: Plan[] = [
   },
   {
     id: '4',
-    name: 'Elite',
+    name: 'ELITE',
     logo: elite,
     price: undefined,
     isActive: false,
@@ -222,7 +222,7 @@ export const plans: Plan[] = [
   },
   {
     id: '5',
-    name: 'Full',
+    name: 'FULL',
     logo: full,
     price: undefined,
     isActive: false,
