@@ -12,24 +12,16 @@ import {
   IconArrowRight,
   IconBuildingCommunity,
 } from '@tabler/icons-react'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
 import { toast } from 'sonner'
 import { modules } from '@/consts/plans'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
-import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 import { PlanCard } from './components/PlanCard'
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { VisualPlanType } from '@/types/plans'
 import { ModuleCard } from './components/ModuleCard'
@@ -39,11 +31,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { createItemNew, getData } from '@/actions/_cruds'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
-import { ProgressCircle } from '@/components/ui/progress-circle'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 const personTypeOptions = [
   {
@@ -100,12 +91,6 @@ export default function SubscriptionPage() {
   const [selectedPlanId, setSelectedPlanId] = useState<string>('')
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
-  const [isValidating, setIsValidating] = useState(false)
-  const [progress, setProgress] = useState(0)
-
-  const router = useRouter()
-
-  const { data: session, update } = useSession()
 
   // Buscar planos da API
   const { data: plansResponse, isLoading: isLoadingPlans } = useQuery({
@@ -156,7 +141,11 @@ export default function SubscriptionPage() {
     },
   })
 
-  const { handleSubmit, watch } = form
+  const {
+    handleSubmit,
+    watch,
+    formState: { isSubmitting },
+  } = form
 
   const selectedPersonType = watch('type')
 
@@ -180,8 +169,6 @@ export default function SubscriptionPage() {
       return
     }
 
-    setIsValidating(true)
-
     const body = {
       selectedPlanId,
       selectedModules,
@@ -190,68 +177,53 @@ export default function SubscriptionPage() {
       agreedToTerms,
     }
 
-    const res = await createItemNew({
-      route: '/plan/subscription',
-      data: body,
-    })
-
-    if (!res.success) {
-      toast.error(res.message || 'Erro!')
-      setIsValidating(false)
-      setProgress(0)
-      return
-    }
-
-    toast.success('Plano contratado com sucesso!')
-
     try {
-      // Atualizar a sessão local com os novos dados
-      if (session?.company?.id) {
-        await update({
-          company: {
-            plan: {
-              name: selectedPlan?.name,
-              features: res.data.features,
-            },
-          },
-        })
+      // Criar checkout no Asaas através do backend
+      const res = await createItemNew({
+        route: '/plan/subscription/checkout',
+        data: body,
+      })
+
+      if (!res.success) {
+        toast.error(res.message || 'Erro ao criar checkout!')
+        return
       }
+
+      // Verificar se recebemos a URL do checkout
+      if (!res.data?.checkoutUrl) {
+        toast.error('URL de checkout não recebida')
+        return
+      }
+
+      // Salvar dados da assinatura no sessionStorage para usar após retorno do Asaas
+      sessionStorage.setItem(
+        'pendingSubscription',
+        JSON.stringify({
+          checkoutId: res.data.checkoutId,
+          planId: selectedPlanId,
+          planName: selectedPlan?.name,
+          modules: selectedModules,
+          additionalUsers,
+          totalValue: totalPrice,
+          timestamp: Date.now(),
+        }),
+      )
+
+      // Redirecionar para o checkout do Asaas
+      window.location.href = res.data.checkoutUrl
     } catch (error) {
-      console.error('Erro ao atualizar dados da empresa:', error)
-      router.replace('/logout')
-      toast.warning('Faça o login novamente')
+      console.error('Erro ao processar assinatura:', error)
+      toast.error('Erro ao processar assinatura')
     }
-
-    setProgress(100)
-
-    router.replace('/')
-  }
-
-  if (isValidating) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
-            <CardHeader className="p-0 mb-8 text-center">
-              <CardTitle className="text-xl font-bold">
-                Validando dados
-              </CardTitle>
-              <CardDescription>
-                Estamos atualizando as informações da sua assinatura.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4">
-              <ProgressCircle value={progress} size={180} />
-            </CardContent>
-          </Card>
-          <Logo text width={154} />
-        </div>
-      </div>
-    )
   }
 
   return (
-    <div className="w-full bg-gray-100">
+    <div
+      className={cn(
+        'w-full bg-gray-100',
+        isSubmitting && 'pointer-events-none',
+      )}
+    >
       <header className="flex flex-wrap justify-between gap-2 bg-white px-6 py-4">
         <div className="flex items-center gap-1">
           <Button
@@ -632,9 +604,10 @@ export default function SubscriptionPage() {
                     form="subscription-form"
                     className="w-full"
                     disabled={!agreedToTerms}
+                    isLoading={isSubmitting}
                   >
                     Avançar
-                    <IconArrowRight />
+                    {!isSubmitting && <IconArrowRight />}
                   </Button>
                 </CardContent>
               </Card>
