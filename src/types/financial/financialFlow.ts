@@ -131,6 +131,11 @@ export type HistoryMetadata = {
   supplierName?: string
   cancelReason?: string
   cancelNotes?: string
+  changeReason?: string
+  changeNotes?: string
+  addedCount?: number
+  modifiedCount?: number
+  removedCount?: number
   [key: string]: unknown
 }
 

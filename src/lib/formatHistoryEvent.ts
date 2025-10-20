@@ -42,6 +42,15 @@ export function formatHistoryEvent(
       break
 
     case 'UPDATE_INSTALLMENTS':
+      if (item.metadata) {
+        if (item.metadata.changeReason) {
+          details.push(`Motivo: ${item.metadata.changeReason}`)
+        }
+        if (item.metadata.changeNotes) {
+          details.push(`Observações: ${item.metadata.changeNotes}`)
+        }
+      }
+
       if (item.changes) {
         const beforeCount = item.changes.before.length
         const afterCount = item.changes.after.length
