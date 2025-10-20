@@ -106,6 +106,7 @@ export type HistoryAction =
   | 'COMPENSATE'
 
 export type HistoryInstallmentChange = {
+  id: string
   installmentNumber: number
   amount: number
   dueDate: string
@@ -136,6 +137,10 @@ export type HistoryMetadata = {
   addedCount?: number
   modifiedCount?: number
   removedCount?: number
+  totalAmountBefore?: number
+  totalAmountAfter?: number
+  totalInstallmentsBefore?: number
+  totalInstallmentsAfter?: number
   [key: string]: unknown
 }
 

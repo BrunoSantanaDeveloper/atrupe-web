@@ -49,6 +49,16 @@ export function formatHistoryEvent(
         if (item.metadata.changeNotes) {
           details.push(`Observações: ${item.metadata.changeNotes}`)
         }
+        // Show total amount change if available
+        if (
+          item.metadata.totalAmountBefore !== undefined &&
+          item.metadata.totalAmountAfter !== undefined &&
+          item.metadata.totalAmountBefore !== item.metadata.totalAmountAfter
+        ) {
+          details.push(
+            `Valor total: ${formatCurrencyToBrl(item.metadata.totalAmountBefore as number)} 🡢 ${formatCurrencyToBrl(item.metadata.totalAmountAfter as number)}`,
+          )
+        }
       }
 
       if (item.changes) {
@@ -56,27 +66,41 @@ export function formatHistoryEvent(
         const afterCount = item.changes.after.length
 
         if (beforeCount !== afterCount) {
-          details.push(`Quantidade: ${beforeCount}x → ${afterCount}x parcelas`)
+          details.push(`Quantidade: ${beforeCount}x 🡢 ${afterCount}x parcelas`)
         }
 
-        // Show value changes for each installment
-        item.changes.before.forEach((before, index) => {
-          const after = item.changes?.after[index]
-          if (after && before.amount !== after.amount) {
+        // Create a map of before installments by installmentNumber for easier lookup
+        const beforeMap = new Map(
+          item.changes.before.map((inst) => [inst.installmentNumber, inst]),
+        )
+
+        // Show changes for each installment in 'after'
+        item.changes.after.forEach((after) => {
+          const before = beforeMap.get(after.installmentNumber)
+
+          if (before) {
+            // Existing installment - check for changes
+            if (before.amount !== after.amount) {
+              details.push(
+                `Parcela ${after.installmentNumber}: ${formatCurrencyToBrl(before.amount)} 🡢 ${formatCurrencyToBrl(after.amount)}`,
+              )
+            }
+            // Remove from map to track which ones were processed
+            beforeMap.delete(after.installmentNumber)
+          } else {
+            // New installment (not in before)
             details.push(
-              `Parcela ${before.installmentNumber}: ${formatCurrencyToBrl(before.amount)} → ${formatCurrencyToBrl(after.amount)}`,
+              `Nova parcela ${after.installmentNumber}: ${formatCurrencyToBrl(after.amount)}`,
             )
           }
         })
 
-        // Show new installments
-        if (afterCount > beforeCount) {
-          item.changes.after.slice(beforeCount).forEach((installment) => {
-            details.push(
-              `Nova parcela ${installment.installmentNumber}: ${formatCurrencyToBrl(installment.amount)}`,
-            )
-          })
-        }
+        // Any remaining items in beforeMap were removed
+        beforeMap.forEach((removed) => {
+          details.push(
+            `Parcela ${removed.installmentNumber} removida: ${formatCurrencyToBrl(removed.amount)}`,
+          )
+        })
       }
       break
 
