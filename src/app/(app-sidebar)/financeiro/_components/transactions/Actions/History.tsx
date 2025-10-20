@@ -1,4 +1,7 @@
-// UI component
+// React
+import { useMemo } from 'react'
+
+// UI
 import {
   Dialog,
   DialogBody,
@@ -9,12 +12,18 @@ import {
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
-// Icon Imports
-import { IconHistory } from '@tabler/icons-react'
+// Icons
+import { IconHistory, IconLoader2 } from '@tabler/icons-react'
 
-// Type Imports
-import { TransactionListType } from '@/types/financial/financialFlow'
+// Types
+import type { TransactionListType } from '@/types/financial/financialFlow'
 import { Timeline } from '@/components/common/Timeline'
+
+// Hooks
+import { useTransactionHistory } from '@/hooks/queries/useTransactionHistory'
+
+// Lib
+import { formatHistoryEvent } from '@/lib/formatHistoryEvent'
 
 interface Props {
   open: boolean
@@ -22,17 +31,16 @@ interface Props {
   rowData?: TransactionListType
 }
 
-type EventType = {
-  date: string
-  time: string
-  author: string
-  title: string
-}
+export function TransactionHistoryDialog({ open, setOpen, rowData }: Props) {
+  const { history, isLoading } = useTransactionHistory({
+    transactionId: rowData?.id || '',
+    transactionType: rowData?.type || 'receivable',
+    enabled: open && !!rowData?.id,
+  })
 
-const events: EventType[] = []
-
-export function TransactionHistoryDialog(props: Props) {
-  const { open, setOpen } = props
+  const events = useMemo(() => {
+    return history.map(formatHistoryEvent)
+  }, [history])
 
   const handleOpenChange = (openDialog: boolean) => {
     setOpen(openDialog ? 'history' : '')
@@ -49,7 +57,11 @@ export function TransactionHistoryDialog(props: Props) {
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
-          {events.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+            </div>
+          ) : events.length > 0 ? (
             <Timeline events={events} />
           ) : (
             <div className="flex items-center justify-center py-10">

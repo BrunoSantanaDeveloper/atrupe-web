@@ -94,3 +94,58 @@ export type TransactionApiResponse = {
   lastPage: number
   data: TransactionDataType[]
 }
+
+// Types for Transaction History
+export type HistoryAction =
+  | 'CREATE'
+  | 'PAY_INSTALLMENT'
+  | 'UPDATE_INSTALLMENTS'
+  | 'UPDATE_DETAILS'
+  | 'CANCEL'
+  | 'CANCEL_INSTALLMENT'
+  | 'COMPENSATE'
+
+export type HistoryInstallmentChange = {
+  installmentNumber: number
+  amount: number
+  dueDate: string
+}
+
+export type HistoryChanges = {
+  before: HistoryInstallmentChange[]
+  after: HistoryInstallmentChange[]
+}
+
+export type HistoryMetadata = {
+  installmentNumber?: number
+  amount?: number
+  paidAmount?: number
+  paidDate?: string
+  paymentConditionId?: string
+  paymentConditionName?: string
+  bankAccountId?: string
+  bankAccountName?: string
+  totalAmount?: number
+  installmentQty?: number
+  clientName?: string
+  supplierName?: string
+  cancelReason?: string
+  cancelNotes?: string
+  [key: string]: unknown
+}
+
+export type TransactionHistoryItem = {
+  id: string
+  action: HistoryAction
+  description: string
+  changes: HistoryChanges | null
+  metadata: HistoryMetadata | null
+  createdBy: string
+  createdByName: string
+  createdAt: string
+}
+
+export type TransactionHistoryResponse = {
+  total: number
+  history: TransactionHistoryItem[]
+}

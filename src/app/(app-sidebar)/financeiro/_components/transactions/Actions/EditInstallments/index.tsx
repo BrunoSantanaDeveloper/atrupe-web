@@ -173,7 +173,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
     }
 
     const result = await updateItemNew({
-      route: `financial/${type}/${rowData?.id}/upsert-installments`,
+      route: `/financial/${type}/${rowData?.id}/upsert-installments`,
       data,
     })
 

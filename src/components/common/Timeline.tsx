@@ -3,6 +3,7 @@ type TimelineEvent = {
   time: string
   author: string
   title: string
+  details?: string[]
 }
 
 interface Props {
@@ -27,6 +28,13 @@ export function Timeline({ events }: Props) {
             <h3 className="mt-1.5 text-sm font-medium text-gray-800">
               {event.title}
             </h3>
+            {event.details && event.details.length > 0 && (
+              <ul className="mt-2 space-y-1 text-xs text-gray-600">
+                {event.details.map((detail, detailIndex) => (
+                  <li key={detailIndex}>• {detail}</li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       ))}
