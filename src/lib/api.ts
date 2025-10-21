@@ -30,6 +30,7 @@ const shouldEndSession = (error: AxiosError | Error): boolean => {
 export default async function apiInstance() {
   const session = await auth()
   const token = session?.accessToken || null
+  const sessionId = session?.sessionId || null
 
   const devEnv = process.env.NODE_ENV === 'development'
 
@@ -39,6 +40,7 @@ export default async function apiInstance() {
       common: {
         'Content-Type': 'application/json',
         Authorization: token || '',
+        'x-session-id': sessionId || '',
         'ngrok-skip-browser-warning': 'any',
       },
     },

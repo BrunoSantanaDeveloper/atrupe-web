@@ -32,6 +32,7 @@ declare module 'next-auth' {
       }
     }
     accessToken: string
+    sessionId: string
   }
 }
 
@@ -86,6 +87,7 @@ export const {
               companyName: authData.company.name,
               companyLegalName: authData.company.legalName,
               accessToken: token,
+              sessionId: authData.sessionId,
               subscription: authData.company.subscription,
               subscriptionActive: authData.company.subscriptionActive,
               trialEndsAt: authData.company.trialEndsAt,
@@ -186,6 +188,7 @@ export const {
         },
         expires: session.expires,
         accessToken: token.accessToken || '',
+        sessionId: token.sessionId || '',
       }
 
       return sessionData
