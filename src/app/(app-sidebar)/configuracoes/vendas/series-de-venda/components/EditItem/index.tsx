@@ -208,18 +208,24 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   width="flex-[1_0_250px]"
                   options={filteredBillingOptions}
                 />
-                <FormSelect<FormType>
-                  name="sendToProduction"
-                  label="Envio para produção"
-                  width="flex-[1_0_250px]"
-                  options={[{ value: 'DIRECT', label: 'Enviar diretamente' }]}
-                />
-                <FormSelect<FormType>
-                  name="productionStatus"
-                  label="Status de produção"
-                  width="flex-[1_0_250px]"
-                  options={filterProductionStatusOptions}
-                />
+                {canManageDeliverySchedule() && (
+                  <>
+                    <FormSelect<FormType>
+                      name="sendToProduction"
+                      label="Envio para produção"
+                      width="flex-[1_0_250px]"
+                      options={[
+                        { value: 'DIRECT', label: 'Enviar diretamente' },
+                      ]}
+                    />
+                    <FormSelect<FormType>
+                      name="productionStatus"
+                      label="Status de produção"
+                      width="flex-[1_0_250px]"
+                      options={filterProductionStatusOptions}
+                    />
+                  </>
+                )}
               </form>
             </Form>
           </DialogBody>

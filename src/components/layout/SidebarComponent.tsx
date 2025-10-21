@@ -93,7 +93,11 @@ export function SidebarComponent(props: Props) {
   const mainNavigation = getMainNavigation(userRole)
 
   const { hasPermission } = usePermissions()
-  const { hasFinancialModule, canManageRejectionReasons } = usePlanFeatures()
+  const {
+    hasFinancialModule,
+    canManageRejectionReasons,
+    canManageDeliverySchedule,
+  } = usePlanFeatures()
 
   // Conversão: getUserLimit usando acesso direto à sessão
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
@@ -148,6 +152,11 @@ export function SidebarComponent(props: Props) {
     // Controle de Motivos de Rejeição e Cancelamento
     if (item.path?.includes('/motivos-de-rejeicao-e-cancelamento')) {
       return canManageRejectionReasons()
+    }
+
+    // Controle de Agenda de entrega
+    if (item.path?.includes('/producao')) {
+      return canManageDeliverySchedule()
     }
 
     // Outras verificações de features podem ser adicionadas aqui
