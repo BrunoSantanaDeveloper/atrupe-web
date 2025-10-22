@@ -28,7 +28,7 @@ import { ModuleCard } from './components/ModuleCard'
 import { useState, useEffect, useMemo } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createItemNew, getData } from '@/actions/_cruds'
+import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
@@ -169,48 +169,97 @@ export default function SubscriptionPage() {
       return
     }
 
-    const body = {
-      selectedPlanId,
-      selectedModules,
-      additionalUsers,
-      customerData,
-      agreedToTerms,
+    if (!agreedToTerms) {
+      toast.warning('Você deve aceitar os termos para continuar')
+      return
     }
 
+    const data = {
+      planId: selectedPlanId,
+      additionalUsers,
+      additionalFeatures: selectedModules,
+      customer: {
+        name: '',
+        document: '',
+        // razaoSocial: '', // Falta back receber
+        // cnpj: '', // Falta back receber
+        email: customerData.email,
+        phone: customerData.phone,
+        // mobile: customerData.mobile, // Falta back receber
+        postalCode: customerData.zipCode,
+        state: customerData.state,
+        city: customerData.city,
+        province: customerData.neighborhood,
+        addressNumber: customerData.number,
+        address: customerData.street,
+        complement: customerData.complement,
+      },
+      successUrl: `${window.location.origin}/assinatura/concluir`,
+      failureUrl: `${window.location.origin}/assinatura/falha`,
+      cycle: 'MONTHLY', // Sempre mensal
+      billingType: 'CREDIT_CARD', // Deve escolher no ckeckout
+    }
+
+    if (customerData.type === 'PF') {
+      data.customer.name = customerData.name
+      data.customer.document = customerData.taxId
+    } else {
+      // data.customer.razaoSocial = customerData.razaoSocial // Falta back receber
+      // data.customer.cnpj = customerData.cnpj // Falta back receber
+      data.customer.name = customerData.nomeResponsavel
+      data.customer.document = customerData.cpfResponsavel
+    }
+
+    const subscriptionId = ''
+
+    let res = null
+
     try {
-      // Criar checkout no Asaas através do backend
-      const res = await createItemNew({
-        route: '/plan/subscription/checkout',
-        data: body,
-      })
+      if (subscriptionId) {
+        // Upgrade de subscription
+        res = await updateItemNew({
+          route: `/subscriptions/${subscriptionId}/upgrade`,
+          data,
+        })
+      } else {
+        // Criar subscription
+        res = await createItemNew({
+          route: '/subscriptions',
+          data,
+        })
+      }
 
       if (!res.success) {
         toast.error(res.message || 'Erro ao criar checkout!')
         return
       }
 
+      console.info(res)
+
+      const paymentUrl = res.data?.payment?.paymentUrl || res.data?.paymentUrl
+
       // Verificar se recebemos a URL do checkout
-      if (!res.data?.checkoutUrl) {
+      if (!paymentUrl) {
         toast.error('URL de checkout não recebida')
         return
       }
 
       // Salvar dados da assinatura no sessionStorage para usar após retorno do Asaas
-      sessionStorage.setItem(
-        'pendingSubscription',
-        JSON.stringify({
-          checkoutId: res.data.checkoutId,
-          planId: selectedPlanId,
-          planName: selectedPlan?.name,
-          modules: selectedModules,
-          additionalUsers,
-          totalValue: totalPrice,
-          timestamp: Date.now(),
-        }),
-      )
+      // sessionStorage.setItem(
+      //   'pendingSubscription',
+      //   JSON.stringify({
+      //     checkoutId: res.data.checkoutId,
+      //     planId: selectedPlanId,
+      //     planName: selectedPlan?.name,
+      //     modules: selectedModules,
+      //     additionalUsers,
+      //     totalValue: totalPrice,
+      //     timestamp: Date.now(),
+      //   }),
+      // )
 
       // Redirecionar para o checkout do Asaas
-      window.location.href = res.data.checkoutUrl
+      window.location.href = paymentUrl
     } catch (error) {
       console.error('Erro ao processar assinatura:', error)
       toast.error('Erro ao processar assinatura')
