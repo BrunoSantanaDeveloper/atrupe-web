@@ -1,6 +1,24 @@
 import { ModuleType, VisualPlanType } from '@/types/plans'
 
-export const plans: VisualPlanType[] = [
+export const modules: ModuleType[] = [
+  {
+    id: '9de3b31a-5e19-4735-89d0-2eef57ac0011',
+    name: 'Nota Fiscal',
+    price: 7000,
+    features: [
+      {
+        items: [
+          'NF-e (Nota Fiscal Eletrônica)',
+          'NFS-e (Nota Fiscal de Serviço Eletrônica)',
+          'NFC-e (Nota Fiscal de Consumidor Eletrônica)',
+        ],
+      },
+    ],
+  },
+]
+
+// TODO: Excluir
+export const plansMock: VisualPlanType[] = [
   {
     id: '9de3b31a-5e19-4735-89d0-2eef57ac0010',
     name: 'Start',
@@ -193,24 +211,5 @@ export const plans: VisualPlanType[] = [
         },
       },
     },
-  },
-]
-
-export const modules: ModuleType[] = [
-  {
-    id: '9de3b31a-5e19-4735-89d0-2eef57ac0011',
-    name: 'Nota Fiscal',
-    price: 7000,
-    description:
-      'Emita notas fiscais eletrônicas diretamente pelo sistema, com total integração ao financeiro.',
-    features: [
-      {
-        items: [
-          'NF-e (Nota Fiscal Eletrônica)',
-          'NFS-e (Nota Fiscal de Serviço Eletrônica)',
-          'NFC-e (Nota Fiscal de Consumidor Eletrônica)',
-        ],
-      },
-    ],
   },
 ]

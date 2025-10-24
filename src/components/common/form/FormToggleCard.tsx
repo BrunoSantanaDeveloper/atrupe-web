@@ -1,8 +1,10 @@
 'use client'
 
+import { SVGProps } from 'react'
+
 // Ui
-import { FormItem, FormField, FormMessage } from '@/components/ui/form'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { FormItem, FormField, FormMessage } from '@/components/ui/form'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 // Form
@@ -11,23 +13,35 @@ import { useFormContext } from 'react-hook-form'
 // Icon
 import { IconCheck, IconProps } from '@tabler/icons-react'
 
+// Utils
+import { cn } from '@/lib/utils'
+
 interface Props {
   options: {
     label: string
     description?: string
     value: string
-    icon: React.ComponentType<IconProps>
+    icon:
+      | React.ComponentType<IconProps>
+      | React.ComponentType<SVGProps<SVGSVGElement>>
   }[]
   onChange?: (value: string) => void
+  name?: string
+  groupClassName?: string
 }
 
-export function FormToggleCard({ options, onChange }: Props) {
+export function FormToggleCard({
+  options,
+  onChange,
+  groupClassName,
+  name = 'type',
+}: Props) {
   const { control } = useFormContext()
 
   return (
     <FormField
       control={control}
-      name="type"
+      name={name}
       render={({ field }) => (
         <FormItem className="w-full">
           <ToggleGroup
@@ -37,7 +51,7 @@ export function FormToggleCard({ options, onChange }: Props) {
               if (value) field.onChange(value)
               onChange?.(value)
             }}
-            className="gap-4 w-full"
+            className={cn('gap-4 w-full', groupClassName)}
           >
             {options.map((option) => (
               <ToggleGroupItem
@@ -45,7 +59,7 @@ export function FormToggleCard({ options, onChange }: Props) {
                 value={option.value}
                 className="w-full h-full bg-white rounded-lg data-[state=on]:bg-brand-50 border data-[state=on]:border-brand-200 hover:bg-white [&_.check-icon]:data-[state=on]:bg-brand [&_.check-icon]:data-[state=on]:border-brand [&_.toggle-label]:data-[state=off]:grayscale"
               >
-                <div className="flex items-center justify-between gap-1 py-4 cursor-pointer w-full">
+                <div className="flex items-center justify-between gap-1 py-3 cursor-pointer w-full">
                   <div className="flex items-center gap-4 text-start">
                     <FeaturedIcon
                       Icon={option.icon}

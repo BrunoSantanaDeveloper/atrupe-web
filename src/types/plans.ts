@@ -56,6 +56,5 @@ export interface ModuleType {
   id: string
   name: string
   price: number
-  description: string
   features: ModuleFeatureType[]
 }

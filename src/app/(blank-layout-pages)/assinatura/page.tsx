@@ -8,8 +8,10 @@ import {
   IconPlus,
   IconCheck,
   IconMinus,
+  IconBarcode,
   IconArrowLeft,
   IconArrowRight,
+  IconCreditCard,
   IconBuildingCommunity,
 } from '@tabler/icons-react'
 import { toast } from 'sonner'
@@ -28,13 +30,14 @@ import { ModuleCard } from './components/ModuleCard'
 import { useState, useEffect, useMemo } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
+import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
+import { IconPix } from '@/assets/icons/CustomIcons'
 
 const personTypeOptions = [
   {
@@ -49,8 +52,26 @@ const personTypeOptions = [
   },
 ]
 
+const billingTypeOptions = [
+  {
+    label: 'Cartão',
+    value: 'CREDIT_CARD',
+    icon: IconCreditCard,
+  },
+  {
+    label: 'PIX',
+    value: 'PIX',
+    icon: IconPix,
+  },
+  {
+    label: 'Boleto',
+    value: 'BOLETO',
+    icon: IconBarcode,
+  },
+]
+
 const baseSchema = z.object({
-  type: z.enum(['PF', 'PJ']),
+  personType: z.enum(['PF', 'PJ']),
   // Campos comuns
   email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
   phone: z.string().optional(),
@@ -62,16 +83,17 @@ const baseSchema = z.object({
   number: z.string(),
   street: z.string().min(1, 'Rua é obrigatória'),
   complement: z.string().optional(),
+  billingType: z.enum(['CREDIT_CARD', 'PIX', 'BOLETO']),
 })
 
 const schemaPF = baseSchema.extend({
-  type: z.literal('PF'),
+  personType: z.literal('PF'),
   name: z.string().min(1, 'Nome completo é obrigatório'),
   taxId: z.string().min(1, 'CPF é obrigatório'),
 })
 
 const schemaPJ = baseSchema.extend({
-  type: z.literal('PJ'),
+  personType: z.literal('PJ'),
   razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
   cnpj: z.string().min(1, 'CNPJ é obrigatório'),
   nomeResponsavel: z
@@ -80,7 +102,7 @@ const schemaPJ = baseSchema.extend({
   cpfResponsavel: z.string().min(1, 'CPF do responsável é obrigatório'),
 })
 
-const schema = z.discriminatedUnion('type', [schemaPF, schemaPJ])
+const schema = z.discriminatedUnion('personType', [schemaPF, schemaPJ])
 
 type FormType = z.infer<typeof schema>
 
@@ -125,7 +147,8 @@ export default function SubscriptionPage() {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      type: 'PF',
+      personType: 'PF',
+      billingType: 'CREDIT_CARD',
       name: '',
       taxId: '',
       email: '',
@@ -147,7 +170,7 @@ export default function SubscriptionPage() {
     formState: { isSubmitting },
   } = form
 
-  const selectedPersonType = watch('type')
+  const selectedPersonType = watch('personType')
 
   // Cálculo do total dos módulos
   const modulesTotal = selectedModules.reduce((total, moduleId) => {
@@ -178,6 +201,7 @@ export default function SubscriptionPage() {
       planId: selectedPlanId,
       additionalUsers,
       additionalFeatures: selectedModules,
+      billingType: customerData.billingType, // Deve escolher no ckeckout
       customer: {
         name: '',
         document: '',
@@ -194,13 +218,11 @@ export default function SubscriptionPage() {
         address: customerData.street,
         complement: customerData.complement,
       },
-      successUrl: `${window.location.origin}/assinatura/concluir`,
-      failureUrl: `${window.location.origin}/assinatura/falha`,
-      cycle: 'MONTHLY', // Sempre mensal
-      billingType: 'CREDIT_CARD', // Deve escolher no ckeckout
+      // successUrl: `${window.location.origin}/assinatura/concluir`,
+      successUrl: 'https://app.atrupe.com.br/assinatura/concluir',
     }
 
-    if (customerData.type === 'PF') {
+    if (customerData.personType === 'PF') {
       data.customer.name = customerData.name
       data.customer.document = customerData.taxId
     } else {
@@ -293,111 +315,117 @@ export default function SubscriptionPage() {
 
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content - Left Column */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Plano Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                Plano
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Escolha o plano mais compatível com o seu negócio.
-              </p>
-              <div className="space-y-4">
-                <PlanCard
-                  plans={plans}
-                  selectedPlanId={selectedPlanId}
-                  onSelectPlan={setSelectedPlanId}
-                  isLoading={isLoadingPlans}
-                />
+          <Form {...form}>
+            {/* Main Content - Left Column */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Plano Section */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  Plano
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Escolha o plano mais compatível com o seu negócio.
+                </p>
+                <div className="space-y-4">
+                  <PlanCard
+                    plans={plans}
+                    selectedPlanId={selectedPlanId}
+                    onSelectPlan={setSelectedPlanId}
+                    isLoading={isLoadingPlans}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Módulos Adicionais Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                Módulos adicionais
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Contrate recursos adicionais para impulsionar o seu plano.
-              </p>
-              <div className="space-y-4">
-                <ModuleCard
-                  modules={modules}
-                  selectedModules={selectedModules}
-                  onSelectModule={setSelectedModules}
-                />
+              {/* Módulos Adicionais Section */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  Módulos adicionais
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Contrate recursos adicionais para impulsionar o seu plano.
+                </p>
+                <div className="space-y-4">
+                  <ModuleCard
+                    modules={modules}
+                    selectedModules={selectedModules}
+                    onSelectModule={setSelectedModules}
+                  />
+                </div>
               </div>
-            </div>
 
-            {/* Usuários adicionais Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                Usuários adicionais
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Contrate usuários adicionais para uma melhor organização do seu
-                time.
-              </p>
-              <Card>
-                <CardContent className="flex justify-between items-center p-6">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl text-gray-700 font-semibold">
-                      {formatCurrencyToBrl(ADDITIONAL_USER_PRICE)}
-                    </span>
-                    <span className="text-sm text-gray"> /mês por usuário</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      size="iconMd"
-                      aria-label="Remover usuário"
-                      RightIcon={IconMinus}
-                      disabled={additionalUsers === 0}
-                      onClick={() => {
-                        setAdditionalUsers((prev) => Math.max(0, prev - 1))
-                      }}
-                    />
-                    <Input
-                      inputMode="numeric"
-                      className="w-16 text-center"
-                      value={additionalUsers}
-                      onChange={(e) => {
-                        setAdditionalUsers(Number(e.target.value))
-                      }}
-                    />
-                    <Button
-                      type="button"
-                      size="iconMd"
-                      aria-label="Adicionar usuário"
-                      RightIcon={IconPlus}
-                      onClick={() => {
-                        setAdditionalUsers((prev) => prev + 1)
-                      }}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+              {/* Usuários adicionais Section */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  Usuários adicionais
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Contrate usuários adicionais para uma melhor organização do
+                  seu time.
+                </p>
+                <Card>
+                  <CardContent className="flex justify-between items-center p-6">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-xl text-gray-700 font-semibold">
+                        {formatCurrencyToBrl(ADDITIONAL_USER_PRICE)}
+                      </span>
+                      <span className="text-sm text-gray">
+                        {' '}
+                        /mês por usuário
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        size="iconMd"
+                        aria-label="Remover usuário"
+                        RightIcon={IconMinus}
+                        disabled={additionalUsers === 0}
+                        onClick={() => {
+                          setAdditionalUsers((prev) => Math.max(0, prev - 1))
+                        }}
+                      />
+                      <Input
+                        inputMode="numeric"
+                        className="w-16 text-center"
+                        value={additionalUsers}
+                        onChange={(e) => {
+                          setAdditionalUsers(Number(e.target.value))
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        size="iconMd"
+                        aria-label="Adicionar usuário"
+                        RightIcon={IconPlus}
+                        onClick={() => {
+                          setAdditionalUsers((prev) => prev + 1)
+                        }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
 
-            {/* Dados complementares Section */}
-            <div>
-              <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                Dados complementares
-              </h2>
-              <p className="text-sm text-gray-600 mb-4">
-                Informações para emissão de suas Notas Fiscais.
-              </p>
-              <Card>
-                <CardContent className="p-6">
-                  <Form {...form}>
+              {/* Dados complementares Section */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  Dados complementares
+                </h2>
+                <p className="text-sm text-gray-600 mb-4">
+                  Informações para emissão de suas Notas Fiscais.
+                </p>
+                <Card>
+                  <CardContent className="p-6">
                     <form
                       id="subscription-form"
                       onSubmit={handleSubmit(onSubmit)}
                       noValidate
                       className="flex flex-wrap gap-5"
                     >
-                      <FormToggleCard options={personTypeOptions} />
+                      <FormToggleCard
+                        name="personType"
+                        options={personTypeOptions}
+                      />
 
                       {/* Campos específicos por tipo */}
                       {selectedPersonType === 'PF' ? (
@@ -509,159 +537,169 @@ export default function SubscriptionPage() {
                         width="w-full"
                       />
                     </form>
-                  </Form>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
 
-          {/* Summary - Right Column */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-6 space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg text-gray-700">
-                    Resumo da assinatura
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 pt-2 space-y-8">
-                  <Separator />
-                  <div className="space-y-6">
-                    {selectedPlanId && (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <IconCheck
-                            size={16}
-                            className="text-brand-400 stroke-[3px]"
-                          />
-                          <span className="text-gray text-sm">
-                            Atrupe {selectedPlan?.name}
-                          </span>
-                        </div>
-                        <div className="flex items-baseline gap-1 text-sm">
-                          <span className="text-gray-600 font-semibold">
-                            {formatCurrencyToBrl(selectedPlan?.basePrice || 0)}
-                          </span>
-                          <span className="text-gray">/mês</span>
-                        </div>
-                      </div>
-                    )}
-                    {selectedModules.map((moduleId) => {
-                      const selectedModule = modules.find(
-                        (m) => m.id === moduleId,
-                      )
-
-                      if (!selectedModule) return null
-
-                      return (
-                        <div
-                          key={moduleId}
-                          className="flex items-center justify-between gap-2"
-                        >
+            {/* Summary - Right Column */}
+            <div className="lg:col-span-1">
+              <div className="sticky top-6 space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg text-gray-700">
+                      Resumo da assinatura
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 pt-2 space-y-6">
+                    <Separator />
+                    <div className="space-y-6">
+                      {selectedPlanId && (
+                        <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <IconCheck
                               size={16}
                               className="text-brand-400 stroke-[3px]"
                             />
                             <span className="text-gray text-sm">
-                              Módulo {selectedModule.name}
+                              Atrupe {selectedPlan?.name}
                             </span>
                           </div>
                           <div className="flex items-baseline gap-1 text-sm">
                             <span className="text-gray-600 font-semibold">
-                              {formatCurrencyToBrl(selectedModule.price)}
+                              {formatCurrencyToBrl(
+                                selectedPlan?.basePrice || 0,
+                              )}
                             </span>
                             <span className="text-gray">/mês</span>
                           </div>
                         </div>
-                      )
-                    })}
-                    {additionalUsers > 0 && (
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <IconCheck
-                            size={16}
-                            className="text-brand-400 stroke-[3px]"
-                          />
-                          <span className="text-gray text-sm">
-                            {additionalUsers}{' '}
-                            {additionalUsers === 1
-                              ? 'Usuário adicional'
-                              : 'Usuários adicionais'}
+                      )}
+                      {selectedModules.map((moduleId) => {
+                        const selectedModule = modules.find(
+                          (m) => m.id === moduleId,
+                        )
+
+                        if (!selectedModule) return null
+
+                        return (
+                          <div
+                            key={moduleId}
+                            className="flex items-center justify-between gap-2"
+                          >
+                            <div className="flex items-center gap-2">
+                              <IconCheck
+                                size={16}
+                                className="text-brand-400 stroke-[3px]"
+                              />
+                              <span className="text-gray text-sm">
+                                Módulo {selectedModule.name}
+                              </span>
+                            </div>
+                            <div className="flex items-baseline gap-1 text-sm">
+                              <span className="text-gray-600 font-semibold">
+                                {formatCurrencyToBrl(selectedModule.price)}
+                              </span>
+                              <span className="text-gray">/mês</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      {additionalUsers > 0 && (
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <IconCheck
+                              size={16}
+                              className="text-brand-400 stroke-[3px]"
+                            />
+                            <span className="text-gray text-sm">
+                              {additionalUsers}{' '}
+                              {additionalUsers === 1
+                                ? 'Usuário adicional'
+                                : 'Usuários adicionais'}
+                            </span>
+                          </div>
+                          <div className="flex items-baseline gap-1 text-sm">
+                            <span className="text-gray-600 font-semibold">
+                              {formatCurrencyToBrl(additionalUsersTotal)}
+                            </span>
+                            <span className="text-gray">/mês</span>
+                          </div>
+                        </div>
+                      )}
+                      {isLoadingPlans ? (
+                        <div className="flex justify-between">
+                          <Skeleton className="h-5 w-24" />
+                          <Skeleton className="h-5 w-24" />
+                        </div>
+                      ) : (
+                        !selectedPlanId &&
+                        selectedModules.length === 0 &&
+                        additionalUsers === 0 && (
+                          <div>
+                            <p className="text-gray text-sm">
+                              Selecione um plano
+                            </p>
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <Separator />
+
+                    <FormToggleCard
+                      name="billingType"
+                      options={billingTypeOptions}
+                      groupClassName="flex-wrap"
+                    />
+
+                    <Separator />
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-sm text-gray-700 font-semibold">
+                        Total
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <IconCoin className="text-blue" />
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-gray-700 font-bold text-lg">
+                            {formatCurrencyToBrl(totalPrice)}
                           </span>
+                          <span className="text-sm text-gray">/mês</span>
                         </div>
-                        <div className="flex items-baseline gap-1 text-sm">
-                          <span className="text-gray-600 font-semibold">
-                            {formatCurrencyToBrl(additionalUsersTotal)}
-                          </span>
-                          <span className="text-gray">/mês</span>
-                        </div>
-                      </div>
-                    )}
-                    {isLoadingPlans ? (
-                      <div className="flex justify-between">
-                        <Skeleton className="h-5 w-24" />
-                        <Skeleton className="h-5 w-24" />
-                      </div>
-                    ) : (
-                      !selectedPlanId &&
-                      selectedModules.length === 0 &&
-                      additionalUsers === 0 && (
-                        <div>
-                          <p className="text-gray text-sm">
-                            Selecione um plano
-                          </p>
-                        </div>
-                      )
-                    )}
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-gray-700 font-semibold">
-                      Total
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <IconCoin className="text-blue" />
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-gray-700 font-bold text-lg">
-                          {formatCurrencyToBrl(totalPrice)}
-                        </span>
-                        <span className="text-sm text-gray">/mês</span>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-6 space-y-6">
-                  <div className="flex items-start gap-2 pt-4">
-                    <Checkbox
-                      id="terms"
-                      checked={agreedToTerms}
-                      onCheckedChange={(checked: boolean) => {
-                        setAgreedToTerms(checked)
-                      }}
-                    />
-                    <label htmlFor="terms" className="text-sm text-gray-700">
-                      Estou de acordo com os{' '}
-                      <SubscriptionTerms onAgreeChange={setAgreedToTerms} /> da
-                      Atrupe.
-                    </label>
-                  </div>
-                  <Button
-                    type="submit"
-                    form="subscription-form"
-                    className="w-full"
-                    disabled={!agreedToTerms}
-                    isLoading={isSubmitting}
-                  >
-                    Avançar
-                    {!isSubmitting && <IconArrowRight />}
-                  </Button>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-6 space-y-6">
+                    <div className="flex items-start gap-2 pt-4">
+                      <Checkbox
+                        id="terms"
+                        checked={agreedToTerms}
+                        onCheckedChange={(checked: boolean) => {
+                          setAgreedToTerms(checked)
+                        }}
+                      />
+                      <label htmlFor="terms" className="text-sm text-gray-700">
+                        Estou de acordo com os{' '}
+                        <SubscriptionTerms onAgreeChange={setAgreedToTerms} />{' '}
+                        da Atrupe.
+                      </label>
+                    </div>
+                    <Button
+                      type="submit"
+                      form="subscription-form"
+                      className="w-full"
+                      disabled={!agreedToTerms}
+                      isLoading={isSubmitting}
+                    >
+                      Avançar
+                      {!isSubmitting && <IconArrowRight />}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          </Form>
         </div>
       </div>
     </div>

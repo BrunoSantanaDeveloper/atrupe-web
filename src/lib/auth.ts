@@ -62,9 +62,12 @@ export const {
         )
 
         try {
-          const res = await api.post('/auth/login', credentials)
+          const res = await api.post('/auth/login', {
+            username: credentials.username,
+            password: credentials.password,
+          })
 
-          const authData = await res.data
+          const authData = res.data
 
           if (res.status === 401) {
             throw new Error(JSON.stringify(authData))
