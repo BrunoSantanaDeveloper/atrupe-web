@@ -22,7 +22,7 @@ import { QuotationPaymentConditions } from '@/app/(app-sidebar)/vendas/orcamento
 import { cn } from '@/lib/utils'
 
 // Third-party
-import { useQuery, useIsMutating, useIsFetching } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Types
 import { OrderType } from '@/types/sales/order'
@@ -43,8 +43,8 @@ interface Props {
 export function Order({ id }: Props) {
   const previousUrl = '/vendas/ordens-de-servico' // TODO : incluir parametros de busca anteriores se houver
 
-  const isMutating = useIsMutating()
-  const isFetching = useIsFetching()
+  // const isMutating = useIsMutating()
+  // const isFetching = useIsFetching()
 
   const { data, isLoading, error } = useQuery<OrderType>({
     staleTime: Infinity,
@@ -121,7 +121,7 @@ export function Order({ id }: Props) {
       <div
         className={cn(
           'space-y-5',
-          (isMutating || isFetching) && 'pointer-events-none',
+          // (isMutating || isFetching) && 'pointer-events-none',
         )}
       >
         <Topbar

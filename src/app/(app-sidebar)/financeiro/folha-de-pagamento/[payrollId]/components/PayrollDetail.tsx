@@ -4,24 +4,22 @@
 import { notFound } from 'next/navigation'
 
 // UI
-import { Spinner } from '@/components/ui/spinner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 // Components
 import { PayrollItems } from './PayrollItems'
-import { PayrollMovement } from './PayrollMovement'
 import { PayrollActions } from './PayrollActions'
 import { Topbar } from '@/components/common/Topbar'
+import { PayrollMovement } from './PayrollMovement'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Lib
-import { cn } from '@/lib/utils'
 import { getItem } from '@/actions/_cruds'
 
 // Third-party
-import { useIsMutating, useIsFetching, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Hooks
 import { usePreviousUrl } from '@/hooks/usePreviousUrl'
@@ -35,8 +33,6 @@ interface Props {
 }
 
 export function PayrollDetail({ payrollId }: Props) {
-  const isMutating = useIsMutating()
-  const isFetching = useIsFetching()
   const previousUrl = usePreviousUrl('/financeiro/folha-de-pagamento')
 
   const { data, isLoading, error } = useQuery({
@@ -89,13 +85,7 @@ export function PayrollDetail({ payrollId }: Props) {
 
   return (
     <PermissionGate permissions={['financial:payroll:view']}>
-      <div
-        className={cn(
-          'relative space-y-5',
-          (isMutating > 0 || isFetching > 0) &&
-            'pointer-events-none opacity-50',
-        )}
-      >
+      <div className="relative space-y-5">
         <Topbar
           title={`Folha de pagamento ${(payrollData?.month + 1).toString().padStart(2, '0')}/${payrollData?.year.toString().slice(-2)}`}
           supportText={payrollData?.employee?.name || ''}
@@ -110,9 +100,6 @@ export function PayrollDetail({ payrollId }: Props) {
           <PayrollItems data={payrollData} />
           <PayrollMovement data={payrollData} />
         </div>
-        {isMutating > 0 || isFetching > 0 ? (
-          <Spinner classname="absolute top-1/2 left-1/2 size-10 -ml-5" />
-        ) : null}
       </div>
     </PermissionGate>
   )
