@@ -28,7 +28,7 @@ import { InactiveUserAlertDialog } from '../InactiveUser'
 import { useForm } from 'react-hook-form'
 import { FormType, getSchema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -85,7 +85,13 @@ export function NewUserDialog({
     mode: 'onChange',
   })
 
-  const { handleSubmit, setValue, watch, reset } = form
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { isSubmitting },
+  } = form
 
   useEffect(() => {
     if (open) {
@@ -98,28 +104,6 @@ export function NewUserDialog({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reset, open])
-
-  const mutation = useMutation({
-    mutationFn: (data: Omit<FormType, 'confirmPassword' | 'password'>) =>
-      editMode
-        ? updateItemNew({
-            route: `/user/${rowData?.user?.id}`,
-            data,
-          })
-        : createItemNew({
-            route: '/user/employee',
-            data: { ...data, employeeId: rowData?.id },
-          }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      handleOpenChange(false)
-      toast.success('Sucesso!')
-    },
-    onError: (error) => {
-      console.error(error)
-      toast.error('Ocorreu um erro')
-    },
-  })
 
   const handlePasswordChange = (value: string) => {
     setPasswordValidations({
@@ -134,13 +118,26 @@ export function NewUserDialog({
 
   const onSubmit = async (data: FormType) => {
     const { confirmPassword: _, ...body } = data
+    const { password: __, ...bodyWithoutPassword } = body
 
-    if (editMode && !body.password) {
-      const { password: _, ...bodyWithoutPassword } = body
-      await mutation.mutateAsync(bodyWithoutPassword)
-    } else {
-      await mutation.mutateAsync(body)
+    const res = editMode
+      ? await updateItemNew({
+          route: `/user/${rowData?.user?.id}`,
+          data: !body.password ? bodyWithoutPassword : body,
+        })
+      : await createItemNew({
+          route: '/user/employee',
+          data: { ...body, employeeId: rowData?.id },
+        })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
     }
+
+    queryClient.invalidateQueries()
+    handleOpenChange(false)
+    toast.success('Usuário criado')
   }
 
   const handleOpenChange = (value: boolean) => {
@@ -324,7 +321,7 @@ export function NewUserDialog({
             <Button
               type="submit"
               form="new-user"
-              isLoading={mutation.isPending}
+              isLoading={isSubmitting}
               RightIcon={IconCircleCheck}
             >
               Salvar
