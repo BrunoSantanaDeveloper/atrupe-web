@@ -6,7 +6,6 @@ import { notFound } from 'next/navigation'
 
 // UI
 import { Button } from '@/components/ui/button'
-import { Spinner } from '@/components/ui/spinner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
@@ -24,7 +23,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { cn } from '@/lib/utils'
 
 // Third-party
-import { useQuery, useIsMutating, useIsFetching } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -49,8 +48,8 @@ export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
 export function Quotation({ id }: Props) {
   const previousUrl = '/vendas/orcamentos' // TODO : incluir parametros de busca anteriores se houver
 
-  const isMutating = useIsMutating()
-  const isFetching = useIsFetching()
+  // const isMutating = useIsMutating()
+  // const isFetching = useIsFetching()
 
   const { data, isLoading, error } = useQuery<QuotationType>({
     staleTime: Infinity,
@@ -151,8 +150,8 @@ export function Quotation({ id }: Props) {
       <div
         className={cn(
           'relative space-y-5',
-          (isMutating > 0 || isFetching > 0) &&
-            'pointer-events-none opacity-50',
+          // (isMutating > 0 || isFetching > 0) &&
+          //   'pointer-events-none opacity-50',
         )}
       >
         <Topbar
@@ -176,9 +175,9 @@ export function Quotation({ id }: Props) {
           <QuotationDelivery quotationData={data} />
           {!isNoInvoice && <QuotationPaymentConditions quotationData={data} />}
         </div>
-        {isMutating > 0 || isFetching > 0 ? (
+        {/* {isMutating > 0 || isFetching > 0 ? (
           <Spinner classname="absolute top-1/2 left-1/2 size-10 -ml-5" />
-        ) : null}
+        ) : null} */}
       </div>
     </PermissionGate>
   )
