@@ -177,9 +177,8 @@ const styles = StyleSheet.create({
     marginLeft: -10,
   },
   itemDescription: {
-    fontSize: 7,
+    fontSize: 6,
     color: '#4B5563',
-    marginLeft: 3.5,
   },
   totalsSection: {
     marginTop: -6,
@@ -762,13 +761,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         <Text style={styles.itemTitle}>
                           {composition?.name || '-'}
                         </Text>
-                        {isProduction && item.technicalDescription && (
-                          <Text
-                            style={[
-                              styles.itemDescription,
-                              { color: '#059669', fontWeight: 'medium' },
-                            ]}
-                          >
+                        {item.technicalDescription && (
+                          <Text style={styles.itemDescription}>
                             {item.technicalDescription}
                           </Text>
                         )}
@@ -776,7 +770,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           <Text
                             style={[
                               styles.itemDescription,
-                              { color: '#DC6803', fontStyle: 'italic' },
+                              { fontStyle: 'italic' },
                             ]}
                           >
                             {item.notes}
@@ -878,13 +872,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       <Text style={styles.itemTitle}>
                         {item.description || '-'}
                       </Text>
-                      {isProduction && item.technicalDescription && (
-                        <Text
-                          style={[
-                            styles.itemDescription,
-                            { color: '#059669', fontWeight: 'medium' },
-                          ]}
-                        >
+                      {item.technicalDescription && (
+                        <Text style={styles.itemDescription}>
                           {item.technicalDescription}
                         </Text>
                       )}
@@ -892,7 +881,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         <Text
                           style={[
                             styles.itemDescription,
-                            { color: '#DC6803', fontStyle: 'italic' },
+                            { fontStyle: 'italic' },
                           ]}
                         >
                           {item.notes}
