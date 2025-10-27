@@ -7,6 +7,7 @@ import { auth } from '@/lib/auth'
 
 // Constants
 const HOME_PAGE = '/dashboard'
+const SUBSCRIPTION_PAGE = '/assinatura'
 const GUEST_ROUTES = [
   'login',
   'cadastro',
@@ -27,6 +28,11 @@ export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const session = await auth()
   const isUserLoggedIn = !!session?.user
+  const trialEndsAt = session?.company.plan.trialEndsAt
+
+  const isTrialExpired = trialEndsAt
+    ? new Date(trialEndsAt) < new Date()
+    : false
 
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
@@ -52,8 +58,22 @@ export async function middleware(req: NextRequest) {
     pathname.endsWith(route),
   )
 
-  if (isUserLoggedIn && isRequestedRouteIsGuestRoute) {
+  if (
+    isUserLoggedIn &&
+    isRequestedRouteIsGuestRoute &&
+    !pathname.endsWith(HOME_PAGE.slice(1))
+  ) {
     return NextResponse.redirect(new URL(HOME_PAGE, req.url).toString())
+  }
+
+  const isAllowedRouteWhenTrialExpired = [
+    'logout',
+    SUBSCRIPTION_PAGE.slice(1),
+  ].some((route) => pathname.endsWith(route))
+
+  // If the user is logged in but the trial has expired, redirect to the subscription page
+  if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
+    return NextResponse.redirect(new URL(SUBSCRIPTION_PAGE, req.url).toString())
   }
 
   // Set pathname in the headers

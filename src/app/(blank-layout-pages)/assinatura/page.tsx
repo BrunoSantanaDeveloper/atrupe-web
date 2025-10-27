@@ -19,17 +19,19 @@ import { modules } from '@/consts/plans'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 import { PlanCard } from './components/PlanCard'
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import type { VisualPlanType } from '@/types/plans'
+import { IconPix } from '@/assets/icons/CustomIcons'
 import { ModuleCard } from './components/ModuleCard'
 import { useState, useEffect, useMemo } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
@@ -37,7 +39,6 @@ import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
-import { IconPix } from '@/assets/icons/CustomIcons'
 
 const personTypeOptions = [
   {
@@ -113,6 +114,12 @@ export default function SubscriptionPage() {
   const [selectedPlanId, setSelectedPlanId] = useState<string>('')
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
+
+  const { data: session } = useSession()
+
+  const trialEndsAt = session?.company?.plan?.trialEndsAt
+
+  const isExpired = trialEndsAt ? new Date(trialEndsAt) < new Date() : false
 
   // Buscar planos da API
   const { data: plansResponse, isLoading: isLoadingPlans } = useQuery({
@@ -304,7 +311,7 @@ export default function SubscriptionPage() {
             variant="neutralLight"
             className="bg-transparent"
           >
-            <Link href="/dashboard">
+            <Link href={isExpired ? '/logout' : '/dashboard'}>
               <IconArrowLeft />
             </Link>
           </Button>

@@ -9,6 +9,7 @@ import {
   IconClock,
   IconClockX,
   IconArrowNarrowRight,
+  IconClockExclamation,
 } from '@tabler/icons-react'
 
 // Libs
@@ -26,7 +27,14 @@ export async function TrialExpiredAlert() {
 
   const isExpired = new Date(trialEndsAt) < new Date()
 
-  const Icon = isExpired ? IconClockX : IconClock
+  const trialOneDayLeft =
+    new Date(trialEndsAt).getTime() - new Date().getTime() < 1000 * 60 * 60 * 24
+
+  const Icon = isExpired
+    ? IconClockX
+    : trialOneDayLeft
+      ? IconClockExclamation
+      : IconClock
 
   const trialDaysLeft = Math.ceil(
     (new Date(trialEndsAt).getTime() - new Date().getTime()) /
@@ -37,7 +45,7 @@ export async function TrialExpiredAlert() {
     <div
       className={cn(
         'border-b',
-        isExpired
+        isExpired || trialOneDayLeft
           ? 'bg-error-50 border-error-200'
           : 'bg-warning-50 border-warning-200',
       )}
@@ -46,14 +54,18 @@ export async function TrialExpiredAlert() {
         <Icon
           className={cn(
             'size-8 stroke-1 flex-shrink-0',
-            isExpired ? 'text-error-600' : 'text-warning-600',
+            isExpired || trialOneDayLeft
+              ? 'text-error-600'
+              : 'text-warning-600',
           )}
         />
         <div className="flex flex-col flex-shrink-0">
           <span
             className={cn(
               'text-sm font-semibold',
-              isExpired ? 'text-error-600' : 'text-warning-600',
+              isExpired || trialOneDayLeft
+                ? 'text-error-600'
+                : 'text-warning-600',
             )}
           >
             {isExpired
