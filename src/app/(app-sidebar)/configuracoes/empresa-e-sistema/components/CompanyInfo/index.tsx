@@ -42,6 +42,7 @@ export function CompanyInfo() {
 
   const companies = useMemo(() => {
     if (!data) return []
+    console.log(data)
     return data?.data
       ?.sort((a: ICompanyData, b: ICompanyData) => {
         if (a.principal !== b.principal) {
@@ -56,7 +57,7 @@ export function CompanyInfo() {
         isInactive: !c?.isActive,
         iconImage: (
           <Image
-            src={c?.personalization?.logoUrl || companyIcon}
+            src={c?.personalization?.favIconUrl || companyIcon}
             alt="Logo da Empresa"
             width={86}
             height={86}
@@ -104,14 +105,7 @@ export function CompanyInfo() {
             <DialogDescription hidden></DialogDescription>
           </DialogHeader>
           <DialogBody className="max-h-[calc(100vh-200px)]">
-            <CompanySettingsList
-              settings={[
-                {
-                  category: 'Empresas',
-                  items: companies,
-                },
-              ]}
-            />
+            <CompanySettingsList settings={[{ items: companies }]} />
             {isLoading && <div>Carregando...</div>}
             <div className="w-full flex justify-center mt-6">
               <NewCompanyTriggerButton

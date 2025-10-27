@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 
 export type CompanySettingsType = {
-  category: string
+  category?: string
   items: {
     title: string
     icon?: React.ElementType<IconProps>
@@ -36,9 +36,11 @@ export function CompanySettingsList({
     <div className="space-y-8">
       {settings.map((setting, index) => (
         <div key={index} className="space-y-4">
-          <h1 className="text-gray-800 font-semibold text-lg">
-            {setting.category}
-          </h1>
+          {setting.category ? (
+            <h1 className="text-gray-800 font-semibold text-lg">
+              {setting.category}
+            </h1>
+          ) : null}
           {setting.items.map((item, index) => (
             <div
               key={index}
