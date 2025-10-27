@@ -8,7 +8,7 @@ export type ListClientsDataType = {
   id: string
   createdAt: string
   updatedAt: string
-  kind: 'COMPANY' | 'PERSON'
+  type: 'COMPANY' | 'PERSON'
   status: 'PROSPECT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
   name: string
   email: string
@@ -50,16 +50,16 @@ export type CitiesType = {
   stateId: string
 }
 
-export type CategoriesType = {
-  id: string
-  name: string
-  kind: string
-  isActive: boolean
-  isStandard: boolean
-  companyId: string
-  parentId: string
-  children: string[]
-}
+// export type CategoriesType = {
+//   id: string
+//   name: string
+//   kind: string
+//   isActive: boolean
+//   isStandard: boolean
+//   companyId: string
+//   parentId: string
+//   children: string[]
+// }
 
 export type ClientOrdersType = {
   id: string

@@ -42,7 +42,6 @@ export function CompanyInfo() {
 
   const companies = useMemo(() => {
     if (!data) return []
-    console.log(data)
     return data?.data
       ?.sort((a: ICompanyData, b: ICompanyData) => {
         if (a.principal !== b.principal) {

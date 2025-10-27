@@ -83,7 +83,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
               {clients.map((client) => (
                 <TableRow key={client.id}>
                   <TableCell className="text-sm text-gray ">
-                    {client?.kind === 'COMPANY' ? 'PJ' : 'PF'}
+                    {client?.type === 'COMPANY' ? 'PJ' : 'PF'}
                   </TableCell>
                   <TableCell className="font-semibold">
                     {client?.name}
