@@ -98,7 +98,7 @@ export function TableData({ tabs, searchParams }: Props) {
     const userLimit = getUserLimit()
 
     // Se está editando usuário existente, permite
-    if (item?.user?.isActive) {
+    if (item?.user) {
       setRowData(item)
       setEditUser(true)
       setOpenDialog('new-user')
@@ -234,12 +234,12 @@ export function TableData({ tabs, searchParams }: Props) {
                                     >
                                       <ActionButton
                                         Icon={
-                                          item?.user?.isActive
+                                          item?.user
                                             ? IconUserEdit
                                             : IconUserPlus
                                         }
                                         tooltip={
-                                          item?.user?.isActive
+                                          item?.user
                                             ? 'Editar usuário'
                                             : 'Novo usuário'
                                         }

@@ -42,7 +42,7 @@ export function InactiveEmployeeAlertDialog(props: Props) {
       updateItem('employeeRoute', rowData?.id || '', body),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Status alterado.')
+      // toast.success('Status alterado.')
       onChange(false)
     },
     onError: () => {

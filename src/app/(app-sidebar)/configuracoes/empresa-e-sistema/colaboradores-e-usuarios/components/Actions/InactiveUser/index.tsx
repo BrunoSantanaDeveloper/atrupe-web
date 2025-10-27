@@ -43,7 +43,7 @@ export function InactiveUserAlertDialog(props: Props) {
       updateItem('userRoute', rowData?.id || '', body),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Status alterado.')
+      // toast.success('Status alterado.')
       onChange(false)
     },
     onError: () => {
