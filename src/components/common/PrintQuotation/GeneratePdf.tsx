@@ -1114,6 +1114,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {printOptions.showPaymentDelivery ? (
                   // Exibição específica quando showPaymentDelivery está ativo
                   <>
+                    {data.payment?.downPayment && (
+                      <Text>
+                        {formatCurrencyToBrl(data.payment?.downPayment?.amount)}{' '}
+                        (Entrada) +
+                      </Text>
+                    )}
                     <Text>{data.payment?.method}</Text>
                     <Text>
                       Até {data.payment?.totalInstallments}x no pedido

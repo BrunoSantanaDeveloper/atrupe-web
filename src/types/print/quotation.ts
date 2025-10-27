@@ -188,6 +188,17 @@ type PaymentType = {
   installments: InstallmentType[]
   availablePaymentMethods?: string[]
   description?: string
+  downPayment: {
+    amount: number
+    dueDate: string
+    additionalFee: number
+    paymentConditionId: string
+    paymentCondition: {
+      id: string
+      name: string
+      paymentMethod: string
+    }
+  }
 }
 
 // Tipo para totais
