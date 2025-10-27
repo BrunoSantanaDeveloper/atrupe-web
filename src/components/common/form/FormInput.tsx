@@ -37,7 +37,7 @@ export function FormInput<T extends FieldValues>({
   additionalOnChange,
   ...props
 }: Props<T>) {
-  const { control } = useFormContext()
+  const { control, setError, clearErrors } = useFormContext()
 
   return (
     <FormField
@@ -55,12 +55,27 @@ export function FormInput<T extends FieldValues>({
               {...field}
               {...props}
               onChange={(e) => {
-                const value =
-                  type === 'number'
-                    ? e.target.value === ''
-                      ? null
-                      : Number(e.target.value)
-                    : e.target.value
+                let value
+
+                if (type === 'number') {
+                  const valueNumber = Number(e.target.value)
+                  const maxNumber = Number(props.max)
+
+                  if (e.target.value === '') {
+                    value = null
+                  } else if (valueNumber > maxNumber) {
+                    value = maxNumber
+                    setError(name, {
+                      type: 'max',
+                      message: `Máximo permitido: ${maxNumber}`,
+                    })
+                  } else {
+                    value = valueNumber
+                    clearErrors(name)
+                  }
+                } else {
+                  value = e.target.value
+                }
 
                 field.onChange(value)
                 additionalOnChange?.(value)
