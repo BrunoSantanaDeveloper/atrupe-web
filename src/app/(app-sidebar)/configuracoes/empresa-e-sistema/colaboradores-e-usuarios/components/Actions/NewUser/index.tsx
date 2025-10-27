@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import {
@@ -78,25 +78,26 @@ export function NewUserDialog({
     initialPasswordValidations,
   )
 
-  const userData = rowData?.user || {
-    name: '',
-    email: '',
-  }
-
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
     resolver: zodResolver(getSchema(!!editMode)),
     mode: 'onChange',
-    values: {
-      name: editMode ? userData.name : getFirstAndLastName(rowData?.name) || '',
-      email: userData.email || '',
-      password: '',
-      confirmPassword: '',
-    },
   })
 
-  const { handleSubmit, setValue, watch } = form
+  const { handleSubmit, setValue, watch, reset } = form
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        name: rowData?.user?.name || getFirstAndLastName(rowData?.name),
+        email: rowData?.user?.email || '',
+        password: '',
+        confirmPassword: '',
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reset, open])
 
   const mutation = useMutation({
     mutationFn: (data: Omit<FormType, 'confirmPassword' | 'password'>) =>
@@ -162,7 +163,7 @@ export function NewUserDialog({
                 variant="neutralOutline"
                 Icon={editMode ? IconUserEdit : IconUserPlus}
               />
-              <span>{editMode ? 'Editar' : 'Novo'} usuário</span>
+              <span>{editMode ? 'Editar usuário' : 'Novo usuário'}</span>
             </div>
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -185,6 +186,7 @@ export function NewUserDialog({
                     {/*  TODO : zod error String must contain exactly 0 character(s) */}
                     <FormInput<FormType>
                       name="password"
+                      autoComplete="new-password"
                       label="Senha"
                       type={showPassword ? 'text' : 'password'}
                       additionalOnChange={(value) =>
