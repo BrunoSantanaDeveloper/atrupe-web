@@ -99,6 +99,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
                     <Badge
                       status
                       variant={clientStatusObj[client?.status]?.variant}
+                      className="text-nowrap"
                     >
                       {clientStatusObj[client?.status]?.text}
                     </Badge>

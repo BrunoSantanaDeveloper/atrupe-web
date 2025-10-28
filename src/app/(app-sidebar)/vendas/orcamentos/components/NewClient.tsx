@@ -11,7 +11,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconUser } from '@tabler/icons-react'
 
 import { useNewClientStore } from '../store/useNewClientStore'
-import NewClientForm from './NewClient/NewClientForm'
+import { NewClientForm } from './NewClient/NewClientForm'
 import React from 'react'
 
 function NewClient() {

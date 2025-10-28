@@ -9,35 +9,35 @@ import { DialogFooter } from '@/components/ui/dialog'
 
 import { IconUser, IconBuildingCommunity } from '@tabler/icons-react'
 import { useNewClientStore } from '../../store/useNewClientStore'
-import {
-  defaultCompanyValues,
-  defaultPersonValues,
-  NewClientFormType,
-  newClientSchema,
-} from './schema'
+import { newClientSchema, NewClientFormType, defaultValues } from './schema'
 import { PersonFields } from './PersonFields'
 import { CompanyFields } from './CompanyFields'
-import { ClientTypeToggleButton } from './ClientTypeToggleButton'
 import { createItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 
-type ClientType = 'PERSON' | 'COMPANY'
+const personTypeOptions = [
+  {
+    label: 'Pessoa Física',
+    value: 'PERSON',
+    icon: IconUser,
+  },
+  {
+    label: 'Pessoa Jurídica',
+    value: 'COMPANY',
+    icon: IconBuildingCommunity,
+  },
+]
 
-const NewClientForm = () => {
+export function NewClientForm() {
   const { onToggleModalVisibility, onClientCreated } = useNewClientStore()
 
   const form = useForm<NewClientFormType>({
     resolver: zodResolver(newClientSchema),
-    defaultValues: defaultPersonValues,
+    defaultValues,
   })
 
-  const {
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = form
+  const { handleSubmit, watch, reset } = form
 
   const handleToggleModal = () => {
     handleCleanForm()
@@ -45,20 +45,38 @@ const NewClientForm = () => {
   }
 
   const handleCleanForm = () => {
-    reset(defaultPersonValues)
+    reset(defaultValues)
   }
 
   const clientType = watch('type')
 
-  const handleUpdateClient = (type: ClientType) => {
-    setValue('type', type)
-    reset(type === 'PERSON' ? defaultPersonValues : defaultCompanyValues)
-  }
-
   const onSubmit = async (data: NewClientFormType) => {
+    const payload = {
+      type: data.type,
+      name: data.name,
+      email: data.email,
+      categoryId: data.category,
+      phone: data.phone,
+      mobile: data.mobile,
+      rg: '',
+      cpf: '',
+      cnpj: '',
+      activity: '',
+      corporateName: '',
+    }
+
+    if (data.type === 'PERSON') {
+      payload.rg = data.rg
+      payload.cpf = data.cpf
+    } else {
+      payload.cnpj = data.cnpj
+      payload.activity = data.activity
+      payload.corporateName = data.corporateName
+    }
+
     const res = await createItemNew({
       route: '/client/pre-register',
-      data,
+      data: payload,
     })
 
     if (!res.success) {
@@ -86,24 +104,9 @@ const NewClientForm = () => {
             id="new-client"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-wrap gap-5"
-            // noValidate
+            noValidate
           >
-            <div className="w-full h-16 flex gap-4">
-              <ClientTypeToggleButton
-                key="person"
-                title="Pessoa Física"
-                onClick={() => handleUpdateClient('PERSON')}
-                isActive={clientType === 'PERSON'}
-                Icon={IconUser}
-              />
-              <ClientTypeToggleButton
-                key="company"
-                title="Pessoa Jurídica"
-                onClick={() => handleUpdateClient('COMPANY')}
-                isActive={clientType === 'COMPANY'}
-                Icon={IconBuildingCommunity}
-              />
-            </div>
+            <FormToggleCard name="type" options={personTypeOptions} />
             {clientType === 'PERSON' ? <PersonFields /> : <CompanyFields />}
           </form>
         </FormProvider>
@@ -122,7 +125,7 @@ const NewClientForm = () => {
             className="gap-2"
             form="new-client"
             RightIcon={ArrowRight}
-            disabled={Object.keys(errors).length > 0}
+            // disabled={Object.keys(form.formState.errors).length > 0}
             // disabled={!form.formState.isValid}
           >
             Cadastrar cliente
@@ -132,4 +135,3 @@ const NewClientForm = () => {
     </>
   )
 }
-export default NewClientForm
