@@ -27,16 +27,11 @@ import { getProxiedImageUrl } from '@/lib/image-proxy'
 import type { PrintOptionsType } from './PrintQuotationDialog'
 import type { PrintQuotationType } from '@/types/print/quotation'
 
+// Components
+import { PdfHeader } from '@/components/common/PdfHeader'
+
 // Icons
-import {
-  EmailIcon,
-  WebsiteIcon,
-  LinkedinIcon,
-  FacebookIcon,
-  MoneySignIcon,
-  InstagramIcon,
-  TruckDeliveryIcon,
-} from '@/assets/icons/PdfIcons'
+import { MoneySignIcon, TruckDeliveryIcon } from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
   page: {
@@ -48,45 +43,6 @@ const styles = StyleSheet.create({
     fontSize: 8,
     paddingBottom: 30,
     paddingTop: 90,
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#F2F4F7',
-    padding: 30,
-    height: 76,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    objectFit: 'contain',
-  },
-  companyInfo: {
-    fontSize: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  companyName: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  socialInfo: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    width: '25%',
-    paddingRight: 0,
   },
   infoContainer: {
     padding: 30,
@@ -327,10 +283,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 7,
   },
-  textRightSmall: {
-    textAlign: 'right',
-    fontSize: 7,
-  },
   textComposition: {
     textAlign: 'center',
     color: '#4B5563',
@@ -346,25 +298,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     objectFit: 'cover',
-  },
-  // Estilos para layouts flexíveis
-  flexRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-    justifyContent: 'flex-end',
-  },
-  companyInfoLarge: {
-    fontSize: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: 4,
-    width: '50%',
-  },
-  companyLogoContainer: {
-    width: '35%',
   },
   // Estilos para textos específicos
   textSmallGray: {
@@ -488,94 +421,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
         )}
 
         {/* Cabeçalho */}
-        <View style={styles.header} fixed>
-          <View style={styles.companyLogoContainer}>
-            <PDFImage
-              src={
-                getProxiedImageUrl(data.company?.logo) ||
-                '/src/assets/icons/companyIconPlaceholder.png'
-              }
-              style={styles.logo}
-            />
-          </View>
-          <View style={styles.companyInfoLarge}>
-            <Text style={styles.companyName}>{data.company?.name}</Text>
-            <Text>{maskCnpj(data.company?.cnpj)}</Text>
-            <Text>
-              {[
-                data.company?.address?.street,
-                data.company?.address?.number,
-                isProduction ? data.company?.address?.neighborhood : null,
-              ]
-                .filter(Boolean)
-                .join(', ')}
-            </Text>
-            {!isProduction && (
-              <Text>
-                {[
-                  data.company?.address?.neighborhood,
-                  data.company?.address?.city,
-                  data.company?.address?.state,
-                ]
-                  .filter(Boolean)
-                  .join(', ')}
-                {data.company?.address?.city || data.company?.address?.state
-                  ? '.'
-                  : ''}
-              </Text>
-            )}
-            {isProduction && (
-              <Text>
-                {[data.company?.address?.city, data.company?.address?.state]
-                  .filter(Boolean)
-                  .join(', ')}
-                {data.company?.address?.city || data.company?.address?.state
-                  ? '.'
-                  : ''}
-              </Text>
-            )}
-          </View>
-          <View style={styles.socialInfo}>
-            {data.company?.socialNetworks?.instagram && (
-              <View style={styles.flexRow}>
-                <Text style={styles.textRightSmall}>
-                  {data.company?.socialNetworks?.instagram}
-                </Text>
-                <InstagramIcon />
-              </View>
-            )}
-            {data.company?.socialNetworks?.facebook && (
-              <View style={styles.flexRow}>
-                <Text style={styles.textRightSmall}>
-                  {data.company?.socialNetworks?.facebook}
-                </Text>
-                <FacebookIcon />
-              </View>
-            )}
-            {data.company?.socialNetworks?.linkedin && (
-              <View style={styles.flexRow}>
-                <Text style={styles.textRightSmall}>
-                  {data.company?.socialNetworks?.linkedin}
-                </Text>
-                <LinkedinIcon />
-              </View>
-            )}
-            {data.company?.siteUrl && (
-              <View style={styles.flexRow}>
-                <Text style={styles.textRightSmall}>
-                  {data.company?.siteUrl}
-                </Text>
-                <WebsiteIcon />
-              </View>
-            )}
-            {data.company?.email && (
-              <View style={styles.flexRow}>
-                <Text style={styles.textRightSmall}>{data.company?.email}</Text>
-                <EmailIcon />
-              </View>
-            )}
-          </View>
-        </View>
+        <PdfHeader company={data.company} />
 
         <View style={styles.infoContainer}>
           {/* Informações do Cliente e Orçamento */}

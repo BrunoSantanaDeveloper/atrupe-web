@@ -1,14 +1,7 @@
 'use client'
 
 // Component
-import {
-  Page,
-  Text,
-  View,
-  Document,
-  StyleSheet,
-  Image as PDFImage,
-} from '@react-pdf/renderer'
+import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer'
 
 // Types
 import { PayrollPdfType } from '@/types/financial/payroll'
@@ -17,18 +10,12 @@ import { PayrollPdfType } from '@/types/financial/payroll'
 import { formatToLocaleDate } from '@/lib/formatDate'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
 import { numberToWords } from '@/lib/numberToWords'
-import { getProxiedImageUrl } from '@/lib/image-proxy'
+
+// Components
+import { PdfHeader } from '@/components/common/PdfHeader'
 
 // Icons
-import {
-  MoneySignIcon,
-  CalendarDollarIcon,
-  EmailIcon,
-  WebsiteIcon,
-  LinkedinIcon,
-  FacebookIcon,
-  InstagramIcon,
-} from '@/assets/icons/PdfIcons'
+import { MoneySignIcon, CalendarDollarIcon } from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
   page: {
@@ -40,45 +27,6 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingTop: 90,
     backgroundColor: '#fff',
-  },
-  header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#F2F4F7',
-    padding: 30,
-    height: 76,
-  },
-  logo: {
-    width: 80,
-    height: 80,
-    objectFit: 'contain',
-  },
-  companyInfo: {
-    fontSize: 8,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    gap: 4,
-  },
-  companyName: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    marginBottom: 2,
-  },
-  socialInfo: {
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-    width: '25%',
-    paddingRight: 0,
   },
   infoContainer: {
     padding: 30,
@@ -295,115 +243,7 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Cabeçalho */}
-        <View style={styles.header} fixed>
-          <View style={{ width: '35%' }}>
-            <PDFImage
-              src={
-                getProxiedImageUrl(data.company?.logo) ||
-                '/src/assets/icons/companyIconPlaceholder.png'
-              }
-              style={styles.logo}
-            />
-          </View>
-          <View style={[styles.companyInfo, { width: '50%' }]}>
-            <Text style={styles.companyName}>{data.company?.name}</Text>
-            <Text>{maskCnpj(data.company?.cnpj)}</Text>
-            <Text>
-              {[data.company?.address?.street, data.company?.address?.number]
-                .filter(Boolean)
-                .join(', ')}
-            </Text>
-            <Text>
-              {[
-                data.company?.address?.neighborhood,
-                data.company?.address?.city,
-                data.company?.address?.state,
-              ]
-                .filter(Boolean)
-                .join(', ')}
-              {data.company?.address?.city || data.company?.address?.state
-                ? '.'
-                : ''}
-            </Text>
-          </View>
-          <View style={styles.socialInfo}>
-            {data.company?.socialNetworks?.instagram && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.socialNetworks?.instagram}
-                </Text>
-                <InstagramIcon />
-              </View>
-            )}
-            {data.company?.socialNetworks?.facebook && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.socialNetworks?.facebook}
-                </Text>
-                <FacebookIcon />
-              </View>
-            )}
-            {data.company?.socialNetworks?.linkedin && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.socialNetworks?.linkedin}
-                </Text>
-                <LinkedinIcon />
-              </View>
-            )}
-            {data.company?.siteUrl && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.siteUrl}
-                </Text>
-                <WebsiteIcon />
-              </View>
-            )}
-            {data.company?.email && (
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 2,
-                  justifyContent: 'flex-end',
-                }}
-              >
-                <Text style={{ fontSize: 7, textAlign: 'right' }}>
-                  {data.company?.email}
-                </Text>
-                <EmailIcon />
-              </View>
-            )}
-          </View>
-        </View>
+        <PdfHeader company={data.company} />
 
         <View style={styles.infoContainer}>
           {/* Linha do título e colaborador */}
