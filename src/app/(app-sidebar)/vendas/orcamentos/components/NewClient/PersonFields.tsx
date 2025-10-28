@@ -1,4 +1,3 @@
-import { useCheckCpf } from '@/hooks/queries/useCheckCpf'
 import { useFormContext } from 'react-hook-form'
 import { NewClientFormType } from './schema'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -7,19 +6,27 @@ import { useEffect, useMemo } from 'react'
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCpf } from '@/lib/validateDocs'
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
+import { useDocumentQuery } from '@/hooks/useDocumentSearch'
 
 export function PersonFields() {
   const { watch, setValue, setError, clearErrors } =
     useFormContext<NewClientFormType>()
 
-  const { data } = useCheckCpf(watch('cpf')?.replace(/\D/g, '') ?? '')
+  const cpf = watch('cpf')
+  const { data: documentData } = useDocumentQuery(
+    cpf?.length === 14 ? cpf : null,
+  )
   const { data: categoryData } = useCategoryOptions('CLIENT')
 
   const categoryOptions = useMemo(() => categoryData || [], [categoryData])
 
   useEffect(() => {
-    setValue('name', data?.name || '')
-  }, [data, setValue])
+    if (documentData && documentData.documentType === 'CPF') {
+      setValue('name', documentData.name || '')
+      setValue('rg', documentData.rg || '')
+      setValue('phone', documentData.phone || '')
+    }
+  }, [documentData, setValue])
 
   return (
     <>

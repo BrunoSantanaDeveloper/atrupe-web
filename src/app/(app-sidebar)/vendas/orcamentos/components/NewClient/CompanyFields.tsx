@@ -5,14 +5,27 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { HandleValidateCnpj } from '@/lib/validateDocs'
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useDocumentQuery } from '@/hooks/useDocumentSearch'
 
 export function CompanyFields() {
-  const { setValue, setError, clearErrors } =
+  const { watch, setValue, setError, clearErrors } =
     useFormContext<NewClientFormType>()
 
+  const cnpj = watch('cnpj')
+  const { data: documentData } = useDocumentQuery(
+    cnpj?.length === 18 ? cnpj : null,
+  )
   const { data: categoryData } = useCategoryOptions('CLIENT')
   const categoryOptions = useMemo(() => categoryData || [], [categoryData])
+
+  useEffect(() => {
+    if (documentData && documentData.documentType === 'CNPJ') {
+      setValue('name', documentData.name || '')
+      setValue('corporateName', documentData.corporateName || '')
+      setValue('phone', documentData.phone || '')
+    }
+  }, [documentData, setValue])
 
   return (
     <div className="flex flex-wrap gap-5">
