@@ -13,7 +13,7 @@ export type InstallmentType = {
   bankAccount: {
     id: string
     name: string
-    bank: {
+    bank?: {
       id: string
       name: string
     }
@@ -22,8 +22,10 @@ export type InstallmentType = {
   amount: number
   additionalFee: number
   dueDate: Date
-  paidValue: number
+  paidValue?: number
+  paidAmount?: number
   paymentDate?: Date
+  paidDate?: Date
   compensateDate?: Date
 }
 

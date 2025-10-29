@@ -218,9 +218,15 @@ export function TransactionDetailsDialog({
                         </TableCell>
                         <TableCell>
                           <div>
-                            <p>{formatCurrencyToBrl(item?.paidValue)}</p>
+                            <p>
+                              {formatCurrencyToBrl(
+                                item?.paidValue || item?.paidAmount,
+                              )}
+                            </p>
                             <p className="text-gray">
-                              {formatToLocaleDate(item?.paymentDate)}
+                              {formatToLocaleDate(
+                                item?.paymentDate || item?.paidDate,
+                              )}
                             </p>
                           </div>
                         </TableCell>
