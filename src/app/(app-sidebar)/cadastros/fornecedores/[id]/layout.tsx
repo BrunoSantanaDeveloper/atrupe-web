@@ -83,23 +83,27 @@ export default function SupplierDetailLayout({ children, params }: Props) {
         }
       />
       <Tabs value={params.tab} defaultValue="cadastro">
-        <TabsList>
-          {tabs.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.tab} asChild>
-              <Link href={`/cadastros/fornecedores/${params.id}/${tab.tab}`}>
-                <span>{tab.label}</span>
-                {tab?.count && tab?.count > 0 ? (
-                  <Badge
-                    variant={params.tab === tab.tab ? 'light' : 'neutralLight'}
-                    className="ml-2"
-                  >
-                    {tab.count}
-                  </Badge>
-                ) : null}
-              </Link>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        {tabs.length > 1 && (
+          <TabsList>
+            {tabs.map((tab) => (
+              <TabsTrigger key={tab.value} value={tab.tab} asChild>
+                <Link href={`/cadastros/fornecedores/${params.id}/${tab.tab}`}>
+                  <span>{tab.label}</span>
+                  {tab?.count && tab?.count > 0 ? (
+                    <Badge
+                      variant={
+                        params.tab === tab.tab ? 'light' : 'neutralLight'
+                      }
+                      className="ml-2"
+                    >
+                      {tab.count}
+                    </Badge>
+                  ) : null}
+                </Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        )}
       </Tabs>
       <div>
         {isLoading ? (
