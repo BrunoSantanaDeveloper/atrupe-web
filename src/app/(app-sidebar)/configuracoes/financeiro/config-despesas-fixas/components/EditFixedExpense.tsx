@@ -48,12 +48,7 @@ import {
 } from '@tabler/icons-react'
 
 // Action
-import {
-  getItemOld,
-  updateItem,
-  createItemNew,
-  updateItemNew,
-} from '@/actions/_cruds'
+import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -64,15 +59,6 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   fixedExpenseId?: string
-}
-
-async function getFixedExpense(fixedExpenseId: string) {
-  if (!fixedExpenseId) return
-  const fixedExpense = await getItemOld({
-    route: 'fixedExpensesConfigRoute',
-    id: fixedExpenseId ?? '',
-  })
-  return fixedExpense
 }
 
 function NewFixedExpenseModal({
@@ -87,10 +73,15 @@ function NewFixedExpenseModal({
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['fixedExpensesConfigRoute', fixedExpenseId],
-    queryFn: () => getFixedExpense(fixedExpenseId ?? ''),
+    queryKey: ['fixedExpensesConfig', fixedExpenseId],
+    queryFn: () =>
+      getItem({
+        route: `/financial/scheduled-expense/${fixedExpenseId}`,
+      }),
     enabled: !!fixedExpenseId,
   })
+
+  const fixedExpense = data?.data
 
   const form = useForm<FixedExpensesFormType>({
     resolver: zodResolver(newFixedExpensesSchema),
@@ -99,25 +90,25 @@ function NewFixedExpenseModal({
       ? defaultFixedExpensesValues
       : {
           supplierId: {
-            label: data?.supplier?.name,
-            value: data?.supplier?.id,
+            label: fixedExpense?.supplier?.name,
+            value: fixedExpense?.supplier?.id,
           },
-          categoryId: data?.categoryId || '',
-          subCategoryId: data?.subCategoryId || '',
-          recurringType: data?.recurringType || 'MONTHLY',
-          dueDay: data?.dueDay || 1,
-          amount: data?.amount ?? 0,
-          description: data?.description || '',
+          categoryId: fixedExpense?.categoryId || '',
+          subCategoryId: fixedExpense?.subCategoryId || '',
+          recurringType: fixedExpense?.recurringType || 'MONTHLY',
+          dueDay: fixedExpense?.dueDay || 1,
+          amount: fixedExpense?.amount ?? 0,
+          description: fixedExpense?.description || '',
         },
   })
 
   const { handleSubmit, reset, watch, formState } = form
 
-  if (editMode && isLoading) return <></>
+  if (editMode && (isLoading || !fixedExpense || !data.success)) return null
 
   function handleToggleModal() {
-    reset(defaultFixedExpensesValues)
     onOpenChange(false)
+    reset(defaultFixedExpensesValues)
   }
 
   const onSubmit = async (data: FixedExpensesFormType) => {
@@ -126,35 +117,29 @@ function NewFixedExpenseModal({
       supplierId: data.supplierId?.value,
     }
 
-    try {
-      if (editMode) {
-        await updateItemNew({
+    const res = editMode
+      ? await updateItemNew({
           route: `/financial/scheduled-expense/${fixedExpenseId}`,
           data: body,
         })
-        await queryClient.invalidateQueries()
-        toast.success('Despesa fixa atualizada com sucesso!')
-      } else {
-        const result = await createItemNew({
+      : await createItemNew({
           route: '/financial/scheduled-expense',
           data: body,
         })
-        if (result.success) {
-          toast.success('Despesa fixa criada com sucesso!')
-        } else {
-          throw new Error(result.message)
-        }
-      }
-      await queryClient.invalidateQueries()
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error)
+
+    if (!res.success) {
       toast.error(
-        `Erro ao ${editMode ? 'editar' : 'cadastrar'} despesa fixa: ${errorMessage}`,
+        res.message ||
+          `${editMode ? 'Erro ao editar' : 'Erro ao cadastrar'} despesa fixa.`,
       )
-    } finally {
-      handleToggleModal()
+      return
     }
+
+    handleToggleModal()
+
+    toast.success('Despesa fixa salva')
+
+    await queryClient.invalidateQueries()
   }
 
   const handleInactivate = async (status: boolean) => {
@@ -164,8 +149,11 @@ function NewFixedExpenseModal({
       title: `Deseja ${status ? 'inativar' : 'ativar'} esta despesa fixa?`,
       confirmLabel: status ? 'Inativar' : 'Ativar',
       onConfirm: () => {
-        updateItem('fixedExpensesConfigRoute', `${fixedExpenseId}`, {
-          isActive: newStatus,
+        updateItemNew({
+          route: `/financial/scheduled-expense/${fixedExpenseId}`,
+          data: {
+            isActive: newStatus,
+          },
         })
         queryClient.invalidateQueries()
         handleToggleModal()
@@ -196,7 +184,9 @@ function NewFixedExpenseModal({
                 <DialogTitle>
                   <div className="flex items-center gap-4">
                     <FeaturedIcon variant="error" Icon={IconCalendarPlus} />
-                    <span>{editMode ? 'Editar' : 'Nova'} despesa fixa</span>
+                    <span>
+                      {editMode ? 'Editar despesa fixa' : 'Nova despesa fixa'}
+                    </span>
                   </div>
                 </DialogTitle>
                 <DialogDescription hidden></DialogDescription>
@@ -259,10 +249,10 @@ function NewFixedExpenseModal({
                   {editMode && (
                     <Button
                       type="button"
-                      variant={data?.isActive ? 'error' : 'default'}
-                      onClick={() => handleInactivate(data?.isActive)}
+                      variant={fixedExpense?.isActive ? 'error' : 'default'}
+                      onClick={() => handleInactivate(fixedExpense?.isActive)}
                     >
-                      {data?.isActive ? 'Inativar' : 'Ativar'}
+                      {fixedExpense?.isActive ? 'Inativar' : 'Ativar'}
                     </Button>
                   )}
                 </div>

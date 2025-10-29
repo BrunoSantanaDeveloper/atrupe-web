@@ -185,7 +185,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                       ? group?.transactions.map((item) => {
                           const currentInstallment = item?.currentInstallment
                           const editDisabled =
-                            item?.expenseSource === 'EMPLOYEE'
+                            item?.expenseSource === 'EMPLOYEE' // TODO: incluir na página de receitas e despesas
 
                           return (
                             <TableRow key={item?.id} className="text-nowrap">

@@ -14,7 +14,6 @@ const defaultRoute: { [key: string]: string } = {
   bankAccountRoute: '/bank/account',
   accountsPlanTotalsRoute: '/financial/nature/quantity',
   accountsPlanRoute: '/financial/nature',
-  fixedExpensesConfigRoute: '/financial/scheduled-expense',
   fixedExpensesConfigTotalsRoute: '/financial/scheduled-expense/quantity',
 
   // orçamentos
@@ -47,7 +46,6 @@ const defaultRoute: { [key: string]: string } = {
   receivableRoute: '/financial/receivable',
   creditLimitRoute: '/financial/credit-limit',
   transactionCategoryRoute: '/financial/nature/sub-category',
-  fixedExpensesListRoute: '/financial/scheduled-expense/grouped-by-supplier',
 
   // Controle de caixa
   cashControlTotalsRoute: '/financial/cash-control/quantity',

@@ -76,7 +76,7 @@ export function PayrollFilter({
   }, [searchParams])
 
   const handleFilter = (key: string, value: string) => {
-    if (!value || value === 'all') {
+    if (!value) {
       params.delete(key)
     } else {
       params.set(key, value)

@@ -35,7 +35,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardFooter, CardContent } from '@/components/ui/card'
 
 // Actions
-import { createItemNew, getDataOld, deleteItemNew } from '@/actions/_cruds'
+import { getData, createItemNew, deleteItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 
 // Libs
@@ -84,7 +84,10 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     staleTime: Infinity,
     queryKey: ['fixed-expenses-list', searchParams],
     queryFn: () =>
-      getDataOld({ route: 'fixedExpensesListRoute', filters: searchParams }),
+      getData({
+        route: '/financial/scheduled-expense/grouped-by-supplier',
+        filters: searchParams,
+      }),
   })
 
   // Mapear todos os itens de despesas de todos os fornecedores
@@ -104,6 +107,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
 
   const hasData = allExpenseItems.length
 
+  // Permitir marcar o checkbox apenas as despesas não lançadas
   const selectableItems = allExpenseItems.filter(
     (item) => item.launchStatus === EMPTY_STATUS,
   )
@@ -125,6 +129,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     }
   }
 
+  // Estado do checkbox que marca todos
   const getHeaderCheckboxState = () => {
     if (selectableItems.length === 0) return false
     if (selectedIds.length === selectableItems.length) return true
@@ -132,13 +137,8 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     return false
   }
 
-  const currentMonth = new Date().getMonth()
-  const currentYear = new Date().getFullYear()
-
-  const month = searchParams.month
-    ? Number(searchParams.month) - 1
-    : currentMonth
-  const year = searchParams.year ? Number(searchParams.year) : currentYear
+  const month = Number(searchParams.month)
+  const year = Number(searchParams.year)
 
   const handleEditInstallments = (item: FixedExpenseItemType) => {
     setSelectedTransaction(item)
@@ -158,7 +158,6 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
       })
 
       if (response.success) {
-        toast.success('Despesa removida com sucesso')
         queryClient.invalidateQueries()
       } else {
         toast.error(response.message || 'Erro ao remover despesa')
@@ -180,10 +179,8 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
 
     const data = {
       scheduledExpenseIds: expenseIds,
-      competenceDate: '2025-06-01',
-      dueDate: '2025-06-30',
-      amount: 40000,
-      notes: 'Observação da movimentação',
+      month,
+      year,
     }
 
     const response = await createItemNew({
@@ -219,20 +216,11 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     const payable = item.payables?.[0]
     const hasPayable = payable && item.launchStatus !== EMPTY_STATUS
 
-    // Calcular a data de vencimento correta baseada no dueDay
-    const calculateDueDate = (
-      dueDay: number,
-      month: number,
-      year: number,
-    ): Date => {
-      return new Date(year, month, dueDay)
-    }
-
     // Para despesas lançadas, usar a data de vencimento do installment se existir, senão calcular baseado no dueDay
     const payableInstallment = hasPayable ? payable.installments?.[0] : null
     const dueDateToUse = payableInstallment?.dueDate
       ? new Date(payableInstallment.dueDate)
-      : calculateDueDate(item.dueDay, month, year)
+      : new Date(year, month, item.dueDay)
 
     // Verificar se a parcela foi efetivamente paga
     const isPaid = payableInstallment?.paidDate
@@ -334,6 +322,14 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                     const isDisabled = item.launchStatus !== EMPTY_STATUS
                     const defaultDueDate = `${item?.dueDay}/${(month + 1).toString().padStart(2, '0')}/${year}`
 
+                    const payableInstallment =
+                      item?.payables[0]?.installments?.[0]
+
+                    const realDueDate = payableInstallment?.dueDate
+
+                    // Se estiver paga, não permite excluir
+                    const canDelete = payableInstallment?.status !== 'PAID'
+
                     return (
                       <TableRow key={item?.id}>
                         <TableCell>
@@ -376,7 +372,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                             <p>{item?.description || '-'}</p>
                           )}
                         </TableCell>
-                        <TableCell className="text-gray-600">
+                        <TableCell>
                           <div>
                             <p>
                               {item?.payables[0]?.totalAmount
@@ -385,8 +381,8 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                   )
                                 : '-'}
                             </p>
-                            <p>
-                              {formatToLocaleDate(item?.payables[0]?.createdAt)}
+                            <p className="text-gray">
+                              {formatToLocaleDate(realDueDate)}
                             </p>
                           </div>
                         </TableCell>
@@ -439,10 +435,13 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                         item?.payables?.[0]?.id,
                                       )}
                                       onClick={() => {
-                                        handleRemoveExpense(
-                                          item?.payables?.[0]?.id,
-                                        )
+                                        if (canDelete) {
+                                          handleRemoveExpense(
+                                            item?.payables?.[0]?.id,
+                                          )
+                                        }
                                       }}
+                                      disabled={!canDelete}
                                     />
                                   </PermissionGate>
                                 </>
@@ -479,7 +478,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
             <CardFooter>
               <TablePagination
                 searchParams={searchParams}
-                lastPage={data?.totalPages}
+                lastPage={data?.lastPage}
               />
             </CardFooter>
           ) : null}

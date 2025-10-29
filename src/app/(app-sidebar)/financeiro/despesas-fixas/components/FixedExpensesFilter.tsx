@@ -65,8 +65,7 @@ export function FixedExpensesFilter({
 
     if (month && !isNaN(Number(month)) && year && !isNaN(Number(year))) {
       // Se ambos os parâmetros existem e são válidos, usa eles
-      // Converter de 1-12 (mês do ano) para 0-11 (índice do array)
-      setCurrentMonth(Number(month) - 1)
+      setCurrentMonth(Number(month))
       setCurrentYear(Number(year))
     } else {
       // Se não há parâmetros válidos, usa o mês atual
@@ -89,6 +88,7 @@ export function FixedExpensesFilter({
   }
 
   const navigateMonth = (direction: 'prev' | 'next') => {
+    setSelectedIds([])
     let newMonth = currentMonth
     let newYear = currentYear
 
@@ -103,18 +103,19 @@ export function FixedExpensesFilter({
     setCurrentMonth(newMonth)
     setCurrentYear(newYear)
 
-    // Atualizar URL - converter de 0-11 (índice do array) para 1-12 (mês do ano)
-    handleFilter('month', (newMonth + 1).toString())
+    // Atualizar URL
+    handleFilter('month', newMonth.toString())
     handleFilter('year', newYear.toString())
   }
 
   const handleMonthYearSelect = (value: string) => {
+    setSelectedIds([])
     const [month, year] = value.split('-')
     setCurrentMonth(Number(month))
     setCurrentYear(Number(year))
 
-    // Converter de 0-11 (índice do array) para 1-12 (mês do ano)
-    handleFilter('month', (Number(month) + 1).toString())
+    // Atualizar URL
+    handleFilter('month', month)
     handleFilter('year', year)
   }
 
@@ -149,15 +150,11 @@ export function FixedExpensesFilter({
           : 'Deseja lançar a despesa fixa selecionada?',
       cancelLabel: 'Voltar',
       confirmLabel: 'Lançar',
-      onConfirm: () => {
-        generateTransaction(selectedIds)
+      toastMsg: undefined,
+      onConfirm: async () => {
+        await generateTransaction(selectedIds)
         setSelectedIds([])
         queryClient.invalidateQueries()
-      },
-      toastMsg: {
-        loading: 'Aguarde...',
-        success: 'Lançamentos enviados aguardando processamento...',
-        error: 'Erro ao lançar despesas fixas',
       },
     })
   }
@@ -197,11 +194,7 @@ export function FixedExpensesFilter({
           selectedIds.length === 0 && 'opacity-0 pointer-events-none',
         )}
       >
-        <Button
-          LeftIcon={IconPlus}
-          onClick={handlePostSelectedExpenses}
-          disabled // TODO: Definir regra pra lançamento em massa
-        >
+        <Button LeftIcon={IconPlus} onClick={handlePostSelectedExpenses}>
           Lançar selecionadas
         </Button>
       </div>

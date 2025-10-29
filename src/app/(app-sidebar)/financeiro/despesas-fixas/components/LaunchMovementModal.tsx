@@ -16,9 +16,9 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -40,24 +40,6 @@ import { useQueryClient } from '@tanstack/react-query'
 // Types
 import type { FixedExpenseItemType } from '@/types/financial/fixedExpenses'
 
-// Função para calcular a data de vencimento padrão baseada no dueDay
-function calculateDefaultDueDate(
-  dueDay: number,
-  month?: number,
-  year?: number,
-): Date {
-  const currentDate = new Date()
-  const currentMonth = currentDate.getMonth()
-  const currentYear = currentDate.getFullYear()
-
-  // Usar o mês e ano dos filtros ou os atuais como fallback
-  const targetMonth = month !== undefined ? month : currentMonth
-  const targetYear = year !== undefined ? year : currentYear
-
-  // Criar a data com o dia do vencimento no mês/ano especificado
-  return new Date(targetYear, targetMonth, dueDay)
-}
-
 const schema = z.object({
   competenceDate: z.date({
     required_error: 'Data de competência é obrigatória',
@@ -65,7 +47,7 @@ const schema = z.object({
   dueDate: z.date({
     required_error: 'Data de vencimento é obrigatória',
   }),
-  amount: z.number().min(0.01, 'Valor deve ser maior que zero'),
+  amount: z.number().min(0.01, 'Digite um valor'),
   notes: z.string().optional(),
 })
 
@@ -75,8 +57,8 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   item: FixedExpenseItemType | null
-  month?: number
-  year?: number
+  month: number
+  year: number
   onSuccess?: () => void
 }
 
@@ -99,12 +81,8 @@ export function LaunchMovementModal({
   useEffect(() => {
     if (item && open) {
       form.reset({
-        competenceDate: item
-          ? calculateDefaultDueDate(item.dueDay, month, year)
-          : new Date(),
-        dueDate: item
-          ? calculateDefaultDueDate(item.dueDay, month, year)
-          : new Date(),
+        competenceDate: item ? new Date(year, month, item.dueDay) : new Date(),
+        dueDate: item ? new Date(year, month, item.dueDay) : new Date(),
         amount: item.amount || 0,
         notes: '',
       })
@@ -115,32 +93,29 @@ export function LaunchMovementModal({
   const onSubmit = async (data: FormType) => {
     if (!item) return
 
-    const requestData = {
+    const payload = {
       scheduledExpenseIds: [item.id],
-      competenceDate: data.competenceDate.toISOString().split('T')[0],
-      dueDate: data.dueDate.toISOString().split('T')[0],
+      competenceDate: data.competenceDate,
+      dueDate: data.dueDate,
       amount: data.amount,
-      notes: data.notes || '',
+      notes: data.notes,
     }
 
-    try {
-      const response = await createItemNew({
-        route: '/financial/scheduled-expense/launch',
-        data: requestData,
-      })
+    const res = await createItemNew({
+      route: '/financial/scheduled-expense/launch',
+      data: payload,
+    })
 
-      if (response.success) {
-        toast.success('Lançamento realizado com sucesso')
-        queryClient.invalidateQueries()
-        reset()
-        onOpenChange(false)
-        onSuccess?.()
-      } else {
-        toast.error('Erro ao lançar despesa fixa')
-      }
-    } catch (error) {
+    if (!res.success) {
       toast.error('Erro ao lançar despesa fixa')
+      return
     }
+
+    toast.success('Lançamento realizado com sucesso')
+    queryClient.invalidateQueries()
+    reset()
+    onOpenChange(false)
+    onSuccess?.()
   }
 
   const handleOpenChange = (openDialog: boolean) => {

@@ -12,6 +12,9 @@ export function metadata() {
 }
 
 export default function FixedExpensesPage({ searchParams }: SearchParamsType) {
+  const month = searchParams.month || String(new Date().getMonth())
+  const year = searchParams.year || String(new Date().getFullYear())
+
   return (
     <PermissionGate
       permissions={['financial:fixed_expense:view']}
@@ -21,7 +24,7 @@ export default function FixedExpensesPage({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <FixedExpenses searchParams={searchParams} />
+      <FixedExpenses searchParams={{ ...searchParams, month, year }} />
     </PermissionGate>
   )
 }
