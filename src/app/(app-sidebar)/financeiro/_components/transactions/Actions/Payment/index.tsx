@@ -122,7 +122,7 @@ export function PaymentDialog({
       reset({
         paidDate: new Date(),
         paymentConditionId: rowData?.paymentCondition?.id || '',
-        bankId: rowData?.bank?.id,
+        bankId: rowData?.bank?.id || rowData?.bankAccount?.bank?.id,
         bankAccountId: rowData?.bankAccount?.id,
         totalValue: rowData?.value || 0,
         amount: rowData?.value || 0,

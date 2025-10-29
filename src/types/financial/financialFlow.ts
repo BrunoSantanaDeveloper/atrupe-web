@@ -13,6 +13,10 @@ export type InstallmentType = {
   bankAccount: {
     id: string
     name: string
+    bank: {
+      id: string
+      name: string
+    }
   }
   value: number
   amount: number
