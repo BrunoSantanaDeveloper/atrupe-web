@@ -2,7 +2,6 @@ import * as z from 'zod'
 
 export const newClientSchema = z
   .object({
-    status: z.enum(['ACTIVE', 'INACTIVE', 'PROSPECT']).optional().nullable(),
     type: z.enum(['PERSON', 'COMPANY']),
     general: z.object({
       name: z.string().min(1, 'Nome é obrigatório'),

@@ -2,16 +2,18 @@
 
 // Components
 import { Button } from '@/components/ui/button'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
-// import { TooltipProvider } from '@/components/ui/tooltip'
-// import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
 import { IconCirclePlus, IconCircleMinus } from '@tabler/icons-react'
-import { updateItem } from '@/actions/_cruds'
-import { ClientInfoType } from '@/types/cadastros/client'
+
+// Types
+import type { ClientInfoType } from '@/types/cadastros/client'
+
+// Lib
+import { updateItemNew } from '@/actions/_cruds'
 
 interface Props {
   params: {
@@ -29,36 +31,6 @@ export function ClientActions({ params, data, entityType }: Props) {
 
   const status = data?.status
 
-  const isProspect = data?.addresses?.length === 0 && entityType === 'client'
-
-  const mutation = useMutation({
-    mutationFn: () =>
-      updateItem(
-        entityType === 'client' ? 'clientRoute' : 'supplierRoute',
-        params.id,
-        {
-          status:
-            status === 'ACTIVE' || status === 'PROSPECT'
-              ? 'INACTIVE'
-              : isProspect
-                ? 'PROSPECT'
-                : 'ACTIVE',
-        },
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey:
-          entityType === 'client'
-            ? ['client-data', params.id]
-            : ['supplier-data', params.id],
-      })
-      queryClient.invalidateQueries({
-        queryKey:
-          entityType === 'client' ? ['client-list', {}] : ['supplier-list', {}],
-      })
-    },
-  })
-
   // Ativar ou inativar cadastro
   const handleActiveToggle = async (type: 'active' | 'inactive') => {
     await alertDialog.open({
@@ -67,12 +39,21 @@ export function ClientActions({ params, data, entityType }: Props) {
       cancelLabel: 'Voltar',
       confirmVariant: type === 'active' ? 'success' : 'error',
       confirmLabel: type === 'active' ? 'Ativar' : 'Inativar',
-      onConfirm: () => {
-        mutation.mutate()
+      onConfirm: async () => {
+        const res = await updateItemNew({
+          route: `/${entityType}/${params.id}/toggle-status`,
+          data: {},
+        })
+
+        if (!res.success) {
+          throw new Error(res.message)
+        }
+
+        queryClient.invalidateQueries()
       },
       toastMsg: {
         loading: `Aguarde...`,
-        success: `Cadastro ${type === 'active' ? 'ativado' : 'inativado'} com sucesso.`,
+        success: `Cadastro ${type === 'active' ? 'ativado' : 'inativado'}.`,
         error: `Erro ao ${type === 'active' ? 'ativar' : 'inativar'} cadastro`,
       },
     })

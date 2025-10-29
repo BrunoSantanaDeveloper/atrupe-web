@@ -256,10 +256,6 @@ export function NewClientModal({
       formData = formDataWithoutCreditLimit as any
     }
 
-    if (client?.status !== 'INACTIVE') {
-      formData.status = 'ACTIVE'
-    }
-
     if (isSubmitting) return
 
     let res

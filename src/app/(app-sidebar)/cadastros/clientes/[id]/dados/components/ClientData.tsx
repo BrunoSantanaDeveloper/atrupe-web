@@ -64,76 +64,81 @@ export function ClientData({ data }: Props) {
           </DetailCardRowItem>
         </DetailCard>
       )}
-      {data.contacts?.length &&
-        data.contacts.map((contact) => (
-          <Fragment key={contact.id}>
-            <DetailCard
-              title={`Responsável - ${contact.name || ''}`}
-              icon={IconUserStar}
-            >
-              <DetailCardRowItem>
-                <TextSupportingText
-                  supporting="Nome"
-                  text={contact.name || ''}
-                />
-                <TextSupportingText
-                  supporting="E-mail"
-                  text={contact.email || ''}
-                />
-                <TextSupportingText
-                  supporting="Celular"
-                  text={contact.phone || ''}
-                />
-              </DetailCardRowItem>
-              <DetailCardRowItem showSeparator={false}>
-                <TextSupportingText
-                  supporting="Observações"
-                  text={contact.notes || ''}
-                  containerClassName="col-span-2 md:col-span-3 lg:col-span-4"
-                />
-              </DetailCardRowItem>
-            </DetailCard>
-          </Fragment>
-        ))}
-      {data.addresses?.length &&
-        data.addresses.map((address) => (
-          <Fragment key={address.id}>
-            <DetailCard title={`Endereço - ${address.type}`} icon={IconMapPin}>
-              <DetailCardRowItem>
-                <TextSupportingText
-                  supporting="CEP"
-                  text={address.zipcode || ''}
-                />
-                <TextSupportingText
-                  supporting="Estado"
-                  text={address.state || ''}
-                />
-                <TextSupportingText
-                  supporting="Cidade"
-                  text={address.city || ''}
-                />
-                <TextSupportingText
-                  supporting="Bairro"
-                  text={address.neighborhood || ''}
-                />
-              </DetailCardRowItem>
-              <DetailCardRowItem showSeparator={false}>
-                <TextSupportingText
-                  supporting="Rua"
-                  text={address.street || ''}
-                />
-                <TextSupportingText
-                  supporting="Número"
-                  text={address.number || ''}
-                />
-                <TextSupportingText
-                  supporting="Complemento"
-                  text={address.complement || ''}
-                />
-              </DetailCardRowItem>
-            </DetailCard>
-          </Fragment>
-        ))}
+      {data.contacts?.length
+        ? data.contacts.map((contact) => (
+            <Fragment key={contact.id}>
+              <DetailCard
+                title={`Responsável - ${contact.name || ''}`}
+                icon={IconUserStar}
+              >
+                <DetailCardRowItem>
+                  <TextSupportingText
+                    supporting="Nome"
+                    text={contact.name || ''}
+                  />
+                  <TextSupportingText
+                    supporting="E-mail"
+                    text={contact.email || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Celular"
+                    text={contact.phone || ''}
+                  />
+                </DetailCardRowItem>
+                <DetailCardRowItem showSeparator={false}>
+                  <TextSupportingText
+                    supporting="Observações"
+                    text={contact.notes || ''}
+                    containerClassName="col-span-2 md:col-span-3 lg:col-span-4"
+                  />
+                </DetailCardRowItem>
+              </DetailCard>
+            </Fragment>
+          ))
+        : null}
+      {data.addresses?.length
+        ? data.addresses.map((address) => (
+            <Fragment key={address.id}>
+              <DetailCard
+                title={`Endereço - ${address.type}`}
+                icon={IconMapPin}
+              >
+                <DetailCardRowItem>
+                  <TextSupportingText
+                    supporting="CEP"
+                    text={address.zipcode || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Estado"
+                    text={address.state || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Cidade"
+                    text={address.city || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Bairro"
+                    text={address.neighborhood || ''}
+                  />
+                </DetailCardRowItem>
+                <DetailCardRowItem showSeparator={false}>
+                  <TextSupportingText
+                    supporting="Rua"
+                    text={address.street || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Número"
+                    text={address.number || ''}
+                  />
+                  <TextSupportingText
+                    supporting="Complemento"
+                    text={address.complement || ''}
+                  />
+                </DetailCardRowItem>
+              </DetailCard>
+            </Fragment>
+          ))
+        : null}
     </div>
   )
 }
