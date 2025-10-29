@@ -605,7 +605,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
                       <View style={styles.itemInfo}>
                         <Text style={styles.itemTitle}>
-                          {composition?.name || '-'}
+                          {item?.description || '-'}
                         </Text>
                         {item.technicalDescription && (
                           <Text style={styles.itemDescription}>
