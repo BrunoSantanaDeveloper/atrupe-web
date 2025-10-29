@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 
 // Components
 import { InactiveEmployeeAlertDialog } from '../InactiveEmployee'
@@ -146,7 +147,7 @@ export function EditEmployeeDialog({
                 className="flex gap-6"
                 noValidate
               >
-                <div className="w-[300px] h-[300px] bg-white rounded-lg">
+                <div className="w-[300px] h-[290px] bg-white rounded-lg mb-8 sticky top-0">
                   <ProductImageUpload<FormType>
                     control={form.control}
                     name="avatarUrl"
@@ -218,10 +219,16 @@ export function EditEmployeeDialog({
                   <Separator />
 
                   <p className="font-semibold w-full">Endereço</p>
-                  <FormInput<FormType>
+                  <FormInputZipCode
                     name="address.zipcode"
                     label="CEP"
                     width="flex-[1_0_190px]"
+                    addressFields={{
+                      street: 'address.street',
+                      neighborhood: 'address.neighborhood',
+                      city: 'address.city',
+                      state: 'address.state',
+                    }}
                   />
 
                   <FormInput<FormType>

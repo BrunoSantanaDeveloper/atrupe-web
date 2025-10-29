@@ -6,10 +6,10 @@ export const schema = z.object({
   roleId: z.string(),
   cpf: z.string(),
   rg: z.string(),
-  phone: z.string().optional(),
-  mobile: z.string().min(1, 'Celular é obrigatório'),
-  avatarUrl: z.string().optional(),
-  signatureUrl: z.string().optional(),
+  phone: z.string(),
+  mobile: z.string(),
+  avatarUrl: z.string(),
+  signatureUrl: z.string(),
   address: z.object({
     zipcode: z.string().min(8, 'CEP inválido'),
     state: z.string(),
@@ -17,7 +17,7 @@ export const schema = z.object({
     neighborhood: z.string(),
     number: z.string(),
     street: z.string(),
-    complement: z.string().optional(),
+    complement: z.string(),
   }),
 })
 
