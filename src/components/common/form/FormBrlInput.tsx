@@ -27,6 +27,7 @@ interface Props<T extends FieldValues>
   type?: HTMLInputTypeAttribute | undefined
   className?: string
   additionalOnChange?: (value: number | null) => void
+  formatValue?: (value: number) => number
 }
 
 // Função para formatar o valor como moeda BRL
@@ -52,6 +53,7 @@ export function FormBrlInput<T extends FieldValues>({
   width = 'flex-[1_0_100px]',
   className,
   additionalOnChange,
+  formatValue,
   ...props
 }: Props<T>) {
   const { control } = useFormContext()
@@ -60,31 +62,37 @@ export function FormBrlInput<T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className={cn('flex flex-col', width)}>
-          {label ? <FormLabel>{label}</FormLabel> : null}
-          <FormControl>
-            <Input
-              placeholder={placeholder}
-              startAdornment={startAdornment}
-              endAdornment={endAdornment}
-              value={formatCurrency(field.value || 0)}
-              onChange={(e) => {
-                if (props.disabled) return
+      render={({ field }) => {
+        const displayValue = formatValue
+          ? formatValue(field.value || 0)
+          : field.value || 0
 
-                const value = e.target.value
-                const parsedValue = parseCurrency(value)
-                field.onChange(parsedValue)
-                additionalOnChange?.(parsedValue)
-              }}
-              className={className}
-              inputMode="numeric"
-              {...props}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+        return (
+          <FormItem className={cn('flex flex-col', width)}>
+            {label ? <FormLabel>{label}</FormLabel> : null}
+            <FormControl>
+              <Input
+                placeholder={placeholder}
+                startAdornment={startAdornment}
+                endAdornment={endAdornment}
+                value={formatCurrency(displayValue)}
+                onChange={(e) => {
+                  if (props.disabled) return
+
+                  const value = e.target.value
+                  const parsedValue = parseCurrency(value)
+                  field.onChange(parsedValue)
+                  additionalOnChange?.(parsedValue)
+                }}
+                className={className}
+                inputMode="numeric"
+                {...props}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )
+      }}
     />
   )
 }

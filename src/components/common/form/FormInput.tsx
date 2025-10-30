@@ -25,6 +25,7 @@ interface Props<T extends FieldValues>
   endAdornment?: JSX.Element
   width?: string
   additionalOnChange?: (value: string | number | null) => void
+  formatValue?: (value: string | number | null) => string | number | null
 }
 
 export function FormInput<T extends FieldValues>({
@@ -35,6 +36,7 @@ export function FormInput<T extends FieldValues>({
   endAdornment,
   width = 'flex-[1_0_100px]',
   additionalOnChange,
+  formatValue,
   ...props
 }: Props<T>) {
   const { control, setError, clearErrors } = useFormContext()
@@ -43,48 +45,55 @@ export function FormInput<T extends FieldValues>({
     <FormField
       control={control}
       name={name}
-      render={({ field }) => (
-        <FormItem className={cn('flex flex-col', width)}>
-          {label ? <FormLabel>{label}</FormLabel> : null}
-          <FormControl>
-            <Input
-              type={type}
-              startAdornment={startAdornment}
-              endAdornment={endAdornment}
-              placeholder={label}
-              {...field}
-              {...props}
-              onChange={(e) => {
-                let value
+      render={({ field }) => {
+        const displayValue = formatValue
+          ? formatValue(field.value)
+          : field.value
 
-                if (type === 'number') {
-                  const valueNumber = Number(e.target.value)
-                  const maxNumber = Number(props.max)
+        return (
+          <FormItem className={cn('flex flex-col', width)}>
+            {label ? <FormLabel>{label}</FormLabel> : null}
+            <FormControl>
+              <Input
+                type={type}
+                startAdornment={startAdornment}
+                endAdornment={endAdornment}
+                placeholder={label}
+                {...field}
+                value={displayValue ?? ''}
+                {...props}
+                onChange={(e) => {
+                  let value
 
-                  if (e.target.value === '') {
-                    value = null
-                  } else if (valueNumber > maxNumber) {
-                    value = maxNumber
-                    setError(name, {
-                      type: 'max',
-                      message: `Máximo permitido: ${maxNumber}`,
-                    })
+                  if (type === 'number') {
+                    const valueNumber = Number(e.target.value)
+                    const maxNumber = Number(props.max)
+
+                    if (e.target.value === '') {
+                      value = null
+                    } else if (valueNumber > maxNumber) {
+                      value = maxNumber
+                      setError(name, {
+                        type: 'max',
+                        message: `Máximo permitido: ${maxNumber}`,
+                      })
+                    } else {
+                      value = valueNumber
+                      clearErrors(name)
+                    }
                   } else {
-                    value = valueNumber
-                    clearErrors(name)
+                    value = e.target.value
                   }
-                } else {
-                  value = e.target.value
-                }
 
-                field.onChange(value)
-                additionalOnChange?.(value)
-              }}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+                  field.onChange(value)
+                  additionalOnChange?.(value)
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )
+      }}
     />
   )
 }

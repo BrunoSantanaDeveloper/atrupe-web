@@ -204,6 +204,7 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   additionalOnChange={handleDiscountChange}
                   autoFocus
                   startAdornment={<PickValuePercentSelect />}
+                  formatValue={(value) => (value < 0 ? 0 : value)}
                 />
               ) : (
                 <FormInput<FormType>
@@ -214,6 +215,10 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   additionalOnChange={handleDiscountChange}
                   autoFocus
                   startAdornment={<PickValuePercentSelect />}
+                  formatValue={(value) => {
+                    const numValue = Number(value)
+                    return numValue < 0 ? 0 : value
+                  }}
                 />
               )}
               <FormBrlInput<FormType>
