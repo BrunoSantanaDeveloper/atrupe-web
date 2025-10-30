@@ -524,9 +524,12 @@ export function calculateQuotationTotals(items: QuotationItemForCalculation[]) {
     0,
   )
 
-  const totalDiscount = correctedItems.reduce(
-    (sum, item) => sum + item.discount.discountedValue,
+  const totalDiscount = Math.max(
     0,
+    correctedItems.reduce(
+      (sum, item) => sum + item.discount.discountedValue,
+      0,
+    ),
   )
 
   // Para itens com desconto já aplicado em totalUnitPrice, finalTotal = soma dos finalPrice

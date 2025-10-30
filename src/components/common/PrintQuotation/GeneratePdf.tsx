@@ -439,17 +439,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               )} */}
             </View>
 
-            <View style={styles.infoBlock}>
-              <Text>A/C</Text>
-              <Text style={styles.infoBold}>{data.contact?.name}</Text>
-              <Text>{data.contact?.phone}</Text>
-              <Text>{data.contact?.email}</Text>
-              {/* {isProduction && data.contact?.notes && (
-                <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
-                  {data.contact.notes}
-                </Text>
-              )} */}
-            </View>
+            {data.contact?.name && (
+              <View style={styles.infoBlock}>
+                <>
+                  <Text>A/C</Text>
+                  <Text style={styles.infoBold}>{data.contact.name}</Text>
+                  <Text>{data.contact?.phone}</Text>
+                  <Text>{data.contact?.email}</Text>
+                </>
+              </View>
+            )}
 
             <View style={styles.infoBlockRight}>
               <Text
@@ -596,12 +595,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           : styles.columnReferenceNormal
                       }
                     >
-                      <View style={styles.itemImage}>
-                        <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
-                          style={styles.itemImageFull}
-                        />
-                      </View>
+                      {printOptions.showImages && (
+                        <View style={styles.itemImage}>
+                          <PDFImage
+                            src={getProxiedImageUrl(item.image?.url)}
+                            style={styles.itemImageFull}
+                          />
+                        </View>
+                      )}
 
                       <View style={styles.itemInfo}>
                         <Text style={styles.itemTitle}>
@@ -638,9 +639,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {!isProduction && (
                       <View style={styles.columnDetails}>
                         <Text style={styles.textCenterSmall}>
-                          {generateFormattedQuantityDetails(
-                            adaptCompositionForDisplayUtils(composition),
-                          )}
+                          {printOptions.showDimensions
+                            ? generateFormattedQuantityDetails(
+                                adaptCompositionForDisplayUtils(composition),
+                              )
+                            : '-'}
                         </Text>
                       </View>
                     )}
@@ -707,12 +710,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         : styles.columnReferenceNormal
                     }
                   >
-                    <View style={styles.itemImage}>
-                      <PDFImage
-                        src={getProxiedImageUrl(item.image?.url)}
-                        style={styles.itemImageFull}
-                      />
-                    </View>
+                    {printOptions.showImages && (
+                      <View style={styles.itemImage}>
+                        <PDFImage
+                          src={getProxiedImageUrl(item.image?.url)}
+                          style={styles.itemImageFull}
+                        />
+                      </View>
+                    )}
 
                     <View style={styles.itemInfo}>
                       <Text style={styles.itemTitle}>
