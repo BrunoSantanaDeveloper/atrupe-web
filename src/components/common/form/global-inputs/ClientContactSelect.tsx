@@ -47,7 +47,11 @@ export function ClientContactSelect({
         if (response.success && response.data) {
           setContacts(response.data || [])
 
-          form.setValue(name, response.data[0].id || '')
+          // Só define o primeiro contato se não houver um valor já selecionado
+          const currentValue = form.getValues(name)
+          if (!currentValue && response.data[0]?.id) {
+            form.setValue(name, response.data[0].id)
+          }
         } else {
           setContacts([])
         }
