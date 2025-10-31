@@ -14,6 +14,7 @@ export const newSupplierSchema = z.object({
     phone: z.string(),
     mobile: z.string(),
     notes: z.string().optional(),
+    isBranch: z.boolean().optional(),
   }),
   addresses: z
     .array(
@@ -54,6 +55,7 @@ export const defaultPersonValues: NewSupplierFormType = {
     phone: '',
     mobile: '',
     notes: '',
+    isBranch: false,
   },
   addresses: [
     {
@@ -90,6 +92,7 @@ export const defaultCompanyValues: NewSupplierFormType = {
     phone: '',
     mobile: '',
     notes: '',
+    isBranch: false,
   },
   addresses: [
     {

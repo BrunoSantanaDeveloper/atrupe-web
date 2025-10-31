@@ -43,6 +43,7 @@ import {
   updateItemNew,
 } from '@/actions/_cruds'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
+import { maskCpf, maskCnpj } from '@/lib/utils'
 
 async function handleGetClient(clientId: string) {
   if (!clientId) return
@@ -95,9 +96,9 @@ export function NewClientModal({
         name: apiData.general?.name || '',
         corporateName: apiData.general?.corporateName || '',
         email: apiData.general?.email || '',
-        cpf: apiData.general?.cpf || '',
+        cpf: apiData.general?.cpf ? maskCpf(apiData.general.cpf) : '',
         rg: apiData.general?.rg || '',
-        cnpj: apiData.general?.cnpj || '',
+        cnpj: apiData.general?.cnpj ? maskCnpj(apiData.general.cnpj) : '',
         birthdate: apiData.general?.birthdate
           ? new Date(apiData.general.birthdate + 'T00:00:00')
           : undefined,
@@ -106,6 +107,7 @@ export function NewClientModal({
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
+        isBranch: apiData.general?.isBranch || false,
       },
       addresses: apiData.addresses?.length
         ? apiData.addresses.map((address: any) => ({

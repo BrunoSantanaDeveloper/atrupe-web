@@ -37,6 +37,7 @@ import {
 import { getItemOld, createItemNew, updateItemNew } from '@/actions/_cruds'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
+import { maskCpf, maskCnpj } from '@/lib/utils'
 
 interface Props {
   editMode?: boolean
@@ -74,14 +75,15 @@ export function NewSupplier({
       general: {
         name: apiData.general?.name || '',
         email: apiData.general?.email || '',
-        cpf: apiData.general?.cpf || '',
+        cpf: apiData.general?.cpf ? maskCpf(apiData.general.cpf) : '',
         rg: apiData.general?.rg || '',
-        cnpj: apiData.general?.cnpj || '',
+        cnpj: apiData.general?.cnpj ? maskCnpj(apiData.general.cnpj) : '',
         activity: apiData.general?.activity || '',
         categoryId: apiData.general?.category?.id || '',
         phone: apiData.general?.phone || '',
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
+        isBranch: apiData.general?.isBranch || false,
       },
       addresses: apiData.addresses?.length
         ? apiData.addresses.map((address: any) => ({

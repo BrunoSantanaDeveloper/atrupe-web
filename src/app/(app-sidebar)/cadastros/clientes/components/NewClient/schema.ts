@@ -16,6 +16,7 @@ export const newClientSchema = z
       phone: z.string(),
       mobile: z.string(),
       notes: z.string().optional(),
+      isBranch: z.boolean().optional(),
     }),
     addresses: z.array(
       z.object({
@@ -109,6 +110,7 @@ export const defaultPersonValues: NewClientFormType = {
     phone: '',
     mobile: '',
     notes: '',
+    isBranch: false,
   },
   addresses: [
     {
@@ -164,6 +166,7 @@ export const defaultCompanyValues: NewClientFormType = {
     phone: '',
     mobile: '',
     notes: '',
+    isBranch: false,
   },
   addresses: [
     {

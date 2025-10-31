@@ -8,6 +8,7 @@ import { useFormContext } from 'react-hook-form'
 import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 import { useMemo, useCallback } from 'react'
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
+import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -84,7 +85,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
     <div className="grid grid-cols-2 gap-4">
       {type === 'PERSON' && (
         <>
-          <FormInput<NewClientFormType>
+          <FormInput
             name="general.cpf"
             label="CPF"
             placeholder="Digite aqui"
@@ -101,7 +102,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
       )}
       {type === 'COMPANY' && (
         <>
-          <FormInput<NewClientFormType>
+          <FormInput
             name="general.cnpj"
             label="CNPJ"
             placeholder="Digite aqui"
@@ -118,7 +119,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
       )}
       {type === 'COMPANY' && (
         <>
-          <FormInput<NewClientFormType>
+          <FormInput
             name="general.corporateName"
             label="Razão social"
             placeholder="Digite aqui"
@@ -126,7 +127,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           />
         </>
       )}
-      <FormInput<NewClientFormType>
+      <FormInput
         name="general.name"
         label={type === 'PERSON' ? 'Nome' : 'Nome fantasia'}
         placeholder="Digite aqui"
@@ -135,31 +136,31 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       {type === 'PERSON' && (
         <>
-          <FormDatePickerSingle<NewClientFormType>
+          <FormDatePickerSingle
             name="general.birthdate"
             label="Data de nascimento"
             placeholder="Selecione a data"
             defaultMonth={new Date(1990, 0, 1)}
           />
-          <FormInput<NewClientFormType> name="general.rg" label="RG" />
+          <FormInput name="general.rg" label="RG" />
         </>
       )}
-      <FormInput<NewClientFormType>
+      <FormInput
         name="general.email"
         label="E-mail"
         placeholder="Digite aqui"
         type="email"
       />
 
-      {/* <FormInput<NewClientFormType> name="general.activity" label="Atividade" /> */}
+      {/* <FormInput name="general.activity" label="Atividade" /> */}
 
-      <FormSelect<NewClientFormType>
+      <FormSelect
         name="general.categoryId"
         label="Grupo"
         options={categoryOptions}
       />
 
-      <FormInput<NewClientFormType>
+      <FormInput
         name="general.phone"
         label="Telefone"
         inputMode="tel"
@@ -170,7 +171,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         maxLength={15}
       />
 
-      <FormInput<NewClientFormType>
+      <FormInput
         name="general.mobile"
         label="Celular"
         inputMode="tel"
@@ -180,8 +181,15 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         }}
         maxLength={15}
       />
+
+      <FormCheckbox
+        name="general.isBranch"
+        label="Filial (Não validar CPF / CNPJ)"
+        className="my-4"
+      />
+
       <div className="col-span-2">
-        <FormTextarea<NewClientFormType>
+        <FormTextarea
           name="general.notes"
           label="Observações gerais"
           placeholder="Digite aqui"
