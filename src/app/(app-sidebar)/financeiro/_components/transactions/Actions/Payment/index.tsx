@@ -60,6 +60,8 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 // Lib
 import { pdf } from '@react-pdf/renderer'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
+import { useBankAccount } from '@/hooks/queries/useBankAccount'
 
 interface Props {
   open: boolean
@@ -92,9 +94,19 @@ export function PaymentDialog({
 
   const { canCreatePaymentDifference, canCreateBankAccount } = usePlanFeatures()
 
+  const paymentConditionId = watch('paymentConditionId') || ''
+  const bankId = watch('bankId') || ''
+  const bankAccountId = watch('bankAccountId') || ''
   const totalValue = watch('totalValue') || 0
   const amount = watch('amount') || 0
   const differenceNatureId = watch('differenceNatureId') || ''
+
+  const { data: banks } = useBankFilterCondition(paymentConditionId)
+
+  const { data: bankAccounts } = useBankAccount({
+    filters: { bankId },
+    isBankRequired: true,
+  })
 
   // Calcula a diferença entre valor pago e valor original
   const difference = useMemo(() => {
@@ -133,9 +145,9 @@ export function PaymentDialog({
       // Sistema de retry para definir bankAccountId
       const setBankAccountWithRetry = (delay: number) => {
         setTimeout(() => {
-          const bankAccountId = watch('bankAccountId')
+          const formBankAccountId = watch('bankAccountId')
 
-          if (!bankAccountId && rowData?.bankAccount?.id) {
+          if (!formBankAccountId && rowData?.bankAccount?.id) {
             setValue('bankAccountId', rowData.bankAccount.id)
             // Se ainda não definiu, tenta novamente após 200ms
             setBankAccountWithRetry(200)
@@ -150,6 +162,36 @@ export function PaymentDialog({
       previousDifferenceTypeRef.current = null
     }
   }, [open, rowData, reset, setValue, watch])
+
+  // Só atribui o primeiro banco se NÃO havia valor inicial no rowData
+  useEffect(() => {
+    const initialBankId = rowData?.bank?.id || rowData?.bankAccount?.bank?.id
+
+    if (
+      banks &&
+      banks.length > 0 &&
+      paymentConditionId &&
+      !bankId &&
+      !initialBankId
+    ) {
+      setValue('bankId', banks[0].id)
+    }
+  }, [banks, paymentConditionId, setValue, bankId, rowData])
+
+  // Só atribui a primeira conta se NÃO havia valor inicial no rowData
+  useEffect(() => {
+    const initialBankAccountId = rowData?.bankAccount?.id
+
+    if (
+      bankAccounts &&
+      bankAccounts.length > 0 &&
+      bankId &&
+      !bankAccountId &&
+      !initialBankAccountId
+    ) {
+      setValue('bankAccountId', bankAccounts[0].id)
+    }
+  }, [bankAccounts, bankId, setValue, bankAccountId, rowData])
 
   // Limpa a categoria quando a natureza é alterada
   useEffect(() => {
