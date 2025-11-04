@@ -57,3 +57,77 @@ export type ListEmployeeType = {
   total: number
   lastPage: number
 }
+
+// Types for Employee History
+export type EmployeeHistoryAction =
+  | 'CREATE'
+  | 'UPDATE'
+  | 'DEACTIVATE'
+  | 'REACTIVATE'
+  | 'CREATE_USER'
+  | 'UPDATE_USER'
+
+export type EmployeeHistoryChanges = {
+  before: Partial<{
+    isActive: boolean
+    name: string
+    roleId: string
+    sectorId: string
+    avatarUrl: string
+    signatureUrl: string
+    sallary: number
+    cpf: string
+    mobile: string
+    phone: string
+    rg: string
+    email: string
+  }>
+  after: Partial<{
+    isActive: boolean
+    name: string
+    roleId: string
+    sectorId: string
+    avatarUrl: string
+    signatureUrl: string
+    sallary: number
+    cpf: string
+    mobile: string
+    phone: string
+    rg: string
+    email: string
+  }>
+}
+
+export type EmployeeHistoryMetadata = {
+  roleId?: string
+  sectorId?: string
+  changedFields?: string[]
+  userId?: string
+  userEmail?: string
+  userName?: string
+  [key: string]: unknown
+}
+
+export type HistoryUser = {
+  id: string
+  name: string
+  email: string
+  avatar: string | null
+}
+
+export type EmployeeHistoryItem = {
+  id: string
+  action: EmployeeHistoryAction
+  description: string
+  changes: EmployeeHistoryChanges | null
+  metadata: EmployeeHistoryMetadata | null
+  createdBy: string
+  createdByName: string
+  createdAt: string
+  user: HistoryUser
+}
+
+export type EmployeeHistoryResponse = {
+  total: number
+  history: EmployeeHistoryItem[]
+}

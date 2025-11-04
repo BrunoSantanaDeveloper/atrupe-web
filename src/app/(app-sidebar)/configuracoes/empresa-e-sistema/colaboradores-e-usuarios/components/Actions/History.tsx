@@ -1,3 +1,6 @@
+// React
+import { useMemo } from 'react'
+
 // UI component
 import {
   Dialog,
@@ -10,11 +13,17 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
-import { IconHistory } from '@tabler/icons-react'
+import { IconHistory, IconLoader2 } from '@tabler/icons-react'
 
 // Type Imports
 import { Timeline } from '@/components/common/Timeline'
 import { EmployeeType } from '@/types/settings/employee'
+
+// Hooks
+import { useEmployeeHistory } from '@/hooks/queries/useEmployeeHistory'
+
+// Lib
+import { formatEmployeeHistoryEvent } from '@/lib/formatHistoryEvent'
 
 interface Props {
   open: boolean
@@ -22,17 +31,17 @@ interface Props {
   rowData?: EmployeeType
 }
 
-type EventType = {
-  date: string
-  time: string
-  author: string
-  title: string
-}
-
-const events: EventType[] = []
-
 export function UserHistoryDialog(props: Props) {
-  const { open, setOpen } = props
+  const { open, setOpen, rowData } = props
+
+  const { history, isLoading } = useEmployeeHistory({
+    employeeId: rowData?.id || '',
+    enabled: open && !!rowData?.id,
+  })
+
+  const events = useMemo(() => {
+    return history.map(formatEmployeeHistoryEvent)
+  }, [history])
 
   const handleOpenChange = (openDialog: boolean) => {
     setOpen(openDialog ? 'history' : '')
@@ -49,7 +58,11 @@ export function UserHistoryDialog(props: Props) {
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
-          {events.length > 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+            </div>
+          ) : events.length > 0 ? (
             <Timeline events={events} />
           ) : (
             <div className="flex items-center justify-center py-10">

@@ -1,7 +1,8 @@
 import { TransactionHistoryItem } from '@/types/financial/financialFlow'
+import { EmployeeHistoryItem } from '@/types/settings/employee'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { formatCurrencyToBrl } from './utils'
+import { formatCurrencyToBrl, maskCpf, MaskPhoneNumber } from './utils'
 
 export type TimelineEvent = {
   date: string
@@ -69,37 +70,58 @@ export function formatHistoryEvent(
           details.push(`Quantidade: ${beforeCount}x 🡢 ${afterCount}x parcelas`)
         }
 
-        // Create a map of before installments by installmentNumber for easier lookup
-        const beforeMap = new Map(
+        // Create a map of before installments by ID for easier lookup
+        const beforeMapById = new Map(
+          item.changes.before.map((inst) => [inst.id, inst]),
+        )
+
+        // Create a map to track which installment numbers exist in before
+        const beforeMapByNumber = new Map(
           item.changes.before.map((inst) => [inst.installmentNumber, inst]),
         )
 
+        // Track which before IDs were matched
+        const matchedBeforeIds = new Set<string>()
+
         // Show changes for each installment in 'after'
         item.changes.after.forEach((after) => {
-          const before = beforeMap.get(after.installmentNumber)
+          const beforeSameId = beforeMapById.get(after.id)
+          const beforeSameNumber = beforeMapByNumber.get(
+            after.installmentNumber,
+          )
 
-          if (before) {
-            // Existing installment - check for changes
-            if (before.amount !== after.amount) {
+          if (beforeSameId) {
+            // Same ID = same installment, check for amount changes
+            if (beforeSameId.amount !== after.amount) {
               details.push(
-                `Parcela ${after.installmentNumber}: ${formatCurrencyToBrl(before.amount)} 🡢 ${formatCurrencyToBrl(after.amount)}`,
+                `Parcela ${after.installmentNumber}: ${formatCurrencyToBrl(beforeSameId.amount)} 🡢 ${formatCurrencyToBrl(after.amount)}`,
               )
             }
-            // Remove from map to track which ones were processed
-            beforeMap.delete(after.installmentNumber)
+            matchedBeforeIds.add(beforeSameId.id)
+          } else if (beforeSameNumber && beforeSameNumber.id !== after.id) {
+            // Different ID but same number = replaced installment
+            details.push(
+              `Parcela ${beforeSameNumber.installmentNumber} removida: ${formatCurrencyToBrl(beforeSameNumber.amount)}`,
+            )
+            details.push(
+              `Nova parcela ${after.installmentNumber}: ${formatCurrencyToBrl(after.amount)}`,
+            )
+            matchedBeforeIds.add(beforeSameNumber.id)
           } else {
-            // New installment (not in before)
+            // Completely new installment
             details.push(
               `Nova parcela ${after.installmentNumber}: ${formatCurrencyToBrl(after.amount)}`,
             )
           }
         })
 
-        // Any remaining items in beforeMap were removed
-        beforeMap.forEach((removed) => {
-          details.push(
-            `Parcela ${removed.installmentNumber} removida: ${formatCurrencyToBrl(removed.amount)}`,
-          )
+        // Any remaining items in beforeMapById that weren't matched were removed
+        beforeMapById.forEach((removed) => {
+          if (!matchedBeforeIds.has(removed.id)) {
+            details.push(
+              `Parcela ${removed.installmentNumber} removida: ${formatCurrencyToBrl(removed.amount)}`,
+            )
+          }
         })
       }
       break
@@ -177,4 +199,167 @@ function formatKey(key: string): string {
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (str) => str.toUpperCase())
     .trim()
+}
+
+export function formatEmployeeHistoryEvent(
+  item: EmployeeHistoryItem,
+): TimelineEvent {
+  const createdAtDate = parseISO(item.createdAt)
+  const date = format(createdAtDate, 'dd/MM/yyyy', { locale: ptBR })
+  const time = format(createdAtDate, 'HH:mm', { locale: ptBR })
+
+  const title = item.description
+  const details: string[] = []
+
+  // Format based on action type
+  switch (item.action) {
+    case 'CREATE':
+      if (item.metadata) {
+        if (item.metadata.roleId) {
+          details.push(`Cargo criado`)
+        }
+        if (item.metadata.sectorId) {
+          details.push(`Setor atribuído`)
+        }
+      }
+      break
+
+    case 'UPDATE':
+      if (item.changes && item.metadata?.changedFields) {
+        const { before, after } = item.changes
+        const changedFields = item.metadata.changedFields
+
+        changedFields.forEach((field) => {
+          const beforeValue = before[field as keyof typeof before]
+          const afterValue = after[field as keyof typeof after]
+
+          // Format field-specific changes
+          switch (field) {
+            case 'cpf':
+              if (beforeValue && afterValue) {
+                details.push(
+                  `CPF: ${maskCpf(String(beforeValue))} 🡢 ${maskCpf(String(afterValue))}`,
+                )
+              }
+              break
+
+            case 'phone':
+            case 'mobile':
+              if (beforeValue && afterValue) {
+                const label = field === 'phone' ? 'Telefone' : 'Celular'
+                details.push(
+                  `${label}: ${MaskPhoneNumber(String(beforeValue))} 🡢 ${MaskPhoneNumber(String(afterValue))}`,
+                )
+              }
+              break
+
+            case 'sallary':
+              if (beforeValue !== undefined && afterValue !== undefined) {
+                details.push(
+                  `Salário: ${formatCurrencyToBrl(Number(beforeValue))} 🡢 ${formatCurrencyToBrl(Number(afterValue))}`,
+                )
+              }
+              break
+
+            case 'name':
+            case 'email':
+            case 'rg':
+              if (beforeValue && afterValue) {
+                details.push(
+                  `${formatFieldLabel(field)}: ${beforeValue} 🡢 ${afterValue}`,
+                )
+              }
+              break
+
+            case 'roleId':
+              details.push(`Cargo alterado`)
+              break
+
+            case 'sectorId':
+              details.push(`Setor alterado`)
+              break
+
+            case 'avatarUrl':
+              details.push(`Avatar atualizado`)
+              break
+
+            case 'signatureUrl':
+              details.push(`Assinatura atualizada`)
+              break
+
+            default:
+              if (beforeValue && afterValue) {
+                details.push(
+                  `${formatFieldLabel(field)}: ${beforeValue} 🡢 ${afterValue}`,
+                )
+              }
+          }
+        })
+      }
+      break
+
+    case 'DEACTIVATE':
+      details.push('Status: Ativo 🡢 Inativo')
+      break
+
+    case 'REACTIVATE':
+      details.push('Status: Inativo 🡢 Ativo')
+      break
+
+    case 'CREATE_USER':
+      if (item.metadata) {
+        if (item.metadata.userName) {
+          details.push(`Nome: ${item.metadata.userName}`)
+        }
+        if (item.metadata.userEmail) {
+          details.push(`E-mail: ${item.metadata.userEmail}`)
+        }
+      }
+      break
+
+    case 'UPDATE_USER':
+      if (item.changes) {
+        const { before, after } = item.changes
+        if (before.email && after.email && before.email !== after.email) {
+          details.push(`E-mail: ${before.email} 🡢 ${after.email}`)
+        }
+        if (
+          before.isActive !== undefined &&
+          after.isActive !== undefined &&
+          before.isActive !== after.isActive
+        ) {
+          details.push(
+            `Status: ${before.isActive ? 'Ativo' : 'Inativo'} 🡢 ${after.isActive ? 'Ativo' : 'Inativo'}`,
+          )
+        }
+      }
+      break
+  }
+
+  return {
+    date,
+    time,
+    author: item.createdByName,
+    title,
+    details: details.length > 0 ? details : undefined,
+  }
+}
+
+function formatFieldLabel(field: string): string {
+  const labels: Record<string, string> = {
+    name: 'Nome',
+    email: 'E-mail',
+    cpf: 'CPF',
+    rg: 'RG',
+    phone: 'Telefone',
+    mobile: 'Celular',
+    sallary: 'Salário',
+    avatarUrl: 'Avatar',
+    signatureUrl: 'Assinatura',
+    roleId: 'Cargo',
+    sectorId: 'Setor',
+    isActive: 'Status',
+  }
+
+  return labels[field] || formatKey(field)
 }

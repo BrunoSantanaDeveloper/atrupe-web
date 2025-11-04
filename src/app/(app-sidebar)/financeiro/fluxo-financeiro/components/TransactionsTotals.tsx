@@ -121,13 +121,13 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <p className="text-xs text-gray">A receber</p>
+            <p className="text-xs text-gray">Recebido</p>
             <p className="text-lG font-medium text-gray-600">
               {formatCurrencyToBrl(totals.receivables.totalPaid)}
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray">A pagar</p>
+            <p className="text-xs text-gray">Pago</p>
             <p className="text-lG font-medium text-gray-600">
               {formatCurrencyToBrl(totals.payables.totalPaid)}
             </p>
