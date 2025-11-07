@@ -51,41 +51,51 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createItemNew } from '@/actions/_cruds'
 
 // Schema
+const clientIdSchema = z
+  .object({
+    label: z.string(),
+    value: z.string(),
+  })
+  .transform((value) => value.value)
+  .nullable()
+
 const duplicateSchema = z.object({
-  clientId: z
-    .object({
-      label: z.string(),
-      value: z.string(),
-    })
-    .transform((value) => value.value)
-    .nullable(),
+  clientId: clientIdSchema,
   description: z.string().trim(),
 })
 
 type DuplicateType = z.infer<typeof duplicateSchema>
-
-const defaultValues = {
-  clientId: null,
-  description: '',
-}
+type DuplicateFormValues = z.input<typeof duplicateSchema>
 
 interface Props {
   quotationId: string
   tooltip?: string
   disabled?: boolean
+  clientId?: string
+  clientName?: string
+  description?: string
 }
 
 export function DuplicateQuotationButton({
   quotationId,
   tooltip = 'Duplicar orçamento',
   disabled = false,
+  clientId,
+  clientName,
+  description,
 }: Props) {
   const [open, setOpen] = useState(false)
   const [openSuccess, setOpenSuccess] = useState(false)
   const [newQuotationId, setNewQuotationId] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  const form = useForm<DuplicateType>({
+  const defaultValues: DuplicateFormValues = {
+    clientId:
+      clientId && clientName ? { label: clientName, value: clientId } : null,
+    description: description || '',
+  }
+
+  const form = useForm<DuplicateFormValues>({
     resolver: zodResolver(duplicateSchema),
     defaultValues,
   })
@@ -140,7 +150,11 @@ export function DuplicateQuotationButton({
             <Form {...form}>
               <form
                 id="quotation-duplicate-list"
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(
+                  onSubmit as unknown as (
+                    data: DuplicateFormValues,
+                  ) => Promise<void>,
+                )}
                 noValidate
                 className="flex flex-wrap gap-4"
               >
@@ -149,7 +163,7 @@ export function DuplicateQuotationButton({
                   label="Cliente"
                   width="w-full"
                 />
-                <FormInput<DuplicateType>
+                <FormInput
                   name="description"
                   label="Nova descrição do serviço"
                   width="w-full"

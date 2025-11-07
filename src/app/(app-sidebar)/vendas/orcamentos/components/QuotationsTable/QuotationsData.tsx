@@ -197,6 +197,9 @@ export function QuotationsData({
                                     >
                                       <DuplicateQuotationButton
                                         quotationId={quotation?.id}
+                                        clientId={quotation?.client?.id}
+                                        clientName={quotation?.client?.name}
+                                        description={quotation?.description}
                                       />
                                     </PermissionGate>
                                     <PermissionGate

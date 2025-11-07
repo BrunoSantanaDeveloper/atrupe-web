@@ -237,6 +237,9 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                     >
                                       <DuplicateQuotationButton
                                         quotationId={order?.quotation?.id}
+                                        clientId={quotation?.client?.id}
+                                        clientName={quotation?.client?.name}
+                                        description={quotation?.description}
                                         tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>

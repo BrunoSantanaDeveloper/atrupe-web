@@ -35,7 +35,12 @@ import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsy
 // Form
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { defaultValues, duplicateSchema, type DuplicateType } from './schema'
+import {
+  getDefaultValues,
+  duplicateSchema,
+  type DuplicateType,
+  type DuplicateFormValues,
+} from './schema'
 
 // Icons
 import {
@@ -69,9 +74,15 @@ export function DuplicateDialog(props: Props) {
 
   const { quotationData } = props
 
-  const form = useForm<DuplicateType>({
+  const defaultFormValues = getDefaultValues(
+    quotationData?.client?.id,
+    quotationData?.client?.name,
+    quotationData?.description,
+  )
+
+  const form = useForm<DuplicateFormValues>({
     resolver: zodResolver(duplicateSchema),
-    defaultValues,
+    defaultValues: defaultFormValues,
   })
 
   const { reset, handleSubmit } = form
@@ -97,7 +108,7 @@ export function DuplicateDialog(props: Props) {
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
     setNewQuotationId(res.data.id)
     setOpen(false)
-    reset(defaultValues)
+    reset(defaultFormValues)
     setOpenSuccess(true)
     setIsLoading(false)
   }
@@ -130,7 +141,11 @@ export function DuplicateDialog(props: Props) {
             <Form {...form}>
               <form
                 id="quotation-duplicate"
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(
+                  onSubmit as unknown as (
+                    data: DuplicateFormValues,
+                  ) => Promise<void>,
+                )}
                 noValidate
                 className="flex flex-wrap gap-4"
               >
@@ -139,7 +154,7 @@ export function DuplicateDialog(props: Props) {
                   label="Cliente"
                   width="w-full"
                 />
-                <FormInput<DuplicateType>
+                <FormInput
                   name="description"
                   label="Nova descrição do serviço"
                   width="w-full"
