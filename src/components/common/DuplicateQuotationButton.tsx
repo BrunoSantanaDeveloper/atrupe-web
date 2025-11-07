@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormRadio } from '@/components/common/form/FormRadio'
 import { ActionButton } from '@/components/common/ActionButton'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 
@@ -62,6 +63,9 @@ const clientIdSchema = z
 const duplicateSchema = z.object({
   clientId: clientIdSchema,
   description: z.string().trim(),
+  updatePrices: z
+    .enum(['original', 'updated'])
+    .transform((value) => value === 'updated'),
 })
 
 type DuplicateType = z.infer<typeof duplicateSchema>
@@ -93,6 +97,7 @@ export function DuplicateQuotationButton({
     clientId:
       clientId && clientName ? { label: clientName, value: clientId } : null,
     description: description || '',
+    updatePrices: 'original',
   }
 
   const form = useForm<DuplicateFormValues>({
@@ -167,6 +172,21 @@ export function DuplicateQuotationButton({
                   name="description"
                   label="Nova descrição do serviço"
                   width="w-full"
+                />
+                <FormRadio<DuplicateFormValues>
+                  name="updatePrices"
+                  label="Valores dos itens"
+                  className="w-full"
+                  items={[
+                    {
+                      value: 'original',
+                      label: 'Duplicar com valores originais',
+                    },
+                    {
+                      value: 'updated',
+                      label: 'Duplicar com valores atualizados',
+                    },
+                  ]}
                 />
               </form>
             </Form>

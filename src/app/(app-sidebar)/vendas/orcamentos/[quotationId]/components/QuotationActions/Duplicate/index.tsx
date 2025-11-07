@@ -29,6 +29,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormRadio } from '@/components/common/form/FormRadio'
 import { ActionButton } from '@/components/common/ActionButton'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 
@@ -158,6 +159,21 @@ export function DuplicateDialog(props: Props) {
                   name="description"
                   label="Nova descrição do serviço"
                   width="w-full"
+                />
+                <FormRadio<DuplicateFormValues>
+                  name="updatePrices"
+                  label="Valores dos itens"
+                  className="w-full"
+                  items={[
+                    {
+                      value: 'original',
+                      label: 'Duplicar com valores originais',
+                    },
+                    {
+                      value: 'updated',
+                      label: 'Duplicar com valores atualizados',
+                    },
+                  ]}
                 />
               </form>
             </Form>
