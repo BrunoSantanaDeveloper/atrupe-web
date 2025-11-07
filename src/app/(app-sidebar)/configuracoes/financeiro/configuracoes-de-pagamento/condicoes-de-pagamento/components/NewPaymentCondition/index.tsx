@@ -206,6 +206,8 @@ export function NewPaymentCondition({
     setShowDialog(value)
   }
 
+  const showNameInput = false
+
   return (
     <Dialog open={editMode ? open : showDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -239,7 +241,9 @@ export function NewPaymentCondition({
             >
               <SelectPaymentMethodField name="paymentMethodId" width="w-full" />
 
-              <FormInput name="name" label="Nome" width="w-full" />
+              {showNameInput && (
+                <FormInput name="name" label="Nome" width="w-full" />
+              )}
 
               <p className="w-full font-semibold">Parcelamento</p>
 
