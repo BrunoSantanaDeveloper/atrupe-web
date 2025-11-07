@@ -30,10 +30,11 @@ import { buttonVariants } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Type
 import { OrderType } from '@/types/sales/order'
@@ -42,7 +43,7 @@ import { OrderType } from '@/types/sales/order'
 import { IconX, IconAlertCircle } from '@tabler/icons-react'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 import { useCancelReason } from '@/hooks/queries/useCancelReason'
 
@@ -60,6 +61,8 @@ export function CancelOrder({ data }: Props) {
   const queryClient = useQueryClient()
   const { canManageRejectionReasons } = usePlanFeatures()
 
+  const alertDialog = useAlertDialog()
+
   const { data: reasonList } = useCancelReason('CANCELLATION')
 
   const options = useMemo(() => {
@@ -69,56 +72,49 @@ export function CancelOrder({ data }: Props) {
     )
   }, [reasonList])
 
-  const mutation = useMutation({
-    mutationFn: () =>
-      createItem({
-        route: 'orderRoute',
-        customPath: `/${data.id}/cancel`,
-        data: { reasonId: reason },
-      }),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-    },
-  })
-
-  // Não renderiza se não tiver acesso à funcionalidade
-  if (!canManageRejectionReasons()) {
-    return null
-  }
-
   const handleCancel = async () => {
-    // Se tiver permissão, cancela direto sem motivo
-    if (canManageRejectionReasons()) {
-      toast.promise(
-        createItem({
-          route: 'orderRoute',
-          customPath: `/${data.id}/cancel`,
-          data: {},
-        }),
-        {
-          loading: 'Aguarde...',
-          success: () => {
-            queryClient.invalidateQueries()
-            return 'Venda cancelada'
-          },
-          error: 'Ocorreu um erro',
+    // Se não informa motivo, cancela direto
+    if (!canManageRejectionReasons()) {
+      await alertDialog.open({
+        title: 'Confirma cancelamento da venda?',
+        iconVariant: 'errorBorderedLight',
+        confirmLabel: 'Cancelar venda',
+        confirmVariant: 'error',
+        onConfirm: () => {
+          createItemNew({
+            route: `/sale/order/${data.id}/cancel`,
+          })
+          queryClient.invalidateQueries()
         },
-      )
+        toastMsg: {
+          loading: 'Cancelando venda...',
+          success: 'Venda cancelada!',
+          error: 'Erro ao cancelar venda',
+        },
+      })
       return
     }
 
-    // Lógica normal para full (com motivo)
-    toast.promise(mutation.mutateAsync(), {
-      loading: 'Aguarde...',
-      success: () => {
-        return 'Venda cancelada'
-      },
-      error: 'Ocorreu um erro',
+    if (!reason) {
+      toast.info('Selecione um motivo')
+      return
+    }
+
+    // Lógica normal (com motivo)
+    const res = await createItemNew({
+      route: `/sale/order/${data.id}/cancel`,
+      data: { reasonId: reason },
     })
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    toast.success('Venda cancelada')
   }
 
   // Se tiver permissão, mostra botão simples sem modal
-  if (canManageRejectionReasons()) {
+  if (!canManageRejectionReasons()) {
     return (
       <CustomButton
         icon={IconX}

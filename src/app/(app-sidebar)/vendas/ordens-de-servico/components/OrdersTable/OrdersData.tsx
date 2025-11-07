@@ -11,6 +11,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
+import { CancelOrderButton } from './CancelOrderButton'
 
 // UI
 import {
@@ -239,6 +240,13 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>
+                                    {order?.status !== 'CANCELED' && (
+                                      <PermissionGate
+                                        permissions={['sale:order:delete']}
+                                      >
+                                        <CancelOrderButton order={order} />
+                                      </PermissionGate>
+                                    )}
                                   </TooltipProvider>
                                 </div>
                               </TableCell>
