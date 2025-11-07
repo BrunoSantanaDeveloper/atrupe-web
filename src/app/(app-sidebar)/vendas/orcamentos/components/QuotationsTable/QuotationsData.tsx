@@ -4,14 +4,15 @@
 import Link from 'next/link'
 import { Fragment, useState } from 'react'
 
-// Component Imports
-import { NewQuotationModal, NewQuotationTriggerButton } from '../NewQuotation'
+// Components
 import { QuotationTagDropdown } from './QuotationTagDropdown'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
-import { PermissionGate } from '@/components/common/PermissionGate'
+import { NewQuotationModal, NewQuotationTriggerButton } from '../NewQuotation'
+import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 
 // UI
 import {
@@ -189,6 +190,13 @@ export function QuotationsData({
                                           setRowData(quotation)
                                           setOpenPrintDialog(true)
                                         }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:quotation:create']}
+                                    >
+                                      <DuplicateQuotationButton
+                                        quotationId={quotation?.id}
                                       />
                                     </PermissionGate>
                                     <PermissionGate

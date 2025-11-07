@@ -7,10 +7,10 @@ import { Fragment, useState } from 'react'
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
-// import { NewQuotationModal } from '../../../orcamentos/components/NewQuotation'
-import { PermissionGate } from '@/components/common/PermissionGate'
+import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 
 // UI
 import {
@@ -229,6 +229,14 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         onClick={() =>
                                           handleGenerateProductionPDF(order)
                                         }
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:quotation:create']}
+                                    >
+                                      <DuplicateQuotationButton
+                                        quotationId={order?.quotation?.id}
+                                        tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>
                                   </TooltipProvider>
