@@ -80,10 +80,15 @@ export function CancelOrderButton({ order }: Props) {
         iconVariant: 'errorBorderedLight',
         confirmLabel: 'Cancelar venda',
         confirmVariant: 'error',
-        onConfirm: () => {
-          createItemNew({
+        onConfirm: async () => {
+          const res = await createItemNew({
             route: `/sale/order/${order.id}/cancel`,
           })
+
+          if (res?.success && res?.data) {
+            showKeptInstallmentsWarning(res.data)
+          }
+
           queryClient.invalidateQueries()
         },
         toastMsg: {
@@ -111,9 +116,56 @@ export function CancelOrderButton({ order }: Props) {
     }
 
     toast.success('Venda cancelada')
+    showKeptInstallmentsWarning(res.data)
+
     setOpen(false)
     setReason('')
     queryClient.invalidateQueries()
+  }
+
+  const showKeptInstallmentsWarning = (
+    data: Record<string, unknown> | undefined,
+  ) => {
+    const keptInstallments = data?.keptInstallments as
+      | {
+          receivables?: number
+          payables?: number
+          total?: number
+        }
+      | undefined
+    const summary = data?.summary as { totalInstallments?: number } | undefined
+
+    const keptReceivables = keptInstallments?.receivables || 0
+    const keptPayables = keptInstallments?.payables || 0
+    const totalKept = keptInstallments?.total || 0
+    const totalInstallments = summary?.totalInstallments || 0
+
+    if (totalKept === 0) return
+
+    const messages = []
+
+    if (keptReceivables > 0) {
+      messages.push(
+        `${keptReceivables} ${keptReceivables === 1 ? 'parcela' : 'parcelas'} de recebimento já ${keptReceivables === 1 ? 'foi paga' : 'foram pagas'}`,
+      )
+    }
+
+    if (keptPayables > 0) {
+      messages.push(
+        `${keptPayables} ${keptPayables === 1 ? 'parcela' : 'parcelas'} de pagamento já ${keptPayables === 1 ? 'foi paga' : 'foram pagas'}`,
+      )
+    }
+
+    const warningMessage = `Das ${totalInstallments} ${totalInstallments === 1 ? 'parcela' : 'parcelas'} da venda, ${messages.join(' e ')} e ${totalKept === 1 ? 'deve' : 'devem'} ser ${totalKept === 1 ? 'cancelada' : 'canceladas'} manualmente.`
+
+    alertDialog.open({
+      title: 'Atenção: Parcelas não canceladas',
+      description: warningMessage,
+      iconVariant: 'warningBorderedLight',
+      confirmLabel: 'Entendi',
+      confirmVariant: 'default',
+      timeout: 300000,
+    })
   }
 
   // Se tiver permissão, mostra botão simples sem modal
