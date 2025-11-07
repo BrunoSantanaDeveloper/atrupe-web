@@ -75,28 +75,32 @@ export function CancelOrder({ data }: Props) {
   const handleCancel = async () => {
     // Se não informa motivo, cancela direto
     if (!canManageRejectionReasons()) {
-      await alertDialog.open({
+      const confirmed = await alertDialog.open({
         title: 'Confirma cancelamento da venda?',
         iconVariant: 'errorBorderedLight',
         confirmLabel: 'Cancelar venda',
         confirmVariant: 'error',
-        onConfirm: async () => {
-          const res = await createItemNew({
-            route: `/sale/order/${data.id}/cancel`,
-          })
-
-          if (res?.success && res?.data) {
-            showKeptInstallmentsWarning(res.data)
-          }
-
-          queryClient.invalidateQueries()
-        },
-        toastMsg: {
-          loading: 'Cancelando venda...',
-          success: 'Venda cancelada!',
-          error: 'Erro ao cancelar venda',
-        },
+        toastMsg: undefined,
       })
+
+      if (!confirmed) return
+
+      const res = await createItemNew({
+        route: `/sale/order/${data.id}/cancel`,
+      })
+
+      if (!res?.success) {
+        toast.error(res?.message || 'Erro ao cancelar venda')
+        return
+      }
+
+      toast.success('Venda cancelada!')
+      queryClient.invalidateQueries()
+
+      if (res?.data) {
+        showKeptInstallmentsWarning(res.data)
+      }
+
       return
     }
 
@@ -116,11 +120,11 @@ export function CancelOrder({ data }: Props) {
     }
 
     toast.success('Venda cancelada')
-    showKeptInstallmentsWarning(res.data)
-
     setOpen(false)
     setReason('')
     queryClient.invalidateQueries()
+
+    showKeptInstallmentsWarning(res.data)
   }
 
   const showKeptInstallmentsWarning = (
@@ -146,7 +150,7 @@ export function CancelOrder({ data }: Props) {
 
     if (keptReceivables > 0) {
       messages.push(
-        `${keptReceivables} ${keptReceivables === 1 ? 'parcela' : 'parcelas'} de recebimento já ${keptReceivables === 1 ? 'foi paga' : 'foram pagas'}`,
+        `${keptReceivables} ${keptReceivables === 1 ? 'parcela' : 'parcelas'} de recebimento já ${keptReceivables === 1 ? 'foi recebida' : 'foram recebidas'}`,
       )
     }
 
@@ -156,16 +160,19 @@ export function CancelOrder({ data }: Props) {
       )
     }
 
-    const warningMessage = `Das ${totalInstallments} ${totalInstallments === 1 ? 'parcela' : 'parcelas'} da venda, ${messages.join(' e ')} e ${totalKept === 1 ? 'deve' : 'devem'} ser ${totalKept === 1 ? 'cancelada' : 'canceladas'} manualmente.`
+    const warningMessage = `Das ${totalInstallments} ${totalInstallments === 1 ? 'parcela' : 'parcelas'} da venda cancelada, ${messages.join(' e ')} e ${totalKept === 1 ? 'deve' : 'devem'} ser ${totalKept === 1 ? 'cancelada' : 'canceladas'} manualmente.`
 
-    alertDialog.open({
-      title: 'Atenção: Parcelas não canceladas',
-      description: warningMessage,
-      iconVariant: 'warningBorderedLight',
-      confirmLabel: 'Entendi',
-      confirmVariant: 'default',
-      timeout: 300000,
-    })
+    // Aguarda um pouco para garantir que o diálogo anterior foi fechado
+    setTimeout(() => {
+      alertDialog.open({
+        title: 'Atenção: Parcelas não canceladas',
+        description: warningMessage,
+        iconVariant: 'warningBorderedLight',
+        confirmLabel: 'Entendi',
+        confirmVariant: 'default',
+        timeout: 300000,
+      })
+    }, 500)
   }
 
   // Se tiver permissão, mostra botão simples sem modal
