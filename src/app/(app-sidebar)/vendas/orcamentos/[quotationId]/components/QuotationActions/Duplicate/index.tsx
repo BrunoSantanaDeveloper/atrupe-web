@@ -45,14 +45,14 @@ import {
 } from '@tabler/icons-react'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Libs
 import { cn } from '@/lib/utils'
 import { actionDisabled } from '@/lib/quotation'
 
 // Actions
-import { createItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -78,34 +78,28 @@ export function DuplicateDialog(props: Props) {
 
   const queryClient = useQueryClient()
 
-  const mutation = useMutation({
-    mutationFn: (data: DuplicateType) =>
-      createItem({
-        route: 'quotationRoute',
-        customPath: `/${quotationData.id}/duplicate`,
-        data,
-      }),
-    onSuccess: (res) => {
-      queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
-      queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
-      setNewQuotationId(res.id)
-      setOpen(false)
-      reset(defaultValues)
-      setOpenSuccess(true)
-      setIsLoading(false)
-    },
-    onError: () => {
-      setIsLoading(false)
-      toast.error('Erro!')
-    },
-  })
-
   const onSubmit = async (data: DuplicateType) => {
     if (isLoading) return
 
     setIsLoading(true)
 
-    await mutation.mutateAsync(data)
+    const res = await createItemNew({
+      route: `/sale/quotation/${quotationData.id}/duplicate`,
+      data,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+    setNewQuotationId(res.data.id)
+    setOpen(false)
+    reset(defaultValues)
+    setOpenSuccess(true)
+    setIsLoading(false)
   }
 
   return (
