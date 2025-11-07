@@ -17,6 +17,7 @@ interface Props<T extends FieldValues> {
   noForm?: boolean
   value?: string
   onChange?: (value: string) => void
+  disabled?: boolean
 }
 
 export function SelectBankField<T extends FieldValues>({
@@ -27,6 +28,7 @@ export function SelectBankField<T extends FieldValues>({
   value,
   onChange,
   noForm,
+  disabled,
   ...props
 }: Props<T>) {
   const { data: banks } = useBank()
@@ -48,6 +50,7 @@ export function SelectBankField<T extends FieldValues>({
         value={value}
         onChange={onChange}
         className={width}
+        disabled={disabled}
         {...props}
       />
     )
@@ -59,6 +62,7 @@ export function SelectBankField<T extends FieldValues>({
       placeholder={placeholder}
       options={options ?? []}
       width={width}
+      disabled={disabled}
       {...props}
     />
   )

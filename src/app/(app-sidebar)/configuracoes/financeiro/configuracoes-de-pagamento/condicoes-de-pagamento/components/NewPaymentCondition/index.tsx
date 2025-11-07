@@ -159,7 +159,6 @@ export function NewPaymentCondition({
     }
     if (!acceptInstallments) {
       setValue('receivingType', 'CASH')
-      setValue('dayInterval', 0)
       setValue('installments', [
         {
           operatorFeeRate: installments?.[0]?.operatorFeeRate ?? 0,
@@ -432,7 +431,6 @@ export function NewPaymentCondition({
                 }
                 type="number"
                 width="flex-[1_0_100px]"
-                disabled={!acceptInstallments}
               />
             </form>
           </Form>

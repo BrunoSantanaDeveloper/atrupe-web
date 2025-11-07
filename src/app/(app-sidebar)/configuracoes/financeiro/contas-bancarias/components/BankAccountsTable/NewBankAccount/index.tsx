@@ -80,7 +80,8 @@ export function NewBankAccountDialog({
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const queryClient = useQueryClient()
-  const { hasFinancialModule, canProvision } = usePlanFeatures()
+  const { canCreateBankAccount, hasFinancialModule, canProvision } =
+    usePlanFeatures()
 
   const { data: paymentConditions } = usePaymentConditions()
 
@@ -207,6 +208,7 @@ export function NewBankAccountDialog({
                   name="bankId"
                   label="Banco"
                   width="flex-[1_0_600px]"
+                  disabled={!canCreateBankAccount()}
                 />
                 {hasFinancialModule('cash') && (
                   <FormSwitch<FormType>
