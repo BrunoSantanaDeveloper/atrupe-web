@@ -49,10 +49,6 @@ export function ViewPaymentDialog({
   setOpen,
   transactionDialogOpen,
 }: Props) {
-  const handlePrintReceipt = () => {
-    window.open('/impressao', '_blank')
-  }
-
   const handleOpenChange = (openDialog: boolean) => {
     setOpen(openDialog ? 'payment' : '')
   }
@@ -123,18 +119,7 @@ export function ViewPaymentDialog({
             />
           </DetailCardRowItem>
         </DialogBody>
-        <DialogFooter className="sm:justify-between">
-          <div>
-            {type === 'receivable' && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrintReceipt}
-              >
-                Imprimir recibo
-              </Button>
-            )}
-          </div>
+        <DialogFooter>
           <div className="space-x-4">
             <DialogClose asChild>
               <Button type="button" variant="neutralOutline">
