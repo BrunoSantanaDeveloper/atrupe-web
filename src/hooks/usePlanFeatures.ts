@@ -73,6 +73,9 @@ export function usePlanFeatures() {
   const canBillOnDeliveryAndCheckout = () =>
     hasFeature('can_bill_on_delivery_and_checkout')
 
+  const canManageCancelTransactionReasons = () =>
+    hasFeature('transaction_cancel_reasons')
+
   return {
     planName,
     hasFeature,
@@ -96,5 +99,6 @@ export function usePlanFeatures() {
     canShowQuotationItemDetails,
     canCreatePaymentDifference,
     canBillOnDeliveryAndCheckout,
+    canManageCancelTransactionReasons,
   }
 }
