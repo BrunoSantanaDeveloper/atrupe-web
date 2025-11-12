@@ -14,48 +14,48 @@ type RecurringTypeOptionsType = BadgeType & {
 }
 
 export const recurringTypeOptions: RecurringTypeOptionsType[] = [
-  {
-    value: 'WEEKLY',
-    label: 'Semanalmente',
-    text: 'Semanal',
-    variant: 'purpleLight',
-  },
+  // {
+  //   value: 'WEEKLY',
+  //   label: 'Semanalmente',
+  //   text: 'Semanal',
+  //   variant: 'purpleLight',
+  // },
   {
     value: 'MONTHLY',
     label: 'Mensalmente',
     text: 'Mensal',
     variant: 'blueLight',
   },
-  {
-    value: 'BIMONTHLY',
-    label: 'Bimestralmente',
-    text: 'Bimestral',
-    variant: 'roseLight',
-  },
-  {
-    value: 'QUARTERLY',
-    label: 'Trimestralmente',
-    text: 'Trimestral',
-    variant: 'successLight',
-  },
-  {
-    value: 'SEMIANNUALLY',
-    label: 'Semestralmente',
-    text: 'Semestral',
-    variant: 'warningLight',
-  },
-  {
-    value: 'YEARLY',
-    label: 'Anualmente',
-    text: 'Anual',
-    variant: 'orangeLight',
-  },
-  {
-    value: 'BIWEEKLY',
-    label: 'Quinzenalmente',
-    text: 'Quinzenal',
-    variant: 'blueLight',
-  },
+  // {
+  //   value: 'BIMONTHLY',
+  //   label: 'Bimestralmente',
+  //   text: 'Bimestral',
+  //   variant: 'roseLight',
+  // },
+  // {
+  //   value: 'QUARTERLY',
+  //   label: 'Trimestralmente',
+  //   text: 'Trimestral',
+  //   variant: 'successLight',
+  // },
+  // {
+  //   value: 'SEMIANNUALLY',
+  //   label: 'Semestralmente',
+  //   text: 'Semestral',
+  //   variant: 'warningLight',
+  // },
+  // {
+  //   value: 'YEARLY',
+  //   label: 'Anualmente',
+  //   text: 'Anual',
+  //   variant: 'orangeLight',
+  // },
+  // {
+  //   value: 'BIWEEKLY',
+  //   label: 'Quinzenalmente',
+  //   text: 'Quinzenal',
+  //   variant: 'blueLight',
+  // },
 ]
 
 export const fixedExpensesRecurringTypeObj: {

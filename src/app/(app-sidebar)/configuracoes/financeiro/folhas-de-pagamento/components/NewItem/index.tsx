@@ -107,7 +107,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
       )}
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>{editMode ? 'Editar' : 'Novo'} custo</DialogTitle>
+          <DialogTitle>{editMode ? 'Editar custo' : 'Novo custo'}</DialogTitle>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
@@ -123,6 +123,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
+                  autoComplete="off"
                 />
                 <FormSelect
                   name="type"
