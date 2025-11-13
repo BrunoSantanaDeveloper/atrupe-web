@@ -208,7 +208,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   width="flex-[1_0_250px]"
                   options={filteredBillingOptions}
                 />
-                {!canManageDeliverySchedule() && (
+                {canManageDeliverySchedule() && (
                   <>
                     <FormSelect<FormType>
                       name="sendToProduction"
