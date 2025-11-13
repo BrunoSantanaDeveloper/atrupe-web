@@ -71,6 +71,8 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
   const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
 
+  const hasUrlDateParams = searchParams?.startDate && searchParams?.endDate
+
   const filters = { ...searchParams }
 
   const { data, isLoading } = useQuery({
@@ -85,7 +87,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
+        {isLoading || !hasUrlDateParams ? (
           <TableSkeleton />
         ) : hasData ? (
           <>
