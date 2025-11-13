@@ -1,7 +1,6 @@
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { NewClientFormType } from '../schema'
 import { maskCpf, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { useFormContext } from 'react-hook-form'
@@ -9,6 +8,7 @@ import { useCategoryOptions } from '@/hooks/queries/useCategoryOptions'
 import { useMemo, useCallback } from 'react'
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -136,11 +136,10 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
       {type === 'PERSON' && (
         <>
-          <FormDatePickerSingle
+          <FormDatePickerInput
             name="general.birthdate"
             label="Data de nascimento"
             placeholder="Selecione a data"
-            defaultMonth={new Date(1990, 0, 1)}
           />
           <FormInput name="general.rg" label="RG" />
         </>
