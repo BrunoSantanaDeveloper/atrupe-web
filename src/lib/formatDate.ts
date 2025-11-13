@@ -110,10 +110,10 @@ export function formatToWeekDate(date: string) {
 
   const utcDate = new Date(date)
 
-  const dayOfWeek = daysOfWeek[utcDate.getDay()]
-  const day = utcDate.getDate()
-  const month = monthsOfYear[utcDate.getMonth()]
-  const year = utcDate.getFullYear()
+  const dayOfWeek = daysOfWeek[utcDate.getUTCDay()]
+  const day = utcDate.getUTCDate()
+  const month = monthsOfYear[utcDate.getUTCMonth()]
+  const year = utcDate.getUTCFullYear()
 
   return `${dayOfWeek}, ${day} de ${month} de ${year}`
 }
