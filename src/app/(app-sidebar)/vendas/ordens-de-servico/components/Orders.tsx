@@ -34,8 +34,12 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import { IconNewsOff } from '@tabler/icons-react'
 
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 export function Orders({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState(false)
+
+  const { canManageDeliverySchedule } = usePlanFeatures()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -54,7 +58,7 @@ export function Orders({ searchParams }: SearchParamsType) {
   const status = searchParams.status
   const statusEmpty = totals?.[status] === 0
 
-  const tabs: TabNavType[] = [
+  const allTabs: TabNavType[] = [
     {
       value: 'PENDING',
       tab: 'aguardando',
@@ -70,7 +74,7 @@ export function Orders({ searchParams }: SearchParamsType) {
     {
       value: 'FINISHED',
       tab: 'finalizadas',
-      label: 'Finalizadas',
+      label: canManageDeliverySchedule() ? 'Finalizadas' : 'Aprovadas',
       count: totals?.finalizadas,
     },
     {
@@ -86,6 +90,12 @@ export function Orders({ searchParams }: SearchParamsType) {
       count: totals?.todas,
     },
   ]
+
+  const tabs = canManageDeliverySchedule()
+    ? allTabs
+    : allTabs.filter(
+        (tab) => tab.value !== 'PENDING' && tab.value !== 'IN_PRODUCTION',
+      )
 
   const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
