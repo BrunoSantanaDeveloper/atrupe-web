@@ -123,6 +123,9 @@ export function DateRangePickerBasic({
   onChange,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const [internalRange, setInternalRange] = useState<DateRange | undefined>(
+    externalValue,
+  )
 
   const [month, setMonth] = useState<Date | undefined>(
     externalValue?.from || externalValue?.to,
@@ -133,6 +136,7 @@ export function DateRangePickerBasic({
 
   useEffect(() => {
     setInputValue(formatDateRange(externalValue?.from, externalValue?.to))
+    setInternalRange(externalValue)
     if (externalValue?.from || externalValue?.to) {
       setMonth(externalValue.from || externalValue.to)
     }
@@ -170,16 +174,39 @@ export function DateRangePickerBasic({
     }
   }
 
+  const handlePopoverOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen)
+    if (isOpen) {
+      // Ao abrir, reseta o range interno para começar uma nova seleção
+      setInternalRange(undefined)
+    }
+  }
+
   const handleCalendarSelect = (range: DateRange | undefined) => {
-    onChange?.(range)
-    if (range) {
-      setInputValue(formatDateRange(range.from, range.to))
-      setMonth(range.from || range.to)
-      if (range.from && range.to) {
-        setOpen(false)
-      }
-    } else {
+    if (!range) {
+      setInternalRange(undefined)
       setInputValue('')
+      return
+    }
+
+    // Se já temos from e to, ou se estamos começando uma nova seleção
+    if (range.from && !range.to) {
+      // Primeiro clique - limpa o input e armazena a primeira data
+      setInternalRange(range)
+      setInputValue(formatDate(range.from))
+      setMonth(range.from)
+    } else if (range.from && range.to) {
+      // Segundo clique - organiza as datas e dispara o onChange
+      const from = range.from < range.to ? range.from : range.to
+      const to = range.from < range.to ? range.to : range.from
+
+      const sortedRange: DateRange = { from, to }
+
+      setInternalRange(sortedRange)
+      setInputValue(formatDateRange(from, to))
+      setMonth(from)
+      onChange?.(sortedRange)
+      setOpen(false)
     }
   }
 
@@ -197,7 +224,7 @@ export function DateRangePickerBasic({
           onKeyDown={handleKeyDown}
           disabled={disabled}
         />
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={handlePopoverOpenChange}>
           <PopoverTrigger asChild>
             <Button
               type="button"
@@ -219,7 +246,7 @@ export function DateRangePickerBasic({
           >
             <Calendar
               mode="range"
-              selected={externalValue}
+              selected={internalRange}
               captionLayout="dropdown"
               month={month}
               onMonthChange={setMonth}
