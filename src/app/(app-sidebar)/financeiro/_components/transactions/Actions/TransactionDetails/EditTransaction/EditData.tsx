@@ -173,7 +173,7 @@ export function EditTransactionData({
                 name="description"
                 label="Descrição"
                 width="w-full"
-                disabled={rowData?.isSale}
+                disabled={!!rowData?.quotationId}
               />
               <SelectTransactionNatureField
                 name="natureId"
