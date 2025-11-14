@@ -220,13 +220,16 @@ export type ListQuotationsType = {
 // Types for Quotation History
 export type QuotationHistoryAction =
   | 'CREATED'
-  | 'UPDATED'
-  | 'APPROVED'
-  | 'REJECTED'
-  | 'CANCELED'
   | 'FINISHED'
-  | 'STATUS_CHANGED'
-  | 'CONVERTED_TO_ORDER'
+  | 'REOPENED'
+  | 'REJECTED'
+  | 'VALUE_CHANGED'
+  | 'APPROVED'
+
+export type QuotationHistoryChanges = {
+  before: Record<string, unknown>
+  after: Record<string, unknown>
+}
 
 export type QuotationHistoryMetadata = {
   [key: string]: unknown
@@ -236,6 +239,7 @@ export type QuotationHistoryItem = {
   id: string
   action: QuotationHistoryAction
   description: string
+  changes: QuotationHistoryChanges | null
   metadata: QuotationHistoryMetadata | null
   createdBy: string
   createdByName: string

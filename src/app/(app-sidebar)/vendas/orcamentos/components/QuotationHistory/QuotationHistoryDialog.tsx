@@ -23,7 +23,7 @@ import { Timeline } from '@/components/common/Timeline'
 import { useQuotationHistory } from '@/hooks/queries/useQuotationHistory'
 
 // Lib
-import { formatHistoryEvent } from '@/lib/formatHistoryEvent'
+import { formatQuotationHistoryEvent } from '@/lib/formatHistoryEvent'
 
 interface Props {
   open: boolean
@@ -38,7 +38,7 @@ export function QuotationHistoryDialog({ open, setOpen, quotation }: Props) {
   })
 
   const events = useMemo(() => {
-    return history.map(formatHistoryEvent)
+    return history.map(formatQuotationHistoryEvent)
   }, [history])
 
   const handleOpenChange = (openDialog: boolean) => {

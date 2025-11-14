@@ -1,5 +1,7 @@
 import { TransactionHistoryItem } from '@/types/financial/financialFlow'
 import { EmployeeHistoryItem } from '@/types/settings/employee'
+import { QuotationHistoryItem } from '@/types/sales/quotation'
+import { OrderHistoryItem } from '@/types/sales/order'
 import { format, parseISO } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { formatCurrencyToBrl, maskCpf, MaskPhoneNumber } from './utils'
@@ -362,4 +364,131 @@ function formatFieldLabel(field: string): string {
   }
 
   return labels[field] || formatKey(field)
+}
+
+export function formatQuotationHistoryEvent(
+  item: QuotationHistoryItem,
+): TimelineEvent {
+  const createdAtDate = parseISO(item.createdAt)
+  const date = format(createdAtDate, 'dd/MM/yyyy', { locale: ptBR })
+  const time = format(createdAtDate, 'HH:mm', { locale: ptBR })
+
+  const title = item.description
+  const details: string[] = []
+
+  // Format based on action type
+  switch (item.action) {
+    case 'CREATED':
+      if (item.metadata) {
+        if (item.metadata.clientName) {
+          details.push(`Cliente: ${item.metadata.clientName}`)
+        }
+        if (item.metadata.totalValue) {
+          details.push(
+            `Valor total: ${formatCurrencyToBrl(item.metadata.totalValue as number)}`,
+          )
+        }
+      }
+      break
+
+    case 'FINISHED':
+      if (item.metadata?.finishedAt) {
+        const finishedDate = parseISO(item.metadata.finishedAt as string)
+        const formattedDate = format(finishedDate, 'dd/MM/yyyy HH:mm', {
+          locale: ptBR,
+        })
+        details.push(`Data de conclusão: ${formattedDate}`)
+      }
+      break
+
+    case 'REOPENED':
+      if (item.metadata?.reason) {
+        details.push(`Motivo: ${item.metadata.reason}`)
+      }
+      break
+
+    case 'REJECTED':
+      if (item.metadata?.rejectionReason) {
+        details.push(`Motivo: ${item.metadata.rejectionReason}`)
+      }
+      if (item.metadata?.rejectionNotes) {
+        details.push(`Observações: ${item.metadata.rejectionNotes}`)
+      }
+      break
+
+    case 'VALUE_CHANGED':
+      if (item.changes) {
+        const { before, after } = item.changes
+
+        if (
+          typeof before?.totalValue === 'number' &&
+          typeof after?.totalValue === 'number'
+        ) {
+          details.push(
+            `Valor total: ${formatCurrencyToBrl(before.totalValue)} 🡢 ${formatCurrencyToBrl(after.totalValue)}`,
+          )
+        }
+      }
+      if (item.metadata?.changeReason) {
+        details.push(`Motivo: ${item.metadata.changeReason}`)
+      }
+      break
+
+    case 'APPROVED':
+      if (item.metadata?.approvedBy) {
+        details.push(`Aprovado por: ${item.metadata.approvedBy}`)
+      }
+      if (item.metadata?.approvalNotes) {
+        details.push(`Observações: ${item.metadata.approvalNotes}`)
+      }
+      break
+  }
+
+  return {
+    date,
+    time,
+    author: item.createdByName,
+    title,
+    details: details.length > 0 ? details : undefined,
+  }
+}
+
+export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
+  const createdAtDate = parseISO(item.createdAt)
+  const date = format(createdAtDate, 'dd/MM/yyyy', { locale: ptBR })
+  const time = format(createdAtDate, 'HH:mm', { locale: ptBR })
+
+  const title = item.description
+  const details: string[] = []
+
+  // Format based on action type
+  switch (item.action) {
+    case 'CREATED':
+      if (item.metadata) {
+        if (item.metadata.quotationId) {
+          details.push(`Orçamento: ${item.metadata.quotationId}`)
+        }
+        if (item.metadata.clientName) {
+          details.push(`Cliente: ${item.metadata.clientName}`)
+        }
+      }
+      break
+
+    case 'CANCELED':
+      if (item.metadata?.cancelReason) {
+        details.push(`Motivo: ${item.metadata.cancelReason}`)
+      }
+      if (item.metadata?.cancelNotes) {
+        details.push(`Observações: ${item.metadata.cancelNotes}`)
+      }
+      break
+  }
+
+  return {
+    date,
+    time,
+    author: item.createdByName,
+    title,
+    details: details.length > 0 ? details : undefined,
+  }
 }

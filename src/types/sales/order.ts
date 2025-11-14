@@ -19,13 +19,12 @@ export type ListOrdersType = {
 }
 
 // Types for Order History
-export type OrderHistoryAction =
-  | 'CREATED'
-  | 'UPDATED'
-  | 'STARTED'
-  | 'COMPLETED'
-  | 'CANCELED'
-  | 'STATUS_CHANGED'
+export type OrderHistoryAction = 'CREATED' | 'CANCELED'
+
+export type OrderHistoryChanges = {
+  before: Record<string, unknown>
+  after: Record<string, unknown>
+}
 
 export type OrderHistoryMetadata = {
   [key: string]: unknown
@@ -35,6 +34,7 @@ export type OrderHistoryItem = {
   id: string
   action: OrderHistoryAction
   description: string
+  changes: OrderHistoryChanges | null
   metadata: OrderHistoryMetadata | null
   createdBy: string
   createdByName: string

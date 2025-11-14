@@ -23,7 +23,7 @@ import { Timeline } from '@/components/common/Timeline'
 import { useOrderHistory } from '@/hooks/queries/useOrderHistory'
 
 // Lib
-import { formatHistoryEvent } from '@/lib/formatHistoryEvent'
+import { formatOrderHistoryEvent } from '@/lib/formatHistoryEvent'
 
 interface Props {
   open: boolean
@@ -38,7 +38,7 @@ export function OrderHistoryDialog({ open, setOpen, order }: Props) {
   })
 
   const events = useMemo(() => {
-    return history.map(formatHistoryEvent)
+    return history.map(formatOrderHistoryEvent)
   }, [history])
 
   const handleOpenChange = (openDialog: boolean) => {
