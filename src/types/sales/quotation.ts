@@ -216,3 +216,37 @@ export type ListQuotationsType = {
   data: ListQuotationsDataType[]
   total: number
 }
+
+// Types for Quotation History
+export type QuotationHistoryAction =
+  | 'CREATED'
+  | 'UPDATED'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'CANCELED'
+  | 'FINISHED'
+  | 'STATUS_CHANGED'
+  | 'CONVERTED_TO_ORDER'
+
+export type QuotationHistoryMetadata = {
+  [key: string]: unknown
+}
+
+export type QuotationHistoryItem = {
+  id: string
+  action: QuotationHistoryAction
+  description: string
+  metadata: QuotationHistoryMetadata | null
+  createdBy: string
+  createdByName: string
+  createdAt: string
+  user?: {
+    id: string
+    name: string
+  }
+}
+
+export type QuotationHistoryResponse = {
+  total: number
+  history: QuotationHistoryItem[]
+}

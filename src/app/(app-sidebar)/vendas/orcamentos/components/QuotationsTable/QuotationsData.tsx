@@ -13,6 +13,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { NewQuotationModal, NewQuotationTriggerButton } from '../NewQuotation'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
+import { QuotationHistoryDialog } from '../QuotationHistory/QuotationHistoryDialog'
 
 // UI
 import {
@@ -49,7 +50,7 @@ import { useQuery } from '@tanstack/react-query'
 import { quotationsStatusObj } from '@/consts/quotations'
 
 // Icons
-import { IconPencil, IconPrinter } from '@tabler/icons-react'
+import { IconPencil, IconPrinter, IconHistory } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
 
@@ -69,6 +70,7 @@ export function QuotationsData({
   const [openDialog, setOpenDialog] = useState(false)
   const [rowData, setRowData] = useState<QuotationType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false)
 
   const { canManageBudgetStatus } = usePlanFeatures()
   const showStatusColumn = canManageBudgetStatus()
@@ -203,6 +205,18 @@ export function QuotationsData({
                                       />
                                     </PermissionGate>
                                     <PermissionGate
+                                      permissions={['sale:quotation:view']}
+                                    >
+                                      <ActionButton
+                                        Icon={IconHistory}
+                                        tooltip="Histórico"
+                                        onClick={() => {
+                                          setRowData(quotation)
+                                          setOpenHistoryDialog(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
                                       permissions={['sale:quotation:edit']}
                                     >
                                       <ActionButton
@@ -223,12 +237,19 @@ export function QuotationsData({
               </TableBody>
             </Table>
             {rowData && (
-              <PrintQuotationDialog
-                type="quotation"
-                quotationId={rowData?.id}
-                open={openPrintDialog}
-                onOpenChange={setOpenPrintDialog}
-              />
+              <>
+                <PrintQuotationDialog
+                  type="quotation"
+                  quotationId={rowData?.id}
+                  open={openPrintDialog}
+                  onOpenChange={setOpenPrintDialog}
+                />
+                <QuotationHistoryDialog
+                  open={openHistoryDialog}
+                  setOpen={setOpenHistoryDialog}
+                  quotation={rowData}
+                />
+              </>
             )}
           </>
         ) : (

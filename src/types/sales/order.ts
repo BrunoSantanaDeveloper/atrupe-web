@@ -17,3 +17,35 @@ export type ListOrdersType = {
   data: OrderListType[]
   total: number
 }
+
+// Types for Order History
+export type OrderHistoryAction =
+  | 'CREATED'
+  | 'UPDATED'
+  | 'STARTED'
+  | 'COMPLETED'
+  | 'CANCELED'
+  | 'STATUS_CHANGED'
+
+export type OrderHistoryMetadata = {
+  [key: string]: unknown
+}
+
+export type OrderHistoryItem = {
+  id: string
+  action: OrderHistoryAction
+  description: string
+  metadata: OrderHistoryMetadata | null
+  createdBy: string
+  createdByName: string
+  createdAt: string
+  user?: {
+    id: string
+    name: string
+  }
+}
+
+export type OrderHistoryResponse = {
+  total: number
+  history: OrderHistoryItem[]
+}

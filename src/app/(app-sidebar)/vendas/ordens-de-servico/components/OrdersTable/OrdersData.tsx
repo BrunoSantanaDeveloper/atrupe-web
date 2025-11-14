@@ -12,6 +12,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { CancelOrderButton } from './CancelOrderButton'
+import { OrderHistoryDialog } from '../OrderHistory/OrderHistoryDialog'
 
 // UI
 import {
@@ -45,7 +46,7 @@ import { useQuery } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
 // Icons
-import { IconPrinter, IconSearch } from '@tabler/icons-react'
+import { IconPrinter, IconSearch, IconHistory } from '@tabler/icons-react'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
@@ -60,6 +61,7 @@ interface Props extends SearchParamsType {
 export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
+  const [openHistoryDialog, setOpenHistoryDialog] = useState(false)
   const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
@@ -243,6 +245,18 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:order:view']}
+                                    >
+                                      <ActionButton
+                                        Icon={IconHistory}
+                                        tooltip="Histórico"
+                                        onClick={() => {
+                                          setRowData(order)
+                                          setOpenHistoryDialog(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
                                     {order?.status !== 'CANCELED' && (
                                       <PermissionGate
                                         permissions={['sale:order:delete']}
@@ -262,12 +276,19 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
               </TableBody>
             </Table>
             {rowData && (
-              <PrintQuotationDialog
-                type="order"
-                quotationId={rowData?.quotation?.id}
-                open={openPrintDialog}
-                onOpenChange={setOpenPrintDialog}
-              />
+              <>
+                <PrintQuotationDialog
+                  type="order"
+                  quotationId={rowData?.quotation?.id}
+                  open={openPrintDialog}
+                  onOpenChange={setOpenPrintDialog}
+                />
+                <OrderHistoryDialog
+                  open={openHistoryDialog}
+                  setOpen={setOpenHistoryDialog}
+                  order={rowData}
+                />
+              </>
             )}
           </>
         ) : (
