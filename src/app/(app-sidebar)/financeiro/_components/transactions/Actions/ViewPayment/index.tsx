@@ -14,6 +14,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { UnpayInstallment } from '../UnpayInstallment'
+import { PrintReceiptButton } from '../PrintReceiptButton'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 
 // Icons
@@ -119,7 +120,10 @@ export function ViewPaymentDialog({
             />
           </DetailCardRowItem>
         </DialogBody>
-        <DialogFooter>
+        <DialogFooter className="sm:justify-between">
+          <div>
+            <PrintReceiptButton type={type} installmentId={rowData?.id} />
+          </div>
           <div className="space-x-4">
             <DialogClose asChild>
               <Button type="button" variant="neutralOutline">

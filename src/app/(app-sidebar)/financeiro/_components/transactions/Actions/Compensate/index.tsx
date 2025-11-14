@@ -1,5 +1,5 @@
 // React
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -17,8 +17,8 @@ import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
-import { ReceiptPdf } from '../Payment/ReceiptPdf'
 import { UnpayInstallment } from '../UnpayInstallment'
+import { PrintReceiptButton } from '../PrintReceiptButton'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
@@ -41,17 +41,13 @@ import type {
   InstallmentType,
   TransactionListType,
 } from '@/types/financial/financialFlow'
-import type { ReceiptPdfType } from '@/types/financial/receipt'
 
 // Actions
-import { updateItemNew, getItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Hooks
 import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
-
-// Lib
-import { pdf } from '@react-pdf/renderer'
 
 interface Props {
   open: boolean
@@ -70,8 +66,6 @@ export function CompensateDialog({
   setOpen,
   transactionDialogOpen,
 }: Props) {
-  const [isLoadingPDF, setIsLoadingPDF] = useState(false)
-
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
   })
@@ -153,32 +147,6 @@ export function CompensateDialog({
     )
     handleOpenChange(false)
     transactionDialogOpen?.(false)
-  }
-
-  const handlePrintReceipt = async () => {
-    setIsLoadingPDF(true)
-    try {
-      // Buscar dados do PDF da API
-      const result = await getItem({
-        route: `/financial/${type}/installment/${rowData?.id}/receipt-data`,
-      })
-
-      if (!result.success) {
-        throw new Error(result.message)
-      }
-
-      const pdfData: ReceiptPdfType = result.data
-      const blob = await pdf(<ReceiptPdf data={pdfData} />).toBlob()
-
-      const url = URL.createObjectURL(blob)
-
-      window.open(url, '_blank')
-    } catch (error) {
-      toast.error('Erro ao gerar recibo')
-      console.error('Erro ao gerar recibo:', error)
-    } finally {
-      setIsLoadingPDF(false)
-    }
   }
 
   const handleOpenChange = (openDialog: boolean) => {
@@ -266,17 +234,7 @@ export function CompensateDialog({
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            {type === 'receivable' && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handlePrintReceipt}
-                isLoading={isLoadingPDF}
-                disabled={isLoadingPDF}
-              >
-                Imprimir recibo
-              </Button>
-            )}
+            <PrintReceiptButton type={type} installmentId={rowData?.id} />
           </div>
           <div className="space-x-4">
             <UnpayInstallment
