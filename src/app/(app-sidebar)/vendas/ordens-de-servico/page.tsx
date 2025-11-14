@@ -12,7 +12,7 @@ export function metadata() {
 }
 
 export default function OrdersPage({ searchParams }: SearchParamsType) {
-  const defaultTab = 'producao'
+  const defaultTab = 'finalizadas'
   const status = searchParams.status || defaultTab
 
   return (
