@@ -52,7 +52,7 @@ export type TransactionListType = {
   notes: string
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
-  quotationId: string
+  quotationId?: string
 }
 
 export type TransactionDetailsType = {
@@ -83,7 +83,7 @@ export type TransactionDetailsType = {
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
   installments: InstallmentType[]
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
-  quotationId: string
+  quotationId?: string
 }
 
 export type TransactionDataType = {
