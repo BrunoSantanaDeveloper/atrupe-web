@@ -186,13 +186,20 @@ export function PayrollItems({ data }: Props) {
                           )}
                           <ActionButton
                             Icon={IconPencil}
-                            tooltip="Editar item"
+                            tooltip={
+                              isAdvance && item.payable?.status === 'PAID'
+                                ? 'Adiantamento já pago'
+                                : 'Editar item'
+                            }
                             onClick={() => {
                               setRowData(item)
                               setIsAdvance(isAdvance)
                               setOpenDialog('newItem')
                             }}
-                            disabled={data?.status === 'CLOSED'}
+                            disabled={
+                              data?.status === 'CLOSED' ||
+                              (isAdvance && item.payable?.status === 'PAID')
+                            }
                           />
                         </TooltipProvider>
                       </div>

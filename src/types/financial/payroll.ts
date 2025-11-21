@@ -19,6 +19,22 @@ export interface PayrollItemType {
   description: string
   createdAt: string
   paidAt?: string
+  payable?: {
+    id: string
+    description: string
+    totalAmount: number
+    status: string
+    referenceDate: string
+    installments: {
+      id: string
+      installmentNumber: number
+      dueDate: string
+      amount: number
+      status: string
+      paidDate: string | null
+      paidAmount: number | null
+    }[]
+  }
   payables: TransactionListType
 }
 

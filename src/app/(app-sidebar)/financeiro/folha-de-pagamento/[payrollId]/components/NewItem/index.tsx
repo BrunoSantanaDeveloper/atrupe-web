@@ -83,6 +83,8 @@ export function NewItemDialog({
       data.type = 'ADVANCE'
     }
 
+    if (rowData?.payable?.status === 'PAID') return
+
     const res = editMode
       ? await updateItemNew({
           route: `/financial/payroll/item/${rowData?.id}`,

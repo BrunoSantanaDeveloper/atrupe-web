@@ -54,7 +54,7 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
 
   const onSubmit = async (data: FormType) => {
     const result = await updateItemNew({
-      route: `financial/${type}/${rowData?.id}`,
+      route: `/financial/${type}/${rowData?.id}`,
       data,
     })
 
