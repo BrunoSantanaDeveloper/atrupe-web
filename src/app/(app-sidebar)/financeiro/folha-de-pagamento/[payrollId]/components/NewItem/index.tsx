@@ -139,6 +139,7 @@ export function NewItemDialog({
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
+                  disabled={editMode}
                 />
                 {!isAdvance ? (
                   <FormSelect
@@ -155,6 +156,7 @@ export function NewItemDialog({
                       },
                     ]}
                     width="flex-[1_0_300px]"
+                    disabled={editMode}
                   />
                 ) : null}
                 <FormBrlInput
