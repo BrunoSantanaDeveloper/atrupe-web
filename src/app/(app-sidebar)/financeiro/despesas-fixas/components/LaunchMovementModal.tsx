@@ -138,7 +138,7 @@ export function LaunchMovementModal({
               <div className="grid grid-cols-3 gap-4">
                 <FormDatePickerSingle
                   name="competenceDate"
-                  label="Data do competência"
+                  label="Data da competência"
                 />
                 <FormDatePickerSingle
                   name="dueDate"

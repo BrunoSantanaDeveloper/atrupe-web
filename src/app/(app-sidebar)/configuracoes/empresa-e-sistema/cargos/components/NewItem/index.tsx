@@ -118,7 +118,7 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
                 variant="neutralOutline"
                 Icon={editMode ? IconPencil : IconCirclePlus}
               />
-              <span>{editMode ? 'Editar' : 'Novo'} cargo</span>
+              <span>{editMode ? 'Editar cargo' : 'Novo cargo'}</span>
             </div>
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -140,6 +140,7 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
                 name="name"
                 label="Cargo"
                 width="flex-[1_0_190px]"
+                autoComplete="off"
               />
             </form>
           </Form>
