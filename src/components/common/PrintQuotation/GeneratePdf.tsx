@@ -419,7 +419,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   const getColumnWidths = () => {
     if (isProduction) {
       return {
-        reference: '85%',
+        reference: '70%',
         qtyItem: '15%',
         details: '0%',
         qtyTotal: '15%',
@@ -503,11 +503,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <Text>{data.client?.document?.value}</Text>
               <Text>{data.client?.phone}</Text>
               <Text>{data.client?.email}</Text>
-              {/* {isProduction && data.client?.notes && (
-                <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
-                  {data.client.notes}
-                </Text>
-              )} */}
+              {isProduction && data.client?.notes && (
+                <Text style={styles.textSmallGray}>{data.client.notes}</Text>
+              )}
             </View>
 
             {data.contact?.name && (
@@ -607,7 +605,21 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               )}
 
-              {printOptions.showDimensions && (
+              {isProduction && hasCompositeProducts && (
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    {
+                      width: columnWidths.qtyItem,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  MEDIDAS/QTD.
+                </Text>
+              )}
+
+              {(printOptions.showDimensions || isProduction) && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -745,7 +757,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     )}
 
                     {/* Qtd. Total */}
-                    {printOptions.showDimensions && (
+                    {(printOptions.showDimensions || isProduction) && (
                       <View style={{ width: columnWidths.qtyTotal }}>
                         <Text style={styles.textCenterSmall}>
                           {
@@ -901,8 +913,43 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     </View>
                   )}
 
+                  {/* Coluna Medidas/Qtd para produção com produtos compostos */}
+                  {isProduction && (
+                    <View style={{ width: columnWidths.qtyItem }}>
+                      <Text style={styles.textCenterSmall}>-</Text>
+                      {item.product.compositions.map((comp) => {
+                        const adaptedComp =
+                          adaptCompositionForDisplayUtils(comp)
+                        const compositionQty =
+                          comp.quantity || comp.originalQuantity || 1
+                        const unitKind =
+                          adaptedComp.unitKind?.toUpperCase() || 'UNITY'
+                        let details = `${compositionQty} un`
+
+                        if (unitKind !== 'UNITY') {
+                          const fullDetails =
+                            generateFormattedQuantityDetails(adaptedComp)
+                          // Extrair apenas a parte das dimensões (tudo após "un ")
+                          const dimensionPart = fullDetails.replace(
+                            /^\d+\s+un\s*/,
+                            '',
+                          )
+                          if (dimensionPart) {
+                            details += ` ${dimensionPart}`
+                          }
+                        }
+
+                        return (
+                          <Text key={comp.id} style={styles.textComposition}>
+                            {details}
+                          </Text>
+                        )
+                      })}
+                    </View>
+                  )}
+
                   {/* Coluna Qtd. Total */}
-                  {printOptions.showDimensions && (
+                  {(printOptions.showDimensions || isProduction) && (
                     <View style={{ width: columnWidths.qtyTotal }}>
                       <Text style={styles.textCenterSmall}>
                         {`${item.product.quantity || 1} un`}
@@ -1048,14 +1095,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     .join(', ')}
                   .
                 </Text>
-                {/* {isProduction && data.delivery?.supplier?.notes && (
-                  <Text style={{ fontSize: 7, color: '#6B7280', marginTop: 2 }}>
-                    {data.delivery.supplier.notes}
-                  </Text>
-                )} */}
-                {isProduction && data.delivery?.supplier?.financialNotes && (
+                {isProduction && data.delivery?.supplier?.notes && (
                   <Text style={styles.textSmallGray}>
-                    {data.delivery.supplier.financialNotes}
+                    {data.delivery.supplier.notes}
                   </Text>
                 )}
                 {isProduction && data.delivery?.notes && (
