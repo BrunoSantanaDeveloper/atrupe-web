@@ -33,6 +33,7 @@ declare module 'next-auth' {
     }
     accessToken: string
     sessionId: string
+    error?: string
   }
 }
 
@@ -41,6 +42,10 @@ export const {
   signOut,
   auth,
 } = NextAuth({
+  session: {
+    strategy: 'jwt',
+    maxAge: 60 * 60 * 4, // 4 horas
+  },
   providers: [
     Credentials({
       credentials: {
@@ -192,6 +197,7 @@ export const {
         expires: session.expires,
         accessToken: token.accessToken || '',
         sessionId: token.sessionId || '',
+        error: token.error as string | undefined,
       }
 
       return sessionData
