@@ -11,7 +11,7 @@ export function useOrderHistory({
   orderId,
   enabled = true,
 }: UseOrderHistoryProps) {
-  const route = `/orders/${orderId}/history`
+  const route = `/sales/history/order/${orderId}`
 
   const { data, isLoading, error, refetch } = useQuery<OrderHistoryResponse>({
     queryKey: ['order-history', orderId],

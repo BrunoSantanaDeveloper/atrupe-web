@@ -11,7 +11,7 @@ export function useQuotationHistory({
   quotationId,
   enabled = true,
 }: UseQuotationHistoryProps) {
-  const route = `/quotations/${quotationId}/history`
+  const route = `/sales/history/quotation/${quotationId}`
 
   const { data, isLoading, error, refetch } =
     useQuery<QuotationHistoryResponse>({
@@ -20,8 +20,6 @@ export function useQuotationHistory({
       staleTime: 1000 * 60 * 5, // 5 minutes
       queryFn: async () => {
         const response = await getData({ route })
-
-        console.log('ooooooooooooooo', response)
 
         if (!response.success) {
           throw new Error(response.message)

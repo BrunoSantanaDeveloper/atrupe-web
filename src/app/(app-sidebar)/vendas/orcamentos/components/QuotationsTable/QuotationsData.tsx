@@ -12,8 +12,8 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { NewQuotationModal, NewQuotationTriggerButton } from '../NewQuotation'
-import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { QuotationHistoryDialog } from '../QuotationHistory/QuotationHistoryDialog'
+import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 
 // UI
 import {
