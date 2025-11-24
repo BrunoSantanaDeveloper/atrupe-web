@@ -19,7 +19,7 @@ export type ListOrdersType = {
 }
 
 // Types for Order History
-export type OrderHistoryAction = 'CREATED' | 'CANCELED'
+export type OrderHistoryAction = 'CREATED' | 'CANCELED' | 'DUPLICATED'
 
 export type OrderHistoryChanges = {
   before: Record<string, unknown>

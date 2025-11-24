@@ -442,6 +442,12 @@ export function formatQuotationHistoryEvent(
         details.push(`Observações: ${item.metadata.approvalNotes}`)
       }
       break
+
+    case 'DUPLICATED':
+      if (item.metadata?.sourceQuotationId) {
+        details.push(`Orçamento original: #${item.metadata.sourceQuotationId}`)
+      }
+      break
   }
 
   return {
@@ -480,6 +486,12 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
       }
       if (item.metadata?.cancelNotes) {
         details.push(`Observações: ${item.metadata.cancelNotes}`)
+      }
+      break
+
+    case 'DUPLICATED':
+      if (item.metadata?.sourceOrderId) {
+        details.push(`Ordem de serviço original: #${item.metadata.sourceOrderId}`)
       }
       break
   }

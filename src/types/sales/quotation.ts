@@ -225,6 +225,7 @@ export type QuotationHistoryAction =
   | 'REJECTED'
   | 'VALUE_CHANGED'
   | 'APPROVED'
+  | 'DUPLICATED'
 
 export type QuotationHistoryChanges = {
   before: Record<string, unknown>
