@@ -6,6 +6,8 @@ import {
   formatCurrencyToBrl,
   calculateQuotationTotals,
   adaptNewItemsToOldFormat,
+  maskCpfCnpj,
+  MaskPhoneNumber,
 } from '@/lib/utils'
 import {
   Page,
@@ -31,7 +33,13 @@ import type { PrintQuotationType } from '@/types/print/quotation'
 import { PdfHeader } from '@/components/common/PdfHeader'
 
 // Icons
-import { MoneySignIcon, TruckDeliveryIcon } from '@/assets/icons/PdfIcons'
+import {
+  PhoneIcon,
+  EmailIcon,
+  DocumentIcon,
+  MoneySignIcon,
+  TruckDeliveryIcon,
+} from '@/assets/icons/PdfIcons'
 
 const styles = StyleSheet.create({
   page: {
@@ -500,9 +508,24 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <View style={styles.infoBlock}>
               <Text>Destinado a</Text>
               <Text style={styles.infoBold}>{data.client?.name}</Text>
-              <Text>{data.client?.document?.value}</Text>
-              <Text>{data.client?.phone}</Text>
-              <Text>{data.client?.email}</Text>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <DocumentIcon />
+                <Text>{maskCpfCnpj(data.client?.document?.value)}</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <PhoneIcon />
+                <Text>{MaskPhoneNumber(data.client?.phone)}</Text>
+              </View>
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <EmailIcon />
+                <Text>{data.client?.email}</Text>
+              </View>
               {isProduction && data.client?.notes && (
                 <Text style={styles.textSmallGray}>{data.client.notes}</Text>
               )}

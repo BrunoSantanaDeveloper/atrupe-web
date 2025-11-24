@@ -36,6 +36,44 @@ export const TruckDeliveryIcon = (props: SVGProps) => (
   </Svg>
 )
 
+export const DocumentIcon = (_props: SVGProps) => (
+  <Svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="#fff"
+    stroke="#475467"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 12, height: 12 }}
+  >
+    <Path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <Path d="M14 3v4a1 1 0 0 0 1 1h4" />
+    <Path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z" />
+    <Path d="M9 9l1 0" />
+    <Path d="M9 13l6 0" />
+    <path d="M9 17l6 0" />
+  </Svg>
+)
+
+export const PhoneIcon = (_props: SVGProps) => (
+  <Svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="#fff"
+    stroke="#475467"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    style={{ width: 12, height: 12 }}
+  >
+    <Path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <Path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+  </Svg>
+)
+
 export const CalendarDollarIcon = (props: SVGProps) => (
   <Svg viewBox="0 0 16 16" style={{ width: 12, height: 12 }} {...props}>
     <Path
