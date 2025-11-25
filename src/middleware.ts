@@ -1,12 +1,13 @@
-// Next Imports
+// Next
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Lib Imports
+// Libs
 import { auth } from '@/lib/auth'
 
 // Constants
-const HOME_PAGE = '/dashboard'
+export const HOME_PAGE = '/dashboard'
+export const SYSTEM_HOME_PAGE = '/admin'
 const SUBSCRIPTION_PAGE = '/assinatura'
 const GUEST_ROUTES = [
   'login',
@@ -27,8 +28,10 @@ const SHARED_ROUTES = ['shared-route']
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
   const session = await auth()
-  const isUserLoggedIn = !!session?.user
+  const user = session?.user
+  const isUserLoggedIn = !!user
   const trialEndsAt = session?.company.plan.trialEndsAt
+  const userIsSystemAdmin = user?.isSystemAdmin
 
   const isTrialExpired = trialEndsAt
     ? new Date(trialEndsAt) < new Date()
@@ -63,7 +66,8 @@ export async function middleware(req: NextRequest) {
     isRequestedRouteIsGuestRoute &&
     !pathname.endsWith(HOME_PAGE.slice(1))
   ) {
-    return NextResponse.redirect(new URL(HOME_PAGE, req.url).toString())
+    const redirectPage = userIsSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE
+    return NextResponse.redirect(new URL(redirectPage, req.url).toString())
   }
 
   const isAllowedRouteWhenTrialExpired = [

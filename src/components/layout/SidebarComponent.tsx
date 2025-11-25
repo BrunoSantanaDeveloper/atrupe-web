@@ -35,6 +35,7 @@ import logo from '@public/logo/logo-text.png'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Consts
+import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
 
 // Third-party
@@ -88,6 +89,7 @@ export function SidebarComponent(props: Props) {
 
   const user = session.user
   const userRole = user.role || 'USER'
+  const userIsSystemAdmin = user.isSystemAdmin
   const companyLogo = session.company.logo as string
   const companyFavicon = session.company.favicon as string
 
@@ -196,7 +198,10 @@ export function SidebarComponent(props: Props) {
           {/* header */}
           <div className="border-b">
             <div className="flex items-center justify-between h-28 transition-all ease-in-out duration-500 px-6 relative">
-              <Link href="/dashboard" className="flex items-center">
+              <Link
+                href={userIsSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE}
+                className="flex items-center"
+              >
                 <Image
                   src={companyLogo || logo}
                   alt="logo empresa"

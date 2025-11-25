@@ -5,10 +5,8 @@ import {
   IconCoins,
   IconUsers,
   IconBoxSeam,
-  IconUserCog,
   IconBuilding,
   IconSettings,
-  IconUserScan,
   IconBrandAsana,
   IconCalculator,
   IconListSearch,
@@ -19,7 +17,7 @@ import {
   IconBusinessplan,
   IconTruckLoading,
   IconRefreshAlert,
-  IconReceiptRefund,
+  IconProgressAlert,
   IconArrowsExchange,
   IconCalendarDollar,
   IconBuildingCommunity,
@@ -266,12 +264,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
 
 export const adminMainNavigation: MainNavigationType[] = [
   {
-    icon: IconCoin,
+    icon: IconListSearch,
     title: 'Avaliação',
     path: '/admin/avaliacao',
     children: [
       {
-        icon: IconReceiptRefund,
+        icon: IconProgressAlert,
         title: 'Cadastros incompletos',
         path: '/admin/avaliacao/cadastros-incompletos',
       },
@@ -295,17 +293,29 @@ export const adminMainNavigation: MainNavigationType[] = [
     ],
   },
   {
-    icon: IconUserScan,
-    title: 'Usuários',
-    path: '/admin/usuarios',
+    icon: IconBook,
+    title: 'Academy',
+    path: '/admin/academy',
     children: [
       {
-        icon: IconUserCog,
-        title: 'Colaboradores',
-        path: '/admin/usuarios/colaboradores',
+        icon: IconBook,
+        title: 'Academy',
+        path: '/admin/academy',
       },
     ],
   },
+  // {
+  //   icon: IconUserScan,
+  //   title: 'Usuários',
+  //   path: '/admin/usuarios',
+  //   children: [
+  //     {
+  //       icon: IconUserCog,
+  //       title: 'Colaboradores',
+  //       path: '/admin/usuarios/colaboradores',
+  //     },
+  //   ],
+  // },
 ]
 
 export const secondaryNavigation: SecondaryNavigationType = {
