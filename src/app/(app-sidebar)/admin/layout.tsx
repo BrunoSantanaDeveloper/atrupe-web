@@ -10,8 +10,9 @@ import { type PropsWithChildren } from 'react'
 export default async function AdminLayout({ children }: PropsWithChildren) {
   const session = await auth()
 
-  const userRole = session?.user?.role || 'USER'
+  const isSystemAdmin = session?.user?.isSystemAdmin
+
+  if (!isSystemAdmin) notFound()
 
   return children
-  if (userRole !== 'SUPER_ADMIN') notFound()
 }

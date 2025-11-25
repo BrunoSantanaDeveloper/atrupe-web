@@ -8,9 +8,8 @@ export function usePermissions() {
   const hasPermission = (permission: string) => {
     if (!session?.user?.permissions) return false
 
-    // Se o usuário for SUPER_ADMIN, tem todas as permissões
-    // TODO: Verificar se o usuário é admin com isAdmin
-    if (session.user.role === 'Admin') return true
+    // Se o usuário for ADMIN, tem todas as permissões
+    if (session.user.isAdmin) return true
 
     return session.user.permissions.includes(permission)
   }

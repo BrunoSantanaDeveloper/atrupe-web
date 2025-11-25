@@ -15,6 +15,7 @@ declare module 'next-auth' {
       permissions: string[]
       employeeId: string
       isAdmin: boolean | undefined
+      isSystemAdmin: boolean | undefined
     }
     company: {
       id: string
@@ -72,6 +73,8 @@ export const {
             password: credentials.password,
           })
 
+          console.log('LOGIN:', res.data)
+
           const authData = res.data
 
           if (res.status === 401) {
@@ -82,6 +85,9 @@ export const {
             const token = `Bearer ${authData.access_token}`
             api.defaults.headers.Authorization = token
 
+            // Para admin do sistema, company é null
+            const company = authData.company || {}
+
             return {
               id: authData.id,
               name: authData.name,
@@ -89,19 +95,21 @@ export const {
               avatar: authData.avatar,
               role: authData.role,
               employeeId: authData.employeeId,
-              companyId: authData.company.id,
-              companyLogo: authData.company.logo,
-              companyFavicon: authData.company.favicon,
-              companyName: authData.company.name,
-              companyLegalName: authData.company.legalName,
+              isAdmin: authData.isAdmin,
+              isSystemAdmin: authData.isSystemAdmin,
+              companyId: company.id || null,
+              companyLogo: company.logo || null,
+              companyFavicon: company.favicon || null,
+              companyName: company.name || null,
+              companyLegalName: company.legalName || null,
               accessToken: token,
               sessionId: authData.sessionId,
-              subscription: authData.company.subscription,
-              subscriptionActive: authData.company.subscriptionActive,
-              trialEndsAt: authData.company.trialEndsAt,
+              subscription: company.subscription || 'FULL',
+              subscriptionActive: company.subscriptionActive,
+              trialEndsAt: company.trialEndsAt || null,
               permissions: authData.permissions || [],
-              features: authData.company.features || [],
-              limits: authData.company.limits || {},
+              features: company.features || [],
+              limits: company.limits || {},
             }
           }
 
@@ -178,6 +186,7 @@ export const {
           avatar: token.avatar || '',
           employeeId: token.employeeId || '',
           isAdmin: token.isAdmin,
+          isSystemAdmin: token.isSystemAdmin,
           permissions: token.permissions || [],
         },
         company: {

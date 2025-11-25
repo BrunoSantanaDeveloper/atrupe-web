@@ -86,11 +86,12 @@ export function SidebarComponent(props: Props) {
 
   const pathname = usePathname()
 
-  const userRole = session.user.role || 'USER'
+  const user = session.user
+  const userRole = user.role || 'USER'
   const companyLogo = session.company.logo as string
   const companyFavicon = session.company.favicon as string
 
-  const mainNavigation = getMainNavigation(userRole)
+  const mainNavigation = getMainNavigation(user)
 
   const { hasPermission } = usePermissions()
   const {

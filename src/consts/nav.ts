@@ -333,8 +333,8 @@ export const userRoleObj: {
   SUPER_ADMIN: 'Super admin',
 }
 
-export function getMainNavigation(userRole: string) {
-  if (userRole === 'SUPER_ADMIN') {
+export function getMainNavigation(user?: { isSystemAdmin?: boolean }) {
+  if (user?.isSystemAdmin) {
     return adminMainNavigation
   }
 
