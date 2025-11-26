@@ -29,8 +29,8 @@ import { IconReportOff } from '@tabler/icons-react'
 export function Main({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['manage-accounts-totals'],
-    queryFn: () => getData({ route: '/accounts/totals' }),
+    queryKey: ['active-clients-totals'],
+    queryFn: () => getData({ route: '/subscriptions/active-clients/totals' }),
   })
 
   const statusTotal = data?.data

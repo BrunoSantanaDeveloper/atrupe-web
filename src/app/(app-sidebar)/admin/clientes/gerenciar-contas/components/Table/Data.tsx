@@ -80,8 +80,8 @@ export function Data({ searchParams, searchDescription }: Props) {
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['manage-accounts-list', searchParams],
-    queryFn: () => getData({ route: '/accounts', filters }),
+    queryKey: ['active-clients-list', searchParams],
+    queryFn: () => getData({ route: '/subscriptions/active-clients', filters }),
   })
 
   const dataArray = data?.data || []
