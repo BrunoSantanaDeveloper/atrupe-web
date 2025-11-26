@@ -23,7 +23,7 @@ import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog
 import { useState } from 'react'
 
 interface Props {
-  data: { files: string[]; video: string }
+  data: { files?: string[]; video?: string }
 }
 
 export function HelpButton({ data }: Props) {
@@ -50,7 +50,7 @@ export function HelpButton({ data }: Props) {
             <IconPlayerPlay size={16} className="mr-2" />
             <span>Vídeo</span>
           </DropdownMenuItem>
-          {files.length > 0 ? (
+          {files?.length ? (
             <DropdownMenuItem
               onClick={() => {
                 window.open(files[0], '_blank')
@@ -60,7 +60,7 @@ export function HelpButton({ data }: Props) {
               <span>PDF</span>
             </DropdownMenuItem>
           ) : null}
-          {files.length > 0 ? (
+          {files?.length ? (
             <DropdownMenuItem
               onClick={() => {
                 window.open(files[1], '_blank')

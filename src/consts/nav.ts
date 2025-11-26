@@ -276,7 +276,7 @@ export const adminMainNavigation: MainNavigationType[] = [
       {
         icon: IconRefreshAlert,
         title: 'Contas trials',
-        path: '/admin/avaliacao/contas-trials',
+        path: '/admin/avaliacao/contas-trial',
       },
     ],
   },

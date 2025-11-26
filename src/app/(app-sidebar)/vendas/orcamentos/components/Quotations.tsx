@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -27,7 +29,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconReportOff } from '@tabler/icons-react'
-import { useState } from 'react'
 
 export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState(false)

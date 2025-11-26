@@ -35,6 +35,8 @@ interface Props {
   previousPage?: string
   badge?: BadgeType
   supportText?: string
+  helpData?: { files: string[]; video: string }
+  classNames?: { title?: string; label?: string }
 }
 
 const exampleHelpData = {
@@ -56,15 +58,16 @@ export function Topbar({
   previousPage,
   badge,
   supportText,
+  helpData = exampleHelpData,
+  classNames,
 }: Props) {
-  const helpData = exampleHelpData
-
   return (
     <div className="space-y-3">
       <div
         className={cn(
-          label && 'bg-brand-200',
           'flex flex-wrap justify-between gap-2 rounded-lg min-h-11',
+          label && 'bg-brand-200 px-6',
+          classNames?.label,
         )}
       >
         <div className="flex justify-center items-center gap-2">
@@ -83,7 +86,14 @@ export function Topbar({
               </Button>
             ) : null}
             {title ? (
-              <h1 className="text-gray-800 font-semibold text-lg">{title}</h1>
+              <h1
+                className={cn(
+                  'text-gray-800 font-semibold text-lg',
+                  classNames?.title,
+                )}
+              >
+                {title}
+              </h1>
             ) : (
               <Skeleton className="h-5 w-48 bg-gray-300" />
             )}
@@ -96,8 +106,10 @@ export function Topbar({
           ) : null}
         </div>
         <div className="flex items-center gap-3">
-          {label ? <p className="font-semibold pr-4">{label}</p> : null}
-          {helpData ? <HelpButton data={helpData} /> : null}
+          {label ? (
+            <p className="font-semibold text-white opacity-60">{label}</p>
+          ) : null}
+          {helpData && !label ? <HelpButton data={helpData} /> : null}
           {secondaryCta || null}
           {primaryCta || null}
         </div>
