@@ -14,8 +14,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
@@ -203,14 +201,20 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Senha gerencial</Label>
-              <Input
+              <label
+                htmlFor="password"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Senha gerencial
+              </label>
+              <input
                 id="password"
                 type="password"
                 placeholder="Digite aqui"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
               <p className="text-sm text-gray-600">
                 Obrigatório para alterar
