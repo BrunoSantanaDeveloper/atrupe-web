@@ -24,10 +24,10 @@ import { SelectCityField } from '@/components/common/form/global-inputs/CitiesSe
 import { useForm } from 'react-hook-form'
 import { FormType, schema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 
 // Types
 import type { IncompleteRegistrationItem } from '../Table/Data'
@@ -50,9 +50,9 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
-      companyName: rowData?.companyName || '',
+      legalName: '',
       document: rowData?.code || '',
-      displayName: '',
+      companyName: rowData?.companyName || '',
       userName: rowData?.userName || '',
       email: rowData?.email || '',
       phone: rowData?.phone || '',
@@ -64,28 +64,30 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
 
   const { handleSubmit, setValue, watch, reset } = form
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem(
-        '/subscriptions/incomplete-registrations',
-        `${rowData?.id}`,
-        data,
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['incomplete-registration-list'],
-      })
-      toast.success('Cadastro efetivado com sucesso')
-      handleOpenChange(false)
-    },
-    onError: (error) => {
-      console.error(error)
-      toast.error('Ocorreu um erro ao efetivar o cadastro')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    await mutation.mutateAsync(data)
+    if (!rowData?.id) {
+      toast.error('ID do cadastro não encontrado')
+      return
+    }
+
+    const res = await createItemNew({
+      route: '/user/complete-registration',
+      data: {
+        id: rowData.id,
+        ...data,
+      },
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ['incomplete-registration-list'],
+    })
+    toast.success('Cadastro efetivado com sucesso')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (value: boolean) => {
@@ -117,7 +119,7 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
             >
               <div className="flex flex-wrap gap-5">
                 <FormInput<FormType>
-                  name="companyName"
+                  name="legalName"
                   label="Razão social"
                   width="flex-[1_0_340px]"
                   placeholder="Digite aqui"
@@ -135,7 +137,7 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
                 />
 
                 <FormInput<FormType>
-                  name="displayName"
+                  name="companyName"
                   label="Nome exibido no navegador"
                   width="flex-[1_0_340px]"
                   placeholder="Digite aqui"
@@ -209,7 +211,7 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
           <Button
             type="submit"
             form="complete-registration"
-            disabled={mutation.isPending}
+            isLoading={form.formState.isSubmitting}
           >
             Cadastrar cliente
           </Button>
