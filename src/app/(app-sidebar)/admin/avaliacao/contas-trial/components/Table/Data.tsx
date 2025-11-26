@@ -9,6 +9,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { EditTrialAccountDialog } from '../EditTrialAccountDialog'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { TrialAccountHistoryDialog } from '../TrialAccountHistoryDialog'
 
 // UI
 import {
@@ -68,6 +69,7 @@ interface GroupedData {
 export function Data({ searchParams, searchDescription }: Props) {
   const [rowData, setRowData] = useState<TrialAccountItem | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -178,6 +180,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       tooltip="Histórico"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsHistoryDialogOpen(true)
                                       }}
                                     />
                                   </TooltipProvider>
@@ -215,6 +218,11 @@ export function Data({ searchParams, searchDescription }: Props) {
       <EditTrialAccountDialog
         open={isDialogOpen}
         setOpen={setIsDialogOpen}
+        rowData={rowData}
+      />
+      <TrialAccountHistoryDialog
+        open={isHistoryDialogOpen}
+        setOpen={setIsHistoryDialogOpen}
         rowData={rowData}
       />
     </>
