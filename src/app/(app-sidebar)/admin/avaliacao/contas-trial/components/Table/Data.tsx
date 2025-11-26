@@ -118,16 +118,16 @@ export function Data({ searchParams, searchDescription }: Props) {
                               {/* Conta */}
                               <TableCell>
                                 <div className="flex items-center gap-3">
-                                  <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+                                  <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
                                     {item?.avatar ? (
                                       <Image
                                         src={item.avatar}
                                         alt={item?.companyName || 'Avatar'}
                                         fill
-                                        className="object-cover"
+                                        className="object-cover p-1"
                                       />
                                     ) : (
-                                      <div className="w-full h-full bg-gray-300" />
+                                      <div className="w-full h-full bg-gray-200" />
                                     )}
                                   </div>
                                   <div>

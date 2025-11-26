@@ -26,7 +26,7 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 
 // Libs
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
@@ -35,7 +35,22 @@ import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconHistory } from '@tabler/icons-react'
+import { IconPencil } from '@tabler/icons-react'
+
+interface IncompleteRegistrationItem {
+  id: string
+  companyName: string
+  code: string
+  userName: string
+  phone: string
+  email: string
+  createdAt: string
+}
+
+interface GroupedData {
+  date: string
+  data: IncompleteRegistrationItem[]
+}
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -43,17 +58,18 @@ interface Props extends SearchParamsType {
 }
 
 export function Data({ searchParams, searchDescription }: Props) {
-  const [rowData, setRowData] = useState(null)
+  const [rowData, setRowData] = useState<IncompleteRegistrationItem>()
 
   const filters = { ...searchParams }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['', searchParams],
-    queryFn: () => getDataOld({ route: '', filters }),
+    queryKey: ['incomplete-registration-list', searchParams],
+    queryFn: () =>
+      getData({ route: '/subscriptions/incomplete-registrations', filters }),
   })
 
-  const dataArray = data?.data || []
+  const dataArray: GroupedData[] = data?.data || []
   const hasData = dataArray.length
 
   return (
@@ -87,21 +103,25 @@ export function Data({ searchParams, searchDescription }: Props) {
                     </TableRow>
                     {group?.data?.length
                       ? group?.data.map((item) => {
-                          const description = `${item?.description}`
-
                           return (
-                            <TableRow key={item?.id}>
+                            <TableRow key={item.id}>
                               <TableCell>
                                 <p className="font-medium">
-                                  {item?.name || ''}
+                                  {item.companyName}
                                 </p>
-                                {description}
                               </TableCell>
-                              <TableCell className="text-success-700 text-nowrap"></TableCell>
-                              <TableCell></TableCell>
-                              <TableCell></TableCell>
+                              <TableCell className="text-success-700 text-nowrap">
+                                {item.code}
+                              </TableCell>
+                              <TableCell>{item.userName}</TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  <p className="text-gray-900">{item.phone}</p>
+                                  <p className="text-gray-600">{item.email}</p>
+                                </div>
+                              </TableCell>
                               <TableCell className="text-gray-600">
-                                {formatToLocaleDate(item?.createdAt)}
+                                {formatToLocaleDate(item.createdAt)}
                               </TableCell>
                               <TableCell>
                                 <div className="flex justify-end gap-1">
@@ -109,13 +129,6 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     <ActionButton
                                       Icon={IconPencil}
                                       tooltip="Editar"
-                                      onClick={() => {
-                                        setRowData(item)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconHistory}
-                                      tooltip="Histórico"
                                       onClick={() => {
                                         setRowData(item)
                                       }}

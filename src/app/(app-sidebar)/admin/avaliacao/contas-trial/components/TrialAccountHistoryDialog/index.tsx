@@ -120,7 +120,7 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
               placeholder="Digite uma mensagem"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              className="min-h-[120px] resize-none"
+              className="min-h-[120px]"
             />
           </div>
         </DialogBody>

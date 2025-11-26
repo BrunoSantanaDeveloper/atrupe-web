@@ -57,6 +57,9 @@ export function SignupForm() {
       route: '/user',
       data: {
         email: data.email,
+        name: data.name,
+        companyName: data.company,
+        phone: data.mobile,
       },
     })
 
