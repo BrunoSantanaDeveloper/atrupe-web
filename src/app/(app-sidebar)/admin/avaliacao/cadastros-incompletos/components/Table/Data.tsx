@@ -8,6 +8,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { CompleteRegistrationDialog } from '../CompleteRegistrationDialog'
 
 // UI
 import {
@@ -37,7 +38,7 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import { IconPencil } from '@tabler/icons-react'
 
-interface IncompleteRegistrationItem {
+export interface IncompleteRegistrationItem {
   id: string
   companyName: string
   code: string
@@ -58,7 +59,10 @@ interface Props extends SearchParamsType {
 }
 
 export function Data({ searchParams, searchDescription }: Props) {
-  const [rowData, setRowData] = useState<IncompleteRegistrationItem>()
+  const [rowData, setRowData] = useState<IncompleteRegistrationItem | null>(
+    null,
+  )
+  const [openDialog, setOpenDialog] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -128,9 +132,10 @@ export function Data({ searchParams, searchDescription }: Props) {
                                   <TooltipProvider>
                                     <ActionButton
                                       Icon={IconPencil}
-                                      tooltip="Editar"
+                                      tooltip="Cadastrar"
                                       onClick={() => {
                                         setRowData(item)
+                                        setOpenDialog(true)
                                       }}
                                     />
                                   </TooltipProvider>
@@ -165,6 +170,12 @@ export function Data({ searchParams, searchDescription }: Props) {
           />
         </CardFooter>
       ) : null}
+
+      <CompleteRegistrationDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        rowData={rowData}
+      />
     </>
   )
 }

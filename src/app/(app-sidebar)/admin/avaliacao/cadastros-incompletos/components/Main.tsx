@@ -15,7 +15,11 @@ import type { SearchParamsType } from '@/types/coreTypes'
 export function Main({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
-      <Topbar title="Cadastros incompletos" />
+      <Topbar
+        title="Cadastros incompletos"
+        label="Super Admin"
+        classNames={{ title: 'text-white', label: 'bg-[#FF4201]' }}
+      />
       <div>
         <Card>
           <>
