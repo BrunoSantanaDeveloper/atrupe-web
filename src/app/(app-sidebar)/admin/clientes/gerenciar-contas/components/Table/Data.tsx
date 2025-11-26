@@ -11,6 +11,7 @@ import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { EditClientDialog } from '../EditClientDialog'
 import { ChangeStatusDialog } from '../ChangeStatusDialog'
 import { ModulesDialog } from '../ModulesDialog'
+import { ClientHistoryDialog } from '../ClientHistoryDialog'
 
 // UI
 import {
@@ -82,6 +83,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isChangeStatusDialogOpen, setIsChangeStatusDialogOpen] =
     useState(false)
   const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -213,6 +215,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       tooltip="Histórico"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsHistoryDialogOpen(true)
                                       }}
                                     />
                                   </TooltipProvider>
@@ -262,6 +265,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <ModulesDialog
         open={isModulesDialogOpen}
         setOpen={setIsModulesDialogOpen}
+        rowData={rowData}
+      />
+
+      <ClientHistoryDialog
+        open={isHistoryDialogOpen}
+        setOpen={setIsHistoryDialogOpen}
         rowData={rowData}
       />
     </>
