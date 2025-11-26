@@ -30,7 +30,7 @@ export function Main({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['trial-accounts-totals'],
-    queryFn: () => getData({ route: '' }),
+    queryFn: () => getData({ route: '/subscriptions/trial-companies/totals' }),
   })
 
   const statusTotal = data?.data

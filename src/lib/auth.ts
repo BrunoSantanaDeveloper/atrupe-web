@@ -73,8 +73,6 @@ export const {
             password: credentials.password,
           })
 
-          console.log('LOGIN:', res.data)
-
           const authData = res.data
 
           if (res.status === 401) {

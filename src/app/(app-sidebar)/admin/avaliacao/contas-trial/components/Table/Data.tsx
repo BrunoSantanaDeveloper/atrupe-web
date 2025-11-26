@@ -28,7 +28,7 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData } from '@/actions/_cruds'
 
 // Libs
 import { formatToWeekDate } from '@/lib/formatDate'
@@ -75,8 +75,9 @@ export function Data({ searchParams, searchDescription }: Props) {
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['', searchParams],
-    queryFn: () => getDataOld({ route: '', filters }),
+    queryKey: ['trial-accounts-list', searchParams],
+    queryFn: () =>
+      getData({ route: '/subscriptions/trial-companies', filters }),
   })
 
   const dataArray = data?.data || []
