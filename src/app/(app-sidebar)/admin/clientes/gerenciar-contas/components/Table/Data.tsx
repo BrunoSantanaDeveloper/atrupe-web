@@ -8,6 +8,9 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { EditClientDialog } from '../EditClientDialog'
+import { ChangeStatusDialog } from '../ChangeStatusDialog'
+import { ModulesDialog } from '../ModulesDialog'
 
 // UI
 import {
@@ -38,9 +41,9 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import {
   IconPencil,
-  IconSettings,
-  IconCurrencyDollar,
+  IconStack2,
   IconHistory,
+  IconSettings,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -69,12 +72,16 @@ interface GroupedData {
 }
 
 const planVariants = {
-  Pro: 'destructive',
+  Pro: 'error',
   Start: 'success',
 } as const
 
 export function Data({ searchParams, searchDescription }: Props) {
   const [rowData, setRowData] = useState<AccountItem | null>(null)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isChangeStatusDialogOpen, setIsChangeStatusDialogOpen] =
+    useState(false)
+  const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -182,6 +189,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       tooltip="Editar"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsEditDialogOpen(true)
                                       }}
                                     />
                                     <ActionButton
@@ -189,13 +197,15 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       tooltip="Configurações"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsChangeStatusDialogOpen(true)
                                       }}
                                     />
                                     <ActionButton
-                                      Icon={IconCurrencyDollar}
-                                      tooltip="Financeiro"
+                                      Icon={IconStack2}
+                                      tooltip="Módulos"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsModulesDialogOpen(true)
                                       }}
                                     />
                                     <ActionButton
@@ -236,6 +246,24 @@ export function Data({ searchParams, searchDescription }: Props) {
           />
         </CardFooter>
       ) : null}
+
+      <EditClientDialog
+        open={isEditDialogOpen}
+        setOpen={setIsEditDialogOpen}
+        rowData={rowData}
+      />
+
+      <ChangeStatusDialog
+        open={isChangeStatusDialogOpen}
+        setOpen={setIsChangeStatusDialogOpen}
+        rowData={rowData}
+      />
+
+      <ModulesDialog
+        open={isModulesDialogOpen}
+        setOpen={setIsModulesDialogOpen}
+        rowData={rowData}
+      />
     </>
   )
 }
