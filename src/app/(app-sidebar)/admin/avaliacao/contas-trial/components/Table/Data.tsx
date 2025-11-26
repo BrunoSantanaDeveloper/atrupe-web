@@ -6,6 +6,7 @@ import { Fragment, useState } from 'react'
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { EditTrialAccountDialog } from '../EditTrialAccountDialog'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 
@@ -29,21 +30,44 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld } from '@/actions/_cruds'
 
 // Libs
-import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
+import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconHistory } from '@tabler/icons-react'
+import Image from 'next/image'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
   searchDescription?: string
 }
 
+export interface TrialAccountItem {
+  id: string
+  avatar?: string
+  companyName?: string
+  displayName?: string
+  code?: string
+  document?: string
+  userName?: string
+  phone?: string
+  email?: string
+  trialPeriod?: string
+  createdAt?: string
+  stateId?: string
+  cityId?: string
+}
+
+interface GroupedData {
+  date: string
+  data: TrialAccountItem[]
+}
+
 export function Data({ searchParams, searchDescription }: Props) {
-  const [rowData, setRowData] = useState(null)
+  const [rowData, setRowData] = useState<TrialAccountItem | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -67,15 +91,14 @@ export function Data({ searchParams, searchDescription }: Props) {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead>Conta</TableHead>
-                  <TableHead>Código</TableHead>
                   <TableHead>Usuário</TableHead>
                   <TableHead>Contato</TableHead>
-                  <TableHead>Criação</TableHead>
+                  <TableHead>Período de teste</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {dataArray.map((group) => (
+                {dataArray.map((group: GroupedData) => (
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
@@ -87,22 +110,58 @@ export function Data({ searchParams, searchDescription }: Props) {
                     </TableRow>
                     {group?.data?.length
                       ? group?.data.map((item) => {
-                          const description = `${item?.description}`
-
                           return (
                             <TableRow key={item?.id}>
+                              {/* Conta */}
                               <TableCell>
-                                <p className="font-medium">
-                                  {item?.name || ''}
+                                <div className="flex items-center gap-3">
+                                  <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0">
+                                    {item?.avatar ? (
+                                      <Image
+                                        src={item.avatar}
+                                        alt={item?.companyName || 'Avatar'}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    ) : (
+                                      <div className="w-full h-full bg-gray-300" />
+                                    )}
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-sm">
+                                      {item?.companyName ||
+                                        'Nome do Empresa Ltda'}
+                                    </p>
+                                    <p className="text-xs text-gray-600">
+                                      {`${item?.code} - ${item?.document}`}
+                                    </p>
+                                  </div>
+                                </div>
+                              </TableCell>
+                              {/* Usuário */}
+                              <TableCell>
+                                <p className="text-sm text-gray-700">
+                                  {item?.userName || '-'}
                                 </p>
-                                {description}
                               </TableCell>
-                              <TableCell className="text-success-700 text-nowrap"></TableCell>
-                              <TableCell></TableCell>
-                              <TableCell></TableCell>
-                              <TableCell className="text-gray-600">
-                                {formatToLocaleDate(item?.createdAt)}
+                              {/* Contato */}
+                              <TableCell>
+                                <div className="text-sm">
+                                  <p className="text-gray-700">
+                                    {item?.phone || '00 00000-0000'}
+                                  </p>
+                                  <p className="text-gray-600">
+                                    {item?.email || 'contato@email.com.br'}
+                                  </p>
+                                </div>
                               </TableCell>
+                              {/* Período de teste */}
+                              <TableCell>
+                                <p className="text-sm text-gray-700 text-nowrap">
+                                  {item?.trialPeriod || '-'}
+                                </p>
+                              </TableCell>
+                              {/* Ações */}
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
@@ -111,6 +170,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       tooltip="Editar"
                                       onClick={() => {
                                         setRowData(item)
+                                        setIsDialogOpen(true)
                                       }}
                                     />
                                     <ActionButton
@@ -152,6 +212,11 @@ export function Data({ searchParams, searchDescription }: Props) {
           />
         </CardFooter>
       ) : null}
+      <EditTrialAccountDialog
+        open={isDialogOpen}
+        setOpen={setIsDialogOpen}
+        rowData={rowData}
+      />
     </>
   )
 }
