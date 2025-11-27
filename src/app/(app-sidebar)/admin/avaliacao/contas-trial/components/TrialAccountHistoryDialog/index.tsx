@@ -59,7 +59,7 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
   const mutation = useMutation({
     mutationFn: (messageData: { message: string }) =>
       createItem({
-        route: `trial-accounts/${rowData?.id}/messages`,
+        route: `trial-accounts/${rowData?.company?.id}/messages`,
         data: messageData,
       }),
     onSuccess: () => {
