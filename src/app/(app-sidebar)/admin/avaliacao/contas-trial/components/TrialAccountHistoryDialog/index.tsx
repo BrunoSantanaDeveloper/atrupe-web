@@ -43,12 +43,12 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
 
   const { data: historyData, isLoading } = useQuery({
-    queryKey: ['trial-account-history', rowData?.id],
+    queryKey: ['company-history', rowData?.company?.id],
     queryFn: () =>
       getData({
-        route: `trial-accounts/${rowData?.id}/history`,
+        route: `company/${rowData?.company?.id}/history`,
       }),
-    enabled: open && !!rowData?.id,
+    enabled: open && !!rowData?.company?.id,
   })
 
   const events = useMemo(() => {
@@ -64,7 +64,7 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['trial-account-history', rowData?.id],
+        queryKey: ['company-history', rowData?.company?.id],
       })
       toast.success('Mensagem enviada com sucesso')
       setMessage('')
