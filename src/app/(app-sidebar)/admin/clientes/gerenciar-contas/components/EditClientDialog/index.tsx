@@ -206,7 +206,11 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
           >
             Voltar
           </Button>
-          <Button type="submit" form="edit-client" disabled={mutation.isPending}>
+          <Button
+            type="submit"
+            form="edit-client"
+            disabled={mutation.isPending}
+          >
             Salvar
           </Button>
         </DialogFooter>

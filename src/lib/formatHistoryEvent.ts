@@ -491,7 +491,9 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
 
     case 'DUPLICATED':
       if (item.metadata?.sourceOrderId) {
-        details.push(`Ordem de serviço original: #${item.metadata.sourceOrderId}`)
+        details.push(
+          `Ordem de serviço original: #${item.metadata.sourceOrderId}`,
+        )
       }
       break
   }

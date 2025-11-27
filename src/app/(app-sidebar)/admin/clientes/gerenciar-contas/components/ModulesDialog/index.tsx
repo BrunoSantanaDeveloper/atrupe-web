@@ -54,7 +54,9 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
     enabled: open && !!rowData?.id,
     queryKey: ['client-modules', rowData?.id],
     queryFn: () =>
-      getData({ route: `/subscriptions/active-clients/${rowData?.id}/modules` }),
+      getData({
+        route: `/subscriptions/active-clients/${rowData?.id}/modules`,
+      }),
   })
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
       updateItem(
         '/subscriptions/active-clients',
         `${rowData?.id}/modules`,
-        data
+        data,
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -85,7 +87,7 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
   const handleToggleModule = (category: string, moduleId: string) => {
     const updatedModules = { ...modules }
     const moduleIndex = updatedModules[category].findIndex(
-      (m) => m.id === moduleId
+      (m) => m.id === moduleId,
     )
 
     if (moduleIndex !== -1) {
