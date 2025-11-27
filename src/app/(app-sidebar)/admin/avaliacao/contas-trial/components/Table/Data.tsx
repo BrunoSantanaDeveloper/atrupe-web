@@ -10,6 +10,7 @@ import { EditTrialAccountDialog } from '../EditTrialAccountDialog'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { TrialAccountHistoryDialog } from '../TrialAccountHistoryDialog'
+import { UpgradeTrialAccountDialog } from '../UpgradeTrialAccountDialog'
 
 // UI
 import {
@@ -37,7 +38,7 @@ import { formatToWeekDate } from '@/lib/formatDate'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconHistory } from '@tabler/icons-react'
+import { IconPencil, IconHistory, IconRocket } from '@tabler/icons-react'
 import Image from 'next/image'
 
 interface Props extends SearchParamsType {
@@ -48,7 +49,10 @@ interface Props extends SearchParamsType {
 export interface TrialAccountItem {
   id: string
   avatar?: string
-  companyName?: string
+  company?: {
+    id: string
+    name: string
+  }
   displayName?: string
   code?: string
   document?: string
@@ -70,6 +74,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [rowData, setRowData] = useState<TrialAccountItem | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
+  const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
 
@@ -80,7 +85,7 @@ export function Data({ searchParams, searchDescription }: Props) {
       getData({ route: '/subscriptions/trial-companies', filters }),
   })
 
-  const dataArray = data?.data || []
+  const dataArray: GroupedData[] = data?.data || []
   const hasData = dataArray.length
 
   return (
@@ -101,7 +106,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {dataArray.map((group: GroupedData) => (
+                {dataArray.map((group) => (
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
@@ -122,7 +127,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     {item?.avatar ? (
                                       <Image
                                         src={item.avatar}
-                                        alt={item?.companyName || 'Avatar'}
+                                        alt={item?.company?.name || 'Avatar'}
                                         fill
                                         className="object-cover p-1"
                                       />
@@ -132,8 +137,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                   </div>
                                   <div>
                                     <p className="font-medium text-sm">
-                                      {item?.companyName ||
-                                        'Nome do Empresa Ltda'}
+                                      {item?.company?.name || '-'}
                                     </p>
                                     <p className="text-xs text-gray-600">
                                       {`${item?.code} - ${item?.document}`}
@@ -144,7 +148,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                               {/* Usuário */}
                               <TableCell>
                                 <p className="text-sm text-gray-700">
-                                  {item?.userName || '-'}
+                                  Nome d {item?.userName || '-'}
                                 </p>
                               </TableCell>
                               {/* Contato */}
@@ -168,6 +172,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
+                                    <ActionButton
+                                      Icon={IconRocket}
+                                      tooltip="Upgrade para Start"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsUpgradeDialogOpen(true)
+                                      }}
+                                    />
                                     <ActionButton
                                       Icon={IconPencil}
                                       tooltip="Editar"
@@ -216,6 +228,11 @@ export function Data({ searchParams, searchDescription }: Props) {
           />
         </CardFooter>
       ) : null}
+      <UpgradeTrialAccountDialog
+        open={isUpgradeDialogOpen}
+        setOpen={setIsUpgradeDialogOpen}
+        rowData={rowData}
+      />
       <EditTrialAccountDialog
         open={isDialogOpen}
         setOpen={setIsDialogOpen}

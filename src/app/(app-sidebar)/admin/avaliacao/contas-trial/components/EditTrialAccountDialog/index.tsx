@@ -50,7 +50,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
-      legalName: rowData?.companyName || '',
+      legalName: rowData?.company?.name || '',
       document: rowData?.document || '',
       companyName: rowData?.displayName || '',
       userName: rowData?.userName || '',
@@ -83,9 +83,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
       return
     }
 
-    queryClient.invalidateQueries({
-      queryKey: ['trial-accounts'],
-    })
+    queryClient.invalidateQueries()
     toast.success('Cliente editado com sucesso')
     handleOpenChange(false)
   }
