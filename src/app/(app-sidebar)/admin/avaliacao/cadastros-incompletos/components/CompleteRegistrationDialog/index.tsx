@@ -61,8 +61,8 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
-      legalName: '',
-      document: rowData?.code || '',
+      legalName: rowData?.companyName || '',
+      document: '',
       companyName: rowData?.companyName || '',
       userName: rowData?.userName || '',
       email: rowData?.email || '',
@@ -97,7 +97,9 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
     queryClient.invalidateQueries({
       queryKey: ['incomplete-registration-list'],
     })
-    toast.success('Cadastro efetivado com sucesso')
+    toast.success(
+      'Cadastro efetivado. Uma senha aleatória foi enviada ao e-mail informado',
+    )
     handleOpenChange(false)
   }
 
