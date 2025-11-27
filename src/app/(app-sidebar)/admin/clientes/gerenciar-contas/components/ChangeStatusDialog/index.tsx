@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useEffect, SVGProps } from 'react'
 
 // UI
 import {
@@ -15,10 +15,24 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+
+// Components
+import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
 // Actions
 import { updateItem } from '@/actions/_cruds'
@@ -27,7 +41,13 @@ import { updateItem } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconAlertTriangle, IconLock, IconPlayerPause } from '@tabler/icons-react'
+import {
+  IconAlertTriangle,
+  IconLock,
+  IconSquareX,
+  IconCheck,
+  IconProps,
+} from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -35,16 +55,110 @@ interface Props {
   rowData: AccountItem | null
 }
 
-type StatusOption = 'BLOCKED' | 'INACTIVE'
+type StatusOption = 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
+
+const formSchema = z.object({
+  status: z.enum(['ACTIVE', 'BLOCKED', 'INACTIVE']),
+  password: z.string().min(1, 'Senha gerencial é obrigatória'),
+})
+
+// Helper para obter configuração baseada no status
+const getStatusConfig = (currentStatus?: StatusOption) => {
+  // Garantir que temos um status válido
+  const safeStatus: StatusOption = currentStatus || 'ACTIVE'
+
+  const statusTexts: Record<StatusOption, string> = {
+    ACTIVE: 'Conta ativa, o que deseja fazer?',
+    BLOCKED: 'Conta bloqueada, o que deseja fazer?',
+    INACTIVE: 'Conta inativa, o que deseja fazer?',
+  }
+
+  const availableOptions: Record<
+    StatusOption,
+    Array<{
+      label: string
+      value: string
+      icon:
+        | React.ComponentType<IconProps>
+        | React.ComponentType<SVGProps<SVGSVGElement>>
+    }>
+  > = {
+    ACTIVE: [
+      {
+        label: 'Bloquear',
+        value: 'BLOCKED',
+        icon: IconLock,
+      },
+      {
+        label: 'Inativar',
+        value: 'INACTIVE',
+        icon: IconSquareX,
+      },
+    ],
+    BLOCKED: [
+      {
+        label: 'Ativar',
+        value: 'ACTIVE',
+        icon: IconCheck,
+      },
+      {
+        label: 'Inativar',
+        value: 'INACTIVE',
+        icon: IconSquareX,
+      },
+    ],
+    INACTIVE: [
+      {
+        label: 'Ativar',
+        value: 'ACTIVE',
+        icon: IconCheck,
+      },
+      {
+        label: 'Bloquear',
+        value: 'BLOCKED',
+        icon: IconLock,
+      },
+    ],
+  }
+
+  return {
+    description: statusTexts[safeStatus],
+    options: availableOptions[safeStatus],
+  }
+}
 
 export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
-  const [selectedStatus, setSelectedStatus] = useState<StatusOption>('BLOCKED')
-  const [password, setPassword] = useState('')
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      status: 'BLOCKED',
+      password: '',
+    },
+  })
+
+  // Atualizar valores padrão quando rowData mudar
+  useEffect(() => {
+    if (open && rowData?.status) {
+      const config = getStatusConfig(rowData.status)
+      const defaultStatus = config.options[0]?.value as StatusOption
+      if (defaultStatus) {
+        form.reset({
+          status: defaultStatus,
+          password: '',
+        })
+      }
+    }
+  }, [open, rowData, form])
 
   const mutation = useMutation({
     mutationFn: (data: { status: StatusOption; password: string }) =>
-      updateItem('/subscriptions/active-clients/status', `${rowData?.id}`, data),
+      updateItem(
+        '/subscriptions/active-clients/status',
+        `${rowData?.id}`,
+        data,
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['active-clients-list'],
@@ -61,24 +175,18 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
     },
   })
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!password) {
-      toast.error('Senha gerencial é obrigatória')
-      return
-    }
-
-    await mutation.mutateAsync({ status: selectedStatus, password })
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    await mutation.mutateAsync(values)
   }
 
   const handleOpenChange = (value: boolean) => {
     if (!value) {
-      setPassword('')
-      setSelectedStatus('BLOCKED')
+      form.reset()
     }
     setOpen(value)
   }
+
+  const statusConfig = getStatusConfig(rowData?.status)
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -87,140 +195,51 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
           <DialogTitle>
             <div className="flex flex-col items-center gap-4 text-center">
               <FeaturedIcon
-                variant="warningModern"
+                variant="warningBorderedLight"
                 Icon={IconAlertTriangle}
                 size="lg"
+                rounded
               />
               <span>Alterar status</span>
             </div>
           </DialogTitle>
           <DialogDescription className="text-center">
-            Conta ativa, o que deseja fazer?
+            {statusConfig.description}
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
-          <form id="change-status" onSubmit={handleSubmit} className="space-y-5">
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setSelectedStatus('BLOCKED')}
-                className={`flex-1 flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
-                  selectedStatus === 'BLOCKED'
-                    ? 'border-primary-600 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    selectedStatus === 'BLOCKED'
-                      ? 'bg-primary-100'
-                      : 'bg-gray-100'
-                  }`}
-                >
-                  <IconLock
-                    size={20}
-                    className={
-                      selectedStatus === 'BLOCKED'
-                        ? 'text-primary-600'
-                        : 'text-gray-600'
-                    }
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-medium text-sm">Bloquear</p>
-                  {selectedStatus === 'BLOCKED' && (
-                    <div className="w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center ml-auto">
-                      <svg
-                        width="12"
-                        height="9"
-                        viewBox="0 0 12 9"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M1 4.5L4.5 8L11 1"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setSelectedStatus('INACTIVE')}
-                className={`flex-1 flex items-center gap-3 p-4 rounded-lg border-2 transition-all ${
-                  selectedStatus === 'INACTIVE'
-                    ? 'border-primary-600 bg-primary-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    selectedStatus === 'INACTIVE'
-                      ? 'bg-primary-100'
-                      : 'bg-gray-100'
-                  }`}
-                >
-                  <IconPlayerPause
-                    size={20}
-                    className={
-                      selectedStatus === 'INACTIVE'
-                        ? 'text-primary-600'
-                        : 'text-gray-600'
-                    }
-                  />
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-medium text-sm">Inativar</p>
-                  {selectedStatus === 'INACTIVE' && (
-                    <div className="w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center ml-auto">
-                      <svg
-                        width="12"
-                        height="9"
-                        viewBox="0 0 12 9"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M1 4.5L4.5 8L11 1"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              </button>
-            </div>
-
-            <div className="space-y-2">
-              <label
-                htmlFor="password"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Senha gerencial
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Digite aqui"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          <Form {...form}>
+            <form
+              id="change-status"
+              onSubmit={form.handleSubmit(handleSubmit)}
+              className="space-y-5"
+            >
+              <FormToggleCard
+                name="status"
+                options={statusConfig.options}
+                groupClassName="grid grid-cols-2"
               />
-              <p className="text-sm text-gray-600">
-                Obrigatório para alterar
-              </p>
-            </div>
-          </form>
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha gerencial</FormLabel>
+                    <Input
+                      type="password"
+                      placeholder="Digite aqui"
+                      {...field}
+                    />
+                    <p className="text-sm text-gray-600">
+                      Obrigatório para alterar
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
         </DialogBody>
         <DialogFooter>
           <Button

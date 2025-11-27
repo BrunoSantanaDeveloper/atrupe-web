@@ -65,6 +65,7 @@ export interface AccountItem {
   createdAt: string
   plan: string
   planType: 'Pro' | 'Start'
+  status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
 }
 
 interface GroupedData {
