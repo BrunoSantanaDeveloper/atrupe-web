@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Fragment, useState } from 'react'
 
 // Components
+import { ChangeStatusDialog } from '../ChangeStatusDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { EditTrialAccountDialog } from '../EditTrialAccountDialog'
@@ -41,7 +42,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
-import { IconPencil, IconHistory } from '@tabler/icons-react'
+import { IconPencil, IconHistory, IconSettings } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -49,7 +50,7 @@ interface Props extends SearchParamsType {
 }
 
 export interface TrialAccountItem {
-  id: string
+  subscriptionId: string
   avatar?: string
   company?: {
     id: string
@@ -77,8 +78,11 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
+  const [isChangeStatusDialogOpen, setIsChangeStatusDialogOpen] =
+    useState(false)
 
   const filters = { ...searchParams }
+  const currentStatus = searchParams.status
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -121,7 +125,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                     {group?.data?.length
                       ? group?.data.map((item) => {
                           return (
-                            <TableRow key={item?.id}>
+                            <TableRow key={item?.subscriptionId}>
                               {/* Conta */}
                               <TableCell>
                                 <div className="flex items-center gap-3">
@@ -174,23 +178,37 @@ export function Data({ searchParams, searchDescription }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconAtrupeLogo}
-                                      variant="ghost"
-                                      tooltip="Upgrade para Start"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsUpgradeDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsDialogOpen(true)
-                                      }}
-                                    />
+                                    {currentStatus !== 'descartadas' && (
+                                      <>
+                                        <ActionButton
+                                          Icon={IconAtrupeLogo}
+                                          variant="ghost"
+                                          tooltip="Upgrade para Start"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsUpgradeDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconPencil}
+                                          tooltip="Editar"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsDialogOpen(true)
+                                          }}
+                                        />
+                                      </>
+                                    )}
+                                    {currentStatus === 'inativas' && (
+                                      <ActionButton
+                                        Icon={IconSettings}
+                                        tooltip="Alterar status"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsChangeStatusDialogOpen(true)
+                                        }}
+                                      />
+                                    )}
                                     <ActionButton
                                       Icon={IconHistory}
                                       tooltip="Histórico"
@@ -244,6 +262,11 @@ export function Data({ searchParams, searchDescription }: Props) {
       <TrialAccountHistoryDialog
         open={isHistoryDialogOpen}
         setOpen={setIsHistoryDialogOpen}
+        rowData={rowData}
+      />
+      <ChangeStatusDialog
+        open={isChangeStatusDialogOpen}
+        setOpen={setIsChangeStatusDialogOpen}
         rowData={rowData}
       />
     </>

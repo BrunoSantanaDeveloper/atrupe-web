@@ -38,6 +38,7 @@ export function Main({ searchParams }: SearchParamsType) {
   const totals: { [key: string]: number } = {
     ativos: statusTotal?.ACTIVE,
     inativos: statusTotal?.INACTIVE,
+    descartados: statusTotal?.DISCARDED,
     todos: statusTotal?.TOTAL,
   }
 
@@ -61,7 +62,7 @@ export function Main({ searchParams }: SearchParamsType) {
       value: 'DISCARDED',
       tab: 'descartadas',
       label: 'Descartadas',
-      count: totals?.inativos,
+      count: totals?.descartados,
     },
   ]
 
