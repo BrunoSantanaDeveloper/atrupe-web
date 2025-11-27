@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // UI
 import {
   Dialog,
@@ -13,12 +16,13 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
-import { SelectStateField } from '@/components/common/form/global-inputs/StatesSelectField'
 import { SelectCityField } from '@/components/common/form/global-inputs/CitiesSelectField'
+import { SelectStateField } from '@/components/common/form/global-inputs/StatesSelectField'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -33,7 +37,12 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import { IconUser } from '@tabler/icons-react'
+import {
+  IconEye,
+  IconUser,
+  IconEyeOff,
+  IconCircleCheck,
+} from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -45,6 +54,8 @@ interface Props {
 }
 
 export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
+  const [showPassword, setShowPassword] = useState(false)
+
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -97,7 +108,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[740px]">
+      <DialogContent className="sm:max-w-[690px]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
@@ -115,20 +126,18 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
               className="flex flex-col gap-5"
               noValidate
             >
-              <p className="font-semibold">Dados da empresa</p>
-
               <div className="flex flex-wrap gap-5">
-                <FormInput<FormType>
+                <FormInput
                   name="legalName"
                   label="Razão social"
-                  width="flex-[1_0_340px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="document"
                   label="CNPJ"
-                  width="flex-[1_0_190px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                   additionalOnChange={(value) => {
                     setValue('document', maskCpfCnpj(String(value)))
@@ -136,36 +145,34 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
                   maxLength={18}
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="companyName"
                   label="Nome exibido no navegador"
-                  width="flex-[1_0_340px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="userName"
                   label="Nome do responsável"
-                  width="flex-[1_0_190px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                 />
               </div>
 
-              <p className="font-semibold">Contato</p>
-
               <div className="flex flex-wrap gap-5">
-                <FormInput<FormType>
+                <FormInput
                   name="email"
                   label="E-mail"
                   type="email"
-                  width="flex-[1_0_340px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="phone"
                   label="Celular"
-                  width="flex-[1_0_190px]"
+                  width="flex-[1_0_231px]"
                   placeholder="Digite aqui"
                   additionalOnChange={(value) => {
                     setValue('phone', MaskPhoneNumber(String(value)))
@@ -174,37 +181,46 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
                 />
               </div>
 
-              <p className="font-semibold">Localização</p>
-
               <div className="flex flex-wrap gap-5">
-                <SelectStateField<FormType>
+                <SelectStateField
                   name="stateId"
                   label="Estado"
-                  width="flex-[1_0_340px]"
+                  width="flex-[1_0_231px]"
                 />
 
-                <SelectCityField<FormType>
+                <SelectCityField
                   name="cityId"
                   label="Cidade"
-                  width="flex-[1_0_190px]"
+                  width="flex-[1_0_231px]"
                   stateId={watch('stateId') || ''}
                 />
               </div>
 
-              <p className="font-semibold">Senha gerencial</p>
-              <p className="text-sm text-gray-600 -mt-3">
-                Obrigatório para salvar edição
-              </p>
+              <Separator />
 
-              <div className="flex flex-wrap gap-5">
-                <FormInput<FormType>
+              <div className="relative">
+                <FormInput
                   name="password"
                   label="Senha gerencial"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Digite sua senha"
                   width="flex-[1_0_340px]"
-                  placeholder="Digite aqui"
+                  className="pr-11"
+                />
+                <Button
+                  type="button"
+                  variant="neutralGhost"
+                  size="iconSm"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-7"
+                  RightIcon={showPassword ? IconEyeOff : IconEye}
+                  tabIndex={-1}
                 />
               </div>
+
+              <p className="text-sm text-gray -mt-3">
+                Obrigatório para salvar edição
+              </p>
             </form>
           </Form>
         </DialogBody>
@@ -220,6 +236,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="edit-trial-account"
             isLoading={form.formState.isSubmitting}
+            RightIcon={IconCircleCheck}
           >
             Salvar
           </Button>
