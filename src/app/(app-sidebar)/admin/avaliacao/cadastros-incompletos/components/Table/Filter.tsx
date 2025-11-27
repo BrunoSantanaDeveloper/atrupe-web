@@ -8,7 +8,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { SortSelectorField } from '@/components/common/form/global-inputs/SortSelectField'
 
 const sortOptions = [
-  { value: 'name', label: 'Nome da conta' },
+  { value: 'default', label: 'Nome da conta' },
   { value: 'updated_at', label: 'Últimas alterações' },
   { value: 'created_at', label: 'Data de criação' },
 ]
@@ -20,7 +20,7 @@ export function Filter({ searchParams }: SearchParamsType) {
   const params = new URLSearchParams(searchParamsObject.toString())
 
   const handleSort = (key: string, value: string) => {
-    if (!value || value === 'name') {
+    if (!value || value === 'default') {
       params.delete(key)
     } else {
       params.set(key, value)
@@ -34,7 +34,7 @@ export function Filter({ searchParams }: SearchParamsType) {
       name="sort"
       width="w-[220px]"
       options={sortOptions}
-      value={searchParams?.sort || 'name'}
+      value={searchParams?.sort || 'default'}
       onChange={(value) => handleSort('sort', value)}
     />
   )

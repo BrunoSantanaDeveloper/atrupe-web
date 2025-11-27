@@ -76,17 +76,16 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
   const { handleSubmit, setValue, watch, reset } = form
 
   const onSubmit = async (data: FormType) => {
-    if (!rowData?.id) {
-      toast.error('ID da conta não encontrado')
+    const id = rowData?.company?.id
+
+    if (!id) {
+      toast.error('ID da empresa não encontrado')
       return
     }
 
     const res = await updateItemNew({
       route: '/user/edit-client',
-      data: {
-        id: rowData.id,
-        ...data,
-      },
+      data: { id, ...data },
     })
 
     if (!res.success) {

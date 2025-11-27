@@ -8,13 +8,17 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { SortSelectorField } from '@/components/common/form/global-inputs/SortSelectField'
 
 // UI
-import {
-  Select,
-  SelectItem,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-} from '@/components/ui/select'
+import { SelectBasic } from '@/components/common/form/FormSelect'
+
+const sortOptions = [
+  { value: 'default', label: 'Nome da conta' },
+  { value: 'updated_at', label: 'Últimas alterações' },
+  { value: 'created_at', label: 'Data de criação' },
+]
+
+const filterOptions = [{ value: 'default', label: 'Nenhum' }]
+
+const stateOptions = [{ value: 'default', label: 'Todos' }]
 
 export function Filter({ searchParams }: SearchParamsType) {
   const router = useRouter()
@@ -22,22 +26,14 @@ export function Filter({ searchParams }: SearchParamsType) {
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
 
-  const handleSort = (key: string, value: string) => {
-    if (!value || value === 'padrao') {
-      params.delete(key)
-    } else {
-      params.set(key, value)
-    }
-
-    router.push(`?${params.toString()}`)
-  }
-
   const handleFilter = (key: string, value: string) => {
-    if (!value || value === 'todos') {
+    if (!value || value === 'default') {
       params.delete(key)
     } else {
       params.set(key, value)
     }
+
+    params.delete('page')
 
     router.push(`?${params.toString()}`)
   }
@@ -47,43 +43,28 @@ export function Filter({ searchParams }: SearchParamsType) {
       <SortSelectorField
         name="sort"
         width="w-[220px]"
-        value={searchParams?.sort || 'padrao'}
-        onChange={(value) => handleSort('sort', value)}
+        options={sortOptions}
+        value={searchParams?.sort || 'default'}
+        onChange={(value) => handleFilter('sort', value)}
       />
 
-      <div className="w-[220px]">
-        <Select
-          value={searchParams?.module || 'todos'}
-          onValueChange={(value) => handleFilter('module', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Módulos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Módulos</SelectItem>
-            <SelectItem value="modulo1">Módulo 1</SelectItem>
-            <SelectItem value="modulo2">Módulo 2</SelectItem>
-            <SelectItem value="modulo3">Módulo 3</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <SelectBasic
+        name="filter"
+        label="Filtrar por"
+        value={searchParams?.filter || 'default'}
+        onChange={(value) => handleFilter('filter', value)}
+        options={filterOptions}
+        className="w-[220px]"
+      />
 
-      <div className="w-[220px]">
-        <Select
-          value={searchParams?.state || 'todos'}
-          onValueChange={(value) => handleFilter('state', value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Estado" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="todos">Todos</SelectItem>
-            <SelectItem value="sp">São Paulo</SelectItem>
-            <SelectItem value="rj">Rio de Janeiro</SelectItem>
-            <SelectItem value="mg">Minas Gerais</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      <SelectBasic // Usar select de Estado
+        name="state"
+        label="Estado"
+        value={searchParams?.state || 'default'}
+        onChange={(value) => handleFilter('state', value)}
+        options={stateOptions}
+        className="w-[220px]"
+      />
     </>
   )
 }
