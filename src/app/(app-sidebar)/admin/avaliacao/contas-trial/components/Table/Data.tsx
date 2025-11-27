@@ -148,7 +148,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                               {/* Usuário */}
                               <TableCell>
                                 <p className="text-sm text-gray-700">
-                                  Nome d {item?.userName || '-'}
+                                  {item?.userName || '-'}
                                 </p>
                               </TableCell>
                               {/* Contato */}

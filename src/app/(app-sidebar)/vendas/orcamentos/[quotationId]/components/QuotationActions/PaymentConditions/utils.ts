@@ -103,8 +103,17 @@ export function defaultValues(quotationData: QuotationType) {
 export const calculatePercentCommission = (
   baseValue: number,
   percentage: number,
+  type?: 'ADD' | 'SUB',
 ): number => {
   const commissionPercentage = percentage / 100
+
+  // Se for tipo SUB, calcula percentual direto do valor base
+  if (type === 'SUB') {
+    return baseValue * commissionPercentage
+  }
+
+  // Se for tipo ADD (ou não especificado), mantém o cálculo anterior
+  // onde o percentual é adicionado ao valor final
   return baseValue / (1 - commissionPercentage) - baseValue
 }
 

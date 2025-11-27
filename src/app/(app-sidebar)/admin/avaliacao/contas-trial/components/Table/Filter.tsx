@@ -20,7 +20,7 @@ export function Filter({ searchParams }: SearchParamsType) {
   const params = new URLSearchParams(searchParamsObject.toString())
 
   const handleSort = (key: string, value: string) => {
-    if (!value || value === 'padrao') {
+    if (!value || value === 'name') {
       params.delete(key)
     } else {
       params.set(key, value)
@@ -34,7 +34,7 @@ export function Filter({ searchParams }: SearchParamsType) {
       name="sort"
       width="w-[220px]"
       options={sortOptions}
-      value={searchParams?.sort || 'padrao'}
+      value={searchParams?.sort || 'name'}
       onChange={(value) => handleSort('sort', value)}
     />
   )

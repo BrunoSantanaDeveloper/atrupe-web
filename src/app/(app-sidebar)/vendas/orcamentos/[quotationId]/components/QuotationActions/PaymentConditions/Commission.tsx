@@ -128,9 +128,11 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
     if (commissionType === 'VALUE') {
       totalCommission = inputCommission
     } else if (commissionType === 'PERCENT') {
+      const type = watch('type') || undefined
       totalCommission = calculatePercentCommission(
         commissionBaseValue,
         inputCommission,
+        type,
       )
     }
 
@@ -284,6 +286,7 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
                       totalCommission = calculatePercentCommission(
                         commissionBaseValue,
                         commissionValue,
+                        value as 'ADD' | 'SUB',
                       )
                     }
 
@@ -332,9 +335,11 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
                         if (value === 'PERCENT') {
                           setValue('commissionValue', 1)
                           // Calcular o valor total da comissão
+                          const type = watch('type') || undefined
                           const totalCommission = calculatePercentCommission(
                             commissionBaseValue,
                             1,
+                            type,
                           )
                           setValue('totalCommission', totalCommission)
                         }
@@ -361,9 +366,11 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
                         if (value === 'PERCENT') {
                           setValue('commissionValue', 1)
                           // Calcular o valor total da comissão
+                          const type = watch('type') || undefined
                           const totalCommission = calculatePercentCommission(
                             commissionBaseValue,
                             1,
+                            type,
                           )
                           setValue('totalCommission', totalCommission)
                         }

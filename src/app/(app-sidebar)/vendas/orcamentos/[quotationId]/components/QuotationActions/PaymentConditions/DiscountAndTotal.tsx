@@ -57,6 +57,7 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
     const newCommissionTotal = calculatePercentCommission(
       newBaseValue,
       commission.commissionValue,
+      commission.type || undefined,
     )
 
     // Atualizar o valor total da comissão
