@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import Image from 'next/image'
 import { Fragment, useState } from 'react'
 
 // Components
@@ -32,14 +33,15 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getData } from '@/actions/_cruds'
 
 // Libs
+import { maskCpfCnpj } from '@/lib/utils'
 import { formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconHistory, IconRocket } from '@tabler/icons-react'
-import Image from 'next/image'
+import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { IconPencil, IconHistory } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -140,7 +142,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       {item?.company?.name || '-'}
                                     </p>
                                     <p className="text-xs text-gray-600">
-                                      {`${item?.code} - ${item?.document}`}
+                                      {`${item?.code} - ${maskCpfCnpj(item?.document || '')}`}
                                     </p>
                                   </div>
                                 </div>
@@ -173,7 +175,8 @@ export function Data({ searchParams, searchDescription }: Props) {
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
                                     <ActionButton
-                                      Icon={IconRocket}
+                                      Icon={IconAtrupeLogo}
+                                      variant="ghost"
                                       tooltip="Upgrade para Start"
                                       onClick={() => {
                                         setRowData(item)

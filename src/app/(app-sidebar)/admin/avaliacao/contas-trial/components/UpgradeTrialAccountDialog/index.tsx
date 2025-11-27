@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // UI
 import {
   Dialog,
@@ -29,7 +32,11 @@ import { createItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import { IconRocket } from '@tabler/icons-react'
+import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { IconEye, IconEyeOff, IconCircleCheck } from '@tabler/icons-react'
+
+// Libs
+import { maskCpfCnpj } from '@/lib/utils'
 
 interface Props {
   open: boolean
@@ -38,6 +45,8 @@ interface Props {
 }
 
 export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
+  const [showPassword, setShowPassword] = useState(false)
+
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -86,7 +95,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconRocket} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconAtrupeLogo} />
               <span>Upgrade para plano Start</span>
             </div>
           </DialogTitle>
@@ -107,24 +116,37 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
                 <div className="bg-gray-50 p-4 rounded-md">
                   <p className="font-semibold">{rowData?.company?.name}</p>
                   <p className="text-sm text-gray-600">
-                    {rowData?.code} - {rowData?.document}
+                    {rowData?.code} - {maskCpfCnpj(rowData?.document || '')}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Esta ação irá converter a conta trial para o plano Start. Para
+                  Esta ação irá converter a conta Trial para o plano Start. Para
                   confirmar, insira sua senha gerencial.
                 </p>
               </div>
 
-              <FormInput<FormType>
-                name="password"
-                label="Senha gerencial"
-                type="password"
-                placeholder="Digite sua senha"
-              />
+              <div className="relative">
+                <FormInput
+                  name="password"
+                  label="Senha gerencial"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Digite sua senha"
+                  width="flex-[1_0_340px]"
+                  className="pr-11"
+                />
+                <Button
+                  type="button"
+                  variant="neutralGhost"
+                  size="iconSm"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-7"
+                  RightIcon={showPassword ? IconEyeOff : IconEye}
+                  tabIndex={-1}
+                />
+              </div>
             </form>
           </Form>
         </DialogBody>
@@ -140,6 +162,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="upgrade-trial-account"
             isLoading={form.formState.isSubmitting}
+            RightIcon={IconCircleCheck}
           >
             Confirmar upgrade
           </Button>
