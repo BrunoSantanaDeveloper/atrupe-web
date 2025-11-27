@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // UI
 import {
   Dialog,
@@ -13,27 +16,33 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
-import { SelectStateField } from '@/components/common/form/global-inputs/StatesSelectField'
 import { SelectCityField } from '@/components/common/form/global-inputs/CitiesSelectField'
+import { SelectStateField } from '@/components/common/form/global-inputs/StatesSelectField'
 
 // Form
 import { useForm } from 'react-hook-form'
 import { FormType, schema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconUser } from '@tabler/icons-react'
+import {
+  IconEye,
+  IconUser,
+  IconEyeOff,
+  IconCircleCheck,
+} from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -45,17 +54,19 @@ interface Props {
 }
 
 export function EditClientDialog({ open, setOpen, rowData }: Props) {
+  const [showPassword, setShowPassword] = useState(false)
+
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
       companyName: rowData?.companyName || '',
-      document: rowData?.document || '',
-      stateId: '',
-      cityId: '',
+      document: maskCpfCnpj(rowData?.document || ''),
+      stateId: rowData?.state?.id || '',
+      cityId: rowData?.city?.id || '',
       userName: rowData?.userName || '',
-      userDocument: '',
+      userDocument: maskCpfCnpj(rowData?.userDocument || ''),
       email: rowData?.email || '',
       phone: rowData?.phone || '',
       password: '',
@@ -64,24 +75,27 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
 
   const { handleSubmit, setValue, watch, reset } = form
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem('/subscriptions/active-clients', `${rowData?.id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['active-clients-list'],
-      })
-      toast.success('Cliente editado com sucesso')
-      handleOpenChange(false)
-    },
-    onError: (error) => {
-      console.error(error)
-      toast.error('Ocorreu um erro ao editar o cliente')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    await mutation.mutateAsync(data)
+    const id = rowData?.id
+
+    if (!id) {
+      toast.error('ID da empresa não encontrado')
+      return
+    }
+
+    const res = await updateItemNew({
+      route: `/subscriptions/active-clients/${id}`,
+      data,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+    toast.success('Cliente editado com sucesso')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (value: boolean) => {
@@ -93,7 +107,7 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[740px]">
+      <DialogContent className="sm:max-w-[690px]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
@@ -112,68 +126,64 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
               noValidate
             >
               <div className="flex flex-wrap gap-5">
-                <FormInput<FormType>
+                <FormInput
                   name="companyName"
                   label="Razão social"
-                  width="flex-[1_0_340px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="document"
                   label="CNPJ"
-                  width="flex-[1_0_190px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                   additionalOnChange={(value) => {
                     setValue('document', maskCpfCnpj(String(value)))
                   }}
                   maxLength={18}
                 />
 
-                <SelectStateField<FormType>
+                <SelectStateField
                   name="stateId"
                   label="Estado"
-                  width="flex-[1_0_340px]"
+                  width="flex-[1_0_231px]"
                 />
 
-                <SelectCityField<FormType>
+                <SelectCityField
                   name="cityId"
                   label="Cidade"
-                  width="flex-[1_0_190px]"
+                  width="flex-[1_0_231px]"
                   stateId={watch('stateId') || ''}
                 />
 
-                <FormInput<FormType>
+                <Separator />
+
+                <FormInput
                   name="userName"
                   label="Nome do responsável"
-                  width="flex-[1_0_340px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="userDocument"
                   label="CPF"
-                  width="flex-[1_0_190px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                   additionalOnChange={(value) => {
                     setValue('userDocument', maskCpfCnpj(String(value)))
                   }}
                   maxLength={14}
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="email"
                   label="E-mail"
                   type="email"
-                  width="flex-[1_0_340px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                 />
 
-                <FormInput<FormType>
+                <FormInput
                   name="phone"
                   label="Celular"
-                  width="flex-[1_0_190px]"
-                  placeholder="Digite aqui"
+                  width="flex-[1_0_231px]"
                   additionalOnChange={(value) => {
                     setValue('phone', MaskPhoneNumber(String(value)))
                   }}
@@ -181,20 +191,31 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
                 />
               </div>
 
-              <p className="font-semibold">Senha gerencial</p>
-              <p className="text-sm text-gray-600 -mt-3">
-                Obrigatório para salvar edição
-              </p>
+              <Separator />
 
-              <div className="flex flex-wrap gap-5">
-                <FormInput<FormType>
+              <div className="relative">
+                <FormInput
                   name="password"
                   label="Senha gerencial"
-                  type="password"
-                  width="flex-[1_0_340px]"
-                  placeholder="Digite aqui"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Digite sua senha"
+                  width="flex-[1_0_231px]"
+                  className="pr-11"
+                />
+                <Button
+                  type="button"
+                  variant="neutralGhost"
+                  size="iconSm"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-7"
+                  RightIcon={showPassword ? IconEyeOff : IconEye}
+                  tabIndex={-1}
                 />
               </div>
+
+              <p className="text-sm text-gray -mt-3">
+                Obrigatório para salvar edição
+              </p>
             </form>
           </Form>
         </DialogBody>
@@ -209,7 +230,8 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
           <Button
             type="submit"
             form="edit-client"
-            disabled={mutation.isPending}
+            disabled={form.formState.isSubmitting}
+            RightIcon={IconCircleCheck}
           >
             Salvar
           </Button>

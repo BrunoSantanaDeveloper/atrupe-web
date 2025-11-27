@@ -60,12 +60,15 @@ export interface AccountItem {
   code: string
   document: string
   userName: string
+  userDocument: string
   phone: string
   email: string
   createdAt: string
   plan: string
   planType: 'Pro' | 'Start'
   status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
+  state: { id: string; name: string }
+  city: { id: string; name: string }
 }
 
 interface GroupedData {
@@ -94,7 +97,7 @@ export function Data({ searchParams, searchDescription }: Props) {
     queryFn: () => getData({ route: '/subscriptions/active-clients', filters }),
   })
 
-  const dataArray = data?.data || []
+  const dataArray: GroupedData[] = data?.data || []
   const hasData = dataArray.length
 
   return (
@@ -116,7 +119,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {dataArray.map((group: GroupedData) => (
+                {dataArray.map((group) => (
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
@@ -142,7 +145,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         className="object-cover p-1"
                                       />
                                     ) : (
-                                      <div className="w-full h-full bg-gradient-to-br from-purple-400 to-blue-500" />
+                                      <div className="w-full h-full bg-gray-200" />
                                     )}
                                   </div>
                                   <div>

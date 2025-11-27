@@ -62,7 +62,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
     resolver: zodResolver(schema),
     values: {
       legalName: rowData?.company?.name || '',
-      document: rowData?.document || '',
+      document: maskCpfCnpj(rowData?.document || ''),
       companyName: rowData?.displayName || '',
       userName: rowData?.userName || '',
       email: rowData?.email || '',
