@@ -223,7 +223,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
             form="edit-trial-account"
             isLoading={form.formState.isSubmitting}
           >
-            Cadastrar cliente
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

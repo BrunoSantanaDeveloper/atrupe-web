@@ -33,7 +33,7 @@ import { createItemNew } from '@/actions/_cruds'
 import type { IncompleteRegistrationItem } from '../Table/Data'
 
 // Icons
-import { IconUser } from '@tabler/icons-react'
+import { IconArrowRight, IconUser } from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -212,6 +212,7 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="complete-registration"
             isLoading={form.formState.isSubmitting}
+            RightIcon={IconArrowRight}
           >
             Cadastrar cliente
           </Button>

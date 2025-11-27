@@ -7,8 +7,8 @@ export const schema = z.object({
   userName: z.string().min(1, 'Nome do responsável é obrigatório'),
   email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
   phone: z.string().min(1, 'Celular é obrigatório'),
-  stateId: z.string().min(1, 'Estado é obrigatório'),
-  cityId: z.string().min(1, 'Cidade é obrigatória'),
+  stateId: z.string(),
+  cityId: z.string(),
   password: z.string().min(1, 'Senha gerencial é obrigatória'),
 })
 

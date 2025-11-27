@@ -26,9 +26,9 @@ export function SelectStateField<T extends FieldValues>({
   const { data: states } = useAddressStates()
 
   const options = useMemo(() => {
-    return states?.map((sector) => ({
-      value: sector.id,
-      label: sector.name,
+    return states?.map((state) => ({
+      value: state.id,
+      label: state.name,
     }))
   }, [states])
 
