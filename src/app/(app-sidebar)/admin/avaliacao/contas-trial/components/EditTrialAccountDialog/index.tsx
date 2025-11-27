@@ -24,10 +24,10 @@ import { SelectCityField } from '@/components/common/form/global-inputs/CitiesSe
 import { useForm } from 'react-hook-form'
 import { FormType, schema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { TrialAccountItem } from '../Table/Data'
@@ -50,9 +50,9 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     values: {
-      companyName: rowData?.companyName || '',
+      legalName: rowData?.companyName || '',
       document: rowData?.document || '',
-      displayName: rowData?.displayName || '',
+      companyName: rowData?.displayName || '',
       userName: rowData?.userName || '',
       email: rowData?.email || '',
       phone: rowData?.phone || '',
@@ -64,22 +64,30 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
 
   const { handleSubmit, setValue, watch, reset } = form
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) =>
-      updateItem('trialAccountRoute', `${rowData?.id}`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trial-accounts'] })
-      toast.success('Cliente editado com sucesso')
-      handleOpenChange(false)
-    },
-    onError: (error) => {
-      console.error(error)
-      toast.error('Ocorreu um erro ao editar o cliente')
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    await mutation.mutateAsync(data)
+    if (!rowData?.id) {
+      toast.error('ID da conta não encontrado')
+      return
+    }
+
+    const res = await updateItemNew({
+      route: '/user/edit-client',
+      data: {
+        id: rowData.id,
+        ...data,
+      },
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ['trial-accounts'],
+    })
+    toast.success('Cliente editado com sucesso')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (value: boolean) => {
@@ -113,7 +121,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
 
               <div className="flex flex-wrap gap-5">
                 <FormInput<FormType>
-                  name="companyName"
+                  name="legalName"
                   label="Razão social"
                   width="flex-[1_0_340px]"
                   placeholder="Digite aqui"
@@ -131,7 +139,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
                 />
 
                 <FormInput<FormType>
-                  name="displayName"
+                  name="companyName"
                   label="Nome exibido no navegador"
                   width="flex-[1_0_340px]"
                   placeholder="Digite aqui"
@@ -213,7 +221,7 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
           <Button
             type="submit"
             form="edit-trial-account"
-            disabled={mutation.isPending}
+            isLoading={form.formState.isSubmitting}
           >
             Cadastrar cliente
           </Button>
