@@ -11,12 +11,19 @@ import { Label } from '@/components/ui/label'
 // Libs
 import { cn } from '@/lib/utils'
 
+const defaultOptions = [
+  { value: 'padrao', label: 'Padrão' },
+  { value: 'data', label: 'Data' },
+  { value: 'nome', label: 'Nome' },
+]
+
 interface Props {
   name: string
   placeholder?: string
   width?: string
   value?: string
   onChange?: (value: string) => void
+  options?: { value: string; label: string }[]
 }
 
 export function SortSelectorField({
@@ -24,13 +31,8 @@ export function SortSelectorField({
   width = 'flex-[1_0_100px]',
   value,
   onChange,
+  options = defaultOptions,
 }: Props) {
-  const options = [
-    { value: 'padrao', label: 'Padrão' },
-    { value: 'data', label: 'Data' },
-    { value: 'nome', label: 'Nome' },
-  ]
-
   return (
     <div className={cn('flex flex-col gap-2', width)}>
       <Label htmlFor={name}>Ordenar por</Label>

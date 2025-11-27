@@ -7,6 +7,12 @@ import { useRouter } from 'next/navigation'
 import type { SearchParamsType } from '@/types/coreTypes'
 import { SortSelectorField } from '@/components/common/form/global-inputs/SortSelectField'
 
+const sortOptions = [
+  { value: 'name', label: 'Nome da conta' },
+  { value: 'updated_at', label: 'Últimas alterações' },
+  { value: 'created_at', label: 'Data de criação' },
+]
+
 export function Filter({ searchParams }: SearchParamsType) {
   const router = useRouter()
 
@@ -14,7 +20,7 @@ export function Filter({ searchParams }: SearchParamsType) {
   const params = new URLSearchParams(searchParamsObject.toString())
 
   const handleSort = (key: string, value: string) => {
-    if (!value || value === 'padrao') {
+    if (!value || value === 'name') {
       params.delete(key)
     } else {
       params.set(key, value)
@@ -27,7 +33,8 @@ export function Filter({ searchParams }: SearchParamsType) {
     <SortSelectorField
       name="sort"
       width="w-[220px]"
-      value={searchParams?.sort || 'padrao'}
+      options={sortOptions}
+      value={searchParams?.sort || 'name'}
       onChange={(value) => handleSort('sort', value)}
     />
   )
