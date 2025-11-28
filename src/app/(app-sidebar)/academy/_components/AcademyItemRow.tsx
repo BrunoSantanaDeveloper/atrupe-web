@@ -24,6 +24,12 @@ import {
 
 // Modals
 import { modalRegistry } from './ModalRegistry'
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '@/components/ui/tooltip'
 
 const buttonVariant: Record<string, ButtonProps['variant']> = {
   pdf: 'errorGhost',
@@ -112,21 +118,37 @@ export function AcademyItemRow({ data }: Props) {
 
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-2">
-          {files?.map((file, index) => {
-            const fileExtension =
-              file.split('.').pop()?.toLowerCase() || 'other'
+          <TooltipProvider>
+            {files?.map((file, index) => {
+              const fileExtension =
+                file.url.split('.').pop()?.toLowerCase() || 'other'
 
-            return (
-              <Button
-                key={index}
-                type="button"
-                variant={buttonVariant[fileExtension] || 'neutralLight'}
-                size="iconSm"
-                RightIcon={IconFileTextFilled}
-                onClick={() => handleAction('file', file)}
-              />
-            )
-          })}
+              return (
+                <Tooltip key={index}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      variant={buttonVariant[fileExtension] || 'neutralLight'}
+                      size="iconSm"
+                      RightIcon={IconFileTextFilled}
+                      onClick={async () => {
+                        try {
+                          await handleSetChecked()
+                          handleAction('file', file.url)
+                        } catch (error) {
+                          console.error(
+                            'Erro ao marcar item como concluído:',
+                            error,
+                          )
+                        }
+                      }}
+                    />
+                  </TooltipTrigger>
+                  <TooltipContent>{file.name}</TooltipContent>
+                </Tooltip>
+              )
+            })}
+          </TooltipProvider>
         </div>
 
         {video && (

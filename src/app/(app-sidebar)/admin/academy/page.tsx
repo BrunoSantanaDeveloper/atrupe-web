@@ -58,7 +58,7 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
+import { useQueryClient, useQuery } from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, deleteItemNew, getData } from '@/actions/_cruds'
@@ -91,7 +91,7 @@ interface AcademyItem {
   page?: string
   modal?: string
   buttonTitle?: string
-  files?: string[]
+  files?: Array<{ url: string; name: string }>
   checked?: boolean
 }
 
@@ -168,43 +168,44 @@ export default function AddAcademyPage() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const mutation = useMutation({
-    mutationFn: (data: FormType) => {
-      return createItemNew({
-        route: '/academy',
-        data,
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['academy-admin'] })
-      refetchAcademy()
-    },
-  })
-
   const onSubmit = async (data: FormType) => {
-    // Coletar URLs dos arquivos dos campos do formulário
-    const filesUrls: string[] = []
+    // Coletar arquivos dos campos do formulário
+    const filesData: Array<{ url: string; name: string }> = []
     for (let i = 0; i < fileFieldsCount; i++) {
-      const fileUrl = form.getValues(`files.${i}` as keyof FormType) as string
-      if (fileUrl && fileUrl.trim() !== '') {
-        filesUrls.push(fileUrl)
+      const fileUrl = form.getValues(`fileUrl.${i}` as keyof FormType) as string
+      const fileName = form.getValues(
+        `fileName.${i}` as keyof FormType,
+      ) as string
+
+      if (
+        fileUrl &&
+        fileUrl.trim() !== '' &&
+        fileName &&
+        fileName.trim() !== ''
+      ) {
+        filesData.push({ url: fileUrl, name: fileName })
       }
     }
 
     const formData = {
       ...data,
-      files: filesUrls,
+      files: filesData,
     }
 
-    await mutation
-      .mutateAsync(formData)
-      .then(() => {
-        toast.success('Item da academy criado com sucesso!')
-        handleOpenChange(false)
-      })
-      .catch((err) => {
-        toast.error(err.message || 'Erro ao criar item da academy')
-      })
+    const res = await createItemNew({
+      route: '/academy',
+      data: formData,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    toast.success('Item da academy criado com sucesso!')
+    handleOpenChange(false)
+    queryClient.invalidateQueries({ queryKey: ['academy-admin'] })
+    refetchAcademy()
   }
 
   const handleOpenChange = (openDialog: boolean) => {
@@ -231,20 +232,30 @@ export default function AddAcademyPage() {
   }
 
   const removeFileField = (index: number) => {
-    // Remover o valor do campo do formulário
-    form.setValue(`files.${index}` as keyof FormType, '' as string)
+    // Remover os valores dos campos do formulário
+    form.setValue(`fileUrl.${index}` as keyof FormType, '' as string)
+    form.setValue(`fileName.${index}` as keyof FormType, '' as string)
 
     // Reorganizar os campos restantes
     for (let i = index; i < fileFieldsCount - 1; i++) {
-      const nextValue = form.getValues(
-        `files.${i + 1}` as keyof FormType,
+      const nextUrl = form.getValues(
+        `fileUrl.${i + 1}` as keyof FormType,
       ) as string
-      form.setValue(`files.${i}` as keyof FormType, nextValue)
+      const nextName = form.getValues(
+        `fileName.${i + 1}` as keyof FormType,
+      ) as string
+
+      form.setValue(`fileUrl.${i}` as keyof FormType, nextUrl)
+      form.setValue(`fileName.${i}` as keyof FormType, nextName)
     }
 
-    // Limpar o último campo e diminuir o contador
+    // Limpar os últimos campos e diminuir o contador
     form.setValue(
-      `files.${fileFieldsCount - 1}` as keyof FormType,
+      `fileUrl.${fileFieldsCount - 1}` as keyof FormType,
+      '' as string,
+    )
+    form.setValue(
+      `fileName.${fileFieldsCount - 1}` as keyof FormType,
       '' as string,
     )
     setFileFieldsCount(Math.max(1, fileFieldsCount - 1))
@@ -449,23 +460,31 @@ export default function AddAcademyPage() {
                     <div className="space-y-4">
                       <Label className="text-sm font-medium">Arquivos</Label>
                       {Array.from({ length: fileFieldsCount }, (_, index) => (
-                        <div key={index} className="flex gap-4 items-end">
-                          <div className="flex-1">
-                            <FormFileUpload
-                              control={form.control}
-                              name={`files.${index}` as keyof FormType}
-                            />
+                        <div key={index} className="space-y-2">
+                          <div className="flex gap-4 items-end">
+                            <div className="flex-1">
+                              <FormFileUpload
+                                control={form.control}
+                                name={`fileUrl.${index}` as keyof FormType}
+                              />
+                            </div>
+                            {fileFieldsCount > 1 && (
+                              <Button
+                                type="button"
+                                variant="error"
+                                size="icon"
+                                onClick={() => removeFileField(index)}
+                                RightIcon={IconTrash}
+                                className="mb-1"
+                              />
+                            )}
                           </div>
-                          {fileFieldsCount > 1 && (
-                            <Button
-                              type="button"
-                              variant="error"
-                              size="icon"
-                              onClick={() => removeFileField(index)}
-                              RightIcon={IconTrash}
-                              className="mb-1"
-                            />
-                          )}
+                          <FormInput<FormType>
+                            name={`fileName.${index}` as keyof FormType}
+                            label="Nome do arquivo (para exibição)"
+                            placeholder="Ex: Produtos, Clientes, etc"
+                            width="w-full"
+                          />
                         </div>
                       ))}
                       <Button
@@ -489,7 +508,7 @@ export default function AddAcademyPage() {
                 <Button
                   type="submit"
                   form="academy-form"
-                  isLoading={mutation.isPending}
+                  isLoading={form.formState.isSubmitting}
                   RightIcon={IconCircleCheck}
                 >
                   Salvar
@@ -566,7 +585,7 @@ export default function AddAcademyPage() {
                             <div className="flex flex-wrap gap-1">
                               {item.files.map((file, index) => {
                                 const fileExtension =
-                                  file.split('.').pop()?.toLowerCase() ||
+                                  file.url.split('.').pop()?.toLowerCase() ||
                                   'other'
 
                                 return (
@@ -579,7 +598,10 @@ export default function AddAcademyPage() {
                                     }
                                     size="iconSm"
                                     RightIcon={IconFileTextFilled}
-                                    onClick={() => window.open(file, '_blank')}
+                                    onClick={() =>
+                                      window.open(file.url, '_blank')
+                                    }
+                                    title={file.name}
                                   />
                                 )
                               })}

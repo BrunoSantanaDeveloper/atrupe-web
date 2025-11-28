@@ -39,7 +39,7 @@ export interface AcademyItem {
   id: string
   description: string
   checked: boolean
-  files?: string[]
+  files?: Array<{ url: string; name: string }>
   video?: string
   page?: string
   modal?: string

@@ -15,7 +15,7 @@ export const schema = z.object({
   page: z.string().optional(),
   modal: z.string().optional(),
   buttonTitle: z.string().optional(),
-  files: z.array(z.string()).default([]),
+  files: z.array(z.object({ url: z.string(), name: z.string() })).default([]),
 })
 
 export type FormType = z.infer<typeof schema>
