@@ -107,6 +107,7 @@ export default function ValidationPage() {
         } else {
           clearSignupData()
           setProgress(100)
+          localStorage.setItem('academy', 'true')
           router.replace('/academy/start')
         }
       } catch (error) {
