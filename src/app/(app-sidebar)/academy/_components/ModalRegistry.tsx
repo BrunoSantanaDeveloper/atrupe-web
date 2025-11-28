@@ -19,25 +19,29 @@ export const modalRegistry: Record<string, React.ComponentType<unknown>> = {
         '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo'
       ).then((module) => ({ default: module.CompanyInfo })),
     {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
+      loading: () => <Button isLoading>Aguarde</Button>,
       ssr: false,
     },
   ),
-  MeasureStandards: dynamic(
+  // Alias para o modal de configuração da empresa (nome usado no backend)
+  CompanyConfigModal: dynamic(
+    () =>
+      import(
+        '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/components/CompanyInfo'
+      ).then((module) => ({ default: module.CompanyInfo })),
+    {
+      loading: () => <Button isLoading>Aguarde</Button>,
+      ssr: false,
+    },
+  ),
+
+  UnitOfMeasureModal: dynamic(
     () =>
       import(
         '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/padrao-de-medida/components/MeasureDefaultsDialog'
       ).then((module) => ({ default: module.MeasureDefaultsDialog })),
     {
-      loading: () => (
-        <Button size="sm" isLoading>
-          Aguarde
-        </Button>
-      ),
+      loading: () => <Button isLoading>Aguarde</Button>,
       ssr: false,
     },
   ),

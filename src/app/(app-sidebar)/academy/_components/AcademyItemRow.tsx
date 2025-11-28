@@ -161,12 +161,11 @@ export function AcademyItemRow({ data }: Props) {
           />
         )}
 
-        {!activeModal ? (
+        {(page || modal) && !activeModal && (
           <Button
             type="button"
-            size="sm"
+            // size="sm"
             className="min-w-[200px]"
-            disabled={!page && !modal}
             isLoading={isCheckLoading}
             onClick={async () => {
               try {
@@ -179,9 +178,8 @@ export function AcademyItemRow({ data }: Props) {
           >
             {buttonTitle || 'Configurar'}
           </Button>
-        ) : (
-          renderModal()
         )}
+        {activeModal && renderModal()}
       </div>
 
       {video && (
