@@ -32,12 +32,7 @@ export function LoginForm() {
 
   const searchParams = useSearchParams()
 
-  const isAcademyEnabled =
-    typeof window !== 'undefined' && localStorage.getItem('academy') === 'true'
-
-  const defaultHomePage = isAcademyEnabled ? '/academy/start' : '/'
-
-  const redirectUrl = searchParams.get('to') || defaultHomePage
+  const redirectUrl = searchParams.get('to')
 
   useEffect(() => {
     if (redirectUrl !== '/') router.refresh()
@@ -72,7 +67,28 @@ export function LoginForm() {
     }
 
     if (res && res.ok && !res.error) {
-      router.replace(redirectUrl)
+      // Se não há URL de redirecionamento específica, verificar preferência da academy
+      if (!redirectUrl) {
+        // Aguardar um momento para a sessão ser estabelecida
+        await new Promise((resolve) => setTimeout(resolve, 100))
+
+        // Buscar a sessão para obter o userId
+        const { getSession } = await import('next-auth/react')
+        const session = await getSession()
+
+        if (session?.user?.userId) {
+          const academyPrefs = JSON.parse(
+            localStorage.getItem('academyPreferences') || '{}',
+          )
+          const isAcademyEnabled = academyPrefs[session.user.userId] === true
+
+          router.replace(isAcademyEnabled ? '/academy/start' : '/')
+        } else {
+          router.replace('/')
+        }
+      } else {
+        router.replace(redirectUrl)
+      }
     } else {
       setErrorState(
         'Ocorreu um erro. Tente novamente mais tarde ou contate o suporte.',

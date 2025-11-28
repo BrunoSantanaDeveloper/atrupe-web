@@ -27,8 +27,8 @@ export async function uploadFiles({
 
   while (progress < 100) {
     setProgresses({ [file.name]: progress })
-    await sleep(Math.floor(Math.random() * 150))
-    progress += Math.floor(Math.random() * 5)
+    await sleep(Math.floor(Math.random() * 100))
+    progress += Math.floor(Math.random() * 7)
   }
   setProgresses({ [file.name]: 100 })
 

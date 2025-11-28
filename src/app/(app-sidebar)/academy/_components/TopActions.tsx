@@ -4,6 +4,7 @@
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 // Components
 import { Label } from '@/components/ui/label'
@@ -20,18 +21,30 @@ export default function TopActions() {
   const pathname = usePathname()
   const currentPlan = pathname.split('/').pop() || 'start'
   const [isAcademyEnabled, setIsAcademyEnabled] = useState(true)
+  const { data: session } = useSession()
 
   useEffect(() => {
-    const isAcademyEnabled = localStorage.getItem('academy') === 'true'
-    setIsAcademyEnabled(isAcademyEnabled)
-  }, [])
+    if (!session?.user?.userId) return
+
+    const academyPrefs = JSON.parse(
+      localStorage.getItem('academyPreferences') || '{}',
+    )
+    const isEnabled = academyPrefs[session.user.userId] === true
+    setIsAcademyEnabled(isEnabled)
+  }, [session?.user?.userId])
 
   const handleOpenManual = () => {
     window.open(`/docs/atrupe-manual-completo-${currentPlan}.pdf`, '_blank')
   }
 
   const handleToggleAcademy = (value: boolean) => {
-    localStorage.setItem('academy', value ? 'true' : 'false')
+    if (!session?.user?.userId) return
+
+    const academyPrefs = JSON.parse(
+      localStorage.getItem('academyPreferences') || '{}',
+    )
+    academyPrefs[session.user.userId] = value
+    localStorage.setItem('academyPreferences', JSON.stringify(academyPrefs))
     setIsAcademyEnabled(value)
   }
 

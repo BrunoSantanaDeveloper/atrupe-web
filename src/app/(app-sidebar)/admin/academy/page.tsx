@@ -451,7 +451,7 @@ export default function AddAcademyPage() {
                       {Array.from({ length: fileFieldsCount }, (_, index) => (
                         <div key={index} className="flex gap-4 items-end">
                           <div className="flex-1">
-                            <FormFileUpload<FormType>
+                            <FormFileUpload
                               control={form.control}
                               name={`files.${index}` as keyof FormType}
                             />

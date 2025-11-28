@@ -107,7 +107,22 @@ export default function ValidationPage() {
         } else {
           clearSignupData()
           setProgress(100)
-          localStorage.setItem('academy', 'true')
+
+          // Buscar a sessão para obter o userId
+          const { getSession } = await import('next-auth/react')
+          const session = await getSession()
+
+          if (session?.user?.userId) {
+            const academyPrefs = JSON.parse(
+              localStorage.getItem('academyPreferences') || '{}',
+            )
+            academyPrefs[session.user.userId] = true
+            localStorage.setItem(
+              'academyPreferences',
+              JSON.stringify(academyPrefs),
+            )
+          }
+
           router.replace('/academy/start')
         }
       } catch (error) {

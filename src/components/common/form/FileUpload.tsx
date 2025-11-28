@@ -62,7 +62,8 @@ export function FormFileUpload<T extends FieldValues>({
                 <FileUploader
                   multiple={multiple}
                   maxFileCount={multiple ? 3 : 1}
-                  maxSize={1024 * 1024 * 10}
+                  maxSize={1024 * 1024 * 30}
+                  customHelpText="PDF de até 30MB"
                   progresses={progresses}
                   onUpload={async (files: File[]) => {
                     const res = await handleUpload(files)
