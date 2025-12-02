@@ -118,8 +118,8 @@ export function AcademyItemRow({ data }: Props) {
         <div className="max-w-xs md:max-w-md lg:max-w-full">
           <span
             className={cn(
-              'text-sm',
-              checked ? 'text-gray-900 font-medium' : 'text-gray-600',
+              'text-sm font-medium',
+              checked ? 'text-gray-900' : 'text-gray-600',
             )}
           >
             {title || buttonTitle || ''}
