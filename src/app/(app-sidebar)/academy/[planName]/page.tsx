@@ -37,6 +37,7 @@ import {
 
 export interface AcademyItem {
   id: string
+  title: string
   description: string
   checked: boolean
   files?: Array<{ url: string; name: string }>

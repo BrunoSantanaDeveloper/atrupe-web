@@ -46,8 +46,17 @@ interface Props {
 }
 
 export function AcademyItemRow({ data }: Props) {
-  const { id, description, checked, files, video, page, modal, buttonTitle } =
-    data
+  const {
+    id,
+    title,
+    description,
+    checked,
+    files,
+    video,
+    page,
+    modal,
+    buttonTitle,
+  } = data
 
   const queryClient = useQueryClient()
 
@@ -106,14 +115,19 @@ export function AcademyItemRow({ data }: Props) {
         ) : (
           <IconCircleFilled className="text-gray-200" />
         )}
-        <span
-          className={cn(
-            'text-sm',
-            checked ? 'text-gray-900 font-medium' : 'text-gray-600',
-          )}
-        >
-          {description}
-        </span>
+        <div className="max-w-xs md:max-w-md lg:max-w-full">
+          <span
+            className={cn(
+              'text-sm',
+              checked ? 'text-gray-900 font-medium' : 'text-gray-600',
+            )}
+          >
+            {title || buttonTitle || ''}
+          </span>
+          <span className="text-xs text-gray block truncate">
+            {description}
+          </span>
+        </div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -165,7 +179,7 @@ export function AcademyItemRow({ data }: Props) {
           <Button
             type="button"
             // size="sm"
-            className="min-w-[200px]"
+            className="min-w-72"
             isLoading={isCheckLoading}
             onClick={async () => {
               try {

@@ -34,7 +34,10 @@ export default function TopActions() {
   }, [session?.user?.userId])
 
   const handleOpenManual = () => {
-    window.open(`/docs/atrupe-manual-completo-${currentPlan}.pdf`, '_blank')
+    window.open(
+      'https://files-atrupe.s3.us-east-1.amazonaws.com/atrupe_academy_start-35b123aa-c87f-437b-8f14-5ad20967c89d.pdf',
+      '_blank',
+    )
   }
 
   const handleToggleAcademy = (value: boolean) => {
