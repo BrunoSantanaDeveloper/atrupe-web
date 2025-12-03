@@ -66,12 +66,12 @@ export function NewClientForm() {
     }
 
     if (data.type === 'PERSON') {
-      payload.rg = data.rg
-      payload.cpf = data.cpf
+      payload.rg = data.rg || ''
+      payload.cpf = data.cpf || ''
     } else {
-      payload.cnpj = data.cnpj
-      payload.activity = data.activity
-      payload.corporateName = data.corporateName
+      payload.cnpj = data.cnpj || ''
+      payload.activity = data.activity || ''
+      payload.corporateName = data.corporateName || ''
     }
 
     const res = await createItemNew({

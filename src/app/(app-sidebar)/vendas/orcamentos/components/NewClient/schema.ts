@@ -20,9 +20,9 @@ const personSchema = baseSchema.extend({
 // Schema específico para Pessoa Jurídica
 const companySchema = baseSchema.extend({
   type: z.literal('COMPANY'),
-  cnpj: z.string(),
-  activity: z.string(),
-  corporateName: z.string(),
+  cnpj: z.string().optional(),
+  activity: z.string().optional(),
+  corporateName: z.string().optional(),
 })
 
 // Schema usando discriminatedUnion
