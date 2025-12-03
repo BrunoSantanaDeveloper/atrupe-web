@@ -13,7 +13,7 @@ export function usePreviousUrl(defaultUrl: string) {
   useEffect(() => {
     try {
       const navigationHistory = JSON.parse(
-        localStorage.getItem('navigationHistory') ||
+        sessionStorage.getItem('navigationHistory') ||
           JSON.stringify({ previousPage: null, currentPage: null }),
       ) as NavigationHistoryType
 

@@ -139,6 +139,7 @@ export function NewItemDialog({
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
+                  autoComplete="off"
                   disabled={editMode}
                 />
                 {!isAdvance ? (

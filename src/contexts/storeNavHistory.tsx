@@ -29,7 +29,7 @@ export function StoreNavHistoryProvider({ children }: PropsWithChildren) {
 
       // Recupera o histórico existente ou inicia um novo
       const navigationHistory: NavigationHistoryType = JSON.parse(
-        localStorage.getItem('navigationHistory') ||
+        sessionStorage.getItem('navigationHistory') ||
           JSON.stringify({ previousPage: null, currentPage: null }),
       )
 
@@ -38,7 +38,7 @@ export function StoreNavHistoryProvider({ children }: PropsWithChildren) {
         navigationHistory.previousPage = navigationHistory.currentPage
         navigationHistory.currentPage = fullCurrentUrl
 
-        localStorage.setItem(
+        sessionStorage.setItem(
           'navigationHistory',
           JSON.stringify(navigationHistory),
         )
