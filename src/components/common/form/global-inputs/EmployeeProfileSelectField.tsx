@@ -32,10 +32,12 @@ export function SelectEmployeeProfileField<T extends FieldValues>({
   const { data: employees } = useEmployee()
 
   const options = useMemo(() => {
-    return employees?.map((employee) => ({
-      value: employee.id,
-      label: employee.name,
-    }))
+    return employees
+      ?.filter((employee) => employee.isActive)
+      .map((employee) => ({
+        value: employee.id,
+        label: employee.name,
+      }))
   }, [employees])
 
   if (noForm)

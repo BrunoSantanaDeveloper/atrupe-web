@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 interface IEmployees {
   id: string
   name: string
+  isActive: boolean
 }
 
 async function fetchData(): Promise<IEmployees[]> {
