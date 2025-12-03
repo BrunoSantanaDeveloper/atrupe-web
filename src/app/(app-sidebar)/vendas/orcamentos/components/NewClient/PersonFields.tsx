@@ -25,6 +25,7 @@ export function PersonFields() {
       setValue('name', documentData.name || '')
       setValue('rg', documentData.rg || '')
       setValue('phone', documentData.phone || '')
+      setValue('birthdate', documentData.birthdate || '')
     }
   }, [documentData, setValue])
 

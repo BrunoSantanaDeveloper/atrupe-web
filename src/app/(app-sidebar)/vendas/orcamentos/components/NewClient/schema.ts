@@ -15,6 +15,7 @@ const personSchema = baseSchema.extend({
   type: z.literal('PERSON'),
   rg: z.string(),
   cpf: z.string(),
+  birthdate: z.string().optional(),
 })
 
 // Schema específico para Pessoa Jurídica
@@ -42,4 +43,5 @@ export const defaultValues: z.infer<typeof personSchema> = {
   cpf: '',
   phone: '',
   mobile: '',
+  birthdate: '',
 }

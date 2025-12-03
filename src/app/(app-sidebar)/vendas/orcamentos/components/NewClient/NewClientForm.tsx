@@ -63,11 +63,13 @@ export function NewClientForm() {
       cnpj: '',
       activity: '',
       corporateName: '',
+      birthdate: '',
     }
 
     if (data.type === 'PERSON') {
       payload.rg = data.rg || ''
       payload.cpf = data.cpf || ''
+      payload.birthdate = data.birthdate || ''
     } else {
       payload.cnpj = data.cnpj || ''
       payload.activity = data.activity || ''
