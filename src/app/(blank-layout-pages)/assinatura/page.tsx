@@ -233,10 +233,8 @@ export default function SubscriptionPage() {
       data.customer.name = customerData.name
       data.customer.document = customerData.taxId
     } else {
-      // data.customer.razaoSocial = customerData.razaoSocial // Falta back receber
-      // data.customer.cnpj = customerData.cnpj // Falta back receber
-      data.customer.name = customerData.nomeResponsavel
-      data.customer.document = customerData.cpfResponsavel
+      data.customer.name = customerData.razaoSocial
+      data.customer.document = customerData.cnpj
     }
 
     const subscriptionId = ''
