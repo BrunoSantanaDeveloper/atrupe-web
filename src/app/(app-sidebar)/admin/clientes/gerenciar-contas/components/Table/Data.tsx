@@ -130,9 +130,9 @@ export function Data({ searchParams, searchDescription }: Props) {
                       </TableCell>
                     </TableRow>
                     {group?.data?.length
-                      ? group?.data.map((item) => {
+                      ? group?.data.map((item, index) => {
                           return (
-                            <TableRow key={item.id}>
+                            <TableRow key={item.id + index}>
                               {/* Conta */}
                               <TableCell>
                                 <div className="flex items-center gap-3">
