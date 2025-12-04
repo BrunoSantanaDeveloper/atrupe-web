@@ -39,6 +39,7 @@ import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
+import { generateIdempotencyKey } from '@/lib/idempotency'
 
 const personTypeOptions = [
   {
@@ -249,10 +250,14 @@ export default function SubscriptionPage() {
           data,
         })
       } else {
-        // Criar subscription
+        // Criar subscription com chave de idempotência para prevenir duplicação
+        const idempotencyKey = generateIdempotencyKey()
         res = await createItemNew({
           route: '/subscriptions',
           data,
+          headers: {
+            'idempotency-key': idempotencyKey,
+          },
         })
       }
 

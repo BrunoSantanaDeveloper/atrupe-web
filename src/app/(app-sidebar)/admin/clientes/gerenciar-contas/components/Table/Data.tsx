@@ -54,7 +54,7 @@ interface Props extends SearchParamsType {
 }
 
 export interface AccountItem {
-  id: string
+  id: string // ID da company (usado para edição)
   avatar?: string
   companyName: string
   code: string

@@ -163,14 +163,16 @@ export const createItem = async ({
 export const createItemNew = async ({
   route,
   data,
+  headers,
 }: {
   route: string
   data?: unknown
+  headers?: Record<string, string>
 }) => {
   const api = await apiInstance()
 
   try {
-    const res = await api.post(route, data)
+    const res = await api.post(route, data, { headers })
 
     return {
       success: true,
