@@ -68,9 +68,37 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
   // Desconto total aplicado aos itens do orçamento
   const discount = totalValue - finalValue
 
-  const deliveryValue = quotationData?.deliveryInfo?.value
+  const deliveryValue = quotationData?.deliveryInfo?.value ?? 0
 
-  const total = finalValue + deliveryValue
+  // Comissão (se for do tipo ADD, soma no total)
+  const commissionValue =
+    data?.commission?.type === 'ADD'
+      ? (data?.commission?.totalCommission ?? 0)
+      : 0
+
+  // Acréscimos das parcelas
+  const installmentsAdditionalFee =
+    data?.installments?.reduce(
+      (acc, installment) => acc + (installment?.additionalFee ?? 0),
+      0,
+    ) ?? 0
+
+  // Acréscimo da entrada
+  const downPaymentAdditionalFee = data?.downPayment?.additionalFee ?? 0
+
+  const totalAdditionalFee =
+    installmentsAdditionalFee + downPaymentAdditionalFee
+
+  // Desconto final configurado nas condições de pagamento
+  const discountTotal = data?.discount?.discountTotal ?? 0
+
+  // Cálculo do total final (igual ao do formulário)
+  const total =
+    finalValue +
+    deliveryValue +
+    commissionValue +
+    totalAdditionalFee -
+    discountTotal
 
   return (
     <Card className="w-full">
