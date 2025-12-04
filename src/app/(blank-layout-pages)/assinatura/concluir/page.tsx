@@ -13,11 +13,10 @@ import {
 } from '@/components/ui/card'
 import { Logo } from '@/components/Logo'
 import { ProgressCircle } from '@/components/ui/progress-circle'
-import { createItemNew } from '@/actions/_cruds'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 
-type SubscriptionStatus = 'processing' | 'success' | 'error' | 'expired'
+type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
 
 export default function FinishSubscriptionPage() {
   const [status, setStatus] = useState<SubscriptionStatus>('processing')
@@ -30,90 +29,51 @@ export default function FinishSubscriptionPage() {
   useEffect(() => {
     const processSubscription = async () => {
       try {
-        setProgress(10)
+        setProgress(20)
 
-        // Recuperar dados da assinatura pendente do sessionStorage
-        const pendingSubscriptionData = sessionStorage.getItem(
-          'pendingSubscription',
+        // Aguardar um pouco para o webhook processar
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+
+        setProgress(40)
+
+        // Atualizar a sessão para obter os dados mais recentes
+        await update()
+
+        setProgress(60)
+
+        // Aguardar mais um pouco para garantir que a sessão foi atualizada
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        setProgress(80)
+
+        // Verificar se a subscription foi ativada
+        // O webhook do Asaas já deve ter ativado a subscription
+        const currentSession = await fetch('/api/auth/session').then((res) =>
+          res.json(),
         )
-
-        if (!pendingSubscriptionData) {
-          setStatus('expired')
-          setErrorMessage('Sessão expirada. Por favor, tente novamente.')
-          return
-        }
-
-        const pendingSubscription = JSON.parse(pendingSubscriptionData)
-
-        // Verificar se a sessão não expirou (30 minutos)
-        const sessionAge = Date.now() - pendingSubscription.timestamp
-        if (sessionAge > 30 * 60 * 1000) {
-          sessionStorage.removeItem('pendingSubscription')
-          setStatus('expired')
-          setErrorMessage('Sessão expirada. Por favor, tente novamente.')
-          return
-        }
-
-        setProgress(30)
-
-        // Obter parâmetros da URL (enviados pelo Asaas)
-        const checkoutId =
-          searchParams.get('checkout_id') || pendingSubscription.checkoutId
-        const paymentStatus = searchParams.get('status')
-        const paymentId = searchParams.get('payment_id')
-
-        setProgress(50)
-
-        // Criar assinatura no backend
-        const res = await createItemNew({
-          route: '/plan/subscription/complete',
-          data: {
-            checkoutId,
-            paymentId,
-            paymentStatus,
-            planId: pendingSubscription.planId,
-            modules: pendingSubscription.modules,
-            additionalUsers: pendingSubscription.additionalUsers,
-          },
-        })
-
-        setProgress(70)
-
-        if (!res.success) {
-          setStatus('error')
-          setErrorMessage(res.message || 'Erro ao finalizar assinatura')
-          toast.error(res.message || 'Erro ao finalizar assinatura')
-          return
-        }
-
-        setProgress(85)
-
-        // Atualizar a sessão local com os novos dados
-        try {
-          await update({
-            company: {
-              plan: {
-                name: pendingSubscription.planName,
-                features: res.data.features,
-              },
-            },
-          })
-        } catch (error) {
-          console.error('Erro ao atualizar sessão:', error)
-        }
 
         setProgress(100)
 
-        // Limpar dados do sessionStorage
-        sessionStorage.removeItem('pendingSubscription')
+        if (currentSession?.company?.plan?.status === 'ACTIVE') {
+          setStatus('success')
+          toast.success('Assinatura realizada com sucesso!')
 
-        setStatus('success')
-        toast.success('Assinatura realizada com sucesso!')
+          // Redirecionar para o dashboard após 3 segundos
+          setTimeout(() => {
+            router.replace('/dashboard')
+          }, 3000)
+        } else {
+          // Pagamento ainda pendente (PIX ou Boleto)
+          setStatus('waiting_payment')
+          setErrorMessage(
+            'Aguardando confirmação do pagamento. Você receberá um e-mail quando o pagamento for confirmado.',
+          )
 
-        // Redirecionar para o dashboard após 3 segundos
-        setTimeout(() => {
-          router.replace('/dashboard')
-        }, 3000)
+          // Redirecionar para o dashboard após 5 segundos
+          setTimeout(() => {
+            router.replace('/dashboard')
+          }, 5000)
+        }
       } catch (error) {
         console.error('Erro ao processar assinatura:', error)
         setStatus('error')
@@ -182,7 +142,40 @@ export default function FinishSubscriptionPage() {
     )
   }
 
-  if (status === 'error' || status === 'expired') {
+  if (status === 'waiting_payment') {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center gap-8 w-full">
+          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
+            <CardHeader className="p-0 mb-8 text-center">
+              <div className="flex justify-center mb-4">
+                <div className="rounded-full bg-blue-100 p-3">
+                  <IconCheck size={48} className="text-blue-600" />
+                </div>
+              </div>
+              <CardTitle className="text-xl font-bold text-blue-600">
+                Aguardando pagamento
+              </CardTitle>
+              <CardDescription className="text-gray-600 mt-2">
+                {errorMessage}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center gap-4">
+              <Button
+                onClick={() => router.replace('/dashboard')}
+                className="w-full"
+              >
+                Ir para o Dashboard
+              </Button>
+            </CardContent>
+          </Card>
+          <Logo text width={154} />
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'error') {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-100">
         <div className="flex flex-col items-center justify-center gap-8 w-full">
@@ -194,9 +187,7 @@ export default function FinishSubscriptionPage() {
                 </div>
               </div>
               <CardTitle className="text-xl font-bold text-red-600">
-                {status === 'expired'
-                  ? 'Sessão expirada'
-                  : 'Erro ao processar assinatura'}
+                Erro ao processar assinatura
               </CardTitle>
               <CardDescription className="text-gray-600 mt-2">
                 {errorMessage ||
@@ -205,10 +196,10 @@ export default function FinishSubscriptionPage() {
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4">
               <Button
-                onClick={() => router.replace('/assinatura')}
+                onClick={() => router.replace('/dashboard')}
                 className="w-full"
               >
-                Voltar para assinatura
+                Ir para o Dashboard
               </Button>
             </CardContent>
           </Card>

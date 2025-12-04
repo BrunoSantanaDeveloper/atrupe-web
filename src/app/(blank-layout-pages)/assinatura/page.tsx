@@ -273,20 +273,6 @@ export default function SubscriptionPage() {
         return
       }
 
-      // Salvar dados da assinatura no sessionStorage para usar após retorno do Asaas
-      // sessionStorage.setItem(
-      //   'pendingSubscription',
-      //   JSON.stringify({
-      //     checkoutId: res.data.checkoutId,
-      //     planId: selectedPlanId,
-      //     planName: selectedPlan?.name,
-      //     modules: selectedModules,
-      //     additionalUsers,
-      //     totalValue: totalPrice,
-      //     timestamp: Date.now(),
-      //   }),
-      // )
-
       // Redirecionar para o checkout do Asaas
       window.location.href = paymentUrl
     } catch (error) {
