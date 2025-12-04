@@ -427,9 +427,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   const getColumnWidths = () => {
     if (isProduction) {
       return {
-        reference: '70%',
+        reference: '55%',
         qtyItem: '15%',
-        details: '0%',
+        details: '15%',
         qtyTotal: '15%',
         unitValue: '0%',
         discount: '0%',
@@ -638,7 +638,23 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     },
                   ]}
                 >
-                  MEDIDAS/QTD.
+                  QTD. ITEM
+                </Text>
+              )}
+
+              {isProduction && (
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    {
+                      width: hasCompositeProducts
+                        ? columnWidths.details
+                        : `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  DETALHAMENTO
                 </Text>
               )}
 
@@ -738,7 +754,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                     </View>
 
-                    {/* Detalhamento - para produtos simples, ocupa espaço de QTD. ITEM + DETALHAMENTO */}
+                    {/* Detalhamento - para produtos simples */}
                     {!isProduction && (
                       <View
                         style={{
@@ -761,6 +777,44 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                               printOptions.showDimensions &&
                               unitKind !== 'UNITY'
                             ) {
+                              const fullDetails =
+                                generateFormattedQuantityDetails(adaptedComp)
+                              // Extrair apenas a parte das dimensões (tudo após "un ")
+                              const dimensionPart = fullDetails.replace(
+                                /^\d+\s+un\s*/,
+                                '',
+                              )
+                              if (dimensionPart) {
+                                details += ` ${dimensionPart}`
+                              }
+                            }
+
+                            return details
+                          })()}
+                        </Text>
+                      </View>
+                    )}
+
+                    {/* Detalhamento - para produtos simples na ficha de produção */}
+                    {isProduction && (
+                      <View
+                        style={{
+                          width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                        }}
+                      >
+                        <Text style={styles.textCenterSmall}>
+                          {(() => {
+                            const adaptedComp =
+                              adaptCompositionForDisplayUtils(composition)
+                            const compositionQty =
+                              composition.quantity ||
+                              composition.originalQuantity ||
+                              1
+                            const unitKind =
+                              adaptedComp.unitKind?.toUpperCase() || 'UNITY'
+                            let details = `${compositionQty} un`
+
+                            if (unitKind !== 'UNITY') {
                               const fullDetails =
                                 generateFormattedQuantityDetails(adaptedComp)
                               // Extrair apenas a parte das dimensões (tudo após "un ")
@@ -897,7 +951,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     </View>
                   )}
 
-                  {/* Coluna Detalhamento - apenas para não-produção */}
+                  {/* Coluna Detalhamento - para não-produção */}
                   {!isProduction && (
                     <View style={{ width: columnWidths.details }}>
                       <Text style={styles.textCenterSmall}>-</Text>
@@ -936,9 +990,23 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     </View>
                   )}
 
-                  {/* Coluna Medidas/Qtd para produção com produtos compostos */}
+                  {/* Coluna Qtd. Item para produção com produtos compostos */}
                   {isProduction && (
                     <View style={{ width: columnWidths.qtyItem }}>
+                      <Text style={styles.textCenterSmall}>
+                        {item.product.quantity || 1}
+                      </Text>
+                      {item.product.compositions.map((comp) => (
+                        <Text key={comp.id} style={styles.textComposition}>
+                          {item.product.quantity || 1}
+                        </Text>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* Coluna Detalhamento para produção com produtos compostos */}
+                  {isProduction && (
+                    <View style={{ width: columnWidths.details }}>
                       <Text style={styles.textCenterSmall}>-</Text>
                       {item.product.compositions.map((comp) => {
                         const adaptedComp =
