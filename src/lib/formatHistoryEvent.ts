@@ -506,3 +506,118 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
     details: details.length > 0 ? details : undefined,
   }
 }
+
+export interface SubscriptionHistoryItem {
+  id: string
+  action: string
+  description: string
+  metadata?: {
+    paymentId?: string
+    value?: number
+    billingType?: string
+    dueDate?: string
+    paymentDate?: string
+    confirmedDate?: string
+    invoiceUrl?: string
+    planName?: string
+    reason?: string
+    notes?: string
+    previousStatus?: string
+    newStatus?: string
+    [key: string]: unknown
+  }
+  createdAt: string
+  createdByName: string
+  type?: 'subscription' | 'payment'
+}
+
+export function formatSubscriptionHistoryEvent(
+  item: SubscriptionHistoryItem,
+): TimelineEvent {
+  const createdAtDate = parseISO(item.createdAt)
+  const date = format(createdAtDate, 'dd/MM/yyyy', { locale: ptBR })
+  const time = format(createdAtDate, 'HH:mm', { locale: ptBR })
+
+  const title = item.description
+  const details: string[] = []
+
+  // Format based on action type
+  if (item.action.startsWith('PAYMENT_')) {
+    // Eventos de pagamento
+    if (item.metadata?.value) {
+      details.push(`Valor: ${formatCurrencyToBrl(item.metadata.value)}`)
+    }
+    if (item.metadata?.billingType) {
+      const billingTypes: Record<string, string> = {
+        CREDIT_CARD: 'Cartão de Crédito',
+        BOLETO: 'Boleto',
+        PIX: 'PIX',
+        DEBIT_CARD: 'Cartão de Débito',
+      }
+      details.push(
+        `Forma de pagamento: ${billingTypes[item.metadata.billingType] || item.metadata.billingType}`,
+      )
+    }
+    if (item.metadata?.dueDate) {
+      const dueDate = parseISO(item.metadata.dueDate)
+      details.push(
+        `Vencimento: ${format(dueDate, 'dd/MM/yyyy', { locale: ptBR })}`,
+      )
+    }
+    if (item.metadata?.paymentDate) {
+      const paymentDate = parseISO(item.metadata.paymentDate)
+      details.push(
+        `Pago em: ${format(paymentDate, 'dd/MM/yyyy', { locale: ptBR })}`,
+      )
+    }
+    if (item.metadata?.confirmedDate) {
+      const confirmedDate = parseISO(item.metadata.confirmedDate)
+      details.push(
+        `Confirmado em: ${format(confirmedDate, 'dd/MM/yyyy', { locale: ptBR })}`,
+      )
+    }
+  } else {
+    // Eventos de subscription
+    switch (item.action) {
+      case 'CREATED':
+        if (item.metadata?.planName) {
+          details.push(`Plano: ${item.metadata.planName}`)
+        }
+        if (item.metadata?.value) {
+          details.push(`Valor: ${formatCurrencyToBrl(item.metadata.value)}`)
+        }
+        break
+
+      case 'ACTIVATED':
+        if (item.metadata?.reason) {
+          details.push(`Motivo: ${item.metadata.reason}`)
+        }
+        break
+
+      case 'BLOCKED':
+        if (item.metadata?.reason) {
+          details.push(`Motivo: ${item.metadata.reason}`)
+        }
+        if (item.metadata?.notes) {
+          details.push(`Observações: ${item.metadata.notes}`)
+        }
+        break
+
+      case 'STATUS_CHANGED':
+        if (item.metadata?.previousStatus && item.metadata?.newStatus) {
+          details.push(
+            `Status: ${item.metadata.previousStatus} 🡢 ${item.metadata.newStatus}`,
+          )
+        }
+        break
+    }
+  }
+
+  return {
+    date,
+    time,
+    author: item.createdByName || 'Sistema',
+    title,
+    details: details.length > 0 ? details : undefined,
+  }
+}

@@ -29,8 +29,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getData, createItem } from '@/actions/_cruds'
 
 // Lib
-import { formatHistoryEvent } from '@/lib/formatHistoryEvent'
+import { formatSubscriptionHistoryEvent } from '@/lib/formatHistoryEvent'
 import { toast } from 'sonner'
+import { format, parseISO } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 interface Props {
   open: boolean
@@ -52,9 +54,24 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
   })
 
   const events = useMemo(() => {
-    const history = historyData?.data || []
-    return history.map(formatHistoryEvent)
-  }, [historyData?.data])
+    const responseData = historyData?.data
+    if (!responseData) return []
+
+    // Se responseData tem uma propriedade 'data', é o formato do endpoint
+    const history = Array.isArray(responseData)
+      ? responseData
+      : responseData.data || []
+    return history.map(formatSubscriptionHistoryEvent)
+  }, [historyData])
+
+  // Acessar lastAccess e company do objeto de resposta correto
+  const responseData = historyData?.data
+  const lastAccess =
+    responseData && !Array.isArray(responseData)
+      ? responseData.lastAccess
+      : null
+  const companyInfo =
+    responseData && !Array.isArray(responseData) ? responseData.company : null
 
   const mutation = useMutation({
     mutationFn: (messageData: { message: string }) =>
@@ -96,7 +113,18 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
-            <DialogTitle>Histórico</DialogTitle>
+            <div className="flex-1">
+              <DialogTitle>Histórico da Conta</DialogTitle>
+              {lastAccess && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Último acesso:{' '}
+                  {format(parseISO(lastAccess.date), "dd/MM/yyyy 'às' HH:mm", {
+                    locale: ptBR,
+                  })}{' '}
+                  por {lastAccess.user?.name || 'Usuário'}
+                </p>
+              )}
+            </div>
           </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
@@ -106,7 +134,50 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
               <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
             </div>
           ) : events.length > 0 ? (
-            <Timeline events={events} />
+            <>
+              {(companyInfo || lastAccess) && (
+                <div className="mb-4 rounded-lg bg-gray-50 p-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                    Resumo da Conta
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {companyInfo && (
+                      <>
+                        <div>
+                          <span className="text-gray-500">Empresa:</span>{' '}
+                          <span className="font-medium">
+                            {companyInfo.name || 'N/A'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Status:</span>{' '}
+                          <span className="font-medium">
+                            {companyInfo.isActive ? 'Ativa' : 'Inativa'}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                    {lastAccess && (
+                      <>
+                        <div>
+                          <span className="text-gray-500">Último usuário:</span>{' '}
+                          <span className="font-medium">
+                            {lastAccess.user?.name || 'N/A'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">IP:</span>{' '}
+                          <span className="font-medium">
+                            {lastAccess.ipAddress || 'N/A'}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              )}
+              <Timeline events={events} />
+            </>
           ) : (
             <div className="flex items-center justify-center py-10">
               <p className="text-sm text-gray-500">
