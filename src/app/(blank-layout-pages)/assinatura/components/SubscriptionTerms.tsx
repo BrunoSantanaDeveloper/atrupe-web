@@ -48,7 +48,7 @@ const plansTableData: PlanTableData[] = [
     name: 'Start',
     logo: start,
     subscriptionFee: 'Isento',
-    monthlyFee: 'R$ 115,00',
+    monthlyFee: 'R$ 147,00',
     period: '30 dias corridos',
   },
   {

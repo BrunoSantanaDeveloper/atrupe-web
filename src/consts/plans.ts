@@ -18,7 +18,7 @@ export const modules: ModuleType[] = [
 ]
 
 // TODO: Excluir
-export const plansMock: VisualPlanType[] = [
+const _plansMock: VisualPlanType[] = [
   {
     id: '9de3b31a-5e19-4735-89d0-2eef57ac0010',
     name: 'Start',
