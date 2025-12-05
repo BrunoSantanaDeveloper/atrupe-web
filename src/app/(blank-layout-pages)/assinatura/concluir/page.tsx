@@ -15,8 +15,34 @@ import { Logo } from '@/components/Logo'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
+import { createItemNew } from '@/actions/_cruds'
 
 type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
+
+interface PlanFeature {
+  isActive: boolean
+  feature: {
+    key: string
+  }
+}
+
+interface PlanLimit {
+  limit?: {
+    key: string
+  }
+  value?: number
+}
+
+interface Plan {
+  planType: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
+  planFeatures?: PlanFeature[]
+  planLimits?: PlanLimit[]
+}
+
+interface Subscription {
+  status: 'ACTIVE' | 'INACTIVE'
+  plan?: Plan
+}
 
 export default function FinishSubscriptionPage() {
   const [status, setStatus] = useState<SubscriptionStatus>('processing')
@@ -46,32 +72,17 @@ export default function FinishSubscriptionPage() {
     setProgress(20)
 
     try {
-      const token = await fetch('/api/auth/session')
-        .then((res) => res.json())
-        .then((session) => session?.accessToken)
+      setProgress(70)
 
-      if (!token) {
-        throw new Error('Token de autenticação não encontrado')
+      const checkResponse = await createItemNew({
+        route: '/subscriptions/check-status',
+      })
+
+      if (!checkResponse.success) {
+        throw new Error('Erro ao verificar status')
       }
 
-      setProgress(50)
-
-      const checkResponse = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/subscriptions/check-status`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
-
-      const checkResult = await checkResponse.json()
-
-      setProgress(80)
-
-      await update()
+      const checkResult = checkResponse.data
 
       setProgress(100)
 
@@ -81,6 +92,39 @@ export default function FinishSubscriptionPage() {
       ) {
         setStatus('success')
         toast.success('Assinatura realizada com sucesso!')
+
+        // Atualizar sessão com os dados do plano contratado
+        const subscription = checkResult.subscription as
+          | Subscription
+          | undefined
+        const plan = subscription?.plan
+        if (plan && subscription) {
+          // Construir features array dos planFeatures ativos
+          const features =
+            plan.planFeatures
+              ?.filter((pf) => pf.isActive && pf.feature)
+              .map((pf) => pf.feature.key) || []
+
+          // Construir limits object dos planLimits
+          const limits: { [key: string]: number } = {}
+          plan.planLimits?.forEach((pl) => {
+            if (pl.limit?.key) {
+              limits[pl.limit.key] = pl.value || 0
+            }
+          })
+
+          await update({
+            company: {
+              plan: {
+                name: plan.planType,
+                active: subscription.status === 'ACTIVE',
+                features,
+                limits,
+              },
+            },
+          })
+        }
+
         setTimeout(() => {
           router.replace('/dashboard')
         }, 3000)
@@ -110,37 +154,18 @@ export default function FinishSubscriptionPage() {
         // Aguardar um pouco para o webhook processar (se estiver configurado)
         await new Promise((resolve) => setTimeout(resolve, 2000))
 
-        setProgress(40)
-
-        // Verificar status diretamente no Asaas (polling ativo)
-        const token = await fetch('/api/auth/session')
-          .then((res) => res.json())
-          .then((session) => session?.accessToken)
-
-        if (!token) {
-          throw new Error('Token de autenticação não encontrado')
-        }
-
-        setProgress(60)
+        setProgress(70)
 
         // Chamar endpoint que verifica status no Asaas e sincroniza
-        const checkResponse = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/subscriptions/check-status`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        )
+        const checkResponse = await createItemNew({
+          route: '/subscriptions/check-status',
+        })
 
-        const checkResult = await checkResponse.json()
+        if (!checkResponse.success) {
+          throw new Error('Erro ao verificar status')
+        }
 
-        setProgress(80)
-
-        // Atualizar a sessão para obter os dados mais recentes
-        await update()
+        const checkResult = checkResponse.data
 
         setProgress(100)
 
@@ -151,6 +176,38 @@ export default function FinishSubscriptionPage() {
         ) {
           setStatus('success')
           toast.success('Assinatura realizada com sucesso!')
+
+          // Atualizar sessão com os dados do plano contratado
+          const subscription = checkResult.subscription as
+            | Subscription
+            | undefined
+          const plan = subscription?.plan
+          if (plan && subscription) {
+            // Construir features array dos planFeatures ativos
+            const features =
+              plan.planFeatures
+                ?.filter((pf) => pf.isActive && pf.feature)
+                .map((pf) => pf.feature.key) || []
+
+            // Construir limits object dos planLimits
+            const limits: { [key: string]: number } = {}
+            plan.planLimits?.forEach((pl) => {
+              if (pl.limit?.key) {
+                limits[pl.limit.key] = pl.value || 0
+              }
+            })
+
+            await update({
+              company: {
+                plan: {
+                  name: plan.planType,
+                  active: subscription.status === 'ACTIVE',
+                  features,
+                  limits,
+                },
+              },
+            })
+          }
 
           // Redirecionar para o dashboard após 3 segundos
           setTimeout(() => {
