@@ -109,7 +109,7 @@ interface AcademyData {
 
 export default function AddAcademyPage() {
   return (
-    <PermissionGate permissions={['admin:academy:manage']}>
+    <PermissionGate permissions={['admin:academy:view']}>
       <AddAcademyContent />
     </PermissionGate>
   )

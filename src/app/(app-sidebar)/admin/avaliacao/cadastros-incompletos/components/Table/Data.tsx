@@ -133,7 +133,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                   <TooltipProvider>
                                     <PermissionGate
                                       permissions={[
-                                        'admin:incomplete_registrations:complete',
+                                        'admin:incomplete_registrations:edit',
                                       ]}
                                     >
                                       <ActionButton

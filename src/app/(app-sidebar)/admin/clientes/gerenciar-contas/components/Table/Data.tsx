@@ -207,7 +207,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     </PermissionGate>
                                     <PermissionGate
                                       permissions={[
-                                        'admin:client_accounts:change_status',
+                                        'admin:client_accounts:edit',
                                       ]}
                                     >
                                       <ActionButton
@@ -221,7 +221,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     </PermissionGate>
                                     <PermissionGate
                                       permissions={[
-                                        'admin:client_accounts:manage_modules',
+                                        'admin:client_accounts:edit',
                                       ]}
                                     >
                                       <ActionButton

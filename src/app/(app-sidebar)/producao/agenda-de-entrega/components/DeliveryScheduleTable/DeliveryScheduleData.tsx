@@ -342,7 +342,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                     ) : (
                                       <PermissionGate
                                         permissions={[
-                                          'production:delivery_schedule:bill',
+                                          'production:delivery_schedule:edit',
                                         ]}
                                       >
                                         <ActionButton
@@ -389,7 +389,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                   <TooltipProvider>
                                     <PermissionGate
                                       permissions={[
-                                        'production:delivery_schedule:add_notes',
+                                        'production:delivery_schedule:edit',
                                       ]}
                                     >
                                       <ActionButton
@@ -408,7 +408,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                     </PermissionGate>
                                     <PermissionGate
                                       permissions={[
-                                        'production:delivery_schedule:schedule',
+                                        'production:delivery_schedule:edit',
                                       ]}
                                     >
                                       <ActionButton

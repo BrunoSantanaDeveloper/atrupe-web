@@ -183,7 +183,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       <>
                                         <PermissionGate
                                           permissions={[
-                                            'admin:trial_accounts:upgrade',
+                                            'admin:trial_accounts:edit',
                                           ]}
                                         >
                                           <ActionButton
@@ -215,7 +215,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     {currentStatus === 'inativas' && (
                                       <PermissionGate
                                         permissions={[
-                                          'admin:trial_accounts:change_status',
+                                          'admin:trial_accounts:edit',
                                         ]}
                                       >
                                         <ActionButton

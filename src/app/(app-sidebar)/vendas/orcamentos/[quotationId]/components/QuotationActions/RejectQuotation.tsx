@@ -90,7 +90,7 @@ export function RejectQuotation({ data }: Props) {
   // Se não tiver permissão, mostra botão simples sem modal
   if (!canManageRejectionReasons()) {
     return (
-      <PermissionGate permissions={['sale:quotation:reject']}>
+      <PermissionGate permissions={['sale:quotation:edit']}>
         <CustomButton
           icon={IconX}
           title="Rejeitar orçamento"
@@ -102,7 +102,7 @@ export function RejectQuotation({ data }: Props) {
   }
 
   return (
-    <PermissionGate permissions={['sale:quotation:reject']}>
+    <PermissionGate permissions={['sale:quotation:edit']}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
           <CustomButton

@@ -78,7 +78,7 @@ export function ApproveQuotation({ data }: Props) {
   }
 
   return (
-    <PermissionGate permissions={['sale:quotation:approve']}>
+    <PermissionGate permissions={['sale:quotation:edit']}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
           <CustomButton
