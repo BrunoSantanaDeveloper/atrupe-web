@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 
 // Components
 import { PayrollDetail } from './components/PayrollDetail'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
 import { ParamsType } from '@/types/coreTypes'
@@ -12,5 +13,16 @@ export const metadata: Metadata = {
 }
 
 export default async function PayrollDetailPage({ params }: ParamsType) {
-  return <PayrollDetail payrollId={params.payrollId} />
+  return (
+    <PermissionGate
+      permissions={['financial:payroll:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar a folha de pagamento.
+        </div>
+      }
+    >
+      <PayrollDetail payrollId={params.payrollId} />
+    </PermissionGate>
+  )
 }

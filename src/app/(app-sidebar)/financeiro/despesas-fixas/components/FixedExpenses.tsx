@@ -517,13 +517,15 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
         type="payable"
       />
 
-      <LaunchMovementModal
-        open={isLaunchModalOpen}
-        onOpenChange={setIsLaunchModalOpen}
-        item={selectedExpenseForLaunch}
-        month={month}
-        year={year}
-      />
+      <PermissionGate permissions={['financial:fixed_expense:create']}>
+        <LaunchMovementModal
+          open={isLaunchModalOpen}
+          onOpenChange={setIsLaunchModalOpen}
+          item={selectedExpenseForLaunch}
+          month={month}
+          year={year}
+        />
+      </PermissionGate>
     </div>
   )
 }

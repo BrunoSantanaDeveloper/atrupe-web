@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 
 // Components
 import { Order } from './components/Order'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
 import { ParamsType } from '@/types/coreTypes'
@@ -13,5 +14,16 @@ export const metadata: Metadata = {
 }
 
 export default async function OrderPage({ params }: ParamsType) {
-  return <Order id={params.orderId} />
+  return (
+    <PermissionGate
+      permissions={['sale:order:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar esta ordem de serviço.
+        </div>
+      }
+    >
+      <Order id={params.orderId} />
+    </PermissionGate>
+  )
 }

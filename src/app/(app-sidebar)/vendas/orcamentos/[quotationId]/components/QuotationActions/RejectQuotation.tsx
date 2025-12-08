@@ -31,6 +31,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -89,17 +90,19 @@ export function RejectQuotation({ data }: Props) {
   // Se não tiver permissão, mostra botão simples sem modal
   if (!canManageRejectionReasons()) {
     return (
-      <CustomButton
-        icon={IconX}
-        title="Rejeitar orçamento"
-        iconVariant="errorLight"
-        onClick={handleReject}
-      />
+      <PermissionGate permissions={['sale:quotation:reject']}>
+        <CustomButton
+          icon={IconX}
+          title="Rejeitar orçamento"
+          iconVariant="errorLight"
+          onClick={handleReject}
+        />
+      </PermissionGate>
     )
   }
 
   return (
-    <>
+    <PermissionGate permissions={['sale:quotation:reject']}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
           <CustomButton
@@ -159,6 +162,6 @@ export function RejectQuotation({ data }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </PermissionGate>
   )
 }

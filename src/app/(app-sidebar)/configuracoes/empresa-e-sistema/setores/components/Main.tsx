@@ -160,7 +160,7 @@ export function Main({ searchParams }: Props) {
                                   <TooltipProvider>
                                     <PermissionGate
                                       permissions={[
-                                        'company_settings:measurement_standards:edit',
+                                        'company_settings:sectors:edit',
                                       ]}
                                     >
                                       <ActionButton

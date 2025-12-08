@@ -21,6 +21,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -77,7 +78,7 @@ export function ApproveQuotation({ data }: Props) {
   }
 
   return (
-    <>
+    <PermissionGate permissions={['sale:quotation:approve']}>
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
           <CustomButton
@@ -116,6 +117,6 @@ export function ApproveQuotation({ data }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </>
+    </PermissionGate>
   )
 }
