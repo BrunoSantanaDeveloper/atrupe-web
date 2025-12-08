@@ -1,5 +1,6 @@
 // Component Imports
 import { CompanySettingsList } from '../components/CompanySettingsList'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Type Imports
 import type { CompanySettingsType } from '../components/CompanySettingsList'
@@ -24,5 +25,17 @@ const settings: CompanySettingsType[] = [
 ]
 
 export default function ProjectManagementSettings() {
-  return <CompanySettingsList settings={settings} />
+  return (
+    <PermissionGate
+      permissions={['project_management:settings:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar as configurações de
+          gerenciamento de projetos.
+        </div>
+      }
+    >
+      <CompanySettingsList settings={settings} />
+    </PermissionGate>
+  )
 }
