@@ -17,6 +17,7 @@ import {
   DialogDescription,
   DialogClose,
 } from '@/components/ui/dialog'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
@@ -320,12 +321,14 @@ export function NewQuotationTriggerButton({
   onOpenChange: (open: boolean) => void
 }) {
   return (
-    <Button
-      type="button"
-      LeftIcon={IconCirclePlus}
-      onClick={() => onOpenChange(true)}
-    >
-      Novo orçamento
-    </Button>
+    <PermissionGate permissions={['sale:quotation:create']}>
+      <Button
+        type="button"
+        LeftIcon={IconCirclePlus}
+        onClick={() => onOpenChange(true)}
+      >
+        Novo orçamento
+      </Button>
+    </PermissionGate>
   )
 }

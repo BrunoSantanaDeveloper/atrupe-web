@@ -32,6 +32,7 @@ import { CancelAlertDialog } from './CancelTransaction/Alert'
 import { ActionButton } from '@/components/common/ActionButton'
 import { EditTransactionData } from './EditTransaction/EditData'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
 
 // Icons
@@ -240,41 +241,49 @@ export function TransactionDetailsDialog({
                         </TableCell>
                         <TableCell>
                           <TooltipProvider>
-                            <ActionButton
-                              Icon={transactionStatus[item?.status]?.icon}
-                              tooltip={
-                                transactionStatus[item?.status || 'UNKNOWN']
-                                  ?.tooltip
-                              }
-                              variant={
-                                transactionStatus[item?.status || 'UNKNOWN']
-                                  ?.button
-                              }
-                              onClick={() => {
-                                if (rowData?.status === 'CANCELED') return
-
-                                setInstallment(item)
-
-                                switch (item?.status) {
-                                  case 'PENDING':
-                                    setOpenDialog('payment')
-                                    break
-                                  case 'PROVISIONED':
-                                    setOpenDialog('compensate')
-                                    break
-                                  case 'PAID':
-                                    setOpenDialog('view')
-                                    break
-                                  case 'OVERDUE':
-                                    setOpenDialog('payment')
-                                    break
-                                  default:
-                                    setOpenDialog('')
-                                    break
+                            <PermissionGate
+                              permissions={[
+                                type === 'receivable'
+                                  ? 'financial:receivable:edit'
+                                  : 'financial:payable:edit',
+                              ]}
+                            >
+                              <ActionButton
+                                Icon={transactionStatus[item?.status]?.icon}
+                                tooltip={
+                                  transactionStatus[item?.status || 'UNKNOWN']
+                                    ?.tooltip
                                 }
-                              }}
-                              disabled={rowData?.status === 'CANCELED'}
-                            />
+                                variant={
+                                  transactionStatus[item?.status || 'UNKNOWN']
+                                    ?.button
+                                }
+                                onClick={() => {
+                                  if (rowData?.status === 'CANCELED') return
+
+                                  setInstallment(item)
+
+                                  switch (item?.status) {
+                                    case 'PENDING':
+                                      setOpenDialog('payment')
+                                      break
+                                    case 'PROVISIONED':
+                                      setOpenDialog('compensate')
+                                      break
+                                    case 'PAID':
+                                      setOpenDialog('view')
+                                      break
+                                    case 'OVERDUE':
+                                      setOpenDialog('payment')
+                                      break
+                                    default:
+                                      setOpenDialog('')
+                                      break
+                                  }
+                                }}
+                                disabled={rowData?.status === 'CANCELED'}
+                              />
+                            </PermissionGate>
                           </TooltipProvider>
                         </TableCell>
                       </TableRow>
@@ -312,22 +321,46 @@ export function TransactionDetailsDialog({
               Voltar
             </Button>
             {rowData?.status === 'CANCELED' && (
-              <Button type="button" onClick={handleUndoCancel}>
-                Desfazer cancelamento
-              </Button>
+              <PermissionGate
+                permissions={[
+                  type === 'receivable'
+                    ? 'financial:receivable:edit'
+                    : 'financial:payable:edit',
+                ]}
+              >
+                <Button type="button" onClick={handleUndoCancel}>
+                  Desfazer cancelamento
+                </Button>
+              </PermissionGate>
             )}
             {open && rowData?.status !== 'CANCELED' && (
               <>
-                <CancelAlertDialog
-                  rowData={data}
-                  type={type}
-                  onTransactionCancel={() => handleOpenChange(false)}
-                />
-                <EditTransactionData
-                  rowData={data}
-                  type={type}
-                  transactionDialogOpen={handleOpenChange}
-                />
+                <PermissionGate
+                  permissions={[
+                    type === 'receivable'
+                      ? 'financial:receivable:delete'
+                      : 'financial:payable:delete',
+                  ]}
+                >
+                  <CancelAlertDialog
+                    rowData={data}
+                    type={type}
+                    onTransactionCancel={() => handleOpenChange(false)}
+                  />
+                </PermissionGate>
+                <PermissionGate
+                  permissions={[
+                    type === 'receivable'
+                      ? 'financial:receivable:edit'
+                      : 'financial:payable:edit',
+                  ]}
+                >
+                  <EditTransactionData
+                    rowData={data}
+                    type={type}
+                    transactionDialogOpen={handleOpenChange}
+                  />
+                </PermissionGate>
                 <PaymentDialog
                   open={openDialog === 'payment'}
                   setOpen={setOpenDialog}

@@ -25,6 +25,10 @@ interface Props extends SearchParamsType {
 
 export function Transactions({ type, searchParams }: Props) {
   const typePt = type === 'receivable' ? 'receita' : 'despesa'
+  const createPermission =
+    type === 'receivable'
+      ? 'financial:receivable:create'
+      : 'financial:payable:create'
 
   const emptyData = false // TODO : corrigir
 
@@ -33,7 +37,7 @@ export function Transactions({ type, searchParams }: Props) {
       <Topbar
         title={`Movimentações a ${type === 'receivable' ? 'receber' : 'pagar'}`}
         primaryCta={
-          <PermissionGate permissions={['financial:receivable:create']}>
+          <PermissionGate permissions={[createPermission]}>
             <NewTransaction type={type} searchParams={searchParams} />
           </PermissionGate>
         }
@@ -48,7 +52,7 @@ export function Transactions({ type, searchParams }: Props) {
               title={`Sem ${typePt}s cadastradas`}
               description={`Cadastre sua primeira ${typePt}`}
               cta={
-                <PermissionGate permissions={['financial:receivable:create']}>
+                <PermissionGate permissions={[createPermission]}>
                   <NewTransaction type={type} searchParams={searchParams} />
                 </PermissionGate>
               }
