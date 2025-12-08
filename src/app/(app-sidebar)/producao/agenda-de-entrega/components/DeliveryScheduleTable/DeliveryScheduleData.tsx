@@ -12,6 +12,7 @@ import { DeliveryScheduleNotesDialog } from '../Actions/Notes'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { DeliveryScheduleDateDialog } from '../Actions/ScheduleDate'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
@@ -320,29 +321,41 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                 <div className="flex gap-2">
                                   <TooltipProvider>
                                     {deliverySchedule?.financial?.billed ? (
-                                      <ActionButton
-                                        variant="neutralLight"
-                                        Icon={IconRefreshDot}
-                                        tooltip="Editar parcelas"
-                                        onClick={() => {
-                                          setRowData(deliverySchedule)
-                                          setOpenDialog('edit-installments')
-                                        }}
-                                        // disabled={
-                                        //   item?.expenseSource === 'EMPLOYEE'
-                                        // }
-                                      />
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:receivable:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          variant="neutralLight"
+                                          Icon={IconRefreshDot}
+                                          tooltip="Editar parcelas"
+                                          onClick={() => {
+                                            setRowData(deliverySchedule)
+                                            setOpenDialog('edit-installments')
+                                          }}
+                                          // disabled={
+                                          //   item?.expenseSource === 'EMPLOYEE'
+                                          // }
+                                        />
+                                      </PermissionGate>
                                     ) : (
-                                      <ActionButton
-                                        variant="neutralLight"
-                                        Icon={IconMoneybag}
-                                        badge="errorLight"
-                                        tooltip="Faturar"
-                                        onClick={() => {
-                                          setRowData(deliverySchedule)
-                                          setOpenDialog('billing')
-                                        }}
-                                      />
+                                      <PermissionGate
+                                        permissions={[
+                                          'production:delivery_schedule:bill',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          variant="neutralLight"
+                                          Icon={IconMoneybag}
+                                          badge="errorLight"
+                                          tooltip="Faturar"
+                                          onClick={() => {
+                                            setRowData(deliverySchedule)
+                                            setOpenDialog('billing')
+                                          }}
+                                        />
+                                      </PermissionGate>
                                     )}
                                     <ActionButton
                                       Icon={IconReceitaFederal}
@@ -374,27 +387,39 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconMessage}
-                                      tooltip="Observações"
-                                      onClick={() => {
-                                        setRowData(deliverySchedule)
-                                        setOpenDialog('notes')
-                                      }}
-                                      badge={
-                                        deliverySchedule?.notes
-                                          ? 'warningLight'
-                                          : undefined
-                                      }
-                                    />
-                                    <ActionButton
-                                      Icon={IconCalendarRepeat}
-                                      tooltip="Data"
-                                      onClick={() => {
-                                        setRowData(deliverySchedule)
-                                        setOpenDialog('date')
-                                      }}
-                                    />
+                                    <PermissionGate
+                                      permissions={[
+                                        'production:delivery_schedule:add_notes',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconMessage}
+                                        tooltip="Observações"
+                                        onClick={() => {
+                                          setRowData(deliverySchedule)
+                                          setOpenDialog('notes')
+                                        }}
+                                        badge={
+                                          deliverySchedule?.notes
+                                            ? 'warningLight'
+                                            : undefined
+                                        }
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={[
+                                        'production:delivery_schedule:schedule',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconCalendarRepeat}
+                                        tooltip="Data"
+                                        onClick={() => {
+                                          setRowData(deliverySchedule)
+                                          setOpenDialog('date')
+                                        }}
+                                      />
+                                    </PermissionGate>
                                     <ActionButton
                                       Icon={IconPrinter}
                                       tooltip="Imprimir"
