@@ -13,6 +13,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { TrialAccountHistoryDialog } from '../TrialAccountHistoryDialog'
 import { UpgradeTrialAccountDialog } from '../UpgradeTrialAccountDialog'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // UI
 import {
@@ -180,43 +181,67 @@ export function Data({ searchParams, searchDescription }: Props) {
                                   <TooltipProvider>
                                     {currentStatus !== 'descartadas' && (
                                       <>
-                                        <ActionButton
-                                          Icon={IconAtrupeLogo}
-                                          variant="ghost"
-                                          tooltip="Upgrade para Start"
-                                          onClick={() => {
-                                            setRowData(item)
-                                            setIsUpgradeDialogOpen(true)
-                                          }}
-                                        />
-                                        <ActionButton
-                                          Icon={IconPencil}
-                                          tooltip="Editar"
-                                          onClick={() => {
-                                            setRowData(item)
-                                            setIsDialogOpen(true)
-                                          }}
-                                        />
+                                        <PermissionGate
+                                          permissions={[
+                                            'admin:trial_accounts:upgrade',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={IconAtrupeLogo}
+                                            variant="ghost"
+                                            tooltip="Upgrade para Start"
+                                            onClick={() => {
+                                              setRowData(item)
+                                              setIsUpgradeDialogOpen(true)
+                                            }}
+                                          />
+                                        </PermissionGate>
+                                        <PermissionGate
+                                          permissions={[
+                                            'admin:trial_accounts:edit',
+                                          ]}
+                                        >
+                                          <ActionButton
+                                            Icon={IconPencil}
+                                            tooltip="Editar"
+                                            onClick={() => {
+                                              setRowData(item)
+                                              setIsDialogOpen(true)
+                                            }}
+                                          />
+                                        </PermissionGate>
                                       </>
                                     )}
                                     {currentStatus === 'inativas' && (
+                                      <PermissionGate
+                                        permissions={[
+                                          'admin:trial_accounts:change_status',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconSettings}
+                                          tooltip="Alterar status"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsChangeStatusDialogOpen(true)
+                                          }}
+                                        />
+                                      </PermissionGate>
+                                    )}
+                                    <PermissionGate
+                                      permissions={[
+                                        'admin:trial_accounts:view',
+                                      ]}
+                                    >
                                       <ActionButton
-                                        Icon={IconSettings}
-                                        tooltip="Alterar status"
+                                        Icon={IconHistory}
+                                        tooltip="Histórico"
                                         onClick={() => {
                                           setRowData(item)
-                                          setIsChangeStatusDialogOpen(true)
+                                          setIsHistoryDialogOpen(true)
                                         }}
                                       />
-                                    )}
-                                    <ActionButton
-                                      Icon={IconHistory}
-                                      tooltip="Histórico"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsHistoryDialogOpen(true)
-                                      }}
-                                    />
+                                    </PermissionGate>
                                   </TooltipProvider>
                                 </div>
                               </TableCell>

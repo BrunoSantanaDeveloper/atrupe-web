@@ -10,6 +10,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { EditClientDialog } from '../EditClientDialog'
 import { ChangeStatusDialog } from '../ChangeStatusDialog'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { ModulesDialog } from '../ModulesDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 
@@ -190,38 +191,62 @@ export function Data({ searchParams, searchDescription }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsEditDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconSettings}
-                                      tooltip="Configurações"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsChangeStatusDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconStack2}
-                                      tooltip="Módulos"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsModulesDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconHistory}
-                                      tooltip="Histórico"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsHistoryDialogOpen(true)
-                                      }}
-                                    />
+                                    <PermissionGate
+                                      permissions={[
+                                        'admin:client_accounts:edit',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconPencil}
+                                        tooltip="Editar"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsEditDialogOpen(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={[
+                                        'admin:client_accounts:change_status',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconSettings}
+                                        tooltip="Configurações"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsChangeStatusDialogOpen(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={[
+                                        'admin:client_accounts:manage_modules',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconStack2}
+                                        tooltip="Módulos"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsModulesDialogOpen(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={[
+                                        'admin:client_accounts:view',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconHistory}
+                                        tooltip="Histórico"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsHistoryDialogOpen(true)
+                                        }}
+                                      />
+                                    </PermissionGate>
                                   </TooltipProvider>
                                 </div>
                               </TableCell>

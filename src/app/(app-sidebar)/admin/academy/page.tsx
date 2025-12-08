@@ -66,6 +66,8 @@ import { createItemNew, deleteItemNew, getData } from '@/actions/_cruds'
 // Utils
 import { cn } from '@/lib/utils'
 
+import { PermissionGate } from '@/components/common/PermissionGate'
+
 // Button variants for file types
 const buttonVariant: Record<
   string,
@@ -106,6 +108,14 @@ interface AcademyData {
 }
 
 export default function AddAcademyPage() {
+  return (
+    <PermissionGate permissions={['admin:academy:manage']}>
+      <AddAcademyContent />
+    </PermissionGate>
+  )
+}
+
+function AddAcademyContent() {
   const [open, setOpen] = useState(false)
   const [selectedPlan, setSelectedPlan] = useState('START')
   const [isCreatingNewSection, setIsCreatingNewSection] = useState(false)
