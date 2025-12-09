@@ -134,7 +134,6 @@ export function NewItemDialog({
                 label="Nome do grupo"
                 width="flex-[1_0_100px]"
                 maxLength={100}
-                autoComplete="off"
               />
             </form>
           </Form>

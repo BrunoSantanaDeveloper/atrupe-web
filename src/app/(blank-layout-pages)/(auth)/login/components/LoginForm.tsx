@@ -100,7 +100,6 @@ export function LoginForm() {
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        autoComplete="off"
         className="flex flex-col gap-4"
         noValidate
       >

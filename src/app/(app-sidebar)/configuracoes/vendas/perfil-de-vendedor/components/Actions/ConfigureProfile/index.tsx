@@ -103,7 +103,6 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
                 name="name"
                 label="Nome do perfil"
                 width="w-full"
-                autoComplete="off"
               />
               <FormInput<FormType>
                 type="number"

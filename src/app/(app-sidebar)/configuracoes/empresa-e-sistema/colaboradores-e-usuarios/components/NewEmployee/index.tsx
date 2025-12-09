@@ -113,17 +113,14 @@ export function NewEmployeeDialog() {
               className="flex flex-wrap gap-5"
               noValidate
             >
-              <FormInput<FormType>
-                name="name"
-                label="Nome"
-                width="w-full"
-                autoComplete="off"
-              />
+              <FormInput<FormType> name="name" label="Nome" width="w-full" />
+
               <SelectSectorField<FormType>
                 name="sectorId"
                 label="Setor"
                 width="flex-[1_0_190px]"
               />
+
               <SelectRoleField<FormType>
                 name="roleId"
                 label="Cargo"

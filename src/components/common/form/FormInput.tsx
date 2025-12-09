@@ -59,6 +59,7 @@ export function FormInput<T extends FieldValues>({
                 startAdornment={startAdornment}
                 endAdornment={endAdornment}
                 placeholder={label}
+                autoComplete="off"
                 {...field}
                 value={displayValue ?? ''}
                 {...props}

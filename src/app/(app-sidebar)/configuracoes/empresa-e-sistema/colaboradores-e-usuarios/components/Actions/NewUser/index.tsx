@@ -173,17 +173,16 @@ export function NewUserDialog({
               className="flex flex-wrap gap-5"
               noValidate
             >
-              <FormInput<FormType> name="name" label="Usuário" width="w-full" />
+              <FormInput name="name" label="Usuário" width="w-full" />
 
-              <FormInput<FormType> name="email" label="Email" width="w-full" />
+              <FormInput name="email" label="Email" width="w-full" />
 
               <div className="flex flex-wrap gap-5 w-full">
                 <div className="flex-[1_0_200px] space-y-2">
                   <div className="relative">
                     {/*  TODO : zod error String must contain exactly 0 character(s) */}
-                    <FormInput<FormType>
+                    <FormInput
                       name="password"
-                      autoComplete="new-password"
                       label="Senha"
                       type={showPassword ? 'text' : 'password'}
                       additionalOnChange={(value) =>
@@ -266,7 +265,7 @@ export function NewUserDialog({
                 </div>
                 <div className="flex-[1_0_200px] space-y-2">
                   <div className="relative">
-                    <FormInput<FormType>
+                    <FormInput
                       name="confirmPassword"
                       label="Repita a senha"
                       type={showConfirmPassword ? 'text' : 'password'}

@@ -47,7 +47,6 @@ export function NewPasswordForm({ onSubmit }: Props) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      autoComplete="off"
       className="flex flex-col gap-6"
       noValidate
     >

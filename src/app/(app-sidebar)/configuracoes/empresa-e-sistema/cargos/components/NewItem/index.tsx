@@ -136,11 +136,11 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
                 label="Setor"
                 width="flex-[1_0_190px]"
               />
+
               <FormInput<FormType>
                 name="name"
                 label="Cargo"
                 width="flex-[1_0_190px]"
-                autoComplete="off"
               />
             </form>
           </Form>

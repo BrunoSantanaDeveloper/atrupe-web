@@ -123,7 +123,6 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
-                  autoComplete="off"
                 />
                 <FormSelect
                   name="type"
