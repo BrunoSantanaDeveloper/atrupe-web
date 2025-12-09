@@ -333,7 +333,7 @@ export default function SubscriptionPage() {
               </div>
 
               {/* Módulos Adicionais Section */}
-              <div>
+              <div hidden>
                 <h2 className="text-xl font-semibold text-gray-700 mb-1">
                   Módulos adicionais
                 </h2>
