@@ -32,7 +32,7 @@ export function TypeAndBilling({ quotationData }: Props) {
         name="type"
         label="Nota"
         options={typeOptions}
-        width="flex-[1_0_200px]"
+        width="flex-[1_0_100px]"
       />
 
       <FormSelect<QuotationPaymentConditionsType>

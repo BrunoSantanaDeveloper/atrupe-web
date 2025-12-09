@@ -107,7 +107,7 @@ export function InstallmentQty() {
     <FormSelect<QuotationPaymentConditionsType>
       name="installmentQty"
       label="Parcelas"
-      width="flex-[1_0_85px]"
+      width="flex-[1_0_40px]"
       options={installmentOptions}
       disabled={!paymentConditionId}
       additionalOnChange={handleChangeInstallmentQty}

@@ -223,12 +223,6 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
             >
               <TypeAndBilling quotationData={quotationData} />
 
-              <PaymentMethodAndCondition quotationData={quotationData} />
-
-              <Separator className="my-2 bg-gray-300" />
-
-              <InstallmentQty />
-
               <FormSelect
                 name="hasDownPayment"
                 label="Entrada"
@@ -236,19 +230,12 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
                   { value: 'false', label: 'Não' },
                   { value: 'true', label: 'Sim' },
                 ]}
-                width="flex-[1_0_85px]"
+                width="flex-[1_0_50px]"
               />
 
-              <FormBrlInput
-                name="commission.totalCommission"
-                label="Valor Comissão"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-                disabled
-                readOnly
-              />
+              <PaymentMethodAndCondition quotationData={quotationData} />
 
-              <DiscountAndTotal addComissionValue={addComissionValue} />
+              <InstallmentQty />
 
               <Separator className="my-2 bg-gray-300" />
 
@@ -261,6 +248,17 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
                   </div>
                 </div>
               )}
+
+              <FormBrlInput
+                name="commission.totalCommission"
+                label="Valor Comissão"
+                startAdornment={<>R$</>}
+                width="flex-[1_0_200px]"
+                disabled
+                readOnly
+              />
+
+              <DiscountAndTotal addComissionValue={addComissionValue} />
 
               <FormTextarea
                 name="description"
