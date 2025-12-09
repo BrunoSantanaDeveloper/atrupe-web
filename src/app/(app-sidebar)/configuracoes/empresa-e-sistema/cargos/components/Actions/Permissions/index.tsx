@@ -342,7 +342,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
             <DialogTitle>
               <div className="flex items-center gap-4">
                 <FeaturedIcon variant="neutralOutline" Icon={IconShieldLock} />
-                <span>Permissões do cargo</span>
+                <span>Permissões do cargo {rowData?.name || ''}</span>
               </div>
             </DialogTitle>
             <DialogDescription className="sr-only"></DialogDescription>
