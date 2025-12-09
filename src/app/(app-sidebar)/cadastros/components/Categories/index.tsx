@@ -134,8 +134,8 @@ export function Categories({ context }: Props) {
                                 <PermissionGate
                                   permissions={[
                                     context === 'client'
-                                      ? 'clients:categories:edit'
-                                      : 'suppliers:categories:edit',
+                                      ? 'register:client_categories:edit'
+                                      : 'register:supplier_categories:edit',
                                   ]}
                                 >
                                   <ActionButton

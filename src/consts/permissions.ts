@@ -1,15 +1,5 @@
 export const permissionsData = [
   {
-    section: 'Valores',
-    key: 'values',
-    items: [
-      {
-        name: 'Valores',
-        key: 'values',
-      },
-    ],
-  },
-  {
     section: 'Cadastros',
     key: 'register',
     items: [
@@ -18,8 +8,16 @@ export const permissionsData = [
         key: 'client',
       },
       {
+        name: 'Categorias de clientes',
+        key: 'client_categories',
+      },
+      {
         name: 'Cadastro de fornecedores',
         key: 'supplier',
+      },
+      {
+        name: 'Categorias de fornecedores',
+        key: 'supplier_categories',
       },
       {
         name: 'Limite de crédito dos clientes',
@@ -42,18 +40,6 @@ export const permissionsData = [
       {
         name: 'Venda rápida',
         key: 'quick',
-      },
-      {
-        name: 'Cliente da venda',
-        key: 'client',
-      },
-      {
-        name: 'Vendedor da venda',
-        key: 'seller',
-      },
-      {
-        name: 'Vendas de outros vendedores',
-        key: 'other_sellers',
       },
     ],
   },
@@ -136,8 +122,12 @@ export const permissionsData = [
     key: 'financial_settings',
     items: [
       {
-        name: 'Bancos, contas e formas de pagamento',
+        name: 'Formas de pagamento',
         key: 'payment_methods',
+      },
+      {
+        name: 'Bancos e contas bancárias',
+        key: 'bank_accounts',
       },
       {
         name: 'Despesas fixas',
@@ -178,44 +168,12 @@ export const permissionsData = [
     key: 'reports',
     items: [
       {
-        name: 'Melhores clientes',
-        key: 'best_clients',
-      },
-      {
-        name: 'Clientes',
-        key: 'clients',
-      },
-      {
-        name: 'Orçamentos',
-        key: 'quotations',
-      },
-      {
-        name: 'Vendas',
-        key: 'sales',
-      },
-      {
         name: 'Dashboard de vendas',
         key: 'sales_dashboard',
       },
       {
         name: 'Dashboard de resultados',
         key: 'results_dashboard',
-      },
-      {
-        name: 'Dashboard de fluxo',
-        key: 'flow_dashboard',
-      },
-      {
-        name: 'Recebimento de vendas',
-        key: 'sales_receipts',
-      },
-      {
-        name: 'Despesas',
-        key: 'payables',
-      },
-      {
-        name: 'Receitas',
-        key: 'receivables',
       },
     ],
   },
