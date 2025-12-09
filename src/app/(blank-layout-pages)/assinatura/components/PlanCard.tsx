@@ -154,6 +154,17 @@ export function PlanCard({
                   priority
                   className="max-w-32"
                 />
+                {plan.videoUrl && (
+                  <Button type="button" variant="none" size="none">
+                    <Badge
+                      variant="neutralLight"
+                      LeftIcon={IconPlayerPlayFilled}
+                      onClick={() => handleOpenVideo(plan.videoUrl!, plan.name)}
+                    >
+                      Ver vídeo
+                    </Badge>
+                  </Button>
+                )}
                 {plan.badge && (
                   <Badge variant={plan.badge.variant}>{plan.badge.text}</Badge>
                 )}

@@ -14,6 +14,7 @@ export interface VisualPlanType {
   name: string
   basePrice?: number
   isActive: boolean
+  videoUrl?: string
   badge?: {
     text: string
     variant: 'light' | 'orangeLight'
