@@ -41,7 +41,6 @@ export function SearchClientTriggerButton({
       size="iconMd"
       variant="neutralOutline"
       Icon={TextSearchIcon}
-      className="bg-transparent"
       onClick={() => onOpenChange(true)}
     />
   )

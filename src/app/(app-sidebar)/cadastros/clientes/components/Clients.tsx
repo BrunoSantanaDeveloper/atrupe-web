@@ -6,6 +6,7 @@ import { useState } from 'react'
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import { NewClientModal, NewClientTriggerButton } from './NewClient'
@@ -36,7 +37,10 @@ import {
   SearchClientModal,
   SearchClientTriggerButton,
 } from './SearchClient/SearchClientModal'
-import { TooltipProvider } from '@radix-ui/react-tooltip'
+import {
+  ImportClientModal,
+  ImportClientTriggerButton,
+} from './ImportClient/ImportClientModal'
 
 export function Clients({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
@@ -101,10 +105,14 @@ export function Clients({ searchParams }: SearchParamsType) {
               size="iconMd"
               variant="neutralOutline"
               Icon={IconFolders}
-              className="bg-transparent"
               link="/cadastros/clientes/categorias"
             />
             <PermissionGate permissions={['register:client:create']}>
+              <ImportClientTriggerButton
+                onOpenChange={() => {
+                  setOpenDialog('import-client')
+                }}
+              />
               <SearchClientTriggerButton
                 onOpenChange={() => {
                   setOpenDialog('search-client')
@@ -170,6 +178,10 @@ export function Clients({ searchParams }: SearchParamsType) {
       />
       <SearchClientModal
         open={openDialog === 'search-client'}
+        onOpenChange={() => setOpenDialog('')}
+      />
+      <ImportClientModal
+        open={openDialog === 'import-client'}
         onOpenChange={() => setOpenDialog('')}
       />
     </div>
