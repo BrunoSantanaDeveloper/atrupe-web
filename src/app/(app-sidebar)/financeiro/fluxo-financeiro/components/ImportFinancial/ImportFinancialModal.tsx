@@ -258,8 +258,7 @@ DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornece
               </div>
             </DialogTitle>
             <DialogDescription className="sr-only">
-              Selecione um arquivo CSV para importar receitas e despesas em
-              lote
+              Selecione um arquivo CSV para importar receitas e despesas em lote
             </DialogDescription>
           </DialogHeader>
 
