@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 
 // Icon
 import {
-  IconTable,
   IconFileText,
   IconHelpCircle,
   IconPlayerPlay,
@@ -60,7 +59,7 @@ export function HelpButton({ data }: Props) {
               <span>PDF</span>
             </DropdownMenuItem>
           ) : null}
-          {files?.length ? (
+          {/* {files?.length ? (
             <DropdownMenuItem
               onClick={() => {
                 window.open(files[1], '_blank')
@@ -69,7 +68,7 @@ export function HelpButton({ data }: Props) {
               <IconTable size={16} className="mr-2" />
               <span>Planilha</span>
             </DropdownMenuItem>
-          ) : null}
+          ) : null} */}
           <DropdownMenuItem
             onClick={() => window.open('https://wa.me/554721229194', '_blank')}
           >

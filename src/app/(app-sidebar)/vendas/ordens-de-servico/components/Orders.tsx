@@ -20,7 +20,12 @@ import {
   NewQuotationModal,
   NewQuotationTriggerButton,
 } from '../../orcamentos/components/NewQuotation'
+import {
+  ImportOrderModal,
+  ImportOrderTriggerButton,
+} from './ImportOrder/ImportOrderModal'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -37,7 +42,7 @@ import { IconNewsOff } from '@tabler/icons-react'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 export function Orders({ searchParams }: SearchParamsType) {
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialog, setOpenDialog] = useState<string>('')
 
   const { canManageDeliverySchedule } = usePlanFeatures()
 
@@ -108,7 +113,16 @@ export function Orders({ searchParams }: SearchParamsType) {
           activeTab={status}
           paramName="status"
           primaryCta={
-            <NewQuotationTriggerButton onOpenChange={setOpenDialog} />
+            <TooltipProvider>
+              <div className="flex gap-2">
+                <ImportOrderTriggerButton
+                  onOpenChange={(open) => setOpenDialog(open ? 'import' : '')}
+                />
+                <NewQuotationTriggerButton
+                  onOpenChange={(open) => setOpenDialog(open ? 'new' : '')}
+                />
+              </div>
+            </TooltipProvider>
           }
         />
         <div>
@@ -136,14 +150,24 @@ export function Orders({ searchParams }: SearchParamsType) {
                 icon={IconNewsOff}
                 title="Sem ordens de serviço"
                 description="Cadastre um orçamento"
-                cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
+                cta={
+                  <NewQuotationTriggerButton
+                    onOpenChange={(open) => setOpenDialog(open ? 'new' : '')}
+                  />
+                }
               />
             )}
           </Card>
           <NewQuotationModal
-            open={openDialog}
+            open={openDialog === 'new'}
             onOpenChange={(open) => {
-              setOpenDialog(open)
+              setOpenDialog(open ? 'new' : '')
+            }}
+          />
+          <ImportOrderModal
+            open={openDialog === 'import'}
+            onOpenChange={(open) => {
+              setOpenDialog(open ? 'import' : '')
             }}
           />
         </div>
