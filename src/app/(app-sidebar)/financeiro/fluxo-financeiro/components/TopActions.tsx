@@ -2,7 +2,7 @@
 
 // React
 import { useRouter } from 'next/navigation'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 
 // UI
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -11,6 +11,10 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { NewTransaction } from '../../_components/transactions/NewTransaction'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import {
+  ImportFinancialModal,
+  ImportFinancialTriggerButton,
+} from './ImportFinancial/ImportFinancialModal'
 
 // Icons
 import {
@@ -32,6 +36,7 @@ interface Props extends SearchParamsType {
 
 export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
   const router = useRouter()
+  const [openImportModal, setOpenImportModal] = useState(false)
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
@@ -52,6 +57,7 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
     <div className="flex flex-wrap items-center gap-4">
       <TooltipProvider>
         <PermissionGate permissions={['financial:flow:edit']}>
+          <ImportFinancialTriggerButton onOpenChange={setOpenImportModal} />
           <ActionButton
             tooltip={
               searchParams.sort === 'asc'
@@ -104,6 +110,10 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
       <PermissionGate permissions={['financial:flow_receivable:create']}>
         <NewTransaction type="receivable" searchParams={searchParams} />
       </PermissionGate>
+      <ImportFinancialModal
+        open={openImportModal}
+        onOpenChange={setOpenImportModal}
+      />
     </div>
   )
 }
