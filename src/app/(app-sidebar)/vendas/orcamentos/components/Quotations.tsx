@@ -5,6 +5,7 @@ import { useState } from 'react'
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import {
@@ -17,6 +18,10 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { QuotationsData } from './QuotationsTable/QuotationsData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
+import {
+  ImportQuotationModal,
+  ImportQuotationTriggerButton,
+} from './ImportQuotation/ImportQuotationModal'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -31,7 +36,7 @@ import { useQuery } from '@tanstack/react-query'
 import { IconReportOff } from '@tabler/icons-react'
 
 export function Quotations({ searchParams }: SearchParamsType) {
-  const [openDialog, setOpenDialog] = useState(false)
+  const [openDialog, setOpenDialog] = useState('')
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -94,7 +99,20 @@ export function Quotations({ searchParams }: SearchParamsType) {
         tabs={tabs}
         activeTab={status}
         paramName="status"
-        primaryCta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
+        primaryCta={
+          <TooltipProvider>
+            <ImportQuotationTriggerButton
+              onOpenChange={() => {
+                setOpenDialog('import-quotation')
+              }}
+            />
+            <NewQuotationTriggerButton
+              onOpenChange={() => {
+                setOpenDialog('new-quotation')
+              }}
+            />
+          </TooltipProvider>
+        }
       />
       <div>
         <Card>
@@ -121,14 +139,20 @@ export function Quotations({ searchParams }: SearchParamsType) {
               icon={IconReportOff}
               title="Sem orçamentos cadastrados"
               description="Cadastre seu primeiro orçamento"
-              cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
+              cta={
+                <NewQuotationTriggerButton
+                  onOpenChange={() => setOpenDialog('new-quotation')}
+                />
+              }
             />
           )}
           <NewQuotationModal
-            open={openDialog}
-            onOpenChange={(open) => {
-              setOpenDialog(open)
-            }}
+            open={openDialog === 'new-quotation'}
+            onOpenChange={() => setOpenDialog('')}
+          />
+          <ImportQuotationModal
+            open={openDialog === 'import-quotation'}
+            onOpenChange={() => setOpenDialog('')}
           />
         </Card>
       </div>
