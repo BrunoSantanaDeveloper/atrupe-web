@@ -54,7 +54,7 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-4">
+    <div className="flex flex-wrap items-center gap-3">
       <TooltipProvider>
         <PermissionGate permissions={['financial:flow:edit']}>
           <ImportFinancialTriggerButton onOpenChange={setOpenImportModal} />

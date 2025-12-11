@@ -114,7 +114,7 @@ export function Orders({ searchParams }: SearchParamsType) {
           paramName="status"
           primaryCta={
             <TooltipProvider>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <ImportOrderTriggerButton
                   onOpenChange={(open) => setOpenDialog(open ? 'import' : '')}
                 />
