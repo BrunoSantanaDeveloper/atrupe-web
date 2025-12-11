@@ -1,12 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import {
@@ -19,6 +18,11 @@ import { ProductsFilter } from './ProductsTable/ProductsFilter'
 import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ActionButton } from '@/components/common/ActionButton'
+import {
+  ImportProductModal,
+  ImportProductTriggerButton,
+} from './ImportProduct/ImportProductModal'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -34,7 +38,6 @@ import { IconPackageOff, IconFolders } from '@tabler/icons-react'
 
 export function Products({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState<string>('')
-  const router = useRouter()
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['product-totals'],
@@ -77,28 +80,29 @@ export function Products({ searchParams }: SearchParamsType) {
           activeTab={searchParams?.status || 'ativos'}
           paramName="status"
           primaryCta={
-            <>
-              <Button
-                type="button"
+            <TooltipProvider>
+              <ActionButton
+                tooltip="Grupos de produtos"
+                size="iconMd"
                 variant="neutralOutline"
-                className="bg-transparent"
-                LeftIcon={IconFolders}
-                onClick={() => {
-                  router.push('/configuracoes/produtos/grupo-de-produtos')
-                }}
-              >
-                Grupos de produtos
-              </Button>
+                Icon={IconFolders}
+                link="/configuracoes/produtos/grupo-de-produtos"
+              />
               <PermissionGate
                 permissions={['product_settings:materials_products:create']}
               >
+                <ImportProductTriggerButton
+                  onOpenChange={() => {
+                    setOpenDialog('import-product')
+                  }}
+                />
                 <NewProductTriggerButton
                   onOpenChange={() => {
                     setOpenDialog('new-product')
                   }}
                 />
               </PermissionGate>
-            </>
+            </TooltipProvider>
           }
         />
         <div>
@@ -136,6 +140,10 @@ export function Products({ searchParams }: SearchParamsType) {
         </div>
         <NewProduct
           open={openDialog === 'new-product'}
+          onOpenChange={() => setOpenDialog('')}
+        />
+        <ImportProductModal
+          open={openDialog === 'import-product'}
           onOpenChange={() => setOpenDialog('')}
         />
       </div>

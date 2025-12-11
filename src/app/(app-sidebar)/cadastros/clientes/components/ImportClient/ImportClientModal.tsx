@@ -114,8 +114,6 @@ COMPANY,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-
-    toast.success('O modelo de importação foi baixado com sucesso')
   }
 
   const handleImport = async () => {
