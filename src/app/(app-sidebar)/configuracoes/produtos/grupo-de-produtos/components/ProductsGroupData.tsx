@@ -92,9 +92,7 @@ export function ProductsGroupData({ searchParams, tabs }: Props) {
                         <div className="flex justify-end gap-1">
                           <TooltipProvider>
                             <PermissionGate
-                              permissions={[
-                                'product_settings:materials_products:edit',
-                              ]}
+                              permissions={['product_settings:products:edit']}
                             >
                               <NewProductGroupTriggerButton
                                 editMode

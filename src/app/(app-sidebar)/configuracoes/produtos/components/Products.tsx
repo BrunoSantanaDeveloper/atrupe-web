@@ -72,7 +72,7 @@ export function Products({ searchParams }: SearchParamsType) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
   return (
-    <PermissionGate permissions={['product_settings:materials_products:view']}>
+    <PermissionGate permissions={['product_settings:products:view']}>
       <div className="space-y-5">
         <Topbar
           title="Produtos"
@@ -89,7 +89,7 @@ export function Products({ searchParams }: SearchParamsType) {
                 link="/configuracoes/produtos/grupo-de-produtos"
               />
               <PermissionGate
-                permissions={['product_settings:materials_products:create']}
+                permissions={['product_settings:products:create']}
               >
                 <ImportProductTriggerButton
                   onOpenChange={() => {

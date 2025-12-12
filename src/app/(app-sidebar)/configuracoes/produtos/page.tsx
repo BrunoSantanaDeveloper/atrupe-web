@@ -14,7 +14,7 @@ export function metadata() {
 export default function ProductsPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['product_settings:materials_products:view']}
+      permissions={['product_settings:products:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as configurações de produtos.

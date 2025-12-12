@@ -291,10 +291,10 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
   return (
     <PermissionGate
       permissions={[
-        'product_settings:materials_products:view',
+        'product_settings:products:view',
         editMode
-          ? 'product_settings:materials_products:edit'
-          : 'product_settings:materials_products:create',
+          ? 'product_settings:products:edit'
+          : 'product_settings:products:create',
       ]}
       requireAll={true}
     >

@@ -1,31 +1,5 @@
 export const permissionsData = [
   {
-    section: 'Cadastros',
-    key: 'register',
-    items: [
-      {
-        name: 'Cadastro de clientes',
-        key: 'client',
-      },
-      {
-        name: 'Categorias de clientes',
-        key: 'client_categories',
-      },
-      {
-        name: 'Cadastro de fornecedores',
-        key: 'supplier',
-      },
-      {
-        name: 'Categorias de fornecedores',
-        key: 'supplier_categories',
-      },
-      {
-        name: 'Limite de crédito dos clientes',
-        key: 'credit_limit',
-      },
-    ],
-  },
-  {
     section: 'Vendas',
     key: 'sale',
     items: [
@@ -44,16 +18,6 @@ export const permissionsData = [
     ],
   },
   {
-    section: 'Produção',
-    key: 'production',
-    items: [
-      {
-        name: 'Agenda de entrega',
-        key: 'delivery_schedule',
-      },
-    ],
-  },
-  {
     section: 'Financeiro',
     key: 'financial',
     items: [
@@ -61,14 +25,14 @@ export const permissionsData = [
         name: 'Fluxo financeiro',
         key: 'flow',
       },
-      {
-        name: 'Fluxo fin. - Lançamento de despesas',
-        key: 'flow_payable',
-      },
-      {
-        name: 'Fluxo fin. - Lançamento de receitas',
-        key: 'flow_receivable',
-      },
+      // {
+      //   name: 'Fluxo fin. - Lançamento de despesas',
+      //   key: 'flow_payable',
+      // },
+      // {
+      //   name: 'Fluxo fin. - Lançamento de receitas',
+      //   key: 'flow_receivable',
+      // },
       {
         name: 'Movimentações a pagar',
         key: 'payable',
@@ -96,24 +60,70 @@ export const permissionsData = [
     ],
   },
   {
-    section: 'Configurações de vendas',
-    key: 'sales_settings',
+    section: 'Cadastros',
+    key: 'register',
     items: [
       {
-        name: 'Série de vendas',
-        key: 'series',
+        name: 'Cadastro de clientes',
+        key: 'client',
       },
       {
-        name: 'Perfil de vendedor',
-        key: 'seller_profile',
+        name: 'Grupos de clientes',
+        key: 'client_categories',
       },
       {
-        name: 'Motivos de rejeições e cancelamentos',
-        key: 'rejection_reasons',
+        name: 'Cadastro de fornecedores',
+        key: 'supplier',
       },
       {
-        name: 'Status de orçamento',
-        key: 'quotation_status',
+        name: 'Grupos de fornecedores',
+        key: 'supplier_categories',
+      },
+      // {
+      //   name: 'Limite de crédito dos clientes',
+      //   key: 'credit_limit',
+      // },
+    ],
+  },
+  {
+    section: 'Produção',
+    key: 'production',
+    items: [
+      {
+        name: 'Agenda de entrega',
+        key: 'delivery_schedule',
+      },
+    ],
+  },
+  {
+    section: 'Empresa e sistema',
+    key: 'company_settings',
+    items: [
+      {
+        name: 'Configuração da empresa',
+        key: 'company_config',
+      },
+      {
+        name: 'Padrões de medidas',
+        key: 'measurement_standards',
+      },
+      {
+        name: 'Colaboradores e usuários',
+        key: 'users',
+      },
+      {
+        name: 'Cargos',
+        key: 'roles',
+      },
+    ],
+  },
+  {
+    section: 'Configurações de produtos',
+    key: 'product_settings',
+    items: [
+      {
+        name: 'Produtos',
+        key: 'products',
       },
     ],
   },
@@ -144,59 +154,49 @@ export const permissionsData = [
     ],
   },
   {
-    section: 'Configurações de produtos',
-    key: 'product_settings',
+    section: 'Configurações de vendas',
+    key: 'sales_settings',
     items: [
       {
-        name: 'Materiais e produtos',
-        key: 'materials_products',
+        name: 'Série de vendas',
+        key: 'series',
+      },
+      {
+        name: 'Perfil de vendedor',
+        key: 'seller_profile',
+      },
+      {
+        name: 'Motivos de rejeições e cancelamentos',
+        key: 'rejection_reasons',
+      },
+      {
+        name: 'Status de orçamento',
+        key: 'quotation_status',
       },
     ],
   },
-  {
-    section: 'Nota Fiscal',
-    key: 'invoice',
-    items: [
-      {
-        name: 'NFS-e',
-        key: 'nfse',
-      },
-    ],
-  },
-  {
-    section: 'Relatórios',
-    key: 'reports',
-    items: [
-      {
-        name: 'Dashboard de vendas',
-        key: 'sales_dashboard',
-      },
-      {
-        name: 'Dashboard de resultados',
-        key: 'results_dashboard',
-      },
-    ],
-  },
-  {
-    section: 'Empresa e sistema',
-    key: 'company_settings',
-    items: [
-      {
-        name: 'Configuração da empresa',
-        key: 'company_config',
-      },
-      {
-        name: 'Padrões de medidas',
-        key: 'measurement_standards',
-      },
-      {
-        name: 'Colaboradores e usuários',
-        key: 'users',
-      },
-      {
-        name: 'Cargos',
-        key: 'roles',
-      },
-    ],
-  },
+  // {
+  //   section: 'Nota Fiscal',
+  //   key: 'invoice',
+  //   items: [
+  //     {
+  //       name: 'NFS-e',
+  //       key: 'nfse',
+  //     },
+  //   ],
+  // },
+  // {
+  //   section: 'Relatórios',
+  //   key: 'reports',
+  //   items: [
+  //     {
+  //       name: 'Dashboard de vendas',
+  //       key: 'sales_dashboard',
+  //     },
+  //     {
+  //       name: 'Dashboard de resultados',
+  //       key: 'results_dashboard',
+  //     },
+  //   ],
+  // },
 ]

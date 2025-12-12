@@ -71,7 +71,7 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
   return (
-    <PermissionGate permissions={['product_settings:materials_products:view']}>
+    <PermissionGate permissions={['product_settings:products:view']}>
       <div className="space-y-5">
         <Topbar
           title="Grupos de produtos"
@@ -80,9 +80,7 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
           paramName="status"
           previousPage="/configuracoes/produtos"
           primaryCta={
-            <PermissionGate
-              permissions={['product_settings:materials_products:create']}
-            >
+            <PermissionGate permissions={['product_settings:products:create']}>
               <NewProductGroupTriggerButton
                 onOpenChange={() => {
                   setOpenDialog('new-group')
