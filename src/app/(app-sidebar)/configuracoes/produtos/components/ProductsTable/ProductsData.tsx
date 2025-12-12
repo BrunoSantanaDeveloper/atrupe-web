@@ -21,7 +21,12 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
 
 // Icons
@@ -103,9 +108,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
-                        <PermissionGate
-                          permissions={['invoice:nfse:view']}
-                        >
+                        <PermissionGate permissions={['invoice:nfse:view']}>
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button

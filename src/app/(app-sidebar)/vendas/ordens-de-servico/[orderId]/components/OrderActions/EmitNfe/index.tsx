@@ -119,9 +119,7 @@ export function EmitNfe({ data }: Props) {
         )
         queryClient.invalidateQueries({ queryKey: ['order', data.id] })
       } else {
-        toast.warning(
-          `NF-e processada com status: ${result.data.status}`,
-        )
+        toast.warning(`NF-e processada com status: ${result.data.status}`)
       }
     } catch (error) {
       const message =
@@ -137,7 +135,10 @@ export function EmitNfe({ data }: Props) {
   }
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { variant: any; label: string }> = {
+    const statusConfig: Record<
+      string,
+      { variant: 'success' | 'warning' | 'error' | 'neutral'; label: string }
+    > = {
       AUTORIZADA: { variant: 'success', label: 'Autorizada' },
       PROCESSANDO: { variant: 'warning', label: 'Processando' },
       REJEITADA: { variant: 'error', label: 'Rejeitada' },
@@ -162,7 +163,7 @@ export function EmitNfe({ data }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="primaryOutline" Icon={IconFileInvoice} />
+                <FeaturedIcon variant="outline" Icon={IconFileInvoice} />
                 <div>
                   <span>Emitir Nota Fiscal</span>
                   <p className="text-sm font-normal text-gray-500">
@@ -264,14 +265,12 @@ export function EmitNfe({ data }: Props) {
                   </div>
 
                   <FormInput
-                    control={form.control}
                     name="operationNature"
                     label="Natureza da Operação"
                     placeholder="Venda de mercadoria"
                   />
 
                   <FormTextarea
-                    control={form.control}
                     name="additionalInfo"
                     label="Informações Complementares"
                     placeholder="Informações adicionais que aparecerão na nota fiscal"

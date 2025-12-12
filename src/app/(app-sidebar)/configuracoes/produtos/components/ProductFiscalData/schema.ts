@@ -57,25 +57,65 @@ export const defaultFiscalDataValues: ProductFiscalDataFormType = {
 
 // ICMS Origin options
 export const icmsOriginOptions = [
-  { value: '0', label: '0 - Nacional - Exceto as indicadas nos códigos 3, 4, 5 e 8' },
+  {
+    value: '0',
+    label: '0 - Nacional - Exceto as indicadas nos códigos 3, 4, 5 e 8',
+  },
   { value: '1', label: '1 - Estrangeira - Importação direta' },
   { value: '2', label: '2 - Estrangeira - Adquirida no mercado interno' },
-  { value: '3', label: '3 - Nacional - Com conteúdo de importação superior a 40% e inferior ou igual a 70%' },
-  { value: '4', label: '4 - Nacional - Cuja produção tenha sido feita em conformidade' },
-  { value: '5', label: '5 - Nacional - Com conteúdo de importação inferior ou igual a 40%' },
-  { value: '6', label: '6 - Estrangeira - Importação direta sem similar nacional na lista da CAMEX' },
-  { value: '7', label: '7 - Estrangeira - Adquirido interno sem similar nacional na lista da CAMEX' },
-  { value: '8', label: '8 - Nacional - Mercadoria ou bem com conteúdo de importação superior a 70%' },
+  {
+    value: '3',
+    label:
+      '3 - Nacional - Com conteúdo de importação superior a 40% e inferior ou igual a 70%',
+  },
+  {
+    value: '4',
+    label: '4 - Nacional - Cuja produção tenha sido feita em conformidade',
+  },
+  {
+    value: '5',
+    label: '5 - Nacional - Com conteúdo de importação inferior ou igual a 40%',
+  },
+  {
+    value: '6',
+    label:
+      '6 - Estrangeira - Importação direta sem similar nacional na lista da CAMEX',
+  },
+  {
+    value: '7',
+    label:
+      '7 - Estrangeira - Adquirido interno sem similar nacional na lista da CAMEX',
+  },
+  {
+    value: '8',
+    label:
+      '8 - Nacional - Mercadoria ou bem com conteúdo de importação superior a 70%',
+  },
 ]
 
 // ICMS CST options (Simples Nacional)
 export const icmsCstOptions = [
-  { value: '101', label: '101 - Tributada pelo Simples Nacional com permissão de crédito (v.2.0)' },
-  { value: '102', label: '102 - Tributada pelo Simples Nacional sem permissão de crédito' },
-  { value: '103', label: '103 - Isenção do ICMS no Simples Nacional para a faixa de receita bruta' },
+  {
+    value: '101',
+    label:
+      '101 - Tributada pelo Simples Nacional com permissão de crédito (v.2.0)',
+  },
+  {
+    value: '102',
+    label: '102 - Tributada pelo Simples Nacional sem permissão de crédito',
+  },
+  {
+    value: '103',
+    label:
+      '103 - Isenção do ICMS no Simples Nacional para a faixa de receita bruta',
+  },
   { value: '300', label: '300 - Imune' },
   { value: '400', label: '400 - Não tributada pelo Simples Nacional (v.2.0)' },
-  { value: '500', label: '500 - ICMS cobrado anteriormente por substituição tributária (substituído) ou por antecipação' },
+  {
+    value: '500',
+    label:
+      '500 - ICMS cobrado anteriormente por substituição tributária (substituído) ou por antecipação',
+  },
 ]
 
 // ICMS Base Modality options
@@ -88,7 +128,10 @@ export const icmsBaseModalityOptions = [
 
 // PIS/COFINS CST options
 export const pisCstOptions = [
-  { value: '04', label: '04 - Operação tributável (Tributação monofásica (Alíquota zero))' },
+  {
+    value: '04',
+    label: '04 - Operação tributável (Tributação monofásica (Alíquota zero))',
+  },
   { value: '06', label: '06 - Operação tributável (Alíquota zero)' },
   { value: '07', label: '07 - Operação isenta da contribuição' },
   { value: '08', label: '08 - Operação sem incidência da contribuição' },

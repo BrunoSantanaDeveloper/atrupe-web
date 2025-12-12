@@ -43,7 +43,7 @@ import {
 } from './schema'
 
 // Actions
-import { createItemNew, updateItemNew, getItemById } from '@/actions/_cruds'
+import { createItemNew, updateItemNew, getDataOld } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -57,11 +57,10 @@ interface Props {
 
 async function fetchFiscalData(productId: string) {
   try {
-    const response = await getItemById({
-      route: '/fiscal/product',
-      id: productId,
+    const response = await getDataOld({
+      route: `/fiscal/product/${productId}`,
     })
-    return response
+    return response?.data || null
   } catch (error) {
     return null
   }
@@ -120,13 +119,12 @@ export function ProductFiscalDataDialog({
       const action = fiscalData ? updateItemNew : createItemNew
 
       const result = await action({
-        route: '/fiscal/product',
-        params: { ...data, productId },
-        ...(fiscalData && { id: fiscalData.id }),
+        route: `/fiscal/product/${productId}`,
+        data: { ...data, productId },
       })
 
-      if (result.error) {
-        toast.error(result.error.message || 'Erro ao salvar dados fiscais')
+      if (!result.success) {
+        toast.error(result.message || 'Erro ao salvar dados fiscais')
         return
       }
 
@@ -184,13 +182,11 @@ export function ProductFiscalDataDialog({
                       />
                     </div>
                     <FormInput
-                      control={form.control}
                       name="productCode"
                       label="Código"
                       placeholder="Digite aqui"
                     />
                     <FormSelect
-                      control={form.control}
                       name="commercialUnit"
                       label="Unidade comercial"
                       options={commercialUnitOptions}
@@ -198,14 +194,12 @@ export function ProductFiscalDataDialog({
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormInput
-                      control={form.control}
                       name="ncm"
                       label="NCM"
                       placeholder="00000000"
                       maxLength={8}
                     />
                     <FormInput
-                      control={form.control}
                       name="cean"
                       label="CEAN"
                       placeholder="Digite aqui"
@@ -218,13 +212,11 @@ export function ProductFiscalDataDialog({
                   <h4 className="font-semibold text-gray-700">ICMS</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormSelect
-                      control={form.control}
                       name="icmsOrigin"
                       label="Origem da mercadoria"
                       options={icmsOriginOptions}
                     />
                     <FormSelect
-                      control={form.control}
                       name="icmsCst"
                       label="CST ICMS"
                       options={icmsCstOptions}
@@ -232,23 +224,18 @@ export function ProductFiscalDataDialog({
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormInput
-                      control={form.control}
                       name="icmsRate"
                       label="Alíquota ICMS"
                       type="number"
                       placeholder="00.00"
-                      suffix="%"
                     />
                     <FormInput
-                      control={form.control}
                       name="icmsCreditRate"
                       label="Alíquota Crédito ICMS"
                       type="number"
                       placeholder="00.00"
-                      suffix="%"
                     />
                     <FormSelect
-                      control={form.control}
                       name="icmsBaseModality"
                       label="Origem da mercadoria"
                       options={icmsBaseModalityOptions}
@@ -261,34 +248,28 @@ export function ProductFiscalDataDialog({
                   <h4 className="font-semibold text-gray-700">PIS COFINS</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormSelect
-                      control={form.control}
                       name="pisCst"
                       label="CST PIS"
                       options={pisCstOptions}
                     />
                     <FormInput
-                      control={form.control}
                       name="pisRate"
                       label="Alíquota PIS"
                       type="number"
                       placeholder="00.00"
-                      suffix="%"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormSelect
-                      control={form.control}
                       name="cofinsCst"
                       label="CST COFINS"
                       options={pisCstOptions}
                     />
                     <FormInput
-                      control={form.control}
                       name="cofinsRate"
                       label="Alíquota COFINS"
                       type="number"
                       placeholder="00.00"
-                      suffix="%"
                     />
                   </div>
                 </div>
@@ -298,25 +279,21 @@ export function ProductFiscalDataDialog({
                   <h4 className="font-semibold text-gray-700">IPI</h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <FormInput
-                      control={form.control}
                       name="ipiFramework"
                       label="Enquadramento"
                       placeholder="0"
                     />
                     <FormSelect
-                      control={form.control}
                       name="ipiCst"
                       label="CST IPI"
                       options={ipiCstOptions}
                       placeholder="Selecione"
                     />
                     <FormInput
-                      control={form.control}
                       name="ipiRate"
                       label="Alíquota IPI"
                       type="number"
                       placeholder="00.00"
-                      suffix="%"
                     />
                   </div>
                 </div>

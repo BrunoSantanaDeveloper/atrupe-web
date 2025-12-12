@@ -23,7 +23,7 @@ import { useForm } from 'react-hook-form'
 import { invoicyConfigSchema, type InvoicyConfigFormType } from './schema'
 
 // Actions
-import { createItemNew, updateItemNew, getItemById } from '@/actions/_cruds'
+import { createItemNew, updateItemNew, getDataOld } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -35,11 +35,10 @@ const environmentOptions = [
 
 async function fetchInvoicyConfig() {
   try {
-    const response = await getItemById({
+    const response = await getDataOld({
       route: '/fiscal/config',
-      id: 'current', // Backend will resolve to current company
     })
-    return response
+    return response?.data || null
   } catch (error) {
     return null
   }
@@ -91,12 +90,11 @@ export function InvoicyConfigForm() {
 
       const result = await action({
         route: '/fiscal/config',
-        params: data,
-        ...(configData && { id: configData.id }),
+        data,
       })
 
-      if (result.error) {
-        toast.error(result.error.message || 'Erro ao salvar configuração')
+      if (!result.success) {
+        toast.error(result.message || 'Erro ao salvar configuração')
         return
       }
 
@@ -125,7 +123,7 @@ export function InvoicyConfigForm() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <FeaturedIcon variant="primaryOutline" Icon={IconSettings} />
+        <FeaturedIcon variant="outline" Icon={IconSettings} />
         <div>
           <h2 className="text-lg font-semibold">Configuração do Invoicy</h2>
           <p className="text-sm text-gray-500">
@@ -143,28 +141,22 @@ export function InvoicyConfigForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
-                control={form.control}
                 name="partnerKey"
                 label="Partner Key"
                 placeholder="Digite o Partner Key"
-                required
               />
               <FormInput
-                control={form.control}
                 name="accessKey"
                 label="Access Key"
                 type="password"
                 placeholder="Digite a Access Key"
-                required
               />
             </div>
 
             <FormSelect
-              control={form.control}
               name="environment"
               label="Ambiente"
               options={environmentOptions}
-              required
             />
           </div>
 
@@ -173,14 +165,8 @@ export function InvoicyConfigForm() {
             <h3 className="font-semibold text-base">Configuração de NF-e</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormInput name="nfeSeries" label="Série NF-e" placeholder="1" />
               <FormInput
-                control={form.control}
-                name="nfeSeries"
-                label="Série NF-e"
-                placeholder="1"
-              />
-              <FormInput
-                control={form.control}
                 name="nfeNextNumber"
                 label="Próximo Número NF-e"
                 type="number"
@@ -191,17 +177,17 @@ export function InvoicyConfigForm() {
 
           {/* NFC-e Configuration (Optional) */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Configuração de NFC-e (Opcional)</h3>
+            <h3 className="font-semibold text-base">
+              Configuração de NFC-e (Opcional)
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
-                control={form.control}
                 name="nfceSeries"
                 label="Série NFC-e"
                 placeholder="1"
               />
               <FormInput
-                control={form.control}
                 name="nfceNextNumber"
                 label="Próximo Número NFC-e"
                 type="number"
@@ -212,17 +198,17 @@ export function InvoicyConfigForm() {
 
           {/* NFS-e Configuration (Optional) */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Configuração de NFS-e (Opcional)</h3>
+            <h3 className="font-semibold text-base">
+              Configuração de NFS-e (Opcional)
+            </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
-                control={form.control}
                 name="nfseSeries"
                 label="Série NFS-e"
                 placeholder="1"
               />
               <FormInput
-                control={form.control}
                 name="nfseNextNumber"
                 label="Próximo Número NFS-e"
                 type="number"
@@ -237,13 +223,11 @@ export function InvoicyConfigForm() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
-                control={form.control}
                 name="defaultCfop"
                 label="CFOP Padrão"
                 placeholder="5102"
               />
               <FormInput
-                control={form.control}
                 name="defaultOperationNature"
                 label="Natureza da Operação Padrão"
                 placeholder="Venda de mercadoria"
@@ -251,7 +235,6 @@ export function InvoicyConfigForm() {
             </div>
 
             <FormTextarea
-              control={form.control}
               name="taxInfoText"
               label="Informações Fiscais Complementares"
               placeholder="Texto que será incluído nas notas fiscais"
