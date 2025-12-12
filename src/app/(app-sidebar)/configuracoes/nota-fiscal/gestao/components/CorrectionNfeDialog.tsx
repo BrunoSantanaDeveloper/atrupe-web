@@ -30,7 +30,9 @@ import { z } from 'zod'
 import { createItemNew } from '@/actions/_cruds'
 
 const correctionSchema = z.object({
-  correction: z.string().min(15, 'A correção deve ter pelo menos 15 caracteres'),
+  correction: z
+    .string()
+    .min(15, 'A correção deve ter pelo menos 15 caracteres'),
 })
 
 type CorrectionFormType = z.infer<typeof correctionSchema>
@@ -101,7 +103,7 @@ export function CorrectionNfeDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="primaryOutline" Icon={IconPencil} />
+              <FeaturedIcon variant="outline" Icon={IconPencil} />
               <div>
                 <span>Carta de Correção</span>
                 <p className="text-sm font-normal text-gray-500">
@@ -130,7 +132,6 @@ export function CorrectionNfeDialog({
               noValidate
             >
               <FormTextarea
-                control={form.control}
                 name="correction"
                 label="Texto da Correção"
                 placeholder="Descreva a correção a ser feita (mínimo 15 caracteres)"

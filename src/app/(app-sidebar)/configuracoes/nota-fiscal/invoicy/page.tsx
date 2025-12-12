@@ -13,7 +13,10 @@ export default function InvoicyConfigPage() {
   return (
     <PermissionGate permissions={['invoice:nfse:view']}>
       <div>
-        <Topbar title="Configuração do Invoicy" backUrl="/configuracoes/nota-fiscal" />
+        <Topbar
+          title="Configuração do Invoicy"
+          previousPage="/configuracoes/nota-fiscal"
+        />
         <div className="p-6">
           <InvoicyConfigForm />
         </div>

@@ -48,8 +48,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Actions
 import { getDataOld } from '@/actions/_cruds'
 
-// Utils
-import { formatDate } from '@/lib/utils'
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('pt-BR')
+}
 
 interface NfeItem {
   id: string
@@ -84,14 +85,14 @@ const statusConfig: Record<
 }
 
 async function fetchNfeList(status?: string) {
-  const params: Record<string, string> = {}
+  const filters: Record<string, string> = {}
   if (status && status !== 'ALL') {
-    params.status = status
+    filters.status = status
   }
 
   const response = await getDataOld({
     route: '/fiscal/nfe',
-    params,
+    filters,
   })
 
   return response?.data || []

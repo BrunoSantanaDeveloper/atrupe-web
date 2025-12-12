@@ -125,7 +125,6 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
               noValidate
             >
               <FormTextarea
-                control={form.control}
                 name="reason"
                 label="Justificativa do Cancelamento"
                 placeholder="Informe o motivo do cancelamento (mínimo 15 caracteres)"
