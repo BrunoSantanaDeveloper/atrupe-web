@@ -6,6 +6,7 @@ import { useState } from 'react'
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
+import { ProductFiscalDataDialog } from '../ProductFiscalData'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -19,8 +20,12 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
+
+// Icons
+import { IconReceipt } from '@tabler/icons-react'
 
 // Types
 import type { ProductListType } from '@/types/settings/products'
@@ -45,6 +50,7 @@ interface Props extends SearchParamsType {
 export function ProductsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
+  const [selectedProductName, setSelectedProductName] = useState<string>('')
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -98,6 +104,27 @@ export function ProductsData({ searchParams, tabs }: Props) {
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
                         <PermissionGate
+                          permissions={['invoice:nfse:view']}
+                        >
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="neutralGhost"
+                                size="icon"
+                                onClick={() => {
+                                  setOpenDialog('fiscal-data')
+                                  setSelectedProductId(product?.id)
+                                  setSelectedProductName(product?.name)
+                                }}
+                              >
+                                <IconReceipt className="size-5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>Dados Fiscais</TooltipContent>
+                          </Tooltip>
+                        </PermissionGate>
+                        <PermissionGate
                           permissions={[
                             'product_settings:materials_products:edit',
                           ]}
@@ -141,6 +168,18 @@ export function ProductsData({ searchParams, tabs }: Props) {
           if (!open) {
             setOpenDialog('')
             setSelectedProductId('')
+          }
+        }}
+      />
+      <ProductFiscalDataDialog
+        open={openDialog === 'fiscal-data'}
+        productId={selectedProductId}
+        productName={selectedProductName}
+        onOpenChange={(open) => {
+          if (!open) {
+            setOpenDialog('')
+            setSelectedProductId('')
+            setSelectedProductName('')
           }
         }}
       />

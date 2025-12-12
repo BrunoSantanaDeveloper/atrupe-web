@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import { pdf } from '@react-pdf/renderer'
 import { CancelOrder } from './CancelOrder'
+import { EmitNfe } from './EmitNfe'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
@@ -98,6 +99,9 @@ export function OrderActions({ data }: Props) {
                 setType('order')
               }}
             />
+          </PermissionGate>
+          <PermissionGate permissions={['invoice:nfse:view']}>
+            <EmitNfe data={data} />
           </PermissionGate>
         </div>
         <div className="flex flex-wrap gap-4">
