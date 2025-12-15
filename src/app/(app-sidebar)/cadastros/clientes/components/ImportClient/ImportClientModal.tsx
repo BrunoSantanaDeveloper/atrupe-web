@@ -26,6 +26,7 @@ import {
   IconArrowRight,
   IconCloudUpload,
   IconAlertCircle,
+  IconExternalLink,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
@@ -42,6 +43,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+// Mapeamento de erros para URLs de correção
+const getErrorFixUrl = (field: string, error: string): string | null => {
+  const errorLower = error.toLowerCase()
+
+  if (errorLower.includes('cpf') && errorLower.includes('já existe')) {
+    return '/cadastros/clientes'
+  }
+  if (errorLower.includes('cnpj') && errorLower.includes('já existe')) {
+    return '/cadastros/clientes'
+  }
+
+  return null
+}
 
 interface ImportClientModalProps {
   open: boolean
@@ -359,25 +374,41 @@ COMPANY,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
                     <TableHead>Coluna</TableHead>
                     <TableHead>Valor</TableHead>
                     <TableHead>Motivo</TableHead>
+                    <TableHead className="w-24">Corrigir</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {errors.map((error, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{error.row}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-medium">
-                          {error.field}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-nowrap">
-                        {error.value || (
-                          <span className="text-gray-400">vazio</span>
-                        )}
-                      </TableCell>
-                      <TableCell>{error.error}</TableCell>
-                    </TableRow>
-                  ))}
+                  {errors.map((error, index) => {
+                    const fixUrl = getErrorFixUrl(error.field, error.error)
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{error.row}</TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-medium">
+                            {error.field}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-nowrap">
+                          {error.value || (
+                            <span className="text-gray-400">vazio</span>
+                          )}
+                        </TableCell>
+                        <TableCell>{error.error}</TableCell>
+                        <TableCell>
+                          {fixUrl && (
+                            <Button
+                              variant="neutralGhost"
+                              size="sm"
+                              onClick={() => window.open(fixUrl, '_blank')}
+                            >
+                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              Abrir
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>

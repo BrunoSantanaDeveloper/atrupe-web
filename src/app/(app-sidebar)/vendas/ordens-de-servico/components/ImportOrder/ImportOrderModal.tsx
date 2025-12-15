@@ -26,6 +26,7 @@ import {
   IconArrowRight,
   IconCloudUpload,
   IconAlertCircle,
+  IconExternalLink,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
@@ -42,6 +43,57 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+
+// Mapeamento de erros para URLs de correção
+const getErrorFixUrl = (field: string, error: string): string | null => {
+  const errorLower = error.toLowerCase()
+
+  if (
+    errorLower.includes('cliente') ||
+    field.toLowerCase().includes('cliente')
+  ) {
+    return '/cadastros/clientes'
+  }
+  if (
+    errorLower.includes('produto') ||
+    field.toLowerCase().includes('produto')
+  ) {
+    return '/configuracoes/produtos'
+  }
+  if (
+    errorLower.includes('vendedor') ||
+    field.toLowerCase().includes('vendedor')
+  ) {
+    return '/configuracoes/vendas/perfil-de-vendedor'
+  }
+  if (errorLower.includes('série') || field.toLowerCase().includes('serie')) {
+    return '/configuracoes/vendas/series-de-venda'
+  }
+  if (
+    errorLower.includes('categoria') ||
+    field.toLowerCase().includes('categoria')
+  ) {
+    return '/configuracoes/produtos/grupo-de-produtos'
+  }
+  if (errorLower.includes('setor') || field.toLowerCase().includes('setor')) {
+    return '/configuracoes/empresa-e-sistema/setores'
+  }
+  if (
+    errorLower.includes('condição de pagamento') ||
+    field.toLowerCase().includes('pagamento')
+  ) {
+    return '/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento'
+  }
+  if (
+    errorLower.includes('fornecedor') ||
+    errorLower.includes('transportador') ||
+    errorLower.includes('comissionado')
+  ) {
+    return '/cadastros/fornecedores'
+  }
+
+  return null
+}
 
 interface ImportOrderModalProps {
   open: boolean
@@ -381,25 +433,41 @@ export function ImportOrderModal({
                     <TableHead>Coluna</TableHead>
                     <TableHead>Valor</TableHead>
                     <TableHead>Motivo</TableHead>
+                    <TableHead className="w-24">Corrigir</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {errors.map((error, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{error.row}</TableCell>
-                      <TableCell>
-                        <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-medium">
-                          {error.field}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-nowrap">
-                        {error.value || (
-                          <span className="text-gray-400">vazio</span>
-                        )}
-                      </TableCell>
-                      <TableCell>{error.error}</TableCell>
-                    </TableRow>
-                  ))}
+                  {errors.map((error, index) => {
+                    const fixUrl = getErrorFixUrl(error.field, error.error)
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{error.row}</TableCell>
+                        <TableCell>
+                          <span className="inline-flex items-center px-2 py-1 rounded-md bg-red-50 text-red-700 text-xs font-medium">
+                            {error.field}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-nowrap">
+                          {error.value || (
+                            <span className="text-gray-400">vazio</span>
+                          )}
+                        </TableCell>
+                        <TableCell>{error.error}</TableCell>
+                        <TableCell>
+                          {fixUrl && (
+                            <Button
+                              variant="neutralGhost"
+                              size="sm"
+                              onClick={() => window.open(fixUrl, '_blank')}
+                            >
+                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              Abrir
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
                 </TableBody>
               </Table>
             </div>
