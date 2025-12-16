@@ -12,6 +12,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { CancelOrderButton } from './CancelOrderButton'
+import { EmitNfeButton } from './EmitNfeButton'
 import { OrderHistoryDialog } from '../OrderHistory/OrderHistoryDialog'
 
 // UI
@@ -245,6 +246,16 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>
+                                    {order?.status !== 'CANCELED' && (
+                                      <PermissionGate
+                                        permissions={['sale:order:view']}
+                                      >
+                                        <EmitNfeButton
+                                          orderId={order?.id}
+                                          orderStatus={order?.status}
+                                        />
+                                      </PermissionGate>
+                                    )}
                                     <PermissionGate
                                       permissions={['sale:order:view']}
                                     >
