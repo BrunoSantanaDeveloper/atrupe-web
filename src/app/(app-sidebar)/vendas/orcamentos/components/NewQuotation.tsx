@@ -303,7 +303,6 @@ export function NewQuotationModal({
               className="gap-2"
               form="new-quotation"
               isLoading={form.formState.isSubmitting}
-              disabled={!form.formState.isDirty}
               RightIcon={IconArrowRight}
             >
               {!editMode ? 'Criar orçamento' : 'Salvar edição'}

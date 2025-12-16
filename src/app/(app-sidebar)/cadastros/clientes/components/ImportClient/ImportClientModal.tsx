@@ -114,9 +114,9 @@ export function ImportClientModal({
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo
-    const csvContent = `type,name,email,phone,mobile,cpf,cnpj,rg,activity,corporateName,notes,cep,rua,numero,complemento,bairro,cidade,uf
-PERSON,João Silva,joao@example.com,(11) 3333-4444,(11) 99999-8888,123.456.789-00,,12.345.678-9,,,Cliente exemplo,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP
-COMPANY,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,12.345.678/0001-90,,Comércio,Empresa ABC Comércio Ltda,Distribuidor autorizado,04567-000,Rua dos Empresários,500,,Centro,São Paulo,SP`
+    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,atividade,razaoSocial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf
+PESSOA,João Silva,joao@example.com,(11) 3333-4444,(11) 99999-8888,123.456.789-00,,12.345.678-9,,,Cliente exemplo,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP
+EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,12.345.678/0001-90,,Comércio,Empresa ABC Comércio Ltda,Distribuidor autorizado,04567-000,Rua dos Empresários,500,,Centro,São Paulo,SP`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')

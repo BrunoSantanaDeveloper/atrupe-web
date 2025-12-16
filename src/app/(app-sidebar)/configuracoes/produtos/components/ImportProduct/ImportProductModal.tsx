@@ -120,10 +120,10 @@ export function ImportProductModal({
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo baseado no schema do backend
-    const csvContent = `codigo,nome,descricao,categoria,setor,servico1,servico1Descricao,servico1UnidadeMedida,servico1Largura,servico1Altura,servico1Qtd,servico1Custo,servico1Preco
-PROD-001,Porta de Madeira,Porta em madeira maciça,Portas,MARCENARIA,Fabricação,Fabricação de porta em madeira,M2,0.80,2.10,1,150.00,350.00
-PROD-002,Janela de Alumínio,Janela com vidro temperado,Esquadrias,SERRALHERIA,Instalação,Instalação de janela de alumínio,M2,1.20,1.50,1,200.00,450.00
-PROD-003,Portão Automático,Portão de ferro com motor,Portões,SERRALHERIA,Montagem,Montagem completa de portão automático,UN,3.00,2.50,1,800.00,1800.00`
+    const csvContent = `codigo,nome,descricao,categoria,setor,servico,servicoDescricao,unidadeMedida,largura,altura,quantidade,custo,preco
+PROD-001,Cartão de Visita,Cartão de visita 4x4 cores em papel couché 300g,Impressos Comerciais,IMPRESSAO,Impressão Offset,Impressão offset 4x4 cores em papel couché,UN,0.09,0.05,1,45.00,120.00
+PROD-002,Banner Lona,Banner em lona 440g com acabamento em bastão e corda,Comunicação Visual,IMPRESSAO,Impressão Digital,Impressão digital em lona de alta resolução,M2,1.00,1.50,1,35.00,85.00
+PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impressos Comerciais,IMPRESSAO,Arte e Impressão,Criação de arte e impressão offset,UN,0.15,0.21,1,80.00,180.00`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
