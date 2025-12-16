@@ -43,7 +43,7 @@ import {
 } from './schema'
 
 // Actions
-import { createItemNew, updateItemNew, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getDataOld } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -116,10 +116,8 @@ export function ProductFiscalDataDialog({
 
   async function onSubmit(data: ProductFiscalDataFormType) {
     try {
-      const action = fiscalData ? updateItemNew : createItemNew
-
-      const result = await action({
-        route: `/fiscal/product/${productId}`,
+      const result = await createItemNew({
+        route: `/fiscal/product/upsert`,
         data: { ...data, productId },
       })
 
