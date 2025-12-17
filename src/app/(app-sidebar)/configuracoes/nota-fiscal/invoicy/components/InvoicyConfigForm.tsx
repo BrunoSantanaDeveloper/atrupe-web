@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -15,7 +15,11 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Icons
-import { IconDeviceFloppy, IconSettings } from '@tabler/icons-react'
+import {
+  IconDeviceFloppy,
+  IconSettings,
+  IconPlugConnected,
+} from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -23,7 +27,7 @@ import { useForm } from 'react-hook-form'
 import { invoicyConfigSchema, type InvoicyConfigFormType } from './schema'
 
 // Actions
-import { createItemNew, updateItemNew, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getDataOld } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -36,7 +40,7 @@ const environmentOptions = [
 async function fetchInvoicyConfig() {
   try {
     const response = await getDataOld({
-      route: '/fiscal/config',
+      route: '/fiscal/invoicy/config',
     })
     return response?.data || null
   } catch (error) {
@@ -46,11 +50,33 @@ async function fetchInvoicyConfig() {
 
 export function InvoicyConfigForm() {
   const queryClient = useQueryClient()
+  const [isTestingConnection, setIsTestingConnection] = useState(false)
 
   const { data: configData, isLoading } = useQuery({
     queryKey: ['invoicy-config'],
     queryFn: fetchInvoicyConfig,
   })
+
+  async function handleTestConnection() {
+    setIsTestingConnection(true)
+    try {
+      const result = await createItemNew({
+        route: '/fiscal/invoicy/test-connection',
+        data: {},
+      })
+
+      if (result.success) {
+        toast.success('Conexão com Invoicy estabelecida com sucesso!')
+      } else {
+        toast.error(result.message || 'Erro ao testar conexão com Invoicy')
+      }
+    } catch (error) {
+      toast.error('Erro ao testar conexão com Invoicy')
+      console.error(error)
+    } finally {
+      setIsTestingConnection(false)
+    }
+  }
 
   const form = useForm<InvoicyConfigFormType>({
     resolver: zodResolver(invoicyConfigSchema),
@@ -89,10 +115,8 @@ export function InvoicyConfigForm() {
 
   async function onSubmit(data: InvoicyConfigFormType) {
     try {
-      const action = configData ? updateItemNew : createItemNew
-
-      const result = await action({
-        route: '/fiscal/config',
+      const result = await createItemNew({
+        route: '/fiscal/invoicy/config/upsert',
         data,
       })
 
@@ -140,7 +164,22 @@ export function InvoicyConfigForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Credentials Section */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Credenciais de Acesso</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-base">Credenciais de Acesso</h3>
+              {configData && (
+                <Button
+                  type="button"
+                  variant="neutralOutline"
+                  size="sm"
+                  onClick={handleTestConnection}
+                  disabled={isTestingConnection}
+                  isLoading={isTestingConnection}
+                  LeftIcon={IconPlugConnected}
+                >
+                  Testar Conexão
+                </Button>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
