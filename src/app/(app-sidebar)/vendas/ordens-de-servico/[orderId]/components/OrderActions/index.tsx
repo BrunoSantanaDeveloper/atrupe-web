@@ -100,7 +100,7 @@ export function OrderActions({ data }: Props) {
               }}
             />
           </PermissionGate>
-          <PermissionGate permissions={['invoice:nfse:view']}>
+          <PermissionGate permissions={['invoice_settings:nfse:view']}>
             <EmitNfe data={data} />
           </PermissionGate>
         </div>

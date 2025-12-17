@@ -183,10 +183,10 @@ export function NewCompany({
   return (
     <PermissionGate
       permissions={[
-        'company_settings:company_config:view',
+        'company_settings:company:view',
         editMode
-          ? 'company_settings:company_config:edit'
-          : 'company_settings:company_config:create',
+          ? 'company_settings:company:edit'
+          : 'company_settings:company:create',
       ]}
       requireAll={true}
     >

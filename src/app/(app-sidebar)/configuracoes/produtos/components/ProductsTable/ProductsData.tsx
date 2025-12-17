@@ -108,7 +108,9 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
-                        <PermissionGate permissions={['invoice:nfse:view']}>
+                        <PermissionGate
+                          permissions={['invoice_settings:nfse:view']}
+                        >
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button

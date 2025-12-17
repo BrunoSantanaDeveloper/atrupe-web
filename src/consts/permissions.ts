@@ -101,7 +101,7 @@ export const permissionsData = [
     items: [
       {
         name: 'Configuração da empresa',
-        key: 'company_config',
+        key: 'company',
       },
       {
         name: 'Padrões de medidas',
@@ -114,6 +114,10 @@ export const permissionsData = [
       {
         name: 'Cargos',
         key: 'roles',
+      },
+      {
+        name: 'Setores',
+        key: 'sectors',
       },
     ],
   },
@@ -175,16 +179,16 @@ export const permissionsData = [
       },
     ],
   },
-  // {
-  //   section: 'Nota Fiscal',
-  //   key: 'invoice',
-  //   items: [
-  //     {
-  //       name: 'NFS-e',
-  //       key: 'nfse',
-  //     },
-  //   ],
-  // },
+  {
+    section: 'Nota Fiscal',
+    key: 'invoice_settings',
+    items: [
+      {
+        name: 'NFS-e',
+        key: 'nfse',
+      },
+    ],
+  },
   // {
   //   section: 'Relatórios',
   //   key: 'reports',

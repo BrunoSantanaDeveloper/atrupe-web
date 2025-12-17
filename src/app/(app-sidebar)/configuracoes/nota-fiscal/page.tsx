@@ -10,7 +10,7 @@ export function metadata() {
 
 export default function InvoicePage() {
   return (
-    <PermissionGate permissions={['invoice:nfse:view']}>
+    <PermissionGate permissions={['invoice_settings:nfse:view']}>
       <FiscalSettingsClient />
     </PermissionGate>
   )
