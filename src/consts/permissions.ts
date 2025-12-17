@@ -8,12 +8,12 @@ export const permissionsData = [
         key: 'quotation',
       },
       {
-        name: 'Ordens de serviço',
-        key: 'order',
+        name: 'Orçamentos de outros Vendedores',
+        key: 'other_quotation',
       },
       {
-        name: 'Venda rápida',
-        key: 'quick',
+        name: 'Ordens de serviço',
+        key: 'order',
       },
     ],
   },
@@ -25,22 +25,6 @@ export const permissionsData = [
         name: 'Fluxo financeiro',
         key: 'flow',
       },
-      // {
-      //   name: 'Fluxo fin. - Lançamento de despesas',
-      //   key: 'flow_payable',
-      // },
-      // {
-      //   name: 'Fluxo fin. - Lançamento de receitas',
-      //   key: 'flow_receivable',
-      // },
-      {
-        name: 'Movimentações a pagar',
-        key: 'payable',
-      },
-      {
-        name: 'Movimentações a receber',
-        key: 'receivable',
-      },
       {
         name: 'Lançamento de despesas fixas',
         key: 'fixed_expense',
@@ -48,14 +32,6 @@ export const permissionsData = [
       {
         name: 'Lançamento de folha de pagamento',
         key: 'payroll',
-      },
-      {
-        name: 'Controle de caixa',
-        key: 'cash_control',
-      },
-      {
-        name: 'Frente de caixa',
-        key: 'checkout',
       },
     ],
   },
@@ -68,30 +44,8 @@ export const permissionsData = [
         key: 'client',
       },
       {
-        name: 'Grupos de clientes',
-        key: 'client_categories',
-      },
-      {
         name: 'Cadastro de fornecedores',
         key: 'supplier',
-      },
-      {
-        name: 'Grupos de fornecedores',
-        key: 'supplier_categories',
-      },
-      // {
-      //   name: 'Limite de crédito dos clientes',
-      //   key: 'credit_limit',
-      // },
-    ],
-  },
-  {
-    section: 'Produção',
-    key: 'production',
-    items: [
-      {
-        name: 'Agenda de entrega',
-        key: 'delivery_schedule',
       },
     ],
   },
@@ -189,18 +143,4 @@ export const permissionsData = [
       },
     ],
   },
-  // {
-  //   section: 'Relatórios',
-  //   key: 'reports',
-  //   items: [
-  //     {
-  //       name: 'Dashboard de vendas',
-  //       key: 'sales_dashboard',
-  //     },
-  //     {
-  //       name: 'Dashboard de resultados',
-  //       key: 'results_dashboard',
-  //     },
-  //   ],
-  // },
 ]
