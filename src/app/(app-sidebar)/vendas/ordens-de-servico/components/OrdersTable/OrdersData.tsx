@@ -13,6 +13,7 @@ import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { CancelOrderButton } from './CancelOrderButton'
 import { EmitNfeButton } from './EmitNfeButton'
+import { EmitNfseButton } from './EmitNfseButton'
 import { OrderHistoryDialog } from '../OrderHistory/OrderHistoryDialog'
 
 // UI
@@ -251,6 +252,16 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         permissions={['sale:order:view']}
                                       >
                                         <EmitNfeButton
+                                          orderId={order?.id}
+                                          orderStatus={order?.status}
+                                        />
+                                      </PermissionGate>
+                                    )}
+                                    {order?.status !== 'CANCELED' && (
+                                      <PermissionGate
+                                        permissions={['sale:order:view']}
+                                      >
+                                        <EmitNfseButton
                                           orderId={order?.id}
                                           orderStatus={order?.status}
                                         />

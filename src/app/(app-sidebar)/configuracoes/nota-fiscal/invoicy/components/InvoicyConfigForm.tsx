@@ -76,6 +76,9 @@ export function InvoicyConfigForm() {
         nfceNextNumber: configData.nfceNextNumber || undefined,
         nfseSeries: configData.nfseSeries || '',
         nfseNextNumber: configData.nfseNextNumber || undefined,
+        emitIm: configData.emitIm || '',
+        codigoServico: configData.codigoServico || '',
+        aliquotaIss: configData.aliquotaIss || undefined,
         defaultCfop: configData.defaultCfop || '5102',
         defaultOperationNature:
           configData.defaultOperationNature || 'Venda de mercadoria',
@@ -201,18 +204,40 @@ export function InvoicyConfigForm() {
             <h3 className="font-semibold text-base">
               Configuração de NFS-e (Opcional)
             </h3>
+            <p className="text-sm text-gray-500">
+              Para emissão de Nota Fiscal de Serviço Eletrônica
+            </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
                 name="nfseSeries"
                 label="Série NFS-e"
-                placeholder="1"
+                placeholder="A1"
               />
               <FormInput
                 name="nfseNextNumber"
-                label="Próximo Número NFS-e"
+                label="Próximo Número RPS"
                 type="number"
                 placeholder="1"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormInput
+                name="emitIm"
+                label="Inscrição Municipal"
+                placeholder="000000"
+              />
+              <FormInput
+                name="codigoServico"
+                label="Código do Serviço"
+                placeholder="17.01"
+              />
+              <FormInput
+                name="aliquotaIss"
+                label="Alíquota ISS (%)"
+                type="number"
+                placeholder="3"
               />
             </div>
           </div>
