@@ -184,8 +184,8 @@ export const permissionsData = [
     key: 'invoice_settings',
     items: [
       {
-        name: 'NFS-e',
-        key: 'nfse',
+        name: 'NF',
+        key: 'nf',
       },
     ],
   },

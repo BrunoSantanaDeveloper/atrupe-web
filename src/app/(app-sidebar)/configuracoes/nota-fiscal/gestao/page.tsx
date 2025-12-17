@@ -13,7 +13,7 @@ export default function GestaoNfePage() {
     <>
       <Topbar title="Gestão de Notas Fiscais" />
 
-      <PermissionGate permissions={['invoice_settings:nfse:view']}>
+      <PermissionGate permissions={['invoice_settings:nf:view']}>
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

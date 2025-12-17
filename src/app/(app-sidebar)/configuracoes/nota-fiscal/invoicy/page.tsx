@@ -11,7 +11,7 @@ export function metadata() {
 
 export default function InvoicyConfigPage() {
   return (
-    <PermissionGate permissions={['invoice_settings:nfse:view']}>
+    <PermissionGate permissions={['invoice_settings:nf:view']}>
       <div>
         <Topbar
           title="Configuração do Invoicy"
