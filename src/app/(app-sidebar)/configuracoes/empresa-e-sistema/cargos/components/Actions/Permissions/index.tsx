@@ -120,7 +120,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   // Função para obter limite de usuários da sessão
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
-  const shouldShowPermission = (section: string, item: string) => {
+  const _shouldShowPermission = (section: string, item: string) => {
     // Verifica permissões do módulo financeiro
     if (section === 'financial') {
       if (item === 'payable') return hasFinancialModule('payable')
@@ -370,9 +370,11 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                     >
                       {permissionsData.map((section) => {
                         // Filtra os itens da seção baseado nas features do plano
-                        const filteredItems = section.items.filter((item) =>
-                          shouldShowPermission(section.key, item.key),
-                        )
+                        // const filteredItems = section.items.filter((item) =>
+                        //   shouldShowPermission(section.key, item.key),
+                        // )
+
+                        const filteredItems = section.items
 
                         // Se não houver itens na seção após o filtro, não exibe a seção
                         if (filteredItems.length === 0) return null
