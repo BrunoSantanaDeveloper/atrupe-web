@@ -103,6 +103,7 @@ export function InvoicyConfigForm() {
         nfseSeries: configData.nfseSeries || '',
         nfseNextNumber: configData.nfseNextNumber || undefined,
         emitIm: configData.emitIm || '',
+        emitCmun: configData.emitCmun || '',
         codigoServico: configData.codigoServico || '',
         aliquotaIss: configData.aliquotaIss || undefined,
         defaultCfop: configData.defaultCfop || '5102',
@@ -261,12 +262,20 @@ export function InvoicyConfigForm() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
                 name="emitIm"
                 label="Inscrição Municipal"
                 placeholder="000000"
               />
+              <FormInput
+                name="emitCmun"
+                label="Código do Município (IBGE)"
+                placeholder="3550308"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
                 name="codigoServico"
                 label="Código do Serviço"

@@ -72,13 +72,49 @@ interface NfeItem {
   }
 }
 
+// Tipo para os dados retornados do backend
+interface NfeBackendItem {
+  id: string
+  numero: number
+  serie: number
+  status: string
+  valorTotal: number
+  danfeUrl?: string
+  chaveAcesso?: string
+  createdAt: string
+  order?: {
+    id: string
+    quotation?: {
+      id: string
+      quotationNumber?: number
+      client?: {
+        name?: string
+        cnpj?: string
+        cpf?: string
+      }
+    }
+  }
+  quotation?: {
+    client?: {
+      name?: string
+      cnpj?: string
+      cpf?: string
+    }
+  }
+}
+
 const statusConfig: Record<
   string,
   { variant: 'success' | 'warning' | 'error' | 'neutral'; label: string }
 > = {
+  AUTHORIZED: { variant: 'success', label: 'Autorizada' },
   AUTORIZADA: { variant: 'success', label: 'Autorizada' },
+  PROCESSING: { variant: 'warning', label: 'Processando' },
   PROCESSANDO: { variant: 'warning', label: 'Processando' },
+  PENDING: { variant: 'warning', label: 'Pendente' },
+  REJECTED: { variant: 'error', label: 'Rejeitada' },
   REJEITADA: { variant: 'error', label: 'Rejeitada' },
+  CANCELLED: { variant: 'neutral', label: 'Cancelada' },
   CANCELADA: { variant: 'neutral', label: 'Cancelada' },
   DENEGADA: { variant: 'error', label: 'Denegada' },
   ERRO: { variant: 'error', label: 'Erro' },
@@ -95,7 +131,31 @@ async function fetchNfeList(status?: string) {
     filters,
   })
 
-  return response?.data || []
+  // O backend retorna { items, total, page, limit, totalPages }
+  const items = response?.data?.items || response?.data || []
+
+  // Mapear campos do banco para os esperados pelo frontend
+  return items.map((nfe: NfeBackendItem) => ({
+    id: nfe.id,
+    number: nfe.numero,
+    series: String(nfe.serie),
+    status: nfe.status,
+    recipientName:
+      nfe.order?.quotation?.client?.name ||
+      nfe.quotation?.client?.name ||
+      'N/A',
+    recipientDocument:
+      nfe.order?.quotation?.client?.cnpj ||
+      nfe.order?.quotation?.client?.cpf ||
+      nfe.quotation?.client?.cnpj ||
+      nfe.quotation?.client?.cpf ||
+      '',
+    totalNfe: nfe.valorTotal,
+    danfeUrl: nfe.danfeUrl,
+    xmlKey: nfe.chaveAcesso,
+    createdAt: nfe.createdAt,
+    order: nfe.order,
+  }))
 }
 
 export function NfeListClient() {
@@ -153,11 +213,11 @@ export function NfeListClient() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Todos os status</SelectItem>
-              <SelectItem value="AUTORIZADA">Autorizada</SelectItem>
-              <SelectItem value="PROCESSANDO">Processando</SelectItem>
-              <SelectItem value="CANCELADA">Cancelada</SelectItem>
-              <SelectItem value="REJEITADA">Rejeitada</SelectItem>
-              <SelectItem value="ERRO">Erro</SelectItem>
+              <SelectItem value="AUTHORIZED">Autorizada</SelectItem>
+              <SelectItem value="PROCESSING">Processando</SelectItem>
+              <SelectItem value="PENDING">Pendente</SelectItem>
+              <SelectItem value="CANCELLED">Cancelada</SelectItem>
+              <SelectItem value="REJECTED">Rejeitada</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -190,8 +250,10 @@ export function NfeListClient() {
                 variant: 'neutral' as const,
                 label: nfe.status,
               }
-              const canCancel = nfe.status === 'AUTORIZADA'
-              const canCorrect = nfe.status === 'AUTORIZADA'
+              const canCancel =
+                nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
+              const canCorrect =
+                nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
 
               return (
                 <TableRow key={nfe.id}>
