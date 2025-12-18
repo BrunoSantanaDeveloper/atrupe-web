@@ -7,11 +7,7 @@ import { CompanySettingsList } from '../components/CompanySettingsList'
 import type { CompanySettingsType } from '../components/CompanySettingsList'
 
 // Icons
-import {
-  IconFileInvoice,
-  IconSettings,
-  IconReceipt2,
-} from '@tabler/icons-react'
+import { IconSettings, IconReceipt2 } from '@tabler/icons-react'
 
 const defaultPath = 'nota-fiscal'
 
@@ -26,13 +22,6 @@ export function FiscalSettingsClient() {
           description:
             'Configure as credenciais e parâmetros de integração com o Invoicy para emissão de notas fiscais',
           link: `${defaultPath}/invoicy`,
-        },
-        {
-          title: 'Emissão de NF-e',
-          icon: IconFileInvoice,
-          description:
-            'Emita notas fiscais eletrônicas (NF-e) a partir de ordens de serviço',
-          link: `${defaultPath}/nfe`,
         },
         {
           title: 'Gestão de Notas Fiscais',
