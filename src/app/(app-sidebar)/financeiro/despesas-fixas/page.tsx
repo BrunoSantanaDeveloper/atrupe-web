@@ -1,8 +1,8 @@
-// Component Imports
+// Components
 import { FixedExpenses } from './components/FixedExpenses'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-// Type Imports
+// Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
