@@ -14,6 +14,7 @@ export const invoicyConfigSchema = z.object({
   nfseSeries: z.string().optional(),
   nfseNextNumber: z.coerce.number().min(1).optional(),
   emitIm: z.string().optional(), // Inscrição Municipal
+  emitCmun: z.string().optional(), // Código IBGE do município
   codigoServico: z.string().optional(), // Código do serviço municipal
   aliquotaIss: z.coerce.number().min(0).max(100).optional(), // Alíquota ISS
   // Padrões

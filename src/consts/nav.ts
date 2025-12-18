@@ -211,6 +211,26 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Nota Fiscal',
         path: '/configuracoes/nota-fiscal',
         permission: 'settings:invoice:view',
+        children: [
+          {
+            icon: IconReceitaFederal,
+            title: 'Configuração',
+            path: '/configuracoes/nota-fiscal',
+            permission: 'settings:invoice:view',
+          },
+          {
+            icon: IconReceitaFederal,
+            title: 'Invoicy',
+            path: '/configuracoes/nota-fiscal/invoicy',
+            permission: 'settings:invoice:view',
+          },
+          {
+            icon: IconReceitaFederal,
+            title: 'Gestão de Notas',
+            path: '/configuracoes/nota-fiscal/gestao',
+            permission: 'invoice:nfse:view',
+          },
+        ],
       },
       {
         icon: IconCoin,
