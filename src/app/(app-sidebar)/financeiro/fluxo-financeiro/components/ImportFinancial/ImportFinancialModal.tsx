@@ -93,11 +93,12 @@ export function ImportFinancialModal() {
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo baseado no schema do backend
-    const csvContent = `Tipo,Descricao,Referencia,DataReferencia,ValorTotal,QuantidadeParcelas,ClienteCpfCnpj,FornecedorCpfCnpj,Natureza,SubCategoria,CondicaoPagamento,Parcela,DataVencimento,ValorParcela,Status,DataPagamento,ValorPago,ContaBancaria,Observacoes
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,Vendas,Produtos,Boleto,1,2024-02-15,500.00,PAID,2024-02-14,500.00,Banco do Brasil - CC 12345-6,Pagamento via PIX
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,Vendas,Produtos,Boleto,2,2024-03-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,Vendas,Produtos,Boleto,3,2024-04-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
-DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornecedores,Matéria Prima,Dinheiro,1,2024-02-10,2500.00,PAID,2024-02-09,2500.00,Caixa,Pagamento à vista`
+    const csvContent = `Tipo,Descricao,Referencia,DataReferencia,ValorTotal,QuantidadeParcelas,ClienteCpfCnpj,FornecedorCpfCnpj,FuncionarioEmail,Natureza,SubCategoria,CondicaoPagamento,Parcela,DataVencimento,ValorParcela,Status,DataPagamento,ValorPago,ContaBancaria,Observacoes
+RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,1,2024-02-15,500.00,PAID,2024-02-14,500.00,Banco do Brasil - CC 12345-6,Pagamento via PIX
+RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,2,2024-03-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
+RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,3,2024-04-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
+DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,,Fornecedores,Matéria Prima,Dinheiro,1,2024-02-10,2500.00,PAID,2024-02-09,2500.00,Caixa,Pagamento à vista
+DESPESA,Salário Janeiro - João Funcionário,FOLHA-01,2024-01-31,5000.00,1,,,joao.funcionario@empresa.com,Folha de Pagamento,Salários,Transferência,1,2024-02-05,5000.00,PAID,2024-02-05,5000.00,Banco do Brasil - CC 12345-6,Salário mês 01/2024`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
