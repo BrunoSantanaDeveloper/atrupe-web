@@ -116,6 +116,7 @@ const statusConfig: Record<
   REJEITADA: { variant: 'error', label: 'Rejeitada' },
   CANCELLED: { variant: 'neutral', label: 'Cancelada' },
   CANCELADA: { variant: 'neutral', label: 'Cancelada' },
+  CORRECTION_SENT: { variant: 'warning', label: 'Carta de Correção' },
   DENEGADA: { variant: 'error', label: 'Denegada' },
   ERRO: { variant: 'error', label: 'Erro' },
 }
