@@ -1,6 +1,7 @@
 'use client'
 
 // Components
+import { SalesTable } from './SalesTable'
 import { FiltersBar } from './FiltersBar'
 import { SummaryCards } from './SummaryCards'
 import { Topbar } from '@/components/common/Topbar'
@@ -8,15 +9,9 @@ import { TopClientsChart } from './TopClientsChart'
 import { TopProductsChart } from './TopProductsChart'
 import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
+import { PrintButton } from '@/components/common/PrintButton'
 import { ApprovedRejectedChart } from './ApprovedRejectedChart'
 import { QuotationsOriginChart } from './QuotationsOriginChart'
-import { SalesTable } from './SalesTable'
-
-// Icons
-import { IconPrinter } from '@tabler/icons-react'
-
-// UI
-import { Button } from '@/components/ui/button'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -24,16 +19,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 export function SalesReport({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
-      <Topbar
-        title="Relatório de vendas"
-        primaryCta={
-          <Button
-            variant="neutralOutline"
-            size="iconMd"
-            RightIcon={IconPrinter}
-          />
-        }
-      />
+      <Topbar title="Relatório de vendas" primaryCta={<PrintButton />} />
       {/* Filters */}
       <FiltersBar searchParams={searchParams} />
 

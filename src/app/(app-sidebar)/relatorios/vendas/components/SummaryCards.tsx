@@ -6,12 +6,12 @@ import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Icons
 import {
-  IconCheck,
   IconX,
-  IconQuestionMark,
   IconCoin,
-  IconPercentage,
   IconClock,
+  IconPercentage,
+  IconCircleCheck,
+  IconQuestionMark,
 } from '@tabler/icons-react'
 
 // Mock Data
@@ -29,38 +29,38 @@ export function SummaryCards() {
 
   const cards = [
     {
-      icon: IconCheck,
-      variant: 'successLight' as const,
+      icon: IconCircleCheck,
+      variant: 'successLight',
       label: `Aprovadas ${summary.approvedCount} OS`,
       value: formatCurrency(summary.approvedTotal),
     },
     {
       icon: IconX,
-      variant: 'errorLight' as const,
+      variant: 'errorLight',
       label: `Reprovadas/NS ${summary.rejectedCount}`,
       value: formatCurrency(summary.rejectedTotal),
     },
     {
       icon: IconQuestionMark,
-      variant: 'warningLight' as const,
+      variant: 'warningLight',
       label: 'Não respondidas NS',
       value: formatCurrency(summary.noResponseTotal),
     },
     {
       icon: IconCoin,
-      variant: 'infoLight' as const,
+      variant: 'infoLight',
       label: 'Juros/multa OS',
       value: formatCurrency(summary.averageTicket),
     },
     {
       icon: IconPercentage,
-      variant: 'brandLight' as const,
+      variant: 'brandLight',
       label: 'Comissão RBS',
       value: formatCurrency(summary.commission),
     },
     {
       icon: IconClock,
-      variant: 'grayLight' as const,
+      variant: 'grayLight',
       label: '% aprovação/mês',
       value: summary.approvalTime,
     },
