@@ -95,20 +95,26 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
           <div>
             <p className="text-xs text-gray">A receber</p>
             <p className="text-lG font-medium text-gray-600">
-              {formatCurrencyToBrl(totals.receivables.expected)}
+              {formatCurrencyToBrl(
+                totals.receivables.expected - totals.receivables.totalPaid,
+              )}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray">A pagar</p>
             <p className="text-lG font-medium text-gray-600">
-              {formatCurrencyToBrl(totals.payables.expected)}
+              {formatCurrencyToBrl(
+                totals.payables.expected - totals.payables.totalPaid,
+              )}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray">Saldo</p>
             <p className="text-lG font-medium">
               {formatCurrencyToBrl(
-                totals.receivables.expected - totals.payables.expected,
+                totals.receivables.expected -
+                  totals.receivables.totalPaid -
+                  (totals.payables.expected - totals.payables.totalPaid),
               )}
             </p>
           </div>
