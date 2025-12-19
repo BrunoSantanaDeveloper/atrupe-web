@@ -73,9 +73,9 @@ export function CorrectionNfeDialog({
 
     try {
       const result = await createItemNew({
-        route: `/fiscal/nfe/${nfe.id}/correction`,
+        route: `/fiscal/nfe/${nfe.id}/correction-letter`,
         data: {
-          correction: data.correction,
+          correcao: data.correction,
         },
       })
 

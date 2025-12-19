@@ -70,7 +70,7 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
       const result = await createItemNew({
         route: `/fiscal/nfe/${nfe.id}/cancel`,
         data: {
-          reason: data.reason,
+          justificativa: data.reason,
         },
       })
 
