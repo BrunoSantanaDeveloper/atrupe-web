@@ -42,7 +42,8 @@ async function fetchInvoicyConfig() {
     const response = await getDataOld({
       route: '/fiscal/invoicy/config',
     })
-    return response?.data || null
+    // getDataOld já retorna res.data, não precisa de .data adicional
+    return response || null
   } catch (error) {
     return null
   }
