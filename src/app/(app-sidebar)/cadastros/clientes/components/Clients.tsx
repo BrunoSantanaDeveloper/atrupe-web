@@ -37,10 +37,6 @@ import {
   SearchClientModal,
   SearchClientTriggerButton,
 } from './SearchClient/SearchClientModal'
-import {
-  ImportClientModal,
-  ImportClientTriggerButton,
-} from './ImportClient/ImportClientModal'
 
 export function Clients({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
@@ -108,11 +104,6 @@ export function Clients({ searchParams }: SearchParamsType) {
               link="/cadastros/clientes/categorias"
             />
             <PermissionGate permissions={['register:client:create']}>
-              <ImportClientTriggerButton
-                onOpenChange={() => {
-                  setOpenDialog('import-client')
-                }}
-              />
               <SearchClientTriggerButton
                 onOpenChange={() => {
                   setOpenDialog('search-client')
@@ -178,10 +169,6 @@ export function Clients({ searchParams }: SearchParamsType) {
       />
       <SearchClientModal
         open={openDialog === 'search-client'}
-        onOpenChange={() => setOpenDialog('')}
-      />
-      <ImportClientModal
-        open={openDialog === 'import-client'}
         onOpenChange={() => setOpenDialog('')}
       />
     </div>

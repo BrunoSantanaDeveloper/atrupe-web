@@ -8,16 +8,17 @@ import {
   Dialog,
   DialogBody,
   DialogTitle,
+  DialogClose,
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { ActionButton } from '@/components/common/ActionButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
@@ -58,11 +59,6 @@ const getErrorFixUrl = (field: string, error: string): string | null => {
   return null
 }
 
-interface ImportClientModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
 interface ImportError {
   row: number
   field: string
@@ -70,10 +66,8 @@ interface ImportError {
   error: string
 }
 
-export function ImportClientModal({
-  open,
-  onOpenChange,
-}: ImportClientModalProps) {
+export function ImportClientModal() {
+  const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -208,7 +202,7 @@ EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
       await queryClient.invalidateQueries({ queryKey: ['clients-totals'] })
 
       // Fechar modal
-      handleClose()
+      handleOpenChange(false)
     } catch (error) {
       toast.error((error as Error).message || 'Erro ao processar importação')
     } finally {
@@ -217,22 +211,27 @@ EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
     }
   }
 
-  const handleClose = () => {
-    setFile(null)
-    setUploadProgress(0)
-    setErrors([])
-    setShowErrors(false)
-    setImportId(null)
-    setIsUploading(false)
-    setIsValidating(false)
-    onOpenChange(false)
+  const handleOpenChange = (value: boolean) => {
+    if (!value) {
+      setFile(null)
+      setUploadProgress(0)
+      setErrors([])
+      setShowErrors(false)
+      setImportId(null)
+      setIsUploading(false)
+      setIsValidating(false)
+    }
+    setOpen(value)
   }
 
   const isProcessing = isUploading || isValidating
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleClose}>
+      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button RightIcon={IconArrowRight}>Importar</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>
             <DialogTitle>
@@ -323,13 +322,11 @@ EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
           </DialogBody>
 
           <DialogFooter>
-            <Button
-              variant="neutralOutline"
-              onClick={handleClose}
-              disabled={isProcessing}
-            >
-              Fechar
-            </Button>
+            <DialogClose asChild>
+              <Button variant="neutralOutline" disabled={isProcessing}>
+                Fechar
+              </Button>
+            </DialogClose>
             <Button
               onClick={handleImport}
               disabled={!file}
@@ -434,21 +431,5 @@ EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-export function ImportClientTriggerButton({
-  onOpenChange,
-}: {
-  onOpenChange: (open: boolean) => void
-}) {
-  return (
-    <ActionButton
-      tooltip="Importar clientes"
-      size="iconMd"
-      variant="neutralOutline"
-      Icon={IconUpload}
-      onClick={() => onOpenChange(true)}
-    />
   )
 }

@@ -26,6 +26,7 @@ import {
   IconCalendarDollar,
   IconBuildingCommunity,
   IconDeviceDesktopDollar,
+  IconUpload,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -278,6 +279,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Vendas',
         path: '/configuracoes/vendas',
         permission: 'sales_settings:series:view',
+      },
+      {
+        icon: IconUpload,
+        title: 'Importações',
+        path: '/configuracoes/importacoes',
+        permission: 'import_settings:import:view',
       },
     ],
   },

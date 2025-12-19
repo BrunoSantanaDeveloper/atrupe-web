@@ -8,16 +8,17 @@ import {
   Dialog,
   DialogBody,
   DialogTitle,
+  DialogClose,
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { ActionButton } from '@/components/common/ActionButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
@@ -64,11 +65,6 @@ const getErrorFixUrl = (field: string, error: string): string | null => {
   return null
 }
 
-interface ImportProductModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
 interface ImportError {
   row: number
   field: string
@@ -76,10 +72,8 @@ interface ImportError {
   error: string
 }
 
-export function ImportProductModal({
-  open,
-  onOpenChange,
-}: ImportProductModalProps) {
+export function ImportProductModal() {
+  const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -232,7 +226,7 @@ PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impr
         await queryClient.invalidateQueries({ queryKey: ['product-totals'] })
 
         // Fechar modal
-        handleClose()
+        handleOpenChange(false)
       } else {
         toast.warning(successMsg)
       }
@@ -244,22 +238,27 @@ PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impr
     }
   }
 
-  const handleClose = () => {
-    setFile(null)
-    setUploadProgress(0)
-    setErrors([])
-    setShowErrors(false)
-    setImportId(null)
-    setIsUploading(false)
-    setIsValidating(false)
-    onOpenChange(false)
+  const handleOpenChange = (value: boolean) => {
+    if (!value) {
+      setFile(null)
+      setUploadProgress(0)
+      setErrors([])
+      setShowErrors(false)
+      setImportId(null)
+      setIsUploading(false)
+      setIsValidating(false)
+    }
+    setOpen(value)
   }
 
   const isProcessing = isUploading || isValidating
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleClose}>
+      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button RightIcon={IconArrowRight}>Importar</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>
             <DialogTitle>
@@ -350,13 +349,11 @@ PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impr
           </DialogBody>
 
           <DialogFooter>
-            <Button
-              variant="neutralOutline"
-              onClick={handleClose}
-              disabled={isProcessing}
-            >
-              Fechar
-            </Button>
+            <DialogClose asChild>
+              <Button variant="neutralOutline" disabled={isProcessing}>
+                Fechar
+              </Button>
+            </DialogClose>
             <Button
               onClick={handleImport}
               disabled={!file}
@@ -461,21 +458,5 @@ PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impr
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-export function ImportProductTriggerButton({
-  onOpenChange,
-}: {
-  onOpenChange: (open: boolean) => void
-}) {
-  return (
-    <ActionButton
-      tooltip="Importar produtos"
-      size="iconMd"
-      variant="neutralOutline"
-      Icon={IconUpload}
-      onClick={() => onOpenChange(true)}
-    />
   )
 }

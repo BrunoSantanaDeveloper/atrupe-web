@@ -19,10 +19,6 @@ import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ActionButton } from '@/components/common/ActionButton'
-import {
-  ImportProductModal,
-  ImportProductTriggerButton,
-} from './ImportProduct/ImportProductModal'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -91,11 +87,6 @@ export function Products({ searchParams }: SearchParamsType) {
               <PermissionGate
                 permissions={['product_settings:products:create']}
               >
-                <ImportProductTriggerButton
-                  onOpenChange={() => {
-                    setOpenDialog('import-product')
-                  }}
-                />
                 <NewProductTriggerButton
                   onOpenChange={() => {
                     setOpenDialog('new-product')
@@ -140,10 +131,6 @@ export function Products({ searchParams }: SearchParamsType) {
         </div>
         <NewProduct
           open={openDialog === 'new-product'}
-          onOpenChange={() => setOpenDialog('')}
-        />
-        <ImportProductModal
-          open={openDialog === 'import-product'}
           onOpenChange={() => setOpenDialog('')}
         />
       </div>

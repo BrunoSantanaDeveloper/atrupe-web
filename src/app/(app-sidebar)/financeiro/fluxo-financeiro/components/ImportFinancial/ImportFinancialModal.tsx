@@ -8,16 +8,17 @@ import {
   Dialog,
   DialogBody,
   DialogTitle,
+  DialogClose,
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { ActionButton } from '@/components/common/ActionButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
@@ -43,11 +44,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-interface ImportFinancialModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
 interface ImportError {
   row: number
   field: string
@@ -55,10 +51,8 @@ interface ImportError {
   error: string
 }
 
-export function ImportFinancialModal({
-  open,
-  onOpenChange,
-}: ImportFinancialModalProps) {
+export function ImportFinancialModal() {
+  const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -216,7 +210,7 @@ DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornece
         })
 
         // Fechar modal
-        handleClose()
+        handleOpenChange(false)
       } else {
         toast.warning(successMsg)
       }
@@ -228,22 +222,27 @@ DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornece
     }
   }
 
-  const handleClose = () => {
-    setFile(null)
-    setUploadProgress(0)
-    setErrors([])
-    setShowErrors(false)
-    setImportId(null)
-    setIsUploading(false)
-    setIsValidating(false)
-    onOpenChange(false)
+  const handleOpenChange = (value: boolean) => {
+    if (!value) {
+      setFile(null)
+      setUploadProgress(0)
+      setErrors([])
+      setShowErrors(false)
+      setImportId(null)
+      setIsUploading(false)
+      setIsValidating(false)
+    }
+    setOpen(value)
   }
 
   const isProcessing = isUploading || isValidating
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleClose}>
+      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button RightIcon={IconArrowRight}>Importar</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>
             <DialogTitle>
@@ -334,13 +333,11 @@ DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornece
           </DialogBody>
 
           <DialogFooter>
-            <Button
-              variant="neutralOutline"
-              onClick={handleClose}
-              disabled={isProcessing}
-            >
-              Fechar
-            </Button>
+            <DialogClose asChild>
+              <Button variant="neutralOutline" disabled={isProcessing}>
+                Fechar
+              </Button>
+            </DialogClose>
             <Button
               onClick={handleImport}
               disabled={!file}
@@ -429,21 +426,5 @@ DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,Fornece
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-export function ImportFinancialTriggerButton({
-  onOpenChange,
-}: {
-  onOpenChange: (open: boolean) => void
-}) {
-  return (
-    <ActionButton
-      tooltip="Importar lançamentos financeiros"
-      size="iconMd"
-      variant="neutralOutline"
-      Icon={IconUpload}
-      onClick={() => onOpenChange(true)}
-    />
   )
 }
