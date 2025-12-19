@@ -131,8 +131,8 @@ async function fetchNfeList(status?: string) {
     filters,
   })
 
-  // O backend retorna { items, total, page, limit, totalPages }
-  const items = response?.data?.items || response?.data || []
+  // getDataOld já retorna res.data, então não precisa de .data adicional
+  const items = response?.items || response || []
 
   // Mapear campos do banco para os esperados pelo frontend
   return items.map((nfe: NfeBackendItem) => ({
