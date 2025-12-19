@@ -10,8 +10,11 @@ import {
 } from '@/components/ui/chart'
 import { Button } from '@/components/ui/button'
 
+// Components
+import { PrintButton } from '@/components/common/PrintButton'
+
 // Icons
-import { IconFileTypePdf, IconFileSpreadsheet } from '@tabler/icons-react'
+import { IconMaximize } from '@tabler/icons-react'
 
 // Third-party
 import { Bar, XAxis, YAxis, BarChart } from 'recharts'
@@ -22,7 +25,7 @@ import { mockSalesReportData } from '../mock-data'
 const chartConfig = {
   value: {
     label: 'Quantidade',
-    color: 'var(--chart-brand)',
+    color: '#6CE9A6',
   },
 } satisfies ChartConfig
 
@@ -35,13 +38,14 @@ export function TopProductsChart() {
         <CardTitle className="text-base font-semibold text-gray-700">
           Produtos mais vendidos
         </CardTitle>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <IconFileTypePdf className="h-5 w-5 text-red-500" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
-            <IconFileSpreadsheet className="h-5 w-5 text-green-600" />
-          </Button>
+        <div className="flex items-center gap-1">
+          <PrintButton />
+          <Button
+            type="button"
+            size="iconMd"
+            variant="neutralOutline"
+            RightIcon={IconMaximize}
+          />
         </div>
       </CardHeader>
       <CardContent className="p-6">
@@ -74,7 +78,7 @@ export function TopProductsChart() {
               dataKey="value"
               fill="var(--color-value)"
               radius={[0, 4, 4, 0]}
-              barSize={16}
+              barSize={18}
             />
           </BarChart>
         </ChartContainer>
