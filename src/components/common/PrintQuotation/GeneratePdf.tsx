@@ -410,7 +410,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
   // Incluir o frete no total final
   const freightPrice = data.delivery?.freightPrice || 0
-  const finalTotalWithFreight = totals.finalTotal + freightPrice
+  // Usar o valor final do backend (após desconto das condições de pagamento)
+  const backendFinalTotal = data.total?.finalTotal ?? totals.finalTotal
+  const finalTotalWithFreight = backendFinalTotal + freightPrice
 
   // As inconsistências agora são tratadas no componente pai PrintQuotationDialog
   // O PDF sempre usa os valores corretos calculados
@@ -1120,12 +1122,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <View style={styles.totalsSection}>
               <View style={styles.totalRow}>
                 <Text>Subtotal itens</Text>
-                <Text>{totals.formatted.subtotal}</Text>
+                <Text>
+                  {formatCurrencyToBrl(data.total?.subtotal ?? totals.subtotal)}
+                </Text>
               </View>
 
               <View style={styles.totalRow}>
                 <Text>Desconto</Text>
-                <Text>{totals.formatted.discountLabel}</Text>
+                <Text>
+                  {formatCurrencyToBrl(data.total?.totalDiscount ?? 0)}
+                </Text>
               </View>
 
               <View style={styles.totalRow}>

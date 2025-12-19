@@ -157,14 +157,16 @@ export function PrintQuotationDialog({
       }
 
       // Validar se há inconsistências nos totais
+      // Nota: totalDiscount e finalTotal não são validados pois o backend
+      // aplica o desconto das condições de pagamento, enquanto o frontend
+      // calcula apenas baseado nos descontos dos itens
       const adaptedItems = adaptNewItemsToOldFormat(
         quotationData.quotationItems,
       )
 
       const validation = validateQuotationTotals(adaptedItems, {
         subtotal: quotationData.total?.subtotal,
-        totalDiscount: quotationData.total?.totalDiscount,
-        finalTotal: quotationData.total?.finalTotal,
+        // totalDiscount e finalTotal não são comparados - representam coisas diferentes agora
       })
 
       if (!validation.isValid) {
