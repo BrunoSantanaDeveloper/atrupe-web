@@ -60,7 +60,8 @@ async function fetchFiscalData(productId: string) {
     const response = await getDataOld({
       route: `/fiscal/product/${productId}`,
     })
-    return response?.data || null
+    // getDataOld já retorna res.data, não precisa de .data adicional
+    return response || null
   } catch (error) {
     return null
   }
