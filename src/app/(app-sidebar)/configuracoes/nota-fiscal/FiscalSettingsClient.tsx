@@ -19,8 +19,7 @@ export function FiscalSettingsClient() {
         {
           title: 'Configurações Gerais',
           icon: IconSettings,
-          description:
-            'Configure os parâmetros para emissão de notas fiscais',
+          description: 'Configure os parâmetros para emissão de notas fiscais',
           link: `${defaultPath}/invoicy`,
         },
         {
