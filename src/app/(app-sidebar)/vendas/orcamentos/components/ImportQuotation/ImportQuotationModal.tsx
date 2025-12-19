@@ -17,7 +17,6 @@ import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { ActionButton } from '@/components/common/ActionButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
@@ -493,21 +492,5 @@ export function ImportQuotationModal({
         </DialogContent>
       </Dialog>
     </>
-  )
-}
-
-export function ImportQuotationTriggerButton({
-  onOpenChange,
-}: {
-  onOpenChange: (open: boolean) => void
-}) {
-  return (
-    <ActionButton
-      tooltip="Importar orçamentos"
-      size="iconMd"
-      variant="neutralOutline"
-      Icon={IconUpload}
-      onClick={() => onOpenChange(true)}
-    />
   )
 }

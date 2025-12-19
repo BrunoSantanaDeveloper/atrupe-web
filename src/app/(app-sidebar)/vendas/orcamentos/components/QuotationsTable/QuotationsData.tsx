@@ -132,12 +132,23 @@ export function QuotationsData({
                                   {quotation?.client?.name ||
                                     'Cliente não informado'}
                                 </p>
-                                <Link
-                                  href={link}
-                                  className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
+
+                                <PermissionGate
+                                  permissions={['sale:quotation:edit']}
+                                  fallback={
+                                    <p className="text-gray truncate">
+                                      {description}{' '}
+                                      {quotation?.quickSale && '⚡'}
+                                    </p>
+                                  }
                                 >
-                                  {description} {quotation?.quickSale && '⚡'}
-                                </Link>
+                                  <Link
+                                    href={link}
+                                    className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
+                                  >
+                                    {description} {quotation?.quickSale && '⚡'}
+                                  </Link>
+                                </PermissionGate>
                               </TableCell>
                               <TableCell className="text-success-700 text-nowrap">
                                 {/* TODO : Valor da entrega não tá vindo */}
@@ -182,18 +193,14 @@ export function QuotationsData({
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPrinter}
-                                        tooltip="Imprimir"
-                                        onClick={() => {
-                                          setRowData(quotation)
-                                          setOpenPrintDialog(true)
-                                        }}
-                                      />
-                                    </PermissionGate>
+                                    <ActionButton
+                                      Icon={IconPrinter}
+                                      tooltip="Imprimir"
+                                      onClick={() => {
+                                        setRowData(quotation)
+                                        setOpenPrintDialog(true)
+                                      }}
+                                    />
                                     <PermissionGate
                                       permissions={['sale:quotation:create']}
                                     >
@@ -204,18 +211,14 @@ export function QuotationsData({
                                         description={quotation?.description}
                                       />
                                     </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconHistory}
-                                        tooltip="Histórico"
-                                        onClick={() => {
-                                          setRowData(quotation)
-                                          setOpenHistoryDialog(true)
-                                        }}
-                                      />
-                                    </PermissionGate>
+                                    <ActionButton
+                                      Icon={IconHistory}
+                                      tooltip="Histórico"
+                                      onClick={() => {
+                                        setRowData(quotation)
+                                        setOpenHistoryDialog(true)
+                                      }}
+                                    />
                                     <PermissionGate
                                       permissions={['sale:quotation:edit']}
                                     >
@@ -259,11 +262,7 @@ export function QuotationsData({
               searchDescription ||
               'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo orçamento'
             }
-            cta={
-              <PermissionGate permissions={['sale:quotation:create']}>
-                <NewQuotationTriggerButton onOpenChange={setOpenDialog} />
-              </PermissionGate>
-            }
+            cta={<NewQuotationTriggerButton onOpenChange={setOpenDialog} />}
           />
         )}
       </CardContent>
@@ -276,6 +275,7 @@ export function QuotationsData({
           />
         </CardFooter>
       ) : null}
+
       <NewQuotationModal
         open={openDialog}
         onOpenChange={(open) => {

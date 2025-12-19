@@ -21,7 +21,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -78,45 +77,42 @@ export function ApproveQuotation({ data }: Props) {
   }
 
   return (
-    <PermissionGate permissions={['sale:quotation:edit']}>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger asChild>
-          <CustomButton
-            icon={IconCircleCheck}
-            title="Aprovar orçamento"
-            iconVariant="successLight"
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <CustomButton
+          icon={IconCircleCheck}
+          title="Aprovar orçamento"
+          iconVariant="successLight"
+        />
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <FeaturedIcon
+            Icon={IconAlertTriangle}
+            rounded
+            size="lg"
+            variant="warningBorderedLight"
+            className="mx-auto mb-2"
           />
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <FeaturedIcon
-              Icon={IconAlertTriangle}
-              rounded
-              size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
-            />
-            <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Ao aprovar o orçamento, ele será convertido em uma ordem de
-              serviço.
-              <br />
-              <br />
-              Você será redirecionado para a nova ordem de serviço, e poderá
-              acessá-la novamente no menu &quot;Ordens de Serviço&quot;.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleApprove}
-              RightIcon={IconCircleCheck}
-            >
-              Aprovar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </PermissionGate>
+          <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Ao aprovar o orçamento, ele será convertido em uma ordem de serviço.
+            <br />
+            <br />
+            Você será redirecionado para a nova ordem de serviço, e poderá
+            acessá-la novamente no menu &quot;Ordens de Serviço&quot;.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Voltar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleApprove}
+            RightIcon={IconCircleCheck}
+          >
+            Aprovar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

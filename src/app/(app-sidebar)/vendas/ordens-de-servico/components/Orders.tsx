@@ -20,10 +20,6 @@ import {
   NewQuotationModal,
   NewQuotationTriggerButton,
 } from '../../orcamentos/components/NewQuotation'
-import {
-  ImportOrderModal,
-  ImportOrderTriggerButton,
-} from './ImportOrder/ImportOrderModal'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
@@ -115,9 +111,6 @@ export function Orders({ searchParams }: SearchParamsType) {
           primaryCta={
             <TooltipProvider>
               <div className="flex gap-3">
-                <ImportOrderTriggerButton
-                  onOpenChange={(open) => setOpenDialog(open ? 'import' : '')}
-                />
                 <NewQuotationTriggerButton
                   onOpenChange={(open) => setOpenDialog(open ? 'new' : '')}
                 />
@@ -162,12 +155,6 @@ export function Orders({ searchParams }: SearchParamsType) {
             open={openDialog === 'new'}
             onOpenChange={(open) => {
               setOpenDialog(open ? 'new' : '')
-            }}
-          />
-          <ImportOrderModal
-            open={openDialog === 'import'}
-            onOpenChange={(open) => {
-              setOpenDialog(open ? 'import' : '')
             }}
           />
         </div>

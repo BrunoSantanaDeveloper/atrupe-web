@@ -207,110 +207,114 @@ export function NewQuotationModal({
   const clientId = form.watch('clientId')?.value
 
   return (
-    <Dialog open={open} onOpenChange={handleToggleModal}>
-      <DialogContent className="sm:max-w-[696px]">
-        <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
-              {!editMode ? 'Novo orçamento' : 'Editar orçamento'}
-            </div>
-          </DialogTitle>
-          <DialogDescription hidden></DialogDescription>
-        </DialogHeader>
-        <DialogBody>
-          <Form {...form}>
-            <form
-              id="new-quotation"
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-wrap gap-5"
-              noValidate
-            >
-              <ClientSelector
-                name="clientId"
-                label="Cliente"
-                width="w-full"
-                additionalOnChange={() => {
-                  // Limpar seleção de contato quando cliente mudar
-                  form.setValue('contactId', '')
-                }}
-              />
-              <FormInput<QuotationFormType>
-                name="description"
-                label="Descrição do serviço"
-                width="w-full"
-              />
-              <SelectSerieField
-                name="seriesId"
-                label="Série"
-                width="flex-[1_0_300px]"
-                disabled={editMode}
-              />
-              <SelectContactSourceField<QuotationFormType>
-                name="contactSourceId"
-                label="Atendimento"
-                width="flex-[1_0_300px]"
-              />
-              <SelectSellerField
-                name="sellerId"
-                label="Vendedor"
-                width="flex-[1_0_300px]"
-                placeholder={data?.seller?.name}
-              />
-              <ClientContactSelect
-                name="contactId"
-                label="Responsável"
-                width="flex-[1_0_300px]"
-                clientId={clientId}
-                disabled={!clientId}
-              />
-              {canManageMultipleCompanies() && (
-                <SelectCompanyField<QuotationFormType>
-                  name="companyId"
-                  label="Empresa"
+    <PermissionGate
+      permissions={['sale:quotation:create', 'sale:quotation:edit']}
+    >
+      <Dialog open={open} onOpenChange={handleToggleModal}>
+        <DialogContent className="sm:max-w-[696px]">
+          <DialogHeader>
+            <DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
+                {!editMode ? 'Novo orçamento' : 'Editar orçamento'}
+              </div>
+            </DialogTitle>
+            <DialogDescription hidden></DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <Form {...form}>
+              <form
+                id="new-quotation"
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-wrap gap-5"
+                noValidate
+              >
+                <ClientSelector
+                  name="clientId"
+                  label="Cliente"
+                  width="w-full"
+                  additionalOnChange={() => {
+                    // Limpar seleção de contato quando cliente mudar
+                    form.setValue('contactId', '')
+                  }}
+                />
+                <FormInput<QuotationFormType>
+                  name="description"
+                  label="Descrição do serviço"
+                  width="w-full"
+                />
+                <SelectSerieField
+                  name="seriesId"
+                  label="Série"
                   width="flex-[1_0_300px]"
                   disabled={editMode}
                 />
+                <SelectContactSourceField<QuotationFormType>
+                  name="contactSourceId"
+                  label="Atendimento"
+                  width="flex-[1_0_300px]"
+                />
+                <SelectSellerField
+                  name="sellerId"
+                  label="Vendedor"
+                  width="flex-[1_0_300px]"
+                  placeholder={data?.seller?.name}
+                />
+                <ClientContactSelect
+                  name="contactId"
+                  label="Responsável"
+                  width="flex-[1_0_300px]"
+                  clientId={clientId}
+                  disabled={!clientId}
+                />
+                {canManageMultipleCompanies() && (
+                  <SelectCompanyField<QuotationFormType>
+                    name="companyId"
+                    label="Empresa"
+                    width="flex-[1_0_300px]"
+                    disabled={editMode}
+                  />
+                )}
+              </form>
+            </Form>
+          </DialogBody>
+          <DialogFooter className="sm:justify-between">
+            <div className="flex items-center space-x-2">
+              {!editMode && <NewClientTriggerButton />}
+            </div>
+            <div className="space-x-4">
+              {process.env.NODE_ENV === 'development' && (
+                <Button
+                  type="button"
+                  variant="warningLight"
+                  onClick={() => {
+                    form.trigger()
+                    console.info(form.getValues())
+                    console.info(form.formState.errors)
+                  }}
+                >
+                  Teste
+                </Button>
               )}
-            </form>
-          </Form>
-        </DialogBody>
-        <DialogFooter className="sm:justify-between">
-          <div className="flex items-center space-x-2">
-            {!editMode && <NewClientTriggerButton />}
-          </div>
-          <div className="space-x-4">
-            {process.env.NODE_ENV === 'development' && (
+              <DialogClose>
+                <Button type="button" variant="neutralOutline">
+                  Cancelar
+                </Button>
+              </DialogClose>
               <Button
-                type="button"
-                variant="warningLight"
-                onClick={() => {
-                  form.trigger()
-                  console.info(form.getValues())
-                  console.info(form.formState.errors)
-                }}
+                type="submit"
+                className="gap-2"
+                form="new-quotation"
+                isLoading={form.formState.isSubmitting}
+                RightIcon={IconArrowRight}
               >
-                Teste
+                {!editMode ? 'Criar orçamento' : 'Salvar edição'}
               </Button>
-            )}
-            <DialogClose>
-              <Button type="button" variant="neutralOutline">
-                Cancelar
-              </Button>
-            </DialogClose>
-            <Button
-              type="submit"
-              className="gap-2"
-              form="new-quotation"
-              isLoading={form.formState.isSubmitting}
-              RightIcon={IconArrowRight}
-            >
-              {!editMode ? 'Criar orçamento' : 'Salvar edição'}
-            </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PermissionGate>
   )
 }
 

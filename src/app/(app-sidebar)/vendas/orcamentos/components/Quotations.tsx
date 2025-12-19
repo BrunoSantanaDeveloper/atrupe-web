@@ -18,10 +18,6 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { QuotationsData } from './QuotationsTable/QuotationsData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
-import {
-  ImportQuotationModal,
-  ImportQuotationTriggerButton,
-} from './ImportQuotation/ImportQuotationModal'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -101,11 +97,6 @@ export function Quotations({ searchParams }: SearchParamsType) {
         paramName="status"
         primaryCta={
           <TooltipProvider>
-            <ImportQuotationTriggerButton
-              onOpenChange={() => {
-                setOpenDialog('import-quotation')
-              }}
-            />
             <NewQuotationTriggerButton
               onOpenChange={() => {
                 setOpenDialog('new-quotation')
@@ -148,10 +139,6 @@ export function Quotations({ searchParams }: SearchParamsType) {
           )}
           <NewQuotationModal
             open={openDialog === 'new-quotation'}
-            onOpenChange={() => setOpenDialog('')}
-          />
-          <ImportQuotationModal
-            open={openDialog === 'import-quotation'}
             onOpenChange={() => setOpenDialog('')}
           />
         </Card>

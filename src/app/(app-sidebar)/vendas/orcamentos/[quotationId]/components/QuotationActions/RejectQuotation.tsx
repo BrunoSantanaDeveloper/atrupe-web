@@ -31,7 +31,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -90,78 +89,74 @@ export function RejectQuotation({ data }: Props) {
   // Se não tiver permissão, mostra botão simples sem modal
   if (!canManageRejectionReasons()) {
     return (
-      <PermissionGate permissions={['sale:quotation:edit']}>
-        <CustomButton
-          icon={IconX}
-          title="Rejeitar orçamento"
-          iconVariant="errorLight"
-          onClick={handleReject}
-        />
-      </PermissionGate>
+      <CustomButton
+        icon={IconX}
+        title="Rejeitar orçamento"
+        iconVariant="errorLight"
+        onClick={handleReject}
+      />
     )
   }
 
   return (
-    <PermissionGate permissions={['sale:quotation:edit']}>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger asChild>
-          <CustomButton
-            icon={IconX}
-            title="Rejeitar orçamento"
-            iconVariant="errorLight"
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        <CustomButton
+          icon={IconX}
+          title="Rejeitar orçamento"
+          iconVariant="errorLight"
+        />
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <FeaturedIcon
+            Icon={IconAlertCircle}
+            rounded
+            size="lg"
+            variant="errorBorderedLight"
+            className="mx-auto mb-2"
           />
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <FeaturedIcon
-              Icon={IconAlertCircle}
-              rounded
-              size="lg"
-              variant="errorBorderedLight"
-              className="mx-auto mb-2"
-            />
-            <AlertDialogTitle>Rejeitar orçamento</AlertDialogTitle>
-            <AlertDialogDescription className="sr-only">
-              Selecione um motivo e confirme se deseja rejeitar o orçamento
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-1">
-            <Label htmlFor={'rejectReason'}>Motivo</Label>
-            <Select value={reason} onValueChange={(value) => setReason(value)}>
-              <SelectTrigger id={'rejectReason'} autoFocus>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  {options?.length ? (
-                    options?.map((option) => (
-                      <SelectItem key={option.id} value={option.id}>
-                        {option.reason}
-                      </SelectItem>
-                    ))
-                  ) : (
-                    <SelectLabel className="text-gray-400 cursor-not-allowed">
-                      Vazio
-                    </SelectLabel>
-                  )}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setReason('')}>
-              Voltar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleReject}
-              className={buttonVariants({ variant: 'error' })}
-              disabled={!reason}
-            >
-              Rejeitar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </PermissionGate>
+          <AlertDialogTitle>Rejeitar orçamento</AlertDialogTitle>
+          <AlertDialogDescription className="sr-only">
+            Selecione um motivo e confirme se deseja rejeitar o orçamento
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <div className="space-y-1">
+          <Label htmlFor={'rejectReason'}>Motivo</Label>
+          <Select value={reason} onValueChange={(value) => setReason(value)}>
+            <SelectTrigger id={'rejectReason'} autoFocus>
+              <SelectValue placeholder="Selecione" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {options?.length ? (
+                  options?.map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.reason}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectLabel className="text-gray-400 cursor-not-allowed">
+                    Vazio
+                  </SelectLabel>
+                )}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setReason('')}>
+            Voltar
+          </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={handleReject}
+            className={buttonVariants({ variant: 'error' })}
+            disabled={!reason}
+          >
+            Rejeitar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
