@@ -6,12 +6,12 @@ import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Icons
 import {
-  IconX,
   IconCoin,
-  IconClock,
-  IconPercentage,
-  IconCircleCheck,
+  IconCircleX,
   IconClockHour4,
+  IconClockCheck,
+  IconCircleCheck,
+  IconReceiptDollar,
 } from '@tabler/icons-react'
 
 // Mock Data
@@ -37,25 +37,25 @@ export function SummaryCards() {
       value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
-      icon: IconX,
+      icon: IconCircleX,
       variant: 'errorLight',
       label: `Não aprovadas (${summary.rejectedCount})`,
       value: formatCurrencyToBrl(summary.rejectedTotal),
     },
     {
       icon: IconCoin,
-      variant: 'blueLight',
+      variant: 'neutralLight',
       label: 'Ticket médio O.S',
       value: formatCurrencyToBrl(summary.averageTicket),
     },
     {
-      icon: IconPercentage,
-      variant: 'blueLight',
+      icon: IconReceiptDollar,
+      variant: 'neutralLight',
       label: 'Comissão (8%)',
       value: formatCurrencyToBrl(summary.commission),
     },
     {
-      icon: IconClock,
+      icon: IconClockCheck,
       variant: 'neutralLight',
       label: 'Aprovação média',
       value: summary.approvalTime,
@@ -67,6 +67,7 @@ export function SummaryCards() {
       {cards.map((card, index) => (
         <Card key={index} className="p-4 flex items-center gap-3">
           <FeaturedIcon
+            size="md"
             variant={card.variant as FeaturedIconProps['variant']}
             Icon={card.icon}
           />

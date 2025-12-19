@@ -20,12 +20,8 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 const chartConfig = {
   approved: {
-    label: 'Aprovados',
+    label: 'Aprovadas',
     color: 'var(--chart-brand)',
-  },
-  inProgress: {
-    label: 'Em andamento',
-    color: 'var(--chart-gray)',
   },
 } satisfies ChartConfig
 
@@ -36,7 +32,7 @@ export function SalesEvolutionChart() {
     <Card>
       <CardHeader>
         <CardTitle className="text-base font-semibold text-gray-700">
-          Evolução de vendas do mês
+          Evolução de vendas do período
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -65,7 +61,7 @@ export function SalesEvolutionChart() {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => formatCurrencyToBrl(value)}
-              width={80}
+              width={90}
             />
             <ChartTooltip
               cursor={false}
@@ -74,43 +70,23 @@ export function SalesEvolutionChart() {
             />
             <Line
               dataKey="approved"
-              type="monotone"
+              type="linear"
               stroke="var(--color-approved)"
               strokeWidth={2}
               dot={{
                 fill: 'var(--color-approved)',
+                stroke: '#fff',
                 strokeWidth: 2,
-                r: 4,
+                r: 5,
               }}
               activeDot={{
-                r: 6,
-              }}
-            />
-            <Line
-              dataKey="inProgress"
-              type="monotone"
-              stroke="var(--color-inProgress)"
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              dot={{
-                fill: 'var(--color-inProgress)',
+                r: 7,
+                stroke: '#fff',
                 strokeWidth: 2,
-                r: 4,
               }}
             />
           </LineChart>
         </ChartContainer>
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 mt-4">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-brand" />
-            <span className="text-sm text-gray-600">Aprovados</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-gray-400" />
-            <span className="text-sm text-gray-600">Em andamento</span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   )
