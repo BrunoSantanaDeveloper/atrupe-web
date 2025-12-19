@@ -5,7 +5,7 @@ import { InvoicyConfigForm } from './components/InvoicyConfigForm'
 
 export function metadata() {
   return {
-    title: 'Configuração do Invoicy',
+    title: 'Configurações Gerais',
   }
 }
 
@@ -14,7 +14,7 @@ export default function InvoicyConfigPage() {
     <PermissionGate permissions={['invoice:nfse:view']}>
       <div>
         <Topbar
-          title="Configuração do Invoicy"
+          title="Configurações Gerais"
           previousPage="/configuracoes/nota-fiscal"
         />
         <div className="p-6">
