@@ -12,7 +12,7 @@ import { Switch } from '@/components/ui/switch'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
-import { IconFileFilled } from '@tabler/icons-react'
+import { IconFileTypePdf } from '@tabler/icons-react'
 
 // Assets
 import atrupeAcademy from '@/assets/images/academy-logo.png'
@@ -54,7 +54,7 @@ export default function TopActions() {
   return (
     <>
       <CustomButton
-        icon={IconFileFilled}
+        icon={IconFileTypePdf}
         iconVariant="errorGhost"
         title={`Manual completo ${currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}`}
         className="h-14"

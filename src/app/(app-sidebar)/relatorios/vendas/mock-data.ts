@@ -31,17 +31,19 @@ const approvedRejectedData: ApprovedRejectedData[] = [
 ]
 
 const quotationsOrigin: OriginChartData[] = [
-  { name: 'WhatsApp', value: 45, color: '#25D366' },
-  { name: 'Site', value: 30, color: '#3B82F6' },
-  { name: 'Instagram', value: 15, color: '#E1306C' },
-  { name: 'Outros', value: 10, color: '#9CA3AF' },
+  { name: 'WhatsApp', value: 75, color: '#039855' },
+  { name: 'Balcão', value: 45, color: '#F97066' },
+  { name: 'Instagram', value: 30, color: '#475467' },
+  { name: 'Site', value: 35, color: '#F79009' },
+  { name: 'Outros', value: 15, color: '#FDB022' },
 ]
 
 const ordersOrigin: OriginChartData[] = [
-  { name: 'WhatsApp', value: 50, color: '#25D366' },
-  { name: 'Balcão', value: 25, color: '#F59E0B' },
-  { name: 'Site', value: 15, color: '#3B82F6' },
-  { name: 'Outros', value: 10, color: '#9CA3AF' },
+  { name: 'WhatsApp', value: 75, color: '#039855' },
+  { name: 'Balcão', value: 45, color: '#F97066' },
+  { name: 'Instagram', value: 30, color: '#475467' },
+  { name: 'Site', value: 35, color: '#F79009' },
+  { name: 'Outros', value: 15, color: '#FDB022' },
 ]
 
 const topProducts: TopProductData[] = [

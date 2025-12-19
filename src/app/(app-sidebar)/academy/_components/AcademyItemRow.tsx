@@ -17,9 +17,9 @@ import { useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconVideo,
+  IconFileTypePdf,
   IconCircleFilled,
   IconCircleCheckFilled,
-  IconFileTextFilled,
 } from '@tabler/icons-react'
 
 // Modals
@@ -144,7 +144,7 @@ export function AcademyItemRow({ data }: Props) {
                       type="button"
                       variant={buttonVariant[fileExtension] || 'neutralLight'}
                       size="iconSm"
-                      RightIcon={IconFileTextFilled}
+                      RightIcon={IconFileTypePdf}
                       onClick={async () => {
                         try {
                           await handleSetChecked()

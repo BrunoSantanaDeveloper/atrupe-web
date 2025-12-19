@@ -2,37 +2,37 @@
 
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { ChartConfig, ChartContainer } from '@/components/ui/chart'
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '@/components/ui/chart'
 
 // Third-party
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts'
+import { PieChart, Pie, Cell } from 'recharts'
 
 // Mock Data
 import { mockSalesReportData } from '../mock-data'
 
+const COLORS = {
+  whatsapp: '#039855',
+  balcao: '#F97066',
+  instagram: '#475467',
+  site: '#F79009',
+  outros: '#FDB022',
+}
+
 const chartConfig = {
-  whatsapp: {
-    label: 'WhatsApp',
-    color: '#25D366',
-  },
-  site: {
-    label: 'Site',
-    color: '#3B82F6',
-  },
-  instagram: {
-    label: 'Instagram',
-    color: '#E1306C',
-  },
-  outros: {
-    label: 'Outros',
-    color: '#9CA3AF',
-  },
+  whatsapp: { label: 'WhatsApp', color: COLORS.whatsapp },
+  balcao: { label: 'Balcão', color: COLORS.balcao },
+  instagram: { label: 'Instagram', color: COLORS.instagram },
+  site: { label: 'Site', color: COLORS.site },
+  outros: { label: 'Outros', color: COLORS.outros },
 } satisfies ChartConfig
 
 export function QuotationsOriginChart() {
   const { quotationsOrigin } = mockSalesReportData
-
-  const _total = quotationsOrigin.reduce((sum, item) => sum + item.value, 0)
 
   return (
     <Card>
@@ -42,32 +42,39 @@ export function QuotationsOriginChart() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <div className="flex items-center justify-between gap-4">
-          <ChartContainer config={chartConfig} className="h-[180px] w-[180px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={quotationsOrigin}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
-                  paddingAngle={2}
-                  dataKey="value"
-                >
-                  {quotationsOrigin.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-              </PieChart>
-            </ResponsiveContainer>
+        <div className="flex flex-col items-center">
+          <ChartContainer config={chartConfig} className="h-[200px] w-[200px]">
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie
+                data={quotationsOrigin}
+                cx="50%"
+                cy="50%"
+                innerRadius={45}
+                outerRadius={90}
+                paddingAngle={0}
+                dataKey="value"
+                nameKey="name"
+              >
+                {quotationsOrigin.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.color}
+                    stroke="none"
+                  />
+                ))}
+              </Pie>
+            </PieChart>
           </ChartContainer>
           {/* Legend */}
-          <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-4 text-sm">
             {quotationsOrigin.map((item, index) => (
               <div key={index} className="flex items-center gap-2">
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="w-3 h-3 rounded"
                   style={{ backgroundColor: item.color }}
                 />
                 <span className="text-gray-600">{item.name}</span>
