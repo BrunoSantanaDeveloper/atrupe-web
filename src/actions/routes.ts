@@ -80,6 +80,11 @@ const defaultRoute: { [key: string]: string } = {
 
   sellerProfileTotalsRoute: '/seller/profile',
   sellerProfilesRoute: '/seller/profile',
+
+  // Fiscal - NF-e, NFS-e, Invoicy
+  '/fiscal/nfe': '/fiscal/nfe',
+  '/fiscal/nfse': '/fiscal/nfse',
+  '/fiscal/invoicy/config': '/fiscal/invoicy/config',
 }
 
 export function defaultRoutes() {
