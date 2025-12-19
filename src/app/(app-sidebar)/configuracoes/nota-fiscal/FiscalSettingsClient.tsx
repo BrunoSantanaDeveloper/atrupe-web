@@ -17,10 +17,10 @@ export function FiscalSettingsClient() {
       category: 'Configurações Fiscais',
       items: [
         {
-          title: 'Configuração do Invoicy',
+          title: 'Configurações Gerais',
           icon: IconSettings,
           description:
-            'Configure as credenciais e parâmetros de integração com o Invoicy para emissão de notas fiscais',
+            'Configure os parâmetros para emissão de notas fiscais',
           link: `${defaultPath}/invoicy`,
         },
         {

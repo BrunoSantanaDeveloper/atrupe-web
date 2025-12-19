@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
+// Nota: Partner Key e Access Key são credenciais globais da Atrupe
+// e são configuradas via variáveis de ambiente no backend
 export const invoicyConfigSchema = z.object({
-  partnerKey: z.string().min(1, 'Partner Key é obrigatório'),
-  accessKey: z.string().min(1, 'Access Key é obrigatória'),
   environment: z.enum(['PRODUCAO', 'HOMOLOGACAO']),
   // NF-e
   nfeSeries: z.string().optional().default('1'),
