@@ -1,3 +1,5 @@
+'use client'
+
 // Next
 import Link from 'next/link'
 
@@ -17,6 +19,9 @@ import { Skeleton } from '../ui/skeleton'
 // Components
 import { HelpButton } from './HelpButton'
 
+// Hooks
+import { useHelpData } from '@/hooks/queries/useHelpData'
+
 export type TabNavType = {
   value: string
   tab: string
@@ -35,13 +40,7 @@ interface Props {
   previousPage?: string
   badge?: BadgeType
   supportText?: string
-  helpData?: { files: string[]; video: string }
   classNames?: { title?: string; label?: string }
-}
-
-const exampleHelpData = {
-  files: ['/docs/atrupe-manual-completo-start.pdf'],
-  video: 'https://vimeo.com/495579294',
 }
 
 export function Topbar({
@@ -55,9 +54,12 @@ export function Topbar({
   previousPage,
   badge,
   supportText,
-  helpData = exampleHelpData,
   classNames,
 }: Props) {
+  const { helpData } = useHelpData()
+  const hasHelpContent =
+    helpData && (helpData.video || (helpData.files?.length ?? 0) > 0)
+
   return (
     <div className="space-y-3">
       <div
@@ -106,7 +108,7 @@ export function Topbar({
           {label ? (
             <p className="font-semibold text-white opacity-60">{label}</p>
           ) : null}
-          {helpData && !label ? <HelpButton data={helpData} /> : null}
+          {hasHelpContent && !label ? <HelpButton data={helpData} /> : null}
           {secondaryCta || null}
           {primaryCta || null}
         </div>
