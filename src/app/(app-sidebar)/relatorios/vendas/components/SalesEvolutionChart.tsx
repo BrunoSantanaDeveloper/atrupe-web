@@ -15,6 +15,9 @@ import { Line, XAxis, YAxis, CartesianGrid, LineChart } from 'recharts'
 // Mock Data
 import { mockSalesReportData } from '../mock-data'
 
+// Utils
+import { formatCurrencyToBrl } from '@/lib/utils'
+
 const chartConfig = {
   approved: {
     label: 'Aprovados',
@@ -25,16 +28,6 @@ const chartConfig = {
     color: 'var(--chart-gray)',
   },
 } satisfies ChartConfig
-
-function formatCurrency(value: number) {
-  if (value === 0) return 'R$ 0'
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
 
 export function SalesEvolutionChart() {
   const { evolution } = mockSalesReportData
@@ -71,13 +64,13 @@ export function SalesEvolutionChart() {
             <YAxis
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value) => formatCurrency(value)}
+              tickFormatter={(value) => formatCurrencyToBrl(value)}
               width={80}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent />}
-              formatter={(value) => formatCurrency(value as number)}
+              formatter={(value) => formatCurrencyToBrl(value as number)}
             />
             <Line
               dataKey="approved"

@@ -22,7 +22,7 @@ import { mockSalesReportData } from '../mock-data'
 const chartConfig = {
   value: {
     label: 'Valor',
-    color: '#4CBC89',
+    color: 'var(--chart-brand)',
   },
 } satisfies ChartConfig
 

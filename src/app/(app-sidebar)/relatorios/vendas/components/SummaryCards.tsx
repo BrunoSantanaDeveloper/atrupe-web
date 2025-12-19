@@ -17,12 +17,8 @@ import {
 // Mock Data
 import { mockSalesReportData } from '../mock-data'
 
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value)
-}
+// Utils
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 export function SummaryCards() {
   const { summary } = mockSalesReportData
@@ -32,31 +28,31 @@ export function SummaryCards() {
       icon: IconCircleCheck,
       variant: 'successLight',
       label: `Aprovadas ${summary.approvedCount} OS`,
-      value: formatCurrency(summary.approvedTotal),
+      value: formatCurrencyToBrl(summary.approvedTotal),
     },
     {
       icon: IconX,
       variant: 'errorLight',
       label: `Reprovadas/NS ${summary.rejectedCount}`,
-      value: formatCurrency(summary.rejectedTotal),
+      value: formatCurrencyToBrl(summary.rejectedTotal),
     },
     {
       icon: IconQuestionMark,
       variant: 'warningLight',
       label: 'Não respondidas NS',
-      value: formatCurrency(summary.noResponseTotal),
+      value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
       icon: IconCoin,
       variant: 'infoLight',
       label: 'Juros/multa OS',
-      value: formatCurrency(summary.averageTicket),
+      value: formatCurrencyToBrl(summary.averageTicket),
     },
     {
       icon: IconPercentage,
       variant: 'brandLight',
       label: 'Comissão RBS',
-      value: formatCurrency(summary.commission),
+      value: formatCurrencyToBrl(summary.commission),
     },
     {
       icon: IconClock,

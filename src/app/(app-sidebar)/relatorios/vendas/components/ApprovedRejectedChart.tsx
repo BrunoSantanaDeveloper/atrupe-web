@@ -18,15 +18,15 @@ import { mockSalesReportData } from '../mock-data'
 const chartConfig = {
   approved: {
     label: 'Aprovados',
-    color: '#4CBC89',
+    color: 'var(--chart-brand)',
   },
   rejected: {
     label: 'Vendas',
-    color: '#F97316',
+    color: 'var(--chart-orange)',
   },
   inProgress: {
     label: 'Em andamento',
-    color: '#FCD34D',
+    color: 'var(--chart-warning)',
   },
 } satisfies ChartConfig
 
@@ -87,15 +87,15 @@ export function ApprovedRejectedChart() {
         {/* Legend */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-sm">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-[#4CBC89]" />
+            <div className="w-3 h-3 rounded bg-brand" />
             <span className="text-gray-600">Aprovados</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-[#F97316]" />
+            <div className="w-3 h-3 rounded bg-orange" />
             <span className="text-gray-600">Vendas</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-[#FCD34D]" />
+            <div className="w-3 h-3 rounded bg-warning" />
             <span className="text-gray-600">Em andamento</span>
           </div>
         </div>
