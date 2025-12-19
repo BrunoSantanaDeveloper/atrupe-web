@@ -17,16 +17,16 @@ import { mockSalesReportData } from '../mock-data'
 
 const chartConfig = {
   approved: {
-    label: 'Aprovados',
-    color: 'var(--chart-brand)',
+    label: 'Aprovadas',
+    color: '#6CE9A6',
+  },
+  expired: {
+    label: 'Vencidas',
+    color: '#FEC84B',
   },
   rejected: {
-    label: 'Vendas',
-    color: 'var(--chart-orange)',
-  },
-  inProgress: {
-    label: 'Em andamento',
-    color: 'var(--chart-warning)',
+    label: 'Rejeitadas',
+    color: '#F97066',
   },
 } satisfies ChartConfig
 
@@ -37,7 +37,7 @@ export function ApprovedRejectedChart() {
     <Card>
       <CardHeader>
         <CardTitle className="text-base font-semibold text-gray-700">
-          Aprovados x Não aprovados
+          Aprovadas x Não aprovadas
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -48,6 +48,7 @@ export function ApprovedRejectedChart() {
           <BarChart
             accessibilityLayer
             data={approvedRejected}
+            barGap={2}
             margin={{
               left: 0,
               right: 0,
@@ -62,41 +63,48 @@ export function ApprovedRejectedChart() {
               tickMargin={10}
               axisLine={false}
             />
-            <YAxis tickLine={false} axisLine={false} hide />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              domain={[0, 100]}
+              ticks={[0, 25, 50, 75, 100]}
+            />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Bar
               dataKey="approved"
               fill="var(--color-approved)"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={12}
             />
             <Bar
               dataKey="rejected"
+              stackId="naoAprovadas"
               fill="var(--color-rejected)"
-              radius={[4, 4, 0, 0]}
-              barSize={20}
+              radius={[0, 0, 0, 0]}
+              barSize={12}
             />
             <Bar
-              dataKey="inProgress"
-              fill="var(--color-inProgress)"
+              dataKey="expired"
+              stackId="naoAprovadas"
+              fill="var(--color-expired)"
               radius={[4, 4, 0, 0]}
-              barSize={20}
+              barSize={12}
             />
           </BarChart>
         </ChartContainer>
         {/* Legend */}
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-4 text-sm">
+        <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-brand" />
-            <span className="text-gray-600">Aprovados</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-orange" />
-            <span className="text-gray-600">Vendas</span>
+            <span className="text-gray-600">Aprovadas</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-warning" />
-            <span className="text-gray-600">Em andamento</span>
+            <span className="text-gray-600">Vencidas</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded bg-error" />
+            <span className="text-gray-600">Rejeitadas</span>
           </div>
         </div>
       </CardContent>

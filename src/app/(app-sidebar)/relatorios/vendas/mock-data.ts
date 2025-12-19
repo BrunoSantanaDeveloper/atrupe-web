@@ -22,12 +22,12 @@ const evolutionData: SalesEvolutionData[] = [
 ]
 
 const approvedRejectedData: ApprovedRejectedData[] = [
-  { label: 'Jul', approved: 2, rejected: 2, inProgress: 1 },
-  { label: 'Ago', approved: 3, rejected: 2, inProgress: 2 },
-  { label: 'Set', approved: 1, rejected: 1, inProgress: 1 },
-  { label: 'Out', approved: 2, rejected: 3, inProgress: 2 },
-  { label: 'Nov', approved: 6, rejected: 2, inProgress: 0 },
-  { label: 'Dez', approved: 0, rejected: 0, inProgress: 0 },
+  { label: 'Jul', approved: 100, expired: 65, rejected: 25 },
+  { label: 'Ago', approved: 78, expired: 58, rejected: 18 },
+  { label: 'Set', approved: 72, expired: 72, rejected: 25 },
+  { label: 'Out', approved: 35, expired: 28, rejected: 25 },
+  { label: 'Nov', approved: 30, expired: 18, rejected: 28 },
+  { label: 'Dez', approved: 18, expired: 0, rejected: 30 },
 ]
 
 const quotationsOrigin: OriginChartData[] = [

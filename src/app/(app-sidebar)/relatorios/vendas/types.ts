@@ -34,8 +34,8 @@ export interface SalesEvolutionData {
 export interface ApprovedRejectedData {
   label: string
   approved: number
+  expired: number
   rejected: number
-  inProgress: number
 }
 
 export interface OriginChartData {
