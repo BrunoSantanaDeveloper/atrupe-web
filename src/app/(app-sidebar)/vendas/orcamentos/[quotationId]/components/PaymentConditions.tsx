@@ -52,21 +52,8 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
 
   const data = quotationData.paymentConditions
 
-  // Somatório do valor total dos itens do orçamento (sem desconto)
-  const totalValue = quotationData?.quotationItems?.reduce(
-    (acc, item) => acc + item?.totalValue,
-    0,
-  )
-
   // Somatório do valor final dos itens do orçamento (já com desconto)
   const finalValue = quotationData?.totalValue
-  // const finalValue = quotationData?.quotationItems?.reduce(
-  //   (acc, item) => acc + item?.finalValue,
-  //   0,
-  // )
-
-  // Desconto total aplicado aos itens do orçamento
-  const discount = totalValue - finalValue
 
   const deliveryValue = quotationData?.deliveryInfo?.value ?? 0
 
@@ -151,11 +138,11 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                 />
                 <TextSupportingText
                   supporting="Itens"
-                  text={formatCurrencyToBrl(totalValue)}
+                  text={formatCurrencyToBrl(finalValue)}
                 />
                 <TextSupportingText
                   supporting="Desconto"
-                  text={formatCurrencyToBrl(discount)}
+                  text={formatCurrencyToBrl(discountTotal)}
                 />
                 <TextSupportingText
                   supporting="Subtotal"
