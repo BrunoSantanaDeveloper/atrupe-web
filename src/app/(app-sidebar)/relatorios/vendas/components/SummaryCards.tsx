@@ -11,7 +11,7 @@ import {
   IconClock,
   IconPercentage,
   IconCircleCheck,
-  IconQuestionMark,
+  IconClockHour4,
 } from '@tabler/icons-react'
 
 // Mock Data
@@ -27,43 +27,43 @@ export function SummaryCards() {
     {
       icon: IconCircleCheck,
       variant: 'successLight',
-      label: `Aprovadas ${summary.approvedCount} OS`,
+      label: `Aprovadas (${summary.approvedCount})`,
       value: formatCurrencyToBrl(summary.approvedTotal),
+    },
+    {
+      icon: IconClockHour4,
+      variant: 'warningLight',
+      label: `Aguardando (${summary.rejectedCount})`,
+      value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
       icon: IconX,
       variant: 'errorLight',
-      label: `Reprovadas/NS ${summary.rejectedCount}`,
+      label: `Não aprovadas (${summary.rejectedCount})`,
       value: formatCurrencyToBrl(summary.rejectedTotal),
     },
     {
-      icon: IconQuestionMark,
-      variant: 'warningLight',
-      label: 'Não respondidas NS',
-      value: formatCurrencyToBrl(summary.noResponseTotal),
-    },
-    {
       icon: IconCoin,
-      variant: 'infoLight',
-      label: 'Juros/multa OS',
+      variant: 'blueLight',
+      label: 'Ticket médio O.S',
       value: formatCurrencyToBrl(summary.averageTicket),
     },
     {
       icon: IconPercentage,
-      variant: 'brandLight',
-      label: 'Comissão RBS',
+      variant: 'blueLight',
+      label: 'Comissão (8%)',
       value: formatCurrencyToBrl(summary.commission),
     },
     {
       icon: IconClock,
-      variant: 'grayLight',
-      label: '% aprovação/mês',
+      variant: 'neutralLight',
+      label: 'Aprovação média',
       value: summary.approvalTime,
     },
   ]
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
         <Card key={index} className="p-4 flex items-center gap-3">
           <FeaturedIcon
