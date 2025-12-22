@@ -9,9 +9,9 @@ import { TopClientsChart } from './TopClientsChart'
 import { TopProductsChart } from './TopProductsChart'
 import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
-import { PrintButton } from '@/components/common/PrintButton'
 import { ApprovedRejectedChart } from './ApprovedRejectedChart'
 import { QuotationsOriginChart } from './QuotationsOriginChart'
+import { SalesReportPrintButton } from './SalesReportPrintButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -19,7 +19,10 @@ import type { SearchParamsType } from '@/types/coreTypes'
 export function SalesReport({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
-      <Topbar title="Relatório de vendas" primaryCta={<PrintButton />} />
+      <Topbar
+        title="Relatório de vendas"
+        primaryCta={<SalesReportPrintButton />}
+      />
       {/* Filters */}
       <FiltersBar searchParams={searchParams} />
 
