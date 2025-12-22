@@ -46,8 +46,8 @@ const phaseConfig: Record<
 export function SalesTable() {
   const { tableSections, pagination } = mockSalesReportData
   const [currentPage, setCurrentPage] = useState(pagination.page)
-  const [groupBy, setGroupBy] = useState('value')
-  const [orderBy, setOrderBy] = useState('seller')
+  const [groupBy, setGroupBy] = useState('none')
+  const [orderBy, setOrderBy] = useState('approvedDate')
 
   return (
     <Card>
@@ -57,25 +57,24 @@ export function SalesTable() {
           <SelectBasic
             name="groupBy"
             label="Agrupar por"
-            className="w-[140px]"
+            className="w-[260px]"
             value={groupBy}
             onChange={setGroupBy}
             options={[
-              { value: 'value', label: 'Maior valor' },
-              { value: 'date', label: 'Data' },
+              { value: 'none', label: 'Sem agrupamento' },
               { value: 'client', label: 'Cliente' },
             ]}
           />
           <SelectBasic
             name="orderBy"
             label="Ordenar por"
-            className="w-[180px]"
+            className="w-[260px]"
             value={orderBy}
             onChange={setOrderBy}
             options={[
-              { value: 'seller', label: 'Nome do vendedor' },
-              { value: 'client', label: 'Nome do cliente' },
-              { value: 'value', label: 'Valor' },
+              { value: 'approvedDate', label: 'Data de aprovação' },
+              { value: 'valueDesc', label: 'Maior valor' },
+              { value: 'valueAsc', label: 'Menor valor' },
             ]}
           />
         </div>

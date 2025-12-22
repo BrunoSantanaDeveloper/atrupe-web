@@ -161,13 +161,13 @@ const tableSections: SalesTableSection[] = [
 
 export const mockSalesReportData: SalesReportData = {
   summary: {
-    approvedTotal: 48981.25,
-    approvedCount: 159,
-    rejectedTotal: 7864.05,
-    rejectedCount: 10,
-    noResponseTotal: 7864.05,
-    averageTicket: 150.8,
-    commission: 2782.42,
+    approvedTotal: 4898125,
+    approvedCount: 230,
+    rejectedTotal: 786405,
+    rejectedCount: 100,
+    noResponseTotal: 786405,
+    averageTicket: 15080,
+    commission: 278242,
     approvalTime: '48h35',
   },
   evolution: evolutionData,

@@ -138,7 +138,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           name="origin"
           label="Origem"
           placeholder="Selecione uma origem"
-          className="w-[220px]"
+          className="w-[260px]"
           options={originOptions}
           value={searchParams?.origin || 'all'}
           onChange={(value) => handleFilter('origin', value)}
@@ -147,20 +147,19 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           name="period"
           label="Período"
           placeholder="Selecione o período"
-          className="w-[220px]"
+          className="w-[260px]"
           options={periodSelectOptions}
           value={searchParams?.period || 'current_month'}
           onChange={handlePeriodChange}
         />
-        {isCustomPeriod && (
-          <DateRangePickerBasic
-            label="Período personalizado"
-            placeholder="Selecione o período"
-            className="w-[220px]"
-            value={defaultDateRange}
-            onChange={handleDateRangeChange}
-          />
-        )}
+        <DateRangePickerBasic
+          label="Período personalizado"
+          placeholder="Selecione o período"
+          className="w-[260px]"
+          value={defaultDateRange}
+          onChange={handleDateRangeChange}
+          disabled={!isCustomPeriod}
+        />
       </CardHeader>
     </Card>
   )

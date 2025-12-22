@@ -39,11 +39,11 @@ export function TopClientsChart() {
           Melhores clientes
         </CardTitle>
         <div className="flex items-center gap-1">
-          <PrintButton />
+          <PrintButton size="icon" variant="ghost" />
           <Button
             type="button"
-            size="iconMd"
-            variant="neutralOutline"
+            size="icon"
+            variant="ghost"
             RightIcon={IconMaximize}
           />
         </div>
