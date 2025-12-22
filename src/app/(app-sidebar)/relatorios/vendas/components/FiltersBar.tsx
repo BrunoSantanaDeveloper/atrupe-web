@@ -72,16 +72,20 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
         startDate = new Date(today.getFullYear(), today.getMonth(), 1)
         endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
         break
-      case 'last_month':
-        startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-        endDate = new Date(today.getFullYear(), today.getMonth(), 0)
-        break
-      case 'last_3_months':
-        startDate = new Date(today.getFullYear(), today.getMonth() - 2, 1)
-        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
-        break
       case 'last_6_months':
         startDate = new Date(today.getFullYear(), today.getMonth() - 5, 1)
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        break
+      case 'last_12_months':
+        startDate = new Date(today.getFullYear(), today.getMonth() - 11, 1)
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        break
+      case 'last_24_months':
+        startDate = new Date(today.getFullYear(), today.getMonth() - 23, 1)
+        endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        break
+      case 'last_36_months':
+        startDate = new Date(today.getFullYear(), today.getMonth() - 35, 1)
         endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
         break
       case 'custom':
