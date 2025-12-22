@@ -11,8 +11,8 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
-// Mock Data
-import { mockOrigins, periodOptions } from '../mock-data'
+// Config
+import { originOptions, periodOptions } from '../config'
 import { Card, CardHeader } from '@/components/ui/card'
 
 export function FiltersBar({ searchParams }: SearchParamsType) {
@@ -123,7 +123,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
     router.push(`?${params.toString()}`)
   }
 
-  const originOptions = mockOrigins.map((o) => ({
+  const originSelectOptions = originOptions.map((o) => ({
     value: o.id,
     label: o.name,
   }))
@@ -143,7 +143,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           label="Origem"
           placeholder="Selecione uma origem"
           className="w-[260px]"
-          options={originOptions}
+          options={originSelectOptions}
           value={searchParams?.origin || 'all'}
           onChange={(value) => handleFilter('origin', value)}
         />
