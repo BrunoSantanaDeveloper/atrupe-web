@@ -43,7 +43,7 @@ export function SalesReport({ searchParams }: SearchParamsType) {
       </div>
 
       {/* Table */}
-      <SalesTable />
+      <SalesTable searchParams={searchParams} />
     </div>
   )
 }

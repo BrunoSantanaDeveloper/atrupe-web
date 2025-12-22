@@ -12,6 +12,8 @@ export interface SalesReportFilters {
     | 'custom'
   startDate: Date | null
   endDate: Date | null
+  groupBy: 'none' | 'client'
+  orderBy: 'approvedDate' | 'valueDesc' | 'valueAsc'
 }
 
 export interface SalesSummary {
@@ -68,12 +70,19 @@ export interface SaleRecord {
   phasePercentage: number
 }
 
-export interface SalesTableSection {
-  title: string
+// Grouped by client - returned when groupBy = 'client'
+export interface SalesClientGroup {
+  clientId: string
+  clientName: string
   count: number
   total: number
   records: SaleRecord[]
 }
+
+// Table data can be either flat (no grouping) or grouped by client
+export type SalesTableData =
+  | { grouped: false; records: SaleRecord[]; totalCount: number }
+  | { grouped: true; groups: SalesClientGroup[]; totalCount: number }
 
 export interface SalesReportData {
   summary: SalesSummary
@@ -83,7 +92,7 @@ export interface SalesReportData {
   ordersOrigin: OriginChartData[]
   topProducts: TopProductData[]
   topClients: TopClientData[]
-  tableSections: SalesTableSection[]
+  tableData: SalesTableData
   pagination: {
     page: number
     totalPages: number
