@@ -24,22 +24,22 @@ export function SalesReport({ searchParams }: SearchParamsType) {
       <FiltersBar searchParams={searchParams} />
 
       {/* Summary Cards */}
-      <SummaryCards />
+      <SummaryCards searchParams={searchParams} />
 
       {/* Sales Evolution Chart */}
-      <SalesEvolutionChart />
+      <SalesEvolutionChart searchParams={searchParams} />
 
       {/* Charts Row: Approved/Rejected, Origin Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <ApprovedRejectedChart />
-        <QuotationsOriginChart />
-        <OrdersOriginChart />
+        <ApprovedRejectedChart searchParams={searchParams} />
+        <QuotationsOriginChart searchParams={searchParams} />
+        <OrdersOriginChart searchParams={searchParams} />
       </div>
 
       {/* Rankings Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <TopProductsChart />
-        <TopClientsChart />
+        <TopProductsChart searchParams={searchParams} />
+        <TopClientsChart searchParams={searchParams} />
       </div>
 
       {/* Table */}

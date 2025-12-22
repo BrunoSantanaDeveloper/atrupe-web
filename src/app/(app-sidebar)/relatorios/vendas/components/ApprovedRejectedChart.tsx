@@ -1,7 +1,11 @@
 'use client'
 
+// React
+import { useQuery } from '@tanstack/react-query'
+
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   ChartConfig,
   ChartTooltip,
@@ -12,8 +16,11 @@ import {
 // Third-party
 import { Bar, XAxis, YAxis, CartesianGrid, BarChart } from 'recharts'
 
-// Mock Data
-import { mockSalesReportData } from '../mock-data'
+// Actions
+import { getApprovedRejected } from '@/actions/sales-report'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
 
 const chartConfig = {
   approved: {
@@ -30,8 +37,21 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ApprovedRejectedChart() {
-  const { approvedRejected } = mockSalesReportData
+interface ApprovedRejectedChartProps extends SearchParamsType {}
+
+export function ApprovedRejectedChart({
+  searchParams,
+}: ApprovedRejectedChartProps) {
+  const { data: approvedRejected = [], isLoading } = useQuery({
+    queryKey: ['sales-approved-rejected', searchParams],
+    queryFn: () =>
+      getApprovedRejected({
+        sellerId: searchParams?.sellerId as string,
+        originId: searchParams?.originId as string,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
+  })
 
   return (
     <Card>
@@ -41,57 +61,56 @@ export function ApprovedRejectedChart() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-[200px] max-h-[250px] w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={approvedRejected}
-            barGap={2}
-            margin={{
-              left: 0,
-              right: 0,
-              top: 12,
-              bottom: 0,
-            }}
+        {isLoading ? (
+          <Skeleton className="h-[200px] w-full" />
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="min-h-[200px] max-h-[250px] w-full"
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              domain={[0, 100]}
-              ticks={[0, 25, 50, 75, 100]}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar
-              dataKey="approved"
-              fill="var(--color-approved)"
-              radius={[4, 4, 0, 0]}
-              barSize={12}
-            />
-            <Bar
-              dataKey="rejected"
-              stackId="naoAprovadas"
-              fill="var(--color-rejected)"
-              radius={[0, 0, 0, 0]}
-              barSize={12}
-            />
-            <Bar
-              dataKey="expired"
-              stackId="naoAprovadas"
-              fill="var(--color-expired)"
-              radius={[4, 4, 0, 0]}
-              barSize={12}
-            />
-          </BarChart>
-        </ChartContainer>
+            <BarChart
+              accessibilityLayer
+              data={approvedRejected}
+              barGap={2}
+              margin={{
+                left: 0,
+                right: 0,
+                top: 12,
+                bottom: 0,
+              }}
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="label"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis tickLine={false} axisLine={false} domain={[0, 'auto']} />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="approved"
+                fill="var(--color-approved)"
+                radius={[4, 4, 0, 0]}
+                barSize={12}
+              />
+              <Bar
+                dataKey="rejected"
+                stackId="naoAprovadas"
+                fill="var(--color-rejected)"
+                radius={[0, 0, 0, 0]}
+                barSize={12}
+              />
+              <Bar
+                dataKey="expired"
+                stackId="naoAprovadas"
+                fill="var(--color-expired)"
+                radius={[4, 4, 0, 0]}
+                barSize={12}
+              />
+            </BarChart>
+          </ChartContainer>
+        )}
         {/* Legend */}
         <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">

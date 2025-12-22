@@ -1,7 +1,11 @@
 'use client'
 
+// React
+import { useQuery } from '@tanstack/react-query'
+
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   ChartConfig,
   ChartTooltip,
@@ -12,8 +16,11 @@ import {
 // Third-party
 import { Line, XAxis, YAxis, CartesianGrid, LineChart } from 'recharts'
 
-// Mock Data
-import { mockSalesReportData } from '../mock-data'
+// Actions
+import { getSalesEvolution } from '@/actions/sales-report'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -25,8 +32,21 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function SalesEvolutionChart() {
-  const { evolution } = mockSalesReportData
+interface SalesEvolutionChartProps extends SearchParamsType {}
+
+export function SalesEvolutionChart({
+  searchParams,
+}: SalesEvolutionChartProps) {
+  const { data: evolution = [], isLoading } = useQuery({
+    queryKey: ['sales-evolution', searchParams],
+    queryFn: () =>
+      getSalesEvolution({
+        sellerId: searchParams?.sellerId as string,
+        originId: searchParams?.originId as string,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
+  })
 
   return (
     <Card>
@@ -36,57 +56,61 @@ export function SalesEvolutionChart() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-[250px] max-h-[300px] w-full"
-        >
-          <LineChart
-            accessibilityLayer
-            data={evolution}
-            margin={{
-              left: 12,
-              right: 12,
-              top: 12,
-              bottom: 12,
-            }}
+        {isLoading ? (
+          <Skeleton className="h-[250px] w-full" />
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="min-h-[250px] max-h-[300px] w-full"
           >
-            <CartesianGrid vertical={false} strokeDasharray="3 3" />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => formatCurrencyToBrl(value)}
-              width={90}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent />}
-              formatter={(value) => formatCurrencyToBrl(value as number)}
-            />
-            <Line
-              dataKey="approved"
-              type="linear"
-              stroke="var(--color-approved)"
-              strokeWidth={2}
-              dot={{
-                fill: 'var(--color-approved)',
-                stroke: '#fff',
-                strokeWidth: 2,
-                r: 5,
+            <LineChart
+              accessibilityLayer
+              data={evolution}
+              margin={{
+                left: 12,
+                right: 12,
+                top: 12,
+                bottom: 12,
               }}
-              activeDot={{
-                r: 7,
-                stroke: '#fff',
-                strokeWidth: 2,
-              }}
-            />
-          </LineChart>
-        </ChartContainer>
+            >
+              <CartesianGrid vertical={false} strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value) => formatCurrencyToBrl(value)}
+                width={90}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent />}
+                formatter={(value) => formatCurrencyToBrl(value as number)}
+              />
+              <Line
+                dataKey="approved"
+                type="linear"
+                stroke="var(--color-approved)"
+                strokeWidth={2}
+                dot={{
+                  fill: 'var(--color-approved)',
+                  stroke: '#fff',
+                  strokeWidth: 2,
+                  r: 5,
+                }}
+                activeDot={{
+                  r: 7,
+                  stroke: '#fff',
+                  strokeWidth: 2,
+                }}
+              />
+            </LineChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )

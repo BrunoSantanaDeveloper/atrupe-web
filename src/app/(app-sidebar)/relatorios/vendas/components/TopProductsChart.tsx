@@ -1,7 +1,11 @@
 'use client'
 
+// React
+import { useQuery } from '@tanstack/react-query'
+
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   ChartConfig,
   ChartTooltip,
@@ -19,8 +23,11 @@ import { IconMaximize } from '@tabler/icons-react'
 // Third-party
 import { Bar, XAxis, YAxis, BarChart } from 'recharts'
 
-// Mock Data
-import { mockSalesReportData } from '../mock-data'
+// Actions
+import { getTopProducts } from '@/actions/sales-report'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
 
 const chartConfig = {
   value: {
@@ -29,8 +36,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function TopProductsChart() {
-  const { topProducts } = mockSalesReportData
+interface TopProductsChartProps extends SearchParamsType {}
+
+export function TopProductsChart({ searchParams }: TopProductsChartProps) {
+  const { data: topProducts = [], isLoading } = useQuery({
+    queryKey: ['sales-top-products', searchParams],
+    queryFn: () =>
+      getTopProducts({
+        sellerId: searchParams?.sellerId as string,
+        originId: searchParams?.originId as string,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
+  })
 
   return (
     <Card>
@@ -49,39 +67,43 @@ export function TopProductsChart() {
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <ChartContainer
-          config={chartConfig}
-          className="min-h-[280px] max-h-[320px] w-full"
-        >
-          <BarChart
-            accessibilityLayer
-            data={topProducts}
-            layout="vertical"
-            margin={{
-              left: 0,
-              right: 20,
-              top: 0,
-              bottom: 0,
-            }}
+        {isLoading ? (
+          <Skeleton className="h-[280px] w-full" />
+        ) : (
+          <ChartContainer
+            config={chartConfig}
+            className="min-h-[280px] max-h-[320px] w-full"
           >
-            <XAxis type="number" hide />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tickLine={false}
-              axisLine={false}
-              width={80}
-              tick={{ fontSize: 12 }}
-            />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <Bar
-              dataKey="value"
-              fill="var(--color-value)"
-              radius={[0, 4, 4, 0]}
-              barSize={18}
-            />
-          </BarChart>
-        </ChartContainer>
+            <BarChart
+              accessibilityLayer
+              data={topProducts}
+              layout="vertical"
+              margin={{
+                left: 0,
+                right: 20,
+                top: 0,
+                bottom: 0,
+              }}
+            >
+              <XAxis type="number" hide />
+              <YAxis
+                type="category"
+                dataKey="name"
+                tickLine={false}
+                axisLine={false}
+                width={80}
+                tick={{ fontSize: 12 }}
+              />
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="value"
+                fill="var(--color-value)"
+                radius={[0, 4, 4, 0]}
+                barSize={18}
+              />
+            </BarChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )

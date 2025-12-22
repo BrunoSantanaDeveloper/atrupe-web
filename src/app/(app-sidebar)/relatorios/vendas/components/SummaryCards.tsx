@@ -1,7 +1,11 @@
 'use client'
 
+// React
+import { useQuery } from '@tanstack/react-query'
+
 // UI
 import { Card } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Icons
@@ -14,14 +18,50 @@ import {
   IconReceiptDollar,
 } from '@tabler/icons-react'
 
-// Mock Data
-import { mockSalesReportData } from '../mock-data'
+// Actions
+import { getSalesReportSummary } from '@/actions/sales-report'
+
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
 
-export function SummaryCards() {
-  const { summary } = mockSalesReportData
+interface SummaryCardsProps extends SearchParamsType {}
+
+export function SummaryCards({ searchParams }: SummaryCardsProps) {
+  const { data: summary, isLoading } = useQuery({
+    queryKey: ['sales-summary', searchParams],
+    queryFn: () =>
+      getSalesReportSummary({
+        sellerId: searchParams?.sellerId as string,
+        originId: searchParams?.originId as string,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
+  })
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Array(6)
+          .fill(0)
+          .map((_, i) => (
+            <Card key={i} className="p-4 flex items-center gap-3">
+              <Skeleton className="h-10 w-10 rounded-full" />
+              <div className="flex flex-col gap-1">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-5 w-20" />
+              </div>
+            </Card>
+          ))}
+      </div>
+    )
+  }
+
+  if (!summary) {
+    return null
+  }
 
   const cards = [
     {
@@ -33,7 +73,7 @@ export function SummaryCards() {
     {
       icon: IconClockHour4,
       variant: 'warningLight',
-      label: `Aguardando (${summary.rejectedCount})`,
+      label: `Aguardando (${summary.noResponseTotal})`,
       value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
@@ -51,7 +91,7 @@ export function SummaryCards() {
     {
       icon: IconReceiptDollar,
       variant: 'neutralLight',
-      label: 'Comissão (8%)',
+      label: 'Comissão',
       value: formatCurrencyToBrl(summary.commission),
     },
     {
