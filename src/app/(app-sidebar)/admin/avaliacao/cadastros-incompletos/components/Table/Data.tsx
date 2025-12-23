@@ -9,7 +9,6 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { CompleteRegistrationDialog } from '../CompleteRegistrationDialog'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 // UI
 import {
@@ -131,20 +130,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={[
-                                        'admin:incomplete_registrations:edit',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Cadastrar"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog(true)
-                                        }}
-                                      />
-                                    </PermissionGate>
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Cadastrar"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setOpenDialog(true)
+                                      }}
+                                    />
                                   </TooltipProvider>
                                 </div>
                               </TableCell>
