@@ -70,10 +70,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectPage, req.url).toString())
   }
 
-  const isAllowedRouteWhenTrialExpired = [
-    'logout',
-    SUBSCRIPTION_PAGE.slice(1),
-  ].some((route) => pathname.endsWith(route))
+  const isAllowedRouteWhenTrialExpired =
+    pathname.endsWith('logout') || pathname.startsWith(SUBSCRIPTION_PAGE)
 
   // If the user is logged in but the trial has expired, redirect to the subscription page
   if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
