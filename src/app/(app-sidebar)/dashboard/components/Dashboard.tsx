@@ -12,16 +12,16 @@ export function Dashboard() {
   return (
     <div className="space-y-4 mt-1 w-full">
       <div className="flex flex-wrap gap-4">
-        <PermissionGate permissions={['reports:results_dashboard:view']}>
+        <PermissionGate permissions={['financial:flow:view']}>
           <DashboardRevenues />
         </PermissionGate>
-        <PermissionGate permissions={['reports:results_dashboard:view']}>
+        <PermissionGate permissions={['financial:flow:view']}>
           <DashboardExpenses />
         </PermissionGate>
       </div>
       <div className="flex flex-wrap gap-4">
         <div className="space-y-4 flex-[1_1_900px]">
-          <PermissionGate permissions={['reports:sales_dashboard:view']}>
+          <PermissionGate permissions={['sale:quotation:view']}>
             <DashboardQuotations />
           </PermissionGate>
           {/* <DashboardSalesEvolution /> */}

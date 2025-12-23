@@ -74,22 +74,20 @@ export function Main() {
   return (
     <div className="space-y-6">
       <Topbar
-        title="Sessões Ativas"
+        title="Dashboard"
         primaryCta={
           <Button
+            size="iconMd"
+            variant="neutralOutline"
             onClick={() => refetch()}
-            LeftIcon={IconRefresh}
-            disabled={isRefetching}
-            variant="outline"
-          >
-            {isRefetching ? 'Atualizando...' : 'Atualizar'}
-          </Button>
+            RightIcon={IconRefresh}
+            isLoading={isRefetching}
+          />
         }
         badge={{
           variant: sessions.length > 0 ? 'successLight' : 'neutralLight',
           text: `${sessions.length} ${sessions.length === 1 ? 'Usuário' : 'Usuários'} Online`,
         }}
-        previousPage="/admin"
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
