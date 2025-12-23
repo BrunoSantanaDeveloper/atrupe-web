@@ -40,6 +40,7 @@ import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 import { generateIdempotencyKey } from '@/lib/idempotency'
+import { useRouter } from 'next/navigation'
 
 const IS_DEV_ENV = process.env.NEXT_PUBLIC_ENV !== 'production'
 
@@ -119,10 +120,40 @@ export default function SubscriptionPage() {
   const [additionalUsers, setAdditionalUsers] = useState(0)
 
   const { data: session } = useSession()
+  const router = useRouter()
 
   const trialEndsAt = session?.company?.plan?.trialEndsAt
 
   const isExpired = trialEndsAt ? new Date(trialEndsAt) < new Date() : false
+
+  // Verificar se há assinatura paga pendente de ativação
+  // Isso cobre o caso onde o usuário pagou mas fechou a página antes de ir para /concluir
+  useQuery({
+    queryKey: ['check-subscription-status'],
+    queryFn: async () => {
+      const response = await createItemNew({
+        route: '/subscriptions/check-status',
+      })
+
+      if (response.success) {
+        const status = response.data?.status
+
+        // Se a assinatura foi ativada ou já estava ativa, redirecionar
+        if (status === 'activated' || status === 'already_active') {
+          toast.success('Sua assinatura está ativa!')
+          router.replace('/assinatura/concluir')
+          return response.data
+        }
+      }
+
+      return response.data
+    },
+    // Só executa se o trial expirou (usuário está nesta página por causa disso)
+    enabled: isExpired,
+    // Não refazer a query automaticamente
+    refetchOnWindowFocus: false,
+    retry: false,
+  })
 
   // Buscar planos da API
   const { data: plansResponse, isLoading: isLoadingPlans } = useQuery({
