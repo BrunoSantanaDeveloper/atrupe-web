@@ -162,12 +162,7 @@ export function ServicosFiscaisClient() {
   }
 
   // Update form when fiscal data loads
-  if (
-    dialogOpen &&
-    selectedService &&
-    fiscalData &&
-    !form.formState.isDirty
-  ) {
+  if (dialogOpen && selectedService && fiscalData && !form.formState.isDirty) {
     form.reset({
       codigoServico: fiscalData.codigoServico || '',
       aliquotaIss: fiscalData.aliquotaIss || undefined,

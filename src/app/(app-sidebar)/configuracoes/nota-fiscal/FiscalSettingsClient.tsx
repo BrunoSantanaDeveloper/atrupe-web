@@ -32,22 +32,19 @@ export function FiscalSettingsClient() {
         {
           title: 'Configurar Emissores',
           icon: IconBuilding,
-          description:
-            'Configure os dados do emitente para suas notas fiscais',
+          description: 'Configure os dados do emitente para suas notas fiscais',
           link: `${defaultPath}/emissores`,
         },
         {
           title: 'NF-e Natureza de Operação e CFOP',
           icon: IconArrowsSplit,
-          description:
-            'Configure as naturezas de operação e CFOPs para NF-e',
+          description: 'Configure as naturezas de operação e CFOPs para NF-e',
           link: `${defaultPath}/cfop`,
         },
         {
           title: 'NF-e - Lista de Produtos e Serviços',
           icon: IconPackage,
-          description:
-            'Visualize e configure os produtos para emissão de NF-e',
+          description: 'Visualize e configure os produtos para emissão de NF-e',
           link: `${defaultPath}/produtos`,
         },
         {

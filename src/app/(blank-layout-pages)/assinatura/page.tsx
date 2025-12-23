@@ -41,6 +41,8 @@ import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 import { generateIdempotencyKey } from '@/lib/idempotency'
 
+const IS_DEV_ENV = process.env.NEXT_PUBLIC_ENV !== 'production'
+
 const personTypeOptions = [
   {
     label: 'Pessoa Física',
@@ -227,7 +229,9 @@ export default function SubscriptionPage() {
         complement: customerData.complement,
       },
       // successUrl: `${window.location.origin}/assinatura/concluir`,
-      successUrl: 'https://app.atrupe.com.br/assinatura/concluir',
+      successUrl: IS_DEV_ENV
+        ? 'https://homolog.atrupe.com.br/assinatura/concluir'
+        : 'https://app.atrupe.com.br/assinatura/concluir',
     }
 
     if (customerData.personType === 'PF') {

@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
-import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
@@ -38,30 +37,55 @@ const cfopOptions = [
   { value: '5101', label: '5101 - Venda de produção do estabelecimento' },
   { value: '5102', label: '5102 - Venda de mercadoria adquirida' },
   { value: '5103', label: '5103 - Venda de produção para não contribuinte' },
-  { value: '5104', label: '5104 - Venda de mercadoria adquirida para não contribuinte' },
+  {
+    value: '5104',
+    label: '5104 - Venda de mercadoria adquirida para não contribuinte',
+  },
   { value: '5405', label: '5405 - Venda de mercadoria sujeita a ST' },
   { value: '5656', label: '5656 - Venda de combustíveis ou lubrificantes' },
   { value: '5910', label: '5910 - Remessa em bonificação' },
   { value: '5911', label: '5911 - Remessa de amostra grátis' },
   { value: '6101', label: '6101 - Venda de produção para outro estado' },
-  { value: '6102', label: '6102 - Venda de mercadoria adquirida para outro estado' },
-  { value: '6103', label: '6103 - Venda de produção para não contribuinte (outro estado)' },
-  { value: '6104', label: '6104 - Venda de mercadoria adquirida para não contribuinte (outro estado)' },
-  { value: '6405', label: '6405 - Venda de mercadoria sujeita a ST (outro estado)' },
+  {
+    value: '6102',
+    label: '6102 - Venda de mercadoria adquirida para outro estado',
+  },
+  {
+    value: '6103',
+    label: '6103 - Venda de produção para não contribuinte (outro estado)',
+  },
+  {
+    value: '6104',
+    label:
+      '6104 - Venda de mercadoria adquirida para não contribuinte (outro estado)',
+  },
+  {
+    value: '6405',
+    label: '6405 - Venda de mercadoria sujeita a ST (outro estado)',
+  },
   { value: '7101', label: '7101 - Venda de produção para exportação' },
-  { value: '7102', label: '7102 - Venda de mercadoria adquirida para exportação' },
+  {
+    value: '7102',
+    label: '7102 - Venda de mercadoria adquirida para exportação',
+  },
 ]
 
 const operationNatureOptions = [
   { value: 'Venda de mercadoria', label: 'Venda de mercadoria' },
   { value: 'Venda de produção própria', label: 'Venda de produção própria' },
-  { value: 'Venda de mercadoria adquirida', label: 'Venda de mercadoria adquirida' },
+  {
+    value: 'Venda de mercadoria adquirida',
+    label: 'Venda de mercadoria adquirida',
+  },
   { value: 'Prestação de serviços', label: 'Prestação de serviços' },
   { value: 'Devolução de mercadoria', label: 'Devolução de mercadoria' },
   { value: 'Remessa para conserto', label: 'Remessa para conserto' },
   { value: 'Remessa para demonstração', label: 'Remessa para demonstração' },
   { value: 'Remessa em bonificação', label: 'Remessa em bonificação' },
-  { value: 'Transferência de mercadoria', label: 'Transferência de mercadoria' },
+  {
+    value: 'Transferência de mercadoria',
+    label: 'Transferência de mercadoria',
+  },
   { value: 'Exportação', label: 'Exportação' },
 ]
 

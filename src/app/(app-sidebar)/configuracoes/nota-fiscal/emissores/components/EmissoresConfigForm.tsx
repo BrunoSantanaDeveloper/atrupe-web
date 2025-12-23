@@ -240,11 +240,7 @@ export function EmissoresConfigForm() {
                   placeholder="Rua, Avenida, etc."
                 />
               </div>
-              <FormInput
-                name="emitNumero"
-                label="Número"
-                placeholder="123"
-              />
+              <FormInput name="emitNumero" label="Número" placeholder="123" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
