@@ -366,6 +366,7 @@ export const adminMainNavigation: MainNavigationType[] = [
         icon: IconBook,
         title: 'Academy',
         path: '/admin/academy',
+        permission: 'academy:academy:view',
       },
     ],
   },
