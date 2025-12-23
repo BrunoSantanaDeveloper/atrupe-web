@@ -16,8 +16,7 @@ export default function ClientOrdersPage({ params }: Props) {
       permissions={['sale:order:view']}
       fallback={
         <div className="p-4">
-          Você não tem permissão para visualizar as ordens de serviço do
-          cliente.
+          Você não tem permissão para visualizar ordens de serviço.
         </div>
       }
     >

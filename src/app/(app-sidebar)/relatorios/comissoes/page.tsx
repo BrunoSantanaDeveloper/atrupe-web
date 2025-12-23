@@ -16,7 +16,7 @@ export default function ComissionReportPage({
 }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['reports:comission:view']}
+      permissions={['financial:flow:view']}
       fallback={
         <div className="p-4 text-center">
           <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>

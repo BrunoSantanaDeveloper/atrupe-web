@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Components
 import { ClientActions } from './components/ClientActions'
@@ -68,48 +69,61 @@ export default function ClientDetailLayout({ children, params }: Props) {
     : allTabs.filter((tab) => tab.tab === 'cadastro')
 
   return (
-    <div className="space-y-5">
-      <Topbar
-        title={data?.general?.name}
-        supportText={
-          data?.type === 'PERSON' ? 'PF' : data?.type === 'COMPANY' ? 'PJ' : ''
-        }
-        previousPage="/cadastros/clientes"
-        badge={clientStatusObj[data?.status]}
-        primaryCta={
-          <ClientActions params={params} data={data} entityType="client" />
-        }
-      />
-      <Tabs value={params.tab} defaultValue="cadastro">
-        {tabs.length > 1 && (
-          <TabsList>
-            {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.tab} asChild>
-                <Link href={`/cadastros/clientes/${params.id}/${tab.tab}`}>
-                  <span>{tab.label}</span>
-                  {tab?.count && tab?.count > 0 ? (
-                    <Badge
-                      variant={
-                        params.tab === tab.tab ? 'light' : 'neutralLight'
-                      }
-                      className="ml-2"
-                    >
-                      {tab.count}
-                    </Badge>
-                  ) : null}
-                </Link>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        )}
-      </Tabs>
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-[300px]" />
-        ) : (
-          <div className="space-y-3">{children}</div>
-        )}
+    <PermissionGate
+      permissions={['register:client:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar cliente.
+        </div>
+      }
+    >
+      <div className="space-y-5">
+        <Topbar
+          title={data?.general?.name}
+          supportText={
+            data?.type === 'PERSON'
+              ? 'PF'
+              : data?.type === 'COMPANY'
+                ? 'PJ'
+                : ''
+          }
+          previousPage="/cadastros/clientes"
+          badge={clientStatusObj[data?.status]}
+          primaryCta={
+            <ClientActions params={params} data={data} entityType="client" />
+          }
+        />
+        <Tabs value={params.tab} defaultValue="cadastro">
+          {tabs.length > 1 && (
+            <TabsList>
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.tab} asChild>
+                  <Link href={`/cadastros/clientes/${params.id}/${tab.tab}`}>
+                    <span>{tab.label}</span>
+                    {tab?.count && tab?.count > 0 ? (
+                      <Badge
+                        variant={
+                          params.tab === tab.tab ? 'light' : 'neutralLight'
+                        }
+                        className="ml-2"
+                      >
+                        {tab.count}
+                      </Badge>
+                    ) : null}
+                  </Link>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          )}
+        </Tabs>
+        <div>
+          {isLoading ? (
+            <Skeleton className="h-[300px]" />
+          ) : (
+            <div className="space-y-3">{children}</div>
+          )}
+        </div>
       </div>
-    </div>
+    </PermissionGate>
   )
 }

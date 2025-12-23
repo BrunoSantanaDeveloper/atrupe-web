@@ -16,7 +16,7 @@ export function metadata() {
   }
 }
 
-export default function PDVPage({ searchParams }: SearchParamsType) {
+export default function PDVsPage({ searchParams }: SearchParamsType) {
   return (
     <FeatureGate
       features={[FEATURES.FINANCIAL.PDV_SCREEN]}
@@ -28,7 +28,7 @@ export default function PDVPage({ searchParams }: SearchParamsType) {
       }
     >
       <PermissionGate
-        permissions={['financial:checkout:view']}
+        permissions={['financial:pdv:view']}
         fallback={
           <div className="p-4">
             Você não tem permissão para visualizar a frente de caixa.

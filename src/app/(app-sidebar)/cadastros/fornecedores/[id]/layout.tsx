@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { TabNavType, Topbar } from '@/components/common/Topbar'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { ClientActions } from '../../clientes/[id]/components/ClientActions'
 
 // Consts
@@ -70,48 +71,63 @@ export default function SupplierDetailLayout({ children, params }: Props) {
     : allTabs.filter((tab) => tab.tab === 'cadastro')
 
   return (
-    <div className="space-y-5">
-      <Topbar
-        title={data?.general?.name}
-        supportText={
-          data?.type === 'PERSON' ? 'PF' : data?.type === 'COMPANY' ? 'PJ' : ''
-        }
-        previousPage="/cadastros/fornecedores"
-        badge={supplierStatusObj[data?.status]}
-        primaryCta={
-          <ClientActions params={params} data={data} entityType="supplier" />
-        }
-      />
-      <Tabs value={params.tab} defaultValue="cadastro">
-        {tabs.length > 1 && (
-          <TabsList>
-            {tabs.map((tab) => (
-              <TabsTrigger key={tab.value} value={tab.tab} asChild>
-                <Link href={`/cadastros/fornecedores/${params.id}/${tab.tab}`}>
-                  <span>{tab.label}</span>
-                  {tab?.count && tab?.count > 0 ? (
-                    <Badge
-                      variant={
-                        params.tab === tab.tab ? 'light' : 'neutralLight'
-                      }
-                      className="ml-2"
-                    >
-                      {tab.count}
-                    </Badge>
-                  ) : null}
-                </Link>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        )}
-      </Tabs>
-      <div>
-        {isLoading ? (
-          <Skeleton className="h-[300px]" />
-        ) : (
-          <div className="space-y-3">{children}</div>
-        )}
+    <PermissionGate
+      permissions={['register:supplier:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar fornecedor.
+        </div>
+      }
+    >
+      <div className="space-y-5">
+        <Topbar
+          title={data?.general?.name}
+          supportText={
+            data?.type === 'PERSON'
+              ? 'PF'
+              : data?.type === 'COMPANY'
+                ? 'PJ'
+                : ''
+          }
+          previousPage="/cadastros/fornecedores"
+          badge={supplierStatusObj[data?.status]}
+          primaryCta={
+            <ClientActions params={params} data={data} entityType="supplier" />
+          }
+        />
+        <Tabs value={params.tab} defaultValue="cadastro">
+          {tabs.length > 1 && (
+            <TabsList>
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.tab} asChild>
+                  <Link
+                    href={`/cadastros/fornecedores/${params.id}/${tab.tab}`}
+                  >
+                    <span>{tab.label}</span>
+                    {tab?.count && tab?.count > 0 ? (
+                      <Badge
+                        variant={
+                          params.tab === tab.tab ? 'light' : 'neutralLight'
+                        }
+                        className="ml-2"
+                      >
+                        {tab.count}
+                      </Badge>
+                    ) : null}
+                  </Link>
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          )}
+        </Tabs>
+        <div>
+          {isLoading ? (
+            <Skeleton className="h-[300px]" />
+          ) : (
+            <div className="space-y-3">{children}</div>
+          )}
+        </div>
       </div>
-    </div>
+    </PermissionGate>
   )
 }

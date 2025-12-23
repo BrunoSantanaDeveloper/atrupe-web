@@ -8,7 +8,7 @@ export function metadata() {
 export default function SupplierCategoriesPage() {
   return (
     <PermissionGate
-      permissions={['register:supplier_categories:view']}
+      permissions={['register:supplier:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar os grupos de fornecedores.

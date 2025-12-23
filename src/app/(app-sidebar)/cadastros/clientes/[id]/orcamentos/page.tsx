@@ -16,7 +16,7 @@ export default function ClientQuotationsPage({ params }: Props) {
       permissions={['sale:quotation:view']}
       fallback={
         <div className="p-4">
-          Você não tem permissão para visualizar os orçamentos do cliente.
+          Você não tem permissão para visualizar orçamentos.
         </div>
       }
     >

@@ -14,7 +14,7 @@ export function metadata() {
 export default function SectorReportPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['reports:sector:view']}
+      permissions={['company_settings:sectors:view']}
       fallback={
         <div className="p-4 text-center">
           <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>
