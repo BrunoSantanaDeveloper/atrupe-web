@@ -32,6 +32,7 @@ import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/c
 // Utils
 import { formatToLocaleDate } from '@/lib/formatDate'
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
   open: boolean
@@ -130,12 +131,15 @@ export function ViewPaymentDialog({
                 Voltar
               </Button>
             </DialogClose>
-            <UnpayInstallment
-              type={type}
-              rowData={rowData}
-              handleOpenChange={handleOpenChange}
-              transactionDialogOpen={transactionDialogOpen}
-            />
+
+            <PermissionGate permissions={['financial:flow:edit']}>
+              <UnpayInstallment
+                type={type}
+                rowData={rowData}
+                handleOpenChange={handleOpenChange}
+                transactionDialogOpen={transactionDialogOpen}
+              />
+            </PermissionGate>
           </div>
         </DialogFooter>
       </DialogContent>

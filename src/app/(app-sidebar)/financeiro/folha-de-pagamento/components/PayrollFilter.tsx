@@ -20,6 +20,7 @@ import {
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 const MONTHS = [
   'Janeiro',
@@ -196,9 +197,11 @@ export function PayrollFilter({
           selectedIds.length === 0 && 'opacity-0 pointer-events-none',
         )}
       >
-        <Button LeftIcon={IconPlus} onClick={handlePostSelectedPayroll}>
-          Lançar selecionadas
-        </Button>
+        <PermissionGate permissions={['financial:payroll:edit']}>
+          <Button LeftIcon={IconPlus} onClick={handlePostSelectedPayroll}>
+            Lançar selecionadas
+          </Button>
+        </PermissionGate>
       </div>
     </>
   )

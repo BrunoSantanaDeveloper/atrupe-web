@@ -141,7 +141,7 @@ export function PayrollMovement({ data }: Props) {
                         <div className="flex justify-end gap-1">
                           <TooltipProvider>
                             <PermissionGate
-                              permissions={['financial:payroll:view']}
+                              permissions={['financial:flow:view']}
                             >
                               <ActionButton
                                 Icon={IconSearch}
@@ -154,7 +154,7 @@ export function PayrollMovement({ data }: Props) {
                             </PermissionGate>
 
                             <PermissionGate
-                              permissions={['financial:payroll:view']}
+                              permissions={['financial:flow:view']}
                             >
                               <ActionButton
                                 Icon={IconHistory}
@@ -167,7 +167,7 @@ export function PayrollMovement({ data }: Props) {
                             </PermissionGate>
 
                             <PermissionGate
-                              permissions={['financial:payroll:edit']}
+                              permissions={['financial:flow:edit']}
                             >
                               <ActionButton
                                 Icon={

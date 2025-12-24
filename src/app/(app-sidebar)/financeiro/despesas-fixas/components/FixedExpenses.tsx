@@ -276,11 +276,15 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
         title="Despesas fixas"
         primaryCta={
           <>
-            <NewFixedExpenseTriggerButton onOpenChange={setIsNewExpenseOpen} />
-            <NewFixedExpense
-              open={isNewExpenseOpen}
-              onOpenChange={setIsNewExpenseOpen}
-            />
+            <PermissionGate permissions={['financial:fixed_expenses:create']}>
+              <NewFixedExpenseTriggerButton
+                onOpenChange={setIsNewExpenseOpen}
+              />
+              <NewFixedExpense
+                open={isNewExpenseOpen}
+                onOpenChange={setIsNewExpenseOpen}
+              />
+            </PermissionGate>
           </>
         }
       />
@@ -425,7 +429,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                   </PermissionGate>
                                   <PermissionGate
                                     permissions={[
-                                      'financial:fixed_expense:delete',
+                                      'financial:fixed_expense:edit',
                                     ]}
                                   >
                                     <ActionButton

@@ -20,6 +20,7 @@ import {
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 const MONTHS = [
   'Janeiro',
@@ -194,9 +195,11 @@ export function FixedExpensesFilter({
           selectedIds.length === 0 && 'opacity-0 pointer-events-none',
         )}
       >
-        <Button LeftIcon={IconPlus} onClick={handlePostSelectedExpenses}>
-          Lançar selecionadas
-        </Button>
+        <PermissionGate permissions={['financial:fixed_expenses:edit']}>
+          <Button LeftIcon={IconPlus} onClick={handlePostSelectedExpenses}>
+            Lançar selecionadas
+          </Button>
+        </PermissionGate>
       </div>
     </>
   )

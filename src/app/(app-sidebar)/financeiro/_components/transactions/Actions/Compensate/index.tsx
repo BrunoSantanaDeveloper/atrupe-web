@@ -48,6 +48,7 @@ import { updateItemNew } from '@/actions/_cruds'
 // Hooks
 import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
   open: boolean
@@ -237,11 +238,13 @@ export function CompensateDialog({
             <PrintReceiptButton type={type} installmentId={rowData?.id} />
           </div>
           <div className="space-x-4">
-            <UnpayInstallment
-              type={type}
-              rowData={rowData}
-              handleOpenChange={handleOpenChange}
-            />
+            <PermissionGate permissions={['financial:flow:edit']}>
+              <UnpayInstallment
+                type={type}
+                rowData={rowData}
+                handleOpenChange={handleOpenChange}
+              />
+            </PermissionGate>
             <Button
               type="submit"
               form="edit-transaction-data"

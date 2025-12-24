@@ -137,9 +137,13 @@ export function FixedExpensesData({ searchParams, tabs }: Props) {
             title="Despesa fixa não encontrada"
             description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre uma nova despesa fixa"
             cta={
-              <NewFixedExpenseTriggerButton
-                onOpenChange={() => setOpenDialog('new-fixed-expense')}
-              />
+              <PermissionGate
+                permissions={['financial_settings:fixed_expenses:create']}
+              >
+                <NewFixedExpenseTriggerButton
+                  onOpenChange={() => setOpenDialog('new-fixed-expense')}
+                />
+              </PermissionGate>
             }
           />
         )}

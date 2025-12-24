@@ -109,11 +109,15 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                 title="Sem despesas fixas cadastradas"
                 description="Cadastre sua primeira despesa fixa"
                 cta={
-                  <NewFixedExpenseTriggerButton
-                    onOpenChange={(open) => {
-                      if (open) setOpenDialog('new-fixed-expense')
-                    }}
-                  />
+                  <PermissionGate
+                    permissions={['financial_settings:fixed_expenses:create']}
+                  >
+                    <NewFixedExpenseTriggerButton
+                      onOpenChange={(open) => {
+                        if (open) setOpenDialog('new-fixed-expense')
+                      }}
+                    />
+                  </PermissionGate>
                 }
               />
             )}
