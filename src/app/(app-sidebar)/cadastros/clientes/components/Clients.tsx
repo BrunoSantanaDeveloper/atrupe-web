@@ -96,13 +96,15 @@ export function Clients({ searchParams }: SearchParamsType) {
         paramName="status"
         primaryCta={
           <TooltipProvider>
-            <ActionButton
-              tooltip="Grupos de clientes"
-              size="iconMd"
-              variant="neutralOutline"
-              Icon={IconFolders}
-              link="/cadastros/clientes/categorias"
-            />
+            <PermissionGate permissions={['register:client:edit']}>
+              <ActionButton
+                tooltip="Grupos de clientes"
+                size="iconMd"
+                variant="neutralOutline"
+                Icon={IconFolders}
+                link="/cadastros/clientes/categorias"
+              />
+            </PermissionGate>
             <PermissionGate permissions={['register:client:create']}>
               <SearchClientTriggerButton
                 onOpenChange={() => {

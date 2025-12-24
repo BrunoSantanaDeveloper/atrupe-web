@@ -85,25 +85,27 @@ export function ClientActions({ params, data, entityType }: Props) {
           />
         </TooltipProvider> */}
 
-        {(status === 'ACTIVE' || status === 'PROSPECT') && (
-          <Button
-            variant="error"
-            LeftIcon={IconCircleMinus}
-            onClick={() => handleActiveToggle('inactive')}
-          >
-            Inativar cadastro
-          </Button>
-        )}
+        <PermissionGate permissions={[`register:${entityType}:delete`]}>
+          {(status === 'ACTIVE' || status === 'PROSPECT') && (
+            <Button
+              variant="error"
+              LeftIcon={IconCircleMinus}
+              onClick={() => handleActiveToggle('inactive')}
+            >
+              Inativar cadastro
+            </Button>
+          )}
 
-        {status === 'INACTIVE' && (
-          <Button
-            variant="success"
-            LeftIcon={IconCirclePlus}
-            onClick={() => handleActiveToggle('active')}
-          >
-            Ativar cadastro
-          </Button>
-        )}
+          {status === 'INACTIVE' && (
+            <Button
+              variant="success"
+              LeftIcon={IconCirclePlus}
+              onClick={() => handleActiveToggle('active')}
+            >
+              Ativar cadastro
+            </Button>
+          )}
+        </PermissionGate>
         {/* <ToggleStatusModal
           id={params.id}
           open={isToggleModalOpen === 'active'}

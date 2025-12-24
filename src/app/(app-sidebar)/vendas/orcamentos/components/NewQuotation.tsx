@@ -280,7 +280,11 @@ export function NewQuotationModal({
           </DialogBody>
           <DialogFooter className="sm:justify-between">
             <div className="flex items-center space-x-2">
-              {!editMode && <NewClientTriggerButton />}
+              {!editMode && (
+                <PermissionGate permissions={['register:client:create']}>
+                  <NewClientTriggerButton />
+                </PermissionGate>
+              )}
             </div>
             <div className="space-x-4">
               {process.env.NODE_ENV === 'development' && (

@@ -8,7 +8,7 @@ export function metadata() {
 export default function ClientCategoriesPage() {
   return (
     <PermissionGate
-      permissions={['register:client:view']}
+      permissions={['register:client:edit']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar os grupos de clientes.

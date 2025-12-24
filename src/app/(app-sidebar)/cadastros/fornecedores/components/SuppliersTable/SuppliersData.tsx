@@ -140,11 +140,13 @@ export function SuppliersData({ searchParams, tabs }: Props) {
             title="Fornecedor não encontrado"
             description="Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo fornecedor"
             cta={
-              <NewSupplierTriggerButton
-                onOpenChange={() => {
-                  setOpenDialog('new-supplier')
-                }}
-              />
+              <PermissionGate permissions={['register:supplier:create']}>
+                <NewSupplierTriggerButton
+                  onOpenChange={() => {
+                    setOpenDialog('new-supplier')
+                  }}
+                />
+              </PermissionGate>
             }
           />
         )}
