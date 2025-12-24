@@ -294,7 +294,11 @@ export function TableData({ tabs, searchParams }: Props) {
           <FilteredDataEmpty
             title="Colaborador não encontrado"
             description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo colaborador."
-            cta={<NewEmployeeDialog />}
+            cta={
+              <PermissionGate permissions={['company_settings:users:create']}>
+                <NewEmployeeDialog />
+              </PermissionGate>
+            }
           />
         )}
       </CardContent>

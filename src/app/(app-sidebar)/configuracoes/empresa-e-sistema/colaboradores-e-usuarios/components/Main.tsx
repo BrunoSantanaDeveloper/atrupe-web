@@ -85,14 +85,18 @@ export function Main({ searchParams }: SearchParamsType) {
             </PermissionGate>
           }
           secondaryCta={
-            <Button
-              asChild
-              type="button"
-              variant="neutralOutline"
-              LeftIcon={IconIdBadge}
-            >
-              <Link href="/configuracoes/empresa-e-sistema/cargos">Cargos</Link>
-            </Button>
+            <PermissionGate permissions={['company_settings:users:edit']}>
+              <Button
+                asChild
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconIdBadge}
+              >
+                <Link href="/configuracoes/empresa-e-sistema/cargos">
+                  Cargos
+                </Link>
+              </Button>
+            </PermissionGate>
           }
         />
         <div>
