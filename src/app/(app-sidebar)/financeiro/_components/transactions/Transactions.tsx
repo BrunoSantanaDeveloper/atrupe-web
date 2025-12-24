@@ -37,7 +37,9 @@ export function Transactions({ type, searchParams }: Props) {
       <Topbar
         title={`Movimentações a ${type === 'receivable' ? 'receber' : 'pagar'}`}
         primaryCta={
-          <PermissionGate permissions={[createPermission]}>
+          <PermissionGate
+            permissions={[createPermission, 'financial:flow:create']}
+          >
             <NewTransaction type={type} searchParams={searchParams} />
           </PermissionGate>
         }
@@ -52,7 +54,9 @@ export function Transactions({ type, searchParams }: Props) {
               title={`Sem ${typePt}s cadastradas`}
               description={`Cadastre sua primeira ${typePt}`}
               cta={
-                <PermissionGate permissions={[createPermission]}>
+                <PermissionGate
+                  permissions={[createPermission, 'financial:flow:create']}
+                >
                   <NewTransaction type={type} searchParams={searchParams} />
                 </PermissionGate>
               }

@@ -98,10 +98,14 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
           />
         </PermissionGate>
       </TooltipProvider>
-      <PermissionGate permissions={['financial:flow_payable:create']}>
+      <PermissionGate
+        permissions={['financial:payable:create', 'financial:flow:create']}
+      >
         <NewTransaction type="payable" searchParams={searchParams} />
       </PermissionGate>
-      <PermissionGate permissions={['financial:flow_receivable:create']}>
+      <PermissionGate
+        permissions={['financial:receivable:create', 'financial:flow:create']}
+      >
         <NewTransaction type="receivable" searchParams={searchParams} />
       </PermissionGate>
     </div>

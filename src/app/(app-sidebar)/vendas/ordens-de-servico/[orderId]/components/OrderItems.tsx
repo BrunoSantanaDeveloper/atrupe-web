@@ -193,7 +193,7 @@ export function OrderItems({ data }: Props) {
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconMessage}
@@ -214,7 +214,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:view']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconPhoto}
@@ -230,7 +230,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:create']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconCopy}
@@ -245,7 +245,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconPencil}
@@ -257,7 +257,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconCoin}
@@ -273,7 +273,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:delete']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconTrashX}
@@ -347,7 +347,7 @@ export function OrderItems({ data }: Props) {
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconMessage}
@@ -368,7 +368,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:view']}
+                                      permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
                                         Icon={IconPhoto}
@@ -383,38 +383,26 @@ export function OrderItems({ data }: Props) {
                                         )}
                                       />
                                     </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:create']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconCopy}
-                                        tooltip="Duplicar item"
-                                        disabled
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:order:edit']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Editar item"
-                                        disabled
-                                      />
-                                      <ActionButton
-                                        Icon={IconCoin}
-                                        tooltip="Valores"
-                                        disabled
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:delete']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconTrashX}
-                                        tooltip="Excluir item"
-                                        disabled
-                                      />
-                                    </PermissionGate>
+                                    <ActionButton
+                                      Icon={IconCopy}
+                                      tooltip="Duplicar item"
+                                      disabled
+                                    />
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar item"
+                                      disabled
+                                    />
+                                    <ActionButton
+                                      Icon={IconCoin}
+                                      tooltip="Valores"
+                                      disabled
+                                    />
+                                    <ActionButton
+                                      Icon={IconTrashX}
+                                      tooltip="Excluir item"
+                                      disabled
+                                    />
                                   </TooltipProvider>
                                 </div>
                               </TableCell>

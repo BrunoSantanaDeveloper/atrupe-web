@@ -84,6 +84,11 @@ export function TransactionsData({ type, searchParams }: Props) {
   const transactionData: TransactionDataType[] = data?.data || []
   const hasData = transactionData.length
 
+  const createPermission =
+    type === 'receivable'
+      ? 'financial:receivable:create'
+      : 'financial:payable:create'
+
   return (
     <>
       <CardContent>
@@ -371,7 +376,13 @@ export function TransactionsData({ type, searchParams }: Props) {
           <FilteredDataEmpty
             title={`${typePt} não encontrada`}
             description={`Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre uma nova ${typePt}`}
-            cta={<NewTransaction type={type} searchParams={searchParams} />}
+            cta={
+              <PermissionGate
+                permissions={[createPermission, 'financial:flow:create']}
+              >
+                <NewTransaction type={type} searchParams={searchParams} />
+              </PermissionGate>
+            }
           />
         )}
       </CardContent>

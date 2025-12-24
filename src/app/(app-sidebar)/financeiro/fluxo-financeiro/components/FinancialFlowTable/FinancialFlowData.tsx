@@ -261,9 +261,10 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
 
                                     <PermissionGate
                                       permissions={[
+                                        'financial:flow:edit',
                                         item?.type === 'receivable'
-                                          ? 'financial:flow_receivable:edit'
-                                          : 'financial:flow_payable:edit',
+                                          ? 'financial:receivable:edit'
+                                          : 'financial:payable:edit',
                                       ]}
                                     >
                                       <ActionButton
@@ -310,9 +311,10 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
 
                                     <PermissionGate
                                       permissions={[
+                                        'financial:flow:edit',
                                         item?.type === 'receivable'
-                                          ? 'financial:flow_receivable:edit'
-                                          : 'financial:flow_payable:edit',
+                                          ? 'financial:receivable:edit'
+                                          : 'financial:payable:edit',
                                       ]}
                                     >
                                       <ActionButton

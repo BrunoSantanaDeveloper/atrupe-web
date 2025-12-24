@@ -71,7 +71,7 @@ export function QuotationActions({ data }: Props) {
             <FinishQuotation data={data} canFinish={canFinish} />
           </PermissionGate>
           {canApprove ? (
-            <PermissionGate permissions={['sale:quotation:create']}>
+            <PermissionGate permissions={['sale:order:create']}>
               <ApproveQuotation data={data} />
             </PermissionGate>
           ) : null}

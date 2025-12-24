@@ -27,6 +27,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icon Imports
 import { IconReportMoney } from '@tabler/icons-react'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props extends SearchParamsType {
   id: string
@@ -81,10 +82,21 @@ export function Checkout({ searchParams, id }: Props) {
         paramName="status"
         previousPage="/financeiro/frente-de-caixa"
         secondaryCta={
-          <NewTransaction type="payable" searchParams={searchParams} />
+          <PermissionGate
+            permissions={['financial:payable:create', 'financial:flow:create']}
+          >
+            <NewTransaction type="payable" searchParams={searchParams} />
+          </PermissionGate>
         }
         primaryCta={
-          <NewTransaction type="receivable" searchParams={searchParams} />
+          <PermissionGate
+            permissions={[
+              'financial:receivable:create',
+              'financial:flow:create',
+            ]}
+          >
+            <NewTransaction type="receivable" searchParams={searchParams} />
+          </PermissionGate>
         }
       />
       <div className="space-y-2">

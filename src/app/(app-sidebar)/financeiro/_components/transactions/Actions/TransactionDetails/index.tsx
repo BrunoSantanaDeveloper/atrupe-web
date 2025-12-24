@@ -243,6 +243,7 @@ export function TransactionDetailsDialog({
                           <TooltipProvider>
                             <PermissionGate
                               permissions={[
+                                'financial:flow:edit',
                                 type === 'receivable'
                                   ? 'financial:receivable:edit'
                                   : 'financial:payable:edit',
@@ -337,6 +338,7 @@ export function TransactionDetailsDialog({
               <>
                 <PermissionGate
                   permissions={[
+                    'financial:flow:delete',
                     type === 'receivable'
                       ? 'financial:receivable:delete'
                       : 'financial:payable:delete',
@@ -350,6 +352,7 @@ export function TransactionDetailsDialog({
                 </PermissionGate>
                 <PermissionGate
                   permissions={[
+                    'financial:flow:edit',
                     type === 'receivable'
                       ? 'financial:receivable:edit'
                       : 'financial:payable:edit',

@@ -32,6 +32,9 @@ import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { TransactionListType } from '@/types/financial/financialFlow'
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
 
 interface Props {
   open: boolean
@@ -86,19 +89,34 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
           </div>
         </DialogHeader>
         <DialogBody>
-          <Form {...form}>
-            <form
-              id="transaction-notes"
-              onSubmit={handleSubmit(onSubmit)}
-              noValidate
-            >
-              <FormTextarea<FormType>
-                name="notes"
-                label="Observação da movimentação"
-                rows={6}
-              />
-            </form>
-          </Form>
+          <PermissionGate
+            permissions={['financial:flow:edit']}
+            fallback={
+              <div className="space-y-1">
+                <Label>Observação da movimentação</Label>
+                <Textarea
+                  className="resize-none"
+                  value={rowData?.notes || ''}
+                  rows={6}
+                  readOnly
+                />
+              </div>
+            }
+          >
+            <Form {...form}>
+              <form
+                id="transaction-notes"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
+              >
+                <FormTextarea<FormType>
+                  name="notes"
+                  label="Observação da movimentação"
+                  rows={6}
+                />
+              </form>
+            </Form>
+          </PermissionGate>
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div></div>
@@ -110,14 +128,16 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
             >
               Cancelar
             </Button>
-            <Button
-              type="submit"
-              form="transaction-notes"
-              RightIcon={IconCircleCheck}
-              isLoading={formState.isSubmitting}
-            >
-              Salvar
-            </Button>
+            <PermissionGate permissions={['financial:flow:edit']}>
+              <Button
+                type="submit"
+                form="transaction-notes"
+                RightIcon={IconCircleCheck}
+                isLoading={formState.isSubmitting}
+              >
+                Salvar
+              </Button>
+            </PermissionGate>
           </div>
         </DialogFooter>
       </DialogContent>
