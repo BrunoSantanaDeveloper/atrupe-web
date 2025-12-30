@@ -87,14 +87,14 @@ export function floatToBrl(value: number): string {
     .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
-export function maskCpf(value: string) {
-  value = value.replace(/\D/g, '')
+export function maskCpf(value: string | null | undefined) {
+  value = value?.replace(/\D/g, '')
   if (!value) return ''
   return value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
 }
 
-export function maskCnpj(value: string) {
-  value = value.replace(/\D/g, '')
+export function maskCnpj(value: string | null | undefined) {
+  value = value?.replace(/\D/g, '')
   if (!value) return ''
   return value.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
 }
@@ -126,8 +126,8 @@ export function MaskPhoneNumber(phone?: string | number | null) {
 }
 
 // Retorna o valor formatado em HH:MM
-export function maskCep(value: string) {
-  value = value.replace(/\D/g, '')
+export function maskCep(value: string | null | undefined) {
+  value = value?.replace(/\D/g, '')
   if (!value) return ''
   if (value.length <= 5) {
     return value.replace(/(\d{2})(\d{3})/, '$1.$2')
