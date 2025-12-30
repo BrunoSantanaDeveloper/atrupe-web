@@ -100,8 +100,8 @@ export function maskCnpj(value: string) {
 }
 
 // Retorna 000.000.000-00 ou 00.000.000/0000-00
-export function maskCpfCnpj(value: string) {
-  value = value.replace(/\D/g, '')
+export function maskCpfCnpj(value: string | null | undefined) {
+  value = value?.replace(/\D/g, '')
 
   if (!value) return ''
   if (value.length === 11) {
