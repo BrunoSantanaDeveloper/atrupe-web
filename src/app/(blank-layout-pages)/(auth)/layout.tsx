@@ -12,7 +12,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 py-8 overflow-y-auto">
       <div className="w-full max-w-[1248px] flex items-center gap-10 flex-col-reverse lg:flex-row mx-auto px-4 my-auto">
         {/* Coluna da esquerda */}
-        <div className="w-full max-w-[744px] aspect-square rounded-3xl bg-[url('/img/auth-christmas.png')] bg-cover relative">
+        <div className="w-full max-w-[744px] aspect-square rounded-3xl bg-[url('/img/auth-start.png')] bg-cover relative">
           <div className="absolute bottom-0 left-0 right-0 h-1/3 rounded-b-3xl bg-gradient-to-t from-[#B53B17] to-transparent"></div>
         </div>
 
