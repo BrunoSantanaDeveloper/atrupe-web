@@ -93,7 +93,7 @@ export function SalesEvolutionChart({
               />
               <Line
                 dataKey="approved"
-                type="linear"
+                type="monotone"
                 stroke="var(--color-approved)"
                 strokeWidth={2}
                 dot={{
