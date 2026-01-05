@@ -11,6 +11,21 @@ const apiUrl = process.env.API_URL
 const shouldEndSession = (error: AxiosError | Error): boolean => {
   // Erro 401 - Unauthorized
   if ('response' in error && error.response?.status === 401) {
+    // Não fazer logout se for erro de validação de senha (ex: delete-account)
+    const url = error.config?.url || ''
+    const message =
+      (error.response?.data as Record<string, unknown>)?.message || ''
+
+    // Se for um endpoint que valida senha de admin, não fazer logout
+    if (
+      url.includes('delete-account') ||
+      url.includes('extend-trial') ||
+      url.includes('assign-manual') ||
+      String(message).includes('Senha do administrador')
+    ) {
+      return false
+    }
+
     return true
   }
 

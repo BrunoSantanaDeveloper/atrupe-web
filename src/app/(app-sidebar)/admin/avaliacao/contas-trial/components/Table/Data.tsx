@@ -6,6 +6,7 @@ import { Fragment, useState } from 'react'
 
 // Components
 import { ChangeStatusDialog } from '../ChangeStatusDialog'
+import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { EditTrialAccountDialog } from '../EditTrialAccountDialog'
@@ -42,7 +43,12 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
-import { IconPencil, IconHistory, IconSettings } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconHistory,
+  IconSettings,
+  IconTrash,
+} from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -80,6 +86,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isUpgradeDialogOpen, setIsUpgradeDialogOpen] = useState(false)
   const [isChangeStatusDialogOpen, setIsChangeStatusDialogOpen] =
     useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
   const currentStatus = searchParams.status
@@ -217,6 +224,17 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         setIsHistoryDialogOpen(true)
                                       }}
                                     />
+                                    {/* {(currentStatus === 'descartadas' ||
+                                      currentStatus === 'inativas') && ( */}
+                                    <ActionButton
+                                      Icon={IconTrash}
+                                      tooltip="Excluir conta"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsDeleteDialogOpen(true)
+                                      }}
+                                    />
+                                    {/* )} */}
                                   </TooltipProvider>
                                 </div>
                               </TableCell>
@@ -267,6 +285,11 @@ export function Data({ searchParams, searchDescription }: Props) {
       <ChangeStatusDialog
         open={isChangeStatusDialogOpen}
         setOpen={setIsChangeStatusDialogOpen}
+        rowData={rowData}
+      />
+      <DeleteAccountDialog
+        open={isDeleteDialogOpen}
+        setOpen={setIsDeleteDialogOpen}
         rowData={rowData}
       />
     </>

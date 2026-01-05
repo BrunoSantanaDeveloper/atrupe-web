@@ -281,6 +281,35 @@ export const deleteItemNew = async ({
   }
 }
 
+// EXCLUIR COM BODY (usar quando precisa enviar dados no corpo da requisição)
+export const deleteWithBody = async ({
+  route,
+  data,
+}: {
+  route: string
+  data: unknown
+}) => {
+  const api = await apiInstance()
+
+  try {
+    const res = await api.delete(route, { data })
+
+    return {
+      success: true,
+      message: 'Item excluído com sucesso!',
+      data: res.data,
+    }
+  } catch (error: any) {
+    const userMessage = error?.response?.data?.userMessage
+
+    return {
+      success: false,
+      code: userMessage?.statusCode || 500,
+      message: userMessage?.message || 'Erro desconhecido.',
+    }
+  }
+}
+
 export const uploadFile = async (route: string, data: FormData) => {
   const api = await apiInstance()
 
