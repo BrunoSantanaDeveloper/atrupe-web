@@ -103,35 +103,36 @@ export function NewCompany({
       ? await updateItemNew({ route: `/company/${companyData?.id}`, data })
       : await createItemNew({ route: '/company', data })
 
-    if (result.success) {
-      // Primeiro invalidar as queries específicas para garantir que os dados sejam atualizados
-      await queryClient.invalidateQueries({ queryKey: ['companies-data'] })
-      await queryClient.invalidateQueries({ queryKey: ['company-list'] })
-
-      // Depois fechar o modal e resetar o formulário
-      handleToggleModal()
-
-      try {
-        if (editMode && companyData?.principal) {
-          await update({
-            company: {
-              name: data.general.name,
-              legalName: data.general.legalName,
-              logo: data.personalization.logoUrl,
-              favicon: data.personalization.favIconUrl,
-            },
-          })
-        }
-
-        toast.success(
-          `Empresa ${editMode ? 'atualizada' : 'criada'} com sucesso!`,
-        )
-      } catch (error) {
-        console.error('Erro ao processar dados da empresa:', error)
-        toast.error(`Erro ao ${editMode ? 'atualizar' : 'criar'} empresa`)
-      }
-    } else {
+    if (!result.success) {
       toast.error(result.message)
+      return
+    }
+
+    // Primeiro invalidar as queries específicas para garantir que os dados sejam atualizados
+    await queryClient.invalidateQueries({ queryKey: ['companies-data'] })
+    await queryClient.invalidateQueries({ queryKey: ['company-list'] })
+
+    // Depois fechar o modal e resetar o formulário
+    handleToggleModal()
+
+    try {
+      if (editMode && companyData?.principal) {
+        await update({
+          company: {
+            name: data.general.name,
+            legalName: data.general.legalName,
+            logo: data.personalization.logoUrl,
+            favicon: data.personalization.favIconUrl,
+          },
+        })
+      }
+
+      toast.success(
+        `Empresa ${editMode ? 'atualizada' : 'criada'} com sucesso!`,
+      )
+    } catch (error) {
+      console.error('Erro ao processar dados da empresa:', error)
+      toast.error(`Erro ao ${editMode ? 'atualizar' : 'criar'} empresa`)
     }
 
     toast.dismiss(loadingToast)
@@ -269,6 +270,7 @@ export function NewCompany({
                 type="submit"
                 form="company-info"
                 RightIcon={IconCircleCheck}
+                isLoading={form.formState.isSubmitting}
               >
                 Salvar
               </Button>
