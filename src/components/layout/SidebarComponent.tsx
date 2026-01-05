@@ -289,7 +289,11 @@ export function SidebarComponent(props: Props) {
                 type="single"
                 collapsible
                 className="w-full px-4"
-                defaultValue={`/${pathname.split('/')[1]}`}
+                defaultValue={
+                  filteredNavigation.find((item) =>
+                    pathname.startsWith(item.path || ''),
+                  )?.path
+                }
               >
                 {filteredNavigation.map((item, index) => {
                   // Verifica se há pelo menos um item filho com permissão
