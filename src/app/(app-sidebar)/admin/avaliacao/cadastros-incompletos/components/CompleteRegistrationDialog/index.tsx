@@ -94,9 +94,7 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
       return
     }
 
-    queryClient.invalidateQueries({
-      queryKey: ['incomplete-registration-list'],
-    })
+    queryClient.invalidateQueries()
     toast.success(
       'Cadastro efetivado. Uma senha aleatória foi enviada ao e-mail informado',
     )

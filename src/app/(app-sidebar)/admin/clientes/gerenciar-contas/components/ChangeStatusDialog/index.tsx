@@ -29,13 +29,13 @@ import {
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { AccountItem } from '../Table/Data'
@@ -152,31 +152,21 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
     }
   }, [open, rowData, form])
 
-  const mutation = useMutation({
-    mutationFn: (data: { status: StatusOption; password: string }) =>
-      updateItem(
-        '/subscriptions/active-clients/status',
-        `${rowData?.id}`,
-        data,
-      ),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['active-clients-list'],
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['active-clients-totals'],
-      })
-      toast.success('Status alterado com sucesso')
-      handleOpenChange(false)
-    },
-    onError: (error) => {
-      console.error(error)
-      toast.error('Ocorreu um erro ao alterar o status')
-    },
-  })
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    const res = await updateItemNew({
+      route: `/subscriptions/active-clients/${rowData?.id}`,
+      data,
+    })
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    await mutation.mutateAsync(values)
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    queryClient.invalidateQueries()
+
+    toast.success('Status alterado com sucesso')
+    handleOpenChange(false)
   }
 
   const handleOpenChange = (value: boolean) => {
@@ -211,7 +201,7 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
           <Form {...form}>
             <form
               id="change-status"
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-5"
             >
               <FormToggleCard
@@ -252,7 +242,7 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
           <Button
             type="submit"
             form="change-status"
-            disabled={mutation.isPending}
+            disabled={form.formState.isSubmitting}
           >
             Alterar
           </Button>
