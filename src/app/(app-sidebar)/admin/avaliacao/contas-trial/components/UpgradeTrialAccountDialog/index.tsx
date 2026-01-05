@@ -77,7 +77,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
       return
     }
 
-    queryClient.invalidateQueries({ queryKey: ['trial-accounts-list'] })
+    queryClient.invalidateQueries()
     toast.success('Conta atualizada para plano Start com sucesso!')
     handleOpenChange(false)
   }

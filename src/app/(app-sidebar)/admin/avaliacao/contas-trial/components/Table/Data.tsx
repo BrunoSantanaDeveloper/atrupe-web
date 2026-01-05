@@ -44,10 +44,11 @@ import { useQuery } from '@tanstack/react-query'
 // Icons
 import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
 import {
+  IconTrash,
   IconPencil,
   IconHistory,
   IconSettings,
-  IconTrash,
+  IconBuildingStore,
 } from '@tabler/icons-react'
 
 interface Props extends SearchParamsType {
@@ -145,7 +146,12 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         className="object-cover p-1"
                                       />
                                     ) : (
-                                      <div className="w-full h-full bg-gray-200" />
+                                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <IconBuildingStore
+                                          size={24}
+                                          className="text-gray-400"
+                                        />
+                                      </div>
                                     )}
                                   </div>
                                   <div>

@@ -42,11 +42,12 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconTrash,
   IconPencil,
   IconStack2,
   IconHistory,
   IconSettings,
-  IconTrash,
+  IconBuildingStore,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -67,7 +68,7 @@ export interface AccountItem {
   email: string
   createdAt: string
   plan: string
-  planType: 'Pro' | 'Start'
+  planType: 'START' | 'LITE' | 'PRO'
   status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
   state: { id: string; name: string }
   city: { id: string; name: string }
@@ -79,8 +80,9 @@ interface GroupedData {
 }
 
 const planVariants = {
-  Pro: 'error',
-  Start: 'success',
+  START: 'default',
+  LITE: 'neutral',
+  PRO: 'orange',
 } as const
 
 export function Data({ searchParams, searchDescription }: Props) {
@@ -149,7 +151,12 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         className="object-cover p-1"
                                       />
                                     ) : (
-                                      <div className="w-full h-full bg-gray-200" />
+                                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                        <IconBuildingStore
+                                          size={24}
+                                          className="text-gray-400"
+                                        />
+                                      </div>
                                     )}
                                   </div>
                                   <div>
@@ -185,9 +192,9 @@ export function Data({ searchParams, searchDescription }: Props) {
                               <TableCell>
                                 <Badge
                                   variant={planVariants[item.planType]}
-                                  className="text-xs font-medium"
+                                  className="text-xs font-medium capitalize"
                                 >
-                                  {item.planType}
+                                  {item.planType.toLowerCase()}
                                 </Badge>
                               </TableCell>
                               {/* Ações */}
