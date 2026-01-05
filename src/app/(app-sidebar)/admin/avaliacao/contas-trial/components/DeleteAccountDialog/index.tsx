@@ -100,7 +100,7 @@ export function DeleteAccountDialog({ open, setOpen, rowData }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[480px] border-4 border-error">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="pr-0">
             <div className="flex flex-col items-center gap-4 text-center">
               <FeaturedIcon
                 variant="errorBorderedLight"

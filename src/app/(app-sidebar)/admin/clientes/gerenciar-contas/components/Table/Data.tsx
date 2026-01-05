@@ -10,6 +10,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { EditClientDialog } from '../EditClientDialog'
 import { ChangeStatusDialog } from '../ChangeStatusDialog'
+import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 
@@ -45,6 +46,7 @@ import {
   IconStack2,
   IconHistory,
   IconSettings,
+  IconTrash,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -88,8 +90,10 @@ export function Data({ searchParams, searchDescription }: Props) {
     useState(false)
   const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
+  const currentStatus = searchParams.status
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -222,6 +226,16 @@ export function Data({ searchParams, searchDescription }: Props) {
                                         setIsHistoryDialogOpen(true)
                                       }}
                                     />
+                                    {currentStatus !== 'ativas' && (
+                                      <ActionButton
+                                        Icon={IconTrash}
+                                        tooltip="Excluir conta"
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setIsDeleteDialogOpen(true)
+                                        }}
+                                      />
+                                    )}
                                   </TooltipProvider>
                                 </div>
                               </TableCell>
@@ -275,6 +289,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <ClientHistoryDialog
         open={isHistoryDialogOpen}
         setOpen={setIsHistoryDialogOpen}
+        rowData={rowData}
+      />
+
+      <DeleteAccountDialog
+        open={isDeleteDialogOpen}
+        setOpen={setIsDeleteDialogOpen}
         rowData={rowData}
       />
     </>
