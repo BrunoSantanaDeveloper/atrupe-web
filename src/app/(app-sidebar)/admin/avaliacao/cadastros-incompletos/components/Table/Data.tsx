@@ -4,6 +4,7 @@
 import { Fragment, useState } from 'react'
 
 // Components
+import { Badge } from '@/components/ui/badge'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TablePagination } from '@/components/common/TablePagination'
@@ -46,6 +47,7 @@ export interface IncompleteRegistrationItem {
   phone: string
   email: string
   createdAt: string
+  emailVerified: boolean
 }
 
 interface GroupedData {
@@ -80,7 +82,7 @@ export function Data({ searchParams, searchDescription }: Props) {
     <>
       <CardContent>
         {isLoading ? (
-          <TableSkeleton cols={6} />
+          <TableSkeleton cols={7} />
         ) : hasData ? (
           <>
             <Table>
@@ -90,6 +92,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                   <TableHead>Código</TableHead>
                   <TableHead>Usuário</TableHead>
                   <TableHead>Contato</TableHead>
+                  <TableHead>Validação e-mail</TableHead>
                   <TableHead>Criação</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
@@ -99,7 +102,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={6}
+                        colSpan={7}
                         className="text-gray font-medium text-xs py-3"
                       >
                         {formatToWeekDate(group?.date)}
@@ -123,6 +126,17 @@ export function Data({ searchParams, searchDescription }: Props) {
                                   <p className="text-gray-900">{item.phone}</p>
                                   <p className="text-gray-600">{item.email}</p>
                                 </div>
+                              </TableCell>
+                              <TableCell>
+                                {item.emailVerified ? (
+                                  <Badge variant="successLight">
+                                    Confirmado
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="errorLight">
+                                    Não confirmado
+                                  </Badge>
+                                )}
                               </TableCell>
                               <TableCell className="text-gray-600">
                                 {formatToLocaleDate(item.createdAt)}
