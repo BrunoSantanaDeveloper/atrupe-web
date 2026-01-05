@@ -35,6 +35,7 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getData } from '@/actions/_cruds'
 
 // Libs
+import { maskCpfCnpj } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
@@ -164,7 +165,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       {item.companyName}
                                     </p>
                                     <p className="text-xs text-gray-600">
-                                      {`${item.code} - ${item.document}`}
+                                      {`${item.code} - ${maskCpfCnpj(item.document)}`}
                                     </p>
                                   </div>
                                 </div>
