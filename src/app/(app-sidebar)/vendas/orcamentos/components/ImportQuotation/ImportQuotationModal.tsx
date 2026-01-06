@@ -8,9 +8,11 @@ import {
   Dialog,
   DialogBody,
   DialogTitle,
+  DialogClose,
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
 import { useDropzone } from 'react-dropzone'
@@ -94,11 +96,6 @@ const getErrorFixUrl = (field: string, error: string): string | null => {
   return null
 }
 
-interface ImportQuotationModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
 interface ImportError {
   row: number
   field: string
@@ -106,10 +103,8 @@ interface ImportError {
   error: string
 }
 
-export function ImportQuotationModal({
-  open,
-  onOpenChange,
-}: ImportQuotationModalProps) {
+export function ImportQuotationModal() {
+  const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
@@ -263,7 +258,7 @@ export function ImportQuotationModal({
         await queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
 
         // Fechar modal
-        handleClose()
+        handleOpenChange(false)
       } else {
         toast.warning(successMsg)
       }
@@ -275,22 +270,27 @@ export function ImportQuotationModal({
     }
   }
 
-  const handleClose = () => {
-    setFile(null)
-    setUploadProgress(0)
-    setErrors([])
-    setShowErrors(false)
-    setImportId(null)
-    setIsUploading(false)
-    setIsValidating(false)
-    onOpenChange(false)
+  const handleOpenChange = (value: boolean) => {
+    if (!value) {
+      setFile(null)
+      setUploadProgress(0)
+      setErrors([])
+      setShowErrors(false)
+      setImportId(null)
+      setIsUploading(false)
+      setIsValidating(false)
+    }
+    setOpen(value)
   }
 
   const isProcessing = isUploading || isValidating
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleClose}>
+      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button RightIcon={IconArrowRight}>Importar</Button>
+        </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>
             <DialogTitle>
@@ -381,13 +381,11 @@ export function ImportQuotationModal({
           </DialogBody>
 
           <DialogFooter>
-            <Button
-              variant="neutralOutline"
-              onClick={handleClose}
-              disabled={isProcessing}
-            >
-              Fechar
-            </Button>
+            <DialogClose asChild>
+              <Button variant="neutralOutline" disabled={isProcessing}>
+                Fechar
+              </Button>
+            </DialogClose>
             <Button
               onClick={handleImport}
               disabled={!file}
