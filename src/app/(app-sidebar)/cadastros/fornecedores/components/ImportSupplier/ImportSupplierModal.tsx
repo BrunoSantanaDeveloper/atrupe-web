@@ -113,9 +113,9 @@ export function ImportSupplierModal() {
   }
 
   const handleDownloadTemplate = () => {
-    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,atividade,razaoSocial,categoria,observacoes,cep,rua,numero,complemento,bairro,cidade,uf
-EMPRESA,Fornecedor ABC Ltda,contato@fornecedorabc.com,(11) 3333-4444,(11) 99999-8888,,12.345.678/0001-90,,Indústria,Fornecedor ABC Indústria Ltda,Matéria Prima,Fornecedor de materiais,04567-000,Rua das Indústrias,500,Galpão 3,Centro Industrial,São Paulo,SP
-PESSOA,João Fornecedor,joao@fornecedor.com,(11) 2222-3333,(11) 98888-9999,123.456.789-00,,12.345.678-9,Serviços,,,Prestador de serviços,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP`
+    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,razaoSocial,categoria,filial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf,responsavelNome,responsavelEmail,responsavelTelefone,responsavelCelular
+EMPRESA,Fornecedor ABC Ltda,contato@fornecedorabc.com,(11) 3333-4444,(11) 99999-8888,,12.345.678/0001-90,,Fornecedor ABC Indústria Ltda,Matéria Prima,NAO,Fornecedor de materiais,04567-000,Rua das Indústrias,500,Galpão 3,Centro Industrial,São Paulo,SP,Maria Santos,maria@fornecedor.com,(11) 3333-5555,(11) 99999-7777
+PESSOA,João Fornecedor,joao@fornecedor.com,(11) 2222-3333,(11) 98888-9999,123.456.789-00,,12.345.678-9,,Serviços,NAO,Prestador de serviços,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP,Pedro Souza,pedro@empresa.com,(11) 2222-4444,(11) 98888-6666`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
