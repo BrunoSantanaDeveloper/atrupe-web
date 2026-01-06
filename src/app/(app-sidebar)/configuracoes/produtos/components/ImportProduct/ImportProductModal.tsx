@@ -124,7 +124,7 @@ PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impr
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-produtos.csv')
+    link.setAttribute('download', 'modelo-importacao-produtos-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

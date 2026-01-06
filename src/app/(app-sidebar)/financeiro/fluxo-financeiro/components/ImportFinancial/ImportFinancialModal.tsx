@@ -105,7 +105,7 @@ DESPESA,Salário Janeiro - João Funcionário,FOLHA-01,2024-01-31,5000.00,1,,,jo
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-financeiro.csv')
+    link.setAttribute('download', 'modelo-importacao-financeiro-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

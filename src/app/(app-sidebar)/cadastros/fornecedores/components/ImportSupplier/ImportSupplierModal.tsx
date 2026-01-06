@@ -122,7 +122,7 @@ PESSOA,João Fornecedor,joao@fornecedor.com,(11) 2222-3333,(11) 98888-9999,123.4
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-fornecedores.csv')
+    link.setAttribute('download', 'modelo-importacao-fornecedores-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

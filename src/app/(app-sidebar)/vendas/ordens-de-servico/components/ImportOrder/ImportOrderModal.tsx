@@ -157,7 +157,7 @@ export function ImportOrderModal() {
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-ordens.csv')
+    link.setAttribute('download', 'modelo-importacao-ordens-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

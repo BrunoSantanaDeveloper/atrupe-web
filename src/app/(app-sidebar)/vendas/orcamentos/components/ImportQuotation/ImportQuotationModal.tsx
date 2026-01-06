@@ -156,7 +156,7 @@ export function ImportQuotationModal() {
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-orcamentos.csv')
+    link.setAttribute('download', 'modelo-importacao-orcamentos-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()

@@ -143,7 +143,7 @@ COMPANY,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,
     const url = URL.createObjectURL(blob)
 
     link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-clientes.csv')
+    link.setAttribute('download', 'modelo-importacao-clientes-atrupe.csv')
     link.style.visibility = 'hidden'
     document.body.appendChild(link)
     link.click()
