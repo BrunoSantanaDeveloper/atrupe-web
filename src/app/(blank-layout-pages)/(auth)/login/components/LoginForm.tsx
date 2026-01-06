@@ -144,7 +144,6 @@ export function LoginForm() {
         </div>
         <Button
           type="submit"
-          disabled={isSubmitting}
           className="mt-4 [&>svg]:ml-0"
           RightIcon={IconArrowNarrowRight}
           isLoading={isSubmitting}
