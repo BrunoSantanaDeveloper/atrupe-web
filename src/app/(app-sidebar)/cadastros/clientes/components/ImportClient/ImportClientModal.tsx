@@ -108,9 +108,9 @@ export function ImportClientModal() {
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo
-    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,atividade,razaoSocial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf
-PESSOA,João Silva,joao@example.com,(11) 3333-4444,(11) 99999-8888,123.456.789-00,,12.345.678-9,,,Cliente exemplo,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP
-EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,12.345.678/0001-90,,Comércio,Empresa ABC Comércio Ltda,Distribuidor autorizado,04567-000,Rua dos Empresários,500,,Centro,São Paulo,SP`
+    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,razaoSocial,grupo,dataNascimento,filial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf,responsavelNome,responsavelEmail,responsavelTelefone,responsavelCelular
+PESSOA,João Silva,joao@example.com,(11) 3333-4444,(11) 99999-8888,123.456.789-00,,12.345.678-9,,Varejo,15/03/1990,NAO,Cliente exemplo,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP,Maria Santos,maria@empresa.com,(11) 3333-5555,(11) 99999-7777
+EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,12.345.678/0001-90,,Empresa ABC Comércio Ltda,Atacado,,NAO,Distribuidor autorizado,04567-000,Rua dos Empresários,500,,Centro,São Paulo,SP,Pedro Souza,pedro@empresaabc.com,(11) 2222-4444,(11) 98888-6666`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
