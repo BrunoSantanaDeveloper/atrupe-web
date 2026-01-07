@@ -114,6 +114,7 @@ export function ImportProductModal() {
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo baseado no schema do backend
+    // TODO: Alterar "categoria" para "grupo" / Verificar o que é "serviço", "custo", "preco". Faltam campos para diversas unidades de medida.
     const csvContent = `codigo,nome,descricao,categoria,setor,servico,unidadeMedida,largura,altura,custo,preco,permitirEditarValor,permitirEditarDescricao
 PROD-001,Cartão de Visita,Cartão de visita 4x4 cores em papel couché 300g,Impressos Comerciais,IMPRESSAO,Impressão Offset,UN,0.09,0.05,45.00,120.00,SIM,SIM
 PROD-002,Banner Lona,Banner em lona 440g com acabamento em bastão e corda,Comunicação Visual,IMPRESSAO,Impressão Digital,M2,1.00,1.50,35.00,85.00,SIM,NAO
