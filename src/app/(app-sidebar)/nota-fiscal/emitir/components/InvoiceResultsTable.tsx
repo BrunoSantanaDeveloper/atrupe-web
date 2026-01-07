@@ -162,7 +162,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         <ActionButton
                           Icon={IconSearch}
                           tooltip="Visualizar"
-                          onClick={() => {}}
+                          link={`/nota-fiscal/emitir/${item.id}`}
                         />
                       </div>
                     </TableCell>
