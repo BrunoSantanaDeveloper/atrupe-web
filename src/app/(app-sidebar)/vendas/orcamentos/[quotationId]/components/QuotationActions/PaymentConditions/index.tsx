@@ -51,7 +51,7 @@ import {
 } from '@tabler/icons-react'
 
 // Third-party
-import { useIsFetching, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
 import { updateItemNew } from '@/actions/_cruds'
@@ -72,7 +72,7 @@ interface Props {
 export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
   const [open, setOpen] = useState(false)
 
-  const isFetching = useIsFetching()
+  // const isFetching = useIsFetching()
 
   const queryClient = useQueryClient()
 
@@ -176,7 +176,8 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
     console.info('Errors: ', form.formState.errors)
   }
 
-  const isBusy = isSubmitting || isFetching > 0
+  // const isBusy = isSubmitting || isFetching > 0
+  const isBusy = isSubmitting
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

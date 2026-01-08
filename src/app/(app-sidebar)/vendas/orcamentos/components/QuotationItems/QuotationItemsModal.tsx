@@ -32,6 +32,27 @@ import { IProduct, useProducts } from '@/hooks/queries/useProduct'
 import { useQuotation } from '@/contexts/quotationContext'
 import { SelectSectorWithProductsField } from '@/components/common/form/global-inputs/SectorWithProductsSelectField'
 
+// Helper para converter unitKind para símbolo da unidade
+function getUnitSymbol(unitKind: string | null | undefined): string {
+  switch (unitKind?.toUpperCase()) {
+    case 'AREA':
+      return 'm²'
+    case 'LENGTH':
+      return 'm'
+    case 'CAPACITY':
+      return 'L'
+    case 'WEIGHT':
+      return 'kg'
+    case 'DISTANCE':
+      return 'km'
+    case 'DURATION':
+      return 'h'
+    case 'UNITY':
+    default:
+      return 'un'
+  }
+}
+
 const schema = z.object({
   search: z.string().optional(),
   sectorId: z.string(),
@@ -172,7 +193,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                       </TableCell>
                       <TableCell className="w-[10%] text-right">
                         <Badge variant="blueLight" size={'lg'}>
-                          Un
+                          {getUnitSymbol(item.items?.[0]?.unitKind)}
                         </Badge>
                       </TableCell>
                       <TableCell className="w-full max-w-[15%] text-start">
