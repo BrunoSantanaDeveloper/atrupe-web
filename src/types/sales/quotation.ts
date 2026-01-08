@@ -175,6 +175,7 @@ export type QuotationType = {
   seller: {
     id: string
     name: string
+    maxDiscount?: number | null
   }
   company: {
     id: string

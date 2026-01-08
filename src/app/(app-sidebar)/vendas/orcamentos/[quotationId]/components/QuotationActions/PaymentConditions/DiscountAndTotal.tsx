@@ -8,22 +8,57 @@ import { useFormContext } from 'react-hook-form'
 import type { QuotationPaymentConditionsType } from './schema'
 import { calculatePercentCommission } from './utils'
 
+// Types
+import type { QuotationType } from '@/types/sales/quotation'
+
 interface Props {
   addComissionValue: number
+  quotationData: QuotationType
 }
 
-export function DiscountAndTotal({ addComissionValue }: Props) {
+export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
   const form = useFormContext<QuotationPaymentConditionsType>()
 
   const { watch, setValue } = form
 
   const baseValue = watch('paymentConditionsBaseValue') || 0
   const discountType = watch('discount.discountType')
+  const discountTotal = watch('discount.discountTotal') || 0
   const installmentQty = watch('installmentQty')
   const installments = watch('installments') || []
   const hasDownPayment = watch('hasDownPayment')
   const downPaymentAmount = watch('downPayment.amount') || 0
   const commission = watch('commission')
+
+  // Calcular o valor original sem nenhum desconto (soma dos totalValue dos produtos)
+  const originalValue =
+    quotationData?.quotationItems?.reduce(
+      (sum, item) => sum + (item?.totalValue || 0),
+      0,
+    ) || 0
+
+  // Calcular o desconto total dos itens (soma das diferenças entre totalValue e finalValue)
+  const itemsDiscountTotal =
+    quotationData?.quotationItems?.reduce((sum, item) => {
+      const itemDiscount = (item?.totalValue || 0) - (item?.finalValue || 0)
+      return sum + Math.max(itemDiscount, 0)
+    }, 0) || 0
+
+  // Desconto total combinado (itens + desconto geral)
+  const combinedDiscountTotal = itemsDiscountTotal + discountTotal
+
+  // Calcular o percentual de desconto total
+  const totalDiscountPercentage =
+    originalValue > 0 ? (combinedDiscountTotal / originalValue) * 100 : 0
+
+  // Limite máximo de desconto do vendedor
+  const maxDiscount = quotationData?.seller?.maxDiscount
+
+  // Verificar se o desconto excede o limite
+  const exceedsMaxDiscount =
+    maxDiscount !== null &&
+    maxDiscount !== undefined &&
+    totalDiscountPercentage > maxDiscount
 
   // Função para atualizar as parcelas quando o valor total mudar
   const updateInstallments = (newTotalValue: number) => {
@@ -169,45 +204,53 @@ export function DiscountAndTotal({ addComissionValue }: Props) {
     updateInstallments(totalValue)
   }
 
+  // Mensagem de erro do desconto
+  const discountErrorMessage = exceedsMaxDiscount
+    ? `Desconto total (${totalDiscountPercentage.toFixed(1)}%) excede o limite do vendedor (${maxDiscount}%)`
+    : undefined
+
   return (
     <>
-      {discountType === 'VALUE' ? (
-        <FormBrlInput<QuotationPaymentConditionsType>
-          name="discount.discountValue"
-          label="Desconto"
-          width="flex-[1_0_200px]"
-          className="[&>input]:-ml-1"
-          additionalOnChange={handleDiscountChange}
-          startAdornment={
-            <PickValuePercentSelect
-              name="discount.discountType"
-              onChange={() => {
-                setValue('discount.discountValue', 0)
-                setValue('discount.discountTotal', 0)
-                handleDiscountChange(0)
-              }}
-            />
-          }
-        />
-      ) : (
-        <FormInput<QuotationPaymentConditionsType>
-          type="number"
-          name="discount.discountValue"
-          label="Desconto"
-          width="flex-[1_0_200px]"
-          additionalOnChange={handleDiscountChange}
-          startAdornment={
-            <PickValuePercentSelect
-              name="discount.discountType"
-              onChange={() => {
-                setValue('discount.discountValue', 0)
-                setValue('discount.discountTotal', 0)
-                handleDiscountChange(0)
-              }}
-            />
-          }
-        />
-      )}
+      <div className="flex-[1_0_200px]">
+        {discountType === 'VALUE' ? (
+          <FormBrlInput<QuotationPaymentConditionsType>
+            name="discount.discountValue"
+            label="Desconto"
+            className="[&>input]:-ml-1"
+            additionalOnChange={handleDiscountChange}
+            startAdornment={
+              <PickValuePercentSelect
+                name="discount.discountType"
+                onChange={() => {
+                  setValue('discount.discountValue', 0)
+                  setValue('discount.discountTotal', 0)
+                  handleDiscountChange(0)
+                }}
+              />
+            }
+          />
+        ) : (
+          <FormInput<QuotationPaymentConditionsType>
+            type="number"
+            name="discount.discountValue"
+            label="Desconto"
+            additionalOnChange={handleDiscountChange}
+            startAdornment={
+              <PickValuePercentSelect
+                name="discount.discountType"
+                onChange={() => {
+                  setValue('discount.discountValue', 0)
+                  setValue('discount.discountTotal', 0)
+                  handleDiscountChange(0)
+                }}
+              />
+            }
+          />
+        )}
+        {discountErrorMessage && (
+          <p className="mt-1 text-xs text-error">{discountErrorMessage}</p>
+        )}
+      </div>
 
       <FormBrlInput<QuotationPaymentConditionsType>
         name="totalValue"

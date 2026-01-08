@@ -259,7 +259,10 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
                 readOnly
               />
 
-              <DiscountAndTotal addComissionValue={addComissionValue} />
+              <DiscountAndTotal
+                addComissionValue={addComissionValue}
+                quotationData={quotationData}
+              />
 
               <FormTextarea
                 name="description"

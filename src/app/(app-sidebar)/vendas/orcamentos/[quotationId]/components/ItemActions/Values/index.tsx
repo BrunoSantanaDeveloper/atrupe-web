@@ -1,5 +1,5 @@
 // React
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useMemo } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -64,6 +64,60 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
   const discountType = watch('discountType') || 'VALUE'
 
   const isFirstRender = useRef(true)
+
+  // Calcular o desconto atual do item em valor absoluto
+  const currentItemDiscount = useMemo(() => {
+    if (discountType === 'VALUE') {
+      return discount
+    } else if (discountType === 'PERCENT') {
+      return (discount / 100) * baseValue
+    }
+    return 0
+  }, [discount, discountType, baseValue])
+
+  // Calcular o valor original total sem nenhum desconto (soma dos totalValue dos produtos)
+  const originalValue = useMemo(() => {
+    return (
+      quotationData?.quotationItems?.reduce(
+        (sum, item) => sum + (item?.totalValue || 0),
+        0,
+      ) || 0
+    )
+  }, [quotationData?.quotationItems])
+
+  // Calcular o desconto total dos outros itens (excluindo o item atual)
+  const otherItemsDiscount = useMemo(() => {
+    return (
+      quotationData?.quotationItems?.reduce((sum, item) => {
+        // Pular o item atual
+        if (item?.id === rowData?.id) return sum
+        const itemDiscount = (item?.totalValue || 0) - (item?.finalValue || 0)
+        return sum + Math.max(itemDiscount, 0)
+      }, 0) || 0
+    )
+  }, [quotationData?.quotationItems, rowData?.id])
+
+  // Calcular o desconto geral das condições de pagamento
+  const generalDiscount = useMemo(() => {
+    return quotationData?.paymentConditions?.discount?.discountTotal || 0
+  }, [quotationData?.paymentConditions?.discount?.discountTotal])
+
+  // Desconto total combinado (item atual + outros itens + desconto geral)
+  const combinedDiscountTotal =
+    currentItemDiscount + otherItemsDiscount + generalDiscount
+
+  // Calcular o percentual de desconto total
+  const totalDiscountPercentage =
+    originalValue > 0 ? (combinedDiscountTotal / originalValue) * 100 : 0
+
+  // Limite máximo de desconto do vendedor
+  const maxDiscount = quotationData?.seller?.maxDiscount
+
+  // Verificar se o desconto excede o limite
+  const exceedsMaxDiscount =
+    maxDiscount !== null &&
+    maxDiscount !== undefined &&
+    totalDiscountPercentage > maxDiscount
 
   // Resetar form quando modal abrir
   useEffect(() => {
@@ -195,32 +249,40 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                 width="flex-[1_0_200px]"
                 disabled
               />
-              {discountType === 'VALUE' ? (
-                <FormBrlInput<FormType>
-                  name="discount"
-                  label="Desconto"
-                  width="flex-[1_0_200px]"
-                  className="[&>input]:-ml-1"
-                  additionalOnChange={handleDiscountChange}
-                  autoFocus
-                  startAdornment={<PickValuePercentSelect />}
-                  formatValue={(value) => (value < 0 ? 0 : value)}
-                />
-              ) : (
-                <FormInput<FormType>
-                  type="number"
-                  name="discount"
-                  label="Desconto"
-                  width="flex-[1_0_200px]"
-                  additionalOnChange={handleDiscountChange}
-                  autoFocus
-                  startAdornment={<PickValuePercentSelect />}
-                  formatValue={(value) => {
-                    const numValue = Number(value)
-                    return numValue < 0 ? 0 : value
-                  }}
-                />
-              )}
+              <div className="flex flex-wrap flex-[1_0_200px]">
+                {discountType === 'VALUE' ? (
+                  <FormBrlInput<FormType>
+                    name="discount"
+                    label="Desconto"
+                    width="w-full"
+                    className="[&>input]:-ml-1"
+                    additionalOnChange={handleDiscountChange}
+                    autoFocus
+                    startAdornment={<PickValuePercentSelect />}
+                    formatValue={(value) => (value < 0 ? 0 : value)}
+                  />
+                ) : (
+                  <FormInput<FormType>
+                    type="number"
+                    name="discount"
+                    label="Desconto"
+                    width="w-full"
+                    additionalOnChange={handleDiscountChange}
+                    autoFocus
+                    startAdornment={<PickValuePercentSelect />}
+                    formatValue={(value) => {
+                      const numValue = Number(value)
+                      return numValue < 0 ? 0 : value
+                    }}
+                  />
+                )}
+                {exceedsMaxDiscount && (
+                  <p className="mt-1 text-xs text-error">
+                    Desconto total ({totalDiscountPercentage.toFixed(1)}%)
+                    excede o limite do vendedor ({maxDiscount}%)
+                  </p>
+                )}
+              </div>
               <FormBrlInput<FormType>
                 name="finalValue"
                 label="Valor total"
