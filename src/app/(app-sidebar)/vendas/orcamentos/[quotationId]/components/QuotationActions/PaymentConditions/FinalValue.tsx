@@ -70,14 +70,21 @@ export default function FinalValue({
           >
             + {formatCurrencyToBrl(itemsValue)}
           </p>
-          <p className="text-gray-500">Desc. dos itens:</p>
+          <p className="text-gray-500">
+            {itemsDiscount < 0 ? 'Acr.' : 'Desc.'} dos itens:
+          </p>
           <p
             className={cn(
               'text-right',
-              itemsDiscount > 0 ? 'text-error-800' : 'text-gray-400',
+              itemsDiscount > 0
+                ? 'text-error-800'
+                : itemsDiscount < 0
+                  ? 'text-success-800'
+                  : 'text-gray-400',
             )}
           >
-            - {formatCurrencyToBrl(itemsDiscount)}
+            {itemsDiscount > 0 ? '-' : '+'}{' '}
+            {formatCurrencyToBrl(Math.abs(itemsDiscount))}
           </p>
           <p className="text-gray-500">Frete:</p>
           <p

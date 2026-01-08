@@ -274,8 +274,10 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
             <div>
               <p className="text-lg font-semibold text-gray-500 text-nowrap">
                 {formatCurrencyToBrl(
-                  quotationData?.totalValue +
-                    quotationData?.deliveryInfo?.value,
+                  quotationData?.quotationItems?.reduce(
+                    (acc, item) => acc + (item?.totalValue || 0),
+                    0,
+                  ),
                 )}
               </p>
               <p className="text-sm font-medium text-gray-400">Valor base</p>
