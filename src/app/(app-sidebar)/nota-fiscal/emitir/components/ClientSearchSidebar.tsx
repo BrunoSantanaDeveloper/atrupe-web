@@ -11,13 +11,23 @@ import { Label } from '@/components/ui/label'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { Search } from 'lucide-react'
+import { Search, Loader2 } from 'lucide-react'
 import { IconSearch, IconUserSearch, IconCheck } from '@tabler/icons-react'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { ClientType } from './IssueInvoice'
 import { cn } from '@/lib/utils'
+
+// Actions
+import { getData } from '@/actions/_cruds'
+
+interface ClientType {
+  id: string
+  name: string
+  corporateName?: string
+  cnpj?: string
+  cpf?: string
+}
 
 interface Props {
   searchParams: SearchParamsType['searchParams']
@@ -29,10 +39,9 @@ export function ClientSearchSidebar({ searchParams }: Props) {
   const router = useRouter()
   const searchParamsHook = useSearchParams()
 
-  // Mock search results
   const [clients, setClients] = useState<ClientType[]>([])
 
-  const handleSearch = (e: React.SyntheticEvent) => {
+  const handleSearch = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     if (!search.trim()) {
       setClients([])
@@ -41,14 +50,31 @@ export function ClientSearchSidebar({ searchParams }: Props) {
     }
 
     setIsSearching(true)
-    // Simulating API call
-    setTimeout(() => {
-      setClients([
-        { id: '1', name: 'Nome do Cliente Ltda' },
-        { id: '2', name: 'Outro Cliente Exemplo S.A.' },
-        { id: '3', name: 'Cliente de Teste Me' },
-      ])
-    }, 500)
+
+    try {
+      const result = await getData({
+        route: '/client',
+        filters: { search: search.trim() },
+        perPage: '20',
+      })
+
+      if (result.success && result.data) {
+        const formattedClients = result.data.map((client: ClientType) => ({
+          id: client.id,
+          name: client.corporateName || client.name,
+          cnpj: client.cnpj,
+          cpf: client.cpf,
+        }))
+        setClients(formattedClients)
+      } else {
+        setClients([])
+      }
+    } catch (error) {
+      console.error('Erro ao buscar clientes:', error)
+      setClients([])
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   const handleSelectClient = (clientId: string) => {
@@ -79,13 +105,19 @@ export function ClientSearchSidebar({ searchParams }: Props) {
           <div className="relative flex-1">
             <Input
               id="client-search"
-              placeholder="Buscar por..."
+              placeholder="Buscar por nome ou CNPJ..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               startAdornment={<Search size={18} className="text-gray-400" />}
             />
           </div>
-          <Button type="submit" size="iconMd" LeftIcon={IconSearch} />
+          <Button
+            type="submit"
+            size="iconMd"
+            LeftIcon={isSearching ? Loader2 : IconSearch}
+            disabled={isSearching}
+            className={isSearching ? 'animate-spin' : ''}
+          />
         </form>
       </CardHeader>
 
@@ -102,14 +134,21 @@ export function ClientSearchSidebar({ searchParams }: Props) {
                     'bg-white border-l-4 border-l-success-600',
                 )}
               >
-                <span
-                  className={cn(
-                    'font-medium text-gray-700',
-                    selectedClientId === client.id && 'text-success-700',
+                <div className="flex flex-col">
+                  <span
+                    className={cn(
+                      'font-medium text-gray-700',
+                      selectedClientId === client.id && 'text-success-700',
+                    )}
+                  >
+                    {client.name}
+                  </span>
+                  {(client.cnpj || client.cpf) && (
+                    <span className="text-xs text-gray-400">
+                      {client.cnpj || client.cpf}
+                    </span>
                   )}
-                >
-                  {client.name}
-                </span>
+                </div>
                 {selectedClientId === client.id && (
                   <IconCheck size={18} className="text-success-600" />
                 )}
@@ -128,14 +167,12 @@ export function ClientSearchSidebar({ searchParams }: Props) {
               />
               <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-900">
-                  {isSearching && !clients.length
-                    ? 'Buscando...'
-                    : 'Sem clientes filtrados'}
+                  {isSearching ? 'Buscando...' : 'Sem clientes filtrados'}
                 </p>
                 <p className="text-sm text-gray-500">
-                  {isSearching && !clients.length
+                  {isSearching
                     ? 'Aguarde um momento'
-                    : 'Faça uma nova busca'}
+                    : 'Digite um nome ou CNPJ para buscar'}
                 </p>
               </div>
             </div>

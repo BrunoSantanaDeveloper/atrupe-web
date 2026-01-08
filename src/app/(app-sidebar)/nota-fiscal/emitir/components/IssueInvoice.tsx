@@ -11,11 +11,6 @@ import { InvoiceResultsTable } from './InvoiceResultsTable'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
-export interface ClientType {
-  id: string
-  name: string
-}
-
 export function IssueInvoice({ searchParams }: SearchParamsType) {
   return (
     <TooltipProvider>
