@@ -77,6 +77,21 @@ export function InstallmentQty() {
     recalculateInstallments(qtyNumber, additionalFee)
   }
 
+  // Gerar parcelas automaticamente quando o dialog abre sem parcelas existentes
+  // mas com uma condição de pagamento selecionada (Workaround implementado para task AT-340)
+  useEffect(() => {
+    if (
+      paymentConditionId &&
+      installmentQty &&
+      Number(installmentQty) > 0 &&
+      (!installments || installments.length === 0)
+    ) {
+      // Gerar parcelas iniciais
+      handleChangeInstallmentQty(installmentQty)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentConditionId])
+
   // Recalcular parcelas quando o valor total ou o valor da entrada mudar
   useEffect(() => {
     if (
