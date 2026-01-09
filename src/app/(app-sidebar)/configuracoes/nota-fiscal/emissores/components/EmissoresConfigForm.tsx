@@ -14,7 +14,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import { IconDeviceFloppy, IconBuilding } from '@tabler/icons-react'
+import { IconDeviceFloppy, IconBuilding, IconKey, IconLock } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -40,6 +40,11 @@ const emissoresSchema = z.object({
   emitCep: z.string().optional(),
   emitCmun: z.string().optional(),
   emitUf: z.string().optional(),
+  // Invoicy Credentials
+  accessKey: z.string().optional(),
+  partnerKey: z.string().optional(),
+  certificatePassword: z.string().optional(),
+  ambiente: z.string().optional(),
 })
 
 type EmissoresFormType = z.infer<typeof emissoresSchema>
@@ -80,6 +85,11 @@ const ufOptions = [
   { value: 'TO', label: 'TO - Tocantins' },
 ]
 
+const ambienteOptions = [
+  { value: '1', label: 'Produção' },
+  { value: '2', label: 'Homologação' },
+]
+
 async function fetchEmissoresConfig() {
   try {
     const response = await getDataOld({
@@ -113,7 +123,12 @@ export function EmissoresConfigForm() {
       emitBairro: '',
       emitCep: '',
       emitCmun: '',
+      emitCmun: '',
       emitUf: '',
+      accessKey: '',
+      partnerKey: '',
+      certificatePassword: '',
+      ambiente: '2',
     },
   })
 
@@ -132,7 +147,12 @@ export function EmissoresConfigForm() {
         emitBairro: configData.emitBairro || '',
         emitCep: configData.emitCep || '',
         emitCmun: configData.emitCmun || '',
+        emitCmun: configData.emitCmun || '',
         emitUf: configData.emitUf || '',
+        accessKey: configData.accessKey || '',
+        partnerKey: configData.partnerKey || '',
+        certificatePassword: configData.certificatePassword || '',
+        ambiente: configData.ambiente === 'PRODUCAO' ? '1' : '2',
       })
     }
   }, [configData, form])
@@ -144,6 +164,7 @@ export function EmissoresConfigForm() {
         data: {
           ...data,
           emitCrt: data.emitCrt ? parseInt(data.emitCrt, 10) : 1,
+          ambiente: data.ambiente ? parseInt(data.ambiente, 10) : 2,
         },
       })
 
@@ -184,6 +205,43 @@ export function EmissoresConfigForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Credenciais Invoicy */}
+          <div className="rounded-lg bg-white p-6 space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <IconKey className="w-5 h-5 text-gray-500" />
+              <h3 className="font-semibold text-base">Credenciais Invoicy</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormInput
+                name="accessKey"
+                label="Chave de Acesso (Access Key)"
+                placeholder="Chave fornecida pelo Invoicy"
+                type="password"
+              />
+              <FormInput
+                name="partnerKey"
+                label="Chave de Parceiro (Partner Key)"
+                placeholder="Chave do parceiro (Opcional)"
+                type="password"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormInput
+                name="certificatePassword"
+                label="Senha do Certificado"
+                placeholder="Senha para instalar certificado"
+                type="password"
+              />
+              <FormSelect
+                name="ambiente"
+                label="Ambiente"
+                options={ambienteOptions}
+              />
+            </div>
+          </div>
+
           {/* Dados da Empresa */}
           <div className="rounded-lg bg-white p-6 space-y-4">
             <h3 className="font-semibold text-base">Identificação</h3>
