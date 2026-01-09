@@ -46,6 +46,7 @@ interface MainNavigationType {
   counter?: number // ** 3
   action?: boolean
   permission?: string // Nova propriedade para permissões
+  requiredModule?: string // Módulo contratado necessário para exibir o item
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
 
@@ -170,12 +171,14 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Emitir Nota',
         path: '/nota-fiscal/emitir',
         permission: 'nota_fiscal:emitir:view',
+        requiredModule: 'nota_fiscal',
       },
       {
         icon: IconFileCheck,
         title: 'Notas emitidas',
         path: '/nota-fiscal/emitidas',
         permission: 'nota_fiscal:emitidas:view',
+        requiredModule: 'nota_fiscal',
       },
     ],
   },

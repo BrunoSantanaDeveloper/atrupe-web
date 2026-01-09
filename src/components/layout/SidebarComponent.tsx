@@ -65,6 +65,7 @@ interface NavigationItem {
   counter?: number
   action?: boolean
   permission?: string
+  requiredModule?: string
   children?: NavigationItem[]
 }
 
@@ -102,6 +103,21 @@ export function SidebarComponent(props: Props) {
     canManageDeliverySchedule,
   } = usePlanFeatures()
 
+  // TODO: Implementar verificação real de módulos contratados via API/sessão
+  // Por enquanto, usando booleano mockado para o módulo de nota fiscal
+  const contractedModules = {
+    nota_fiscal: false, // Alterar para true/false para testar a restrição
+  }
+
+  // Função que verifica se o módulo contratado está disponível
+  const hasContractedModule = (requiredModule?: string): boolean => {
+    if (!requiredModule) return true // Se não requer módulo, permite acesso
+    return (
+      contractedModules[requiredModule as keyof typeof contractedModules] ??
+      false
+    )
+  }
+
   // Conversão: getUserLimit usando acesso direto à sessão
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
@@ -114,10 +130,15 @@ export function SidebarComponent(props: Props) {
     )
   }
 
-  // Função que verifica se um item deve ser exibido baseado em permissões e features do plano
+  // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
   const checkItemAccess = (item: NavigationItem): boolean => {
     // Primeiro verifica permissões
     if (!checkPermission(item.permission)) {
+      return false
+    }
+
+    // Verifica se o módulo contratado está disponível
+    if (!hasContractedModule(item.requiredModule)) {
       return false
     }
 
