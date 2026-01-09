@@ -113,12 +113,16 @@ export function ImportProductModal() {
   }
 
   const handleDownloadTemplate = () => {
-    // Criar um CSV de exemplo baseado no schema do backend
-    // TODO: Alterar "categoria" para "grupo" / Verificar o que é "serviço", "custo", "preco". Faltam campos para diversas unidades de medida.
-    const csvContent = `codigo,nome,descricao,categoria,setor,servico,unidadeMedida,largura,altura,custo,preco,permitirEditarValor,permitirEditarDescricao
-PROD-001,Cartão de Visita,Cartão de visita 4x4 cores em papel couché 300g,Impressos Comerciais,IMPRESSAO,Impressão Offset,UN,0.09,0.05,45.00,120.00,SIM,SIM
-PROD-002,Banner Lona,Banner em lona 440g com acabamento em bastão e corda,Comunicação Visual,IMPRESSAO,Impressão Digital,M2,1.00,1.50,35.00,85.00,SIM,NAO
-PROD-003,Flyer A5,Flyer promocional A5 frente e verso em papel couché 150g,Impressos Comerciais,IMPRESSAO,Arte e Impressão,UN,0.15,0.21,80.00,180.00,NAO,SIM`
+    // Criar um CSV de exemplo com NOVOS produtos (não duplicar códigos do seed)
+    // Setores já existem no seed: Impressão, Gráfica Rápida, CNC, Serralheria
+    // Grupos já existem no seed: Lonas, Adesivos, Revenda Gráfica Rápida, Estruturas, PVC
+    const csvContent = `codigo,nome,descricao,grupo,setor,servico,unidadeMedida,largura,altura,custo,preco,permitirEditarValor,permitirEditarDescricao
+BANER2,Banner Lona 280g,Banner em lona econômica 280g com acabamento simples,Lonas,Impressão,Impressão Digital,M2,1.00,1.00,40.00,80.00,SIM,NAO
+CARTV2,Cartão Visita Premium,Cartão de visita laminação fosca com hot stamping,Revenda Gráfica Rápida,Gráfica Rápida,Impressão Offset,UN,0.09,0.05,150.00,350.00,SIM,SIM
+ADFOS2,Adesivo Perfurado Veicular,Adesivo perfurado para aplicação em vidros de veículos,Adesivos,Impressão,Impressão Digital,M2,1.00,1.00,80.00,180.00,SIM,SIM
+PNACM2,Painel ACM Luminoso,Painel em ACM com caixa de luz LED embutida,Estruturas,Serralheria,Estrutura Metálica,M2,1.00,1.00,350.00,750.00,SIM,NAO
+LONA2,Lona Blackout,Lona blackout para projeção traseira,Lonas,Impressão,Impressão Digital,M2,1.00,1.00,60.00,120.00,SIM,NAO
+LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC,CNC,Corte CNC,M2,1.00,1.00,200.00,450.00,SIM,NAO`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')

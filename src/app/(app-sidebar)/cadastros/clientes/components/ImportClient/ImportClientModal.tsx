@@ -107,10 +107,13 @@ export function ImportClientModal() {
   }
 
   const handleDownloadTemplate = () => {
-    // Criar um CSV de exemplo
+    // Criar um CSV de exemplo com NOVOS clientes (não duplicar dados do seed)
+    // Os grupos usados já existem no seed: Comércio, Agências de Publicidade e Marketing, Saúde, etc
     const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,razaoSocial,grupo,dataNascimento,filial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf,responsavelNome,responsavelEmail,responsavelTelefone,responsavelCelular
-PESSOA,João Silva,joao@example.com,(11) 3333-4444,(11) 99999-8888,123.456.789-00,,12.345.678-9,,Varejo,15/03/1990,NAO,Cliente exemplo,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP,Maria Santos,maria@empresa.com,(11) 3333-5555,(11) 99999-7777
-EMPRESA,Empresa ABC Ltda,contato@empresaabc.com,(11) 2222-3333,(11) 98888-9999,,12.345.678/0001-90,,Empresa ABC Comércio Ltda,Atacado,,NAO,Distribuidor autorizado,04567-000,Rua dos Empresários,500,,Centro,São Paulo,SP,Pedro Souza,pedro@empresaabc.com,(11) 2222-4444,(11) 98888-6666`
+EMPRESA,Agência Criativa Design,contato@criativadesign.com.br,(11) 3456-7890,(11) 98765-4321,,45.678.901/0001-23,,Criativa Design Comunicação Ltda,Agências de Publicidade e Marketing,,NAO,Cliente de banners e materiais gráficos,01310-100,Av Paulista,1500,Sala 1201,Bela Vista,São Paulo,SP,Carlos Oliveira,carlos@criativadesign.com.br,(11) 3456-7891,(11) 98765-4320
+EMPRESA,Estúdio Foto Premium,contato@fotopremium.com.br,(11) 4567-8901,(11) 97654-3210,,56.789.012/0001-34,,Estúdio Foto Premium Ltda,Estúdios de Fotografia,,NAO,Álbuns e impressões fotográficas,04567-000,Rua dos Fotógrafos,800,,Centro,São Paulo,SP,Amanda Ferreira,amanda@fotopremium.com.br,(11) 4567-8902,(11) 97654-3211
+PESSOA,Dr. Roberto Costa,dr.roberto@clinica.com.br,(11) 3333-4444,(11) 99888-7766,234.567.890-12,,23.456.789-0,,Saúde,15/03/1975,NAO,Cartões de visita e receituários,01310-100,Rua Augusta,2100,Conj 45,Consolação,São Paulo,SP,,,,
+EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543-2109,,67.890.123/0001-45,,Central Modas Comércio Ltda,Comércio,,NAO,Sacolas e materiais promocionais,05432-100,Av República,300,,Centro,São Paulo,SP,Roberto Silva,roberto@centralmodas.com.br,(11) 5678-9013,(11) 96543-2108`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')

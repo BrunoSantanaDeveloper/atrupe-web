@@ -92,13 +92,14 @@ export function ImportFinancialModal() {
   }
 
   const handleDownloadTemplate = () => {
-    // Criar um CSV de exemplo baseado no schema do backend
+    // Criar um CSV de exemplo para NOVOS lançamentos financeiros
+    // Usa dados de referência que JÁ EXISTEM no seed: Cliente Exemplo (012.345.678-90), Caixa Empresa, condições de pagamento (Pix, Boleto, Dinheiro)
     const csvContent = `Tipo,Descricao,Referencia,DataReferencia,ValorTotal,QuantidadeParcelas,ClienteCpfCnpj,FornecedorCpfCnpj,FuncionarioEmail,Natureza,SubCategoria,CondicaoPagamento,Parcela,DataVencimento,ValorParcela,Status,DataPagamento,ValorPago,ContaBancaria,Observacoes
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,1,2024-02-15,500.00,PAID,2024-02-14,500.00,Banco do Brasil - CC 12345-6,Pagamento via PIX
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,2,2024-03-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
-RECEITA,Venda de produto para João Silva,NF-12345,2024-01-15,1500.00,3,12345678900,,,Vendas,Produtos,Boleto,3,2024-04-15,500.00,PENDING,,,Banco do Brasil - CC 12345-6,
-DESPESA,Compra de materiais,PEDIDO-789,2024-01-10,2500.00,1,,98765432100,,Fornecedores,Matéria Prima,Dinheiro,1,2024-02-10,2500.00,PAID,2024-02-09,2500.00,Caixa,Pagamento à vista
-DESPESA,Salário Janeiro - João Funcionário,FOLHA-01,2024-01-31,5000.00,1,,,joao.funcionario@empresa.com,Folha de Pagamento,Salários,Transferência,1,2024-02-05,5000.00,PAID,2024-02-05,5000.00,Banco do Brasil - CC 12345-6,Salário mês 01/2024`
+RECEITA,Banner 6m2 - Cliente Exemplo,OS-00145,2024-01-15,700.00,2,012.345.678-90,,,Vendas,Comunicação Visual,Boleto,1,2024-02-15,350.00,PAID,2024-02-14,350.00,Caixa Empresa,Pagamento via Pix
+RECEITA,Banner 6m2 - Cliente Exemplo,OS-00145,2024-01-15,700.00,2,012.345.678-90,,,Vendas,Comunicação Visual,Boleto,2,2024-03-15,350.00,PENDING,,,,Aguardando vencimento
+DESPESA,Compra de lona 440g - 50m,NF-78901,2024-01-10,2500.00,1,,,,,Materiais,Dinheiro,1,2024-02-10,2500.00,PAID,2024-02-09,2500.00,Caixa Empresa,Pagamento à vista
+DESPESA,Frete OS-00145 - Entrega banner,FRETE-145,2024-01-20,100.00,1,,,,,Frete de Vendas,Dinheiro,1,2024-01-20,100.00,PAID,2024-01-20,100.00,Caixa Empresa,Entrega realizada
+RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,,Vendas,Impressos,Pix,1,2024-01-18,400.00,PAID,2024-01-18,400.00,Caixa Empresa,Pagamento no ato`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')

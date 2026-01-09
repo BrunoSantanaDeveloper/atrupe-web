@@ -144,12 +144,13 @@ export function ImportQuotationModal() {
   }
 
   const handleDownloadTemplate = () => {
-    // Criar um CSV de exemplo baseado no schema do backend
-    // Campos financeiros e de entrega são opcionais e devem ser informados apenas na primeira linha de cada orçamento
+    // Criar um CSV de exemplo para NOVOS orçamentos
+    // Usa dados de referência que JÁ EXISTEM no seed: Cliente Exemplo (012.345.678-90), produtos (BANER, ADBRL, CARTV), série V1, condições de pagamento (Pix, Boleto)
     const csvContent = `NumeroVenda,Serie,Status,DataVenda,DataValidade,DataEntrega,ClienteCpfCnpj,ClienteNome,VendedorEmail,ResponsavelNome,ResponsavelEmail,ItemID,ProdutoCodigo,ProdutoNome,Quantidade,ValorUnitario,ValorTotal,Desconto,ObservacaoItem,CondicaoPagamento,QtdParcelas,Parcela1Valor,Parcela1Vencimento,Parcela2Valor,Parcela2Vencimento,Parcela3Valor,Parcela3Vencimento,EntradaValor,EntradaVencimento,TipoEntrega,TransportadorCpfCnpj,FreteCusto,FreteValor
-1,V1,OPEN,2024-01-15,2024-02-15,2024-02-20,12345678900,João Silva,vendedor@empresa.com,Maria Santos,maria@empresa.com,1,PROD-001,Porta de Madeira,2,350.00,700.00,0,Entrega em 15 dias,Boleto,2,575.00,2024-02-15,575.00,2024-03-15,,,,,,CARRIER,98765432100,100.00,150.00
-1,V1,OPEN,2024-01-15,2024-02-15,2024-02-20,12345678900,João Silva,vendedor@empresa.com,,,2,PROD-002,Janela de Alumínio,1,450.00,450.00,0,,,,,,,,,,,,,,,,,
-2,V1,OPEN,2024-01-16,,,,98765432100,Maria Santos,vendedor@empresa.com,,,1,PROD-003,Portão Automático,1,1800.00,1800.00,0,Instalação incluída,Boleto,1,1800.00,2024-02-16,,,,,,,PICKUP,,,,`
+1,V1,OPEN,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,BANER,Banner,6,100.00,600.00,0,Banner 3x2m com acabamento em bastão,Boleto,2,350.00,2024-02-15,350.00,2024-03-15,,,,,,CARRIER,,80.00,100.00
+1,V1,OPEN,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,2,ADBRL,Adesivo Brilho Impresso,4,100.00,400.00,0,Adesivo vinil 1x1m,,,,,,,,,,,,,,,
+2,V1,OPEN,2024-01-16,2024-02-16,,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,CARTV,Milheiro Cartão Visita,2,200.00,400.00,0,Cartão visita 4x4 couché 300g,Pix,1,400.00,2024-01-16,,,,,,,PICKUP,,,
+3,V1,OPEN,2024-01-17,2024-02-17,2024-02-25,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,PNACM,Painel ACM,2,400.00,800.00,50,Painel 2x1m com estrutura,Cartão de Crédito,2,375.00,2024-02-17,375.00,2024-03-17,,,,,,CARRIER,,120.00,150.00`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')

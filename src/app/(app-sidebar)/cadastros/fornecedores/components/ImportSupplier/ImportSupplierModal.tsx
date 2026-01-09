@@ -113,9 +113,13 @@ export function ImportSupplierModal() {
   }
 
   const handleDownloadTemplate = () => {
-    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,razaoSocial,categoria,filial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf,responsavelNome,responsavelEmail,responsavelTelefone,responsavelCelular
-EMPRESA,Fornecedor ABC Ltda,contato@fornecedorabc.com,(11) 3333-4444,(11) 99999-8888,,12.345.678/0001-90,,Fornecedor ABC Indústria Ltda,Matéria Prima,NAO,Fornecedor de materiais,04567-000,Rua das Indústrias,500,Galpão 3,Centro Industrial,São Paulo,SP,Maria Santos,maria@fornecedor.com,(11) 3333-5555,(11) 99999-7777
-PESSOA,João Fornecedor,joao@fornecedor.com,(11) 2222-3333,(11) 98888-9999,123.456.789-00,,12.345.678-9,,Serviços,NAO,Prestador de serviços,01310-100,Av Paulista,1000,Sala 101,Bela Vista,São Paulo,SP,Pedro Souza,pedro@empresa.com,(11) 2222-4444,(11) 98888-6666`
+    // Criar um CSV de exemplo com NOVOS fornecedores (não duplicar dados do seed)
+    // Grupos já existem no seed: Suprimentos Gerais, Equipamentos e Manutenção, Serviços Terceirizados, Logística e Transporte
+    const csvContent = `tipo,nome,email,telefone,celular,cpf,cnpj,rg,razaoSocial,grupo,filial,observacoes,cep,rua,numero,complemento,bairro,cidade,uf,responsavelNome,responsavelEmail,responsavelTelefone,responsavelCelular
+EMPRESA,Papéis Premium Brasil,vendas@papeispremium.com.br,(11) 3333-4444,(11) 99999-8888,,12.345.678/0001-90,,Papéis Premium Indústria e Comércio Ltda,Suprimentos Gerais,NAO,Fornecedor de papéis couché e offset,04567-000,Rua das Indústrias,500,Galpão 3,Distrito Industrial,São Paulo,SP,Ricardo Mendes,ricardo@papeispremium.com.br,(11) 3333-5555,(11) 99999-7777
+EMPRESA,Equipamentos Gráficos SP,comercial@equipgraficos.com.br,(11) 4444-5555,(11) 98888-7777,,23.456.789/0001-01,,Equipamentos Gráficos SP Ltda,Equipamentos e Manutenção,NAO,Manutenção de impressoras e equipamentos,05678-000,Av Industrial,1200,,Centro Industrial,Guarulhos,SP,Fernanda Lima,fernanda@equipgraficos.com.br,(11) 4444-5556,(11) 98888-7776
+EMPRESA,Gráfica Terceirizada ABC,atendimento@graficaabc.com.br,(11) 5555-6666,(11) 97777-6666,,34.567.890/0001-12,,Gráfica ABC Serviços Terceirizados Ltda,Serviços Terceirizados,NAO,Impressão offset e acabamento gráfico,06789-000,Rua dos Gráficos,300,Bloco B,Parque Gráfico,Barueri,SP,Jorge Santos,jorge@graficaabc.com.br,(11) 5555-6667,(11) 97777-6665
+PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 96666-5555,456.789.012-34,,45.678.901-2,,Logística e Transporte,NAO,Transportador autônomo - entregas urgentes,01234-000,Rua das Entregas,150,,Vila Carrão,São Paulo,SP,,,,`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
