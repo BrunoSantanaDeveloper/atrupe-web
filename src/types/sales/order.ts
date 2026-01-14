@@ -2,10 +2,21 @@
 
 import { QuotationType } from './quotation'
 
+export type NfeType = {
+  id: string
+  numero: number
+  serie: number
+  status: string
+  chaveAcesso?: string
+  danfeUrl?: string
+  dataEmissao?: string
+}
+
 export type OrderType = {
   id: string
   status: string
   quotation: QuotationType
+  nfes?: NfeType[]
 }
 
 export type OrderListType = {

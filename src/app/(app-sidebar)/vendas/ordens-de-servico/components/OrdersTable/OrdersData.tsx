@@ -257,14 +257,30 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                       <PermissionGate
                                         permissions={['sale:order:view']}
                                       >
-                                        <ActionButton
-                                          Icon={IconFileInvoice}
-                                          tooltip="Emitir NF-e"
-                                          onClick={() => {
-                                            setRowData(order)
-                                            setOpenNfeDialog(true)
-                                          }}
-                                        />
+                                        {order?.nfes?.[0]?.status ===
+                                        'AUTHORIZED' ? (
+                                          <ActionButton
+                                            Icon={IconFileInvoice}
+                                            tooltip={`DANFE ${order.nfes[0].numero}/${order.nfes[0].serie}`}
+                                            onClick={() => {
+                                              if (order.nfes?.[0]?.danfeUrl) {
+                                                window.open(
+                                                  order.nfes[0].danfeUrl,
+                                                  '_blank',
+                                                )
+                                              }
+                                            }}
+                                          />
+                                        ) : (
+                                          <ActionButton
+                                            Icon={IconFileInvoice}
+                                            tooltip="Emitir NF-e"
+                                            onClick={() => {
+                                              setRowData(order)
+                                              setOpenNfeDialog(true)
+                                            }}
+                                          />
+                                        )}
                                       </PermissionGate>
                                     )}
                                     {order?.status !== 'CANCELED' && (

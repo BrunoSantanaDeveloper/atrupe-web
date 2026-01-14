@@ -14,7 +14,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import { IconDeviceFloppy, IconBuilding, IconKey, IconLock } from '@tabler/icons-react'
+import { IconKey, IconBuilding, IconDeviceFloppy } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -123,7 +123,6 @@ export function EmissoresConfigForm() {
       emitBairro: '',
       emitCep: '',
       emitCmun: '',
-      emitCmun: '',
       emitUf: '',
       accessKey: '',
       partnerKey: '',
@@ -146,7 +145,6 @@ export function EmissoresConfigForm() {
         emitNumero: configData.emitNumero || '',
         emitBairro: configData.emitBairro || '',
         emitCep: configData.emitCep || '',
-        emitCmun: configData.emitCmun || '',
         emitCmun: configData.emitCmun || '',
         emitUf: configData.emitUf || '',
         accessKey: configData.accessKey || '',

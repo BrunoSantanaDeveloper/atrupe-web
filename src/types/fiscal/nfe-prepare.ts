@@ -45,6 +45,9 @@ export interface NfePrepareItem {
   cstPis: string
   cstCofins: string
   unit: string
+  uCom?: string
+  ean?: string
+  ceantrib?: string
   quantity: number
   unitValue: number
   discount: number
