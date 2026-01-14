@@ -45,7 +45,7 @@ interface MainNavigationType {
   query?: string // ** "?status=ACTIVE&page=1"
   counter?: number // ** 3
   action?: boolean
-  permission?: string // Nova propriedade para permissões
+  permission?: string | string[] // Nova propriedade para permissões (string ou array para múltiplas permissões)
   requiredModule?: string // Módulo contratado necessário para exibir o item
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
@@ -254,7 +254,13 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconBuilding,
         title: 'Empresa e sistema',
         path: '/configuracoes/empresa-e-sistema',
-        permission: 'company_settings:company:view',
+        permission: [
+          'company_settings:company:view',
+          'company_settings:users:view',
+          'company_settings:measurement_standards:view',
+          'company_settings:roles:view',
+          'company_settings:sectors:view',
+        ],
       },
       // {
       //   icon: IconReceiptTax,

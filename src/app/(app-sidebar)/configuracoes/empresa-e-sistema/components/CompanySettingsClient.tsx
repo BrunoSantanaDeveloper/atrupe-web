@@ -29,6 +29,7 @@ export function CompanySettingsClient() {
           description:
             'Defina as informações gerais, endereços e personalização de marca de uma ou mais empresas.',
           cta: <CompanyInfo />,
+          permission: 'company_settings:company:edit',
         },
         {
           title: 'Setores',
@@ -36,6 +37,7 @@ export function CompanySettingsClient() {
           description:
             'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
           link: `${defaultPath}/setores`,
+          permission: 'company_settings:sectors:view',
         },
         {
           title: 'Padrão de medida',
@@ -43,12 +45,14 @@ export function CompanySettingsClient() {
           description:
             'Defina os padrões usados para quantificar diferentes propriedades.',
           cta: <MeasureDefaultsDialog />,
+          permission: 'company_settings:measurement_standards:edit',
         },
         {
           title: 'Colaboradores e usuários',
           icon: IconUserShield,
           description: 'Gerencie os usuários e suas permissões',
           link: `${defaultPath}/colaboradores-e-usuarios`,
+          permission: 'company_settings:users:view',
         },
       ],
     },

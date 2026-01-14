@@ -64,7 +64,7 @@ interface NavigationItem {
   query?: string
   counter?: number
   action?: boolean
-  permission?: string
+  permission?: string | string[]
   requiredModule?: string
   children?: NavigationItem[]
 }
@@ -123,11 +123,17 @@ export function SidebarComponent(props: Props) {
 
   // TODO: Verificar se o usuário é admin com isAdmin
   // Função auxiliar que verifica permissão considerando admin
-  const checkPermission = (permission?: string) => {
-    // return !permission || session.user.isAdmin || hasPermission(permission)
-    return (
-      !permission || session.user.role === 'Admin' || hasPermission(permission)
-    )
+  // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica OR)
+  const checkPermission = (permission?: string | string[]) => {
+    if (!permission) return true
+    if (session.user.role === 'Admin') return true
+
+    // Se for array, verifica se o usuário tem pelo menos uma das permissões
+    if (Array.isArray(permission)) {
+      return permission.some((perm) => hasPermission(perm))
+    }
+
+    return hasPermission(permission)
   }
 
   // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
