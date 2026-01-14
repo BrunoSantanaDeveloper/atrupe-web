@@ -184,23 +184,27 @@ export function PayrollItems({ data }: Props) {
                               isLoading={isLoadingPDF}
                             />
                           )}
-                          <ActionButton
-                            Icon={IconPencil}
-                            tooltip={
-                              isAdvance && item.payable?.status === 'PAID'
-                                ? 'Adiantamento já pago'
-                                : 'Editar item'
-                            }
-                            onClick={() => {
-                              setRowData(item)
-                              setIsAdvance(isAdvance)
-                              setOpenDialog('newItem')
-                            }}
-                            disabled={
-                              data?.status === 'CLOSED' ||
-                              (isAdvance && item.payable?.status === 'PAID')
-                            }
-                          />
+                          <PermissionGate
+                            permissions={['financial:payroll:edit']}
+                          >
+                            <ActionButton
+                              Icon={IconPencil}
+                              tooltip={
+                                isAdvance && item.payable?.status === 'PAID'
+                                  ? 'Adiantamento já pago'
+                                  : 'Editar item'
+                              }
+                              onClick={() => {
+                                setRowData(item)
+                                setIsAdvance(isAdvance)
+                                setOpenDialog('newItem')
+                              }}
+                              disabled={
+                                data?.status === 'CLOSED' ||
+                                (isAdvance && item.payable?.status === 'PAID')
+                              }
+                            />
+                          </PermissionGate>
                         </TooltipProvider>
                       </div>
                     </TableCell>

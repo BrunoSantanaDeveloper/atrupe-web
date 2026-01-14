@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function PayrollDetailPage({ params }: ParamsType) {
   return (
     <PermissionGate
-      permissions={['financial:payroll:edit']}
+      permissions={['financial:payroll:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar a folha de pagamento.
