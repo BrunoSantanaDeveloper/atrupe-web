@@ -288,11 +288,13 @@ export function EditEmployeeDialog({
           <DialogFooter className="sm:justify-between">
             <div>
               {!rowData?.role?.isAdmin && (
-                <InactiveEmployeeAlertDialog
-                  rowData={rowData}
-                  onChange={handleOpenChange}
-                  searchParams={searchParams}
-                />
+                <PermissionGate permissions={['company_settings:users:delete']}>
+                  <InactiveEmployeeAlertDialog
+                    rowData={rowData}
+                    onChange={handleOpenChange}
+                    searchParams={searchParams}
+                  />
+                </PermissionGate>
               )}
             </div>
             <div className="space-x-4">
