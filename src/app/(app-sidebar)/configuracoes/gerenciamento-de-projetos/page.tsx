@@ -1,3 +1,5 @@
+'use client'
+
 // Component Imports
 import { CompanySettingsList } from '../components/CompanySettingsList'
 import { PermissionGate } from '@/components/common/PermissionGate'
