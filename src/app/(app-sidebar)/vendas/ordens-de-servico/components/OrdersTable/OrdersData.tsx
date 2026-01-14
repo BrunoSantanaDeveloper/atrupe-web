@@ -12,7 +12,7 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { CancelOrderButton } from './CancelOrderButton'
-import { EmitNfeButton } from './EmitNfeButton'
+import { EmitNfeDialog } from './EmitNfeDialog'
 import { EmitNfseButton } from './EmitNfseButton'
 import { OrderHistoryDialog } from '../OrderHistory/OrderHistoryDialog'
 
@@ -48,7 +48,12 @@ import { useQuery } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
 // Icons
-import { IconPrinter, IconSearch, IconHistory } from '@tabler/icons-react'
+import {
+  IconPrinter,
+  IconSearch,
+  IconHistory,
+  IconFileInvoice,
+} from '@tabler/icons-react'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
@@ -64,6 +69,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
   const [openHistoryDialog, setOpenHistoryDialog] = useState(false)
+  const [openNfeDialog, setOpenNfeDialog] = useState(false)
   const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
@@ -251,9 +257,13 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                       <PermissionGate
                                         permissions={['sale:order:view']}
                                       >
-                                        <EmitNfeButton
-                                          orderId={order?.id}
-                                          orderStatus={order?.status}
+                                        <ActionButton
+                                          Icon={IconFileInvoice}
+                                          tooltip="Emitir NF-e"
+                                          onClick={() => {
+                                            setRowData(order)
+                                            setOpenNfeDialog(true)
+                                          }}
                                         />
                                       </PermissionGate>
                                     )}
@@ -309,6 +319,11 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                   open={openHistoryDialog}
                   setOpen={setOpenHistoryDialog}
                   order={rowData}
+                />
+                <EmitNfeDialog
+                  open={openNfeDialog}
+                  setOpen={setOpenNfeDialog}
+                  orderId={rowData?.id}
                 />
               </>
             )}
