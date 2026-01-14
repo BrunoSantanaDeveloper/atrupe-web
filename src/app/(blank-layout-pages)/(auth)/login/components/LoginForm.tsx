@@ -27,6 +27,7 @@ import { IconArrowNarrowRight, IconEye, IconEyeOff } from '@tabler/icons-react'
 export function LoginForm() {
   const [errorState, setErrorState] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter()
 
@@ -67,6 +68,7 @@ export function LoginForm() {
     }
 
     if (res && res.ok && !res.error) {
+      setIsLoading(true)
       // Se não há URL de redirecionamento específica, verificar preferência da academy
       if (!redirectUrl) {
         // Aguardar um momento para a sessão ser estabelecida
@@ -89,6 +91,10 @@ export function LoginForm() {
       } else {
         router.replace(redirectUrl)
       }
+
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 10000)
     } else {
       setErrorState(
         'Ocorreu um erro. Tente novamente mais tarde ou contate o suporte.',
@@ -146,7 +152,7 @@ export function LoginForm() {
           type="submit"
           className="mt-4 [&>svg]:ml-0"
           RightIcon={IconArrowNarrowRight}
-          isLoading={isSubmitting}
+          isLoading={isLoading || isSubmitting}
         >
           Entrar
         </Button>
