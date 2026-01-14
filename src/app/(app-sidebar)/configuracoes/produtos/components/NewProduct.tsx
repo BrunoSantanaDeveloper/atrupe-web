@@ -304,7 +304,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
             <DialogTitle>
               <div className="flex items-center gap-4">
                 <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
-                <span>{editMode ? 'Editar' : 'Novo'} produto</span>
+                <span>{editMode ? 'Editar produto' : 'Novo produto'}</span>
               </div>
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
@@ -502,13 +502,17 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                   onCheckedChange={(value) => setInsertAnother(value)}
                 />
               ) : (
-                <Button
-                  type="button"
-                  variant={isActive ? 'error' : 'default'}
-                  onClick={handleToggleStatus}
+                <PermissionGate
+                  permissions={['product_settings:products:delete']}
                 >
-                  {isActive ? 'Inativar' : 'Ativar'}
-                </Button>
+                  <Button
+                    type="button"
+                    variant={isActive ? 'error' : 'default'}
+                    onClick={handleToggleStatus}
+                  >
+                    {isActive ? 'Inativar' : 'Ativar'}
+                  </Button>
+                </PermissionGate>
               )}
             </div>
             <div className="space-x-4">
