@@ -14,7 +14,7 @@ export function metadata() {
 export default function DfcReportPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['financial:flow:view']}
+      permissions={['financial:flow:view', 'values:values:view']}
       fallback={
         <div className="p-4 text-center">
           <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>

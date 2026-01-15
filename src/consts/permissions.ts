@@ -1,5 +1,15 @@
 export const permissionsData = [
   {
+    section: 'Valores',
+    key: 'values',
+    items: [
+      {
+        name: 'Valores',
+        key: 'values',
+      },
+    ],
+  },
+  {
     section: 'Vendas',
     key: 'sale',
     items: [

@@ -17,7 +17,7 @@ export default function FixedExpensesPage({ searchParams }: SearchParamsType) {
 
   return (
     <PermissionGate
-      permissions={['financial:fixed_expense:view']}
+      permissions={['financial:fixed_expense:view', 'values:values:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as despesas fixas.
