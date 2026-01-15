@@ -19,12 +19,94 @@ interface Props {
 function SessionActivityHandler({ children }: PropsWithChildren) {
   const { data: session, update } = useSession()
   const lastActivityRef = useRef<number>(Date.now())
-  const refreshIntervalRef = useRef<NodeJS.Timeout>()
 
   // Atualiza o timestamp de última atividade
   const updateActivity = useCallback(() => {
     lastActivityRef.current = Date.now()
   }, [])
+
+  // Busca dados do usuário via rota API interna (proxy)
+  const fetchUserMe = useCallback(async () => {
+    try {
+      const response = await fetch('/api/user/me')
+      if (!response.ok) return null
+      return response.json()
+    } catch {
+      return null
+    }
+  }, [])
+
+  // Busca dados atualizados do /user/me e atualiza a sessão
+  const refreshUserData = useCallback(async () => {
+    try {
+      const userData = await fetchUserMe()
+      if (!userData) return
+
+      const updatePayload: {
+        user?: Record<string, unknown>
+        company?: Record<string, unknown>
+      } = {}
+
+      // Verificar mudanças no usuário
+      const newPermissions = userData.policies || []
+      const currentPermissions = session?.user?.permissions || []
+      const permissionsChanged =
+        JSON.stringify(newPermissions.sort()) !==
+        JSON.stringify(currentPermissions.sort())
+
+      if (permissionsChanged) {
+        updatePayload.user = {
+          ...updatePayload.user,
+          permissions: newPermissions,
+        }
+      }
+      if (userData.name !== session?.user?.name) {
+        updatePayload.user = { ...updatePayload.user, name: userData.name }
+      }
+      if (userData.avatar !== session?.user?.avatar) {
+        updatePayload.user = {
+          ...updatePayload.user,
+          avatar: userData.avatar,
+        }
+      }
+
+      // Verificar mudanças na empresa
+      const company = userData.employee?.company
+      if (company) {
+        if (company.name !== session?.company?.name) {
+          updatePayload.company = {
+            ...updatePayload.company,
+            name: company.name,
+          }
+        }
+        if (company.legalName !== session?.company?.legalName) {
+          updatePayload.company = {
+            ...updatePayload.company,
+            legalName: company.legalName,
+          }
+        }
+        if (company.logoUrl !== session?.company?.logo) {
+          updatePayload.company = {
+            ...updatePayload.company,
+            logo: company.logoUrl,
+          }
+        }
+        if (company.favIconUrl !== session?.company?.favicon) {
+          updatePayload.company = {
+            ...updatePayload.company,
+            favicon: company.favIconUrl,
+          }
+        }
+      }
+
+      // Só atualiza se algum dado mudou
+      if (updatePayload.user || updatePayload.company) {
+        await update(updatePayload)
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar dados do usuário:', error)
+    }
+  }, [fetchUserMe, session, update])
 
   useEffect(() => {
     // Eventos que indicam atividade do usuário
@@ -48,26 +130,32 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     }
   }, [session])
 
+  // Atualiza dados do usuário no mount inicial (refresh da página)
   useEffect(() => {
-    // Verifica a cada 5 minutos se o usuário está ativo
-    refreshIntervalRef.current = setInterval(
-      async () => {
+    refreshUserData()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    // Atualiza dados do usuário quando a janela ganha foco (volta para a aba)
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
         const timeSinceLastActivity = Date.now() - lastActivityRef.current
 
-        // Se o usuário esteve ativo nos últimos 10 minutos, renova a sessão
+        // Se o usuário esteve ativo nos últimos 10 minutos, renova a sessão e dados
         if (timeSinceLastActivity < 10 * 60 * 1000) {
           await update()
+          await refreshUserData()
         }
-      },
-      5 * 60 * 1000,
-    ) // Verifica a cada 5 minutos
-
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current)
       }
     }
-  }, [update])
+
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [update, refreshUserData])
 
   return <>{children}</>
 }

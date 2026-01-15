@@ -165,6 +165,10 @@ export const {
             if (typeof session.user.name !== 'undefined') {
               token.name = session.user.name
             }
+            // Atualizar permissões se fornecidas
+            if (typeof session.user.permissions !== 'undefined') {
+              token.permissions = session.user.permissions
+            }
           }
         } catch (error) {
           // Em caso de erro, logar mas não quebrar a sessão
