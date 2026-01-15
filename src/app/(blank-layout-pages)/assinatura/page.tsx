@@ -15,7 +15,7 @@ import {
   IconBuildingCommunity,
 } from '@tabler/icons-react'
 import { toast } from 'sonner'
-import { modules } from '@/consts/plans'
+import type { ModuleType, VisualPlanType } from '@/types/plans'
 import { Logo } from '@/components/Logo'
 import { useForm } from 'react-hook-form'
 import { Form } from '@/components/ui/form'
@@ -25,7 +25,6 @@ import { useQuery } from '@tanstack/react-query'
 import { PlanCard } from './components/PlanCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
-import type { VisualPlanType } from '@/types/plans'
 import { IconPix } from '@/assets/icons/CustomIcons'
 import { ModuleCard } from './components/ModuleCard'
 import { useState, useEffect, useMemo } from 'react'
@@ -172,9 +171,31 @@ export default function SubscriptionPage() {
     },
   })
 
+  // Buscar módulos da API
+  const { data: modulesResponse } = useQuery({
+    queryKey: ['subscription-modules'],
+    queryFn: async () => {
+      const response = await getData({
+        route: '/plan/public/modules',
+      })
+
+      if (!response.success) {
+        toast.error(response.message || 'Erro ao carregar módulos')
+        return []
+      }
+
+      return response.data || []
+    },
+  })
+
   const plans: VisualPlanType[] = useMemo(
     () => plansResponse || [],
     [plansResponse],
+  )
+
+  const modules: ModuleType[] = useMemo(
+    () => modulesResponse || [],
+    [modulesResponse],
   )
 
   // Definir o primeiro plano como selecionado quando os dados forem carregados
@@ -213,9 +234,9 @@ export default function SubscriptionPage() {
 
   const selectedPersonType = watch('personType')
 
-  // Cálculo do total dos módulos
-  const modulesTotal = selectedModules.reduce((total, moduleId) => {
-    const selectedModule = modules.find((m) => m.id === moduleId)
+  // Cálculo do total dos módulos (usando key para identificar)
+  const modulesTotal = selectedModules.reduce((total, moduleKey) => {
+    const selectedModule = modules.find((m) => m.key === moduleKey)
     return total + (selectedModule?.price || 0)
   }, 0)
 
@@ -606,16 +627,16 @@ export default function SubscriptionPage() {
                           </div>
                         </div>
                       )}
-                      {selectedModules.map((moduleId) => {
+                      {selectedModules.map((moduleKey) => {
                         const selectedModule = modules.find(
-                          (m) => m.id === moduleId,
+                          (m) => m.key === moduleKey,
                         )
 
                         if (!selectedModule) return null
 
                         return (
                           <div
-                            key={moduleId}
+                            key={moduleKey}
                             className="flex items-center justify-between gap-2"
                           >
                             <div className="flex items-center gap-2">

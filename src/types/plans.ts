@@ -38,7 +38,10 @@ interface ModuleFeatureType {
 
 export interface ModuleType {
   id: string
+  key: string
   name: string
   price: number
-  features: ModuleFeatureType[]
+  description?: string
+  category?: string
+  features?: ModuleFeatureType[]
 }

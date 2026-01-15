@@ -1,21 +1,6 @@
-import { ModuleType, VisualPlanType } from '@/types/plans'
+import { VisualPlanType } from '@/types/plans'
 
-export const modules: ModuleType[] = [
-  {
-    id: '9de3b31a-5e19-4735-89d0-2eef57ac0011',
-    name: 'Nota Fiscal',
-    price: 7000,
-    features: [
-      {
-        items: [
-          'NF-e (Nota Fiscal Eletrônica)',
-          'NFS-e (Nota Fiscal de Serviço Eletrônica)',
-          'NFC-e (Nota Fiscal de Consumidor Eletrônica)',
-        ],
-      },
-    ],
-  },
-]
+// Módulos agora são buscados da API em /plan/public/modules
 
 // TODO: Excluir
 const _plansMock: VisualPlanType[] = [
