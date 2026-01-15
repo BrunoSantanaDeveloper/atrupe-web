@@ -31,12 +31,14 @@ export function SalesSettingsClient() {
           icon: IconTransactionDollar,
           description: 'Defina os padrões básicos de vendas.',
           link: `${defaultPath}/series-de-venda`,
+          permission: 'sales_settings:series:view',
         },
         {
           title: 'Perfil de vendedor',
           icon: IconUserCircle,
           description: 'Gerencie os vendedores, suas comissões e permissões.',
           link: `${defaultPath}/perfil-de-vendedor`,
+          permission: 'sales_settings:seller_profile:view',
         },
         ...(canManageRejectionReasons()
           ? [
@@ -46,6 +48,7 @@ export function SalesSettingsClient() {
                 description:
                   'Defina motivos para mapear rejeições e cancelamentos.',
                 link: `${defaultPath}/motivos-de-rejeicao-e-cancelamento`,
+                permission: 'sales_settings:rejection_reasons:view',
               },
             ]
           : []),
@@ -56,6 +59,7 @@ export function SalesSettingsClient() {
                 icon: IconStatusChange,
                 description: 'Defina status para acompanhamento das propostas.',
                 link: `${defaultPath}/status-de-orcamento`,
+                permission: 'sales_settings:quotation_status:view',
               },
             ]
           : []),
