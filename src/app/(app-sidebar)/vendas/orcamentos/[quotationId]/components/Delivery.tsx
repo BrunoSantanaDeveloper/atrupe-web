@@ -101,10 +101,12 @@ export function QuotationDelivery({ quotationData }: Props) {
                   supporting="Transportadora"
                   text={data?.supplier?.name}
                 />
-                <TextSupportingText
-                  supporting="Valor"
-                  text={formatCurrencyToBrl(Number(data?.value)) || 'R$ 0,00'}
-                />
+                <PermissionGate permissions={['values:values:view']}>
+                  <TextSupportingText
+                    supporting="Valor"
+                    text={formatCurrencyToBrl(Number(data?.value)) || 'R$ 0,00'}
+                  />
+                </PermissionGate>
               </DetailCardRowItem>
               <DetailCardRowItem
                 showSeparator={false}

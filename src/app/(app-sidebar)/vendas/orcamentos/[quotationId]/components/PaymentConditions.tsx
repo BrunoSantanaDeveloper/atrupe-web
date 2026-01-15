@@ -136,26 +136,28 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                   supporting="Pagamento"
                   text={data?.paymentCondition?.name}
                 />
-                <TextSupportingText
-                  supporting="Itens"
-                  text={formatCurrencyToBrl(finalValue)}
-                />
-                <TextSupportingText
-                  supporting="Desconto"
-                  text={formatCurrencyToBrl(discountTotal)}
-                />
-                <TextSupportingText
-                  supporting="Subtotal"
-                  text={formatCurrencyToBrl(finalValue)}
-                />
-                <TextSupportingText
-                  supporting="Entrega"
-                  text={formatCurrencyToBrl(deliveryValue)}
-                />
-                <TextSupportingText
-                  supporting="Total"
-                  text={formatCurrencyToBrl(total)}
-                />
+                <PermissionGate permissions={['values:values:view']}>
+                  <TextSupportingText
+                    supporting="Itens"
+                    text={formatCurrencyToBrl(finalValue)}
+                  />
+                  <TextSupportingText
+                    supporting="Desconto"
+                    text={formatCurrencyToBrl(discountTotal)}
+                  />
+                  <TextSupportingText
+                    supporting="Subtotal"
+                    text={formatCurrencyToBrl(finalValue)}
+                  />
+                  <TextSupportingText
+                    supporting="Entrega"
+                    text={formatCurrencyToBrl(deliveryValue)}
+                  />
+                  <TextSupportingText
+                    supporting="Total"
+                    text={formatCurrencyToBrl(total)}
+                  />
+                </PermissionGate>
               </DetailCardRowItem>
               {/* {data?.description && (
                 <DetailCardRowItem

@@ -22,6 +22,7 @@ import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 // Components
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
 import { IconCalculator, IconSearch } from '@tabler/icons-react'
@@ -41,6 +42,19 @@ interface Props {
 export function OrderFinancial({ data }: Props) {
   const financialData = data?.quotation?.financial
 
+  // Componente só é exibido se o usuário tem permissão de visualizar valores
+  return (
+    <PermissionGate permissions={['values:values:view']}>
+      <OrderFinancialContent financialData={financialData} />
+    </PermissionGate>
+  )
+}
+
+function OrderFinancialContent({
+  financialData,
+}: {
+  financialData: OrderType['quotation']['financial'] | undefined
+}) {
   if (!financialData) {
     return (
       <Card className="w-full">

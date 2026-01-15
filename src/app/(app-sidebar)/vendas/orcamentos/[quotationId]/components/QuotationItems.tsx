@@ -138,9 +138,11 @@ export function QuotationItems({ data }: Props) {
                       <TableHead>Qtd. Item</TableHead>
                       <TableHead>Detalhamento</TableHead>
                       <TableHead>Qtd. Total</TableHead>
-                      <TableHead>Valor un.</TableHead>
-                      <TableHead>Desconto</TableHead>
-                      <TableHead>Valor Final</TableHead>
+                      <PermissionGate permissions={['values:values:view']}>
+                        <TableHead>Valor un.</TableHead>
+                        <TableHead>Desconto</TableHead>
+                        <TableHead>Valor Final</TableHead>
+                      </PermissionGate>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -176,24 +178,28 @@ export function QuotationItems({ data }: Props) {
                                   ).formatted
                                 }
                               </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
-                                {formatCurrencyToBrl(
-                                  item?.totalValue /
-                                    (item?.product?.quantity || 1),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-warning-600 text-nowrap py-4">
-                                -
-                                {formatCurrencyToBrl(
-                                  Math.max(
-                                    0,
-                                    item?.totalValue - item?.finalValue,
-                                  ),
-                                )}
-                              </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
-                                {formatCurrencyToBrl(item?.finalValue)}
-                              </TableCell>
+                              <PermissionGate
+                                permissions={['values:values:view']}
+                              >
+                                <TableCell className="py-4 text-sm text-gray">
+                                  {formatCurrencyToBrl(
+                                    item?.totalValue /
+                                      (item?.product?.quantity || 1),
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-warning-600 text-nowrap py-4">
+                                  -
+                                  {formatCurrencyToBrl(
+                                    Math.max(
+                                      0,
+                                      item?.totalValue - item?.finalValue,
+                                    ),
+                                  )}
+                                </TableCell>
+                                <TableCell className="py-4 text-sm text-gray">
+                                  {formatCurrencyToBrl(item?.finalValue)}
+                                </TableCell>
+                              </PermissionGate>
                               <TableCell className="py-4">
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
@@ -337,24 +343,28 @@ export function QuotationItems({ data }: Props) {
                               <TableCell className="text-sm text-gray">
                                 {`${item?.product?.quantity || 1} un`}
                               </TableCell>
-                              <TableCell className="text-sm text-gray">
-                                {formatCurrencyToBrl(
-                                  item?.totalValue /
-                                    (item?.product?.quantity || 1),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-warning-600 text-nowrap">
-                                -
-                                {formatCurrencyToBrl(
-                                  Math.max(
-                                    0,
-                                    item?.totalValue - item?.finalValue,
-                                  ),
-                                )}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray">
-                                {formatCurrencyToBrl(item?.finalValue)}
-                              </TableCell>
+                              <PermissionGate
+                                permissions={['values:values:view']}
+                              >
+                                <TableCell className="text-sm text-gray">
+                                  {formatCurrencyToBrl(
+                                    item?.totalValue /
+                                      (item?.product?.quantity || 1),
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-warning-600 text-nowrap">
+                                  -
+                                  {formatCurrencyToBrl(
+                                    Math.max(
+                                      0,
+                                      item?.totalValue - item?.finalValue,
+                                    ),
+                                  )}
+                                </TableCell>
+                                <TableCell className="text-sm text-gray">
+                                  {formatCurrencyToBrl(item?.finalValue)}
+                                </TableCell>
+                              </PermissionGate>
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <TooltipProvider>
@@ -508,28 +518,32 @@ export function QuotationItems({ data }: Props) {
                                             }
                                           </AccordionContent>
                                         </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {formatCurrencyToBrl(
-                                              calculateDisplayUnitValue(
-                                                item.product.quantity,
-                                                composition,
-                                              ),
-                                            )}
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            -
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {formatCurrencyToBrl(
-                                              composition?.totalValue,
-                                            )}
-                                          </AccordionContent>
-                                        </TableCell>
+                                        <PermissionGate
+                                          permissions={['values:values:view']}
+                                        >
+                                          <TableCell className="py-0 text-sm text-gray">
+                                            <AccordionContent className="py-4">
+                                              {formatCurrencyToBrl(
+                                                calculateDisplayUnitValue(
+                                                  item.product.quantity,
+                                                  composition,
+                                                ),
+                                              )}
+                                            </AccordionContent>
+                                          </TableCell>
+                                          <TableCell className="py-0 text-sm text-gray">
+                                            <AccordionContent className="py-4">
+                                              -
+                                            </AccordionContent>
+                                          </TableCell>
+                                          <TableCell className="py-0 text-sm text-gray">
+                                            <AccordionContent className="py-4">
+                                              {formatCurrencyToBrl(
+                                                composition?.totalValue,
+                                              )}
+                                            </AccordionContent>
+                                          </TableCell>
+                                        </PermissionGate>
                                         <TableCell className="py-0 text-sm text-gray">
                                           <AccordionContent className="py-4"></AccordionContent>
                                         </TableCell>
