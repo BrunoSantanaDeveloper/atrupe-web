@@ -31,6 +31,7 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 
@@ -97,15 +98,17 @@ export function PrintQuotationDialog({
     useState<PendingPrintData | null>(null)
 
   const { canShowQuotationItemDetails } = usePlanFeatures()
+  const { hasPermission } = usePermissions()
+  const hasValuesPermission = hasPermission('values:values:view')
 
   const form = useForm<PrintOptionsType>({
     defaultValues: {
       showImages: true,
       showDimensions: true,
-      showUnitValue: true,
-      showDiscounts: true,
-      showFinalValue: true,
-      showTotalValue: true,
+      showUnitValue: hasValuesPermission,
+      showDiscounts: hasValuesPermission,
+      showFinalValue: hasValuesPermission,
+      showTotalValue: hasValuesPermission,
       showPaymentDelivery: true,
       showItemsDetails: canShowQuotationItemDetails(),
     },
@@ -275,28 +278,34 @@ export function PrintQuotationDialog({
                     name="showDimensions"
                     label="Exibir medidas"
                   />
-                  <FormCheckbox<PrintOptionsType>
-                    name="showUnitValue"
-                    label="Exibir valor unitário"
-                  />
-                  <FormCheckbox<PrintOptionsType>
-                    name="showDiscounts"
-                    label="Exibir descontos"
-                  />
-                  <FormCheckbox<PrintOptionsType>
-                    name="showFinalValue"
-                    label="Exibir valor final"
-                  />
+                  {hasValuesPermission && (
+                    <>
+                      <FormCheckbox<PrintOptionsType>
+                        name="showUnitValue"
+                        label="Exibir valor unitário"
+                      />
+                      <FormCheckbox<PrintOptionsType>
+                        name="showDiscounts"
+                        label="Exibir descontos"
+                      />
+                      <FormCheckbox<PrintOptionsType>
+                        name="showFinalValue"
+                        label="Exibir valor final"
+                      />
+                    </>
+                  )}
                 </div>
                 <Separator className="my-5" />
                 <div className="space-y-4">
                   <p className="font-semibold text-gray-700">
                     Outras informações da venda
                   </p>
-                  <FormCheckbox<PrintOptionsType>
-                    name="showTotalValue"
-                    label="Exibir valores totais"
-                  />
+                  {hasValuesPermission && (
+                    <FormCheckbox<PrintOptionsType>
+                      name="showTotalValue"
+                      label="Exibir valores totais"
+                    />
+                  )}
                   <FormCheckbox<PrintOptionsType>
                     name="showPaymentDelivery"
                     label="Exibir especificação de pagamento e entrega"
