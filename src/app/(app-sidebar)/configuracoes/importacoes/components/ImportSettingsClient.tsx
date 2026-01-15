@@ -25,30 +25,35 @@ export function ImportSettingsClient() {
           icon: IconUpload,
           description: 'Traga sua base de clientes para o Atrupe.',
           cta: <ImportClientModal />,
+          permission: 'import_settings:clients:view',
         },
         {
           title: 'Importar Fornecedores',
           icon: IconUpload,
           description: 'Cadastre seus fornecedores no sistema.',
           cta: <ImportSupplierModal />,
+          permission: 'import_settings:suppliers:view',
         },
         {
           title: 'Importar Produtos',
           icon: IconUpload,
           description: 'Importe seus produtos ou serviços.',
           cta: <ImportProductModal />,
+          permission: 'import_settings:products:view',
         },
         {
           title: 'Importar Orçamentos',
           icon: IconUpload,
           description: 'Importe seus orçamentos para o sistema.',
           cta: <ImportQuotationModal />,
+          permission: 'import_settings:quotations:view',
         },
         {
           title: 'Importar Ordens de Serviço',
           icon: IconUpload,
           description: 'Importe suas ordens de serviço para o sistema.',
           cta: <ImportOrderModal />,
+          permission: 'import_settings:quotations:view',
         },
         {
           title: 'Importar Receitas e Despesas',
@@ -56,6 +61,7 @@ export function ImportSettingsClient() {
           description:
             'Traga suas receitas e despesas para o controle financeiro.',
           cta: <ImportFinancialModal />,
+          permission: 'import_settings:financial:view',
         },
       ],
     },
