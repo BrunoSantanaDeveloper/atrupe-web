@@ -109,6 +109,10 @@ export const permissionsData = [
         name: 'Limites de crédito',
         key: 'credit_limits',
       },
+      {
+        name: 'Folha de pagamento',
+        key: 'payroll',
+      },
     ],
   },
   {

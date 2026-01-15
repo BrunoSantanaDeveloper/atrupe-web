@@ -34,12 +34,14 @@ export function FinanceSettingsClient() {
           icon: IconBuildingBank,
           description: 'Cadastre as contas bancárias da sua empresa',
           link: `${defaultPath}/contas-bancarias`,
+          permission: 'financial_settings:bank_accounts:view',
         },
         {
           title: 'Configuração de Pagamentos',
           icon: IconCreditCardPay,
           description: 'Cadastre as condições de pagamento da sua empresa',
           link: `${defaultPath}/configuracoes-de-pagamento/condicoes-de-pagamento`,
+          permission: 'financial_settings:payment_methods:view',
         },
         {
           title: 'Configuração do Plano de Contas',
@@ -47,6 +49,7 @@ export function FinanceSettingsClient() {
           description:
             'Defina a relação de códigos e classificações para registrar as movimentações financeiras da empresa',
           link: `${defaultPath}/plano-de-contas`,
+          permission: 'financial_settings:chart_accounts:view',
         },
         {
           title: 'Cadastro das Despesas Fixas',
@@ -54,6 +57,7 @@ export function FinanceSettingsClient() {
           description:
             'Cadastre as despesas regulares de acordo com a sua recorrência',
           link: `${defaultPath}/config-despesas-fixas`,
+          permission: 'financial_settings:fixed_expenses:view',
         },
         // Mostra limite de crédito apenas se o plano permitir
         ...(hasFinancialModule('credit_limit')
@@ -64,6 +68,7 @@ export function FinanceSettingsClient() {
                 description:
                   'Defina o padrão de limite de crédito para os clientes',
                 cta: <CreditLimit />,
+                permission: 'financial_settings:credit_limits:edit',
               },
             ]
           : []),
@@ -72,6 +77,7 @@ export function FinanceSettingsClient() {
           icon: IconFileDollar,
           description: 'Gerencie os custos por colaborador',
           link: `${defaultPath}/folhas-de-pagamento`,
+          permission: 'financial_settings:payroll:view',
         },
       ],
     },

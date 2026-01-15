@@ -10,7 +10,21 @@ export function metadata() {
 
 export default function FinanceSettings() {
   return (
-    <PermissionGate permissions={['financial_settings:view']}>
+    <PermissionGate
+      permissions={[
+        'financial_settings:payment_methods:view',
+        'financial_settings:bank_accounts:view',
+        'financial_settings:fixed_expenses:view',
+        'financial_settings:chart_accounts:view',
+        'financial_settings:credit_limits:view',
+      ]}
+      requireAll={false}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar as configurações do financeiro.
+        </div>
+      }
+    >
       <FinanceSettingsClient />
     </PermissionGate>
   )
