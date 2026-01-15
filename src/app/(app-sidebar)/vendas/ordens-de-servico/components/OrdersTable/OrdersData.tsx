@@ -145,7 +145,9 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead className="max-w-96">Referência</TableHead>
-                  <TableHead>Valor</TableHead>
+                  <PermissionGate permissions={['values:values:view']}>
+                    <TableHead>Valor</TableHead>
+                  </PermissionGate>
                   <TableHead>Vendedor</TableHead>
                   {showCurrentPhase && <TableHead>Fase atual</TableHead>}
                   <TableHead></TableHead>
@@ -182,9 +184,13 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                   <p className="truncate">{description}</p>
                                 </Link>
                               </TableCell>
-                              <TableCell className="text-success-700 text-nowrap">
-                                {formatCurrencyToBrl(quotation?.totalValue)}
-                              </TableCell>
+                              <PermissionGate
+                                permissions={['values:values:view']}
+                              >
+                                <TableCell className="text-success-700 text-nowrap">
+                                  {formatCurrencyToBrl(quotation?.totalValue)}
+                                </TableCell>
+                              </PermissionGate>
                               <TableCell className="text-gray-600">
                                 {quotation?.seller?.name}
                               </TableCell>

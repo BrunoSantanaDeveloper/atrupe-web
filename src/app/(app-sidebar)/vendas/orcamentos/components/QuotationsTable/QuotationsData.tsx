@@ -101,7 +101,9 @@ export function QuotationsData({
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead>Referência</TableHead>
-                  <TableHead>Valor</TableHead>
+                  <PermissionGate permissions={['values:values:view']}>
+                    <TableHead>Valor</TableHead>
+                  </PermissionGate>
                   {isAllTab && <TableHead>Fase atual</TableHead>}
                   {showStatusColumn && <TableHead>Status</TableHead>}
                   <TableHead>Concluído em</TableHead>
@@ -150,14 +152,18 @@ export function QuotationsData({
                                   </Link>
                                 </PermissionGate>
                               </TableCell>
-                              <TableCell className="text-success-700 text-nowrap">
-                                {/* TODO : Valor da entrega não tá vindo */}
-                                {formatCurrencyToBrl(
-                                  quotation?.totalValue ||
-                                    0 + quotation?.deliveryInfo?.value ||
-                                    0,
-                                )}
-                              </TableCell>
+                              <PermissionGate
+                                permissions={['values:values:view']}
+                              >
+                                <TableCell className="text-success-700 text-nowrap">
+                                  {/* TODO : Valor da entrega não tá vindo */}
+                                  {formatCurrencyToBrl(
+                                    quotation?.totalValue ||
+                                      0 + quotation?.deliveryInfo?.value ||
+                                      0,
+                                  )}
+                                </TableCell>
+                              </PermissionGate>
                               {isAllTab && (
                                 <TableCell>
                                   {quotation?.status ? (
