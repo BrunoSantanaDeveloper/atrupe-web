@@ -477,8 +477,10 @@ export function calculateTotalQuantity(
       if (composition.duration) {
         const totalSeconds =
           composition.duration * compositionQuantity * baseQuantity
+        // Retornar valor em horas para cálculo correto do valor unitário
+        const totalHours = totalSeconds / 3600
         return {
-          value: totalSeconds,
+          value: totalHours,
           unit: 'h',
           formatted: `${secondsToTimeString(totalSeconds)}`,
         }
