@@ -170,7 +170,7 @@ export function QuotationItems({ data }: Props) {
                               <TableCell className="py-4 text-sm text-gray">
                                 {generateFormattedQuantityDetails(composition)}
                               </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
+                              <TableCell className="py-4 text-sm text-gray text-nowrap">
                                 {
                                   calculateTotalQuantity(
                                     item.product.quantity,
@@ -184,7 +184,7 @@ export function QuotationItems({ data }: Props) {
                                 <TableCell className="py-4 text-sm text-gray">
                                   {formatCurrencyToBrl(
                                     item?.totalValue /
-                                      (item?.product?.quantity || 1),
+                                      (composition.quantity || 1),
                                   )}
                                 </TableCell>
                                 <TableCell className="text-warning-600 text-nowrap py-4">

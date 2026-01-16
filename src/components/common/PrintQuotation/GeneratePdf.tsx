@@ -854,7 +854,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       <View style={{ width: columnWidths.unitValue }}>
                         <Text style={styles.textRight}>
                           {formatCurrencyToBrl(
-                            item.totalValue / (item.product.quantity || 1),
+                            item.totalValue / (composition.quantity || 1),
                           )}
                         </Text>
                       </View>
