@@ -13,6 +13,7 @@ import { ChangeStatusDialog } from '../ChangeStatusDialog'
 import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
+import { SyncAsaasDialog } from '../SyncAsaasDialog'
 
 // UI
 import {
@@ -49,6 +50,7 @@ import {
   IconHistory,
   IconSettings,
   IconBuildingStore,
+  IconRefresh,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -94,6 +96,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false)
 
   const filters = { ...searchParams }
   const currentStatus = searchParams.status
@@ -227,6 +230,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       }}
                                     />
                                     <ActionButton
+                                      Icon={IconRefresh}
+                                      tooltip="Verificar Asaas"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsSyncDialogOpen(true)
+                                      }}
+                                    />
+                                    <ActionButton
                                       Icon={IconHistory}
                                       tooltip="Histórico"
                                       onClick={() => {
@@ -303,6 +314,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <DeleteAccountDialog
         open={isDeleteDialogOpen}
         setOpen={setIsDeleteDialogOpen}
+        rowData={rowData}
+      />
+
+      <SyncAsaasDialog
+        open={isSyncDialogOpen}
+        setOpen={setIsSyncDialogOpen}
         rowData={rowData}
       />
     </>
