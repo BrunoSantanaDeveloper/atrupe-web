@@ -223,7 +223,7 @@ export function NewPaymentCondition({
               <span>
                 {editMode
                   ? 'Editar condição de pagamento'
-                  : 'Nova condição de pagamento'}{' '}
+                  : 'Nova condição de pagamento'}
               </span>
             </div>
           </DialogTitle>

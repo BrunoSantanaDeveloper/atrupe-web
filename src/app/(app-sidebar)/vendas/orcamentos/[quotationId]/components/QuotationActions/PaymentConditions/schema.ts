@@ -49,6 +49,7 @@ export const quotationPaymentConditionsSchema = z.object({
   mainAdditionalFee: z.number().optional(),
   additionalFeeType: z.enum(['PERCENT', 'VALUE']).optional(),
   paymentConditionsBaseValue: z.number().optional().nullable(),
+  dayInterval: z.number().optional(),
 })
 
 export type QuotationPaymentConditionsType = z.infer<

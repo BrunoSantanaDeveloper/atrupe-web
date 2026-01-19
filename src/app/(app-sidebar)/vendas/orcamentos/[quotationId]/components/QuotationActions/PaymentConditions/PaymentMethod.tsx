@@ -2,7 +2,7 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 
 import { useFormContext } from 'react-hook-form'
 
-import { addMonths } from 'date-fns'
+import { addDays } from 'date-fns'
 import { getItem } from '@/actions/_cruds'
 
 import { QuotationPaymentConditionsType } from './schema'
@@ -45,6 +45,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
     const minInstallments = data?.minInstallments || 1
     const maxInstallments = data?.maxInstallments || 1
+    const dayInterval = data?.dayInterval || 30
 
     const additionalFee = data?.installments[0]?.operatorFeeTransfer || 0
     const additionalFeeType = data?.costType
@@ -53,6 +54,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
     setValue('maxInstallmentQty', maxInstallments)
     setValue('mainAdditionalFee', additionalFee)
     setValue('additionalFeeType', additionalFeeType)
+    setValue('dayInterval', dayInterval)
 
     // Setar o valor de installmentQty, com delay para evitar que valor seja setado antes de existir as opções de qtt de parcelas
     setTimeout(() => {
@@ -60,7 +62,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
     }, 100)
 
     const newInstallments = Array.from({ length: 1 }, (_, i) => ({
-      dueDate: addMonths(new Date(dueDate), i + 1),
+      dueDate: addDays(new Date(dueDate), dayInterval * (i + 1)),
       additionalFee,
       amount: totalValue - downPaymentValue,
     }))

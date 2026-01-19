@@ -2,7 +2,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { useFormContext } from 'react-hook-form'
 
 import { QuotationPaymentConditionsType } from './schema'
-import { addMonths } from 'date-fns'
+import { addDays } from 'date-fns'
 import { getItem } from '@/actions/_cruds'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { useEffect } from 'react'
@@ -22,6 +22,7 @@ export function InstallmentQty() {
   const installmentQty = watch('installmentQty')
   const installments = watch('installments')
   const hasDownPayment = watch('hasDownPayment')
+  const dayInterval = watch('dayInterval') || 30
 
   // Função para recalcular os valores das parcelas
   const recalculateInstallments = async (
@@ -43,7 +44,8 @@ export function InstallmentQty() {
       id: installments?.[i]?.id,
       // Preservar a data de vencimento se existir, ou criar uma nova
       dueDate:
-        installments?.[i]?.dueDate || addMonths(new Date(dueDate), i + 1),
+        installments?.[i]?.dueDate ||
+        addDays(new Date(dueDate), dayInterval * (i + 1)),
       additionalFee: additionalFee / qty,
       amount: installmentValue,
     }))
