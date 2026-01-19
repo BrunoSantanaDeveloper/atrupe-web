@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 // UI
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
 import {
@@ -20,7 +20,6 @@ import {
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 const MONTHS = [
   'Janeiro',
@@ -162,7 +161,7 @@ export function FixedExpensesFilter({
 
   return (
     <>
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 w-full sm:w-auto">
         <Button
           type="button"
           variant="neutralOutline"
@@ -171,6 +170,7 @@ export function FixedExpensesFilter({
           aria-label="Mês anterior"
           RightIcon={IconChevronLeft}
         />
+
         <SelectBasic
           name="month-year-select"
           label="Mês de referência"
@@ -178,8 +178,9 @@ export function FixedExpensesFilter({
           options={generateMonthYearOptions()}
           value={currentValue}
           onChange={handleMonthYearSelect}
-          className="w-[220px]"
+          className="w-full sm:w-[220px]"
         />
+
         <Button
           type="button"
           variant="neutralOutline"
@@ -189,14 +190,14 @@ export function FixedExpensesFilter({
           RightIcon={IconChevronRight}
         />
       </div>
-      <div
-        className={cn(
-          'flex items-end transition-opacity duration-300',
-          selectedIds.length === 0 && 'opacity-0 pointer-events-none',
-        )}
-      >
+      <div className="flex items-end w-full sm:w-auto">
         <PermissionGate permissions={['financial:fixed_expenses:edit']}>
-          <Button LeftIcon={IconPlus} onClick={handlePostSelectedExpenses}>
+          <Button
+            LeftIcon={IconPlus}
+            onClick={handlePostSelectedExpenses}
+            disabled={selectedIds.length === 0}
+            className="w-full sm:w-auto"
+          >
             Lançar selecionadas
           </Button>
         </PermissionGate>

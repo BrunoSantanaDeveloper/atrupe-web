@@ -5,11 +5,11 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 // UI
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
 import {
@@ -20,7 +20,6 @@ import {
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 const MONTHS = [
   'Janeiro',
@@ -162,7 +161,7 @@ export function PayrollFilter({
 
   return (
     <>
-      <div className="flex items-end gap-2">
+      <div className="flex items-end gap-2 w-full sm:w-auto">
         <Button
           type="button"
           variant="neutralOutline"
@@ -179,7 +178,7 @@ export function PayrollFilter({
           options={generateMonthYearOptions()}
           value={currentValue}
           onChange={handleMonthYearSelect}
-          className="w-[220px]"
+          className="w-full sm:w-[220px]"
         />
 
         <Button
@@ -191,14 +190,14 @@ export function PayrollFilter({
           RightIcon={IconChevronRight}
         />
       </div>
-      <div
-        className={cn(
-          'flex items-end transition-opacity duration-300',
-          selectedIds.length === 0 && 'opacity-0 pointer-events-none',
-        )}
-      >
+      <div className="flex items-end w-full sm:w-auto">
         <PermissionGate permissions={['financial:payroll:edit']}>
-          <Button LeftIcon={IconPlus} onClick={handlePostSelectedPayroll}>
+          <Button
+            LeftIcon={IconPlus}
+            onClick={handlePostSelectedPayroll}
+            disabled={selectedIds.length === 0}
+            className="w-full sm:w-auto"
+          >
             Lançar selecionadas
           </Button>
         </PermissionGate>
