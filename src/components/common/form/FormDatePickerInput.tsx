@@ -163,7 +163,7 @@ export function FormDatePickerInput({
                   }}
                   disabled={disabled}
                 />
-                <Popover open={open} onOpenChange={setOpen}>
+                <Popover open={open} onOpenChange={setOpen} modal>
                   <PopoverTrigger asChild>
                     <Button
                       type="button"

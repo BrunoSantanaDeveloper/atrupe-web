@@ -29,7 +29,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { ChangeTotalValueAlertDialog } from './ChangeValue/ChangeValueAlert'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Icons
@@ -271,7 +271,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                               >
                                 {`${currentInstallment?.installmentNumber || index + 1}/${fields.length}`}
                               </p>
-                              <FormDatePickerSingle
+                              <FormDatePickerInput
                                 name={`installments.${index}.dueDate`}
                                 label="Vencimento"
                                 width="flex-[1_0_130px]"

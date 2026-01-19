@@ -17,7 +17,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Utils
@@ -78,7 +78,7 @@ export function InstallmentsForm({
             <p className="text-sm font-medium text-gray-700 leading-[44px] mt-5">
               {`${index + 1}/${fields.length}`}
             </p>
-            <FormDatePickerSingle
+            <FormDatePickerInput
               name={`installments.${index}.dueDate`}
               label="Vencimento"
               width="flex-[1_0_130px]"

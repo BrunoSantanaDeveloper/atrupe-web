@@ -19,8 +19,9 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { UnpayInstallment } from '../UnpayInstallment'
 import { PrintReceiptButton } from '../PrintReceiptButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
 import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
 import { AvailablePaymentConditionsSelectField } from '@/components/common/form/global-inputs/AvailablePaymentConditionsSelectField'
@@ -46,9 +47,8 @@ import type {
 import { updateItemNew } from '@/actions/_cruds'
 
 // Hooks
-import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 import { useBankAccount } from '@/hooks/queries/useBankAccount'
-import { PermissionGate } from '@/components/common/PermissionGate'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 interface Props {
   open: boolean
@@ -178,7 +178,7 @@ export function CompensateDialog({
               noValidate
               className="flex flex-wrap gap-4"
             >
-              <FormDatePickerSingle
+              <FormDatePickerInput
                 name="paidDate"
                 label={
                   type === 'payable'
@@ -188,7 +188,7 @@ export function CompensateDialog({
                 width="flex-[1_0_150px]"
                 disabled
               />
-              <FormDatePickerSingle
+              <FormDatePickerInput
                 name="compensateDate"
                 label="Data da compensação"
                 width="flex-[1_0_150px]"

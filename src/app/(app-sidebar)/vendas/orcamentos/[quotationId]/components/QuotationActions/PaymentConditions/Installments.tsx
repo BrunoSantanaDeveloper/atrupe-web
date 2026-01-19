@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { Separator } from '@/components/ui/separator'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { QuotationPaymentConditionsType } from './schema'
@@ -74,25 +74,25 @@ export function Installments() {
         <p className="text-sm font-medium text-gray-700 leading-[44px] pt-5 mr-8">
           {`${index + 1}/${installments.length}`}
         </p>
-        <FormDatePickerSingle<QuotationPaymentConditionsType>
+        <FormDatePickerInput
           name={`installments.${index}.dueDate`}
           label="Vencimento"
           width="flex-[1_0_130px]"
         />
-        <PaymentConditionsSelectField<QuotationPaymentConditionsType>
+        <PaymentConditionsSelectField
           name="paymentConditionId"
           label="Condição de pagamento"
           width="flex-[1_0_200px]"
           disabled
         />
-        <FormBrlInput<QuotationPaymentConditionsType>
+        <FormBrlInput
           name={`installments.${index}.additionalFee`}
           placeholder="0,00"
           label="Acréscimo"
           startAdornment={<>R$</>}
           disabled
         />
-        <FormBrlInput<QuotationPaymentConditionsType>
+        <FormBrlInput
           name={`installments.${index}.amount`}
           placeholder="0,00"
           label="Valor da parcela"

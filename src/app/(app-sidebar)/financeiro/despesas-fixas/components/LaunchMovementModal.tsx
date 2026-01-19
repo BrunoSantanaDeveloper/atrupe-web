@@ -23,7 +23,7 @@ import { Button } from '@/components/ui/button'
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 
 // Icons
 import { IconCircleCheck } from '@tabler/icons-react'
@@ -136,11 +136,11 @@ export function LaunchMovementModal({
             </DialogHeader>
             <DialogBody className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
-                <FormDatePickerSingle
+                <FormDatePickerInput
                   name="competenceDate"
                   label="Data da competência"
                 />
-                <FormDatePickerSingle
+                <FormDatePickerInput
                   name="dueDate"
                   label="Data de vencimento"
                 />

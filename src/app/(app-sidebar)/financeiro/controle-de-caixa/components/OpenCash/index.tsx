@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
 
 // Icons
@@ -116,7 +116,7 @@ export function OpenCashDialog(props: Props) {
                   isBankRequired={false}
                   emptyMessage="Vazio"
                 />
-                <FormDatePickerSingle
+                <FormDatePickerInput
                   name="openingDate"
                   label="Data de abertura"
                   width="flex-[1_0_100px]"

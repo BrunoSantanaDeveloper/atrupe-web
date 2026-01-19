@@ -1,6 +1,6 @@
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { getItem } from '@/actions/_cruds'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
 
@@ -64,7 +64,7 @@ export function DownPayment() {
       <p className="text-sm font-medium text-gray-700 leading-[44px] pt-5">
         Entrada
       </p>
-      <FormDatePickerSingle<QuotationPaymentConditionsType>
+      <FormDatePickerInput
         name={`downPayment.dueDate`}
         label="Vencimento"
         width="flex-[1_0_130px]"

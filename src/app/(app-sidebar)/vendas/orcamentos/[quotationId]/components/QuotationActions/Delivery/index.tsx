@@ -23,7 +23,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { ClientAddressSelectField } from '@/components/common/form/global-inputs/ClientAddressSelectField'
 
@@ -212,7 +212,7 @@ export function DeliveryDialog({ quotationData }: Props) {
                   setValue('estimatedDate', newDate)
                 }}
               />
-              <FormDatePickerSingle
+              <FormDatePickerInput
                 name="estimatedDate"
                 label="Data estimada"
                 width="flex-[1_0_200px]"

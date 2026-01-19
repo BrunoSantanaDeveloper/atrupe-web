@@ -19,9 +19,9 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { Separator } from '@/components/ui/separator'
-import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
 import { PrintReceiptButton } from '../PrintReceiptButton'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
 import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
@@ -55,11 +55,11 @@ import { updateItemNew } from '@/actions/_cruds'
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useBankAccount } from '@/hooks/queries/useBankAccount'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
 
 // Lib
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
-import { useBankAccount } from '@/hooks/queries/useBankAccount'
 
 interface Props {
   open: boolean
@@ -306,7 +306,7 @@ export function PaymentDialog({
               noValidate
               className="flex flex-wrap gap-4"
             >
-              <FormDatePickerSingle
+              <FormDatePickerInput
                 name="paidDate"
                 label={
                   type === 'payable'

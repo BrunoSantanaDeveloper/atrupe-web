@@ -24,7 +24,7 @@ import { InstallmentsForm } from './InstallmentsForm'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 import { SelectTransactionNatureField } from '@/components/common/form/global-inputs/TransactionNatureSelectField'
@@ -301,12 +301,12 @@ export function NewTransaction({ type }: Props) {
                       handleInstallmentsQuantity(Number(value))
                     }
                   />
-                  <FormDatePickerSingle
+                  <FormDatePickerInput
                     name="referenceDate"
                     label="Competência"
                     width="flex-[1_0_280px]"
                   />
-                  <FormDatePickerSingle
+                  <FormDatePickerInput
                     name="dueDate"
                     label="Data de vencimento"
                     width="flex-[1_0_280px]"

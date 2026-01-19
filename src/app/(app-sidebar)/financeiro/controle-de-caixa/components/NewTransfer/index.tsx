@@ -22,7 +22,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerSingle } from '@/components/common/form/FormDatePicker'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
 
 // Icons
@@ -123,7 +123,7 @@ export function NewTransferDialog() {
                   options={transferOptions}
                   width="flex-[1_1_280px]"
                 />
-                <FormDatePickerSingle
+                <FormDatePickerInput
                   name="transferDate"
                   label="Data"
                   width="flex-[1_1_125px]"
