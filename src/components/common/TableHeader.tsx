@@ -46,10 +46,13 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
   }
 
   return (
-    <CardHeader className="flex-row flex-wrap space-y-0 gap-4">
-      {children}
-      <form onSubmit={handleSearch} className="flex items-end gap-2 ml-auto">
-        <div className="flex flex-col w-64 gap-2">
+    <CardHeader className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-end">
+      <div className="flex flex-wrap gap-4 items-end">{children}</div>
+      <form
+        onSubmit={handleSearch}
+        className="flex items-end gap-2 w-full lg:w-auto"
+      >
+        <div className="flex flex-col flex-1 lg:flex-none lg:w-64 gap-2">
           <Label htmlFor="search">Buscar</Label>
           <Input
             id="search"

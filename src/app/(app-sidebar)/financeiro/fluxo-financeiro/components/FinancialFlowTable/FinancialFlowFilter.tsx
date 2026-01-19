@@ -82,7 +82,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
         <DateRangePickerBasic
           label="Período"
           placeholder="Selecione o período"
-          className="w-[220px]"
+          className="w-full sm:w-[220px]"
           value={defaultDateRange}
           onChange={handleDateRangeChange}
         />
@@ -93,14 +93,14 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
             placeholder="Selecione uma conta"
             value={searchParams?.bankAccountId || 'all'}
             additionalOnChange={(value) => handleFilter('bankAccountId', value)}
-            width="w-[220px]"
+            width="w-full sm:w-[220px]"
           />
         )}
         <SelectBasic
           name="status"
           label="Situação"
           placeholder="Selecione uma situação"
-          className="w-[220px]"
+          className="w-full sm:w-[220px]"
           options={[
             { value: 'all', label: 'Todas' },
             { value: 'PENDING', label: 'Em aberto' },
@@ -120,7 +120,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
           additionalOnChange={(value) =>
             handleFilter('paymentConditionId', value)
           }
-          width="w-[220px]"
+          width="w-full sm:w-[220px]"
         />
       </>
     </PermissionGate>
