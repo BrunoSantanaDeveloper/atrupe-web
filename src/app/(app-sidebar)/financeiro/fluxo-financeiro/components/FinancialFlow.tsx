@@ -13,8 +13,10 @@ import { Card, CardContent } from '@/components/ui/card'
 import { TopActions } from './TopActions'
 import { Topbar } from '@/components/common/Topbar'
 import { TransactionsTotalsCard } from './TransactionsTotals'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { FinancialFlowData } from './FinancialFlowTable/FinancialFlowData'
+import { NewTransaction } from '../../_components/transactions/NewTransaction'
 import { FinancialFlowFilter } from './FinancialFlowTable/FinancialFlowFilter'
 
 // Types
@@ -87,6 +89,26 @@ export function FinancialFlow({ searchParams }: Props) {
               : 'warningLight',
         }}
         primaryCta={
+          <>
+            <PermissionGate
+              permissions={[
+                'financial:payable:create',
+                'financial:flow:create',
+              ]}
+            >
+              <NewTransaction type="payable" searchParams={searchParams} />
+            </PermissionGate>
+            <PermissionGate
+              permissions={[
+                'financial:receivable:create',
+                'financial:flow:create',
+              ]}
+            >
+              <NewTransaction type="receivable" searchParams={searchParams} />
+            </PermissionGate>
+          </>
+        }
+        secondaryCta={
           <TopActions
             showTotals={showTotals}
             setShowTotals={setShowTotals}

@@ -7,7 +7,7 @@ import { IconTrendingUp } from '@tabler/icons-react'
 
 export function DashboardRevenues() {
   return (
-    <Card className="flex-[1_0_540px]">
+    <Card className="flex-[1_1_540px]">
       <CardHeader>
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="successLight" Icon={IconTrendingUp} />

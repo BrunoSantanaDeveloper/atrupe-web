@@ -9,7 +9,6 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
-import { NewTransaction } from '../../_components/transactions/NewTransaction'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
@@ -98,16 +97,6 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
           />
         </PermissionGate>
       </TooltipProvider>
-      <PermissionGate
-        permissions={['financial:payable:create', 'financial:flow:create']}
-      >
-        <NewTransaction type="payable" searchParams={searchParams} />
-      </PermissionGate>
-      <PermissionGate
-        permissions={['financial:receivable:create', 'financial:flow:create']}
-      >
-        <NewTransaction type="receivable" searchParams={searchParams} />
-      </PermissionGate>
     </div>
   )
 }

@@ -7,7 +7,7 @@ import { IconTrendingDown } from '@tabler/icons-react'
 
 export function DashboardExpenses() {
   return (
-    <Card className="flex-[1_0_540px]">
+    <Card className="flex-[1_1_540px]">
       <CardHeader>
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="errorLight" Icon={IconTrendingDown} />

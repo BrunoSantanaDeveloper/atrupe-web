@@ -64,7 +64,7 @@ export function Topbar({
     <div className="space-y-3">
       <div
         className={cn(
-          'flex flex-wrap justify-between gap-2 rounded-lg min-h-11',
+          'flex flex-col sm:flex-row sm:flex-wrap sm:justify-between gap-3 rounded-lg min-h-11',
           label && 'bg-brand-200 px-6',
           classNames?.label,
         )}
@@ -104,7 +104,7 @@ export function Topbar({
             </Badge>
           ) : null}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           {label ? (
             <p className="font-semibold text-white opacity-60">{label}</p>
           ) : null}
