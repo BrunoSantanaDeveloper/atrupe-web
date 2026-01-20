@@ -44,14 +44,14 @@ const FormField = <
 const useFormField = () => {
   const fieldContext = React.useContext(FormFieldContext)
   const itemContext = React.useContext(FormItemContext)
-  const { getFieldState, formState } = useFormContext()
+  const formContext = useFormContext()
 
-  const fieldState = getFieldState(fieldContext.name, formState)
-
-  if (!fieldContext) {
-    throw new Error('useFormField should be used within <FormField>')
+  if (!fieldContext || !itemContext || !formContext) {
+    return null
   }
 
+  const { getFieldState, formState } = formContext
+  const fieldState = getFieldState(fieldContext.name, formState)
   const { id } = itemContext
 
   return {
@@ -90,7 +90,9 @@ const FormLabel = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
 >(({ className, ...props }, ref) => {
-  const { error, formItemId } = useFormField()
+  const field = useFormField()
+  const error = field?.error
+  const formItemId = field?.formItemId
 
   return (
     <Label
@@ -107,7 +109,11 @@ const FormControl = React.forwardRef<
   React.ElementRef<typeof Slot>,
   React.ComponentPropsWithoutRef<typeof Slot>
 >(({ ...props }, ref) => {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+  const field = useFormField()
+  const error = field?.error
+  const formItemId = field?.formItemId
+  const formDescriptionId = field?.formDescriptionId
+  const formMessageId = field?.formMessageId
 
   return (
     <Slot
@@ -129,7 +135,8 @@ const FormDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => {
-  const { formDescriptionId } = useFormField()
+  const field = useFormField()
+  const formDescriptionId = field?.formDescriptionId
 
   return (
     <p
@@ -146,7 +153,9 @@ const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
-  const { error, formMessageId } = useFormField()
+  const field = useFormField()
+  const error = field?.error
+  const formMessageId = field?.formMessageId
   const body = error ? String(error?.message) : children
 
   if (!body) {

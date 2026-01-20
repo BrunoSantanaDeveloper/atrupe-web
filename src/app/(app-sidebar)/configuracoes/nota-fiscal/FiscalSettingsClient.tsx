@@ -24,13 +24,6 @@ export function FiscalSettingsClient() {
       category: 'Configurações Fiscais',
       items: [
         {
-          title: 'Configurações Gerais',
-          icon: IconSettings,
-          description: 'Configure os parâmetros para emissão de notas fiscais',
-          link: `${defaultPath}/invoicy`,
-          permission: 'invoice_settings:nf:view',
-        },
-        {
           title: 'Configurar Emissores',
           icon: IconBuilding,
           description: 'Configure os dados do emitente para suas notas fiscais',
@@ -59,14 +52,7 @@ export function FiscalSettingsClient() {
           link: `${defaultPath}/servicos`,
           permission: 'invoice_settings:nf:view',
         },
-        {
-          title: 'Gestão de Notas Fiscais',
-          icon: IconReceipt2,
-          description:
-            'Visualize, consulte e gerencie suas notas fiscais emitidas',
-          link: `${defaultPath}/gestao`,
-          permission: 'invoice_settings:nf:view',
-        },
+
       ],
     },
   ]

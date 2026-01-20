@@ -1,7 +1,7 @@
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { CfopConfigForm } from './components/CfopConfigForm'
+import { CfopListClient } from './components/CfopListClient'
 
 export function metadata() {
   return {
@@ -18,9 +18,10 @@ export default function CfopConfigPage() {
           previousPage="/configuracoes/nota-fiscal"
         />
         <div className="p-6">
-          <CfopConfigForm />
+          <CfopListClient />
         </div>
       </div>
     </PermissionGate>
   )
 }
+
