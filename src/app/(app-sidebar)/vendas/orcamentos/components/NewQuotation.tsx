@@ -334,7 +334,7 @@ export function NewQuotationTriggerButton({
         LeftIcon={IconCirclePlus}
         onClick={() => onOpenChange(true)}
       >
-        Novo orçamento
+        Novo<span className="hidden sm:inline"> orçamento</span>
       </Button>
     </PermissionGate>
   )

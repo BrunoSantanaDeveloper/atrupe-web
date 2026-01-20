@@ -60,7 +60,7 @@ export function OrdersFilter({ searchParams }: SearchParamsType) {
         noForm
         name="serie"
         label="Série"
-        width="w-[220px]"
+        width="w-full sm:w-[220px]"
         value={searchParams?.serieId || 'all'}
         onChange={(value) => handleFilter('serieId', value)}
       />
@@ -68,7 +68,7 @@ export function OrdersFilter({ searchParams }: SearchParamsType) {
         noForm
         name="seller"
         label="Vendedor"
-        width="w-[220px]"
+        width="w-full sm:w-[220px]"
         value={searchParams?.sellerId || 'all'}
         onChange={(value) => handleFilter('sellerId', value)}
       />

@@ -76,14 +76,14 @@ export function QuotationsFilter({ searchParams }: SearchParamsType) {
       <DateRangePickerBasic
         label="Período"
         placeholder="Selecione o período"
-        className="w-[220px]"
+        className="w-full sm:w-[220px]"
         value={defaultDateRange}
         onChange={handleDateRangeChange}
       />
       <SelectSerieField
         name="serie"
         label="Série"
-        width="w-[220px]"
+        width="w-full sm:w-[220px]"
         noForm
         value={searchParams?.serieId || 'all'}
         onChange={(value) => handleFilter('serieId', value)}
@@ -91,7 +91,7 @@ export function QuotationsFilter({ searchParams }: SearchParamsType) {
       <SelectSellerField
         name="seller"
         label="Vendedor"
-        width="w-[220px]"
+        width="w-full sm:w-[220px]"
         noForm
         value={searchParams?.sellerId || 'all'}
         onChange={(value) => handleFilter('sellerId', value)}

@@ -64,7 +64,7 @@ export function Topbar({
     <div className="space-y-3">
       <div
         className={cn(
-          'flex flex-col sm:flex-row sm:flex-wrap sm:justify-between gap-3 rounded-lg min-h-11',
+          'flex flex-wrap justify-between gap-2 rounded-lg min-h-11',
           label && 'bg-brand-200 px-6',
           classNames?.label,
         )}
@@ -114,7 +114,7 @@ export function Topbar({
         </div>
       </div>
       {tabs?.length ? (
-        <Tabs value={activeTab}>
+        <Tabs value={activeTab} className="overflow-x-auto">
           <TabsList>
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.tab} asChild>
