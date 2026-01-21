@@ -96,10 +96,12 @@ export function ProductFiscalDataDialog({
         productCode: fiscalData.productCode || '',
         commercialUnit: fiscalData.commercialUnit || 'UN',
         ncm: fiscalData.ncm || '',
+        // cest: fiscalData.cest || '',
         cean: fiscalData.cean || '',
         icmsOrigin: fiscalData.icmsOrigin || '0',
         icmsCst: fiscalData.icmsCst || '102',
         icmsRate: fiscalData.icmsRate || undefined,
+        // icmsReducao: fiscalData.icmsReducao || undefined,
         icmsCreditRate: fiscalData.icmsCreditRate || undefined,
         icmsBaseModality: fiscalData.icmsBaseModality || '3',
         pisCst: fiscalData.pisCst || '07',
@@ -209,6 +211,12 @@ export function ProductFiscalDataDialog({
                       placeholder="00000000"
                       maxLength={8}
                     />
+                    {/* <FormInput
+                      name="cest"
+                      label="CEST"
+                      placeholder="0000000"
+                      maxLength={7}
+                    /> */}
                     <FormInput
                       name="cean"
                       label="CEAN"
@@ -239,6 +247,12 @@ export function ProductFiscalDataDialog({
                       type="number"
                       placeholder="00.00"
                     />
+                    {/* <FormInput
+                      name="icmsReducao"
+                      label="Redução Base ICMS"
+                      type="number"
+                      placeholder="00.00"
+                    /> */}
                     <FormInput
                       name="icmsCreditRate"
                       label="Alíquota Crédito ICMS"

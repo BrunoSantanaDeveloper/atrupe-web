@@ -5,12 +5,14 @@ export const productFiscalDataSchema = z.object({
   productCode: z.string().optional(),
   commercialUnit: z.string().default('UN'),
   ncm: z.string().optional(),
+  // cest: z.string().optional(),
   cean: z.string().optional(),
 
   // ICMS
   icmsOrigin: z.string().default('0'),
   icmsCst: z.string().default('102'),
   icmsRate: z.coerce.number().optional(),
+  // icmsReducao: z.coerce.number().optional(),
   icmsCreditRate: z.coerce.number().optional(),
   icmsBaseModality: z.string().default('3'),
 
@@ -37,10 +39,12 @@ export const defaultFiscalDataValues: ProductFiscalDataFormType = {
   productCode: '',
   commercialUnit: 'UN',
   ncm: '',
+  // cest: '',
   cean: '',
   icmsOrigin: '0',
   icmsCst: '102',
   icmsRate: undefined,
+  // icmsReducao: undefined,
   icmsCreditRate: undefined,
   icmsBaseModality: '3',
   pisCst: '07',
