@@ -98,6 +98,21 @@ export interface NfePrepareExistingNfe {
   dataEmissao: string
 }
 
+export interface NfePrepareVolume {
+  quantidade: number
+  especie: string
+  marca: string
+  numeracao: string
+  pesoLiquido: number
+  pesoBruto: number
+}
+
+export interface NfePrepareDuplicata {
+  numero: string
+  dataVencimento: string
+  valor: number
+}
+
 export interface NfePrepareResponse {
   orderId: string
   quotationId: string
@@ -108,9 +123,9 @@ export interface NfePrepareResponse {
   destinatario: NfePrepareDestinatario
   items: NfePrepareItem[]
   transportadora: NfePrepareTransportadora
-  volumes: unknown[]
+  volumes: NfePrepareVolume[]
   pagamento: NfePreparePagamento
-  duplicatas: unknown[]
+  duplicatas: NfePrepareDuplicata[]
   informacoesComplementares: string
   totais: NfePrepareTotais
 }

@@ -1,3 +1,5 @@
+import { IssuedInvoicesClient } from './components/IssuedInvoicesClient'
+
 export default function IssuedInvoicePage() {
-  return <div>Emissão de Nota Fiscal</div>
+  return <IssuedInvoicesClient />
 }

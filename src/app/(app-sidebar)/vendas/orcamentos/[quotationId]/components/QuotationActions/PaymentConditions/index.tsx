@@ -139,6 +139,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
 
     data.installmentQty = Number(data.installmentQty) as unknown as string
     delete data.paymentConditionsBaseValue
+    delete data.dayInterval
 
     delete data.dayInterval
 

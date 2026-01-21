@@ -180,6 +180,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
       technicalDescription: data?.technicalDescription ?? '',
       allowEditValues: data.allowEditValues,
       allowEditDescription: data.allowEditDescription,
+      isService: data.isService,
       imageUrl: data.imageUrl || null,
       items: data.items?.map((item) => ({
         id: editMode ? item.id : undefined,
@@ -487,6 +488,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                     name="allowEditDescription"
                     label="Permitir editar descrição"
                   />
+                  <FormSwitch name="isService" label="É um serviço?" />
                 </div>
                 {canShowProductionStages && <ProductionStages />}
               </form>

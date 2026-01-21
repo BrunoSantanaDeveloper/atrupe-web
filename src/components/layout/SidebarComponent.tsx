@@ -106,7 +106,7 @@ export function SidebarComponent(props: Props) {
   // TODO: Implementar verificação real de módulos contratados via API/sessão
   // Por enquanto, usando booleano mockado para o módulo de nota fiscal
   const contractedModules = {
-    nota_fiscal: false, // Alterar para true/false para testar a restrição
+    nota_fiscal: true, // Alterar para true/false para testar a restrição
   }
 
   // Função que verifica se o módulo contratado está disponível

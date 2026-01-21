@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 
 // UI
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+// Accordion imports removed
 import {
   Accordion,
   AccordionItem,
@@ -15,39 +17,42 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
+
+// Custom Components
+import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
 import {
   IconX,
-  IconBox,
   IconSum,
   IconSend,
   IconUser,
-  IconCopy,
-  IconScale,
-  IconTruck,
   IconPencil,
   IconPrinter,
   IconSettings,
   IconFileText,
   IconDownload,
-  IconCreditCard,
-  IconExternalLink,
   IconAlertTriangle,
+  IconArrowLeft,
+  IconHelpCircle,
+  IconAlertTriangleFilled,
 } from '@tabler/icons-react'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
+// Sub-components
+import { InvoiceTransport } from './InvoiceTransport'
+import { InvoicePayment } from './InvoicePayment'
+import { InvoiceItems } from './InvoiceItems'
+
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
 
 // Types
-import type {
-  NfePrepareResponse,
-  NfePrepareItem,
-} from '@/types/fiscal/nfe-prepare'
+import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
 
 // Types
 interface Props {
@@ -61,12 +66,7 @@ export function IssueInvoiceForm({ id }: Props) {
   const [data, setData] = useState<NfePrepareResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const [accordionValue, setAccordionValue] = useState<string[]>([
-    'config',
-    'recipient',
-    'items',
-    'totals',
-  ])
+  // Accordion state removed
 
   // Fetch data on mount
   const fetchData = useCallback(async () => {
@@ -82,7 +82,14 @@ export function IssueInvoiceForm({ id }: Props) {
         throw new Error(result.message || 'Erro ao carregar dados da NF-e')
       }
 
-      setData(result.data)
+      // Initialize empty arrays if null (backend guard)
+      const preparedData = {
+        ...result.data,
+        volumes: result.data.volumes || [],
+        duplicatas: result.data.duplicatas || [],
+      }
+
+      setData(preparedData)
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao carregar dados'
@@ -100,6 +107,12 @@ export function IssueInvoiceForm({ id }: Props) {
   // Handle emit
   const handleEmit = async () => {
     if (!data) return
+
+    // Basic validation
+    if (data.items.some((item) => item.needsConfiguration)) {
+      toast.error('Existem itens que precisam de configuração fiscal.')
+      return
+    }
 
     // Check if NF-e already exists
     if (data.hasExistingNfe) {
@@ -132,6 +145,7 @@ export function IssueInvoiceForm({ id }: Props) {
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
           destPais: data.destinatario.pais,
+          // Mapped from updated data
           items: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -139,7 +153,7 @@ export function IssueInvoiceForm({ id }: Props) {
             discount: item.discount,
             description: item.description,
             ncm: item.ncm,
-            cfop: item.cfop,
+            cfop: item.cfop ? Number(item.cfop) : undefined,
             uCom: item.uCom,
             ean: item.ean,
             ceantrib: item.ceantrib,
@@ -147,7 +161,14 @@ export function IssueInvoiceForm({ id }: Props) {
             cstPis: item.cstPis,
             cstCofins: item.cstCofins,
             cstIpi: item.cstIpi,
+            freight: item.freight,
+            insurance: item.insurance,
           })),
+          transportadora: data.transportadora,
+          volumes: data.volumes,
+          pagamento: data.pagamento,
+          duplicatas: data.duplicatas,
+          modalidadeFrete: data.emissao.modalidadeFrete,
         },
       })
 
@@ -156,7 +177,7 @@ export function IssueInvoiceForm({ id }: Props) {
       }
 
       toast.success('NF-e emitida com sucesso!')
-      router.push('/nota-fiscal/emitir')
+      router.push('/nota-fiscal/emitidas')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao emitir NF-e'
       toast.error(message)
@@ -223,527 +244,602 @@ export function IssueInvoiceForm({ id }: Props) {
   return (
     <TooltipProvider>
       <div className="space-y-6 pb-10">
-        {/* Topbar */}
-        <Topbar
-          title="Emissão de NF-e"
-          supportText={data.destinatario.razaoSocial}
-          badge={{
-            text: data.hasExistingNfe ? 'NF-e Emitida' : 'Em digitação',
-            variant: data.hasExistingNfe ? 'success' : 'blueLight',
-          }}
-          previousPage="/nota-fiscal/emitir"
-          primaryCta={
-            <Button
-              variant="neutralOutline"
-              size="iconMd"
-              LeftIcon={IconPrinter}
-              disabled={!data.hasExistingNfe}
-              onClick={() => {
-                if (data.existingNfe?.danfeUrl) {
-                  window.open(data.existingNfe.danfeUrl, '_blank')
-                }
-              }}
-            />
-          }
-        />
+        {/* Header Customizado */}
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="iconSm"
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => router.push('/nota-fiscal/emitir')}
+              >
+                <IconArrowLeft size={20} />
+              </Button>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-semibold text-gray-900">
+                  Emissão de NF-e
+                </h1>
+                <span className="text-xl text-gray-400">
+                  {data.destinatario.razaoSocial}
+                </span>
+                <Badge
+                  variant={data.hasExistingNfe ? 'success' : 'blueLight'}
+                  className="ml-2"
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
+                  {data.hasExistingNfe ? 'NF-e Emitida' : 'Em digitação'}
+                </Badge>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="neutralGhost"
+                size="iconSm"
+                className="text-gray-400"
+              >
+                <IconHelpCircle size={20} />
+              </Button>
+              <Button
+                variant="neutralGhost"
+                size="iconSm"
+                className="text-gray-400"
+                disabled={!data.hasExistingNfe}
+                onClick={() => {
+                  if (data.existingNfe?.danfeUrl) {
+                    window.open(data.existingNfe.danfeUrl, '_blank')
+                  }
+                }}
+              >
+                <IconPrinter size={20} />
+              </Button>
+            </div>
+          </div>
+
+          {/* Action Bar */}
+          {!data.hasExistingNfe && (
+            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+              <CustomButton
+                icon={IconX}
+                title="Cancelar venda"
+                iconVariant="errorLight"
+                onClick={() => router.push('/nota-fiscal/emitir')}
+              />
+              <CustomButton
+                icon={IconSend}
+                title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
+                iconVariant="successLight"
+                onClick={handleEmit}
+                disabled={isEmitting}
+                isLoading={isEmitting}
+              />
+            </div>
+          )}
+        </div>
 
         {/* Alert Area */}
         {data.emissao.ambiente === 'HOMOLOGACAO' && (
-          <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center">
-            <p className="text-warning-700 font-medium text-sm flex items-center justify-center gap-2">
-              <span className="text-lg">⚠</span>
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
+            <p className="text-orange-800 font-medium text-sm flex items-center justify-center gap-2">
+              <IconAlertTriangleFilled size={18} className="text-orange-500" />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>
           </div>
         )}
 
-        {/* Existing NF-e Alert */}
-        {data.hasExistingNfe && data.existingNfe && (
-          <div className="bg-success-50 border border-success-200 rounded-lg p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <FeaturedIcon variant="successLight" Icon={IconFileText} />
-                <div>
-                  <p className="font-semibold text-success-700">
-                    NF-e já emitida para esta ordem
-                  </p>
-                  <p className="text-sm text-success-600">
-                    Número: {data.existingNfe.numero}/{data.existingNfe.serie} |
-                    Status: {data.existingNfe.status}
-                  </p>
-                </div>
-              </div>
-              {data.existingNfe.danfeUrl && (
-                <Button
-                  variant="success"
-                  RightIcon={IconExternalLink}
-                  onClick={() =>
-                    window.open(data.existingNfe!.danfeUrl!, '_blank')
-                  }
-                >
-                  Visualizar DANFE
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        {!data.hasExistingNfe && (
-          <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-            <Button
-              variant="neutralOutline"
-              className="text-error-600 border-error-100 hover:bg-error-50"
-              LeftIcon={IconX}
-              onClick={() => router.push('/nota-fiscal/emitir')}
-            >
-              Cancelar digitação
-            </Button>
-            <Button
-              variant="success"
-              className="px-8"
-              RightIcon={IconSend}
-              onClick={handleEmit}
-              disabled={isEmitting}
-              isLoading={isEmitting}
-            >
-              {isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-            </Button>
-          </div>
-        )}
-
         {/* Form Sections */}
-        <Accordion
-          type="multiple"
-          value={accordionValue}
-          onValueChange={setAccordionValue}
-          className="space-y-4"
-        >
+        {/* Form Sections */}
+        <div className="space-y-6">
           {/* Configuração de emissão */}
-          <AccordionItem value="config" className="border-none">
-            <Card className="border-none shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Configuração de emissão
-                  </CardTitle>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="neutralGhost"
-                    size="iconSm"
-                    LeftIcon={IconPencil}
-                  />
-                  <AccordionTrigger className="p-0 hover:no-underline" />
-                </div>
-              </CardHeader>
-              <AccordionContent>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                  {[
-                    { label: 'Emissor', value: data.emissao.emissor },
-                    { label: 'CNPJ', value: data.emissao.emissorCnpj },
-                    {
-                      label: 'Próximo documento',
-                      value: data.emissao.proximoDocumento,
-                    },
-                    { label: 'Tipo', value: `${data.emissao.tipo} - Saída` },
-                    {
-                      label: 'Finalidade',
-                      value: `${data.emissao.finalidade} - NF-e normal`,
-                    },
-                    {
-                      label: 'Natureza da operação',
-                      value: data.emissao.operationNature,
-                    },
-                    {
-                      label: 'Consumidor final',
-                      value:
-                        data.emissao.consumidorFinal === 1
-                          ? '1 - Sim'
-                          : '0 - Não',
-                    },
-                    {
-                      label: 'Presença do consumidor',
-                      value: `${data.emissao.presencaConsumidor} - Operação presencial`,
-                    },
-                    {
-                      label: 'NF-e referenciada',
-                      value: data.emissao.nfeReferenciada || 'Sem referência',
-                    },
-                    {
-                      label: 'Data de saída',
-                      value: new Date(data.emissao.dataSaida).toLocaleString(
-                        'pt-BR',
-                      ),
-                    },
-                    {
-                      label: 'Destino operação',
-                      value:
-                        data.emissao.destinoOperacao === 1
-                          ? '1 - Operação interna'
-                          : '2 - Operação interestadual',
-                    },
-                    {
-                      label: 'Modalidade de frete',
-                      value: '9 - Sem ocorrência de transporte',
-                    },
-                  ].map((field, i) => (
-                    <div key={i} className="space-y-1">
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                        {field.label}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {field.value}
-                      </p>
-                    </div>
-                  ))}
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-
-          {/* Destinatário / Tomador */}
-          <AccordionItem value="recipient" className="border-none">
-            <Card className="border-none shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Destinatário / Tomador
-                  </CardTitle>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="neutralGhost"
-                    size="iconSm"
-                    LeftIcon={IconPencil}
-                  />
-                  <AccordionTrigger className="p-0 hover:no-underline" />
-                </div>
-              </CardHeader>
-              <AccordionContent>
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-                  {[
-                    {
-                      label: 'Razão Social',
-                      value: data.destinatario.razaoSocial,
-                    },
-                    { label: 'CNPJ/CPF', value: data.destinatario.cnpjCpf },
-                    { label: 'I.E.', value: data.destinatario.ie || 'N/D' },
-                    {
-                      label: 'E-mail',
-                      value: data.destinatario.email || 'N/D',
-                    },
-                    {
-                      label: 'Telefone',
-                      value: data.destinatario.telefone || 'N/D',
-                    },
-                    { label: 'CEP', value: data.destinatario.cep },
-                    { label: 'Estado', value: data.destinatario.estado },
-                    { label: 'Cidade', value: data.destinatario.cidade },
-                    { label: 'Bairro', value: data.destinatario.bairro },
-                    {
-                      label: 'Rua',
-                      value: `${data.destinatario.endereco}, ${data.destinatario.numero}`,
-                    },
-                  ].map((field, i) => (
-                    <div key={i} className="space-y-1">
-                      <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">
-                        {field.label}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {field.value}
-                      </p>
-                    </div>
-                  ))}
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-
-          {/* Itens */}
-          <AccordionItem value="items" className="border-none">
-            <Card className="border-none shadow-sm overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Itens ({data.items.length})
-                  </CardTitle>
-                </div>
-                <AccordionTrigger className="p-0 hover:no-underline" />
-              </CardHeader>
-              <AccordionContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full border-collapse">
-                    <thead className="bg-gray-50/50 border-y border-gray-100">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Referência
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          CST
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Frete
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Seguro
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Valor unitário
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Qtd.
-                        </th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
-                          Valor final
-                        </th>
-                        <th className="px-6 py-3"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.items.map((item: NfePrepareItem) => (
-                        <tr
-                          key={item.itemNumber}
-                          className="group border-b border-gray-50 hover:bg-gray-50/50 transition-colors"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <p className="text-sm font-medium text-gray-900">
-                                {item.itemNumber} - {item.description}
-                              </p>
-                              <p className="text-[10px] text-gray-400 font-mono uppercase tracking-tight">
-                                COD: {item.productCode || 'N/D'} | NCM:{' '}
-                                {item.ncm || 'N/D'} | CFOP: {item.cfop || 'N/D'}
-                              </p>
-                              {item.needsConfiguration && (
-                                <p className="text-[11px] text-error-600 font-medium">
-                                  Este item ainda não foi configurado.
-                                </p>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            {item.needsConfiguration ? (
-                              <Button
-                                variant="success"
-                                size="sm"
-                                LeftIcon={IconSettings}
-                                className="h-8 text-xs"
-                              >
-                                Configurar
-                              </Button>
-                            ) : (
-                              <div className="space-y-1">
-                                <p className="text-[10px] text-gray-400 uppercase font-medium">
-                                  ICMS: {item.cstIcms}
-                                </p>
-                                <p className="text-[10px] text-gray-400 uppercase font-medium">
-                                  IPI: {item.cstIpi || 'N/D'}
-                                </p>
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {item.freight > 0
-                              ? formatCurrency(item.freight)
-                              : '-'}
-                          </td>
-                          <td className="px-4 py-4 text-sm text-gray-500">
-                            {item.insurance > 0
-                              ? formatCurrency(item.insurance)
-                              : '-'}
-                          </td>
-                          <td className="px-4 py-4 text-sm font-medium text-gray-700">
-                            {formatCurrency(item.unitValue)}
-                          </td>
-                          <td className="px-4 py-4 text-sm font-medium text-gray-700">
-                            {item.quantity}
-                          </td>
-                          <td className="px-4 py-4 text-sm font-bold text-success-600 text-nowrap">
-                            {formatCurrency(item.totalValue)}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <Button
-                              variant="neutralGhost"
-                              size="iconSm"
-                              LeftIcon={IconPencil}
-                              className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-
-          {/* Collapsed Sections */}
-          {[
-            { id: 'transport', label: 'Transportadora', icon: IconTruck },
-            { id: 'volumes', label: 'Volumes transportados', icon: IconScale },
-            { id: 'payment', label: 'Pagamento', icon: IconCreditCard },
-            { id: 'installments', label: 'Duplicatas', icon: IconCopy },
-            {
-              id: 'auth',
-              label: 'Autorização de download',
-              icon: IconDownload,
-            },
-            {
-              id: 'info',
-              label: 'Informações complementares',
-              icon: IconFileText,
-            },
-          ].map((sec) => (
-            <AccordionItem key={sec.id} value={sec.id} className="border-none">
-              <Card className="border-none shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between py-4">
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible defaultValue="config">
+              <AccordionItem value="config" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={sec.icon} />
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconSettings}
+                    />
                     <CardTitle className="text-gray-700 font-semibold text-base">
-                      {sec.label}
+                      Configuração de emissão
                     </CardTitle>
                   </div>
-                  <AccordionTrigger className="p-0 hover:no-underline" />
+                  <div className="flex gap-3">
+                    <Button
+                      variant="neutralGhost"
+                      size="iconSm"
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <IconPencil size={16} />
+                    </Button>
+                    <AccordionTrigger
+                      className={cn(
+                        buttonVariants({
+                          variant: 'neutralLight',
+                          size: 'icon',
+                        }),
+                        'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                      )}
+                    />
+                  </div>
                 </CardHeader>
                 <AccordionContent>
-                  <CardContent className="text-sm text-gray-500 italic">
-                    {sec.id === 'info' && data.informacoesComplementares
-                      ? data.informacoesComplementares
-                      : `Conteúdo do setor ${sec.label}`}
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      {/* Row 1: Emissor & Basic Info */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          { label: 'Emissor', value: data.emissao.emissor },
+                          { label: 'CNPJ', value: data.emissao.emissorCnpj },
+                          {
+                            label: 'Natureza da operação',
+                            value: data.emissao.operationNature,
+                          },
+                          {
+                            label: 'Tipo',
+                            value: `${data.emissao.tipo} - Saída`,
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 2: Operation Details */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          {
+                            label: 'Finalidade',
+                            value: `${data.emissao.finalidade} - NF-e normal`,
+                          },
+                          {
+                            label: 'Destino operação',
+                            value:
+                              data.emissao.destinoOperacao === 1
+                                ? '1 - Operação interna'
+                                : '2 - Operação interestadual',
+                          },
+                          {
+                            label: 'Próximo documento',
+                            value: data.emissao.proximoDocumento,
+                          },
+                          {
+                            label: 'Data de saída',
+                            value: new Date(
+                              data.emissao.dataSaida,
+                            ).toLocaleString('pt-BR'),
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 3: Consumer & Transport */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+                        {[
+                          {
+                            label: 'Consumidor final',
+                            value:
+                              data.emissao.consumidorFinal === 1
+                                ? '1 - Sim'
+                                : '0 - Não',
+                          },
+                          {
+                            label: 'Presença do consumidor',
+                            value: `${data.emissao.presencaConsumidor} - Operação presencial`,
+                          },
+                          {
+                            label: 'Modalidade de frete',
+                            value:
+                              data.emissao.modalidadeFrete !== undefined
+                                ? data.emissao.modalidadeFrete
+                                : '9 - Sem ocorrência de transporte',
+                          },
+                          {
+                            label: 'NF-e referenciada',
+                            value:
+                              data.emissao.nfeReferenciada || 'Sem referência',
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </CardContent>
                 </AccordionContent>
-              </Card>
-            </AccordionItem>
-          ))}
+              </AccordionItem>
+            </Accordion>
+          </Card>
+
+          {/* Destinatário / Tomador */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible defaultValue="recipient">
+              <AccordionItem value="recipient" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                  <div className="flex gap-3 items-center">
+                    <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
+                    <CardTitle className="text-gray-700 font-semibold text-base">
+                      Destinatário / Tomador
+                    </CardTitle>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button
+                      variant="neutralGhost"
+                      size="iconSm"
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <IconPencil size={16} />
+                    </Button>
+                    <AccordionTrigger
+                      className={cn(
+                        buttonVariants({
+                          variant: 'neutralLight',
+                          size: 'icon',
+                        }),
+                        'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                      )}
+                    />
+                  </div>
+                </CardHeader>
+                <AccordionContent>
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      {/* Row 1: Basic Info */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          {
+                            label: 'Razão Social',
+                            value: data.destinatario.razaoSocial,
+                          },
+                          {
+                            label: 'CNPJ/CPF',
+                            value: data.destinatario.cnpjCpf,
+                          },
+                          {
+                            label: 'I.E.',
+                            value: data.destinatario.ie || 'N/D',
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 2: Address */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          {
+                            label: 'Rua',
+                            value: `${data.destinatario.endereco}, ${data.destinatario.numero}`,
+                          },
+                          { label: 'Bairro', value: data.destinatario.bairro },
+                          { label: 'CEP', value: data.destinatario.cep },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 3: Contact & Location */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6">
+                        {[
+                          { label: 'Cidade', value: data.destinatario.cidade },
+                          { label: 'Estado', value: data.destinatario.estado },
+                          {
+                            label: 'Telefone',
+                            value: data.destinatario.telefone || 'N/D',
+                          },
+                          {
+                            label: 'E-mail',
+                            value: data.destinatario.email || 'N/D',
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+
+          {/* Items Section */}
+          <InvoiceItems data={data} onUpdate={setData} />
+
+          {/* Transport Section */}
+          <InvoiceTransport data={data} onUpdate={setData} />
+
+          {/* Payment Section */}
+          <InvoicePayment data={data} onUpdate={setData} />
+
+          {/* Info Complementar */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="info" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                  <div className="flex gap-3 items-center">
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconFileText}
+                    />
+                    <CardTitle className="text-gray-700 font-semibold text-base">
+                      Informações complementares
+                    </CardTitle>
+                  </div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </CardHeader>
+                <AccordionContent>
+                  <CardContent className="p-6">
+                    <p className="text-sm text-gray-500 italic">
+                      {data.informacoesComplementares
+                        ? data.informacoesComplementares
+                        : 'Nenhuma informação adicional'}
+                    </p>
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+
+          {/* Download Auth */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="auth" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                  <div className="flex gap-3 items-center">
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconDownload}
+                    />
+                    <CardTitle className="text-gray-700 font-semibold text-base">
+                      Autorização de download
+                    </CardTitle>
+                  </div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </CardHeader>
+                <AccordionContent>
+                  <CardContent className="p-6">
+                    <p className="text-sm text-gray-500 italic">
+                      Funcionalidade de autorização de CNPJs ainda não
+                      disponível.
+                    </p>
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
 
           {/* Totais */}
-          <AccordionItem value="totals" className="border-none">
-            <Card className="border-none shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between py-4">
-                <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconSum} />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Totais
-                  </CardTitle>
-                </div>
-                <AccordionTrigger className="p-0 hover:no-underline" />
-              </CardHeader>
-              <AccordionContent>
-                <CardContent className="grid grid-cols-2 md:grid-cols-6 gap-y-8 gap-x-4 pt-4 border-t border-gray-50">
-                  {[
-                    {
-                      label: 'Valor Prod/Serv',
-                      value: formatCurrency(data.totais.valorProdutos),
-                    },
-                    {
-                      label: 'Base de cálc ICMS',
-                      value:
-                        data.totais.baseCalculoIcms > 0
-                          ? formatCurrency(data.totais.baseCalculoIcms)
-                          : '-',
-                    },
-                    {
-                      label: 'Base de cálc ICMS ST',
-                      value:
-                        data.totais.baseCalculoIcmsSt > 0
-                          ? formatCurrency(data.totais.baseCalculoIcmsSt)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor COFINS',
-                      value:
-                        data.totais.valorCofins > 0
-                          ? formatCurrency(data.totais.valorCofins)
-                          : '-',
-                    },
-                    {
-                      label: 'Outras desps. acess.',
-                      value:
-                        data.totais.outrasDesepesas > 0
-                          ? formatCurrency(data.totais.outrasDesepesas)
-                          : '-',
-                    },
-                    {
-                      label: 'Desconto',
-                      value:
-                        data.totais.valorDesconto > 0
-                          ? formatCurrency(data.totais.valorDesconto)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor ICMS',
-                      value:
-                        data.totais.valorIcms > 0
-                          ? formatCurrency(data.totais.valorIcms)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor ICMS ST',
-                      value:
-                        data.totais.valorIcmsSt > 0
-                          ? formatCurrency(data.totais.valorIcmsSt)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor PIS',
-                      value:
-                        data.totais.valorPis > 0
-                          ? formatCurrency(data.totais.valorPis)
-                          : '-',
-                    },
-                    {
-                      label: 'Total Tributos',
-                      value:
-                        data.totais.valorTotalTributos > 0
-                          ? formatCurrency(data.totais.valorTotalTributos)
-                          : '-',
-                    },
-                    {
-                      label: 'Seguro',
-                      value:
-                        data.totais.valorSeguro > 0
-                          ? formatCurrency(data.totais.valorSeguro)
-                          : '-',
-                    },
-                    {
-                      label: 'Frete',
-                      value:
-                        data.totais.valorFrete > 0
-                          ? formatCurrency(data.totais.valorFrete)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor IPI',
-                      value:
-                        data.totais.valorIpi > 0
-                          ? formatCurrency(data.totais.valorIpi)
-                          : '-',
-                    },
-                    {
-                      label: 'Valor da Nota',
-                      value: formatCurrency(data.totais.valorNota),
-                    },
-                  ].map((field, i) => (
-                    <div key={i} className="space-y-1">
-                      <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
-                        {field.label}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {field.value}
-                      </p>
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible defaultValue="totals">
+              <AccordionItem value="totals" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                  <div className="flex gap-3 items-center">
+                    <FeaturedIcon variant="neutralOutline" Icon={IconSum} />
+                    <CardTitle className="text-gray-700 font-semibold text-base">
+                      Totais
+                    </CardTitle>
+                  </div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </CardHeader>
+                <AccordionContent>
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      {/* Row 1: Invoice Components */}
+                      <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          {
+                            label: 'Valor Prod/Serv',
+                            value: formatCurrency(data.totais.valorProdutos),
+                            highlight: true,
+                          },
+                          {
+                            label: 'Frete',
+                            value:
+                              data.totais.valorFrete > 0
+                                ? formatCurrency(data.totais.valorFrete)
+                                : '-',
+                          },
+                          {
+                            label: 'Seguro',
+                            value:
+                              data.totais.valorSeguro > 0
+                                ? formatCurrency(data.totais.valorSeguro)
+                                : '-',
+                          },
+                          {
+                            label: 'Desconto',
+                            value:
+                              data.totais.valorDesconto > 0
+                                ? formatCurrency(data.totais.valorDesconto)
+                                : '-',
+                          },
+                          {
+                            label: 'Outras desps.',
+                            value:
+                              data.totais.outrasDesepesas > 0
+                                ? formatCurrency(data.totais.outrasDesepesas)
+                                : '-',
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p
+                              className={`text-sm font-semibold ${field.highlight ? 'text-blue-600' : 'text-gray-900'}`}
+                            >
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 2: Taxes */}
+                      <div className="grid grid-cols-2 lg:grid-cols-7 gap-6 p-6 border-b border-gray-100">
+                        {[
+                          {
+                            label: 'Base ICMS',
+                            value:
+                              data.totais.baseCalculoIcms > 0
+                                ? formatCurrency(data.totais.baseCalculoIcms)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor ICMS',
+                            value:
+                              data.totais.valorIcms > 0
+                                ? formatCurrency(data.totais.valorIcms)
+                                : '-',
+                          },
+                          {
+                            label: 'Base ST',
+                            value:
+                              data.totais.baseCalculoIcmsSt > 0
+                                ? formatCurrency(data.totais.baseCalculoIcmsSt)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor ST',
+                            value:
+                              data.totais.valorIcmsSt > 0
+                                ? formatCurrency(data.totais.valorIcmsSt)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor IPI',
+                            value:
+                              data.totais.valorIpi > 0
+                                ? formatCurrency(data.totais.valorIpi)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor PIS',
+                            value:
+                              data.totais.valorPis > 0
+                                ? formatCurrency(data.totais.valorPis)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor COFINS',
+                            value:
+                              data.totais.valorCofins > 0
+                                ? formatCurrency(data.totais.valorCofins)
+                                : '-',
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p className="text-sm font-semibold text-gray-900">
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Row 3: Totals */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50/50">
+                        {[
+                          {
+                            label: 'Total Tributos',
+                            value:
+                              data.totais.valorTotalTributos > 0
+                                ? formatCurrency(data.totais.valorTotalTributos)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor da Nota',
+                            value: formatCurrency(data.totais.valorNota),
+                            highlight: true,
+                            large: true,
+                          },
+                        ].map((field, i) => (
+                          <div key={i} className="space-y-1">
+                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                              {field.label}
+                            </p>
+                            <p
+                              className={`font-bold ${field.large ? 'text-lg text-blue-600' : 'text-sm text-gray-900'}`}
+                            >
+                              {field.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  ))}
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-        </Accordion>
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+        </div>
       </div>
     </TooltipProvider>
   )

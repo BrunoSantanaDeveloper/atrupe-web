@@ -43,7 +43,7 @@ import {
 } from './schema'
 
 // Actions
-import { createItemNew, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getData } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -57,11 +57,14 @@ interface Props {
 
 async function fetchFiscalData(productId: string) {
   try {
-    const response = await getDataOld({
+    const response = await getData({
       route: `/fiscal/product/${productId}`,
     })
-    // getDataOld já retorna res.data, não precisa de .data adicional
-    return response || null
+
+    if (response.success && response.data) {
+      return response.data
+    }
+    return null
   } catch (error) {
     return null
   }
@@ -128,9 +131,17 @@ export function ProductFiscalDataDialog({
       }
 
       toast.success('Dados fiscais salvos com sucesso!')
-      queryClient.invalidateQueries({
-        queryKey: ['product-fiscal-data', productId],
-      })
+
+      // Invalidate both the specific item and the list
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['product-fiscal-data', productId],
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ['products-fiscal'],
+        }),
+      ])
+
       onOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar dados fiscais')

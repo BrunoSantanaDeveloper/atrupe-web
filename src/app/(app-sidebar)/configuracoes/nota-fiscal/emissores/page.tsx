@@ -1,7 +1,7 @@
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { EmissoresConfigForm } from './components/EmissoresConfigForm'
+import { EmissoresListClient } from './components/EmissoresListClient'
 
 export function metadata() {
   return {
@@ -18,7 +18,7 @@ export default function EmissoresConfigPage() {
           previousPage="/configuracoes/nota-fiscal"
         />
         <div className="p-6">
-          <EmissoresConfigForm />
+          <EmissoresListClient />
         </div>
       </div>
     </PermissionGate>
