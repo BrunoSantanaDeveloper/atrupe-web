@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 // UI
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +17,6 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Skeleton } from '@/components/ui/skeleton'
-import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 // Custom Components
@@ -34,12 +33,10 @@ import {
   IconSettings,
   IconFileText,
   IconDownload,
-  IconExternalLink,
   IconAlertTriangle,
   IconArrowLeft,
   IconHelpCircle,
   IconAlertTriangleFilled,
-  IconCheck,
 } from '@tabler/icons-react'
 
 // Components
@@ -316,7 +313,6 @@ export function IssueInvoiceForm({ id }: Props) {
                 disabled={isEmitting}
                 isLoading={isEmitting}
               />
-
             </div>
           )}
         </div>
@@ -341,7 +337,10 @@ export function IssueInvoiceForm({ id }: Props) {
               <AccordionItem value="config" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconSettings}
+                    />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Configuração de emissão
                     </CardTitle>
@@ -373,8 +372,14 @@ export function IssueInvoiceForm({ id }: Props) {
                         {[
                           { label: 'Emissor', value: data.emissao.emissor },
                           { label: 'CNPJ', value: data.emissao.emissorCnpj },
-                          { label: 'Natureza da operação', value: data.emissao.operationNature },
-                          { label: 'Tipo', value: `${data.emissao.tipo} - Saída` },
+                          {
+                            label: 'Natureza da operação',
+                            value: data.emissao.operationNature,
+                          },
+                          {
+                            label: 'Tipo',
+                            value: `${data.emissao.tipo} - Saída`,
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -390,10 +395,27 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 2: Operation Details */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
                         {[
-                          { label: 'Finalidade', value: `${data.emissao.finalidade} - NF-e normal` },
-                          { label: 'Destino operação', value: data.emissao.destinoOperacao === 1 ? '1 - Operação interna' : '2 - Operação interestadual' },
-                          { label: 'Próximo documento', value: data.emissao.proximoDocumento },
-                          { label: 'Data de saída', value: new Date(data.emissao.dataSaida).toLocaleString('pt-BR') },
+                          {
+                            label: 'Finalidade',
+                            value: `${data.emissao.finalidade} - NF-e normal`,
+                          },
+                          {
+                            label: 'Destino operação',
+                            value:
+                              data.emissao.destinoOperacao === 1
+                                ? '1 - Operação interna'
+                                : '2 - Operação interestadual',
+                          },
+                          {
+                            label: 'Próximo documento',
+                            value: data.emissao.proximoDocumento,
+                          },
+                          {
+                            label: 'Data de saída',
+                            value: new Date(
+                              data.emissao.dataSaida,
+                            ).toLocaleString('pt-BR'),
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -409,10 +431,29 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 3: Consumer & Transport */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6">
                         {[
-                          { label: 'Consumidor final', value: data.emissao.consumidorFinal === 1 ? '1 - Sim' : '0 - Não' },
-                          { label: 'Presença do consumidor', value: `${data.emissao.presencaConsumidor} - Operação presencial` },
-                          { label: 'Modalidade de frete', value: data.emissao.modalidadeFrete !== undefined ? data.emissao.modalidadeFrete : '9 - Sem ocorrência de transporte' },
-                          { label: 'NF-e referenciada', value: data.emissao.nfeReferenciada || 'Sem referência' },
+                          {
+                            label: 'Consumidor final',
+                            value:
+                              data.emissao.consumidorFinal === 1
+                                ? '1 - Sim'
+                                : '0 - Não',
+                          },
+                          {
+                            label: 'Presença do consumidor',
+                            value: `${data.emissao.presencaConsumidor} - Operação presencial`,
+                          },
+                          {
+                            label: 'Modalidade de frete',
+                            value:
+                              data.emissao.modalidadeFrete !== undefined
+                                ? data.emissao.modalidadeFrete
+                                : '9 - Sem ocorrência de transporte',
+                          },
+                          {
+                            label: 'NF-e referenciada',
+                            value:
+                              data.emissao.nfeReferenciada || 'Sem referência',
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -467,9 +508,18 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 1: Basic Info */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
                         {[
-                          { label: 'Razão Social', value: data.destinatario.razaoSocial },
-                          { label: 'CNPJ/CPF', value: data.destinatario.cnpjCpf },
-                          { label: 'I.E.', value: data.destinatario.ie || 'N/D' },
+                          {
+                            label: 'Razão Social',
+                            value: data.destinatario.razaoSocial,
+                          },
+                          {
+                            label: 'CNPJ/CPF',
+                            value: data.destinatario.cnpjCpf,
+                          },
+                          {
+                            label: 'I.E.',
+                            value: data.destinatario.ie || 'N/D',
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -485,7 +535,10 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 2: Address */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
                         {[
-                          { label: 'Rua', value: `${data.destinatario.endereco}, ${data.destinatario.numero}` },
+                          {
+                            label: 'Rua',
+                            value: `${data.destinatario.endereco}, ${data.destinatario.numero}`,
+                          },
                           { label: 'Bairro', value: data.destinatario.bairro },
                           { label: 'CEP', value: data.destinatario.cep },
                         ].map((field, i) => (
@@ -505,8 +558,14 @@ export function IssueInvoiceForm({ id }: Props) {
                         {[
                           { label: 'Cidade', value: data.destinatario.cidade },
                           { label: 'Estado', value: data.destinatario.estado },
-                          { label: 'Telefone', value: data.destinatario.telefone || 'N/D' },
-                          { label: 'E-mail', value: data.destinatario.email || 'N/D' },
+                          {
+                            label: 'Telefone',
+                            value: data.destinatario.telefone || 'N/D',
+                          },
+                          {
+                            label: 'E-mail',
+                            value: data.destinatario.email || 'N/D',
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -540,7 +599,10 @@ export function IssueInvoiceForm({ id }: Props) {
               <AccordionItem value="info" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconFileText} />
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconFileText}
+                    />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Informações complementares
                     </CardTitle>
@@ -574,7 +636,10 @@ export function IssueInvoiceForm({ id }: Props) {
               <AccordionItem value="auth" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconDownload} />
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconDownload}
+                    />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Autorização de download
                     </CardTitle>
@@ -592,7 +657,8 @@ export function IssueInvoiceForm({ id }: Props) {
                 <AccordionContent>
                   <CardContent className="p-6">
                     <p className="text-sm text-gray-500 italic">
-                      Funcionalidade de autorização de CNPJs ainda não disponível.
+                      Funcionalidade de autorização de CNPJs ainda não
+                      disponível.
                     </p>
                   </CardContent>
                 </AccordionContent>
@@ -627,17 +693,47 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 1: Invoice Components */}
                       <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 p-6 border-b border-gray-100">
                         {[
-                          { label: 'Valor Prod/Serv', value: formatCurrency(data.totais.valorProdutos), highlight: true },
-                          { label: 'Frete', value: data.totais.valorFrete > 0 ? formatCurrency(data.totais.valorFrete) : '-' },
-                          { label: 'Seguro', value: data.totais.valorSeguro > 0 ? formatCurrency(data.totais.valorSeguro) : '-' },
-                          { label: 'Desconto', value: data.totais.valorDesconto > 0 ? formatCurrency(data.totais.valorDesconto) : '-' },
-                          { label: 'Outras desps.', value: data.totais.outrasDesepesas > 0 ? formatCurrency(data.totais.outrasDesepesas) : '-' },
+                          {
+                            label: 'Valor Prod/Serv',
+                            value: formatCurrency(data.totais.valorProdutos),
+                            highlight: true,
+                          },
+                          {
+                            label: 'Frete',
+                            value:
+                              data.totais.valorFrete > 0
+                                ? formatCurrency(data.totais.valorFrete)
+                                : '-',
+                          },
+                          {
+                            label: 'Seguro',
+                            value:
+                              data.totais.valorSeguro > 0
+                                ? formatCurrency(data.totais.valorSeguro)
+                                : '-',
+                          },
+                          {
+                            label: 'Desconto',
+                            value:
+                              data.totais.valorDesconto > 0
+                                ? formatCurrency(data.totais.valorDesconto)
+                                : '-',
+                          },
+                          {
+                            label: 'Outras desps.',
+                            value:
+                              data.totais.outrasDesepesas > 0
+                                ? formatCurrency(data.totais.outrasDesepesas)
+                                : '-',
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
                               {field.label}
                             </p>
-                            <p className={`text-sm font-semibold ${field.highlight ? 'text-blue-600' : 'text-gray-900'}`}>
+                            <p
+                              className={`text-sm font-semibold ${field.highlight ? 'text-blue-600' : 'text-gray-900'}`}
+                            >
                               {field.value}
                             </p>
                           </div>
@@ -647,13 +743,55 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 2: Taxes */}
                       <div className="grid grid-cols-2 lg:grid-cols-7 gap-6 p-6 border-b border-gray-100">
                         {[
-                          { label: 'Base ICMS', value: data.totais.baseCalculoIcms > 0 ? formatCurrency(data.totais.baseCalculoIcms) : '-' },
-                          { label: 'Valor ICMS', value: data.totais.valorIcms > 0 ? formatCurrency(data.totais.valorIcms) : '-' },
-                          { label: 'Base ST', value: data.totais.baseCalculoIcmsSt > 0 ? formatCurrency(data.totais.baseCalculoIcmsSt) : '-' },
-                          { label: 'Valor ST', value: data.totais.valorIcmsSt > 0 ? formatCurrency(data.totais.valorIcmsSt) : '-' },
-                          { label: 'Valor IPI', value: data.totais.valorIpi > 0 ? formatCurrency(data.totais.valorIpi) : '-' },
-                          { label: 'Valor PIS', value: data.totais.valorPis > 0 ? formatCurrency(data.totais.valorPis) : '-' },
-                          { label: 'Valor COFINS', value: data.totais.valorCofins > 0 ? formatCurrency(data.totais.valorCofins) : '-' },
+                          {
+                            label: 'Base ICMS',
+                            value:
+                              data.totais.baseCalculoIcms > 0
+                                ? formatCurrency(data.totais.baseCalculoIcms)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor ICMS',
+                            value:
+                              data.totais.valorIcms > 0
+                                ? formatCurrency(data.totais.valorIcms)
+                                : '-',
+                          },
+                          {
+                            label: 'Base ST',
+                            value:
+                              data.totais.baseCalculoIcmsSt > 0
+                                ? formatCurrency(data.totais.baseCalculoIcmsSt)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor ST',
+                            value:
+                              data.totais.valorIcmsSt > 0
+                                ? formatCurrency(data.totais.valorIcmsSt)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor IPI',
+                            value:
+                              data.totais.valorIpi > 0
+                                ? formatCurrency(data.totais.valorIpi)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor PIS',
+                            value:
+                              data.totais.valorPis > 0
+                                ? formatCurrency(data.totais.valorPis)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor COFINS',
+                            value:
+                              data.totais.valorCofins > 0
+                                ? formatCurrency(data.totais.valorCofins)
+                                : '-',
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
@@ -669,14 +807,27 @@ export function IssueInvoiceForm({ id }: Props) {
                       {/* Row 3: Totals */}
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50/50">
                         {[
-                          { label: 'Total Tributos', value: data.totais.valorTotalTributos > 0 ? formatCurrency(data.totais.valorTotalTributos) : '-' },
-                          { label: 'Valor da Nota', value: formatCurrency(data.totais.valorNota), highlight: true, large: true },
+                          {
+                            label: 'Total Tributos',
+                            value:
+                              data.totais.valorTotalTributos > 0
+                                ? formatCurrency(data.totais.valorTotalTributos)
+                                : '-',
+                          },
+                          {
+                            label: 'Valor da Nota',
+                            value: formatCurrency(data.totais.valorNota),
+                            highlight: true,
+                            large: true,
+                          },
                         ].map((field, i) => (
                           <div key={i} className="space-y-1">
                             <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
                               {field.label}
                             </p>
-                            <p className={`font-bold ${field.large ? 'text-lg text-blue-600' : 'text-sm text-gray-900'}`}>
+                            <p
+                              className={`font-bold ${field.large ? 'text-lg text-blue-600' : 'text-sm text-gray-900'}`}
+                            >
                               {field.value}
                             </p>
                           </div>

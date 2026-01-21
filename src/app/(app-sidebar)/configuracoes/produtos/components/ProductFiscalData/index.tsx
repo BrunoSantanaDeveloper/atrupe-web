@@ -139,7 +139,7 @@ export function ProductFiscalDataDialog({
         }),
         queryClient.invalidateQueries({
           queryKey: ['products-fiscal'],
-        })
+        }),
       ])
 
       onOpenChange(false)

@@ -29,7 +29,7 @@ import {
   IconSettings,
   IconSearch,
   IconAlertCircle,
-  IconCheck
+  IconCheck,
 } from '@tabler/icons-react'
 
 // Actions
@@ -61,13 +61,13 @@ interface FetchResponse {
 async function fetchProducts(
   page: number,
   search: string,
-  status: string
+  status: string,
 ): Promise<FetchResponse> {
   try {
     const filters: any = {
       search,
       limit: 10,
-      page
+      page,
     }
 
     // Apply status filter if not 'all'
@@ -79,7 +79,7 @@ async function fetchProducts(
 
     const response = await getData({
       route: '/product',
-      filters
+      filters,
     })
 
     if (response.success && Array.isArray(response.data)) {
@@ -87,7 +87,7 @@ async function fetchProducts(
         data: response.data,
         page: response.page || 1,
         lastPage: response.lastPage || 1,
-        total: response.total || 0
+        total: response.total || 0,
       }
     }
 
@@ -151,13 +151,23 @@ export function ProdutosFiscaisClient() {
         </div>
       </div>
 
-      <Tabs defaultValue="all" value={activeTab} onValueChange={handleTabChange} className="w-full">
+      <Tabs
+        defaultValue="all"
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="w-full"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <TabsList>
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="pending" className="gap-2">
               Pendentes
-              <Badge variant="warning" className="h-5 px-1.5 rounded-full text-[10px]">!</Badge>
+              <Badge
+                variant="warning"
+                className="h-5 px-1.5 rounded-full text-[10px]"
+              >
+                !
+              </Badge>
             </TabsTrigger>
             <TabsTrigger value="configured" className="gap-2">
               Configurados
@@ -227,7 +237,14 @@ export function ProdutosFiscaisClient() {
             devolução, etc.).
           </li>
           <li>
-            Produtos marcados como <Badge variant="warning" className="inline text-[10px] h-4 px-1 mx-1">Pendente</Badge> não poderão ser emitidos em notas fiscais.
+            Produtos marcados como{' '}
+            <Badge
+              variant="warning"
+              className="inline text-[10px] h-4 px-1 mx-1"
+            >
+              Pendente
+            </Badge>{' '}
+            não poderão ser emitidos em notas fiscais.
           </li>
         </ul>
       </div>
@@ -248,10 +265,10 @@ export function ProdutosFiscaisClient() {
 function ProductTable({
   products,
   isLoading,
-  onConfigure
+  onConfigure,
 }: {
-  products: Product[],
-  isLoading: boolean,
+  products: Product[]
+  isLoading: boolean
   onConfigure: (p: Product) => void
 }) {
   if (isLoading) {
@@ -269,7 +286,9 @@ function ProductTable({
         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm mb-4">
           <IconPackage className="h-6 w-6 text-gray-400" />
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhum produto encontrado</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-1">
+          Nenhum produto encontrado
+        </h3>
         <p className="text-gray-500 max-w-sm">
           Não encontramos produtos correspondentes aos filtros selecionados.
         </p>
@@ -299,27 +318,50 @@ function ProductTable({
                 <TableCell className="font-medium">
                   <div className="flex flex-col">
                     <span className="text-gray-900">{product.name}</span>
-                    <span className="text-xs text-gray-500">ID: {product.id.slice(0, 8)}</span>
+                    <span className="text-xs text-gray-500">
+                      ID: {product.id.slice(0, 8)}
+                    </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-gray-600">{product.sku || '-'}</TableCell>
-                <TableCell className="font-mono text-xs">{product.fiscalData?.ncm || '-'}</TableCell>
+                <TableCell className="text-gray-600">
+                  {product.sku || '-'}
+                </TableCell>
+                <TableCell className="font-mono text-xs">
+                  {product.fiscalData?.ncm || '-'}
+                </TableCell>
                 <TableCell className="text-xs">
-                  {product.fiscalData?.cfopInState && (
+                  {(product.fiscalData?.cfopInState && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-gray-700">Int: {product.fiscalData.cfopInState}</span>
+                      <span className="text-gray-700">
+                        Int: {product.fiscalData.cfopInState}
+                      </span>
                       {product.fiscalData.cfopOutState && (
-                        <span className="text-gray-500">Ext: {product.fiscalData.cfopOutState}</span>
+                        <span className="text-gray-500">
+                          Ext: {product.fiscalData.cfopOutState}
+                        </span>
                       )}
                     </div>
-                  ) || '-'}
+                  )) ||
+                    '-'}
                 </TableCell>
-                <TableCell className="text-xs text-gray-600">{product.fiscalData?.icmsCst || '-'}</TableCell>
+                <TableCell className="text-xs text-gray-600">
+                  {product.fiscalData?.icmsCst || '-'}
+                </TableCell>
                 <TableCell className="text-center">
                   {isConfigured ? (
-                    <Badge variant="success" className="font-normal justify-center w-full">Configurado</Badge>
+                    <Badge
+                      variant="success"
+                      className="font-normal justify-center w-full"
+                    >
+                      Configurado
+                    </Badge>
                   ) : (
-                    <Badge variant="warning" className="font-normal justify-center w-full">Pendente</Badge>
+                    <Badge
+                      variant="warning"
+                      className="font-normal justify-center w-full"
+                    >
+                      Pendente
+                    </Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-right">
@@ -341,4 +383,3 @@ function ProductTable({
     </div>
   )
 }
-

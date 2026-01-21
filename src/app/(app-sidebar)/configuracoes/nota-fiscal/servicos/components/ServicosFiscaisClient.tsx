@@ -52,7 +52,14 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 // Actions
-import { getData, getDataOld, getItem, createItemNew, updateItemNew, deleteItemNew } from '@/actions/_cruds'
+import {
+  getData,
+  getDataOld,
+  getItem,
+  createItemNew,
+  updateItemNew,
+  deleteItemNew,
+} from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -114,7 +121,8 @@ async function fetchServices(search: string) {
     })
 
     // Ensure we return an array
-    if (response.success && response.data) return response.data as unknown as any[]
+    if (response.success && response.data)
+      return response.data as unknown as any[]
 
     return []
   } catch (error) {
@@ -187,7 +195,12 @@ export function ServicosFiscaisClient() {
 
   // Update form when fiscal data loads
   useEffect(() => {
-    if (dialogOpen && selectedService && fiscalData && !form.formState.isDirty) {
+    if (
+      dialogOpen &&
+      selectedService &&
+      fiscalData &&
+      !form.formState.isDirty
+    ) {
       form.reset({
         codigoServico: fiscalData.codigoServico || '',
         aliquotaIss: fiscalData.aliquotaIss || undefined,
@@ -240,7 +253,7 @@ export function ServicosFiscaisClient() {
     if (!itemToDelete) return
 
     try {
-      // NOTE: Assuming fiscal data deletion or clearing fields. 
+      // NOTE: Assuming fiscal data deletion or clearing fields.
       // Using a hypothetical endpoint or just updating with empty values if "delete" isn't direct.
       // But based on user request "delete item", I'll try to delete the association or the fiscal data.
       // Since I don't have a direct "delete fiscal data" endpoint known, I will assume clearing it or a specific endpoint.
@@ -264,7 +277,7 @@ export function ServicosFiscaisClient() {
 
       const result = await deleteItemNew({
         route: '/product/delete', // Adjust if route is different, traditionally /product/{id}
-        params: { id: itemToDelete.id }
+        params: { id: itemToDelete.id },
       })
 
       if (!result.success) {
@@ -404,7 +417,10 @@ export function ServicosFiscaisClient() {
                   {/* Empty Search Result Row */}
                   {services.length === 0 && search !== '' && (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-24 text-center text-gray-500">
+                      <TableCell
+                        colSpan={4}
+                        className="h-24 text-center text-gray-500"
+                      >
                         Nenhum serviço encontrado para &quot;{search}&quot;
                       </TableCell>
                     </TableRow>
@@ -547,9 +563,7 @@ export function ServicosFiscaisClient() {
             </div>
             <div className="space-y-1">
               <DialogTitle>Deseja remover item de serviço?</DialogTitle>
-              <DialogDescription>
-                {itemToDelete?.name}
-              </DialogDescription>
+              <DialogDescription>{itemToDelete?.name}</DialogDescription>
             </div>
           </DialogHeader>
           <DialogFooter className="sm:justify-center gap-2">
@@ -562,7 +576,7 @@ export function ServicosFiscaisClient() {
             </Button>
             <Button
               type="button"
-              variant="destructive"
+              variant="error"
               onClick={onDeleteConfirm}
             >
               Remover

@@ -135,15 +135,15 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     values: !editMode
       ? defaultNewProductValues
       : {
-        ...product,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        items: product?.items?.map((item: any) => ({
-          ...item,
-          unitCost: item.unitCost,
-          salePrice: item.salePrice,
-        })),
-        productionStages: getFilteredProductionStages(),
-      },
+          ...product,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          items: product?.items?.map((item: any) => ({
+            ...item,
+            unitCost: item.unitCost,
+            salePrice: item.salePrice,
+          })),
+          productionStages: getFilteredProductionStages(),
+        },
   })
 
   const items = useFieldArray({
@@ -488,10 +488,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
                     name="allowEditDescription"
                     label="Permitir editar descrição"
                   />
-                  <FormSwitch
-                    name="isService"
-                    label="É um serviço?"
-                  />
+                  <FormSwitch name="isService" label="É um serviço?" />
                 </div>
                 {canShowProductionStages && <ProductionStages />}
               </form>

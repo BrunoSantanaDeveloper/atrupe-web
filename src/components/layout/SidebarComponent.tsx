@@ -56,8 +56,8 @@ import { useSession } from 'next-auth/react'
 
 interface NavigationItem {
   icon:
-  | React.ComponentType<IconProps>
-  | React.ComponentType<SVGProps<SVGSVGElement>>
+    | React.ComponentType<IconProps>
+    | React.ComponentType<SVGProps<SVGSVGElement>>
   iconColor?: string
   title: string
   path?: string
@@ -401,7 +401,7 @@ export function SidebarComponent(props: Props) {
                                               )
                                                 ? 'text-brand'
                                                 : navChild?.iconColor ||
-                                                'text-gray-400',
+                                                    'text-gray-400',
                                               navChild?.action
                                                 ? 'text-brand'
                                                 : '',
@@ -414,7 +414,7 @@ export function SidebarComponent(props: Props) {
                                                 ? 'ml-4 opacity-0'
                                                 : 'mr-0',
                                               navChild?.action &&
-                                              'font-semibold text-gray-600',
+                                                'font-semibold text-gray-600',
                                             )}
                                           >
                                             {navChild?.title}

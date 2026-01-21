@@ -52,7 +52,6 @@ export function FiscalSettingsClient() {
           link: `${defaultPath}/servicos`,
           permission: 'invoice_settings:nf:view',
         },
-
       ],
     },
   ]

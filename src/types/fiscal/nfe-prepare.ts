@@ -98,16 +98,6 @@ export interface NfePrepareExistingNfe {
   dataEmissao: string
 }
 
-export interface NfePrepareResponse {
-  orderId: string
-  quotationId: string
-  orderCode: string
-  hasExistingNfe: boolean
-  existingNfe: NfePrepareExistingNfe | null
-  emissao: NfePrepareEmissao
-  destinatario: NfePrepareDestinatario
-  items: NfePrepareItem[]
-  transportadora: NfePrepareTransportadora
 export interface NfePrepareVolume {
   quantidade: number
   especie: string

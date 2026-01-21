@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 
 import { Badge } from '@/components/ui/badge'
 
@@ -18,7 +18,6 @@ import {
     AccordionContent,
     AccordionTrigger,
 } from '@/components/ui/accordion'
-import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 // Components
@@ -79,7 +78,9 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                         LeftIcon={IconSettings}
                                         onClick={() => {
                                             /* Just open first for now or let user handle per row */
-                                            const firstIncomplete = data.items.find((i) => i.needsConfiguration)
+                                            const firstIncomplete = data.items.find(
+                                                (i) => i.needsConfiguration,
+                                            )
                                             if (firstIncomplete) setConfigItem(firstIncomplete)
                                         }}
                                     >
@@ -167,7 +168,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                                         {item.needsConfiguration ? (
                                                             <Button
                                                                 variant="success"
-                                                                size="xs"
+                                                                size="sm"
                                                                 LeftIcon={IconSettings}
                                                                 className="font-medium"
                                                                 onClick={() => setConfigItem(item)}
@@ -257,36 +258,30 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                         </tbody>
                                     </table>
                                 </div>
-
-
                             </CardContent>
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>
-            </Card >
+            </Card>
 
             {/* Dialogs */}
-            {
-                configItem && (
-                    <InvoiceItemConfigDialog
-                        open={!!configItem}
-                        onOpenChange={(open) => !open && setConfigItem(null)}
-                        item={configItem}
-                        onSave={handleUpdateItem}
-                    />
-                )
-            }
+            {configItem && (
+                <InvoiceItemConfigDialog
+                    open={!!configItem}
+                    onOpenChange={(open) => !open && setConfigItem(null)}
+                    item={configItem}
+                    onSave={handleUpdateItem}
+                />
+            )}
 
-            {
-                editItem && (
-                    <InvoiceItemEditDialog
-                        open={!!editItem}
-                        onOpenChange={(open) => !open && setEditItem(null)}
-                        item={editItem}
-                        onSave={handleUpdateItem}
-                    />
-                )
-            }
+            {editItem && (
+                <InvoiceItemEditDialog
+                    open={!!editItem}
+                    onOpenChange={(open) => !open && setEditItem(null)}
+                    item={editItem}
+                    onSave={handleUpdateItem}
+                />
+            )}
         </>
     )
 }
