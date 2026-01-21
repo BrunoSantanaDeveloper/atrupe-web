@@ -114,9 +114,11 @@ export function IssueInvoiceForm({ id }: Props) {
       return
     }
 
-    // Check if NF-e already exists
-    if (data.hasExistingNfe) {
-      toast.info('Esta ordem já possui uma NF-e emitida.')
+    // Check if NF-e already exists and is authorized
+    const isNfeAuthorized =
+      data.hasExistingNfe && data.existingNfe?.status === 'AUTHORIZED'
+    if (isNfeAuthorized) {
+      toast.info('Esta ordem já possui uma NF-e autorizada.')
       if (data.existingNfe?.danfeUrl) {
         window.open(data.existingNfe.danfeUrl, '_blank')
       }
@@ -264,11 +266,21 @@ export function IssueInvoiceForm({ id }: Props) {
                   {data.destinatario.razaoSocial}
                 </span>
                 <Badge
-                  variant={data.hasExistingNfe ? 'success' : 'blueLight'}
+                  variant={
+                    data.existingNfe?.status === 'AUTHORIZED'
+                      ? 'success'
+                      : data.existingNfe?.status === 'REJECTED'
+                        ? 'error'
+                        : 'blueLight'
+                  }
                   className="ml-2"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
-                  {data.hasExistingNfe ? 'NF-e Emitida' : 'Em digitação'}
+                  {data.existingNfe?.status === 'AUTHORIZED'
+                    ? 'NF-e Autorizada'
+                    : data.existingNfe?.status === 'REJECTED'
+                      ? 'NF-e Rejeitada'
+                      : 'Em digitação'}
                 </Badge>
               </div>
             </div>
@@ -284,7 +296,7 @@ export function IssueInvoiceForm({ id }: Props) {
                 variant="neutralGhost"
                 size="iconSm"
                 className="text-gray-400"
-                disabled={!data.hasExistingNfe}
+                disabled={data.existingNfe?.status !== 'AUTHORIZED'}
                 onClick={() => {
                   if (data.existingNfe?.danfeUrl) {
                     window.open(data.existingNfe.danfeUrl, '_blank')
@@ -296,8 +308,9 @@ export function IssueInvoiceForm({ id }: Props) {
             </div>
           </div>
 
-          {/* Action Bar */}
-          {!data.hasExistingNfe && (
+          {/* Action Bar - Show when no NF-e or when NF-e was rejected (allow retry) */}
+          {(!data.hasExistingNfe ||
+            data.existingNfe?.status === 'REJECTED') && (
             <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
               <CustomButton
                 icon={IconX}

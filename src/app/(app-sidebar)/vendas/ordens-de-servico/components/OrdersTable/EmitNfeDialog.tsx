@@ -113,7 +113,7 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
           `NF-e ${result.data.numero}/${result.data.serie} emitida com sucesso!`,
         )
         queryClient.invalidateQueries({ queryKey: ['order-list'] })
-        queryClient.invalidateQueries({ queryKey: ['order', orderId] })
+        queryClient.invalidateQueries({ queryKey: ['order-data', orderId] })
       } else {
         toast.warning(`NF-e processada com status: ${result.data.status}`)
       }
@@ -125,6 +125,9 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
         status: 'ERRO',
         statusMessage: message,
       })
+      // Invalidar queries mesmo em caso de erro para garantir dados atualizados
+      queryClient.invalidateQueries({ queryKey: ['order-list'] })
+      queryClient.invalidateQueries({ queryKey: ['order-data', orderId] })
     } finally {
       setIsLoading(false)
     }
