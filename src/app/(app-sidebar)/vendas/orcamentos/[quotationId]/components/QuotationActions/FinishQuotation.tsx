@@ -68,6 +68,26 @@ export function FinishQuotation({ data, canFinish }: Props) {
   // Se for "Sem lançamento" (Cortesia por exemplo), não verificar se existem condições de pagamento
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
 
+  // Verificar se há divergência entre o valor esperado e o valor das parcelas
+  // Valor esperado = valor dos itens + frete + comissão(ADD)
+  const deliveryValue = data?.deliveryInfo?.value || 0
+  const commissionValue =
+    data?.paymentConditions?.commission?.type === 'ADD'
+      ? data?.paymentConditions?.commission?.totalCommission || 0
+      : 0
+  const expectedTotalValue = data?.totalValue + deliveryValue + commissionValue
+
+  // Valor das parcelas (soma de amount de cada parcela)
+  const installmentsTotal =
+    data?.paymentConditions?.installments?.reduce(
+      (sum, inst) => sum + (inst?.amount || 0),
+      0,
+    ) || 0
+
+  // Verificar se há divergência (tolerância de 1 centavo para erros de arredondamento)
+  const hasValueDivergence =
+    hasInstallments && Math.abs(expectedTotalValue - installmentsTotal) > 1
+
   const handleClose = () => {
     setOpen(false)
   }
@@ -104,11 +124,14 @@ export function FinishQuotation({ data, canFinish }: Props) {
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
+  const canFinishDirectly =
+    (hasInstallments || isNoInvoice) && !hasValueDivergence
+
   return (
     <>
       {canFinish ? (
         <AlertDialog open={open} onOpenChange={setOpen}>
-          {hasInstallments || isNoInvoice ? (
+          {canFinishDirectly ? (
             <CustomButton
               icon={IconProgressCheck}
               title="Concluir orçamento"
