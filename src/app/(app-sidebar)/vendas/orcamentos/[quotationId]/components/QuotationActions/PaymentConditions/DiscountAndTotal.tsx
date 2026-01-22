@@ -29,6 +29,8 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
   const hasDownPayment = watch('hasDownPayment')
   const downPaymentAmount = watch('downPayment.amount') || 0
   const commission = watch('commission')
+  const mainAdditionalFee = watch('mainAdditionalFee') || 0
+  const downPaymentAdditionalFee = watch('downPayment.additionalFee') || 0
 
   // Calcular o valor original sem nenhum desconto (soma dos totalValue dos produtos)
   const originalValue =
@@ -59,6 +61,11 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
     maxDiscount !== null &&
     maxDiscount !== undefined &&
     totalDiscountPercentage > maxDiscount
+
+  // Valor máximo permitido para o Valor Total
+  // = Valor base (já considera desc. dos itens) + Comissão(ADD) + Acréscimos
+  const maxTotalValue =
+    baseValue + addComissionValue + mainAdditionalFee + downPaymentAdditionalFee
 
   // Função para atualizar as parcelas quando o valor total mudar
   const updateInstallments = (newTotalValue: number) => {
@@ -153,7 +160,19 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
 
   // Calcula o desconto ao alterar o valor total
   const handleTotalValueChange = (value: number | null) => {
-    const totalValue = Number(value) || 0
+    let totalValue = Number(value) || 0
+
+    // Limitar ao valor máximo permitido
+    if (totalValue > maxTotalValue) {
+      totalValue = maxTotalValue
+      setValue('totalValue', maxTotalValue)
+    }
+
+    // Não permitir valores negativos
+    if (totalValue < 0) {
+      totalValue = 0
+      setValue('totalValue', 0)
+    }
 
     // Remover a comissão do valor total para calcular o desconto corretamente
     const totalWithoutCommission = totalValue - addComissionValue
