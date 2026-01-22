@@ -91,7 +91,7 @@ export function CompanyInfo() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button type="button" RightIcon={IconArrowRight}>
+          <Button type="button" RightIcon={IconArrowRight} className="w-full">
             Configurar
           </Button>
         </DialogTrigger>

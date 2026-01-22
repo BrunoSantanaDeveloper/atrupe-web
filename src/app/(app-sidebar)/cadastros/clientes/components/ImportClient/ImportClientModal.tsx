@@ -233,7 +233,9 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
     <>
       <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
-          <Button RightIcon={IconArrowRight}>Importar</Button>
+          <Button type="button" RightIcon={IconArrowRight} className="w-full">
+            Importar
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>

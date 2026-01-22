@@ -231,7 +231,9 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
     <>
       <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
-          <Button RightIcon={IconArrowRight}>Importar</Button>
+          <Button type="button" RightIcon={IconArrowRight} className="w-full">
+            Importar
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>

@@ -138,7 +138,7 @@ export function MeasureDefaultsDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" RightIcon={IconArrowRight}>
+        <Button type="button" RightIcon={IconArrowRight} className="w-full">
           Configurar
         </Button>
       </DialogTrigger>

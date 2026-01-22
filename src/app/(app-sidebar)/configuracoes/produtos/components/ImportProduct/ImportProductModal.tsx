@@ -262,7 +262,9 @@ LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC
     <>
       <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
-          <Button RightIcon={IconArrowRight}>Importar</Button>
+          <Button type="button" RightIcon={IconArrowRight} className="w-full">
+            Importar
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[578px]">
           <DialogHeader>
