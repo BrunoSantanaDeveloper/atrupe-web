@@ -11,17 +11,17 @@ export function Step1() {
 
   return (
     <div className="grid grid-cols-2 gap-4">
-      <FormInput<CompanyFormType>
-        name="general.legalName"
+      <FormInput
+        name="general.name"
         label="Nome Fantasia"
         placeholder="Digite aqui"
       />
-      <FormInput<CompanyFormType>
-        name="general.name"
+      <FormInput
+        name="general.legalName"
         label="Razão Social"
         placeholder="Digite aqui"
       />
-      <FormInput<CompanyFormType>
+      <FormInput
         name="general.cnpj"
         label="CNPJ"
         placeholder="Digite aqui"
@@ -30,24 +30,31 @@ export function Step1() {
         }}
         maxLength={18}
       />
-      <FormInput<CompanyFormType>
-        name="general.municipalRegistration"
-        label="Inscrição Estadual"
-        placeholder="Digite aqui"
-      />
-      <FormInput<CompanyFormType>
+      <div className="grid grid-cols-2 gap-4">
+        <FormInput
+          name="general.stateRegistration"
+          label="Inscrição Estadual"
+          placeholder="Digite aqui"
+        />
+        <FormInput
+          name="general.municipalRegistration"
+          label="Inscrição Municipal"
+          placeholder="Digite aqui"
+        />
+      </div>
+      <FormInput
         name="general.email"
         label="E-mail"
         type="email"
         placeholder="Digite aqui"
       />
-      <FormInput<CompanyFormType>
+      <FormInput
         name="general.siteUrl"
         label="Site"
         type="url"
         placeholder="Digite aqui"
       />
-      <FormInput<CompanyFormType>
+      <FormInput
         name="general.phone"
         label="Telefone"
         inputMode="tel"
@@ -58,7 +65,7 @@ export function Step1() {
         maxLength={15}
       />
 
-      <FormInput<CompanyFormType>
+      <FormInput
         name="general.mobile"
         label="Celular"
         inputMode="tel"

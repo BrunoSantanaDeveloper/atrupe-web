@@ -148,6 +148,7 @@ export function NewCompany({
         legalName: company?.general?.legalName ?? '',
         cnpj: company?.general?.cnpj ?? '',
         municipalRegistration: company?.general?.municipalRegistration ?? '',
+        stateRegistration: company?.general?.stateRegistration ?? '',
         email: company?.general?.email ?? '',
         siteUrl: company?.general?.siteUrl ?? '',
         phone: company?.general?.phone ?? '',

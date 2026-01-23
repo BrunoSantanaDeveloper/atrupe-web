@@ -111,7 +111,7 @@ export function EmissoresListClient() {
         emitCep: config?.emitCep || company.address?.zipcode || '',
         emitCmun: config?.emitCmun || '',
         emitUf: config?.emitUf || company.address?.state || '',
-        emitIe: config?.emitIe || '',
+        emitIe: config?.emitIe || company.general.stateRegistration || '',
         emitIm: config?.emitIm || company.general.municipalRegistration || '',
         emitCrt: config?.emitCrt || '1',
         environment: config?.environment, // Se undefined, será tratado como não configurado
@@ -256,9 +256,8 @@ export function EmissoresListClient() {
         data: updateData,
       })
     } else {
-      // Garante que o companyId seja enviado ao criar (se necessário, embora o backend pegue do token)
-      const payload = { ...data, companyId: selectedEmissor?.companyId }
-      await createMutation.mutateAsync(payload)
+      // Backend pega companyId do token, não enviar no payload
+      await createMutation.mutateAsync(data)
     }
   }
 

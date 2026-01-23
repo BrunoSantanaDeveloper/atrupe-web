@@ -6,6 +6,7 @@ export const companySchema = z.object({
     legalName: z.string().min(1, 'Nome fantasia é obrigatório'),
     name: z.string(),
     cnpj: z.string(),
+    stateRegistration: z.string().optional(),
     municipalRegistration: z.string().optional(),
     email: z.string().email('Email inválido').optional().or(z.literal('')),
     siteUrl: z.string().optional(),
@@ -42,6 +43,7 @@ export const defaultValues: CompanyFormType = {
     legalName: '',
     name: '',
     cnpj: '',
+    stateRegistration: '',
     municipalRegistration: '',
     email: '',
     siteUrl: '',
@@ -100,6 +102,7 @@ interface SocialNetworks {
 interface General {
   name: string
   legalName: string
+  stateRegistration: string | null
   municipalRegistration: string | null
   cnpj: string
   email: string | null
