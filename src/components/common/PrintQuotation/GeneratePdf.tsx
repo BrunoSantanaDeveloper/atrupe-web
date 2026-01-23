@@ -31,6 +31,7 @@ import type { PrintQuotationType } from '@/types/print/quotation'
 
 // Components
 import { PdfHeader } from '@/components/common/PdfHeader'
+import { PreviewText } from './PreviewText'
 
 // Icons
 import {
@@ -215,14 +216,9 @@ const styles = StyleSheet.create({
   },
   watermark: {
     position: 'absolute',
-    top: '30%',
-    left: '30%',
-    transform: 'translate(-50%, -50%) rotate(-45deg)',
-    fontSize: 100,
-    color: '#000000',
-    opacity: 0.1,
-    fontWeight: 'bold',
-    zIndex: 1,
+    top: '25%',
+    left: '10%',
+    transform: 'rotate(-45deg)',
   },
   infoDate: {
     display: 'flex',
@@ -342,6 +338,27 @@ const styles = StyleSheet.create({
   },
   paymentContainerFull: {
     width: '100%',
+  },
+  // Estilos para imagens grandes (não originais)
+  itemImageLarge: {
+    width: '100%',
+    height: 'auto',
+    maxHeight: 300,
+    borderRadius: 4,
+    overflow: 'hidden',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+    paddingTop: 4,
+  },
+  itemRowWrapper: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+    paddingTop: 4,
+    paddingBottom: 4,
+  },
+  itemRowContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
 })
 
@@ -494,13 +511,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Marca d'água - apenas se status for OPEN */}
-        {showWatermark && (
-          <Text style={styles.watermark} fixed>
-            PRÉVIA
-          </Text>
-        )}
-
         {/* Cabeçalho */}
         <PdfHeader company={data.company} />
 
@@ -711,21 +721,226 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               // Para produtos simples (1 composição), renderizar apenas a linha da composição
               if (!isComposite && item.product.compositions.length === 1) {
                 const composition = item.product.compositions[0]
+                // Verificar se a imagem é original ou alterada
+                const isOriginalImage = item.image?.original !== false
+                const showSmallImage =
+                  printOptions.showImages && isOriginalImage && item.image?.url
+                const showLargeImage =
+                  printOptions.showImages && !isOriginalImage && item.image?.url
 
                 return (
                   <View
                     key={item.id || index}
-                    style={styles.tableRow}
+                    style={styles.itemRowWrapper}
                     wrap={false}
                   >
-                    {/* Coluna Referência - Nome da composição diretamente */}
+                    {/* Linha com informações do produto */}
+                    <View style={styles.itemRowContent}>
+                      {/* Coluna Referência - Nome da composição diretamente */}
+                      <View
+                        style={[
+                          styles.columnReference,
+                          { width: columnWidths.reference },
+                        ]}
+                      >
+                        {showSmallImage && (
+                          <View style={styles.itemImage}>
+                            <PDFImage
+                              src={getProxiedImageUrl(item.image?.url)}
+                              style={styles.itemImageFull}
+                            />
+                          </View>
+                        )}
+
+                        <View style={styles.itemInfo}>
+                          <Text style={styles.itemTitle}>
+                            {item?.description || '-'}
+                          </Text>
+                          {item.technicalDescription && (
+                            <Text style={styles.itemDescription}>
+                              {item.technicalDescription}
+                            </Text>
+                          )}
+                          {isProduction && item.notes && (
+                            <Text
+                              style={[
+                                styles.itemDescription,
+                                { fontStyle: 'italic' },
+                              ]}
+                            >
+                              {item.notes}
+                            </Text>
+                          )}
+                        </View>
+                      </View>
+
+                      {/* Detalhamento - para produtos simples */}
+                      {!isProduction && (
+                        <View
+                          style={{
+                            width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                          }}
+                        >
+                          <Text style={styles.textCenterSmall}>
+                            {(() => {
+                              const adaptedComp =
+                                adaptCompositionForDisplayUtils(composition)
+                              const compositionQty =
+                                composition.quantity ||
+                                composition.originalQuantity ||
+                                1
+                              const unitKind =
+                                adaptedComp.unitKind?.toUpperCase() || 'UNITY'
+                              let details = `${compositionQty} un`
+
+                              if (
+                                printOptions.showDimensions &&
+                                unitKind !== 'UNITY'
+                              ) {
+                                const fullDetails =
+                                  generateFormattedQuantityDetails(adaptedComp)
+                                // Extrair apenas a parte das dimensões (tudo após "un ")
+                                const dimensionPart = fullDetails.replace(
+                                  /^\d+\s+un\s*/,
+                                  '',
+                                )
+                                if (dimensionPart) {
+                                  details += ` ${dimensionPart}`
+                                }
+                              }
+
+                              return details
+                            })()}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Detalhamento - para produtos simples na ficha de produção */}
+                      {isProduction && (
+                        <View
+                          style={{
+                            width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                          }}
+                        >
+                          <Text style={styles.textCenterSmall}>
+                            {(() => {
+                              const adaptedComp =
+                                adaptCompositionForDisplayUtils(composition)
+                              const compositionQty =
+                                composition.quantity ||
+                                composition.originalQuantity ||
+                                1
+                              const unitKind =
+                                adaptedComp.unitKind?.toUpperCase() || 'UNITY'
+                              let details = `${compositionQty} un`
+
+                              if (unitKind !== 'UNITY') {
+                                const fullDetails =
+                                  generateFormattedQuantityDetails(adaptedComp)
+                                // Extrair apenas a parte das dimensões (tudo após "un ")
+                                const dimensionPart = fullDetails.replace(
+                                  /^\d+\s+un\s*/,
+                                  '',
+                                )
+                                if (dimensionPart) {
+                                  details += ` ${dimensionPart}`
+                                }
+                              }
+
+                              return details
+                            })()}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Qtd. Total */}
+                      {(printOptions.showDimensions || isProduction) && (
+                        <View style={{ width: columnWidths.qtyTotal }}>
+                          <Text style={styles.textCenterSmall}>
+                            {
+                              calculateTotalQuantity(
+                                item.product.quantity,
+                                adaptCompositionForDisplayUtils(composition),
+                              ).formatted
+                            }
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Valor Un. - valor do item dividido pela quantidade */}
+                      {!isProduction && printOptions.showUnitValue && (
+                        <View style={{ width: columnWidths.unitValue }}>
+                          <Text style={styles.textRight}>
+                            {formatCurrencyToBrl(
+                              item.totalValue /
+                                calculateTotalQuantity(
+                                  item.product.quantity,
+                                  adaptCompositionForDisplayUtils(composition),
+                                ).value,
+                            )}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Desconto - desconto do item */}
+                      {!isProduction && printOptions.showDiscounts && (
+                        <View style={{ width: columnWidths.discount }}>
+                          <Text style={styles.textDiscount}>
+                            -
+                            {formatCurrencyToBrl(
+                              Math.max(0, item.totalValue - item.finalValue),
+                            )}
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Valor Final - valor final do item */}
+                      {!isProduction && printOptions.showFinalValue && (
+                        <View style={{ width: columnWidths.finalValue }}>
+                          <Text style={styles.textRight}>
+                            {formatCurrencyToBrl(item.finalValue)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+
+                    {/* Imagem grande abaixo das informações quando não for original */}
+                    {showLargeImage && (
+                      <View style={styles.itemImageLarge}>
+                        <PDFImage
+                          src={getProxiedImageUrl(item.image?.url)}
+                          style={styles.itemImageFull}
+                        />
+                      </View>
+                    )}
+                  </View>
+                )
+              }
+
+              // Para produtos compostos, manter comportamento atual
+              // Verificar se a imagem é original ou alterada
+              const isOriginalImage = item.image?.original !== false
+              const showSmallImage =
+                printOptions.showImages && isOriginalImage && item.image?.url
+              const showLargeImage =
+                printOptions.showImages && !isOriginalImage && item.image?.url
+
+              return (
+                <View
+                  key={item.id || index}
+                  style={styles.itemRowWrapper}
+                  wrap={false}
+                >
+                  {/* Linha com informações do produto */}
+                  <View style={styles.itemRowContent}>
+                    {/* Coluna Referência - Imagem e Descrição do item */}
                     <View
                       style={[
                         styles.columnReference,
                         { width: columnWidths.reference },
                       ]}
                     >
-                      {printOptions.showImages && (
+                      {showSmallImage && (
                         <View style={styles.itemImage}>
                           <PDFImage
                             src={getProxiedImageUrl(item.image?.url)}
@@ -736,7 +951,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
                       <View style={styles.itemInfo}>
                         <Text style={styles.itemTitle}>
-                          {item?.description || '-'}
+                          {item.description || '-'}
                         </Text>
                         {item.technicalDescription && (
                           <Text style={styles.itemDescription}>
@@ -753,24 +968,43 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             {item.notes}
                           </Text>
                         )}
+                        {(isProduction ||
+                          (printOptions.showDimensions &&
+                            printOptions.showItemsDetails)) &&
+                          item.product.compositions.map((comp) => (
+                            <Text key={comp.id} style={styles.itemDescription}>
+                              {comp?.name}
+                            </Text>
+                          ))}
                       </View>
                     </View>
 
-                    {/* Detalhamento - para produtos simples */}
+                    {/* Coluna Qtd. Item */}
                     {!isProduction && (
-                      <View
-                        style={{
-                          width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
-                        }}
-                      >
-                        <Text style={styles.textCenterSmall}>
-                          {(() => {
+                      <View style={{ width: columnWidths.qtyItem }}>
+                        <Text style={styles.textCenter}>
+                          {item.product.quantity || 1}
+                        </Text>
+                        {printOptions.showDimensions &&
+                          printOptions.showItemsDetails &&
+                          item.product.compositions.map((comp) => (
+                            <Text key={comp.id} style={styles.textComposition}>
+                              {item.product.quantity || 1}
+                            </Text>
+                          ))}
+                      </View>
+                    )}
+
+                    {/* Coluna Detalhamento - para não-produção */}
+                    {!isProduction && (
+                      <View style={{ width: columnWidths.details }}>
+                        <Text style={styles.textCenterSmall}>-</Text>
+                        {printOptions.showItemsDetails &&
+                          item.product.compositions.map((comp) => {
                             const adaptedComp =
-                              adaptCompositionForDisplayUtils(composition)
+                              adaptCompositionForDisplayUtils(comp)
                             const compositionQty =
-                              composition.quantity ||
-                              composition.originalQuantity ||
-                              1
+                              comp.quantity || comp.originalQuantity || 1
                             const unitKind =
                               adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                             let details = `${compositionQty} un`
@@ -791,178 +1025,37 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                               }
                             }
 
-                            return details
-                          })()}
-                        </Text>
+                            return (
+                              <Text
+                                key={comp.id}
+                                style={styles.textComposition}
+                              >
+                                {details}
+                              </Text>
+                            )
+                          })}
                       </View>
                     )}
 
-                    {/* Detalhamento - para produtos simples na ficha de produção */}
+                    {/* Coluna Qtd. Item para produção com produtos compostos */}
                     {isProduction && (
-                      <View
-                        style={{
-                          width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
-                        }}
-                      >
+                      <View style={{ width: columnWidths.qtyItem }}>
                         <Text style={styles.textCenterSmall}>
-                          {(() => {
-                            const adaptedComp =
-                              adaptCompositionForDisplayUtils(composition)
-                            const compositionQty =
-                              composition.quantity ||
-                              composition.originalQuantity ||
-                              1
-                            const unitKind =
-                              adaptedComp.unitKind?.toUpperCase() || 'UNITY'
-                            let details = `${compositionQty} un`
-
-                            if (unitKind !== 'UNITY') {
-                              const fullDetails =
-                                generateFormattedQuantityDetails(adaptedComp)
-                              // Extrair apenas a parte das dimensões (tudo após "un ")
-                              const dimensionPart = fullDetails.replace(
-                                /^\d+\s+un\s*/,
-                                '',
-                              )
-                              if (dimensionPart) {
-                                details += ` ${dimensionPart}`
-                              }
-                            }
-
-                            return details
-                          })()}
+                          {item.product.quantity || 1}
                         </Text>
-                      </View>
-                    )}
-
-                    {/* Qtd. Total */}
-                    {(printOptions.showDimensions || isProduction) && (
-                      <View style={{ width: columnWidths.qtyTotal }}>
-                        <Text style={styles.textCenterSmall}>
-                          {
-                            calculateTotalQuantity(
-                              item.product.quantity,
-                              adaptCompositionForDisplayUtils(composition),
-                            ).formatted
-                          }
-                        </Text>
-                      </View>
-                    )}
-
-                    {/* Valor Un. - valor do item dividido pela quantidade */}
-                    {!isProduction && printOptions.showUnitValue && (
-                      <View style={{ width: columnWidths.unitValue }}>
-                        <Text style={styles.textRight}>
-                          {formatCurrencyToBrl(
-                            item.totalValue /
-                              calculateTotalQuantity(
-                                item.product.quantity,
-                                adaptCompositionForDisplayUtils(composition),
-                              ).value,
-                          )}
-                        </Text>
-                      </View>
-                    )}
-
-                    {/* Desconto - desconto do item */}
-                    {!isProduction && printOptions.showDiscounts && (
-                      <View style={{ width: columnWidths.discount }}>
-                        <Text style={styles.textDiscount}>
-                          -
-                          {formatCurrencyToBrl(
-                            Math.max(0, item.totalValue - item.finalValue),
-                          )}
-                        </Text>
-                      </View>
-                    )}
-
-                    {/* Valor Final - valor final do item */}
-                    {!isProduction && printOptions.showFinalValue && (
-                      <View style={{ width: columnWidths.finalValue }}>
-                        <Text style={styles.textRight}>
-                          {formatCurrencyToBrl(item.finalValue)}
-                        </Text>
-                      </View>
-                    )}
-                  </View>
-                )
-              }
-
-              // Para produtos compostos, manter comportamento atual
-              return (
-                <View
-                  key={item.id || index}
-                  style={styles.tableRow}
-                  wrap={false}
-                >
-                  {/* Coluna Referência - Imagem e Descrição do item */}
-                  <View
-                    style={[
-                      styles.columnReference,
-                      { width: columnWidths.reference },
-                    ]}
-                  >
-                    {printOptions.showImages && (
-                      <View style={styles.itemImage}>
-                        <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
-                          style={styles.itemImageFull}
-                        />
-                      </View>
-                    )}
-
-                    <View style={styles.itemInfo}>
-                      <Text style={styles.itemTitle}>
-                        {item.description || '-'}
-                      </Text>
-                      {item.technicalDescription && (
-                        <Text style={styles.itemDescription}>
-                          {item.technicalDescription}
-                        </Text>
-                      )}
-                      {isProduction && item.notes && (
-                        <Text
-                          style={[
-                            styles.itemDescription,
-                            { fontStyle: 'italic' },
-                          ]}
-                        >
-                          {item.notes}
-                        </Text>
-                      )}
-                      {(isProduction ||
-                        (printOptions.showDimensions &&
-                          printOptions.showItemsDetails)) &&
-                        item.product.compositions.map((comp) => (
-                          <Text key={comp.id} style={styles.itemDescription}>
-                            {comp?.name}
-                          </Text>
-                        ))}
-                    </View>
-                  </View>
-
-                  {/* Coluna Qtd. Item */}
-                  {!isProduction && (
-                    <View style={{ width: columnWidths.qtyItem }}>
-                      <Text style={styles.textCenter}>
-                        {item.product.quantity || 1}
-                      </Text>
-                      {printOptions.showDimensions &&
-                        printOptions.showItemsDetails &&
-                        item.product.compositions.map((comp) => (
+                        {item.product.compositions.map((comp) => (
                           <Text key={comp.id} style={styles.textComposition}>
                             {item.product.quantity || 1}
                           </Text>
                         ))}
-                    </View>
-                  )}
+                      </View>
+                    )}
 
-                  {/* Coluna Detalhamento - para não-produção */}
-                  {!isProduction && (
-                    <View style={{ width: columnWidths.details }}>
-                      <Text style={styles.textCenterSmall}>-</Text>
-                      {printOptions.showItemsDetails &&
-                        item.product.compositions.map((comp) => {
+                    {/* Coluna Detalhamento para produção com produtos compostos */}
+                    {isProduction && (
+                      <View style={{ width: columnWidths.details }}>
+                        <Text style={styles.textCenterSmall}>-</Text>
+                        {item.product.compositions.map((comp) => {
                           const adaptedComp =
                             adaptCompositionForDisplayUtils(comp)
                           const compositionQty =
@@ -971,10 +1064,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                           let details = `${compositionQty} un`
 
-                          if (
-                            printOptions.showDimensions &&
-                            unitKind !== 'UNITY'
-                          ) {
+                          if (unitKind !== 'UNITY') {
                             const fullDetails =
                               generateFormattedQuantityDetails(adaptedComp)
                             // Extrair apenas a parte das dimensões (tudo após "un ")
@@ -993,127 +1083,89 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             </Text>
                           )
                         })}
-                    </View>
-                  )}
+                      </View>
+                    )}
 
-                  {/* Coluna Qtd. Item para produção com produtos compostos */}
-                  {isProduction && (
-                    <View style={{ width: columnWidths.qtyItem }}>
-                      <Text style={styles.textCenterSmall}>
-                        {item.product.quantity || 1}
-                      </Text>
-                      {item.product.compositions.map((comp) => (
-                        <Text key={comp.id} style={styles.textComposition}>
-                          {item.product.quantity || 1}
+                    {/* Coluna Qtd. Total */}
+                    {(printOptions.showDimensions || isProduction) && (
+                      <View style={{ width: columnWidths.qtyTotal }}>
+                        <Text style={styles.textCenterSmall}>
+                          {`${item.product.quantity || 1} un`}
                         </Text>
-                      ))}
-                    </View>
-                  )}
+                        {(isProduction ||
+                          (printOptions.showDimensions &&
+                            printOptions.showItemsDetails)) &&
+                          item.product.compositions.map((comp) => (
+                            <Text key={comp.id} style={styles.textComposition}>
+                              {
+                                calculateTotalQuantity(
+                                  item.product.quantity,
+                                  adaptCompositionForDisplayUtils(comp),
+                                ).formatted
+                              }
+                            </Text>
+                          ))}
+                      </View>
+                    )}
 
-                  {/* Coluna Detalhamento para produção com produtos compostos */}
-                  {isProduction && (
-                    <View style={{ width: columnWidths.details }}>
-                      <Text style={styles.textCenterSmall}>-</Text>
-                      {item.product.compositions.map((comp) => {
-                        const adaptedComp =
-                          adaptCompositionForDisplayUtils(comp)
-                        const compositionQty =
-                          comp.quantity || comp.originalQuantity || 1
-                        const unitKind =
-                          adaptedComp.unitKind?.toUpperCase() || 'UNITY'
-                        let details = `${compositionQty} un`
+                    {/* Colunas financeiras - apenas para não-produção */}
+                    {!isProduction && printOptions.showUnitValue && (
+                      <View style={{ width: columnWidths.unitValue }}>
+                        <Text style={styles.textRight}>
+                          {formatCurrencyToBrl(
+                            item.totalValue / (item.product.quantity || 1),
+                          )}
+                        </Text>
+                        {printOptions.showDimensions &&
+                          printOptions.showItemsDetails &&
+                          item.product.compositions.map((comp) => (
+                            <Text key={comp.id} style={styles.textComposition}>
+                              {formatCurrencyToBrl(
+                                calculateDisplayUnitValue(
+                                  item.product.quantity || 1,
+                                  adaptCompositionForDisplayUtils(comp),
+                                ),
+                              )}
+                            </Text>
+                          ))}
+                      </View>
+                    )}
 
-                        if (unitKind !== 'UNITY') {
-                          const fullDetails =
-                            generateFormattedQuantityDetails(adaptedComp)
-                          // Extrair apenas a parte das dimensões (tudo após "un ")
-                          const dimensionPart = fullDetails.replace(
-                            /^\d+\s+un\s*/,
-                            '',
-                          )
-                          if (dimensionPart) {
-                            details += ` ${dimensionPart}`
-                          }
-                        }
+                    {/* Colunas descontos */}
+                    {!isProduction && printOptions.showDiscounts && (
+                      <View style={{ width: columnWidths.discount }}>
+                        <Text style={styles.textDiscount}>
+                          -
+                          {formatCurrencyToBrl(
+                            Math.max(0, item.totalValue - item.finalValue),
+                          )}
+                        </Text>
+                      </View>
+                    )}
 
-                        return (
-                          <Text key={comp.id} style={styles.textComposition}>
-                            {details}
-                          </Text>
-                        )
-                      })}
-                    </View>
-                  )}
+                    {!isProduction && printOptions.showFinalValue && (
+                      <View style={{ width: columnWidths.finalValue }}>
+                        <Text style={styles.textRight}>
+                          {formatCurrencyToBrl(item.finalValue)}
+                        </Text>
+                        {printOptions.showDimensions &&
+                          printOptions.showItemsDetails &&
+                          item.product.compositions.map((comp) => (
+                            <Text key={comp.id} style={styles.textComposition}>
+                              {formatCurrencyToBrl(comp?.totalValue || 0)}
+                            </Text>
+                          ))}
+                      </View>
+                    )}
+                  </View>
 
-                  {/* Coluna Qtd. Total */}
-                  {(printOptions.showDimensions || isProduction) && (
-                    <View style={{ width: columnWidths.qtyTotal }}>
-                      <Text style={styles.textCenterSmall}>
-                        {`${item.product.quantity || 1} un`}
-                      </Text>
-                      {(isProduction ||
-                        (printOptions.showDimensions &&
-                          printOptions.showItemsDetails)) &&
-                        item.product.compositions.map((comp) => (
-                          <Text key={comp.id} style={styles.textComposition}>
-                            {
-                              calculateTotalQuantity(
-                                item.product.quantity,
-                                adaptCompositionForDisplayUtils(comp),
-                              ).formatted
-                            }
-                          </Text>
-                        ))}
-                    </View>
-                  )}
-
-                  {/* Colunas financeiras - apenas para não-produção */}
-                  {!isProduction && printOptions.showUnitValue && (
-                    <View style={{ width: columnWidths.unitValue }}>
-                      <Text style={styles.textRight}>
-                        {formatCurrencyToBrl(
-                          item.totalValue / (item.product.quantity || 1),
-                        )}
-                      </Text>
-                      {printOptions.showDimensions &&
-                        printOptions.showItemsDetails &&
-                        item.product.compositions.map((comp) => (
-                          <Text key={comp.id} style={styles.textComposition}>
-                            {formatCurrencyToBrl(
-                              calculateDisplayUnitValue(
-                                item.product.quantity || 1,
-                                adaptCompositionForDisplayUtils(comp),
-                              ),
-                            )}
-                          </Text>
-                        ))}
-                    </View>
-                  )}
-
-                  {/* Colunas descontos */}
-                  {!isProduction && printOptions.showDiscounts && (
-                    <View style={{ width: columnWidths.discount }}>
-                      <Text style={styles.textDiscount}>
-                        -
-                        {formatCurrencyToBrl(
-                          Math.max(0, item.totalValue - item.finalValue),
-                        )}
-                      </Text>
-                    </View>
-                  )}
-
-                  {!isProduction && printOptions.showFinalValue && (
-                    <View style={{ width: columnWidths.finalValue }}>
-                      <Text style={styles.textRight}>
-                        {formatCurrencyToBrl(item.finalValue)}
-                      </Text>
-                      {printOptions.showDimensions &&
-                        printOptions.showItemsDetails &&
-                        item.product.compositions.map((comp) => (
-                          <Text key={comp.id} style={styles.textComposition}>
-                            {formatCurrencyToBrl(comp?.totalValue || 0)}
-                          </Text>
-                        ))}
+                  {/* Imagem grande abaixo das informações quando não for original */}
+                  {showLargeImage && (
+                    <View style={styles.itemImageLarge}>
+                      <PDFImage
+                        src={getProxiedImageUrl(item.image?.url)}
+                        style={styles.itemImageFull}
+                      />
                     </View>
                   )}
                 </View>
@@ -1322,6 +1374,13 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             `Página ${pageNumber} de ${totalPages}`
           }
         />
+
+        {/* Marca d'água - renderizada por último para ficar sobre todo conteúdo */}
+        {showWatermark && (
+          <View style={styles.watermark} fixed>
+            <PreviewText width={400} height={107} opacity={0.1} />
+          </View>
+        )}
       </Page>
     </Document>
   )
