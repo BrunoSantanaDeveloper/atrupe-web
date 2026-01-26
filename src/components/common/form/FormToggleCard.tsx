@@ -21,7 +21,7 @@ interface Props {
     label: string
     description?: string
     value: string
-    icon:
+    icon?:
       | React.ComponentType<IconProps>
       | React.ComponentType<SVGProps<SVGSVGElement>>
   }[]
@@ -61,12 +61,14 @@ export function FormToggleCard({
               >
                 <div className="flex items-center justify-between gap-1 py-3 cursor-pointer w-full">
                   <div className="flex items-center gap-4 text-start">
-                    <FeaturedIcon
-                      Icon={option.icon}
-                      variant="borderedLight"
-                      size="sm"
-                      rounded
-                    />
+                    {option.icon ? (
+                      <FeaturedIcon
+                        Icon={option.icon}
+                        variant="borderedLight"
+                        size="sm"
+                        rounded
+                      />
+                    ) : null}
                     <div className="toggle-label">
                       <p className="text-brand-800">{option.label}</p>
                       {option.description && (

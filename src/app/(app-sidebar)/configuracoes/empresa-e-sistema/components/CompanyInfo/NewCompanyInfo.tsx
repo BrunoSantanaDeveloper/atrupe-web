@@ -26,6 +26,7 @@ import { Step1 } from './Steps/Step1'
 import { Step2 } from './Steps/Step2'
 import { Step3 } from './Steps/Step3'
 import { Step4 } from './Steps/Step4'
+import { Step5 } from './Steps/Step5'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { DangerActionCompanyModal } from './DangerActionCompanyModal'
 
@@ -174,6 +175,14 @@ export function NewCompany({
         facebook: company?.socialNetworks?.facebook ?? '',
         linkedin: company?.socialNetworks?.linkedin ?? '',
       },
+      fiscal: {
+        cnae: company?.fiscal?.cnae ?? '',
+        partnerKey: company?.fiscal?.partnerKey ?? '',
+        accessKey: company?.fiscal?.accessKey ?? '',
+        certificateType: company?.fiscal?.certificateType ?? 'Certificado A1',
+        certificateDescription: company?.fiscal?.certificateDescription ?? '',
+        certificatePassword: company?.fiscal?.certificatePassword ?? '',
+      },
     }
     form.reset(formData)
 
@@ -203,16 +212,19 @@ export function NewCompany({
           </DialogHeader>
           <DialogBody className="max-h-[calc(100vh-200px)]">
             <Tabs defaultValue="general">
-              <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsList className="grid w-full grid-cols-5 mb-6">
                 <TabsTrigger value="general">
                   <span className={cn(hasGeneralErrors && errorTabStyle)}>
-                    Dados da empresa
+                    Gerais
                   </span>
                 </TabsTrigger>
                 <TabsTrigger value="address">
                   <span className={cn(hasAddressErrors && errorTabStyle)}>
                     Endereço
                   </span>
+                </TabsTrigger>
+                <TabsTrigger value="fiscal">
+                  <span>Nota Fiscal</span>
                 </TabsTrigger>
                 <TabsTrigger value="social">
                   <span
@@ -223,7 +235,7 @@ export function NewCompany({
                 </TabsTrigger>
                 <TabsTrigger value="customize">
                   <span className={cn(hasCustomizeErrors && errorTabStyle)}>
-                    Personalizar empresa
+                    Personalização
                   </span>
                 </TabsTrigger>
               </TabsList>
@@ -244,6 +256,9 @@ export function NewCompany({
                   </TabsContent>
                   <TabsContent value="social">
                     <Step4 />
+                  </TabsContent>
+                  <TabsContent value="fiscal">
+                    <Step5 />
                   </TabsContent>
                 </form>
               </Form>

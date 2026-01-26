@@ -34,6 +34,14 @@ export const companySchema = z.object({
     facebook: z.string().optional(),
     linkedin: z.string().optional(),
   }),
+  fiscal: z.object({
+    cnae: z.string().optional(),
+    partnerKey: z.string().optional(),
+    accessKey: z.string().optional(),
+    certificateType: z.string().optional(),
+    certificateDescription: z.string().optional(),
+    certificatePassword: z.string().optional(),
+  }),
 })
 export type CompanyFormType = z.infer<typeof companySchema>
 
@@ -69,6 +77,14 @@ export const defaultValues: CompanyFormType = {
     instagram: '',
     facebook: '',
     linkedin: '',
+  },
+  fiscal: {
+    cnae: '',
+    partnerKey: '',
+    accessKey: '',
+    certificateType: 'A1',
+    certificateDescription: '',
+    certificatePassword: '',
   },
 }
 
@@ -111,6 +127,16 @@ interface General {
   mobile: string | null
 }
 
+// Definição de tipos para o fiscal
+interface Fiscal {
+  cnae: string | null
+  partnerKey: string | null
+  accessKey: string | null
+  certificateType: string | null
+  certificateDescription: string | null
+  certificatePassword: string | null
+}
+
 // Definição de tipos para cada item de dados
 export interface ICompanyData {
   id: string
@@ -120,6 +146,7 @@ export interface ICompanyData {
   address: Address | null
   personalization: Personalization
   socialNetworks: SocialNetworks | null
+  fiscal: Fiscal | null
 }
 
 // Definição de tipos para o objeto principal

@@ -95,7 +95,7 @@ export function CompanyInfo() {
             Configurar
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[800px]">
+        <DialogContent className="sm:max-w-[720px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconBuildingStore} />
