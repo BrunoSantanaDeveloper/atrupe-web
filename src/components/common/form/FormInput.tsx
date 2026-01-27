@@ -1,3 +1,6 @@
+// React
+import { useState } from 'react'
+
 // UI component Imports
 import {
   FormItem,
@@ -8,6 +11,9 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 
+// UI
+import { Button } from '@/components/ui/button'
+
 // Form
 import { useFormContext } from 'react-hook-form'
 
@@ -17,12 +23,16 @@ import { cn } from '@/lib/utils'
 // Type Imports
 import type { Path, FieldValues } from 'react-hook-form'
 
+// Icons
+import { IconEye, IconEyeOff } from '@tabler/icons-react'
+
 interface Props<T extends FieldValues>
   extends React.InputHTMLAttributes<HTMLInputElement> {
   name: Path<T>
   label?: string
   startAdornment?: JSX.Element
   endAdornment?: JSX.Element
+  showPasswordToggle?: boolean
   width?: string
   additionalOnChange?: (value: string | number | null) => void
   formatValue?: (value: string | number | null) => string | number | null
@@ -34,12 +44,14 @@ export function FormInput<T extends FieldValues>({
   label,
   startAdornment,
   endAdornment,
+  showPasswordToggle = true,
   width = 'flex-[1_0_100px]',
   additionalOnChange,
   formatValue,
   ...props
 }: Props<T>) {
   const { control, setError, clearErrors } = useFormContext()
+  const [showPassword, setShowPassword] = useState(false)
 
   return (
     <FormField
@@ -51,11 +63,11 @@ export function FormInput<T extends FieldValues>({
           : field.value
 
         return (
-          <FormItem className={cn('flex flex-col', width)}>
+          <FormItem className={cn('flex flex-col relative', width)}>
             {label ? <FormLabel>{label}</FormLabel> : null}
             <FormControl>
               <Input
-                type={type}
+                type={type === 'password' && showPassword ? 'text' : type}
                 startAdornment={startAdornment}
                 endAdornment={endAdornment}
                 placeholder={label}
@@ -91,6 +103,17 @@ export function FormInput<T extends FieldValues>({
                 }}
               />
             </FormControl>
+            {type === 'password' && showPasswordToggle && (
+              <Button
+                type="button"
+                variant="neutralGhost"
+                size="iconSm"
+                onClick={() => setShowPassword(!showPassword)}
+                RightIcon={showPassword ? IconEyeOff : IconEye}
+                className="absolute right-2 top-5 hover:bg-transparent active:bg-transparent"
+                tabIndex={-1}
+              />
+            )}
             <FormMessage />
           </FormItem>
         )

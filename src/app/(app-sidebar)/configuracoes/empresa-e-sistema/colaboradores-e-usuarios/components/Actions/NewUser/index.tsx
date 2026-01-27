@@ -42,8 +42,6 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Icons
 import {
-  IconEye,
-  IconEyeOff,
   IconUserPlus,
   IconUserEdit,
   IconCircleCheck,
@@ -72,8 +70,6 @@ export function NewUserDialog({
   rowData,
   searchParams,
 }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordValidations, setPasswordValidations] = useState(
     initialPasswordValidations,
   )
@@ -143,8 +139,6 @@ export function NewUserDialog({
   const handleOpenChange = (value: boolean) => {
     if (!value) {
       setPasswordValidations(initialPasswordValidations)
-      setShowPassword(false)
-      setShowConfirmPassword(false)
     }
 
     setOpen?.(value ? 'new-user' : '')
@@ -179,27 +173,14 @@ export function NewUserDialog({
 
               <div className="flex flex-wrap gap-5 w-full">
                 <div className="flex-[1_0_200px] space-y-2">
-                  <div className="relative">
-                    {/*  TODO : zod error String must contain exactly 0 character(s) */}
-                    <FormInput
-                      name="password"
-                      label="Senha"
-                      type={showPassword ? 'text' : 'password'}
-                      additionalOnChange={(value) =>
-                        handlePasswordChange(String(value))
-                      }
-                      className="pr-11"
-                    />
-                    <Button
-                      type="button"
-                      variant="neutralGhost"
-                      size="iconSm"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-2 top-7"
-                      RightIcon={showPassword ? IconEyeOff : IconEye}
-                      tabIndex={-1}
-                    />
-                  </div>
+                  <FormInput
+                    name="password"
+                    label="Senha"
+                    type="password"
+                    additionalOnChange={(value) =>
+                      handlePasswordChange(String(value))
+                    }
+                  />
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
@@ -264,25 +245,11 @@ export function NewUserDialog({
                   </div>
                 </div>
                 <div className="flex-[1_0_200px] space-y-2">
-                  <div className="relative">
-                    <FormInput
-                      name="confirmPassword"
-                      label="Repita a senha"
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      className="pr-12"
-                    />
-                    <Button
-                      type="button"
-                      variant="neutralGhost"
-                      size="iconSm"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-2 top-7"
-                      RightIcon={showConfirmPassword ? IconEyeOff : IconEye}
-                      tabIndex={-1}
-                    />
-                  </div>
+                  <FormInput
+                    name="confirmPassword"
+                    label="Repita a senha"
+                    type="password"
+                  />
                   <div className="flex items-center gap-1 text-gray text-sm">
                     <IconComponent
                       icon={IconCircleCheckFilled}

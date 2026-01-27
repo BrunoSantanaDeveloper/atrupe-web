@@ -1,8 +1,5 @@
 'use client'
 
-// React
-import { useState } from 'react'
-
 // UI
 import {
   Dialog,
@@ -37,12 +34,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import {
-  IconEye,
-  IconUser,
-  IconEyeOff,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconUser, IconCircleCheck } from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -54,8 +46,6 @@ interface Props {
 }
 
 export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
-
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -197,25 +187,13 @@ export function EditTrialAccountDialog({ open, setOpen, rowData }: Props) {
 
               <Separator />
 
-              <div className="relative">
-                <FormInput
-                  name="password"
-                  label="Senha gerencial"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha"
-                  width="flex-[1_0_340px]"
-                  className="pr-11"
-                />
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="iconSm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-7"
-                  RightIcon={showPassword ? IconEyeOff : IconEye}
-                  tabIndex={-1}
-                />
-              </div>
+              <FormInput
+                name="password"
+                label="Senha gerencial"
+                type="password"
+                placeholder="Digite sua senha"
+                width="w-full"
+              />
 
               <p className="text-sm text-gray -mt-3">
                 Obrigatório para salvar edição

@@ -1,8 +1,5 @@
 'use client'
 
-// React
-import { useState } from 'react'
-
 // UI
 import {
   Dialog,
@@ -33,7 +30,7 @@ import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
 import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
-import { IconEye, IconEyeOff, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Libs
 import { maskCpfCnpj } from '@/lib/utils'
@@ -45,8 +42,6 @@ interface Props {
 }
 
 export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
-
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -128,25 +123,13 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
                 </p>
               </div>
 
-              <div className="relative">
-                <FormInput
-                  name="password"
-                  label="Senha gerencial"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha"
-                  width="flex-[1_0_340px]"
-                  className="pr-11"
-                />
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="iconSm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-7"
-                  RightIcon={showPassword ? IconEyeOff : IconEye}
-                  tabIndex={-1}
-                />
-              </div>
+              <FormInput
+                name="password"
+                label="Senha gerencial"
+                type="password"
+                placeholder="Digite sua senha"
+                width="w-full"
+              />
             </form>
           </Form>
         </DialogBody>

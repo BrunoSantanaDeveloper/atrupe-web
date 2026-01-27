@@ -1,8 +1,5 @@
 'use client'
 
-// React
-import { useState } from 'react'
-
 // UI
 import {
   Dialog,
@@ -34,12 +31,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import {
-  IconEye,
-  IconEyeOff,
-  IconAlertTriangle,
-  IconLockOpen,
-} from '@tabler/icons-react'
+import { IconAlertTriangle, IconLockOpen } from '@tabler/icons-react'
 import { FormInput } from '@/components/common/form/FormInput'
 
 interface Props {
@@ -54,7 +46,6 @@ const formSchema = z.object({
 })
 
 export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
   const queryClient = useQueryClient()
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -133,25 +124,13 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
                 groupClassName="grid grid-cols-1"
               />
 
-              <div className="relative mt-5 mb-2">
-                <FormInput
-                  name="password"
-                  label="Senha gerencial"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha"
-                  width="flex-[1_0_340px]"
-                  className="pr-11"
-                />
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="iconSm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-7"
-                  RightIcon={showPassword ? IconEyeOff : IconEye}
-                  tabIndex={-1}
-                />
-              </div>
+              <FormInput
+                name="password"
+                label="Senha gerencial"
+                type="password"
+                placeholder="Digite sua senha"
+                width="w-full"
+              />
 
               <p className="text-sm text-gray-600">Obrigatório para alterar</p>
             </form>

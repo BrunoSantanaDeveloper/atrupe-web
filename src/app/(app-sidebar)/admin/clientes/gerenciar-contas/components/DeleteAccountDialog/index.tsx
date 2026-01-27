@@ -35,7 +35,7 @@ import { deleteWithBody } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconEye, IconEyeOff, IconExclamationCircle } from '@tabler/icons-react'
+import { IconExclamationCircle } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -48,7 +48,6 @@ const formSchema = z.object({
 })
 
 export function DeleteAccountDialog({ open, setOpen, rowData }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
   const queryClient = useQueryClient()
 
@@ -134,25 +133,13 @@ export function DeleteAccountDialog({ open, setOpen, rowData }: Props) {
 
           <Form {...form}>
             <form id="delete-account" onSubmit={handleSubmit(onSubmit)}>
-              <div className="relative mb-2">
-                <FormInput
-                  name="password"
-                  label="Senha gerencial"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha para confirmar"
-                  width="flex-[1_0_340px]"
-                  className="pr-11"
-                />
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="iconSm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-7"
-                  RightIcon={showPassword ? IconEyeOff : IconEye}
-                  tabIndex={-1}
-                />
-              </div>
+              <FormInput
+                name="password"
+                label="Senha gerencial"
+                type="password"
+                placeholder="Digite sua senha para confirmar"
+                width="w-full"
+              />
               <p className="text-sm text-gray-600">
                 Digite sua senha de administrador para confirmar a exclusão
               </p>

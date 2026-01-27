@@ -175,7 +175,6 @@ export function EmissorFormModal({
     certificatePassword?: string
     fileName?: string
   }>({})
-  const [showAccessKey, setShowAccessKey] = useState(false)
 
   const isEditing = !!emissor?.id
 
@@ -407,25 +406,12 @@ export function EmissorFormModal({
                   />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="relative">
-                      <FormInput
-                        name="accessKey"
-                        label="Chave de Acesso (Access Key)"
-                        placeholder="Chave fornecida pelo Invoicy"
-                        type={showAccessKey ? 'text' : 'password'}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowAccessKey(!showAccessKey)}
-                        className="absolute right-3 top-[34px] text-gray-500 hover:text-gray-700"
-                      >
-                        {showAccessKey ? (
-                          <IconEyeOff className="w-5 h-5" />
-                        ) : (
-                          <IconEye className="w-5 h-5" />
-                        )}
-                      </button>
-                    </div>
+                    <FormInput
+                      name="accessKey"
+                      label="Chave de Acesso (Access Key)"
+                      placeholder="Chave fornecida pelo Invoicy"
+                      type="password"
+                    />
                     <FormSelect
                       name="ambiente"
                       label="Ambiente"

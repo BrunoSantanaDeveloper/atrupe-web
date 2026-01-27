@@ -22,11 +22,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type LoginType, loginSchema } from './schema'
 
 // Icons
-import { IconArrowNarrowRight, IconEye, IconEyeOff } from '@tabler/icons-react'
+import { IconArrowNarrowRight } from '@tabler/icons-react'
 
 export function LoginForm() {
   const [errorState, setErrorState] = useState<string | null>(null)
-  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
   const router = useRouter()
@@ -109,31 +108,19 @@ export function LoginForm() {
         className="flex flex-col gap-4"
         noValidate
       >
-        <FormInput<LoginType>
+        <FormInput
           name="username"
           type="email"
           label="E-mail"
           placeholder="Digite seu e-mail"
           width="w-full"
         />
-        <div className="relative">
-          <FormInput<LoginType>
-            name="password"
-            type={showPassword ? 'text' : 'password'}
-            label="Senha"
-            placeholder="Digite sua senha"
-            className="pr-11"
-          />
-          <Button
-            type="button"
-            variant="neutralGhost"
-            size="iconSm"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-2 top-7"
-            RightIcon={showPassword ? IconEyeOff : IconEye}
-            tabIndex={-1}
-          />
-        </div>
+        <FormInput
+          name="password"
+          type="password"
+          label="Senha"
+          placeholder="Digite sua senha"
+        />
         {errorState && (
           <span className="text-sm font-medium text-error text-center">
             {errorState}

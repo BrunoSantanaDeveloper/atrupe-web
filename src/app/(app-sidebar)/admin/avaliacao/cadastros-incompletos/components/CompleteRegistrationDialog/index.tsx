@@ -1,8 +1,5 @@
 'use client'
 
-// React
-import { useState } from 'react'
-
 // UI
 import {
   Dialog,
@@ -37,12 +34,7 @@ import { createItemNew } from '@/actions/_cruds'
 import type { IncompleteRegistrationItem } from '../Table/Data'
 
 // Icons
-import {
-  IconEye,
-  IconUser,
-  IconEyeOff,
-  IconArrowRight,
-} from '@tabler/icons-react'
+import { IconUser, IconArrowRight } from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -54,8 +46,6 @@ interface Props {
 }
 
 export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
-
   const queryClient = useQueryClient()
 
   const form = useForm<FormType>({
@@ -196,24 +186,12 @@ export function CompleteRegistrationDialog({ open, setOpen, rowData }: Props) {
 
               <Separator />
 
-              <div className="relative">
-                <FormInput
-                  name="password"
-                  label="Senha gerencial"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Digite sua senha"
-                  className="pr-11"
-                />
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="iconSm"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-2 top-7"
-                  RightIcon={showPassword ? IconEyeOff : IconEye}
-                  tabIndex={-1}
-                />
-              </div>
+              <FormInput
+                name="password"
+                label="Senha gerencial"
+                type="password"
+                placeholder="Digite sua senha"
+              />
 
               <p className="text-sm text-gray -mt-3">
                 Obrigatório para salvar edição

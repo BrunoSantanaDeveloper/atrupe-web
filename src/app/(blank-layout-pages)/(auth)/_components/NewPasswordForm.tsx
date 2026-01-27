@@ -1,7 +1,4 @@
-'use client'
-
 // React
-import { useState } from 'react'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -19,8 +16,6 @@ import { type NewPasswordType } from './schema'
 
 // Icons
 import {
-  IconEye,
-  IconEyeOff,
   IconArrowNarrowRight,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
@@ -33,9 +28,6 @@ interface Props {
 }
 
 export function NewPasswordForm({ onSubmit }: Props) {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
   const form = useFormContext<NewPasswordType>()
 
   const {
@@ -52,44 +44,15 @@ export function NewPasswordForm({ onSubmit }: Props) {
     >
       <div className="flex flex-wrap gap-5 w-full">
         <div className="flex-[1_0_200px] space-y-2">
-          <div className="relative">
-            <FormInput
-              name="password"
-              label="Senha"
-              type={showPassword ? 'text' : 'password'}
-              className="pr-11"
-              autoFocus
-            />
-            <Button
-              type="button"
-              variant="neutralGhost"
-              size="iconSm"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-2 top-7"
-              RightIcon={showPassword ? IconEyeOff : IconEye}
-              tabIndex={-1}
-            />
-          </div>
+          <FormInput name="password" label="Senha" type="password" autoFocus />
           <PasswordValidation password={watch('password')} />
         </div>
         <div className="flex-[1_0_200px] space-y-2">
-          <div className="relative">
-            <FormInput
-              name="confirmPassword"
-              label="Repita a senha"
-              type={showConfirmPassword ? 'text' : 'password'}
-              className="pr-12"
-            />
-            <Button
-              type="button"
-              variant="neutralGhost"
-              size="iconSm"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-2 top-7"
-              RightIcon={showConfirmPassword ? IconEyeOff : IconEye}
-              tabIndex={-1}
-            />
-          </div>
+          <FormInput
+            name="confirmPassword"
+            label="Repita a senha"
+            type="password"
+          />
           <div className="flex items-center gap-1 text-gray text-sm">
             <IconComponent
               icon={IconCircleCheckFilled}
