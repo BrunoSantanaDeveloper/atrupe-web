@@ -63,6 +63,7 @@ export function Step5() {
           const base64String = reader.result as string
           setValue('fiscal.certificate', base64String)
           setValue('fiscal.certificateName', file.name)
+          setValue('fiscal.certificateLastUpload', '')
         }
         reader.readAsDataURL(file)
       }
@@ -78,14 +79,22 @@ export function Step5() {
     multiple: false,
   })
 
-  const removeCertificate = () => {
-    setValue('fiscal.certificate', '')
-    setValue('fiscal.certificateDescription', '')
-    setValue('fiscal.certificateName', '')
-    setValue('fiscal.certificatePassword', '')
+  const handleRemoveCertificate = () => {
     setValue('fiscal.certificateType', '')
+    setValue('fiscal.certificateDescription', '')
+    setValue('fiscal.certificatePassword', '')
+    setValue('fiscal.certificate', '')
+    setValue('fiscal.certificateName', '')
+    setValue('fiscal.certificateLastUpload', '')
     setShowFields(false)
   }
+
+  const handleRemoveCertificateFile = () => {
+    setValue('fiscal.certificate', '')
+    setValue('fiscal.certificateName', '')
+    setValue('fiscal.certificateLastUpload', '')
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -131,7 +140,7 @@ export function Step5() {
                 type="button"
                 variant="neutralGhost"
                 size="icon"
-                onClick={removeCertificate}
+                onClick={handleRemoveCertificate}
               >
                 <IconTrash className="w-5 h-5 text-neutral-500" />
               </Button>
@@ -149,13 +158,14 @@ export function Step5() {
               <FormInput
                 name="fiscal.certificateDescription"
                 label="Descrição"
-                placeholder="Ex: Teste de Nota"
+                placeholder="Digite aqui"
               />
               <FormInput
                 name="fiscal.certificatePassword"
                 label="Senha"
                 type="password"
-                placeholder="••••••••••"
+                placeholder="••••••••••••"
+                autoComplete="new-password"
               />
             </div>
             {certificate ? (
@@ -170,8 +180,8 @@ export function Step5() {
                       {watch('fiscal.certificateName')}
                     </p>
                     <p className="text-xs text-neutral-500 truncate">
-                      {watch('fiscal.certificateUpdatedAt')
-                        ? `Modificado em ${formatToLocaleDateTime(watch('fiscal.certificateUpdatedAt')!)} `
+                      {watch('fiscal.certificateLastUpload')
+                        ? `Modificado em ${formatToLocaleDateTime(watch('fiscal.certificateLastUpload')!)} `
                         : 'Carregado agora'}
                     </p>
                   </div>
@@ -180,7 +190,7 @@ export function Step5() {
                   type="button"
                   variant="neutralGhost"
                   size="icon"
-                  onClick={() => setValue('fiscal.certificate', '')}
+                  onClick={handleRemoveCertificateFile}
                   RightIcon={IconTrash}
                 />
               </div>

@@ -99,6 +99,7 @@ export function NewCompany({
 
   const onSubmit = async (data: CompanyFormType) => {
     const loadingToast = toast.loading('Aguarde...')
+    delete data.fiscal.certificateLastUpload
 
     const result = editMode
       ? await updateItemNew({ route: `/company/${companyData?.id}`, data })
@@ -177,14 +178,13 @@ export function NewCompany({
       },
       fiscal: {
         cnae: company?.fiscal?.cnae ?? '',
-        partnerKey: company?.fiscal?.partnerKey ?? '',
         accessKey: company?.fiscal?.accessKey ?? '',
         certificateType: company?.fiscal?.certificateType ?? '',
         certificateDescription: company?.fiscal?.certificateDescription ?? '',
         certificatePassword: company?.fiscal?.certificatePassword ?? '',
         certificate: company?.fiscal?.certificate ?? '',
         certificateName: company?.fiscal?.certificateName ?? '',
-        certificateUpdatedAt: company?.fiscal?.certificateUpdatedAt ?? '',
+        certificateLastUpload: company?.fiscal?.certificateLastUpload ?? '',
       },
     }
     form.reset(formData)
