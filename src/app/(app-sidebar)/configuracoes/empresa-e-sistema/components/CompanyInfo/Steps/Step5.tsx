@@ -105,6 +105,7 @@ export function Step5() {
           width="sm:col-span-1"
         />
         <FormInput
+          type="password"
           name="fiscal.accessKey"
           label="Chave de acesso (AccessKey)"
           placeholder="Digite aqui"
@@ -164,7 +165,7 @@ export function Step5() {
                 name="fiscal.certificatePassword"
                 label="Senha"
                 type="password"
-                placeholder="••••••••••••"
+                placeholder="Digite aqui"
                 autoComplete="new-password"
               />
             </div>
