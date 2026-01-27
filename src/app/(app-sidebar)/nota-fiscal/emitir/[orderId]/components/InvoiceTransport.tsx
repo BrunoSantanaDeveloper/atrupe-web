@@ -17,11 +17,11 @@ import { Separator } from '@/components/ui/separator'
 
 // Icons
 import {
-  IconTruck,
-  IconScale,
+  IconBox,
   IconPlus,
   IconTrash,
   IconPackage,
+  IconTruckDelivery,
 } from '@tabler/icons-react'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -114,7 +114,10 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
           <AccordionItem value="transport" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconTruck} />
+                <FeaturedIcon
+                  variant="neutralOutline"
+                  Icon={IconTruckDelivery}
+                />
                 <CardTitle className="text-gray-700 font-semibold text-base">
                   Transportadora
                 </CardTitle>
@@ -247,7 +250,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
           <AccordionItem value="volumes" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconScale} />
+                <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
                 <CardTitle className="text-gray-700 font-semibold text-base">
                   Volumes transportados
                 </CardTitle>

@@ -1,52 +1,46 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 
 // UI
 import { toast } from 'sonner'
-import { Button, buttonVariants } from '@/components/ui/button'
-import { TooltipProvider } from '@/components/ui/tooltip'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-// Accordion imports removed
 import {
   Accordion,
   AccordionItem,
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+
 import { cn } from '@/lib/utils'
 
-// Custom Components
+// Components
+import { InvoiceItems } from './InvoiceItems'
+import { InvoicePayment } from './InvoicePayment'
+import { Topbar } from '@/components/common/Topbar'
+import { InvoiceTransport } from './InvoiceTransport'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
 import {
   IconX,
-  IconSum,
-  IconSend,
-  IconUser,
   IconPencil,
-  IconPrinter,
+  IconUserCog,
+  IconMessage,
   IconSettings,
-  IconFileText,
-  IconDownload,
-  IconAlertTriangle,
   IconArrowLeft,
-  IconHelpCircle,
+  IconCalculator,
+  IconCircleCheck,
+  IconCloudDownload,
+  IconAlertTriangle,
   IconAlertTriangleFilled,
 } from '@tabler/icons-react'
-
-// Components
-import { Topbar } from '@/components/common/Topbar'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
-
-// Sub-components
-import { InvoiceTransport } from './InvoiceTransport'
-import { InvoicePayment } from './InvoicePayment'
-import { InvoiceItems } from './InvoiceItems'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
@@ -54,19 +48,17 @@ import { getItem, createItemNew } from '@/actions/_cruds'
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
 
-// Types
 interface Props {
   id: string
 }
 
 export function IssueInvoiceForm({ id }: Props) {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
-  const [data, setData] = useState<NfePrepareResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [data, setData] = useState<NfePrepareResponse | null>(null)
 
-  // Accordion state removed
+  const router = useRouter()
 
   // Fetch data on mount
   const fetchData = useCallback(async () => {
@@ -284,42 +276,20 @@ export function IssueInvoiceForm({ id }: Props) {
                 </Badge>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="neutralGhost"
-                size="iconSm"
-                className="text-gray-400"
-              >
-                <IconHelpCircle size={20} />
-              </Button>
-              <Button
-                variant="neutralGhost"
-                size="iconSm"
-                className="text-gray-400"
-                disabled={data.existingNfe?.status !== 'AUTHORIZED'}
-                onClick={() => {
-                  if (data.existingNfe?.danfeUrl) {
-                    window.open(data.existingNfe.danfeUrl, '_blank')
-                  }
-                }}
-              >
-                <IconPrinter size={20} />
-              </Button>
-            </div>
           </div>
 
           {/* Action Bar - Show when no NF-e or when NF-e was rejected (allow retry) */}
           {(!data.hasExistingNfe ||
             data.existingNfe?.status === 'REJECTED') && (
-            <div className="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+            <div className="flex justify-between items-center">
               <CustomButton
                 icon={IconX}
-                title="Cancelar venda"
+                title="Cancelar digitação"
                 iconVariant="errorLight"
                 onClick={() => router.push('/nota-fiscal/emitir')}
               />
               <CustomButton
-                icon={IconSend}
+                icon={IconCircleCheck}
                 title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
                 iconVariant="successLight"
                 onClick={handleEmit}
@@ -342,7 +312,6 @@ export function IssueInvoiceForm({ id }: Props) {
         )}
 
         {/* Form Sections */}
-        {/* Form Sections */}
         <div className="space-y-6">
           {/* Configuração de emissão */}
           <Card className="border-none shadow-sm overflow-hidden">
@@ -360,12 +329,10 @@ export function IssueInvoiceForm({ id }: Props) {
                   </div>
                   <div className="flex gap-3">
                     <Button
-                      variant="neutralGhost"
-                      size="iconSm"
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <IconPencil size={16} />
-                    </Button>
+                      variant="neutralLight"
+                      size="icon"
+                      RightIcon={IconPencil}
+                    />
                     <AccordionTrigger
                       className={cn(
                         buttonVariants({
@@ -491,19 +458,17 @@ export function IssueInvoiceForm({ id }: Props) {
               <AccordionItem value="recipient" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
+                    <FeaturedIcon variant="neutralOutline" Icon={IconUserCog} />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Destinatário / Tomador
                     </CardTitle>
                   </div>
                   <div className="flex gap-3">
                     <Button
-                      variant="neutralGhost"
-                      size="iconSm"
-                      className="text-gray-400 hover:text-gray-600"
-                    >
-                      <IconPencil size={16} />
-                    </Button>
+                      variant="neutralLight"
+                      size="icon"
+                      RightIcon={IconPencil}
+                    />
                     <AccordionTrigger
                       className={cn(
                         buttonVariants({
@@ -606,43 +571,6 @@ export function IssueInvoiceForm({ id }: Props) {
           {/* Payment Section */}
           <InvoicePayment data={data} onUpdate={setData} />
 
-          {/* Info Complementar */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="info" className="p-0 m-0 border-0">
-                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-                  <div className="flex gap-3 items-center">
-                    <FeaturedIcon
-                      variant="neutralOutline"
-                      Icon={IconFileText}
-                    />
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      Informações complementares
-                    </CardTitle>
-                  </div>
-                  <AccordionTrigger
-                    className={cn(
-                      buttonVariants({
-                        variant: 'neutralLight',
-                        size: 'icon',
-                      }),
-                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                    )}
-                  />
-                </CardHeader>
-                <AccordionContent>
-                  <CardContent className="p-6">
-                    <p className="text-sm text-gray-500 italic">
-                      {data.informacoesComplementares
-                        ? data.informacoesComplementares
-                        : 'Nenhuma informação adicional'}
-                    </p>
-                  </CardContent>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Card>
-
           {/* Download Auth */}
           <Card className="border-none shadow-sm overflow-hidden">
             <Accordion type="single" collapsible>
@@ -651,7 +579,7 @@ export function IssueInvoiceForm({ id }: Props) {
                   <div className="flex gap-3 items-center">
                     <FeaturedIcon
                       variant="neutralOutline"
-                      Icon={IconDownload}
+                      Icon={IconCloudDownload}
                     />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Autorização de download
@@ -679,13 +607,50 @@ export function IssueInvoiceForm({ id }: Props) {
             </Accordion>
           </Card>
 
+          {/* Info Complementar */}
+          <Card className="border-none shadow-sm overflow-hidden">
+            <Accordion type="single" collapsible>
+              <AccordionItem value="info" className="p-0 m-0 border-0">
+                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                  <div className="flex gap-3 items-center">
+                    <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
+                    <CardTitle className="text-gray-700 font-semibold text-base">
+                      Informações complementares
+                    </CardTitle>
+                  </div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </CardHeader>
+                <AccordionContent>
+                  <CardContent className="p-6">
+                    <p className="text-sm text-gray-500 italic">
+                      {data.informacoesComplementares
+                        ? data.informacoesComplementares
+                        : 'Nenhuma informação adicional'}
+                    </p>
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </Card>
+
           {/* Totais */}
           <Card className="border-none shadow-sm overflow-hidden">
             <Accordion type="single" collapsible defaultValue="totals">
               <AccordionItem value="totals" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconSum} />
+                    <FeaturedIcon
+                      variant="neutralOutline"
+                      Icon={IconCalculator}
+                    />
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       Totais
                     </CardTitle>

@@ -18,10 +18,10 @@ import {
 
 // Icons
 import {
-  IconCreditCard,
-  IconCopy,
+  IconCoin,
   IconPlus,
   IconTrash,
+  IconReceipt,
   IconCalculator,
 } from '@tabler/icons-react'
 
@@ -136,7 +136,7 @@ export function InvoicePayment({ data, onUpdate }: Props) {
           <AccordionItem value="payment" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCreditCard} />
+                <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
                 <CardTitle className="text-gray-700 font-semibold text-base">
                   Pagamento
                 </CardTitle>
@@ -208,9 +208,9 @@ export function InvoicePayment({ data, onUpdate }: Props) {
           <AccordionItem value="duplicates" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
+                <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
                 <CardTitle className="text-gray-700 font-semibold text-base">
-                  Duplicatas / Parcelas
+                  Duplicatas
                 </CardTitle>
               </div>
               <div className="flex gap-3">
