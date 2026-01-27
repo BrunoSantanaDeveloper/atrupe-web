@@ -574,11 +574,7 @@ export function ServicosFiscaisClient() {
             >
               Cancelar
             </Button>
-            <Button
-              type="button"
-              variant="error"
-              onClick={onDeleteConfirm}
-            >
+            <Button type="button" variant="error" onClick={onDeleteConfirm}>
               Remover
             </Button>
           </DialogFooter>

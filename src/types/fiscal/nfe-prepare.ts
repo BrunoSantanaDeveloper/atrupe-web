@@ -126,6 +126,7 @@ export interface NfePrepareResponse {
   volumes: NfePrepareVolume[]
   pagamento: NfePreparePagamento
   duplicatas: NfePrepareDuplicata[]
+  autXml?: string[]
   informacoesComplementares: string
   totais: NfePrepareTotais
 }

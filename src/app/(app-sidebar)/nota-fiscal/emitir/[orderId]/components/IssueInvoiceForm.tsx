@@ -26,6 +26,8 @@ import { InvoicePayment } from './InvoicePayment'
 import { Topbar } from '@/components/common/Topbar'
 import { InvoiceTransport } from './InvoiceTransport'
 import { CustomButton } from '@/components/common/CustomButton'
+import { InvoiceDuplicates } from './InvoiceDuplicates'
+import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
 
 // Icons
 import {
@@ -37,7 +39,6 @@ import {
   IconArrowLeft,
   IconCalculator,
   IconCircleCheck,
-  IconCloudDownload,
   IconAlertTriangle,
   IconAlertTriangleFilled,
 } from '@tabler/icons-react'
@@ -79,6 +80,7 @@ export function IssueInvoiceForm({ id }: Props) {
         ...result.data,
         volumes: result.data.volumes || [],
         duplicatas: result.data.duplicatas || [],
+        autXml: result.data.autXml || [],
       }
 
       setData(preparedData)
@@ -101,8 +103,12 @@ export function IssueInvoiceForm({ id }: Props) {
     if (!data) return
 
     // Basic validation
-    if (data.items.some((item) => item.needsConfiguration)) {
-      toast.error('Existem itens que precisam de configuração fiscal.')
+    const invalidItems = data.items.filter((item) => item.needsConfiguration)
+    if (invalidItems.length > 0) {
+      const itemNames = invalidItems.map((i) => i.description).join(', ')
+      toast.error(
+        `Existem itens que precisam de configuração fiscal: ${itemNames}`,
+      )
       return
     }
 
@@ -162,6 +168,7 @@ export function IssueInvoiceForm({ id }: Props) {
           volumes: data.volumes,
           pagamento: data.pagamento,
           duplicatas: data.duplicatas,
+          autXml: data.autXml,
           modalidadeFrete: data.emissao.modalidadeFrete,
         },
       })
@@ -568,44 +575,14 @@ export function IssueInvoiceForm({ id }: Props) {
           {/* Transport Section */}
           <InvoiceTransport data={data} onUpdate={setData} />
 
-          {/* Payment Section */}
+          {/* Pagamento */}
           <InvoicePayment data={data} onUpdate={setData} />
 
+          {/* Duplicatas */}
+          <InvoiceDuplicates data={data} onUpdate={setData} />
+
           {/* Download Auth */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="auth" className="p-0 m-0 border-0">
-                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-                  <div className="flex gap-3 items-center">
-                    <FeaturedIcon
-                      variant="neutralOutline"
-                      Icon={IconCloudDownload}
-                    />
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      Autorização de download
-                    </CardTitle>
-                  </div>
-                  <AccordionTrigger
-                    className={cn(
-                      buttonVariants({
-                        variant: 'neutralLight',
-                        size: 'icon',
-                      }),
-                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                    )}
-                  />
-                </CardHeader>
-                <AccordionContent>
-                  <CardContent className="p-6">
-                    <p className="text-sm text-gray-500 italic">
-                      Funcionalidade de autorização de CNPJs ainda não
-                      disponível.
-                    </p>
-                  </CardContent>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Card>
+          <InvoiceDownloadAuth data={data} onUpdate={setData} />
 
           {/* Info Complementar */}
           <Card className="border-none shadow-sm overflow-hidden">
