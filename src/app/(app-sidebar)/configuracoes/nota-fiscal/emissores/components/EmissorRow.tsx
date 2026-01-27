@@ -24,25 +24,37 @@ import {
 // Types
 export interface EmissorData {
   id: string
-  companyId: string // Adicionado
+  companyId: string
   name: string
   isDefault: boolean
-  emitCnpj?: string
-  emitRazaoSocial?: string
-  emitNomeFantasia?: string
   environment?: string
-  hasCertificate?: boolean
-  accessKey?: string
-  // Novos campos para detalhes
-  emitCrt?: string
-  emitIe?: string
-  emitIm?: string
-  emitEndereco?: string
-  emitNumero?: string
-  emitBairro?: string
-  emitCep?: string
-  emitCmun?: string
-  emitUf?: string
+
+  // Dados da empresa vindo do backend
+  company?: {
+    id: string
+    name?: string
+    legalName?: string
+    cnpj?: string
+    stateRegistration?: string
+    municipalRegistration?: string
+    accessKey?: string
+    partnerKey?: string
+    hasCertificate?: boolean
+    address?: {
+      street?: string
+      number?: string
+      neighborhood?: string
+      zipcode?: string
+      city?: string
+      state?: string
+      country?: string
+    }
+  }
+
+  // Configuração Fiscal
+  emitCrt?: number | string // Mantendo compatibilidade com DTO
+  ibgeCode?: string // Antigo emitCmun
+
   // Fiscal Configs
   serieNfe?: number
   proximoNumeroNfe?: number
@@ -84,7 +96,9 @@ export function EmissorRow({
   }
 
   const isConfigured =
-    !!emissor.accessKey && !!emissor.emitCnpj && !!emissor.emitRazaoSocial
+    !!emissor.company?.accessKey &&
+    !!emissor.company?.cnpj &&
+    !!emissor.company?.legalName
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -109,16 +123,14 @@ export function EmissorRow({
             <IconStarFilled className="w-4 h-4 text-amber-500" />
           )}
         </div>
-        {emissor.emitNomeFantasia && (
-          <span className="text-sm text-gray-500">
-            {emissor.emitNomeFantasia}
-          </span>
+        {emissor.company?.name && (
+          <span className="text-sm text-gray-500">{emissor.company.name}</span>
         )}
       </td>
 
       {/* CNPJ */}
       <td className="px-4 py-3 font-mono text-sm text-gray-700">
-        {formatCnpj(emissor.emitCnpj)}
+        {formatCnpj(emissor.company?.cnpj)}
       </td>
 
       {/* Ambiente */}

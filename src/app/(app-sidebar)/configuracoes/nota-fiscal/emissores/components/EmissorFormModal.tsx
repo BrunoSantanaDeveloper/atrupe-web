@@ -1,5 +1,3 @@
-'use client'
-
 // React
 import { useState, useEffect } from 'react'
 
@@ -19,19 +17,14 @@ import { Form } from '@/components/ui/form'
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { CertificateUpload } from './CertificateUpload'
 
 // Icons
 import {
   IconChevronLeft,
   IconChevronRight,
   IconDeviceFloppy,
-  IconKey,
   IconBuilding,
-  IconMapPin,
   IconFileInvoice,
-  IconEye,
-  IconEyeOff,
 } from '@tabler/icons-react'
 
 // Form
@@ -48,26 +41,11 @@ import { cn } from '@/lib/utils'
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   isDefault: z.boolean().optional(),
-  // Credenciais
-  accessKey: z.string().optional(),
-  partnerKey: z.string().optional(),
-  certificate: z.string().optional(),
-  certificatePassword: z.string().optional(),
   ambiente: z.string().optional(),
+
   // Identificação
-  emitCnpj: z.string().optional(),
-  emitIe: z.string().optional(),
-  emitIm: z.string().optional(),
-  emitRazaoSocial: z.string().optional(),
-  emitNomeFantasia: z.string().optional(),
   emitCrt: z.string().optional(),
-  // Endereço
-  emitEndereco: z.string().optional(),
-  emitNumero: z.string().optional(),
-  emitBairro: z.string().optional(),
-  emitCep: z.string().optional(),
-  emitCmun: z.string().optional(),
-  emitUf: z.string().optional(),
+
   // Fiscal Configs
   serieNfe: z.coerce.number().optional(),
   proximoNumeroNfe: z.coerce.number().optional(),
@@ -81,42 +59,12 @@ const emissoresSchema = z.object({
   defaultOperationNature: z.string().optional(),
 })
 
-type EmissoresFormType = z.infer<typeof emissoresSchema>
+export type EmissorFormValues = z.infer<typeof emissoresSchema>
 
 const crtOptions = [
   { value: '1', label: '1 - Simples Nacional' },
   { value: '2', label: '2 - Simples Nacional - Excesso de sublimite' },
   { value: '3', label: '3 - Regime Normal' },
-]
-
-const ufOptions = [
-  { value: 'AC', label: 'AC - Acre' },
-  { value: 'AL', label: 'AL - Alagoas' },
-  { value: 'AP', label: 'AP - Amapá' },
-  { value: 'AM', label: 'AM - Amazonas' },
-  { value: 'BA', label: 'BA - Bahia' },
-  { value: 'CE', label: 'CE - Ceará' },
-  { value: 'DF', label: 'DF - Distrito Federal' },
-  { value: 'ES', label: 'ES - Espírito Santo' },
-  { value: 'GO', label: 'GO - Goiás' },
-  { value: 'MA', label: 'MA - Maranhão' },
-  { value: 'MT', label: 'MT - Mato Grosso' },
-  { value: 'MS', label: 'MS - Mato Grosso do Sul' },
-  { value: 'MG', label: 'MG - Minas Gerais' },
-  { value: 'PA', label: 'PA - Pará' },
-  { value: 'PB', label: 'PB - Paraíba' },
-  { value: 'PR', label: 'PR - Paraná' },
-  { value: 'PE', label: 'PE - Pernambuco' },
-  { value: 'PI', label: 'PI - Piauí' },
-  { value: 'RJ', label: 'RJ - Rio de Janeiro' },
-  { value: 'RN', label: 'RN - Rio Grande do Norte' },
-  { value: 'RS', label: 'RS - Rio Grande do Sul' },
-  { value: 'RO', label: 'RO - Rondônia' },
-  { value: 'RR', label: 'RR - Roraima' },
-  { value: 'SC', label: 'SC - Santa Catarina' },
-  { value: 'SP', label: 'SP - São Paulo' },
-  { value: 'SE', label: 'SE - Sergipe' },
-  { value: 'TO', label: 'TO - Tocantins' },
 ]
 
 const ambienteOptions = [
@@ -126,22 +74,10 @@ const ambienteOptions = [
 
 const STEPS = [
   {
-    id: 'credenciais',
-    title: 'Credenciais',
-    description: 'Configure as credenciais do Invoicy e o certificado digital',
-    icon: IconKey,
-  },
-  {
     id: 'identificacao',
     title: 'Identificação',
-    description: 'Dados da empresa emissora',
+    description: 'Dados gerais do emissor',
     icon: IconBuilding,
-  },
-  {
-    id: 'endereco',
-    title: 'Endereço',
-    description: 'Endereço fiscal da empresa',
-    icon: IconMapPin,
   },
   {
     id: 'fiscal',
@@ -158,7 +94,7 @@ interface EmissorFormModalProps {
   onOpenChange: (open: boolean) => void
   emissor?: EmissorData | null
   editType?: EditType
-  onSave: (data: EmissoresFormType) => Promise<void>
+  onSave: (data: EmissorFormValues) => Promise<void>
 }
 
 export function EmissorFormModal({
@@ -170,36 +106,16 @@ export function EmissorFormModal({
 }: EmissorFormModalProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [certificateData, setCertificateData] = useState<{
-    certificate?: string
-    certificatePassword?: string
-    fileName?: string
-  }>({})
 
   const isEditing = !!emissor?.id
 
-  const form = useForm<EmissoresFormType>({
+  const form = useForm<EmissorFormValues>({
     resolver: zodResolver(emissoresSchema),
     defaultValues: {
       name: '',
       isDefault: false,
-      accessKey: '',
-      partnerKey: '',
-      certificate: '',
-      certificatePassword: '',
       ambiente: 'HOMOLOGACAO',
-      emitCnpj: '',
-      emitIe: '',
-      emitIm: '',
-      emitRazaoSocial: '',
-      emitNomeFantasia: '',
       emitCrt: '1',
-      emitEndereco: '',
-      emitNumero: '',
-      emitBairro: '',
-      emitCep: '',
-      emitCmun: '',
-      emitUf: '',
       // Fiscal defaults
       serieNfe: 1,
       proximoNumeroNfe: 1,
@@ -216,7 +132,7 @@ export function EmissorFormModal({
       // Jump to Fiscal step if editing specific type
       if (editType !== 'GLOBAL' && editType !== 'NFCE') {
         // NFCE is disabled in logic but kept for safety
-        setCurrentStep(3)
+        setCurrentStep(1)
       } else {
         setCurrentStep(0)
       }
@@ -225,24 +141,8 @@ export function EmissorFormModal({
         form.reset({
           name: emissor.name || '',
           isDefault: emissor.isDefault || false,
-          accessKey: (emissor as any).accessKey || '', // Populate existing key
-          partnerKey: '',
-          certificate: '',
-          certificatePassword: '',
           ambiente: emissor.environment || 'HOMOLOGACAO',
-          emitCnpj: (emissor as any).emitCnpj || '',
-          emitIe: (emissor as any).emitIe || '',
-          emitIm: (emissor as any).emitIm || '',
-          emitRazaoSocial: (emissor as any).emitRazaoSocial || '',
-          emitNomeFantasia:
-            (emissor as any).emitNomeFantasia || emissor.emitNomeFantasia || '',
-          emitCrt: String((emissor as any).emitCrt || '1'),
-          emitEndereco: (emissor as any).emitEndereco || '',
-          emitNumero: (emissor as any).emitNumero || '',
-          emitBairro: (emissor as any).emitBairro || '',
-          emitCep: (emissor as any).emitCep || '',
-          emitCmun: (emissor as any).emitCmun || '',
-          emitUf: (emissor as any).emitUf || '',
+          emitCrt: String(emissor.emitCrt || '1'),
           // Fiscal
           serieNfe: emissor.serieNfe || 1,
           proximoNumeroNfe: emissor.proximoNumeroNfe || 1,
@@ -255,33 +155,19 @@ export function EmissorFormModal({
           defaultCfop: emissor.defaultCfop || '',
           defaultOperationNature: emissor.defaultOperationNature || '',
         })
-        setCertificateData({
-          fileName: emissor.hasCertificate ? 'Certificado existente' : '',
-        })
       } else {
         form.reset()
-        setCertificateData({})
       }
     }
   }, [open, emissor, form, editType])
 
-  const handleCertificateChange = (data: {
-    certificate: string
-    certificatePassword: string
-    fileName: string
-  }) => {
-    setCertificateData(data)
-    form.setValue('certificate', data.certificate)
-    form.setValue('certificatePassword', data.certificatePassword)
-  }
-
   const handleNext = async () => {
     // Validate current step fields
-    let fieldsToValidate: (keyof EmissoresFormType)[] = []
+    let fieldsToValidate: (keyof EmissorFormValues)[] = []
 
     switch (currentStep) {
       case 0:
-        fieldsToValidate = ['name']
+        fieldsToValidate = ['name', 'emitCrt', 'ambiente']
         break
       // Add other step validations as needed
     }
@@ -296,15 +182,10 @@ export function EmissorFormModal({
     setCurrentStep((prev) => Math.max(prev - 1, 0))
   }
 
-  const handleSubmit = async (data: EmissoresFormType) => {
+  const handleSubmit = async (data: EmissorFormValues) => {
     setIsSubmitting(true)
     try {
-      await onSave({
-        ...data,
-        certificate: certificateData.certificate || data.certificate,
-        certificatePassword:
-          certificateData.certificatePassword || data.certificatePassword,
-      })
+      await onSave(data)
       onOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar emissor')
@@ -396,60 +277,20 @@ export function EmissorFormModal({
               onSubmit={form.handleSubmit(handleSubmit)}
               className="space-y-4"
             >
-              {/* Step 1: Credenciais */}
+              {/* Step 1: Identificação */}
               {currentStep === 0 && (
                 <div className="space-y-4">
                   <FormInput
                     name="name"
-                    label="Identificação (Ex: Matriz) *"
+                    label="Nome Identificador (Ex: Matriz) *"
                     placeholder="Ex: Matriz, Filial SP"
                   />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="accessKey"
-                      label="Chave de Acesso (Access Key)"
-                      placeholder="Chave fornecida pelo Invoicy"
-                      type="password"
-                    />
                     <FormSelect
                       name="ambiente"
                       label="Ambiente"
                       options={ambienteOptions}
-                    />
-                  </div>
-
-                  <div className="mt-6">
-                    <h4 className="font-medium mb-3">Certificado Digital</h4>
-                    <CertificateUpload
-                      value={certificateData}
-                      onChange={handleCertificateChange}
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 2: Identificação */}
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="emitCnpj"
-                      label="CNPJ"
-                      placeholder="00.000.000/0000-00"
-                    />
-                    <FormInput
-                      name="emitIe"
-                      label="Inscrição Estadual"
-                      placeholder="000000000"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="emitIm"
-                      label="Inscrição Municipal"
-                      placeholder="000000"
                     />
                     <FormSelect
                       name="emitCrt"
@@ -458,65 +299,19 @@ export function EmissorFormModal({
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="emitRazaoSocial"
-                      label="Razão Social"
-                      placeholder="Nome da empresa"
-                    />
-                    <FormInput
-                      name="emitNomeFantasia"
-                      label="Nome Fantasia"
-                      placeholder="Nome fantasia"
-                    />
+                  <div className="bg-blue-50 text-blue-700 p-4 rounded-md text-sm">
+                    <p>
+                      Os dados da empresa (CNPJ, Endereço, Certificado Digital e
+                      Tokens) são obtidos automaticamente do cadastro da
+                      empresa. Certifique-se de que as informações da empresa
+                      estejam completas e atualizadas.
+                    </p>
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Endereço */}
-              {currentStep === 2 && (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-2">
-                      <FormInput
-                        name="emitEndereco"
-                        label="Logradouro"
-                        placeholder="Rua, Avenida, etc."
-                      />
-                    </div>
-                    <FormInput
-                      name="emitNumero"
-                      label="Número"
-                      placeholder="123"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormInput
-                      name="emitBairro"
-                      label="Bairro"
-                      placeholder="Bairro"
-                    />
-                    <FormInput
-                      name="emitCep"
-                      label="CEP"
-                      placeholder="00000-000"
-                    />
-                    <FormSelect name="emitUf" label="UF" options={ufOptions} />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="emitCmun"
-                      label="Código do Município (IBGE)"
-                      placeholder="3550308"
-                    />
-                  </div>
-                </div>
-              )}
-
-              {/* Step 4: Configuração Fiscal */}
-              {currentStep === 3 && (
+              {/* Step 2: Configuração Fiscal */}
+              {currentStep === 1 && (
                 <div className="space-y-4 bg-gray-50/50 p-4 rounded-lg border border-gray-100">
                   {/* NF-e Section */}
                   {(editType === 'GLOBAL' || editType === 'NFE') && (

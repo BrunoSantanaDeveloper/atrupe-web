@@ -1,29 +1,35 @@
 'use client'
 
 import { useState } from 'react'
-import { EmissorData } from './EmissorRow' // Reusing type
-import { Button } from '@/components/ui/button'
+
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+
 import {
-  IconChevronDown,
-  IconChevronUp,
-  IconPencil,
-  IconTrash,
+  IconBan,
   IconCheck,
   IconClock,
-  IconBan,
+  IconPencil,
   IconBuilding,
-  IconPrinter,
-  IconFileInvoice,
+  IconChevronDown,
   IconChevronRight,
+  IconPlugConnected,
+  IconStar,
+  IconDotsVertical,
+  IconTrash,
 } from '@tabler/icons-react'
+
 import { cn } from '@/lib/utils'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+
+import { EmissorData } from './EmissorRow'
 
 interface EmissorListItemProps {
   emissor: EmissorData
@@ -32,12 +38,16 @@ interface EmissorListItemProps {
     type?: 'GLOBAL' | 'NFE' | 'NFSE' | 'NFCE',
   ) => void
   onDelete: (emissor: EmissorData) => void
+  onSetDefault: (emissor: EmissorData) => void
+  onTestConnection: (emissor: EmissorData) => void
 }
 
 export function EmissorListItem({
   emissor,
   onEdit,
   onDelete,
+  onSetDefault,
+  onTestConnection,
 }: EmissorListItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -92,7 +102,7 @@ export function EmissorListItem({
   }
 
   // Helper to determine status based on emissor config
-  const isConfigured = !!emissor.id && !!emissor.accessKey
+  const isConfigured = !!emissor.id && !!emissor.company?.accessKey
 
   const envStatus = !isConfigured
     ? 'DISABLED'
@@ -101,7 +111,6 @@ export function EmissorListItem({
       : 'HOMOLOGATION'
 
   const StatusCard = ({
-    title,
     type,
     status,
     onAction,
@@ -176,17 +185,73 @@ export function EmissorListItem({
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">
-              {emissor.emitRazaoSocial || emissor.name}
+              {emissor.company?.name || emissor.name}
             </h3>
-            {emissor.emitNomeFantasia && (
+            {emissor.company?.legalName && (
               <p className="text-sm text-gray-500">
-                {emissor.emitNomeFantasia}
+                {emissor.company.legalName}
               </p>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Actions Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <IconDotsVertical className="h-4 w-4 text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit(emissor)
+                }}
+              >
+                <IconPencil className="w-4 h-4 mr-2" />
+                Editar
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onTestConnection(emissor)
+                }}
+              >
+                <IconPlugConnected className="w-4 h-4 mr-2" />
+                Testar Conexão
+              </DropdownMenuItem>
+              {!emissor.isDefault && (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onSetDefault(emissor)
+                  }}
+                >
+                  <IconStar className="w-4 h-4 mr-2" />
+                  Definir como Padrão
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onDelete(emissor)
+                }}
+                className="text-red-600 focus:text-red-600"
+              >
+                <IconTrash className="w-4 h-4 mr-2" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Status Badges for collapsed view */}
           {!isExpanded && (
             <div className="hidden md:flex gap-2 mr-4">
@@ -234,7 +299,7 @@ export function EmissorListItem({
                 Razão Social
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitRazaoSocial || '—'}
+                {emissor.company?.legalName || '—'}
               </p>
             </div>
             <div>
@@ -242,7 +307,7 @@ export function EmissorListItem({
                 Nome Fantasia
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitNomeFantasia || '—'}
+                {emissor.company?.name || '—'}
               </p>
             </div>
             <div>
@@ -250,7 +315,7 @@ export function EmissorListItem({
                 CNPJ
               </p>
               <p className="font-medium text-gray-900 font-mono">
-                {formatCnpj(emissor.emitCnpj)}
+                {formatCnpj(emissor.company?.cnpj)}
               </p>
             </div>
             <div>
@@ -258,9 +323,9 @@ export function EmissorListItem({
                 CRT
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitCrt === '1'
+                {String(emissor.emitCrt) === '1'
                   ? 'Simples Nacional'
-                  : emissor.emitCrt === '3'
+                  : String(emissor.emitCrt) === '3'
                     ? 'Regime Normal'
                     : 'Outro'}
               </p>
@@ -271,7 +336,8 @@ export function EmissorListItem({
                 Endereço
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitEndereco}, {emissor.emitNumero}
+                {emissor.company?.address?.street},{' '}
+                {emissor.company?.address?.number}
               </p>
             </div>
             <div>
@@ -279,7 +345,7 @@ export function EmissorListItem({
                 Bairro
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitBairro || '—'}
+                {emissor.company?.address?.neighborhood || '—'}
               </p>
             </div>
             <div>
@@ -287,7 +353,8 @@ export function EmissorListItem({
                 Cidade/UF
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitCmun} - {emissor.emitUf}
+                {emissor.company?.address?.city} -{' '}
+                {emissor.company?.address?.state}
               </p>
             </div>
             <div>
@@ -295,7 +362,7 @@ export function EmissorListItem({
                 CEP
               </p>
               <p className="font-medium text-gray-900">
-                {emissor.emitCep || '—'}
+                {emissor.company?.address?.zipcode || '—'}
               </p>
             </div>
           </div>

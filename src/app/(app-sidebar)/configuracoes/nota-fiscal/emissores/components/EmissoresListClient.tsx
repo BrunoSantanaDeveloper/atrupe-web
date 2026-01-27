@@ -5,7 +5,6 @@ import { useState } from 'react'
 
 // UI
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   AlertDialog,
@@ -21,10 +20,10 @@ import {
 // Components
 import { EmissorListItem } from './EmissorListItem'
 import { type EmissorData } from './EmissorRow' // Keeping type
-import { EmissorFormModal } from './EmissorFormModal'
+import { EmissorFormModal, type EmissorFormValues } from './EmissorFormModal'
 
 // Icons
-import { IconBuilding, IconPlus, IconLoader2 } from '@tabler/icons-react'
+import { IconBuilding, IconLoader2 } from '@tabler/icons-react'
 
 // Actions
 import {
@@ -42,7 +41,7 @@ import { ICompanyData } from '@/app/(app-sidebar)/configuracoes/empresa-e-sistem
 
 export type EditType = 'GLOBAL' | 'NFE' | 'NFSE' | 'NFCE'
 
-async function fetchEmissores() {
+async function fetchEmissores(): Promise<EmissorData[]> {
   try {
     const response = await getData({
       route: '/fiscal/emissores',
@@ -51,9 +50,9 @@ async function fetchEmissores() {
       console.error('Error fetching emissores:', response.message)
       return []
     }
-    if (Array.isArray(response.data)) return response.data
+    if (Array.isArray(response.data)) return response.data as EmissorData[]
     if (response.data?.data && Array.isArray(response.data.data))
-      return response.data.data
+      return response.data.data as EmissorData[]
     return []
   } catch (error) {
     console.error('Error fetching emissores:', error)
@@ -69,7 +68,6 @@ export function EmissoresListClient() {
   )
   const [editType, setEditType] = useState<EditType>('GLOBAL')
   const [deleteEmissor, setDeleteEmissor] = useState<EmissorData | null>(null)
-  const [targetCompany, setTargetCompany] = useState<ICompanyData | null>(null)
 
   // 1. Buscar Empresas
   const { data: companiesResponse, isLoading: isLoadingCompanies } = useQuery({
@@ -88,12 +86,9 @@ export function EmissoresListClient() {
   // 3. Combinar Dados
   const combinedEmissores =
     companiesResponse?.data?.map((company: ICompanyData) => {
-      // Tenta encontrar uma configuração para esta empresa
-      // Assumindo que o backend retorna companyId no config ou que podemos cruzar de alguma forma
-      // Como o backend atual filtra por req.user.companyId, pode ser que só retorne 1 config.
-      // Se o usuário tem acesso a múltiplas empresas, o backend deveria retornar todas.
-      // AVISO: Se o backend filtrar, apenas a empresa logada aparecerá "Configurada".
-      const config = emissores.find((e: any) => e.companyId === company.id)
+      const config = emissores.find(
+        (e: EmissorData) => e.companyId === company.id,
+      )
 
       // Cria um objeto EmissorData híbrido
       const emissorData: EmissorData = {
@@ -101,22 +96,39 @@ export function EmissoresListClient() {
         companyId: company.id,
         name: company.general.name,
         isDefault: config?.isDefault || false,
-        // Prioriza dados da config, fallback para dados da empresa
-        emitRazaoSocial: config?.emitRazaoSocial || company.general.legalName,
-        emitNomeFantasia: config?.emitNomeFantasia || company.general.name,
-        emitCnpj: config?.emitCnpj || company.general.cnpj,
-        emitEndereco: config?.emitEndereco || company.address?.street || '',
-        emitNumero: config?.emitNumero || company.address?.number || '',
-        emitBairro: config?.emitBairro || company.address?.neighborhood || '',
-        emitCep: config?.emitCep || company.address?.zipcode || '',
-        emitCmun: config?.emitCmun || '',
-        emitUf: config?.emitUf || company.address?.state || '',
-        emitIe: config?.emitIe || company.general.stateRegistration || '',
-        emitIm: config?.emitIm || company.general.municipalRegistration || '',
-        emitCrt: config?.emitCrt || '1',
         environment: config?.environment, // Se undefined, será tratado como não configurado
-        hasCertificate: config?.hasCertificate || false,
-        accessKey: config?.accessKey,
+
+        // Dados da empresa vindo da API ou fallback para dados da empresa
+        company: {
+          id: company.id,
+          name: company.general.name,
+          legalName: company.general.legalName,
+          cnpj: company.general.cnpj,
+          stateRegistration: company.general.stateRegistration || undefined,
+          municipalRegistration:
+            company.general.municipalRegistration || undefined,
+          accessKey:
+            config?.company?.accessKey ||
+            company.fiscal?.accessKey ||
+            undefined,
+          partnerKey: config?.company?.partnerKey || undefined,
+
+          address: {
+            street: company.address?.street || undefined,
+            number: company.address?.number || undefined,
+            neighborhood: company.address?.neighborhood || undefined,
+            zipcode: company.address?.zipcode || undefined,
+            city: company.address?.city || undefined,
+            state: company.address?.state || undefined,
+            country: '1058',
+          },
+          hasCertificate: config?.company?.hasCertificate, // Do backend service refactor
+        },
+
+        // Configuração Fiscal
+        emitCrt: config?.emitCrt || '1',
+        ibgeCode: config?.ibgeCode || '', // Refactored property from backend service
+
         // Fiscal Configs
         serieNfe: config?.serieNfe,
         proximoNumeroNfe: config?.proximoNumeroNfe,
@@ -133,7 +145,7 @@ export function EmissoresListClient() {
     }) || []
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: EmissorFormValues) => {
       return createItemNew({
         route: '/fiscal/emissores',
         data,
@@ -155,7 +167,13 @@ export function EmissoresListClient() {
   })
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Partial<EmissorFormValues>
+    }) => {
       return updateItemNew({
         route: `/fiscal/emissores/${id}`,
         data,
@@ -213,7 +231,7 @@ export function EmissoresListClient() {
       toast.success('Definido como padrão!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
     },
-    onError: (error) => toast.error('Erro ao definir padrão'),
+    onError: (_error) => toast.error('Erro ao definir padrão'),
   })
 
   const testConnectionMutation = useMutation({
@@ -227,7 +245,7 @@ export function EmissoresListClient() {
       if (result.data?.success) toast.success('Conexão OK!')
       else toast.error('Falha na conexão.')
     },
-    onError: (error) => toast.error('Erro ao testar conexão'),
+    onError: (_error) => toast.error('Erro ao testar conexão'),
   })
 
   const handleEdit = (emissor: EmissorData, type: EditType = 'GLOBAL') => {
@@ -246,17 +264,13 @@ export function EmissoresListClient() {
     }
   }
 
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: EmissorFormValues) => {
     if (selectedEmissor?.id) {
-      // Remove companyId from data if present to avoid validation error
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { companyId, ...updateData } = data
       await updateMutation.mutateAsync({
         id: selectedEmissor.id,
-        data: updateData,
+        data,
       })
     } else {
-      // Backend pega companyId do token, não enviar no payload
       await createMutation.mutateAsync(data)
     }
   }
@@ -309,6 +323,8 @@ export function EmissoresListClient() {
               emissor={emissor}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onSetDefault={handleSetDefault}
+              onTestConnection={handleTestConnection}
             />
           ))}
         </div>
