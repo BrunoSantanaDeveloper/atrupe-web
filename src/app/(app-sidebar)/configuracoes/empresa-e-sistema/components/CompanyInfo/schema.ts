@@ -38,9 +38,16 @@ export const companySchema = z.object({
     cnae: z.string().optional(),
     partnerKey: z.string().optional(),
     accessKey: z.string().optional(),
-    certificateType: z.string().optional(),
+    certificateType: z
+      .literal('A1')
+      .or(z.literal('A3'))
+      .or(z.literal(''))
+      .optional(),
     certificateDescription: z.string().optional(),
     certificatePassword: z.string().optional(),
+    certificate: z.string().optional(),
+    certificateName: z.string().optional(),
+    certificateUpdatedAt: z.string().optional(),
   }),
 })
 export type CompanyFormType = z.infer<typeof companySchema>
@@ -82,7 +89,7 @@ export const defaultValues: CompanyFormType = {
     cnae: '',
     partnerKey: '',
     accessKey: '',
-    certificateType: 'A1',
+    certificateType: '',
     certificateDescription: '',
     certificatePassword: '',
   },
@@ -132,9 +139,12 @@ interface Fiscal {
   cnae: string | null
   partnerKey: string | null
   accessKey: string | null
-  certificateType: string | null
+  certificateType: 'A1' | 'A3' | '' | null
   certificateDescription: string | null
   certificatePassword: string | null
+  certificate: string | null
+  certificateName: string | null
+  certificateUpdatedAt: string | null
 }
 
 // Definição de tipos para cada item de dados

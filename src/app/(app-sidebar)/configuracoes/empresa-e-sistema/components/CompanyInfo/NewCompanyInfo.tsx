@@ -179,9 +179,12 @@ export function NewCompany({
         cnae: company?.fiscal?.cnae ?? '',
         partnerKey: company?.fiscal?.partnerKey ?? '',
         accessKey: company?.fiscal?.accessKey ?? '',
-        certificateType: company?.fiscal?.certificateType ?? 'Certificado A1',
+        certificateType: company?.fiscal?.certificateType ?? '',
         certificateDescription: company?.fiscal?.certificateDescription ?? '',
         certificatePassword: company?.fiscal?.certificatePassword ?? '',
+        certificate: company?.fiscal?.certificate ?? '',
+        certificateName: company?.fiscal?.certificateName ?? '',
+        certificateUpdatedAt: company?.fiscal?.certificateUpdatedAt ?? '',
       },
     }
     form.reset(formData)
