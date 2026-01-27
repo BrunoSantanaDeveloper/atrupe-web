@@ -119,6 +119,7 @@ export function LoginForm() {
           name="password"
           type="password"
           label="Senha"
+          width="w-full"
           placeholder="Digite sua senha"
         />
         {errorState && (

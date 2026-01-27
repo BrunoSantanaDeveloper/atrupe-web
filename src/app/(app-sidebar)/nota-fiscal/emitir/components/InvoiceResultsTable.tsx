@@ -218,10 +218,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                     : order.id?.slice(0, 8) || 'N/D'
 
                   return (
-                    <TableRow
-                      key={order.id}
-                      className="hover:bg-gray-50 group transition-colors"
-                    >
+                    <TableRow key={order.id} className="hover:bg-gray-50">
                       <TableCell>
                         <Checkbox />
                       </TableCell>
@@ -240,7 +237,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex justify-end">
                           <ActionButton
                             Icon={IconSearch}
                             tooltip="Emitir NF-e"

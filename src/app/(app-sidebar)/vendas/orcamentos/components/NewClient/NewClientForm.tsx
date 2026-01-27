@@ -51,6 +51,7 @@ export function NewClientForm() {
   const clientType = watch('type')
 
   const onSubmit = async (data: NewClientFormType) => {
+    // Preparando payload inicial
     const payload = {
       type: data.type,
       name: data.name,
@@ -66,6 +67,7 @@ export function NewClientForm() {
       birthdate: '',
     }
 
+    // Adicionando campos específicos de pessoa física ou jurídica
     if (data.type === 'PERSON') {
       payload.rg = data.rg || ''
       payload.cpf = data.cpf || ''

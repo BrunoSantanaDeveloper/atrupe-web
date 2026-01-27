@@ -57,42 +57,41 @@ export function CompanyFields() {
         }}
         placeholder="Digite aqui"
       />
-      {/* <FormInput<NewClientFormType>
-        name="activity"
-        label="Atividade"
-        width="flex-[1_0_300px]"
-        placeholder="Digite aqui"
-      /> */}
+
       <FormInput<NewClientFormType>
         name="name"
         label="Nome Fantasia"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
       />
+
       <FormInput<NewClientFormType>
         name="corporateName"
         label="Razão Social"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
       />
+
+      <FormSelect<NewClientFormType>
+        name="category"
+        label="Grupo"
+        width="flex-[1_0_300px]"
+        options={categoryOptions}
+      />
+
       <FormInput<NewClientFormType>
         name="email"
         label="Email"
         type="email"
-        width="flex-[1_0_300px]"
+        width="flex-[1_0_250px]"
         placeholder="Digite aqui"
       />
-      <FormSelect<NewClientFormType>
-        name="category"
-        label="Categoria"
-        width="flex-[1_0_300px]"
-        options={categoryOptions}
-      />
+
       <FormInput<NewClientFormType>
         name="phone"
         label="Telefone"
         inputMode="tel"
-        width="flex-[1_0_300px]"
+        width="flex-[1_0_150px]"
         placeholder="Digite aqui"
         minLength={14}
         maxLength={15}
@@ -101,11 +100,12 @@ export function CompanyFields() {
           setValue('phone', phone)
         }}
       />
+
       <FormInput<NewClientFormType>
         name="mobile"
         label="Celular"
         inputMode="tel"
-        width="flex-[1_0_300px]"
+        width="flex-[1_0_150px]"
         placeholder="Digite aqui"
         minLength={14}
         maxLength={15}

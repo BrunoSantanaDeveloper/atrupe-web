@@ -23,7 +23,7 @@ function NewClient() {
 
   return (
     <Dialog open={open} onOpenChange={handleToggleModal}>
-      <DialogContent className="sm:max-w-[855px]">
+      <DialogContent className="sm:max-w-[696px]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">

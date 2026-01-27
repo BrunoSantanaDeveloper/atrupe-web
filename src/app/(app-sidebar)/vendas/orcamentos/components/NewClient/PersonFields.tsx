@@ -62,18 +62,7 @@ export function PersonFields() {
         placeholder="Digite aqui"
         width="flex-[1_0_300px]"
       />
-      <FormInput
-        name="email"
-        label="Email"
-        placeholder="Digite aqui"
-        width="flex-[1_0_300px]"
-      />
-      <FormSelect
-        name="category"
-        label="Categoria"
-        width="flex-[1_0_300px]"
-        options={categoryOptions}
-      />
+
       <FormInput
         name="rg"
         label="RG"
@@ -81,12 +70,26 @@ export function PersonFields() {
         width="flex-[1_0_300px]"
       />
 
+      <FormSelect
+        name="category"
+        label="Grupo"
+        width="flex-[1_0_300px]"
+        options={categoryOptions}
+      />
+
+      <FormInput
+        name="email"
+        label="Email"
+        placeholder="Digite aqui"
+        width="flex-[1_0_250px]"
+      />
+
       <FormInput
         name="phone"
         label="Telefone"
         inputMode="tel"
         placeholder="Digite aqui"
-        width="flex-[1_0_300px]"
+        width="flex-[1_0_150px]"
         minLength={14}
         maxLength={15}
         additionalOnChange={(value) => {
@@ -99,7 +102,7 @@ export function PersonFields() {
         label="Celular"
         inputMode="tel"
         placeholder="Digite aqui"
-        width="flex-[1_0_300px]"
+        width="flex-[1_0_150px]"
         minLength={14}
         maxLength={15}
         additionalOnChange={(value) => {
