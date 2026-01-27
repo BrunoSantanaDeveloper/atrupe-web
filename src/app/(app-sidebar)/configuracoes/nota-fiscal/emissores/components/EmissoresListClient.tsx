@@ -18,8 +18,7 @@ import {
 } from '@/components/ui/alert-dialog'
 
 // Components
-import { EmissorListItem } from './EmissorListItem'
-import { type EmissorData } from './EmissorRow' // Keeping type
+import { EmissorData, EmissorListItem } from './EmissorListItem'
 import { EmissorFormModal, type EmissorFormValues } from './EmissorFormModal'
 
 // Icons

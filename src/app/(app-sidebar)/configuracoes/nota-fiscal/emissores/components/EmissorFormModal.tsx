@@ -19,24 +19,13 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconDeviceFloppy,
-  IconBuilding,
-  IconFileInvoice,
-} from '@tabler/icons-react'
+import { IconDeviceFloppy } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-
-// Types
-import type { EmissorData } from './EmissorRow'
-
-// Utils
-import { cn } from '@/lib/utils'
+import { EmissorData } from './EmissorListItem'
 
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -72,21 +61,6 @@ const ambienteOptions = [
   { value: 'HOMOLOGACAO', label: 'Homologação' },
 ]
 
-const STEPS = [
-  {
-    id: 'identificacao',
-    title: 'Identificação',
-    description: 'Dados gerais do emissor',
-    icon: IconBuilding,
-  },
-  {
-    id: 'fiscal',
-    title: 'Configuração Fiscal',
-    description: 'Numeração de notas, séries e parâmetros fiscais',
-    icon: IconFileInvoice,
-  },
-]
-
 export type EditType = 'GLOBAL' | 'NFE' | 'NFSE' | 'NFCE'
 
 interface EmissorFormModalProps {
@@ -104,7 +78,6 @@ export function EmissorFormModal({
   editType = 'GLOBAL',
   onSave,
 }: EmissorFormModalProps) {
-  const [currentStep, setCurrentStep] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const isEditing = !!emissor?.id
@@ -129,14 +102,6 @@ export function EmissorFormModal({
   // Reset form when emissor changes
   useEffect(() => {
     if (open) {
-      // Jump to Fiscal step if editing specific type
-      if (editType !== 'GLOBAL' && editType !== 'NFCE') {
-        // NFCE is disabled in logic but kept for safety
-        setCurrentStep(1)
-      } else {
-        setCurrentStep(0)
-      }
-
       if (emissor) {
         form.reset({
           name: emissor.name || '',
@@ -159,28 +124,7 @@ export function EmissorFormModal({
         form.reset()
       }
     }
-  }, [open, emissor, form, editType])
-
-  const handleNext = async () => {
-    // Validate current step fields
-    let fieldsToValidate: (keyof EmissorFormValues)[] = []
-
-    switch (currentStep) {
-      case 0:
-        fieldsToValidate = ['name', 'emitCrt', 'ambiente']
-        break
-      // Add other step validations as needed
-    }
-
-    const isValid = await form.trigger(fieldsToValidate)
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1))
-    }
-  }
-
-  const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0))
-  }
+  }, [open, emissor, form])
 
   const handleSubmit = async (data: EmissorFormValues) => {
     setIsSubmitting(true)
@@ -195,14 +139,11 @@ export function EmissorFormModal({
     }
   }
 
-  const currentStepData = STEPS[currentStep]
-  const StepIcon = currentStepData.icon
-  const isLastStep = currentStep === STEPS.length - 1
   const formId = 'emissor-form'
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 overflow-hidden gap-0">
         <DialogHeader className="px-6 pt-6 pb-2 shrink-0">
           <DialogTitle>
             {isEditing ? 'Editar Emissor' : 'Novo Emissor'}
@@ -221,229 +162,192 @@ export function EmissorFormModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-2">
-          {/* Step Indicator */}
-          <div className="flex items-center justify-center gap-2 my-4">
-            {STEPS.map((step, index) => (
-              <div
-                key={step.id}
-                className={cn(
-                  'flex items-center gap-2',
-                  index < STEPS.length - 1 && 'flex-1',
-                )}
-              >
-                <button
-                  type="button"
-                  onClick={() => index < currentStep && setCurrentStep(index)}
-                  className={cn(
-                    'w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors',
-                    index === currentStep
-                      ? 'bg-brand text-white'
-                      : index < currentStep
-                        ? 'bg-green-500 text-white cursor-pointer hover:bg-green-600'
-                        : 'bg-gray-200 text-gray-500',
-                  )}
-                >
-                  {index + 1}
-                </button>
-                {index < STEPS.length - 1 && (
-                  <div
-                    className={cn(
-                      'flex-1 h-0.5',
-                      index < currentStep ? 'bg-green-500' : 'bg-gray-200',
-                    )}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Step Title */}
-          <div className="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-lg">
-            <div className="p-2 bg-white rounded-lg shadow-sm">
-              <StepIcon className="w-5 h-5 text-brand" />
-            </div>
-            <div>
-              <h3 className="font-semibold">{currentStepData.title}</h3>
-              <p className="text-sm text-gray-500">
-                {currentStepData.description}
-              </p>
-            </div>
-          </div>
-
+        <div className="flex-1 overflow-y-auto px-6 py-4">
           <Form {...form}>
             <form
               id={formId}
               onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-4"
+              className="space-y-6"
             >
-              {/* Step 1: Identificação */}
-              {currentStep === 0 && (
-                <div className="space-y-4">
-                  <FormInput
-                    name="name"
-                    label="Nome Identificador (Ex: Matriz) *"
-                    placeholder="Ex: Matriz, Filial SP"
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormSelect
-                      name="ambiente"
-                      label="Ambiente"
-                      options={ambienteOptions}
-                    />
-                    <FormSelect
-                      name="emitCrt"
-                      label="Código de Regime Tributário"
-                      options={crtOptions}
-                    />
-                  </div>
-
-                  <div className="bg-blue-50 text-blue-700 p-4 rounded-md text-sm">
-                    <p>
-                      Os dados da empresa (CNPJ, Endereço, Certificado Digital e
-                      Tokens) são obtidos automaticamente do cadastro da
-                      empresa. Certifique-se de que as informações da empresa
-                      estejam completas e atualizadas.
-                    </p>
-                  </div>
+              {/* Identificação */}
+              <div className="space-y-4">
+                <div className="space-y-2 pb-2 border-b border-gray-100">
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    Identificação
+                  </h3>
                 </div>
-              )}
 
-              {/* Step 2: Configuração Fiscal */}
-              {currentStep === 1 && (
-                <div className="space-y-4 bg-gray-50/50 p-4 rounded-lg border border-gray-100">
-                  {/* NF-e Section */}
-                  {(editType === 'GLOBAL' || editType === 'NFE') && (
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <div className="font-semibold text-brand-700">NF-e</div>
-                        <div className="text-xs text-gray-400 font-normal">
-                          Nota Fiscal Eletrônica - Produtos
+                <FormInput
+                  name="name"
+                  label="Nome Identificador (Ex: Matriz) *"
+                  placeholder="Ex: Matriz, Filial SP"
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormSelect
+                    name="ambiente"
+                    label="Ambiente"
+                    options={ambienteOptions}
+                  />
+                  <FormSelect
+                    name="emitCrt"
+                    label="Código de Regime Tributário"
+                    options={crtOptions}
+                  />
+                </div>
+              </div>
+
+              {/* Configuração Fiscal */}
+              <div className="space-y-4">
+                <div className="space-y-2 pb-2 border-b border-gray-100">
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    Configuração Fiscal
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  {/* Grupo NFE e NFC-e */}
+                  {(editType === 'GLOBAL' ||
+                    editType === 'NFE' ||
+                    editType === 'NFCE') && (
+                    <div
+                      className={`grid grid-cols-1 ${editType === 'GLOBAL' ? 'md:grid-cols-2' : ''} gap-4`}
+                    >
+                      {(editType === 'GLOBAL' || editType === 'NFE') && (
+                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                          <h4 className="font-medium text-sm text-gray-900 flex items-center gap-2">
+                            <span className="w-1 h-4 bg-blue-500 rounded-full"></span>
+                            Nota Fiscal (NF-e)
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormInput
+                              name="serieNfe"
+                              label="Série"
+                              type="number"
+                              placeholder="1"
+                            />
+                            <FormInput
+                              name="proximoNumeroNfe"
+                              label="Próximo Número"
+                              type="number"
+                              placeholder="1"
+                            />
+                          </div>
                         </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormInput
-                          name="serieNfe"
-                          label="Série NF-e"
-                          type="number"
-                          placeholder="1"
-                        />
-                        <FormInput
-                          name="proximoNumeroNfe"
-                          label="Próximo Número NF-e"
-                          type="number"
-                          placeholder="Ex: 105"
-                        />
-                      </div>
+                      )}
+
+                      {(editType === 'GLOBAL' || editType === 'NFCE') && (
+                        <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                          <h4 className="font-medium text-sm text-gray-900 flex items-center gap-2">
+                            <span className="w-1 h-4 bg-orange-500 rounded-full"></span>
+                            Consumidor (NFC-e)
+                          </h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormInput
+                              name="serieNfce"
+                              label="Série"
+                              type="number"
+                              placeholder="1"
+                            />
+                            <FormInput
+                              name="proximoNumeroNfce"
+                              label="Próximo Número"
+                              type="number"
+                              placeholder="1"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
-                  {/* NFS-e Section */}
+                  {/* Grupo NFS-e */}
                   {(editType === 'GLOBAL' || editType === 'NFSE') && (
-                    <div className="space-y-4 pt-4">
-                      <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <div className="font-semibold text-brand-700">
-                          NFS-e
-                        </div>
-                        <div className="text-xs text-gray-400 font-normal">
-                          Nota Fiscal de Serviço
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                      <h4 className="font-medium text-sm text-gray-900 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-purple-500 rounded-full"></span>
+                        Serviços (NFS-e)
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <FormInput
                           name="serieNfse"
-                          label="Série RPS"
-                          placeholder="A1"
+                          label="Série"
+                          placeholder="Ex: A1"
                         />
                         <FormInput
                           name="proximoRpsNfse"
-                          label="Próximo Número RPS"
+                          label="Próximo RPS"
                           type="number"
-                          placeholder="Ex: 50"
-                        />
-                      </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormInput
-                          name="codigoServico"
-                          label="Código Serviço Padrão"
-                          placeholder="Ex: 10.05"
                         />
                         <FormInput
                           name="aliquotaIss"
                           label="Alíquota ISS (%)"
                           type="number"
                           step="0.01"
-                          placeholder="Ex: 2.5"
                         />
+                      </div>
+                      <div className="grid grid-cols-1">
+                        <FormInput
+                          name="codigoServico"
+                          label="Código de Serviço Padrão (LC 116)"
+                          placeholder="Ex: 17.06"
+                        />
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Código conforme Lei Complementar 116/2003
+                        </p>
                       </div>
                     </div>
                   )}
 
-                  {/* NFC-e Section */}
-                  {(editType === 'GLOBAL' || editType === 'NFCE') && (
-                    <div className="space-y-4 pt-4">
-                      <div className="flex items-center gap-2 pb-2 border-b border-gray-100">
-                        <div className="font-semibold text-brand-700">
-                          NFC-e
-                        </div>
-                        <div className="text-xs text-gray-400 font-normal">
-                          Nota Consumidor
-                        </div>
-                      </div>
+                  {/* Configurações Padrão (CFOP/Natureza) - Apenas para NFE/NFCE/GLOBAL */}
+                  {(editType === 'GLOBAL' ||
+                    editType === 'NFE' ||
+                    editType === 'NFCE') && (
+                    <div className="p-4 rounded-lg border border-gray-200 bg-white">
+                      <h4 className="font-medium text-sm text-gray-900 mb-4 flex items-center gap-2">
+                        <span className="w-1 h-4 bg-gray-400 rounded-full"></span>
+                        Padrões de Operação
+                      </h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormInput
-                          name="serieNfce"
-                          label="Série NFC-e"
-                          type="number"
-                          placeholder="1"
+                          name="defaultCfop"
+                          label="CFOP Padrão"
+                          placeholder="Ex: 5102"
                         />
                         <FormInput
-                          name="proximoNumeroNfce"
-                          label="Próximo Número NFC-e"
-                          type="number"
-                          placeholder="Ex: 1"
+                          name="defaultOperationNature"
+                          label="Natureza de Operação Padrão"
+                          placeholder="Ex: Venda de mercadorias"
                         />
                       </div>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
             </form>
           </Form>
         </div>
 
-        <DialogFooter className="px-6 pb-6 pt-4 border-t bg-white shrink-0">
-          {currentStep > 0 && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleBack}
-              disabled={isSubmitting}
-              LeftIcon={IconChevronLeft}
-            >
-              Voltar
-            </Button>
-          )}
-
-          {!isLastStep ? (
-            <Button
-              type="button"
-              onClick={handleNext}
-              RightIcon={IconChevronRight}
-            >
-              Próximo
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              form={formId}
-              disabled={isSubmitting}
-              RightIcon={IconDeviceFloppy}
-            >
-              {isSubmitting ? 'Salvando...' : 'Salvar Emissor'}
-            </Button>
-          )}
+        <DialogFooter className="px-6 py-4 border-t border-gray-100 bg-gray-50">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => onOpenChange(false)}
+            disabled={isSubmitting}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            form={formId}
+            disabled={isSubmitting}
+            className="bg-brand hover:bg-brand-600 text-white"
+          >
+            {isSubmitting && (
+              <IconDeviceFloppy className="w-4 h-4 mr-2 animate-spin" />
+            )}
+            Salvar Configuração
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

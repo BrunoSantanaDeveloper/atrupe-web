@@ -13,23 +13,55 @@ import {
   IconBuilding,
   IconChevronDown,
   IconChevronRight,
-  IconPlugConnected,
-  IconStar,
-  IconDotsVertical,
-  IconTrash,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+export interface EmissorData {
+  id: string
+  companyId: string
+  name: string
+  isDefault: boolean
+  environment?: string
 
-import { EmissorData } from './EmissorRow'
+  // Dados da empresa vindo do backend
+  company?: {
+    id: string
+    name?: string
+    legalName?: string
+    cnpj?: string
+    stateRegistration?: string
+    municipalRegistration?: string
+    accessKey?: string
+    partnerKey?: string
+    hasCertificate?: boolean
+    address?: {
+      street?: string
+      number?: string
+      neighborhood?: string
+      zipcode?: string
+      city?: string
+      state?: string
+      country?: string
+    }
+  }
+
+  // Configuração Fiscal
+  emitCrt?: number | string // Mantendo compatibilidade com DTO
+  ibgeCode?: string // Antigo emitCmun
+
+  // Fiscal Configs
+  serieNfe?: number
+  proximoNumeroNfe?: number
+  serieNfse?: string
+  proximoRpsNfse?: number
+  codigoServico?: string
+  aliquotaIss?: number
+  serieNfce?: number
+  proximoNumeroNfce?: number
+  defaultCfop?: string
+  defaultOperationNature?: string
+}
 
 interface EmissorListItemProps {
   emissor: EmissorData
@@ -42,13 +74,7 @@ interface EmissorListItemProps {
   onTestConnection: (emissor: EmissorData) => void
 }
 
-export function EmissorListItem({
-  emissor,
-  onEdit,
-  onDelete,
-  onSetDefault,
-  onTestConnection,
-}: EmissorListItemProps) {
+export function EmissorListItem({ emissor, onEdit }: EmissorListItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const formatCnpj = (cnpj?: string) => {
@@ -196,62 +222,6 @@ export function EmissorListItem({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Actions Menu */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <IconDotsVertical className="h-4 w-4 text-gray-400" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onEdit(emissor)
-                }}
-              >
-                <IconPencil className="w-4 h-4 mr-2" />
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onTestConnection(emissor)
-                }}
-              >
-                <IconPlugConnected className="w-4 h-4 mr-2" />
-                Testar Conexão
-              </DropdownMenuItem>
-              {!emissor.isDefault && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onSetDefault(emissor)
-                  }}
-                >
-                  <IconStar className="w-4 h-4 mr-2" />
-                  Definir como Padrão
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onDelete(emissor)
-                }}
-                className="text-red-600 focus:text-red-600"
-              >
-                <IconTrash className="w-4 h-4 mr-2" />
-                Excluir
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Status Badges for collapsed view */}
           {!isExpanded && (
             <div className="hidden md:flex gap-2 mr-4">
