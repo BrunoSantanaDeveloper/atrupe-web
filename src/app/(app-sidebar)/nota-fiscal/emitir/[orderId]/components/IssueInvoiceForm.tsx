@@ -45,7 +45,7 @@ import {
 } from '@tabler/icons-react'
 
 // Actions
-import { getItem, createItemNew } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
@@ -63,14 +63,16 @@ export function IssueInvoiceForm({ id }: Props) {
 
   const router = useRouter()
 
-  // Fetch data on mount
+  // Fetch data on mount - create or get draft
   const fetchData = useCallback(async () => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const result = await getItem({
-        route: `/fiscal/nfe/prepare/${id}`,
+      // Use draft endpoint to create or get existing draft
+      const result = await createItemNew({
+        route: `/fiscal/nfe/draft/${id}`,
+        data: {},
       })
 
       if (!result.success) {
@@ -197,15 +199,37 @@ export function IssueInvoiceForm({ id }: Props) {
     })
   }
 
-  // Handle recipient update
-  const handleRecipientSave = (
+  // Handle recipient update - persist to backend
+  const handleRecipientSave = async (
     updatedDestinatario: NfePrepareResponse['destinatario'],
   ) => {
-    if (!data) return
-    setData({
-      ...data,
-      destinatario: updatedDestinatario,
-    })
+    if (!data || !data.draftId) return
+
+    try {
+      // Save to backend
+      const result = await updateItemNew({
+        route: `/fiscal/nfe/draft/${data.draftId}`,
+        data: {
+          destinatario: updatedDestinatario,
+        },
+      })
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao salvar destinatário')
+      }
+
+      // Update local state
+      setData({
+        ...data,
+        destinatario: updatedDestinatario,
+      })
+
+      toast.success('Destinatário salvo com sucesso')
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao salvar destinatário'
+      toast.error(message)
+    }
   }
 
   // Loading state

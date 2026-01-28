@@ -129,4 +129,7 @@ export interface NfePrepareResponse {
   autXml?: string[]
   informacoesComplementares: string
   totais: NfePrepareTotais
+  // Draft fields
+  draftId?: string
+  isDraft?: boolean
 }
