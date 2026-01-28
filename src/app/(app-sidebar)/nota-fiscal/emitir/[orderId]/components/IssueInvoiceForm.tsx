@@ -28,6 +28,7 @@ import { InvoiceTransport } from './InvoiceTransport'
 import { CustomButton } from '@/components/common/CustomButton'
 import { InvoiceDuplicates } from './InvoiceDuplicates'
 import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
+import { InvoiceRecipientEditDialog } from './InvoiceRecipientEditDialog'
 
 // Icons
 import {
@@ -58,6 +59,7 @@ export function IssueInvoiceForm({ id }: Props) {
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<NfePrepareResponse | null>(null)
+  const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
 
   const router = useRouter()
 
@@ -192,6 +194,17 @@ export function IssueInvoiceForm({ id }: Props) {
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
+    })
+  }
+
+  // Handle recipient update
+  const handleRecipientSave = (
+    updatedDestinatario: NfePrepareResponse['destinatario'],
+  ) => {
+    if (!data) return
+    setData({
+      ...data,
+      destinatario: updatedDestinatario,
     })
   }
 
@@ -335,11 +348,11 @@ export function IssueInvoiceForm({ id }: Props) {
                     </CardTitle>
                   </div>
                   <div className="flex gap-3">
-                    <Button
+                    {/* {<Button
                       variant="neutralLight"
                       size="icon"
                       RightIcon={IconPencil}
-                    />
+                    />} */}
                     <AccordionTrigger
                       className={cn(
                         buttonVariants({
@@ -475,6 +488,7 @@ export function IssueInvoiceForm({ id }: Props) {
                       variant="neutralLight"
                       size="icon"
                       RightIcon={IconPencil}
+                      onClick={() => setIsRecipientEditOpen(true)}
                     />
                     <AccordionTrigger
                       className={cn(
@@ -796,6 +810,14 @@ export function IssueInvoiceForm({ id }: Props) {
           </Card>
         </div>
       </div>
+
+      {/* Recipient Edit Dialog */}
+      <InvoiceRecipientEditDialog
+        open={isRecipientEditOpen}
+        onOpenChange={setIsRecipientEditOpen}
+        destinatario={data.destinatario}
+        onSave={handleRecipientSave}
+      />
     </TooltipProvider>
   )
 }
