@@ -206,7 +206,7 @@ export function NewPaymentCondition({
     setShowDialog(value)
   }
 
-  const showNameInput = false
+  const showNameInput = false // TODO: Campo de nome deve aparecer se tiver mais de uma condição de pagamento para a forma selecionada
 
   return (
     <Dialog open={editMode ? open : showDialog} onOpenChange={handleOpenChange}>
@@ -239,7 +239,13 @@ export function NewPaymentCondition({
               className="flex flex-wrap gap-5"
               noValidate
             >
-              <SelectPaymentMethodField name="paymentMethodId" width="w-full" />
+              <SelectPaymentMethodField
+                name="paymentMethodId"
+                width="w-full"
+                additionalOnChange={(_, label) => {
+                  setValue('name', label)
+                }}
+              />
 
               {showNameInput && (
                 <FormInput name="name" label="Nome" width="w-full" />
@@ -440,6 +446,19 @@ export function NewPaymentCondition({
           </Form>
         </DialogBody>
         <DialogFooter>
+          {process.env.NODE_ENV === 'development' && (
+            <Button
+              type="button"
+              variant="neutralOutline"
+              onClick={() => {
+                form.trigger()
+                console.info('form', form.getValues())
+                console.info('errors', form.formState.errors)
+              }}
+            >
+              Teste
+            </Button>
+          )}
           <Button
             type="button"
             variant="outline"

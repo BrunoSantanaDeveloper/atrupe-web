@@ -17,7 +17,7 @@ interface Props<T extends FieldValues> {
   noForm?: boolean
   value?: string
   disabled?: boolean
-  additionalOnChange?: (value: string) => void
+  additionalOnChange?: (value: string, label: string) => void
 }
 
 export function SelectPaymentMethodField<T extends FieldValues>({
@@ -48,12 +48,17 @@ export function SelectPaymentMethodField<T extends FieldValues>({
         placeholder={placeholder}
         options={[{ value: 'all', label: 'Todas' }, ...(options || [])]}
         value={value}
-        onChange={additionalOnChange}
+        onChange={(val) => additionalOnChange?.(val, '')}
         className={width}
         disabled={disabled}
         {...props}
       />
     )
+
+  const handleChange = (value: string) => {
+    const selectedOption = options?.find((opt) => opt.value === value)
+    additionalOnChange?.(value, selectedOption?.label ?? '')
+  }
 
   return (
     <FormSelect<T>
@@ -62,7 +67,7 @@ export function SelectPaymentMethodField<T extends FieldValues>({
       placeholder={placeholder}
       options={options ?? []}
       width={width}
-      additionalOnChange={additionalOnChange}
+      additionalOnChange={handleChange}
       disabled={disabled}
       {...props}
     />
