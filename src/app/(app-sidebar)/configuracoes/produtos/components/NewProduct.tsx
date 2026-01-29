@@ -65,6 +65,8 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   productId?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onSuccess?: (product: any) => void
 }
 
 const defaultItemFields = [
@@ -85,7 +87,7 @@ async function handleGetProduct(productId: string) {
   return product
 }
 
-function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
+function NewProductModal({ editMode, productId, open, onOpenChange, onSuccess }: Props) {
   const queryClient = useQueryClient()
   const { canManageProducts, canManageProductionStages } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
@@ -135,15 +137,15 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     values: !editMode
       ? defaultNewProductValues
       : {
-          ...product,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          items: product?.items?.map((item: any) => ({
-            ...item,
-            unitCost: item.unitCost,
-            salePrice: item.salePrice,
-          })),
-          productionStages: getFilteredProductionStages(),
-        },
+        ...product,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        items: product?.items?.map((item: any) => ({
+          ...item,
+          unitCost: item.unitCost,
+          salePrice: item.salePrice,
+        })),
+        productionStages: getFilteredProductionStages(),
+      },
   })
 
   const items = useFieldArray({
@@ -204,6 +206,9 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let createdProduct: any = null
+
       if (editMode) {
         const result = await updateItemNew({
           route: `/product/${productId}`,
@@ -224,6 +229,7 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
         if (!result.success) {
           throw new Error(result.message)
         }
+        createdProduct = result.data
 
         toast.success('Produto criado com sucesso!')
       }
@@ -231,6 +237,10 @@ function NewProductModal({ editMode, productId, open, onOpenChange }: Props) {
       if (!insertAnother) {
         handleCleanForm()
         handleToggleModal()
+        // Call onSuccess callback if provided and we created a new product
+        if (onSuccess && createdProduct) {
+          onSuccess(createdProduct)
+        }
       } else {
         handleCleanForm()
       }

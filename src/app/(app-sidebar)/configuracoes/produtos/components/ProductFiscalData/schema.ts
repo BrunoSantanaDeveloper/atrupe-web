@@ -38,7 +38,7 @@ export type ProductFiscalDataFormType = z.infer<typeof productFiscalDataSchema>
 export const defaultFiscalDataValues: ProductFiscalDataFormType = {
   productCode: '',
   commercialUnit: 'UN',
-  ncm: '',
+  ncm: '49111010', // 4911.10.10 - Impressos publicitários, catálogos e semelhantes
   // cest: '',
   cean: '',
   icmsOrigin: '0',

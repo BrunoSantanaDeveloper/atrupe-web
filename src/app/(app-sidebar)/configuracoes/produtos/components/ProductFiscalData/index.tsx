@@ -298,6 +298,29 @@ export function ProductFiscalDataDialog({
                   </div>
                 </div>
 
+
+                {/* CFOP */}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-gray-700">CFOP</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <FormInput
+                      name="cfopInState"
+                      label="CFOP Estadual"
+                      placeholder="5102"
+                    />
+                    <FormInput
+                      name="cfopOutState"
+                      label="CFOP Interestadual"
+                      placeholder="6102"
+                    />
+                    <FormInput
+                      name="cfopExport"
+                      label="CFOP Exportação"
+                      placeholder="7102"
+                    />
+                  </div>
+                </div>
+
                 {/* IPI */}
                 <div className="space-y-4">
                   <h4 className="font-semibold text-gray-700">IPI</h4>

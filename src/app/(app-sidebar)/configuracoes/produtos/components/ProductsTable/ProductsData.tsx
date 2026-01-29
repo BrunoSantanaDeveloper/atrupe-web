@@ -47,6 +47,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -56,6 +57,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
+
+  const { hasAllPermissions } = usePermissions()
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -162,6 +165,15 @@ export function ProductsData({ searchParams, tabs }: Props) {
       <NewProduct
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
+        onSuccess={(product) => {
+          if (hasAllPermissions(['invoice_settings:nf:view'])) {
+            setTimeout(() => {
+              setSelectedProductId(product.id)
+              setSelectedProductName(product.name)
+              setOpenDialog('fiscal-data')
+            }, 100)
+          }
+        }}
       />
       <NewProduct
         open={openDialog === 'edit-product'}

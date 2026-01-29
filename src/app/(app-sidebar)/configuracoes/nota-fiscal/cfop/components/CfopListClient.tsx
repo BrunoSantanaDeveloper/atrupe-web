@@ -178,12 +178,7 @@ export function CfopListClient() {
 
   return (
     <div className="space-y-12">
-      {/* Natureza Section */}
-      <NaturezaListClient cfops={cfops} />
-
-      <Separator />
-
-      {/* CFOP Section */}
+      {/* CFOP Section - Deve vir primeiro para cadastrar antes das Naturezas */}
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -257,6 +252,11 @@ export function CfopListClient() {
           </div>
         )}
       </div>
+
+      <Separator />
+
+      {/* Natureza Section - Vem depois, pois depende dos CFOPs cadastrados */}
+      <NaturezaListClient cfops={cfops} />
 
       {/* Models */}
       <CfopFormModal
