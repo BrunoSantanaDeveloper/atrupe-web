@@ -237,11 +237,16 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end">
+                        <div className="flex justify-end gap-1">
                           <ActionButton
                             Icon={IconSearch}
                             tooltip="Emitir NF-e"
                             link={`/nota-fiscal/emitir/${order.id}`}
+                          />
+                          <ActionButton
+                            Icon={IconFileInvoice}
+                            tooltip="Emitir NFS-e"
+                            link={`/nota-fiscal/emitir-nfse/${order.id}`}
                           />
                         </div>
                       </TableCell>

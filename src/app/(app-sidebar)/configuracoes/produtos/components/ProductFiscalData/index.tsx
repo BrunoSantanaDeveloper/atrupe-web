@@ -298,7 +298,6 @@ export function ProductFiscalDataDialog({
                   </div>
                 </div>
 
-
                 {/* CFOP */}
                 <div className="space-y-4">
                   <h4 className="font-semibold text-gray-700">CFOP</h4>
