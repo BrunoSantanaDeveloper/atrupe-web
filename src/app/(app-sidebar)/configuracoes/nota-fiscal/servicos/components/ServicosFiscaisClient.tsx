@@ -33,7 +33,6 @@ import { toast } from 'sonner'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Icons
@@ -54,7 +53,6 @@ import { z } from 'zod'
 // Actions
 import {
   getData,
-  getDataOld,
   getItem,
   createItemNew,
   updateItemNew,
@@ -77,6 +75,11 @@ interface Service {
     codigoServico?: string
     aliquotaIss?: number
     discriminacao?: string
+    codTribMunicipio?: string
+    cnae?: string
+    nbs?: string
+    codTribNacional?: string
+    codClassificacao?: string
   }
 }
 
@@ -84,28 +87,14 @@ const serviceFiscalSchema = z.object({
   codigoServico: z.string().optional(),
   aliquotaIss: z.coerce.number().min(0).max(100).optional(),
   discriminacao: z.string().optional(),
+  codTribMunicipio: z.string().optional(),
+  cnae: z.string().optional(),
+  nbs: z.string().optional(),
+  codTribNacional: z.string().optional(),
+  codClassificacao: z.string().optional(),
 })
 
 type ServiceFiscalFormType = z.infer<typeof serviceFiscalSchema>
-
-const codigoServicoOptions = [
-  { value: '01.01', label: '01.01 - Análise e desenvolvimento de sistemas' },
-  { value: '01.02', label: '01.02 - Programação' },
-  { value: '01.03', label: '01.03 - Processamento de dados' },
-  { value: '01.04', label: '01.04 - Elaboração de programas' },
-  { value: '01.05', label: '01.05 - Licenciamento de software' },
-  { value: '01.06', label: '01.06 - Assessoria em informática' },
-  { value: '01.07', label: '01.07 - Planejamento de TI' },
-  { value: '01.08', label: '01.08 - Suporte técnico em informática' },
-  { value: '07.02', label: '07.02 - Consultoria' },
-  { value: '07.03', label: '07.03 - Assessoria' },
-  { value: '17.01', label: '17.01 - Assessoria ou consultoria' },
-  { value: '17.02', label: '17.02 - Análise de projetos' },
-  { value: '17.03', label: '17.03 - Planejamento organizacional' },
-  { value: '17.04', label: '17.04 - Recrutamento e seleção' },
-  { value: '17.05', label: '17.05 - Treinamento e avaliação' },
-  { value: '17.06', label: '17.06 - Gestão de recursos humanos' },
-]
 
 async function fetchServices(search: string) {
   try {
@@ -121,8 +110,7 @@ async function fetchServices(search: string) {
     })
 
     // Ensure we return an array
-    if (response.success && response.data)
-      return response.data as unknown as any[]
+    if (response.success && response.data) return response.data
 
     return []
   } catch (error) {
@@ -171,6 +159,11 @@ export function ServicosFiscaisClient() {
       codigoServico: '',
       aliquotaIss: undefined,
       discriminacao: '',
+      codTribMunicipio: '',
+      cnae: '',
+      nbs: '',
+      codTribNacional: '',
+      codClassificacao: '000001',
     },
   })
 
@@ -182,6 +175,11 @@ export function ServicosFiscaisClient() {
       codigoServico: fiscalData?.codigoServico || '',
       aliquotaIss: fiscalData?.aliquotaIss || undefined,
       discriminacao: fiscalData?.discriminacao || '',
+      codTribMunicipio: fiscalData?.codTribMunicipio || '',
+      cnae: fiscalData?.cnae || '',
+      nbs: fiscalData?.nbs || '',
+      codTribNacional: fiscalData?.codTribNacional || '',
+      codClassificacao: fiscalData?.codClassificacao || '000001',
     })
   }
 
@@ -205,6 +203,11 @@ export function ServicosFiscaisClient() {
         codigoServico: fiscalData.codigoServico || '',
         aliquotaIss: fiscalData.aliquotaIss || undefined,
         discriminacao: fiscalData.discriminacao || '',
+        codTribMunicipio: fiscalData.codTribMunicipio || '',
+        cnae: fiscalData.cnae || '',
+        nbs: fiscalData.nbs || '',
+        codTribNacional: fiscalData.codTribNacional || '',
+        codClassificacao: fiscalData.codClassificacao || '000001',
       })
     }
   }, [dialogOpen, selectedService, fiscalData, form])
@@ -242,11 +245,6 @@ export function ServicosFiscaisClient() {
       toast.error('Erro ao salvar dados fiscais')
       console.error(error)
     }
-  }
-
-  function handleDelete(service: Service) {
-    setItemToDelete(service)
-    setDeleteDialogOpen(true)
   }
 
   async function onDeleteConfirm() {
@@ -470,7 +468,7 @@ export function ServicosFiscaisClient() {
             <DialogTitle>
               <div className="flex items-center gap-4">
                 <FeaturedIcon variant="neutralOutline" Icon={IconBriefcase} />
-                <span>Novo item da lista de serviço</span>
+                <span>Item da lista de serviço</span>
               </div>
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
@@ -494,12 +492,10 @@ export function ServicosFiscaisClient() {
 
                   <div className="grid grid-cols-12 gap-4">
                     <div className="col-span-4">
-                      <label className="text-sm font-medium">Código</label>
-                      <Input
-                        value={selectedService?.code || ''}
-                        disabled
-                        placeholder="Digite aqui"
-                        className="mt-1.5"
+                      <FormInput
+                        name="codigoServico"
+                        label="Código"
+                        placeholder="Ex: 13.05"
                       />
                     </div>
                     <div className="col-span-8">
@@ -521,11 +517,44 @@ export function ServicosFiscaisClient() {
                       />
                     </div>
                     <div className="col-span-8">
-                      <FormSelect
-                        name="codigoServico"
-                        label="Cód. tributação do município"
-                        options={codigoServicoOptions}
+                      <FormInput
+                        name="codTribMunicipio"
+                        label="Cód. Tributação Município"
+                        placeholder="000, 001, 002..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-6">
+                      <FormInput
+                        name="cnae"
+                        label="CNAE"
+                        placeholder="Ex: 6201-5/00"
+                      />
+                    </div>
+                    <div className="col-span-6">
+                      <FormInput
+                        name="nbs"
+                        label="NBS"
+                        placeholder="Ex: 1.0301.15.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-12 gap-4">
+                    <div className="col-span-6">
+                      <FormInput
+                        name="codTribNacional"
+                        label="Cód. Tributação Nacional"
                         placeholder="Digite aqui"
+                      />
+                    </div>
+                    <div className="col-span-6">
+                      <FormInput
+                        name="codClassificacao"
+                        label="Cód. Classificação IBS/CBS"
+                        placeholder="000001"
                       />
                     </div>
                   </div>
