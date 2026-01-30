@@ -16,6 +16,8 @@ import { ProductsData } from './ProductsTable/ProductsData'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { ProductsFilter } from './ProductsTable/ProductsFilter'
 import { NewProduct, NewProductTriggerButton } from './NewProduct'
+import { ProductFiscalDataDialog } from './ProductFiscalData'
+import { usePermissions } from '@/hooks/usePermissions'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -34,6 +36,9 @@ import { IconPackageOff, IconFolders } from '@tabler/icons-react'
 
 export function Products({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState<string>('')
+  const [selectedProductId, setSelectedProductId] = useState<string>('')
+  const [selectedProductName, setSelectedProductName] = useState<string>('')
+  const { hasAllPermissions } = usePermissions()
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['product-totals'],
@@ -123,6 +128,15 @@ export function Products({ searchParams }: SearchParamsType) {
                   <NewProduct
                     open={openDialog === 'new-product'}
                     onOpenChange={() => setOpenDialog('')}
+                    onSuccess={(product) => {
+                      if (hasAllPermissions(['invoice_settings:nf:view'])) {
+                        setTimeout(() => {
+                          setSelectedProductId(product.id)
+                          setSelectedProductName(product.name)
+                          setOpenDialog('fiscal-data')
+                        }, 500)
+                      }
+                    }}
                   />
                 }
               />
@@ -132,6 +146,27 @@ export function Products({ searchParams }: SearchParamsType) {
         <NewProduct
           open={openDialog === 'new-product'}
           onOpenChange={() => setOpenDialog('')}
+          onSuccess={(product) => {
+            if (hasAllPermissions(['invoice_settings:nf:view'])) {
+              setTimeout(() => {
+                setSelectedProductId(product.id)
+                setSelectedProductName(product.name)
+                setOpenDialog('fiscal-data')
+              }, 500)
+            }
+          }}
+        />
+        <ProductFiscalDataDialog
+          open={openDialog === 'fiscal-data'}
+          productId={selectedProductId}
+          productName={selectedProductName}
+          onOpenChange={(open) => {
+            if (!open) {
+              setOpenDialog('')
+              setSelectedProductId('')
+              setSelectedProductName('')
+            }
+          }}
         />
       </div>
     </PermissionGate>

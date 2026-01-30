@@ -162,16 +162,20 @@ export function ProductsData({ searchParams, tabs }: Props) {
           />
         )}
       </CardContent>
+
       <NewProduct
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
         onSuccess={(product) => {
-          if (hasAllPermissions(['invoice_settings:nf:view'])) {
+          const hasPermission = hasAllPermissions(['invoice_settings:nf:view'])
+
+          if (hasPermission) {
+            // Increased timeout to ensure NewProduct modal is fully closed and state is settled
             setTimeout(() => {
               setSelectedProductId(product.id)
               setSelectedProductName(product.name)
               setOpenDialog('fiscal-data')
-            }, 100)
+            }, 500)
           }
         }}
       />

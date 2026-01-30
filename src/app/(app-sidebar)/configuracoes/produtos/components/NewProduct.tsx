@@ -87,12 +87,18 @@ async function handleGetProduct(productId: string) {
   return product
 }
 
-function NewProductModal({ editMode, productId, open, onOpenChange, onSuccess }: Props) {
+function NewProductModal({
+  editMode,
+  productId,
+  open,
+  onOpenChange,
+  onSuccess,
+}: Props) {
   const queryClient = useQueryClient()
   const { canManageProducts, canManageProductionStages } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
 
-  const [insertAnother, setInsertAnother] = useState(!editMode)
+  const [insertAnother, setInsertAnother] = useState(false)
 
   const alertDialog = useAlertDialog()
 
@@ -137,15 +143,15 @@ function NewProductModal({ editMode, productId, open, onOpenChange, onSuccess }:
     values: !editMode
       ? defaultNewProductValues
       : {
-        ...product,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        items: product?.items?.map((item: any) => ({
-          ...item,
-          unitCost: item.unitCost,
-          salePrice: item.salePrice,
-        })),
-        productionStages: getFilteredProductionStages(),
-      },
+          ...product,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          items: product?.items?.map((item: any) => ({
+            ...item,
+            unitCost: item.unitCost,
+            salePrice: item.salePrice,
+          })),
+          productionStages: getFilteredProductionStages(),
+        },
   })
 
   const items = useFieldArray({
@@ -235,14 +241,14 @@ function NewProductModal({ editMode, productId, open, onOpenChange, onSuccess }:
       }
 
       if (!insertAnother) {
-        handleCleanForm()
-        handleToggleModal()
-        // Call onSuccess callback if provided and we created a new product
         if (onSuccess && createdProduct) {
           onSuccess(createdProduct)
         }
-      } else {
         handleCleanForm()
+        handleToggleModal()
+      } else {
+        onSuccess?.(createdProduct)
+        reset()
       }
 
       await queryClient.invalidateQueries()
