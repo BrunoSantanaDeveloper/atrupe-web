@@ -109,6 +109,7 @@ export function Step5() {
           name="fiscal.accessKey"
           label="Chave de acesso (AccessKey)"
           placeholder="Digite aqui"
+          autoComplete="new-password"
           width="sm:col-span-3"
         />
       </div>

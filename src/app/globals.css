@@ -6,6 +6,9 @@
   body {
     @apply text-gray-900;
 
+    /* Fix para bug do Radix UI que deixa pointer-events: none no body após fechar modais */
+    pointer-events: auto !important;
+
     div::-webkit-scrollbar-track {
       background-color: transparent;
     }

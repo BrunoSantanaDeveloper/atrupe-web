@@ -7,7 +7,6 @@ import { useState, useEffect } from 'react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Switch } from '@/components/ui/switch'
 import { Input } from '@/components/ui/input'
 import {
   Table,
@@ -293,7 +292,7 @@ export function ServicosFiscaisClient() {
     }
   }
 
-  async function handleToggleActive(service: Service, isActive: boolean) {
+  async function _handleToggleActive(service: Service, isActive: boolean) {
     try {
       const result = await updateItemNew({
         route: `/product/${service.id}`,
@@ -362,7 +361,7 @@ export function ServicosFiscaisClient() {
                     <TableRow key={service.id}>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <Switch
+                          {/* <Switch
                             checked={service.isActive}
                             onCheckedChange={(checked) => {
                               if (checked) {
@@ -379,7 +378,7 @@ export function ServicosFiscaisClient() {
                                 handleToggleActive(service, false)
                               }
                             }}
-                          />
+                          /> */}
                           <div className="flex flex-col">
                             <span className="font-medium text-gray-900">
                               {service.name}

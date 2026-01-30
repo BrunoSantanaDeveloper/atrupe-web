@@ -246,6 +246,7 @@ export function NewCompany({
                 <form
                   id="company-info"
                   onSubmit={handleSubmit(onSubmit)}
+                  autoComplete="off"
                   noValidate
                 >
                   <TabsContent value="general">
