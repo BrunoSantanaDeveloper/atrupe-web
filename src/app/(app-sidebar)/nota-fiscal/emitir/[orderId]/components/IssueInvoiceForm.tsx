@@ -106,12 +106,21 @@ export function IssueInvoiceForm({ id }: Props) {
   const handleEmit = async () => {
     if (!data) return
 
-    // Basic validation
-    const invalidItems = data.items.filter((item) => item.needsConfiguration)
+    // Basic validation - only for products
+    const productItems = data.items.filter((item) => !item.isService)
+
+    if (productItems.length === 0) {
+      toast.error(
+        'Esta ordem não possui produtos para emissão de NF-e. Use a emissão de NFS-e para serviços.',
+      )
+      return
+    }
+
+    const invalidItems = productItems.filter((item) => item.needsConfiguration)
     if (invalidItems.length > 0) {
       const itemNames = invalidItems.map((i) => i.description).join(', ')
       toast.error(
-        `Existem itens que precisam de configuração fiscal: ${itemNames}`,
+        `Existem produtos que precisam de configuração fiscal: ${itemNames}`,
       )
       return
     }
@@ -149,8 +158,8 @@ export function IssueInvoiceForm({ id }: Props) {
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
           destPais: data.destinatario.pais,
-          // Mapped from updated data
-          items: data.items.map((item) => ({
+          // Mapped from updated data - only products
+          items: productItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitValue: item.unitValue,

@@ -39,6 +39,9 @@ export function InvoiceItems({ data, onUpdate }: Props) {
   const [configItem, setConfigItem] = useState<NfePrepareItem | null>(null)
   const [editItem, setEditItem] = useState<NfePrepareItem | null>(null)
 
+  // Filter out services for NF-e
+  const filteredItems = data.items.filter((item) => !item.isService)
+
   const handleUpdateItem = (updatedItem: NfePrepareItem) => {
     const newItems = data.items.map((item) =>
       item.itemNumber === updatedItem.itemNumber ? updatedItem : item,
@@ -66,11 +69,11 @@ export function InvoiceItems({ data, onUpdate }: Props) {
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
                 <CardTitle className="text-gray-700 font-semibold text-base">
-                  Itens ({data.items.length})
+                  Itens ({filteredItems.length})
                 </CardTitle>
               </div>
               <div className="flex gap-3">
-                {data.items.some((i) => i.needsConfiguration) && (
+                {filteredItems.some((i) => i.needsConfiguration) && (
                   <Button
                     variant="success"
                     size="sm"
@@ -78,7 +81,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                     LeftIcon={IconSettings}
                     onClick={() => {
                       /* Just open first for now or let user handle per row */
-                      const firstIncomplete = data.items.find(
+                      const firstIncomplete = filteredItems.find(
                         (i) => i.needsConfiguration,
                       )
                       if (firstIncomplete) setConfigItem(firstIncomplete)
@@ -129,7 +132,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {data.items.map((item) => (
+                      {filteredItems.map((item) => (
                         <tr
                           key={item.itemNumber}
                           className="group hover:bg-gray-50/50 transition-colors"

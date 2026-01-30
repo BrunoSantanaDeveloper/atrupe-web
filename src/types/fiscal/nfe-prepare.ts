@@ -54,6 +54,7 @@ export interface NfePrepareItem {
   freight: number
   insurance: number
   totalValue: number
+  isService: boolean
   needsConfiguration: boolean
 }
 
