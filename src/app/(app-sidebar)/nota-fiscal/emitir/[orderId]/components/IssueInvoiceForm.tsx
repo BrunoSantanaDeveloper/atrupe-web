@@ -331,8 +331,9 @@ export function IssueInvoiceForm({ id }: Props) {
             </div>
           </div>
 
-          {/* Action Bar - Show when no NF-e or when NF-e was rejected (allow retry) */}
+          {/* Action Bar - Show when no NF-e, draft, or when NF-e was rejected (allow retry) */}
           {(!data.hasExistingNfe ||
+            data.existingNfe?.status === 'DRAFT' ||
             data.existingNfe?.status === 'REJECTED') && (
             <div className="flex justify-between items-center">
               <CustomButton
