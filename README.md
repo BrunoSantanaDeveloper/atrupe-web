@@ -30,7 +30,7 @@ O Atrupe Web é uma aplicação web robusta que oferece funcionalidades completa
 
 ### Pré-requisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - npm, yarn, pnpm ou bun
 
 ### 1. Clonar o Repositório
@@ -58,11 +58,11 @@ Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
 
 ```env
 # URL da aplicação
-NEXT_PUBLIC_APP_URL=http://localhost:3018
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # Configurações de autenticação
 NEXTAUTH_SECRET=your-secret-key-here
-NEXTAUTH_URL=http://localhost:3018
+NEXTAUTH_URL=http://localhost:3000
 
 # Outras configurações necessárias
 # (Consulte a equipe de desenvolvimento para valores específicos)
@@ -80,7 +80,7 @@ pnpm dev
 bun dev
 ```
 
-A aplicação estará disponível em [http://localhost:3018](http://localhost:3018)
+A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Estrutura do Projeto
 
@@ -112,7 +112,7 @@ src/
 
 ```bash
 # Desenvolvimento
-npm run dev              # Inicia servidor de desenvolvimento na porta 3018
+npm run dev              # Inicia servidor de desenvolvimento na porta 3000
 
 # Build e Produção
 npm run build           # Gera build de produção
@@ -142,12 +142,13 @@ O projeto segue rigorosos padrões de código estabelecidos pela equipe:
 - ✅ **Módulo Financeiro**
 - ✅ **Dashboard e Relatórios**
 - ✅ **Controle de Produção**
-- ✅ **Sistema de Vendas**  
+- ✅ **Sistema de Vendas**
 - ✅ **Configurações do Sistema**
 
 ## Acessos
 
 # Cliente teste
+
     cliente@teste.com
     atrupe123@
 
