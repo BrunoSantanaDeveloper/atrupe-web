@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint --fix",
-    "test:e2e": "playwright test",
     "shadcn": "npx shadcn@latest add"
   },
   "dependencies": {
@@ -69,7 +68,6 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.0",
     "@tanstack/eslint-plugin-query": "^5.51.15",
     "@tanstack/react-query-devtools": "^5.51.23",
     "@tribodev/eslint-config": "^1.0.1",
