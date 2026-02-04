@@ -188,7 +188,45 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                 permissions={['values:values:view']}
                               >
                                 <TableCell className="text-success-700 text-nowrap">
-                                  {formatCurrencyToBrl(quotation?.totalValue)}
+                                  {formatCurrencyToBrl(
+                                    (() => {
+                                      // Cálculo igual ao PaymentConditions.tsx
+                                      const itemsValue =
+                                        quotation?.totalValue || 0
+                                      const deliveryValue =
+                                        quotation?.deliveryInfo?.value ?? 0
+                                      const payment =
+                                        quotation?.quotationPayment
+                                      const commissionValue =
+                                        payment?.commission?.type === 'ADD'
+                                          ? (payment?.commission
+                                              ?.totalCommission ?? 0)
+                                          : 0
+                                      const installmentsAdditionalFee =
+                                        payment?.quotationInstallment?.reduce(
+                                          (
+                                            acc: number,
+                                            inst: { additionalFee?: number },
+                                          ) => acc + (inst?.additionalFee ?? 0),
+                                          0,
+                                        ) ?? 0
+                                      const downPaymentAdditionalFee =
+                                        payment?.downPaymentAdditionalFee ?? 0
+                                      const totalAdditionalFee =
+                                        installmentsAdditionalFee +
+                                        downPaymentAdditionalFee
+                                      const discountTotal =
+                                        payment?.discountTotal ?? 0
+
+                                      return (
+                                        itemsValue +
+                                        deliveryValue +
+                                        commissionValue +
+                                        totalAdditionalFee -
+                                        discountTotal
+                                      )
+                                    })(),
+                                  )}
                                 </TableCell>
                               </PermissionGate>
                               <TableCell className="text-gray-600">
