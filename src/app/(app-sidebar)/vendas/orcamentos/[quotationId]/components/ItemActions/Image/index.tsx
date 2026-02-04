@@ -64,8 +64,6 @@ export function ItemImageDialog({
     {},
   )
 
-  console.log('rowData', rowData)
-
   const fileInputRef = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
 
@@ -78,12 +76,10 @@ export function ItemImageDialog({
   // Sincronizar estado com dados do item
   useEffect(() => {
     if (rowData && open) {
-      console.log('[DEBUG] useEffect - rowData.image:', rowData.image)
       // Determinar tamanho baseado no campo size ou fallback para original
       const currentSize =
         rowData.image?.size ??
         (rowData.image?.original !== false ? 'small' : 'large')
-      console.log('[DEBUG] useEffect - currentSize calculado:', currentSize)
       setImageSize(currentSize as ImageSize)
       setPreviewUrl(rowData.image?.url || null)
       setSelectedFile(null)
@@ -108,14 +104,11 @@ export function ItemImageDialog({
     const file = event.target.files?.[0]
     if (!file) return
 
-    console.log('original file', file)
-
     try {
       const sizeToUse = pendingSize || imageSize
 
       // Comprimir imagem baseado no tamanho selecionado
       const compressedFile = await compressImage(file, sizeToUse)
-      console.log('compressedFile', compressedFile)
       setSelectedFile(compressedFile)
       setImageSize(sizeToUse)
 
@@ -147,45 +140,33 @@ export function ItemImageDialog({
   const handleSave = async () => {
     try {
       let imageUrl = rowData?.image?.url
-      console.log('[DEBUG] handleSave iniciado')
-      console.log('[DEBUG] rowData.id:', rowData?.id)
-      console.log('[DEBUG] imageUrl inicial:', imageUrl)
-      console.log('[DEBUG] selectedFile:', selectedFile)
 
       // Se tem arquivo selecionado, fazer upload
       if (selectedFile) {
-        console.log('[DEBUG] Fazendo upload do arquivo...')
         const result = await uploadFiles({
           files: [selectedFile],
           setProgresses: setUploadProgress,
         })
-        console.log('[DEBUG] Resultado do upload:', result)
         // result pode ser string direta, array ou objeto
         if (typeof result === 'string') {
           imageUrl = result
         } else {
           imageUrl = result?.[0]?.url || result?.url
         }
-        console.log('[DEBUG] imageUrl após upload:', imageUrl)
       }
 
       // Se removeu a imagem (previewUrl é null e não tem arquivo)
       if (!previewUrl && !selectedFile) {
         imageUrl = ''
-        console.log('[DEBUG] Imagem removida, imageUrl = ""')
       }
-
-      console.log('[DEBUG] Enviando para backend:', { imageUrl, imageSize })
 
       // Atualizar o item com a URL e tamanho
       await updateMutation.mutateAsync({
         imageUrl,
         imageSize,
       })
-      console.log('[DEBUG] Sucesso ao atualizar')
     } catch (error) {
-      console.error('[DEBUG] Erro ao salvar imagem:', error)
-      // Erro tratado pela mutation
+      console.error('Erro ao salvar imagem:', error)
     }
   }
 
