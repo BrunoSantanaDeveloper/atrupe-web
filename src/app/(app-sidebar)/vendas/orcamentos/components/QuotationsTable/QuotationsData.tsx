@@ -158,14 +158,6 @@ export function QuotationsData({
                                 <TableCell className="text-success-700 text-nowrap">
                                   {formatCurrencyToBrl(
                                     (() => {
-                                      // DEBUG - remover depois
-                                      console.log('DEBUG quotation:', {
-                                        id: quotation?.id,
-                                        totalValue: quotation?.totalValue,
-                                        deliveryInfo: quotation?.deliveryInfo,
-                                        quotationPayment:
-                                          quotation?.quotationPayment,
-                                      })
                                       // Cálculo igual ao PaymentConditions.tsx
                                       const itemsValue =
                                         quotation?.totalValue || 0
