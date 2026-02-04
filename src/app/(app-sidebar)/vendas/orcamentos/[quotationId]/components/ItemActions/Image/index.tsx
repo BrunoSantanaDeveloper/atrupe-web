@@ -16,16 +16,14 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Label } from '@/components/ui/label'
+import { Badge } from '@/components/ui/badge'
 
 // Icons
 import {
-  IconPackage,
-  IconUpload,
   IconTrash,
+  IconPackage,
   IconCircleCheck,
-  IconPhoto,
+  IconCloudUpload,
 } from '@tabler/icons-react'
 
 // Actions
@@ -43,6 +41,7 @@ import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 import noImage from '@/assets/images/image-placeholder.svg'
+import { cn } from '@/lib/utils'
 
 interface Props {
   open: boolean
@@ -51,13 +50,22 @@ interface Props {
   rowData?: QuotationItemType
 }
 
-export function ItemImageDialog({ open, setOpen, rowData }: Props) {
+export function ItemImageDialog({
+  open,
+  setOpen,
+  quotationData,
+  rowData,
+}: Props) {
   const [imageSize, setImageSize] = useState<ImageSize>('small')
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [pendingSize, setPendingSize] = useState<ImageSize | null>(null)
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
     {},
   )
+
+  console.log('rowData', rowData)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const queryClient = useQueryClient()
 
@@ -70,10 +78,12 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
   // Sincronizar estado com dados do item
   useEffect(() => {
     if (rowData && open) {
+      console.log('[DEBUG] useEffect - rowData.image:', rowData.image)
       // Determinar tamanho baseado no campo size ou fallback para original
       const currentSize =
         rowData.image?.size ??
         (rowData.image?.original !== false ? 'small' : 'large')
+      console.log('[DEBUG] useEffect - currentSize calculado:', currentSize)
       setImageSize(currentSize as ImageSize)
       setPreviewUrl(rowData.image?.url || null)
       setSelectedFile(null)
@@ -85,7 +95,9 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
     mutationFn: (data: { imageUrl?: string; imageSize?: string }) =>
       updateItem('quotationRoute', `update-product/${rowData?.id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+      queryClient.invalidateQueries({
+        queryKey: [QUOTATION_DATA_QUERY_KEY, quotationData.id],
+      })
       setOpen('')
     },
   })
@@ -96,16 +108,24 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
     const file = event.target.files?.[0]
     if (!file) return
 
+    console.log('original file', file)
+
     try {
+      const sizeToUse = pendingSize || imageSize
+
       // Comprimir imagem baseado no tamanho selecionado
-      const compressedFile = await compressImage(file, imageSize)
+      const compressedFile = await compressImage(file, sizeToUse)
+      console.log('compressedFile', compressedFile)
       setSelectedFile(compressedFile)
+      setImageSize(sizeToUse)
 
       // Criar preview
       const url = URL.createObjectURL(compressedFile)
       setPreviewUrl(url)
     } catch {
       // Erro já tratado pelo hook
+    } finally {
+      setPendingSize(null)
     }
 
     // Limpar input para permitir selecionar o mesmo arquivo novamente
@@ -114,20 +134,9 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
     }
   }
 
-  const handleSizeChange = async (newSize: ImageSize) => {
-    setImageSize(newSize)
-
-    // Se já tem um arquivo selecionado, recomprimir com o novo tamanho
-    if (selectedFile) {
-      try {
-        const recompressedFile = await compressImage(selectedFile, newSize)
-        setSelectedFile(recompressedFile)
-        const url = URL.createObjectURL(recompressedFile)
-        setPreviewUrl(url)
-      } catch {
-        // Manter arquivo anterior em caso de erro
-      }
-    }
+  const handleUploadClick = (size: ImageSize) => {
+    setPendingSize(size)
+    fileInputRef.current?.click()
   }
 
   const handleRemoveImage = () => {
@@ -138,27 +147,44 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
   const handleSave = async () => {
     try {
       let imageUrl = rowData?.image?.url
+      console.log('[DEBUG] handleSave iniciado')
+      console.log('[DEBUG] rowData.id:', rowData?.id)
+      console.log('[DEBUG] imageUrl inicial:', imageUrl)
+      console.log('[DEBUG] selectedFile:', selectedFile)
 
       // Se tem arquivo selecionado, fazer upload
       if (selectedFile) {
+        console.log('[DEBUG] Fazendo upload do arquivo...')
         const result = await uploadFiles({
           files: [selectedFile],
           setProgresses: setUploadProgress,
         })
-        imageUrl = result?.url
+        console.log('[DEBUG] Resultado do upload:', result)
+        // result pode ser string direta, array ou objeto
+        if (typeof result === 'string') {
+          imageUrl = result
+        } else {
+          imageUrl = result?.[0]?.url || result?.url
+        }
+        console.log('[DEBUG] imageUrl após upload:', imageUrl)
       }
 
       // Se removeu a imagem (previewUrl é null e não tem arquivo)
       if (!previewUrl && !selectedFile) {
         imageUrl = ''
+        console.log('[DEBUG] Imagem removida, imageUrl = ""')
       }
+
+      console.log('[DEBUG] Enviando para backend:', { imageUrl, imageSize })
 
       // Atualizar o item com a URL e tamanho
       await updateMutation.mutateAsync({
         imageUrl,
         imageSize,
       })
-    } catch {
+      console.log('[DEBUG] Sucesso ao atualizar')
+    } catch (error) {
+      console.error('[DEBUG] Erro ao salvar imagem:', error)
       // Erro tratado pela mutation
     }
   }
@@ -167,6 +193,7 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
     setOpen(openDialog ? 'image' : '')
     if (!openDialog) {
       setSelectedFile(null)
+      setPendingSize(null)
       setUploadProgress({})
     }
   }
@@ -183,7 +210,7 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
@@ -194,31 +221,42 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
 
         <DialogBody className="space-y-6">
           {/* Preview da imagem */}
-          <div className="relative flex justify-center">
-            <div className="relative">
+          <div className="relative flex justify-center rounded-xl bg-white border overflow-hidden">
+            <div className="relative h-[300px] w-full flex items-center justify-center">
               <Image
                 src={previewUrl ?? noImage}
                 width={300}
                 height={300}
                 alt="Imagem do item"
-                className="min-h-[200px] max-h-[300px] w-auto object-contain rounded-xl border"
+                className={cn(
+                  'max-h-[300px] w-full',
+                  previewUrl ? 'object-contain' : 'object-cover',
+                )}
               />
               {previewUrl && (
-                <Button
-                  type="button"
-                  variant="neutralLight"
-                  size="icon"
-                  className="absolute top-2 right-2"
-                  onClick={handleRemoveImage}
-                  disabled={isLoading}
-                  RightIcon={IconTrash}
-                />
+                <>
+                  <Badge
+                    variant="neutralLight"
+                    className="absolute top-2 left-4 mix-blend-normal bg-white/60 backdrop-blur-sm border shadow-sm"
+                  >
+                    {imageSize === 'small' ? 'Imagem pequena' : 'Imagem grande'}
+                  </Badge>
+                  <Button
+                    type="button"
+                    variant="neutralLight"
+                    size="icon"
+                    className="absolute top-2 right-2 shadow-md"
+                    onClick={handleRemoveImage}
+                    disabled={isLoading}
+                    RightIcon={IconTrash}
+                  />
+                </>
               )}
             </div>
           </div>
 
           {/* Upload de imagem */}
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-4">
             <input
               ref={fileInputRef}
               type="file"
@@ -227,52 +265,42 @@ export function ItemImageDialog({ open, setOpen, rowData }: Props) {
               className="hidden"
               disabled={isLoading}
             />
-            <Button
-              type="button"
-              variant="neutralOutline"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
-              LeftIcon={isCompressing ? undefined : IconUpload}
-              isLoading={isCompressing}
-            >
-              {isCompressing ? 'Comprimindo...' : 'Escolher imagem'}
-            </Button>
-            <p className="text-xs text-muted-foreground">Máximo 10MB.</p>
+            <div className="flex gap-4">
+              <Button
+                type="button"
+                size="sm"
+                variant="neutralOutline"
+                onClick={() => handleUploadClick('small')}
+                disabled={isLoading}
+                LeftIcon={
+                  isCompressing && pendingSize === 'small'
+                    ? undefined
+                    : IconCloudUpload
+                }
+                isLoading={isCompressing && pendingSize === 'small'}
+              >
+                Imagem pequena
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="neutralOutline"
+                onClick={() => handleUploadClick('large')}
+                disabled={isLoading}
+                LeftIcon={
+                  isCompressing && pendingSize === 'large'
+                    ? undefined
+                    : IconCloudUpload
+                }
+                isLoading={isCompressing && pendingSize === 'large'}
+              >
+                Imagem grande
+              </Button>
+            </div>
+            <p className="text-xs text-gray">PNG ou JPG até 10MB e 400x250px</p>
             {compressionError && (
-              <p className="text-xs text-destructive">{compressionError}</p>
+              <p className="text-xs text-error">{compressionError}</p>
             )}
-          </div>
-
-          {/* Seleção de tamanho */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium">Tamanho no PDF</Label>
-            <RadioGroup
-              value={imageSize}
-              onValueChange={(value) => handleSizeChange(value as ImageSize)}
-              className="flex gap-6"
-              disabled={isLoading}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="small" id="size-small" />
-                <Label
-                  htmlFor="size-small"
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <IconPhoto className="h-4 w-4" />
-                  Pequena
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="large" id="size-large" />
-                <Label
-                  htmlFor="size-large"
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <IconPhoto className="h-5 w-5" />
-                  Grande
-                </Label>
-              </div>
-            </RadioGroup>
           </div>
         </DialogBody>
 
