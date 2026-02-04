@@ -14,6 +14,7 @@ export type QuotationItemType = {
   image: {
     url: string
     original: boolean
+    size?: 'small' | 'large'
   }
   technicalDescription: string
   product: {

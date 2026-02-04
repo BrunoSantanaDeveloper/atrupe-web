@@ -721,12 +721,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               // Para produtos simples (1 composição), renderizar apenas a linha da composição
               if (!isComposite && item.product.compositions.length === 1) {
                 const composition = item.product.compositions[0]
-                // Verificar se a imagem é original ou alterada
-                const isOriginalImage = item.image?.original !== false
+                // Determinar tamanho da imagem: usa size se disponível, senão fallback para lógica legada
+                const imageSize =
+                  item.image?.size ??
+                  (item.image?.original !== false ? 'small' : 'large')
                 const showSmallImage =
-                  printOptions.showImages && isOriginalImage && item.image?.url
+                  printOptions.showImages &&
+                  imageSize === 'small' &&
+                  item.image?.url
                 const showLargeImage =
-                  printOptions.showImages && !isOriginalImage && item.image?.url
+                  printOptions.showImages &&
+                  imageSize === 'large' &&
+                  item.image?.url
 
                 return (
                   <View
@@ -918,12 +924,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               }
 
               // Para produtos compostos, manter comportamento atual
-              // Verificar se a imagem é original ou alterada
-              const isOriginalImage = item.image?.original !== false
+              // Determinar tamanho da imagem: usa size se disponível, senão fallback para lógica legada
+              const imageSize =
+                item.image?.size ??
+                (item.image?.original !== false ? 'small' : 'large')
               const showSmallImage =
-                printOptions.showImages && isOriginalImage && item.image?.url
+                printOptions.showImages &&
+                imageSize === 'small' &&
+                item.image?.url
               const showLargeImage =
-                printOptions.showImages && !isOriginalImage && item.image?.url
+                printOptions.showImages &&
+                imageSize === 'large' &&
+                item.image?.url
 
               return (
                 <View

@@ -128,6 +128,7 @@ type ProductType = {
 type ImageType = {
   url: string
   original: boolean
+  size?: 'small' | 'large'
 }
 
 // Tipo para item do orçamento
