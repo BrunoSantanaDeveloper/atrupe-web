@@ -6,6 +6,7 @@ import { Lock, CreditCard, AlertTriangle } from 'lucide-react'
 
 // UI
 import { Button } from '@/components/ui/button'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -38,10 +39,15 @@ export default async function BlockedPage() {
           </a>
           <Card className="rounded-2xl w-full px-8 py-10">
             <CardHeader className="p-0 pb-6 text-center">
-              <div className="mx-auto w-16 h-16 rounded-full bg-error-100 flex items-center justify-center mb-4">
-                <Lock className="w-8 h-8 text-error" />
+              <div className="flex justify-center mb-4">
+                <FeaturedIcon
+                  size="xl"
+                  Icon={Lock}
+                  variant="errorBorderedLight"
+                  rounded
+                />
               </div>
-              <CardTitle className="text-xl font-bold">
+              <CardTitle className="text-lg font-semibold text-gray-700">
                 Conta Suspensa
               </CardTitle>
             </CardHeader>
