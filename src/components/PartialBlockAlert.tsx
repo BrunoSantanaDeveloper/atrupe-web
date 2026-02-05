@@ -10,6 +10,9 @@ import { IconCashBanknote, IconArrowNarrowRight } from '@tabler/icons-react'
 // Libs
 import { auth } from '@/lib/auth'
 
+// Actions
+import { getPendingPaymentUrl } from '@/actions/subscription'
+
 export async function PartialBlockAlert() {
   const session = await auth()
 
@@ -19,6 +22,9 @@ export async function PartialBlockAlert() {
 
   // Only show for PARTIAL block
   if (blockLevel !== 'PARTIAL') return null
+
+  // Get dynamic payment URL
+  const { paymentUrl } = await getPendingPaymentUrl()
 
   return (
     <div className="border-b bg-warning-50 border-warning-200">
@@ -32,8 +38,13 @@ export async function PartialBlockAlert() {
             Regularize o pagamento para manter sua conta ativa.
           </span>
         </div>
-        <Button asChild size="md" RightIcon={IconArrowNarrowRight}>
-          <Link href="https://www.asaas.com" target="_blank">
+        <Button
+          asChild
+          size="md"
+          RightIcon={IconArrowNarrowRight}
+          disabled={!paymentUrl}
+        >
+          <Link href={paymentUrl || '#'} target="_blank">
             Pagar agora
           </Link>
         </Button>

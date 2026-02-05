@@ -7,12 +7,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
+// Actions
+import { getPendingPaymentUrl } from '@/actions/subscription'
+
 export const metadata: Metadata = {
   title: 'Conta Suspensa',
   description: 'Sua conta foi suspensa por pendências financeiras',
 }
 
-export default function BlockedPage() {
+export default async function BlockedPage() {
+  // Get dynamic payment URL
+  const { paymentUrl } = await getPendingPaymentUrl()
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 p-4">
       <Card className="w-full max-w-md text-center">
@@ -38,8 +44,8 @@ export default function BlockedPage() {
           </Alert>
 
           <div className="flex flex-col gap-3">
-            <Button asChild size="lg" className="w-full">
-              <Link href="https://www.asaas.com" target="_blank">
+            <Button asChild size="lg" className="w-full" disabled={!paymentUrl}>
+              <Link href={paymentUrl || '#'} target="_blank">
                 <CreditCard className="w-5 h-5 mr-2" />
                 Regularizar Pagamento
               </Link>
