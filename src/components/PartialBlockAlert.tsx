@@ -1,0 +1,43 @@
+// Next
+import Link from 'next/link'
+
+// Components
+import { Button } from '@/components/ui/button'
+
+// Icons
+import { IconCashBanknote, IconArrowNarrowRight } from '@tabler/icons-react'
+
+// Libs
+import { auth } from '@/lib/auth'
+
+export async function PartialBlockAlert() {
+  const session = await auth()
+
+  if (!session) return null
+
+  const blockLevel = session.company?.blockLevel
+
+  // Only show for PARTIAL block
+  if (blockLevel !== 'PARTIAL') return null
+
+  return (
+    <div className="border-b bg-warning-50 border-warning-200">
+      <div className="flex flex-wrap items-center justify-center gap-4 py-3 px-4">
+        <IconCashBanknote className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
+        <div className="flex flex-col flex-shrink-0">
+          <span className="text-sm font-semibold text-warning-600">
+            Mensalidade atrasada
+          </span>
+          <span className="text-sm text-gray">
+            Regularize o pagamento para manter sua conta ativa.
+          </span>
+        </div>
+        <Button asChild size="md" RightIcon={IconArrowNarrowRight}>
+          <Link href="https://www.asaas.com" target="_blank">
+            Pagar agora
+          </Link>
+        </Button>
+      </div>
+    </div>
+  )
+}

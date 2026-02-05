@@ -2,6 +2,7 @@
 import { Sidebar } from '@/components/layout/Sidebar'
 import { MobileHeader } from '@/components/layout/MobileHeader'
 import { TrialExpiredAlert } from '@/components/TrialExpiredAlert'
+import { PartialBlockAlert } from '@/components/PartialBlockAlert'
 
 // Types
 import type { PropsWithChildren } from 'react'
@@ -10,6 +11,7 @@ export default async function AppLayout({ children }: PropsWithChildren) {
   return (
     <div className="flex flex-col h-screen">
       <TrialExpiredAlert />
+      <PartialBlockAlert />
       <MobileHeader />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />

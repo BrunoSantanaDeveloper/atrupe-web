@@ -9,6 +9,7 @@ import { auth } from '@/lib/auth'
 export const HOME_PAGE = '/dashboard'
 export const SYSTEM_HOME_PAGE = '/admin'
 const SUBSCRIPTION_PAGE = '/assinatura'
+const BLOCKED_PAGE = '/blocked'
 const GUEST_ROUTES = [
   'login',
   'cadastro',
@@ -30,12 +31,15 @@ export async function middleware(req: NextRequest) {
   const session = await auth()
   const user = session?.user
   const isUserLoggedIn = !!user
-  const trialEndsAt = session?.company.plan.trialEndsAt
+  const trialEndsAt = session?.company?.plan?.trialEndsAt
+  const blockLevel = session?.company?.blockLevel
   const userIsSystemAdmin = user?.isSystemAdmin
 
   const isTrialExpired = trialEndsAt
     ? new Date(trialEndsAt) < new Date()
     : false
+
+  const isFullBlocked = blockLevel === 'FULL'
 
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
@@ -76,6 +80,16 @@ export async function middleware(req: NextRequest) {
   // If the user is logged in but the trial has expired, redirect to the subscription page
   if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
     return NextResponse.redirect(new URL(SUBSCRIPTION_PAGE, req.url).toString())
+  }
+
+  const isAllowedRouteWhenBlocked =
+    pathname.endsWith('logout') ||
+    pathname.startsWith(BLOCKED_PAGE) ||
+    pathname.startsWith(SUBSCRIPTION_PAGE)
+
+  // If the company is fully blocked, redirect to the blocked page
+  if (isUserLoggedIn && isFullBlocked && !isAllowedRouteWhenBlocked) {
+    return NextResponse.redirect(new URL(BLOCKED_PAGE, req.url).toString())
   }
 
   // Set pathname in the headers

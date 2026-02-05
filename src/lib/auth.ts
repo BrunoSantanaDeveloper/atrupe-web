@@ -24,6 +24,7 @@ declare module 'next-auth' {
       logo: string
       favicon: string
       features: string[]
+      blockLevel: 'NONE' | 'PARTIAL' | 'FULL'
       plan: {
         name: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
         active: boolean
@@ -105,6 +106,7 @@ export const {
               subscription: company.subscription || 'FULL',
               subscriptionActive: company.subscriptionActive,
               trialEndsAt: company.trialEndsAt || null,
+              blockLevel: company.blockLevel || 'NONE',
               permissions: authData.permissions || [],
               features: company.features || [],
               limits: company.limits || {},
@@ -197,6 +199,8 @@ export const {
           legalName: token.companyLegalName || '',
           logo: token.companyLogo || '',
           favicon: token.companyFavicon || '',
+          blockLevel:
+            (token.blockLevel as 'NONE' | 'PARTIAL' | 'FULL') || 'NONE',
           plan: {
             name: token.subscription || 'TRIAL',
             active: token.subscriptionActive || false,
