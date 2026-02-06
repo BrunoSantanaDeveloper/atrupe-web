@@ -30,14 +30,7 @@ import { getMainNavigation, userRoleObj } from '@/consts/nav'
 
 // Icons
 import { IconComponent } from '../common/Icon'
-import {
-  IconX,
-  IconUser,
-  IconMenu2,
-  IconLogout,
-  IconFilter,
-  IconSearch,
-} from '@tabler/icons-react'
+import { IconX, IconUser, IconMenu2, IconLogout } from '@tabler/icons-react'
 
 // Hooks
 import { useSession } from 'next-auth/react'
@@ -196,20 +189,15 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
           />
         </Link>
         <div className="flex gap-1">
-          <Button
+          {/* <Button
             type="button"
             variant="neutralGhost"
             size="iconMd"
             RightIcon={IconSearch}
             className="bg-transparent"
-          />
-          <Button
-            type="button"
-            variant="neutralGhost"
-            size="iconMd"
-            RightIcon={IconFilter}
-            className="bg-transparent"
-          />
+          /> */}
+          {/* Portal target for filter button from FiltersBar */}
+          <div id="mobile-filter-button-portal" />
           <Button
             type="button"
             variant="neutralGhost"

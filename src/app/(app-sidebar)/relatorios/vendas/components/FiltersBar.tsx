@@ -1,25 +1,88 @@
 'use client'
 
 // React
+import { createPortal } from 'react-dom'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import type { DateRange } from 'react-day-picker'
 
 // Components
-import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogHeader,
+  DialogContent,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader } from '@/components/ui/card'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+
+// Icons
+import { IconFilter } from '@tabler/icons-react'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Config
 import { originOptions, periodOptions } from '../config'
-import { Card, CardHeader } from '@/components/ui/card'
 
 export function FiltersBar({ searchParams }: SearchParamsType) {
-  const router = useRouter()
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
+    null,
+  )
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPortalContainer(document.getElementById('mobile-filter-button-portal'))
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <>
+      {/* Mobile Filter Button - rendered via portal in MobileSidebar header */}
+      {portalContainer &&
+        createPortal(
+          <Button
+            type="button"
+            variant="neutralGhost"
+            size="iconMd"
+            RightIcon={IconFilter}
+            className="bg-transparent"
+            onClick={() => setDialogOpen(true)}
+          />,
+          portalContainer,
+        )}
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Filtros</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="flex flex-col gap-4">
+            <FiltersContent searchParams={searchParams} />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
+
+      <Card className="hidden lg:block">
+        <CardHeader className="flex-row flex-wrap space-y-0 gap-4">
+          <FiltersContent searchParams={searchParams} />
+        </CardHeader>
+      </Card>
+    </>
+  )
+}
+
+function FiltersContent({ searchParams }: SearchParamsType) {
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
+
+  const router = useRouter()
 
   const hasUrlParams = searchParams?.startDate && searchParams?.endDate
 
@@ -136,35 +199,33 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
   const isCustomPeriod = searchParams?.period === 'custom'
 
   return (
-    <Card>
-      <CardHeader className="flex-row flex-wrap space-y-0 gap-4">
-        <SelectBasic
-          name="origin"
-          label="Origem"
-          placeholder="Selecione uma origem"
-          className="w-[260px]"
-          options={originSelectOptions}
-          value={searchParams?.origin || 'all'}
-          onChange={(value) => handleFilter('origin', value)}
-        />
-        <SelectBasic
-          name="period"
-          label="Período"
-          placeholder="Selecione o período"
-          className="w-[260px]"
-          options={periodSelectOptions}
-          value={searchParams?.period || 'current_month'}
-          onChange={handlePeriodChange}
-        />
-        <DateRangePickerBasic
-          label="Período personalizado"
-          placeholder="Selecione o período"
-          className="w-[260px]"
-          value={defaultDateRange}
-          onChange={handleDateRangeChange}
-          disabled={!isCustomPeriod}
-        />
-      </CardHeader>
-    </Card>
+    <>
+      <SelectBasic
+        name="origin"
+        label="Origem"
+        placeholder="Selecione uma origem"
+        className="lg:w-[260px] w-full"
+        options={originSelectOptions}
+        value={searchParams?.origin || 'all'}
+        onChange={(value) => handleFilter('origin', value)}
+      />
+      <SelectBasic
+        name="period"
+        label="Período"
+        placeholder="Selecione o período"
+        className="lg:w-[260px] w-full"
+        options={periodSelectOptions}
+        value={searchParams?.period || 'current_month'}
+        onChange={handlePeriodChange}
+      />
+      <DateRangePickerBasic
+        label="Período personalizado"
+        placeholder="Selecione o período"
+        className="lg:w-[260px] w-full"
+        value={defaultDateRange}
+        onChange={handleDateRangeChange}
+        disabled={!isCustomPeriod}
+      />
+    </>
   )
 }
