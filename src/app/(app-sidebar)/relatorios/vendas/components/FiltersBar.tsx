@@ -140,7 +140,6 @@ function FiltersContent({ searchParams }: SearchParamsType) {
         className="lg:w-[260px] w-full"
         value={defaultDateRange}
         onChange={(range) => updateDateRangeParams(range, updateOptions)}
-        disabled={searchParams?.period !== 'custom'}
       />
     </>
   )

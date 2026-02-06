@@ -49,11 +49,9 @@ export function SalesEvolutionChart({
   })
 
   return (
-    <Card>
+    <Card className="rounded-xl">
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Evolução de vendas do período
-        </CardTitle>
+        <CardTitle>Evolução de vendas do período</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (

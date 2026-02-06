@@ -105,14 +105,14 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
-        <Card key={index} className="p-4 flex items-center gap-3">
+        <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
           <FeaturedIcon
             size="md"
             variant={card.variant as FeaturedIconProps['variant']}
             Icon={card.icon}
           />
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 truncate">{card.label}</span>
+            <span className="text-xs text-gray truncate">{card.label}</span>
             <span className="text-lg font-semibold text-gray-900">
               {card.value}
             </span>
