@@ -44,41 +44,48 @@ export async function TrialExpiredAlert() {
   return (
     <div
       className={cn(
-        'border-b',
+        'border-b z-50',
         isExpired || trialOneDayLeft
           ? 'bg-error-50 border-error-200'
           : 'bg-warning-50 border-warning-200',
       )}
     >
-      <div className="flex flex-wrap items-center justify-center gap-4 py-3 px-4">
-        <Icon
-          className={cn(
-            'size-8 stroke-1 flex-shrink-0',
-            isExpired || trialOneDayLeft
-              ? 'text-error-600'
-              : 'text-warning-600',
-          )}
-        />
-        <div className="flex flex-col flex-shrink-0">
-          <span
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 sm:gap-4 py-3 px-4">
+        <div className="flex items-center gap-3">
+          <Icon
             className={cn(
-              'text-sm font-semibold',
+              'size-6 sm:size-8 stroke-1 flex-shrink-0',
               isExpired || trialOneDayLeft
                 ? 'text-error-600'
                 : 'text-warning-600',
             )}
-          >
-            {isExpired
-              ? 'Seu teste expirou'
-              : `Seu teste expira em ${trialDaysLeft} dia${
-                  trialDaysLeft > 1 ? 's' : ''
-                }`}
-          </span>
-          <span className="text-sm text-gray">
-            Escolha o melhor plano para o seu negócio e contrate agora!
-          </span>
+          />
+          <div className="flex flex-col">
+            <span
+              className={cn(
+                'text-sm font-semibold',
+                isExpired || trialOneDayLeft
+                  ? 'text-error-600'
+                  : 'text-warning-600',
+              )}
+            >
+              {isExpired
+                ? 'Seu teste expirou'
+                : `Seu teste expira em ${trialDaysLeft} dia${
+                    trialDaysLeft > 1 ? 's' : ''
+                  }`}
+            </span>
+            <span className="text-sm text-gray">
+              Escolha o melhor plano para o seu negócio e contrate agora!
+            </span>
+          </div>
         </div>
-        <Button asChild size="md" RightIcon={IconArrowNarrowRight}>
+        <Button
+          asChild
+          size="md"
+          RightIcon={IconArrowNarrowRight}
+          className="w-full sm:w-auto"
+        >
           <Link href="/assinatura">Contratar</Link>
         </Button>
       </div>

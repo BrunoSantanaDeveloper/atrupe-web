@@ -27,7 +27,7 @@ export async function PartialBlockAlert() {
   const { paymentUrl } = await getPendingPaymentUrl()
 
   return (
-    <div className="border-b bg-warning-50 border-warning-200">
+    <div className="border-b bg-warning-50 border-warning-200 z-50">
       <div className="flex flex-wrap items-center justify-center gap-4 py-3 px-4">
         <IconCashBanknote className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
         <div className="flex flex-col flex-shrink-0">

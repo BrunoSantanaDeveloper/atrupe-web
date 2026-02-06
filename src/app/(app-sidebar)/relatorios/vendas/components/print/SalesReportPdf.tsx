@@ -10,7 +10,7 @@ import type {
   SalesReportPdfData,
   SalesReportPdfGroup,
   SalesReportPdfRecord,
-} from '../pdf-types'
+} from '../../pdf-types'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'

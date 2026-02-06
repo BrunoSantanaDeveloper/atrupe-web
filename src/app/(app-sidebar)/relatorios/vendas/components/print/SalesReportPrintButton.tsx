@@ -12,10 +12,10 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button, ButtonProps } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 
 // Icon
-import { IconPrinter, IconLoader2 } from '@tabler/icons-react'
+import { IconPrinter } from '@tabler/icons-react'
 
 // Actions
 import { getSalesReportPdfData } from '@/actions/sales-report-pdf'
@@ -23,15 +23,7 @@ import { getSalesReportPdfData } from '@/actions/sales-report-pdf'
 // PDF Component
 import { SalesReportPdf } from './SalesReportPdf'
 
-interface SalesReportPrintButtonProps {
-  variant?: ButtonProps['variant']
-  size?: ButtonProps['size']
-}
-
-export function SalesReportPrintButton({
-  variant = 'neutralOutline',
-  size = 'iconMd',
-}: SalesReportPrintButtonProps) {
+export function SalesReportPrintButton() {
   const [isLoading, setIsLoading] = useState(false)
   const searchParams = useSearchParams()
 
@@ -67,11 +59,10 @@ export function SalesReportPrintButton({
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          size={size}
-          variant={variant}
-          disabled={isLoading}
-          RightIcon={isLoading ? IconLoader2 : IconPrinter}
-          className={isLoading ? '[&_svg]:animate-spin' : ''}
+          size="iconMd"
+          variant="neutralOutline"
+          isLoading={isLoading}
+          RightIcon={IconPrinter}
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-28" align="end">

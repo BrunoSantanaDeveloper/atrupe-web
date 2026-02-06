@@ -11,7 +11,7 @@ import { OrdersOriginChart } from './OrdersOriginChart'
 import { SalesEvolutionChart } from './SalesEvolutionChart'
 import { ApprovedRejectedChart } from './ApprovedRejectedChart'
 import { QuotationsOriginChart } from './QuotationsOriginChart'
-import { SalesReportPrintButton } from './SalesReportPrintButton'
+import { SalesReportPrintButton } from './print/SalesReportPrintButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'

@@ -30,7 +30,14 @@ import { getMainNavigation, userRoleObj } from '@/consts/nav'
 
 // Icons
 import { IconComponent } from '../common/Icon'
-import { IconMenu2, IconX, IconUser, IconLogout } from '@tabler/icons-react'
+import {
+  IconX,
+  IconUser,
+  IconMenu2,
+  IconLogout,
+  IconFilter,
+  IconSearch,
+} from '@tabler/icons-react'
 
 // Hooks
 import { useSession } from 'next-auth/react'
@@ -178,30 +185,41 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   return (
     <>
       {/* Header with logo and toggle button - z-index higher to stay on top */}
-      <header className="flex items-center justify-between px-6 py-4 bg-white border-b lg:hidden relative z-50">
+      <header className="flex items-center justify-between px-4 py-3 bg-white border-b lg:hidden relative z-50">
         <Link href={userIsSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE}>
           <Image
             src={companyFavicon || favicon}
             alt="Logo da empresa"
             width={38}
             height={38}
-            className="object-contain"
+            className="object-contain ml-8"
           />
         </Link>
-        <Button
-          type="button"
-          variant="neutralGhost"
-          size="icon"
-          aria-label={open ? 'Fechar menu' : 'Abrir menu'}
-          className={className}
-          onClick={() => setOpen(!open)}
-        >
-          {open ? (
-            <IconX className="size-6 text-gray-600" />
-          ) : (
-            <IconMenu2 className="size-6 text-gray-600" />
-          )}
-        </Button>
+        <div className="flex gap-1">
+          <Button
+            type="button"
+            variant="neutralGhost"
+            size="iconMd"
+            RightIcon={IconSearch}
+            className="bg-transparent"
+          />
+          <Button
+            type="button"
+            variant="neutralGhost"
+            size="iconMd"
+            RightIcon={IconFilter}
+            className="bg-transparent"
+          />
+          <Button
+            type="button"
+            variant="neutralGhost"
+            size="iconMd"
+            aria-label={open ? 'Fechar menu' : 'Abrir menu'}
+            className={cn(className, 'bg-transparent')}
+            onClick={() => setOpen(!open)}
+            RightIcon={open ? IconX : IconMenu2}
+          />
+        </div>
       </header>
 
       {/* Full screen menu - slides behind header with clip animation */}
