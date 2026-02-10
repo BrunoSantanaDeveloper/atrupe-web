@@ -33,6 +33,9 @@ export type PeriodType =
   | 'current_month'
   | 'last_month'
   | 'penultimate_month'
+  | 'next_month'
+  | 'next_3_months'
+  | 'next_6_months'
   | 'last_6_months'
   | 'last_12_months'
   | 'last_24_months'
@@ -94,7 +97,25 @@ export function calculatePeriodDates(
   }
 
   const offset = monthOffsets[normalized]
-  if (offset === undefined) return null
+  if (offset === undefined) {
+    // Handle future period types
+    if (normalized === 'next_month') {
+      const startDate = new Date(today.getFullYear(), today.getMonth() + 1, 1)
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 2, 0)
+      return { startDate, endDate: monthEnd }
+    }
+    if (normalized === 'next_3_months') {
+      const startDate = new Date(today)
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 3, 0)
+      return { startDate, endDate: monthEnd }
+    }
+    if (normalized === 'next_6_months') {
+      const startDate = new Date(today)
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 6, 0)
+      return { startDate, endDate: monthEnd }
+    }
+    return null
+  }
 
   const startDate = new Date(today.getFullYear(), today.getMonth() - offset, 1)
 
