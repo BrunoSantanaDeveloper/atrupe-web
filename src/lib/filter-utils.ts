@@ -26,6 +26,8 @@ export function getDateRangeFromParams(
 
 export type PeriodType =
   | 'current_month'
+  | 'last_month'
+  | 'penultimate_month'
   | 'last_6_months'
   | 'last_12_months'
   | 'last_24_months'
@@ -53,6 +55,8 @@ export function calculatePeriodDates(
 
   const monthOffsets: Record<Exclude<PeriodType, 'custom'>, number> = {
     current_month: 0,
+    last_month: 1,
+    penultimate_month: 2,
     last_6_months: 5,
     last_12_months: 11,
     last_24_months: 23,
@@ -62,7 +66,63 @@ export function calculatePeriodDates(
   const offset = monthOffsets[period]
   const startDate = new Date(today.getFullYear(), today.getMonth() - offset, 1)
 
+  // For single-month periods, end date is last day of that specific month
+  if (['current_month', 'last_month', 'penultimate_month'].includes(period)) {
+    const monthEndDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth() + 1,
+      0,
+    )
+    return { startDate, endDate: monthEndDate }
+  }
+
   return { startDate, endDate }
+}
+
+// ============================================
+// PERIOD OPTIONS GENERATION
+// ============================================
+
+const MONTH_NAMES_PT = [
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
+]
+
+/**
+ * Generates dynamic period options with month names
+ * Example output for February 2026:
+ * - Fevereiro de 2026 (Mês atual)
+ * - Janeiro de 2026 (Último mês)
+ * - Dezembro de 2025 (Penúltimo mês)
+ * - Personalizado
+ */
+export function generateMonthPeriodOptions() {
+  const today = new Date()
+
+  const getMonthLabel = (offset: number) => {
+    const date = new Date(today.getFullYear(), today.getMonth() - offset, 1)
+    return `${MONTH_NAMES_PT[date.getMonth()]} de ${date.getFullYear()}`
+  }
+
+  return [
+    { value: 'current_month', label: `${getMonthLabel(0)} (Mês atual)` },
+    { value: 'last_month', label: `${getMonthLabel(1)} (Último mês)` },
+    {
+      value: 'penultimate_month',
+      label: `${getMonthLabel(2)} (Penúltimo mês)`,
+    },
+    { value: 'custom', label: 'Personalizado' },
+  ]
 }
 
 // ============================================

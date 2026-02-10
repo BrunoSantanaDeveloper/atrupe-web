@@ -96,9 +96,14 @@ function GeneralCard({ total }: { total: number }) {
 }
 
 export function SectorCardsGrid({ searchParams }: SearchParamsType) {
+  const filters = {
+    startDate: searchParams?.startDate as string | undefined,
+    endDate: searchParams?.endDate as string | undefined,
+  }
+
   const { data, isLoading } = useQuery({
-    queryKey: ['sector-results', searchParams],
-    queryFn: () => getSectorResults(),
+    queryKey: ['sector-results', filters],
+    queryFn: () => getSectorResults(filters),
   })
 
   if (isLoading) {

@@ -38,7 +38,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           name="period"
           label="Período"
           placeholder="Selecione o período"
-          className="lg:w-[200px] w-full"
+          className="lg:w-[320px] w-full"
           options={periodOptions}
           value={(searchParams?.period as string) || 'current_month'}
           onChange={(value) =>
