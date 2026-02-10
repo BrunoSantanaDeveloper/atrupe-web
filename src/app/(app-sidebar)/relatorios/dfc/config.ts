@@ -1,13 +1,14 @@
 // Filter options for DFC report
 export const REGIME_OPTIONS = [
+  { value: 'competencia', label: 'Competência' },
   { value: 'realizado', label: 'Realizado' },
-  { value: 'orcado', label: 'Orçado' },
 ]
 
 export const PERIOD_OPTIONS = [
-  { value: 'ultimo-mes', label: 'Último mês' },
-  { value: 'ultimos-3-meses', label: 'Últimos 3 meses' },
-  { value: 'ultimos-6-meses', label: 'Últimos 6 meses' },
-  { value: 'ultimo-ano', label: 'Último ano' },
-  { value: 'personalizado', label: 'Personalizado' },
+  { value: 'current_month', label: 'Mês atual' },
+  { value: 'last_month', label: 'Mês anterior' },
+  { value: 'last_3_months', label: '3 meses anteriores' },
+  { value: 'last_6_months', label: '6 meses anteriores' },
+  { value: 'last_12_months', label: '12 meses anteriores' },
+  { value: 'custom', label: 'Personalizado' },
 ]

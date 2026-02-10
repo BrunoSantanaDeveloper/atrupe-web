@@ -39,6 +39,7 @@ export type PeriodType =
   | 'next_month'
   | 'next_3_months'
   | 'next_6_months'
+  | 'last_3_months'
   | 'last_6_months'
   | 'last_12_months'
   | 'last_24_months'
@@ -112,6 +113,7 @@ export function calculatePeriodDates(
     current_month: 0,
     last_month: 1,
     penultimate_month: 2,
+    last_3_months: 2,
     last_6_months: 5,
     last_12_months: 11,
     last_24_months: 23,

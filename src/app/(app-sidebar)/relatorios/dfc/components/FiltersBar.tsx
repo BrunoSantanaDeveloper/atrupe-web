@@ -27,7 +27,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
   const params = useSearchParams()
   const updateOptions = { router, params }
 
-  const currentRegime = (searchParams?.regime as string) || 'realizado'
+  const currentRegime = (searchParams?.regime as string) || 'competencia'
 
   const defaultDateRange = getDateRangeFromParams(
     searchParams?.startDate as string,
@@ -56,7 +56,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           placeholder="Selecione o período"
           className="lg:w-[200px] w-full"
           options={PERIOD_OPTIONS}
-          value={(searchParams?.period as string) || 'ultimos-6-meses'}
+          value={(searchParams?.period as string) || 'current_month'}
           onChange={(value) =>
             updatePeriodParams(value as PeriodType, updateOptions)
           }
