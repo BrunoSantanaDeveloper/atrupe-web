@@ -36,7 +36,7 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Topbar
         title="Financeiro"
         primaryCta={
