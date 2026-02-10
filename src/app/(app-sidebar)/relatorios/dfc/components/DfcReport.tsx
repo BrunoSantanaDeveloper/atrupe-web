@@ -2,6 +2,10 @@
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { FiltersBar } from './FiltersBar'
+import { SummaryCards } from './SummaryCards'
+import { ChartsSection } from './ChartsSection'
+import { DfcTable } from './DfcTable'
 
 // Icons
 import { IconPrinter } from '@tabler/icons-react'
@@ -13,10 +17,8 @@ import { Button } from '@/components/ui/button'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function DfcReport({ searchParams }: SearchParamsType) {
-  console.info(searchParams)
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Topbar
         title="Relatório DFC"
         primaryCta={
@@ -27,6 +29,10 @@ export function DfcReport({ searchParams }: SearchParamsType) {
           />
         }
       />
+      <FiltersBar searchParams={searchParams} />
+      <SummaryCards searchParams={searchParams} />
+      <ChartsSection searchParams={searchParams} />
+      <DfcTable searchParams={searchParams} />
     </div>
   )
 }
