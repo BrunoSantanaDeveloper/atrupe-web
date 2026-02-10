@@ -1,8 +1,12 @@
 // Types for Commission Report (Comissões)
 
-export type CommissionType = 'sold_value' | 'received_value'
+export type CommissionType = 'all' | 'sold_value' | 'received_value'
 
-export type CommissionGroupBy = 'vendedor' | 'cliente' | 'none'
+export type CommissionGroupBy =
+  | 'vendedor'
+  | 'saleDate'
+  | 'receivedDate'
+  | 'none'
 
 export type CommissionOrderBy =
   | 'receivedDate'

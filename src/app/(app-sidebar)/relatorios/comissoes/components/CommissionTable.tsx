@@ -39,8 +39,8 @@ import type {
 interface CommissionTableProps extends SearchParamsType {}
 
 export function CommissionTable({ searchParams }: CommissionTableProps) {
-  const [groupBy, setGroupBy] = useState<CommissionGroupBy>('vendedor')
-  const [orderBy, setOrderBy] = useState<CommissionOrderBy>('receivedDate')
+  const [groupBy, setGroupBy] = useState<CommissionGroupBy>('none')
+  const [orderBy, setOrderBy] = useState<CommissionOrderBy>('saleDate')
 
   const page = parseInt((searchParams?.page as string) || '1')
 
