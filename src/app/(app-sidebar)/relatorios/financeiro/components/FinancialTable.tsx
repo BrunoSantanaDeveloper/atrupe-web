@@ -1,11 +1,11 @@
 'use client'
 
 import { Fragment, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import {
   Table,
@@ -20,7 +20,14 @@ import { Badge } from '@/components/ui/badge'
 import { TablePagination } from '@/components/common/TablePagination'
 
 // Config
-import { statusOptions, groupByOptions, orderByOptions } from '../config'
+import {
+  statusOptionsReceitas,
+  statusOptionsDespesas,
+  groupByOptionsReceitas,
+  groupByOptionsDespesas,
+  orderByOptionsReceitas,
+  orderByOptionsDespesas,
+} from '../config'
 
 // Actions
 import { getFinancialTable } from '@/actions/financial-report'
@@ -37,7 +44,6 @@ interface FinancialTableProps extends SearchParamsType {
 }
 
 export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
-  const router = useRouter()
   const urlParams = useSearchParams()
 
   const [status, setStatus] = useState<FinancialStatus>('received')
@@ -73,12 +79,6 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
       }),
   })
 
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(urlParams.toString())
-    params.set('page', String(newPage))
-    router.push(`?${params.toString()}`)
-  }
-
   const getValueColor = (recordStatus: string) => {
     switch (recordStatus) {
       case 'received':
@@ -94,40 +94,39 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
 
   return (
     <Card>
-      <CardHeader className="flex-row items-center justify-between gap-4 flex-wrap">
-        <CardTitle className="text-base flex items-center gap-2">
-          Serviços
-          <Badge variant="neutralLight">{data?.totalCount || 0}</Badge>
-        </CardTitle>
+      <CardHeader className="flex-row items-center gap-4 flex-wrap space-y-0">
+        <SelectBasic
+          name="status"
+          label={tab === 'receitas' ? 'Receitas' : 'Despesas'}
+          options={
+            tab === 'receitas' ? statusOptionsReceitas : statusOptionsDespesas
+          }
+          value={status}
+          onChange={(v) => setStatus(v as FinancialStatus)}
+          className="lg:w-[200px] w-full"
+        />
 
-        <div className="flex items-center gap-4 flex-wrap">
-          <SelectBasic
-            name="status"
-            label={tab === 'receitas' ? 'Receitas' : 'Despesas'}
-            options={statusOptions}
-            value={status}
-            onChange={(v) => setStatus(v as FinancialStatus)}
-            className="w-32"
-          />
+        <SelectBasic
+          name="groupBy"
+          label="Agrupar por"
+          options={
+            tab === 'receitas' ? groupByOptionsReceitas : groupByOptionsDespesas
+          }
+          value={groupBy}
+          onChange={setGroupBy}
+          className="lg:w-[200px] w-full"
+        />
 
-          <SelectBasic
-            name="groupBy"
-            label="Agrupar por"
-            options={groupByOptions}
-            value={groupBy}
-            onChange={setGroupBy}
-            className="w-32"
-          />
-
-          <SelectBasic
-            name="orderBy"
-            label="Ordenar por"
-            options={orderByOptions}
-            value={orderBy}
-            onChange={setOrderBy}
-            className="w-44"
-          />
-        </div>
+        <SelectBasic
+          name="orderBy"
+          label="Ordenar por"
+          options={
+            tab === 'receitas' ? orderByOptionsReceitas : orderByOptionsDespesas
+          }
+          value={orderBy}
+          onChange={setOrderBy}
+          className="lg:w-[200px] w-full"
+        />
       </CardHeader>
 
       <CardContent>
@@ -148,7 +147,14 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[40%]">Serviços</TableHead>
+                  <TableHead className="w-[40%]">
+                    <span className="flex items-center gap-2">
+                      Serviços
+                      <Badge variant="neutralLight">
+                        {data?.totalCount || 0}
+                      </Badge>
+                    </span>
+                  </TableHead>
                   <TableHead>Data do recebimento</TableHead>
                   <TableHead className="text-right">Vendas</TableHead>
                   <TableHead className="text-right w-16">100%</TableHead>
@@ -233,9 +239,8 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             {data.pagination.totalPages > 1 && (
               <div className="mt-4">
                 <TablePagination
-                  currentPage={data.pagination.page}
-                  totalPages={data.pagination.totalPages}
-                  onPageChange={handlePageChange}
+                  searchParams={searchParams as { [key: string]: string }}
+                  lastPage={data.pagination.totalPages}
                 />
               </div>
             )}

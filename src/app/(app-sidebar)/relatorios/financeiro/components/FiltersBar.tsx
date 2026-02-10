@@ -40,7 +40,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           placeholder="Selecione o período"
           className="lg:w-[200px] w-full"
           options={periodOptions}
-          value={(searchParams?.period as string) || 'custom'}
+          value={(searchParams?.period as string) || 'thisMonth'}
           onChange={(value) =>
             updatePeriodParams(value as PeriodType, updateOptions)
           }
