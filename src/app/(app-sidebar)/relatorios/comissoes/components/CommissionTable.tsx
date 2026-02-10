@@ -1,7 +1,6 @@
 'use client'
 
 import { Fragment, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -31,6 +30,7 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type {
+  CommissionType,
   CommissionGroupBy,
   CommissionOrderBy,
   CommissionRecord,
@@ -39,30 +39,24 @@ import type {
 interface CommissionTableProps extends SearchParamsType {}
 
 export function CommissionTable({ searchParams }: CommissionTableProps) {
-  const router = useRouter()
-  const urlParams = useSearchParams()
-
   const [groupBy, setGroupBy] = useState<CommissionGroupBy>('vendedor')
   const [orderBy, setOrderBy] = useState<CommissionOrderBy>('receivedDate')
 
-  const page = parseInt(urlParams.get('page') || '1')
+  const page = parseInt((searchParams?.page as string) || '1')
 
   const { data, isLoading } = useQuery({
     queryKey: ['commission-table', searchParams, groupBy, orderBy, page],
     queryFn: () =>
       getCommissionTable({
+        commissionType: searchParams?.commissionType as CommissionType,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
         groupBy,
         orderBy,
         page,
         limit: 10,
       }),
   })
-
-  const handlePageChange = (newPage: number) => {
-    const params = new URLSearchParams(urlParams.toString())
-    params.set('page', String(newPage))
-    router.push(`?${params.toString()}`)
-  }
 
   const renderRecord = (record: CommissionRecord) => (
     <TableRow key={record.id}>
@@ -181,9 +175,8 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
             {data.pagination.totalPages > 1 && (
               <div className="p-4">
                 <TablePagination
-                  currentPage={data.pagination.page}
-                  totalPages={data.pagination.totalPages}
-                  onPageChange={handlePageChange}
+                  searchParams={searchParams as Record<string, string>}
+                  lastPage={data.pagination.totalPages}
                 />
               </div>
             )}

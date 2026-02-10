@@ -18,11 +18,17 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { CommissionType } from '../types'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     queryKey: ['commission-summary', searchParams],
-    queryFn: () => getCommissionSummary(),
+    queryFn: () =>
+      getCommissionSummary({
+        commissionType: searchParams?.commissionType as CommissionType,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
   })
 
   const cards = [

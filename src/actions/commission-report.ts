@@ -1,10 +1,10 @@
 'use server'
 
+import apiInstance from '@/lib/api'
+
 import type {
   CommissionSummary,
   CommissionTableData,
-  CommissionRecord,
-  CommissionGroup,
   CommissionType,
   CommissionGroupBy,
   CommissionOrderBy,
@@ -26,91 +26,45 @@ interface CommissionTableFilters {
   limit?: number
 }
 
-// ============================================
-// MOCK DATA - Remover quando backend estiver pronto
-// ============================================
-
-const MOCK_SUMMARY: CommissionSummary = {
-  salesTotal: 4898125,
-  salesCount: 230,
-  receivedTotal: 2500080,
-  receivedCount: 180,
-  commissionTotal: 278242,
-}
-
-function generateMockRecords(count: number): CommissionRecord[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `record-${i + 100}`,
-    clientName: 'Nome do Cliente Ltda',
-    description: `${108 - i}-v1 - ${i === 0 ? 'Venda rápida' : 'Descrição do serviço'}`,
-    saleDate: '00/00/0000',
-    receivedDate: '00/00/0000',
-    saleValue: i === 0 ? 5000000 : 500000,
-    receivedValue: i === 0 ? 5000000 : 500000,
-    percentage: 14,
-  }))
-}
-
-const MOCK_GROUPS: CommissionGroup[] = [
-  {
-    vendedorId: 'v1',
-    vendedorName: 'Nome do Vendedor',
-    count: 4,
-    saleTotal: 450000,
-    receivedTotal: 450000,
-    records: generateMockRecords(4),
-  },
-  {
-    vendedorId: 'v2',
-    vendedorName: 'Nome do Vendedor',
-    count: 40,
-    saleTotal: 450000,
-    receivedTotal: 450000,
-    records: generateMockRecords(6),
-  },
-]
-
-// ============================================
-// SERVER ACTIONS
-// ============================================
+const BASE_ROUTE = '/report/commission'
 
 export async function getCommissionSummary(
-  _filters?: CommissionSummaryFilters,
+  filters?: CommissionSummaryFilters,
 ): Promise<CommissionSummary> {
-  // TODO: Replace with real API call
-  await new Promise((resolve) => setTimeout(resolve, 500))
-  return MOCK_SUMMARY
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/summary`, { params: filters })
+    return res.data
+  } catch (error) {
+    console.error('Error fetching commission summary:', error)
+    return {
+      salesTotal: 0,
+      salesCount: 0,
+      receivedTotal: 0,
+      receivedCount: 0,
+      commissionTotal: 0,
+    }
+  }
 }
 
 export async function getCommissionTable(
-  _filters?: CommissionTableFilters,
+  filters?: CommissionTableFilters,
 ): Promise<CommissionTableData> {
-  // TODO: Replace with real API call
-  await new Promise((resolve) => setTimeout(resolve, 600))
-
-  const groupBy = _filters?.groupBy || 'vendedor'
-
-  if (groupBy === 'none') {
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/table`, { params: filters })
+    return res.data
+  } catch (error) {
+    console.error('Error fetching commission table:', error)
     return {
       grouped: false,
-      records: generateMockRecords(10),
+      records: [],
       groups: [],
-      totalCount: 230,
+      totalCount: 0,
       pagination: {
-        page: _filters?.page || 1,
-        totalPages: 10,
+        page: 1,
+        totalPages: 1,
       },
     }
-  }
-
-  return {
-    grouped: true,
-    records: [],
-    groups: MOCK_GROUPS,
-    totalCount: 230,
-    pagination: {
-      page: _filters?.page || 1,
-      totalPages: 10,
-    },
   }
 }
