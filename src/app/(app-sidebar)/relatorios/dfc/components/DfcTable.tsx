@@ -35,7 +35,12 @@ export function DfcTable({ searchParams }: SearchParamsType) {
 
   const { data, isLoading } = useQuery({
     queryKey: ['dfc-table', searchParams],
-    queryFn: () => getDfcTable(),
+    queryFn: () =>
+      getDfcTable({
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+        regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+      }),
   })
 
   const toggleRow = (id: string) => {

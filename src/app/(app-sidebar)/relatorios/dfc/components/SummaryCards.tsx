@@ -22,7 +22,12 @@ import type { SearchParamsType } from '@/types/coreTypes'
 export function SummaryCards({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
     queryKey: ['dfc-summary', searchParams],
-    queryFn: () => getDfcSummary(),
+    queryFn: () =>
+      getDfcSummary({
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+        regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+      }),
   })
 
   const cards = [

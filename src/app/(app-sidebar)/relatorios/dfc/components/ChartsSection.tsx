@@ -60,13 +60,23 @@ const revenueExpenseConfig = {
 export function ChartsSection({ searchParams }: SearchParamsType) {
   const { data: cashFlowData, isLoading: loadingCashFlow } = useQuery({
     queryKey: ['dfc-cash-flow-chart', searchParams],
-    queryFn: () => getDfcCashFlowChart(),
+    queryFn: () =>
+      getDfcCashFlowChart({
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+        regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+      }),
   })
 
   const { data: revenueExpenseData, isLoading: loadingRevenueExpense } =
     useQuery({
       queryKey: ['dfc-revenue-expense-chart', searchParams],
-      queryFn: () => getDfcRevenueExpenseChart(),
+      queryFn: () =>
+        getDfcRevenueExpenseChart({
+          startDate: searchParams?.startDate as string,
+          endDate: searchParams?.endDate as string,
+          regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+        }),
     })
 
   return (
