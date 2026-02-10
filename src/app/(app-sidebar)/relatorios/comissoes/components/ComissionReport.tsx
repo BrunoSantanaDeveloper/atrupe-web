@@ -2,9 +2,12 @@
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { FiltersBar } from './FiltersBar'
+import { SummaryCards } from './SummaryCards'
+import { CommissionTable } from './CommissionTable'
 
 // Icons
-import { IconPrinter } from '@tabler/icons-react'
+import { IconPrinter, IconFileSpreadsheet } from '@tabler/icons-react'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -13,20 +16,34 @@ import { Button } from '@/components/ui/button'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function ComissionReport({ searchParams }: SearchParamsType) {
-  console.info(searchParams)
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Topbar
-        title="Relatório de Comissões"
+        title="Comissões"
         primaryCta={
-          <Button
-            variant="neutralOutline"
-            size="iconMd"
-            RightIcon={IconPrinter}
-          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="neutralOutline"
+              size="iconMd"
+              RightIcon={IconPrinter}
+            />
+            <Button
+              variant="neutralOutline"
+              size="iconMd"
+              RightIcon={IconFileSpreadsheet}
+            />
+          </div>
         }
       />
+
+      {/* Filters */}
+      <FiltersBar searchParams={searchParams} />
+
+      {/* Summary Cards */}
+      <SummaryCards searchParams={searchParams} />
+
+      {/* Table */}
+      <CommissionTable searchParams={searchParams} />
     </div>
   )
 }

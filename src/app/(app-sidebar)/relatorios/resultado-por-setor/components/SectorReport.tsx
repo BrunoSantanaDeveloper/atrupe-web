@@ -18,7 +18,7 @@ export function SectorReport({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
-        title="Relatório de Resultado por Setor"
+        title="Resultado por Setor"
         primaryCta={
           <Button
             variant="neutralOutline"
