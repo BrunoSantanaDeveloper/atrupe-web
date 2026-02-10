@@ -33,6 +33,9 @@ export type PeriodType =
   | 'current_month'
   | 'last_month'
   | 'penultimate_month'
+  | 'next_7_days'
+  | 'next_15_days'
+  | 'next_30_days'
   | 'next_month'
   | 'next_3_months'
   | 'next_6_months'
@@ -74,6 +77,25 @@ export function calculatePeriodDates(
     const startDate = new Date(today)
     startDate.setDate(startDate.getDate() - 15)
     return { startDate, endDate: new Date(today) }
+  }
+
+  // Future day-based periods
+  if (period === 'next_7_days') {
+    const endDate = new Date(today)
+    endDate.setDate(endDate.getDate() + 7)
+    return { startDate: new Date(today), endDate }
+  }
+
+  if (period === 'next_15_days') {
+    const endDate = new Date(today)
+    endDate.setDate(endDate.getDate() + 15)
+    return { startDate: new Date(today), endDate }
+  }
+
+  if (period === 'next_30_days') {
+    const endDate = new Date(today)
+    endDate.setDate(endDate.getDate() + 30)
+    return { startDate: new Date(today), endDate }
   }
 
   // Normalize aliases

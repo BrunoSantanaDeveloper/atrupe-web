@@ -87,7 +87,7 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
         <SelectBasic
           name="movement"
           label="Movimentação"
-          className="w-[160px]"
+          className="lg:w-[200px] w-full"
           options={movementOptions}
           value={(searchParams?.movement as string) || 'all'}
           onChange={(value) =>
@@ -97,7 +97,7 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
         <SelectBasic
           name="groupBy"
           label="Agrupar por"
-          className="w-[160px]"
+          className="lg:w-[200px] w-full"
           options={groupByOptions}
           value={(searchParams?.groupBy as string) || 'date'}
           onChange={(value) =>
@@ -107,7 +107,7 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
         <SelectBasic
           name="orderBy"
           label="Ordenar por"
-          className="w-[200px]"
+          className="lg:w-[200px] w-full"
           options={orderByOptions}
           value={(searchParams?.orderBy as string) || 'dueDate'}
           onChange={(value) =>

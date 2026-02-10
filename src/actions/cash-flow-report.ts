@@ -1,6 +1,6 @@
 'use server'
 
-import { apiInstance } from '@/lib/api'
+import apiInstance from '@/lib/api'
 
 import type {
   CashFlowSummary,

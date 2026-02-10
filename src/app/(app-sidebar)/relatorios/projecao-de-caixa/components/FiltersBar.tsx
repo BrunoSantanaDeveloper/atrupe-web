@@ -1,7 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
 import { Card, CardHeader } from '@/components/ui/card'
@@ -41,7 +40,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           placeholder="Selecione o período"
           className="lg:w-[200px] w-full"
           options={periodOptions}
-          value={(searchParams?.period as string) || 'custom'}
+          value={(searchParams?.period as string) || 'next_7_days'}
           onChange={(value) =>
             updatePeriodParams(value as PeriodType, updateOptions)
           }
