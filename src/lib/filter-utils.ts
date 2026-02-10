@@ -25,6 +25,11 @@ export function getDateRangeFromParams(
 // ============================================
 
 export type PeriodType =
+  | 'today'
+  | '7days'
+  | '15days'
+  | 'thisMonth'
+  | 'lastMonth'
   | 'current_month'
   | 'last_month'
   | 'penultimate_month'
@@ -51,9 +56,34 @@ export function calculatePeriodDates(
   const today = new Date()
   today.setHours(12, 0, 0, 0)
 
+  // Day-based periods
+  if (period === 'today') {
+    return { startDate: new Date(today), endDate: new Date(today) }
+  }
+
+  if (period === '7days') {
+    const startDate = new Date(today)
+    startDate.setDate(startDate.getDate() - 7)
+    return { startDate, endDate: new Date(today) }
+  }
+
+  if (period === '15days') {
+    const startDate = new Date(today)
+    startDate.setDate(startDate.getDate() - 15)
+    return { startDate, endDate: new Date(today) }
+  }
+
+  // Normalize aliases
+  const normalized =
+    period === 'thisMonth'
+      ? 'current_month'
+      : period === 'lastMonth'
+        ? 'last_month'
+        : period
+
   const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0)
 
-  const monthOffsets: Record<Exclude<PeriodType, 'custom'>, number> = {
+  const monthOffsets: Record<string, number> = {
     current_month: 0,
     last_month: 1,
     penultimate_month: 2,
@@ -63,11 +93,15 @@ export function calculatePeriodDates(
     last_36_months: 35,
   }
 
-  const offset = monthOffsets[period]
+  const offset = monthOffsets[normalized]
+  if (offset === undefined) return null
+
   const startDate = new Date(today.getFullYear(), today.getMonth() - offset, 1)
 
   // For single-month periods, end date is last day of that specific month
-  if (['current_month', 'last_month', 'penultimate_month'].includes(period)) {
+  if (
+    ['current_month', 'last_month', 'penultimate_month'].includes(normalized)
+  ) {
     const monthEndDate = new Date(
       startDate.getFullYear(),
       startDate.getMonth() + 1,
@@ -131,7 +165,7 @@ export function generateMonthPeriodOptions() {
 
 interface UpdateParamsOptions {
   router: AppRouterInstance
-  params: URLSearchParams
+  params: URLSearchParams | { toString(): string }
   resetPage?: boolean
 }
 
@@ -144,15 +178,16 @@ export function updateFilterParam(
   options: UpdateParamsOptions,
 ) {
   const { router, params, resetPage = true } = options
+  const newParams = new URLSearchParams(params.toString())
 
   if (!value || value === 'all') {
-    params.delete(key)
+    newParams.delete(key)
   } else {
-    params.set(key, value)
+    newParams.set(key, value)
   }
 
-  if (resetPage) params.delete('page')
-  router.push(`?${params.toString()}`)
+  if (resetPage) newParams.delete('page')
+  router.push(`?${newParams.toString()}`)
 }
 
 /**
@@ -163,22 +198,23 @@ export function updatePeriodParams(
   options: UpdateParamsOptions,
 ) {
   const { router, params, resetPage = true } = options
+  const newParams = new URLSearchParams(params.toString())
 
   if (period === 'custom') {
-    params.delete('startDate')
-    params.delete('endDate')
-    params.set('period', period)
+    newParams.delete('startDate')
+    newParams.delete('endDate')
+    newParams.set('period', period)
   } else {
     const dates = calculatePeriodDates(period)
     if (dates) {
-      params.set('startDate', formatDateToISO(dates.startDate))
-      params.set('endDate', formatDateToISO(dates.endDate))
-      params.set('period', period)
+      newParams.set('startDate', formatDateToISO(dates.startDate))
+      newParams.set('endDate', formatDateToISO(dates.endDate))
+      newParams.set('period', period)
     }
   }
 
-  if (resetPage) params.delete('page')
-  router.push(`?${params.toString()}`)
+  if (resetPage) newParams.delete('page')
+  router.push(`?${newParams.toString()}`)
 }
 
 /**
@@ -189,16 +225,17 @@ export function updateDateRangeParams(
   options: UpdateParamsOptions,
 ) {
   const { router, params, resetPage = true } = options
+  const newParams = new URLSearchParams(params.toString())
 
   if (range?.from && range?.to) {
-    params.set('startDate', formatDateToISO(range.from))
-    params.set('endDate', formatDateToISO(range.to))
-    params.set('period', 'custom')
+    newParams.set('startDate', formatDateToISO(range.from))
+    newParams.set('endDate', formatDateToISO(range.to))
+    newParams.set('period', 'custom')
   } else {
-    params.delete('startDate')
-    params.delete('endDate')
+    newParams.delete('startDate')
+    newParams.delete('endDate')
   }
 
-  if (resetPage) params.delete('page')
-  router.push(`?${params.toString()}`)
+  if (resetPage) newParams.delete('page')
+  router.push(`?${newParams.toString()}`)
 }

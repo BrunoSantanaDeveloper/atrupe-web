@@ -51,7 +51,12 @@ const chartConfig = {
 export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
   const { data, isLoading } = useQuery({
     queryKey: ['financial-chart', searchParams, tab],
-    queryFn: () => getFinancialChart({ tab }),
+    queryFn: () =>
+      getFinancialChart({
+        tab,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
   })
 
   if (isLoading) {

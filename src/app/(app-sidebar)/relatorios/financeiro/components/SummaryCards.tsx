@@ -32,7 +32,12 @@ interface SummaryCardsProps extends SearchParamsType {
 export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
   const { data, isLoading } = useQuery({
     queryKey: ['financial-summary', searchParams, tab],
-    queryFn: () => getFinancialSummary({ tab }),
+    queryFn: () =>
+      getFinancialSummary({
+        tab,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
+      }),
   })
 
   const cards = [

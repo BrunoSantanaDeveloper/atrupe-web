@@ -3,8 +3,8 @@
 export const periodOptions = [
   { value: 'today', label: 'Hoje' },
   { value: '7days', label: 'Últimos 7 dias' },
-  { value: '30days', label: 'Últimos 30 dias' },
-  { value: 'thisMonth', label: 'Este mês' },
+  { value: '15days', label: 'Últimos 15 dias' },
+  { value: 'thisMonth', label: 'Mês atual' },
   { value: 'lastMonth', label: 'Mês passado' },
   { value: 'custom', label: 'Personalizado' },
 ]

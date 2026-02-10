@@ -59,6 +59,8 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
     queryFn: () =>
       getFinancialTable({
         tab,
+        startDate: searchParams?.startDate as string,
+        endDate: searchParams?.endDate as string,
         status: status === 'all' ? undefined : status,
         groupBy: groupBy as 'none' | 'client' | 'date',
         orderBy: orderBy as
