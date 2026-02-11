@@ -86,8 +86,34 @@ export function SalesEvolutionChart({
               />
               <ChartTooltip
                 cursor={false}
-                content={<ChartTooltipContent />}
-                formatter={(value) => formatCurrencyToBrl(value as number)}
+                content={
+                  <ChartTooltipContent
+                    formatter={(value, name, item) => {
+                      const count = item.payload?.count ?? 0
+                      const color = item.color || 'var(--color-approved)'
+                      return (
+                        <div className="flex w-full items-center gap-2">
+                          <div
+                            className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                            style={{ backgroundColor: color }}
+                          />
+                          <div className="flex flex-1 items-center justify-between gap-8">
+                            <span className="text-gray">
+                              {count}{' '}
+                              {
+                                chartConfig[name as keyof typeof chartConfig]
+                                  ?.label
+                              }
+                            </span>
+                            <span className="font-medium tabular-nums">
+                              {formatCurrencyToBrl(value as number)}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                    }}
+                  />
+                }
               />
               <Line
                 dataKey="approved"

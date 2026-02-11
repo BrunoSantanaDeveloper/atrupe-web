@@ -31,6 +31,7 @@ export interface SalesSummary {
 export interface SalesEvolutionData {
   day: string
   approved: number
+  count: number
 }
 
 export interface ApprovedRejectedData {
