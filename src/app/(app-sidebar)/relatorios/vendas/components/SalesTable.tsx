@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
@@ -110,33 +110,55 @@ export function SalesTable({ searchParams }: SalesTableProps) {
   const isGrouped = tableData.grouped
   const totalPages = tableData.pagination?.totalPages || 1
 
-  const renderRecord = (record: SaleRecord) => (
-    <TableRow key={record.id}>
-      <TableCell>
-        <p className="font-medium">
-          {record.clientName || 'Cliente não informado'}
-        </p>
-        <p className="text-gray truncate">{record.serviceDescription}</p>
-      </TableCell>
-      <TableCell className="text-gray-600">
-        {record.approvedDate || '-'}
-      </TableCell>
-      <TableCell className="text-success-700 text-nowrap">
-        {formatCurrencyToBrl(record.value)}
-      </TableCell>
-      <TableCell>
-        <Badge
-          status
-          variant={phaseConfig[record.phase]?.variant || 'neutralLight'}
-        >
-          {phaseConfig[record.phase]?.label || 'Desconhecido'}
-        </Badge>
-      </TableCell>
-      <TableCell className="text-right text-gray-600">
-        {record.phasePercentage}%
-      </TableCell>
-    </TableRow>
-  )
+  // Calculate total filtered value for percentage column
+  const totalFiltered = useMemo(() => {
+    if (!tableData) return 0
+    if ('groups' in tableData && tableData.groups) {
+      return tableData.groups.reduce(
+        (sum: number, g: SalesClientGroup | SalesSellerGroup) => sum + g.total,
+        0,
+      )
+    }
+    if ('records' in tableData && tableData.records) {
+      return tableData.records.reduce(
+        (sum: number, r: SaleRecord) => sum + r.value,
+        0,
+      )
+    }
+    return 0
+  }, [tableData])
+
+  const renderRecord = (record: SaleRecord) => {
+    const pct =
+      totalFiltered > 0
+        ? ((record.value / totalFiltered) * 100).toFixed(1)
+        : '0.0'
+    return (
+      <TableRow key={record.id}>
+        <TableCell>
+          <p className="font-medium">
+            {record.clientName || 'Cliente não informado'}
+          </p>
+          <p className="text-gray truncate">{record.serviceDescription}</p>
+        </TableCell>
+        <TableCell className="text-gray-600">
+          {record.approvedDate || '-'}
+        </TableCell>
+        <TableCell className="text-success-700 text-nowrap">
+          {formatCurrencyToBrl(record.value)}
+        </TableCell>
+        <TableCell>
+          <Badge
+            status
+            variant={phaseConfig[record.phase]?.variant || 'neutralLight'}
+          >
+            {phaseConfig[record.phase]?.label || 'Desconhecido'}
+          </Badge>
+        </TableCell>
+        <TableCell className="text-right text-gray-600">{pct}%</TableCell>
+      </TableRow>
+    )
+  }
 
   return (
     <Card>
