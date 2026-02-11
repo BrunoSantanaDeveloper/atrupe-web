@@ -39,7 +39,8 @@ export function DfcTable({ searchParams }: SearchParamsType) {
       getDfcTable({
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
-        regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+        regime:
+          (searchParams?.regime as 'realizado' | 'competencia') || undefined,
       }),
   })
 

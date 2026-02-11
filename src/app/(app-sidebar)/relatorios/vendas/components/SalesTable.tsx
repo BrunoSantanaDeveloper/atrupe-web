@@ -25,8 +25,16 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { getSalesTableData } from '@/actions/sales-report'
 
 // Types
-import type { SalePhase, SalesClientGroup, SaleRecord } from '../types'
+import type {
+  SalePhase,
+  SalesClientGroup,
+  SalesSellerGroup,
+  SaleRecord,
+} from '../types'
 import type { SearchParamsType } from '@/types/coreTypes'
+
+// Hooks
+import { usePermissions } from '@/hooks/usePermissions'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -56,7 +64,11 @@ export function SalesTable({ searchParams }: SalesTableProps) {
   const pathname = usePathname()
   const urlSearchParams = useSearchParams()
 
-  const groupBy = (searchParams?.groupBy as 'none' | 'client') || 'client'
+  const { hasPermission } = usePermissions()
+  const canSeeOtherSellers = hasPermission('sale:other_quotation:view')
+
+  const groupBy =
+    (searchParams?.groupBy as 'none' | 'client' | 'seller') || 'client'
   const orderBy =
     (searchParams?.orderBy as 'approvedDate' | 'valueDesc' | 'valueAsc') ||
     'approvedDate'
@@ -139,6 +151,9 @@ export function SalesTable({ searchParams }: SalesTableProps) {
           options={[
             { value: 'none', label: 'Sem agrupamento' },
             { value: 'client', label: 'Cliente' },
+            ...(canSeeOtherSellers
+              ? [{ value: 'seller', label: 'Vendedor' }]
+              : []),
           ]}
         />
         <SelectBasic
@@ -183,36 +198,50 @@ export function SalesTable({ searchParams }: SalesTableProps) {
             </TableHeader>
             <TableBody>
               {isGrouped && 'groups' in tableData
-                ? // Grouped by client - data comes pre-grouped from backend
-                  tableData.groups.map((group: SalesClientGroup) => (
-                    <Fragment key={group.clientId}>
-                      {/* Group Header Row */}
-                      <TableRow className="bg-gray-100">
-                        <TableCell
-                          colSpan={2}
-                          className="text-gray font-medium text-xs py-3"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="text-primary-700">
-                              {group.clientName}
-                            </span>
-                            <Badge variant="neutralLight" className="text-xs">
-                              {group.count}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-success-700 font-medium text-xs py-3">
-                          {formatCurrencyToBrl(group.total)}
-                        </TableCell>
-                        <TableCell colSpan={2}></TableCell>
-                      </TableRow>
+                ? // Grouped - data comes pre-grouped from backend
+                  tableData.groups.map(
+                    (group: SalesClientGroup | SalesSellerGroup) => {
+                      const groupId =
+                        'clientId' in group ? group.clientId : group.sellerId
+                      const groupName =
+                        'clientName' in group
+                          ? group.clientName
+                          : group.sellerName
 
-                      {/* Group Records */}
-                      {group.records.map((record: SaleRecord) =>
-                        renderRecord(record),
-                      )}
-                    </Fragment>
-                  ))
+                      return (
+                        <Fragment key={groupId}>
+                          {/* Group Header Row */}
+                          <TableRow className="bg-gray-100">
+                            <TableCell
+                              colSpan={2}
+                              className="text-gray font-medium text-xs py-3"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-primary-700">
+                                  {groupName}
+                                </span>
+                                <Badge
+                                  variant="neutralLight"
+                                  className="text-xs"
+                                >
+                                  {group.count}
+                                </Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-success-700 font-medium text-xs py-3">
+                              {formatCurrencyToBrl(group.total)}
+                            </TableCell>
+                            <TableCell colSpan={2}></TableCell>
+                          </TableRow>
+
+                          {/* Group Records */}
+                          {group.records.map((record: SaleRecord) =>
+                            renderRecord(record),
+                          )}
+                        </Fragment>
+                      )
+                    },
+                  )
                 : // Ungrouped - flat list from backend
                   'records' in tableData &&
                   tableData.records.map((record: SaleRecord) =>

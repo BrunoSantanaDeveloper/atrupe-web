@@ -12,7 +12,7 @@ export interface SalesReportFilters {
     | 'custom'
   startDate: Date | null
   endDate: Date | null
-  groupBy: 'none' | 'client'
+  groupBy: 'none' | 'client' | 'seller'
   orderBy: 'approvedDate' | 'valueDesc' | 'valueAsc'
 }
 
@@ -78,10 +78,23 @@ export interface SalesClientGroup {
   records: SaleRecord[]
 }
 
-// Table data can be either flat (no grouping) or grouped by client
+// Grouped by seller - returned when groupBy = 'seller'
+export interface SalesSellerGroup {
+  sellerId: string
+  sellerName: string
+  count: number
+  total: number
+  records: SaleRecord[]
+}
+
+// Table data can be either flat (no grouping), grouped by client, or grouped by seller
 export type SalesTableData =
   | { grouped: false; records: SaleRecord[]; totalCount: number }
-  | { grouped: true; groups: SalesClientGroup[]; totalCount: number }
+  | {
+      grouped: true
+      groups: (SalesClientGroup | SalesSellerGroup)[]
+      totalCount: number
+    }
 
 export interface SalesReportData {
   summary: SalesSummary

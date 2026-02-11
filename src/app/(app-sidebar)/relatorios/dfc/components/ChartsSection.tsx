@@ -64,7 +64,8 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
       getDfcCashFlowChart({
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
-        regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+        regime:
+          (searchParams?.regime as 'realizado' | 'competencia') || undefined,
       }),
   })
 
@@ -75,7 +76,8 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
         getDfcRevenueExpenseChart({
           startDate: searchParams?.startDate as string,
           endDate: searchParams?.endDate as string,
-          regime: (searchParams?.regime as 'realizado' | 'orcado') || undefined,
+          regime:
+            (searchParams?.regime as 'realizado' | 'competencia') || undefined,
         }),
     })
 

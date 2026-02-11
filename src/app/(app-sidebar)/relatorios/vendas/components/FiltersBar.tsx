@@ -4,6 +4,7 @@
 import { createPortal } from 'react-dom'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 
 // Lib
 import {
@@ -40,6 +41,10 @@ import { periodOptions } from '../config'
 
 // Hooks
 import { useContactSources } from '@/hooks/queries/useContactSources'
+import { usePermissions } from '@/hooks/usePermissions'
+
+// Actions
+import { getSellers } from '@/actions/sales-report'
 
 export function FiltersBar({ searchParams }: SearchParamsType) {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -106,6 +111,19 @@ function FiltersContent({ searchParams }: SearchParamsType) {
   const updateOptions = { router, params }
 
   const { data: contactSources = [] } = useContactSources()
+  const { hasPermission } = usePermissions()
+  const canSeeOtherSellers = hasPermission('sale:other_quotation:view')
+
+  const { data: sellers = [] } = useQuery({
+    queryKey: ['sellers'],
+    queryFn: () => getSellers(),
+    enabled: canSeeOtherSellers,
+  })
+
+  const sellerSelectOptions = [
+    { value: 'all', label: 'Todos' },
+    ...sellers.map((s) => ({ value: s.id, label: s.name })),
+  ]
 
   const originSelectOptions = [
     { value: 'all', label: 'Todas' },
@@ -119,6 +137,19 @@ function FiltersContent({ searchParams }: SearchParamsType) {
 
   return (
     <>
+      {canSeeOtherSellers && (
+        <SelectBasic
+          name="sellerId"
+          label="Vendedor"
+          placeholder="Selecione um vendedor"
+          className="lg:w-[260px] w-full"
+          options={sellerSelectOptions}
+          value={searchParams?.sellerId || 'all'}
+          onChange={(value) =>
+            updateFilterParam('sellerId', value, updateOptions)
+          }
+        />
+      )}
       <SelectBasic
         name="originId"
         label="Origem"
