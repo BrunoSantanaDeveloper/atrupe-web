@@ -13,7 +13,7 @@ import type {
 interface DfcFilters {
   startDate?: string
   endDate?: string
-  regime?: 'realizado' | 'orcado'
+  regime?: 'competencia' | 'realizado'
 }
 
 const BASE_ROUTE = '/report/dfc'
