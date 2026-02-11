@@ -47,8 +47,10 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
   const urlParams = useSearchParams()
 
   const [status, setStatus] = useState<FinancialStatus>('received')
-  const [groupBy, setGroupBy] = useState('client')
-  const [orderBy, setOrderBy] = useState('receivedDate')
+  const [groupBy, setGroupBy] = useState<'none' | 'client'>('client')
+  const [orderBy, setOrderBy] = useState<
+    'saleDate' | 'dueDate' | 'receivedDate' | 'valueDesc' | 'valueAsc'
+  >('receivedDate')
 
   const page = parseInt(urlParams.get('page') || '1')
 
@@ -67,13 +69,9 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
         tab,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
-        status: status === 'all' ? undefined : status,
-        groupBy: groupBy as 'none' | 'client' | 'date',
-        orderBy: orderBy as
-          | 'receivedDate'
-          | 'valueDesc'
-          | 'valueAsc'
-          | 'clientName',
+        status,
+        groupBy: groupBy as 'none' | 'client',
+        orderBy,
         page,
         limit: 10,
       }),
@@ -113,7 +111,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             tab === 'receitas' ? groupByOptionsReceitas : groupByOptionsDespesas
           }
           value={groupBy}
-          onChange={setGroupBy}
+          onChange={(v) => setGroupBy(v as 'none' | 'client')}
           className="lg:w-[200px] w-full"
         />
 
@@ -124,7 +122,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             tab === 'receitas' ? orderByOptionsReceitas : orderByOptionsDespesas
           }
           value={orderBy}
-          onChange={setOrderBy}
+          onChange={(v) => setOrderBy(v as typeof orderBy)}
           className="lg:w-[200px] w-full"
         />
       </CardHeader>

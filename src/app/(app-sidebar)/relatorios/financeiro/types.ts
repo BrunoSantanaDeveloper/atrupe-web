@@ -53,7 +53,6 @@ export interface FinancialTableData {
 
 export type FinancialTab = 'receitas' | 'despesas'
 export type FinancialStatus =
-  | 'all'
   | 'received'
   | 'confirmed'
   | 'to_receive'

@@ -12,9 +12,9 @@ interface FinancialFilters {
   tab?: FinancialTab
   startDate?: string
   endDate?: string
-  status?: 'all' | 'received' | 'confirmed' | 'to_receive' | 'overdue'
-  groupBy?: 'none' | 'client' | 'date'
-  orderBy?: 'receivedDate' | 'valueDesc' | 'valueAsc' | 'clientName'
+  status?: 'received' | 'confirmed' | 'to_receive' | 'overdue'
+  groupBy?: 'none' | 'client'
+  orderBy?: 'saleDate' | 'dueDate' | 'receivedDate' | 'valueDesc' | 'valueAsc'
   page?: number
   limit?: number
 }
