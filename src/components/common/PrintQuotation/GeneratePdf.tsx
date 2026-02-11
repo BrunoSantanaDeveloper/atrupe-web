@@ -733,6 +733,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     key={item.id || index}
                     style={styles.itemRowWrapper}
                     wrap={false}
+                    minPresenceAhead={10}
                   >
                     {/* Linha com informações do produto */}
                     <View style={styles.itemRowContent}>
@@ -930,6 +931,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   key={item.id || index}
                   style={styles.itemRowWrapper}
                   wrap={false}
+                  minPresenceAhead={10}
                 >
                   {/* Linha com informações do produto */}
                   <View style={styles.itemRowContent}>
