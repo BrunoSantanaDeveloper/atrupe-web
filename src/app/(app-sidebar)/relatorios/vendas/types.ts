@@ -22,6 +22,7 @@ export interface SalesSummary {
   rejectedTotal: number
   rejectedCount: number
   noResponseTotal: number
+  noResponseCount: number
   averageTicket: number
   commission: number
   approvalTime: string // e.g., "48h35"
