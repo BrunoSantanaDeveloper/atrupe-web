@@ -49,7 +49,7 @@ const phaseConfig: Record<
   },
   entregue: {
     label: 'Entrega',
-    variant: 'successLight',
+    variant: 'purpleLight',
   },
   aguardando: {
     label: 'Aguardando',
