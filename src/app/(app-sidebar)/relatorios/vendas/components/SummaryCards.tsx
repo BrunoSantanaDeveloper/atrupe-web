@@ -31,7 +31,13 @@ interface SummaryCardsProps extends SearchParamsType {}
 
 export function SummaryCards({ searchParams }: SummaryCardsProps) {
   const { data: summary, isLoading } = useQuery({
-    queryKey: ['sales-summary', searchParams],
+    queryKey: [
+      'sales-summary',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getSalesReportSummary({
         sellerId: searchParams?.sellerId as string,

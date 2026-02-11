@@ -34,7 +34,13 @@ interface OrdersOriginChartProps extends SearchParamsType {}
 
 export function OrdersOriginChart({ searchParams }: OrdersOriginChartProps) {
   const { data: ordersOrigin = [], isLoading } = useQuery({
-    queryKey: ['sales-orders-origin', searchParams],
+    queryKey: [
+      'sales-orders-origin',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getOrdersOrigin({
         sellerId: searchParams?.sellerId as string,

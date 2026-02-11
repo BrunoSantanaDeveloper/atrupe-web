@@ -38,7 +38,13 @@ export function SalesEvolutionChart({
   searchParams,
 }: SalesEvolutionChartProps) {
   const { data: evolution = [], isLoading } = useQuery({
-    queryKey: ['sales-evolution', searchParams],
+    queryKey: [
+      'sales-evolution',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getSalesEvolution({
         sellerId: searchParams?.sellerId as string,

@@ -36,7 +36,13 @@ export function QuotationsOriginChart({
   searchParams,
 }: QuotationsOriginChartProps) {
   const { data: quotationsOrigin = [], isLoading } = useQuery({
-    queryKey: ['sales-quotations-origin', searchParams],
+    queryKey: [
+      'sales-quotations-origin',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getQuotationsOrigin({
         sellerId: searchParams?.sellerId as string,

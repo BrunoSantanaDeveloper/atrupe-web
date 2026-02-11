@@ -43,7 +43,13 @@ export function ApprovedRejectedChart({
   searchParams,
 }: ApprovedRejectedChartProps) {
   const { data: approvedRejected = [], isLoading } = useQuery({
-    queryKey: ['sales-approved-rejected', searchParams],
+    queryKey: [
+      'sales-approved-rejected',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getApprovedRejected({
         sellerId: searchParams?.sellerId as string,
