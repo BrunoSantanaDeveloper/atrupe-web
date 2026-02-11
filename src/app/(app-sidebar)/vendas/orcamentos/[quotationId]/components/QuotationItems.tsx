@@ -24,7 +24,9 @@ import {
   AccordionContent,
   AccordionTrigger,
 } from '@/components/ui/accordion'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
@@ -34,6 +36,7 @@ import { ItemImageDialog } from './ItemActions/Image'
 import { DeleteItemDialog } from './ItemActions/Delete'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { QuotationItemsModal } from '../../components/QuotationItems/QuotationItemsModal'
 import { QuotationProdDetailModal } from '../../components/QuotationItems/QuotationProdDetailModal'
 import { QuotationCategorySelectorModal } from '../../components/QuotationItems/QuotationCategorySelectorModal'
@@ -70,8 +73,6 @@ import {
 
 // Actions
 import { createItem } from '@/actions/_cruds'
-import { PermissionGate } from '@/components/common/PermissionGate'
-import { Separator } from '@/components/ui/separator'
 
 interface Props {
   data: QuotationType
@@ -119,6 +120,9 @@ export function QuotationItems({ data }: Props) {
             <CardTitle className="text-gray-700 font-semibold text-base">
               Itens
             </CardTitle>
+            <Badge variant="neutralLight" className="mt-1">
+              {items?.length}
+            </Badge>
           </div>
         </CardHeader>
         <CardContent className="pb-0">
