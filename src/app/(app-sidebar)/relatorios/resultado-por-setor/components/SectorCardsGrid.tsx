@@ -15,6 +15,11 @@ import { getSectorResults } from '@/actions/sector-report'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import {
+  calculatePeriodDates,
+  formatDateToISO,
+  type PeriodType,
+} from '@/lib/filter-utils'
 
 // Types
 import type { SectorResult } from '../types'
@@ -32,7 +37,7 @@ function SectorCard({ sector }: { sector: SectorResult }) {
           {Icon ? (
             <Icon className="h-6 w-6 text-gray-600" />
           ) : (
-            <IconLayoutGrid className="h-6 w-6 text-gray-600" />
+            <IconLayoutGrid className="h-6 w-6 " />
           )}
         </div>
         <span className="font-semibold text-gray-900">{sector.name}</span>
@@ -69,10 +74,25 @@ function GeneralCard({ total }: { total: number }) {
 }
 
 export function SectorCardsGrid({ searchParams }: SearchParamsType) {
-  const filters = {
-    startDate: searchParams?.startDate as string | undefined,
-    endDate: searchParams?.endDate as string | undefined,
-  }
+  const period = (searchParams?.period as PeriodType) || 'current_month'
+  const hasExplicitDates = searchParams?.startDate && searchParams?.endDate
+
+  const filters = (() => {
+    if (hasExplicitDates) {
+      return {
+        startDate: searchParams.startDate as string,
+        endDate: searchParams.endDate as string,
+      }
+    }
+    const dates = calculatePeriodDates(period)
+    if (dates) {
+      return {
+        startDate: formatDateToISO(dates.startDate),
+        endDate: formatDateToISO(dates.endDate),
+      }
+    }
+    return {}
+  })()
 
   const { data, isLoading } = useQuery({
     queryKey: ['sector-results', filters],
