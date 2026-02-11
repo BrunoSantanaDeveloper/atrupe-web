@@ -73,8 +73,8 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
     {
       icon: IconClockHour4,
       variant: 'warningLight',
-      label: `Aguardando (${summary.noResponseTotal})`,
-      value: formatCurrencyToBrl(summary.noResponseTotal),
+      label: 'Aguardando',
+      value: String(summary.noResponseTotal),
     },
     {
       icon: IconCircleX,

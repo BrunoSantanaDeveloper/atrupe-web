@@ -36,7 +36,10 @@ import { IconFilter } from '@tabler/icons-react'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Config
-import { originOptions, periodOptions } from '../config'
+import { periodOptions } from '../config'
+
+// Hooks
+import { useContactSources } from '@/hooks/queries/useContactSources'
 
 export function FiltersBar({ searchParams }: SearchParamsType) {
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -102,10 +105,12 @@ function FiltersContent({ searchParams }: SearchParamsType) {
 
   const updateOptions = { router, params }
 
-  const originSelectOptions = originOptions.map((o) => ({
-    value: o.id,
-    label: o.name,
-  }))
+  const { data: contactSources = [] } = useContactSources()
+
+  const originSelectOptions = [
+    { value: 'all', label: 'Todas' },
+    ...contactSources.map((s) => ({ value: s.id, label: s.name })),
+  ]
 
   const periodSelectOptions = periodOptions.map((p) => ({
     value: p.id,
@@ -115,13 +120,15 @@ function FiltersContent({ searchParams }: SearchParamsType) {
   return (
     <>
       <SelectBasic
-        name="origin"
+        name="originId"
         label="Origem"
         placeholder="Selecione uma origem"
         className="lg:w-[260px] w-full"
         options={originSelectOptions}
-        value={searchParams?.origin || 'all'}
-        onChange={(value) => updateFilterParam('origin', value, updateOptions)}
+        value={searchParams?.originId || 'all'}
+        onChange={(value) =>
+          updateFilterParam('originId', value, updateOptions)
+        }
       />
       <SelectBasic
         name="period"

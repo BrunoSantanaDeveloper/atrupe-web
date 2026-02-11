@@ -38,6 +38,7 @@ export function OrdersOriginChart({ searchParams }: OrdersOriginChartProps) {
     queryFn: () =>
       getOrdersOrigin({
         sellerId: searchParams?.sellerId as string,
+        originId: searchParams?.originId as string,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
       }),

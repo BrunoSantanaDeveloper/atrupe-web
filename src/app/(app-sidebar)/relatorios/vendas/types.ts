@@ -3,7 +3,7 @@
 
 export interface SalesReportFilters {
   sellerId: string | null
-  origin: string | null
+  originId: string | null
   period:
     | 'current_month'
     | 'last_month'
@@ -28,9 +28,8 @@ export interface SalesSummary {
 }
 
 export interface SalesEvolutionData {
-  month: string
+  day: string
   approved: number
-  inProgress: number
 }
 
 export interface ApprovedRejectedData {
@@ -48,7 +47,7 @@ export interface OriginChartData {
 
 export interface TopProductData {
   name: string
-  type: 'PDF' | 'Excel' | string
+  type: string
   value: number
 }
 

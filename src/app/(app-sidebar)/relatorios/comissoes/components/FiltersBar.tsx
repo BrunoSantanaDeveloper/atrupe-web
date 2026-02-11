@@ -42,7 +42,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           name="commissionType"
           label="Comissão"
           placeholder="Selecione"
-          className="lg:w-[200px] w-full"
+          className="lg:w-[200px] w-full hidden"
           options={commissionOptions}
           value={(searchParams?.commissionType as string) || 'all'}
           onChange={(value) =>

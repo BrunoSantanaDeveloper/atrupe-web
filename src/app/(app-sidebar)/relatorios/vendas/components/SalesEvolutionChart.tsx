@@ -73,7 +73,7 @@ export function SalesEvolutionChart({
             >
               <CartesianGrid vertical={false} strokeDasharray="3 3" />
               <XAxis
-                dataKey="month"
+                dataKey="day"
                 tickLine={false}
                 tickMargin={10}
                 axisLine={false}
@@ -95,15 +95,14 @@ export function SalesEvolutionChart({
                 stroke="var(--color-approved)"
                 strokeWidth={2}
                 dot={{
-                  fill: 'var(--color-approved)',
-                  stroke: '#fff',
+                  stroke: 'var(--color-approved)',
                   strokeWidth: 2,
-                  r: 5,
+                  r: 4,
                 }}
                 activeDot={{
-                  r: 7,
-                  stroke: '#fff',
+                  r: 4,
                   strokeWidth: 2,
+                  opacity: 0.5,
                 }}
               />
             </LineChart>

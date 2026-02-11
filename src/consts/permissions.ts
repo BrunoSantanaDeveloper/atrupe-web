@@ -18,7 +18,7 @@ export const permissionsData = [
         key: 'quotation',
       },
       {
-        name: 'Orçamentos de outros Vendedores',
+        name: 'Vendas de outros Vendedores',
         key: 'other_quotation',
       },
       {
