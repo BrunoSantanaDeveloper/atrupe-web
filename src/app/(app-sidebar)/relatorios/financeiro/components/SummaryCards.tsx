@@ -19,19 +19,29 @@ import {
 import { getFinancialSummary } from '@/actions/financial-report'
 
 // Utils
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { FinancialTab } from '../types'
+
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface SummaryCardsProps extends SearchParamsType {
   tab: FinancialTab
 }
 
 export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
+  const { canProvision } = usePlanFeatures()
+
   const { data, isLoading } = useQuery({
-    queryKey: ['financial-summary', searchParams, tab],
+    queryKey: [
+      'financial-summary',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      tab,
+    ],
     queryFn: () =>
       getFinancialSummary({
         tab,
@@ -65,11 +75,18 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
       label: `Vencidas (${data?.overdueCount || 0})`,
       value: formatCurrencyToBrl(data?.overdue || 0),
     },
-  ]
+  ] as const
+
+  const visibleCards = canProvision() ? cards : cards.filter((_, i) => i !== 1)
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div
+        className={cn(
+          'grid grid-cols-1 md:grid-cols-2 gap-4',
+          visibleCards.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+        )}
+      >
         {[1, 2, 3, 4].map((i) => (
           <Card key={i} className="p-4 flex items-center gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
@@ -84,8 +101,13 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card, index) => (
+    <div
+      className={cn(
+        'grid grid-cols-1 md:grid-cols-2 gap-4',
+        visibleCards.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
+      )}
+    >
+      {visibleCards.map((card, index) => (
         <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
           <FeaturedIcon
             size="md"

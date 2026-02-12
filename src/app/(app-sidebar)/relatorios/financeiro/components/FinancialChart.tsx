@@ -25,6 +25,9 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { FinancialTab } from '../types'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 interface FinancialChartProps extends SearchParamsType {
   tab: FinancialTab
 }
@@ -49,8 +52,16 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
+  const { canProvision } = usePlanFeatures()
+  const showConfirmed = canProvision()
+
   const { data, isLoading } = useQuery({
-    queryKey: ['financial-chart', searchParams, tab],
+    queryKey: [
+      'financial-chart',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      tab,
+    ],
     queryFn: () =>
       getFinancialChart({
         tab,
@@ -121,18 +132,20 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
                   stopOpacity={0}
                 />
               </linearGradient>
-              <linearGradient id="colorConfirmed" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-confirmed)"
-                  stopOpacity={0.3}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-confirmed)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
+              {showConfirmed && (
+                <linearGradient id="colorConfirmed" x1="0" y1="0" x2="0" y2="1">
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-confirmed)"
+                    stopOpacity={0.3}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-confirmed)"
+                    stopOpacity={0}
+                  />
+                </linearGradient>
+              )}
               <linearGradient id="colorToReceive" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
@@ -173,8 +186,35 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent />}
-              formatter={(value) => formatCurrencyToBrl(value as number)}
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name, item) => {
+                    const countKey = `${String(name)}Count`
+                    const count = item.payload?.[countKey] ?? 0
+                    const color = item.color || `var(--color-${String(name)})`
+                    return (
+                      <div className="flex w-full items-center gap-2">
+                        <div
+                          className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                          style={{ backgroundColor: color }}
+                        />
+                        <div className="flex flex-1 items-center justify-between gap-8">
+                          <span className="text-gray">
+                            {count}{' '}
+                            {
+                              chartConfig[name as keyof typeof chartConfig]
+                                ?.label
+                            }
+                          </span>
+                          <span className="font-medium tabular-nums">
+                            {formatCurrencyToBrl(value as number)}
+                          </span>
+                        </div>
+                      </div>
+                    )
+                  }}
+                />
+              }
             />
             <Area
               type="monotone"
@@ -182,26 +222,28 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
               stroke="var(--color-received)"
               fill="url(#colorReceived)"
               strokeWidth={2}
-              dot={{ fill: 'var(--color-received)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'white', strokeWidth: 2 }}
+              dot={{ stroke: 'var(--color-received)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 4, strokeWidth: 2, opacity: 0.5 }}
             />
-            <Area
-              type="monotone"
-              dataKey="confirmed"
-              stroke="var(--color-confirmed)"
-              fill="url(#colorConfirmed)"
-              strokeWidth={2}
-              dot={{ fill: 'var(--color-confirmed)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'white', strokeWidth: 2 }}
-            />
+            {showConfirmed && (
+              <Area
+                type="monotone"
+                dataKey="confirmed"
+                stroke="var(--color-confirmed)"
+                fill="url(#colorConfirmed)"
+                strokeWidth={2}
+                dot={{ stroke: 'var(--color-confirmed)', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
+              />
+            )}
             <Area
               type="monotone"
               dataKey="toReceive"
               stroke="var(--color-toReceive)"
               fill="url(#colorToReceive)"
               strokeWidth={2}
-              dot={{ fill: 'var(--color-toReceive)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'white', strokeWidth: 2 }}
+              dot={{ stroke: 'var(--color-toReceive)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
             />
             <Area
               type="monotone"
@@ -209,8 +251,8 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
               stroke="var(--color-overdue)"
               fill="url(#colorOverdue)"
               strokeWidth={2}
-              dot={{ fill: 'var(--color-overdue)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, stroke: 'white', strokeWidth: 2 }}
+              dot={{ stroke: 'var(--color-overdue)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
             />
           </AreaChart>
         </ChartContainer>
@@ -220,10 +262,12 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             <div className="w-3 h-3 rounded bg-success-400" />
             <span className="text-gray-600">Recebidas</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded bg-blue-500" />
-            <span className="text-gray-600">Confirmadas</span>
-          </div>
+          {showConfirmed && (
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded bg-blue-500" />
+              <span className="text-gray-600">Confirmadas</span>
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-yellow-500" />
             <span className="text-gray-600">A receber</span>

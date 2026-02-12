@@ -1,7 +1,7 @@
 'use client'
 
-import { Fragment, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { Fragment, useMemo } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -37,27 +37,42 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { FinancialTab, FinancialStatus } from '../types'
+import type { FinancialTab } from '../types'
+
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface FinancialTableProps extends SearchParamsType {
   tab: FinancialTab
 }
 
 export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
-  const urlParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const urlSearchParams = useSearchParams()
+  const { canProvision } = usePlanFeatures()
 
-  const [status, setStatus] = useState<FinancialStatus>('received')
-  const [groupBy, setGroupBy] = useState<'none' | 'client'>('client')
-  const [orderBy, setOrderBy] = useState<
-    'saleDate' | 'dueDate' | 'receivedDate' | 'valueDesc' | 'valueAsc'
-  >('receivedDate')
+  const status = (searchParams?.status as string) || 'received'
+  const groupBy = (searchParams?.groupBy as 'none' | 'client') || 'client'
+  const orderBy = (searchParams?.orderBy as string) || 'receivedDate'
+  const page = Number(searchParams?.page) || 1
 
-  const page = parseInt(urlParams.get('page') || '1')
+  // Helper to update URL params
+  const updateUrlParam = (key: string, value: string) => {
+    const params = new URLSearchParams(urlSearchParams.toString())
+    params.set(key, value)
+    // Reset to page 1 when changing filters
+    if (key !== 'page') {
+      params.set('page', '1')
+    }
+    router.push(`${pathname}?${params.toString()}`, { scroll: false })
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: [
       'financial-table',
-      searchParams,
+      searchParams?.startDate,
+      searchParams?.endDate,
       tab,
       status,
       groupBy,
@@ -69,9 +84,14 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
         tab,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
-        status,
-        groupBy: groupBy as 'none' | 'client',
-        orderBy,
+        status: status as 'received' | 'confirmed' | 'to_receive' | 'overdue',
+        groupBy,
+        orderBy: orderBy as
+          | 'saleDate'
+          | 'dueDate'
+          | 'receivedDate'
+          | 'valueDesc'
+          | 'valueAsc',
         page,
         limit: 10,
       }),
@@ -90,17 +110,31 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
     }
   }
 
+  const totalFiltered = useMemo(() => {
+    if (!data) return 0
+    if (data.grouped && data.groups) {
+      return data.groups.reduce((sum, g) => sum + g.total, 0)
+    }
+    return data.records.reduce((sum, r) => sum + r.value, 0)
+  }, [data])
+
+  const getPct = (value: number) => {
+    if (totalFiltered <= 0) return '0.0'
+    return ((value / totalFiltered) * 100).toFixed(1)
+  }
+
   return (
     <Card>
       <CardHeader className="flex-row items-center gap-4 flex-wrap space-y-0">
         <SelectBasic
           name="status"
           label={tab === 'receitas' ? 'Receitas' : 'Despesas'}
-          options={
-            tab === 'receitas' ? statusOptionsReceitas : statusOptionsDespesas
-          }
+          options={(tab === 'receitas'
+            ? statusOptionsReceitas
+            : statusOptionsDespesas
+          ).filter((opt) => canProvision() || opt.value !== 'confirmed')}
           value={status}
-          onChange={(v) => setStatus(v as FinancialStatus)}
+          onChange={(v) => updateUrlParam('status', v)}
           className="lg:w-[200px] w-full"
         />
 
@@ -111,7 +145,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             tab === 'receitas' ? groupByOptionsReceitas : groupByOptionsDespesas
           }
           value={groupBy}
-          onChange={(v) => setGroupBy(v as 'none' | 'client')}
+          onChange={(v) => updateUrlParam('groupBy', v)}
           className="lg:w-[200px] w-full"
         />
 
@@ -122,7 +156,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
             tab === 'receitas' ? orderByOptionsReceitas : orderByOptionsDespesas
           }
           value={orderBy}
-          onChange={(v) => setOrderBy(v as typeof orderBy)}
+          onChange={(v) => updateUrlParam('orderBy', v)}
           className="lg:w-[200px] w-full"
         />
       </CardHeader>
@@ -200,7 +234,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                               {formatCurrencyToBrl(record.value)}
                             </TableCell>
                             <TableCell className="text-right text-gray-500">
-                              {record.percentage}%
+                              {getPct(record.value)}%
                             </TableCell>
                           </TableRow>
                         ))}
@@ -227,7 +261,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                           {formatCurrencyToBrl(record.value)}
                         </TableCell>
                         <TableCell className="text-right text-gray-500">
-                          {record.percentage}%
+                          {getPct(record.value)}%
                         </TableCell>
                       </TableRow>
                     ))}
