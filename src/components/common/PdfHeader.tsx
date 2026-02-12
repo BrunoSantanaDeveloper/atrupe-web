@@ -10,6 +10,7 @@ import { getProxiedImageUrl } from '@/lib/image-proxy'
 // Icons
 import {
   EmailIcon,
+  PhoneIcon,
   WebsiteIcon,
   LinkedinIcon,
   FacebookIcon,
@@ -101,6 +102,7 @@ type CompanyInfo = {
   logo?: string
   logoUrl?: string
   email?: string
+  phone?: string
   siteUrl?: string
   address?: CompanyAddress
   socialNetworks?: SocialNetworks
@@ -170,6 +172,12 @@ export function PdfHeader({ company }: Props) {
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>{company?.siteUrl}</Text>
             <WebsiteIcon />
+          </View>
+        )}
+        {company?.phone && (
+          <View style={styles.flexRow}>
+            <Text style={styles.textRightSmall}>{company?.phone}</Text>
+            <PhoneIcon />
           </View>
         )}
         {company?.email && (
