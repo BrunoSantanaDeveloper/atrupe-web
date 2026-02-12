@@ -80,7 +80,14 @@ export function ApprovedRejectedChart({
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (
-          <Skeleton className="h-[200px] w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-[200px] w-full" />
+            <div className="flex items-center justify-center gap-6">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
         ) : (
           <ChartContainer
             config={chartConfig}

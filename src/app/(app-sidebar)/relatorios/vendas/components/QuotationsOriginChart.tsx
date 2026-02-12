@@ -61,8 +61,13 @@ export function QuotationsOriginChart({
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center gap-4">
             <Skeleton className="h-[200px] w-[200px] rounded-full" />
+            <div className="flex items-center justify-center gap-4">
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-16" />
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center">

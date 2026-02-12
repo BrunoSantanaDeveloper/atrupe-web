@@ -61,7 +61,7 @@ export function SalesEvolutionChart({
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (
-          <Skeleton className="h-[250px] w-full" />
+          <Skeleton className="h-[300px] w-full" />
         ) : (
           <ChartContainer
             config={chartConfig}

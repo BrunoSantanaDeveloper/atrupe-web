@@ -53,11 +53,11 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
         {Array(6)
           .fill(0)
           .map((_, i) => (
-            <Card key={i} className="p-4 flex items-center gap-3">
-              <Skeleton className="h-10 w-10 rounded-full" />
+            <Card key={i} className="p-6 flex items-center gap-3 rounded-xl">
+              <Skeleton className="h-11 w-11 rounded-[10px]" />
               <div className="flex flex-col gap-1">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </Card>
           ))}
