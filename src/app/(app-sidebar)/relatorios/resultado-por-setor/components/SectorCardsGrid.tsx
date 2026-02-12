@@ -106,27 +106,29 @@ export function SectorCardsGrid({ searchParams }: SearchParamsType) {
           {Array(6)
             .fill(0)
             .map((_, i) => (
-              <Card key={i} className="p-6 rounded-xl">
+              <Card key={i} className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <Skeleton className="h-10 w-10 rounded-full" />
-                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-5 w-28" />
                 </div>
-                <div className="flex items-center justify-between">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-5 w-24" />
+                <Separator />
+                <div className="flex items-center justify-between mt-8">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-5 w-20" />
                 </div>
               </Card>
             ))}
         </div>
         <div>
-          <Card className="p-6 rounded-xl">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Skeleton className="h-10 w-10 rounded-full" />
-              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-5 w-12" />
             </div>
-            <div className="flex items-center justify-between">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-5 w-24" />
+            <Separator />
+            <div className="flex items-center justify-between mt-8">
+              <Skeleton className="h-5 w-16" />
+              <Skeleton className="h-7 w-24" />
             </div>
           </Card>
         </div>
