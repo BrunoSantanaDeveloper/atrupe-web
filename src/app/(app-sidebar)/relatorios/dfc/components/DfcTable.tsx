@@ -34,7 +34,12 @@ export function DfcTable({ searchParams }: SearchParamsType) {
   )
 
   const { data, isLoading } = useQuery({
-    queryKey: ['dfc-table', searchParams],
+    queryKey: [
+      'dfc-table',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.regime,
+    ],
     queryFn: () =>
       getDfcTable({
         startDate: searchParams?.startDate as string,
@@ -115,6 +120,7 @@ export function DfcTable({ searchParams }: SearchParamsType) {
                   className={cn(
                     row.level === 0 && 'bg-gray-50 font-semibold',
                     isNegative && row.level === 0 && 'bg-red-50',
+                    !isNegative && row.level === 0 && 'bg-success-50',
                   )}
                 >
                   <TableCell
@@ -122,6 +128,7 @@ export function DfcTable({ searchParams }: SearchParamsType) {
                       'sticky left-0 bg-inherit',
                       row.level === 0 && 'bg-gray-50',
                       isNegative && row.level === 0 && 'bg-red-50',
+                      !isNegative && row.level === 0 && 'bg-success-50',
                     )}
                     style={{ paddingLeft }}
                   >

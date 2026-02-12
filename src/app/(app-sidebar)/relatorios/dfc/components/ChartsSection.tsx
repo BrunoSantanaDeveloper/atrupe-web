@@ -59,7 +59,12 @@ const revenueExpenseConfig = {
 
 export function ChartsSection({ searchParams }: SearchParamsType) {
   const { data: cashFlowData, isLoading: loadingCashFlow } = useQuery({
-    queryKey: ['dfc-cash-flow-chart', searchParams],
+    queryKey: [
+      'dfc-cash-flow-chart',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.regime,
+    ],
     queryFn: () =>
       getDfcCashFlowChart({
         startDate: searchParams?.startDate as string,
@@ -71,7 +76,12 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
 
   const { data: revenueExpenseData, isLoading: loadingRevenueExpense } =
     useQuery({
-      queryKey: ['dfc-revenue-expense-chart', searchParams],
+      queryKey: [
+        'dfc-revenue-expense-chart',
+        searchParams?.startDate,
+        searchParams?.endDate,
+        searchParams?.regime,
+      ],
       queryFn: () =>
         getDfcRevenueExpenseChart({
           startDate: searchParams?.startDate as string,
@@ -119,9 +129,34 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
                   />
                   <ChartTooltip
                     cursor={false}
-                    content={<ChartTooltipContent />}
-                    formatter={(value) =>
-                      formatCurrencyToBrl(Math.abs(value as number))
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value, name, item) => {
+                          const color = item.color || `var(--color-${name})`
+                          return (
+                            <div className="flex w-full items-center gap-2">
+                              <div
+                                className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                                style={{ backgroundColor: color }}
+                              />
+                              <div className="flex flex-1 items-center justify-between gap-8">
+                                <span className="text-gray">
+                                  {
+                                    cashFlowConfig[
+                                      name as keyof typeof cashFlowConfig
+                                    ]?.label
+                                  }
+                                </span>
+                                <span className="font-medium tabular-nums">
+                                  {formatCurrencyToBrl(
+                                    Math.abs(value as number),
+                                  )}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        }}
+                      />
                     }
                   />
                   <ReferenceLine y={0} stroke="#d1d5db" />
@@ -190,8 +225,33 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
                   />
                   <ChartTooltip
                     cursor={false}
-                    content={<ChartTooltipContent />}
-                    formatter={(value) => formatCurrencyToBrl(value as number)}
+                    content={
+                      <ChartTooltipContent
+                        formatter={(value, name, item) => {
+                          const color = item.color || `var(--color-${name})`
+                          return (
+                            <div className="flex w-full items-center gap-2">
+                              <div
+                                className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                                style={{ backgroundColor: color }}
+                              />
+                              <div className="flex flex-1 items-center justify-between gap-8">
+                                <span className="text-gray">
+                                  {
+                                    revenueExpenseConfig[
+                                      name as keyof typeof revenueExpenseConfig
+                                    ]?.label
+                                  }
+                                </span>
+                                <span className="font-medium tabular-nums">
+                                  {formatCurrencyToBrl(value as number)}
+                                </span>
+                              </div>
+                            </div>
+                          )
+                        }}
+                      />
+                    }
                   />
                   <Bar
                     dataKey="revenue"
