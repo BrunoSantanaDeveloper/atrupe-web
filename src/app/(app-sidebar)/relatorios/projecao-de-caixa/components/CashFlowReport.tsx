@@ -4,12 +4,7 @@ import { FiltersBar } from './FiltersBar'
 import { SummaryCards } from './SummaryCards'
 import { CashFlowChart } from './CashFlowChart'
 import { CashFlowTable } from './CashFlowTable'
-
-// Icons
-import { IconPrinter } from '@tabler/icons-react'
-
-// UI
-import { Button } from '@/components/ui/button'
+import { CashFlowReportPrintButton } from './print/CashFlowReportPrintButton'
 
 // Utils
 import {
@@ -40,15 +35,7 @@ export function CashFlowReport({ searchParams }: SearchParamsType) {
     <div className="space-y-5">
       <Topbar
         title="Projeção de caixa"
-        primaryCta={
-          <Button
-            variant="neutralOutline"
-            size="iconMd"
-            RightIcon={IconPrinter}
-            disabled
-            title="Exportar PDF (em breve)"
-          />
-        }
+        primaryCta={<CashFlowReportPrintButton />}
       />
 
       {/* Filters */}
