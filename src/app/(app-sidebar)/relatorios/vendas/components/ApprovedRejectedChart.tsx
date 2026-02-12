@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -42,11 +43,22 @@ interface ApprovedRejectedChartProps extends SearchParamsType {}
 export function ApprovedRejectedChart({
   searchParams,
 }: ApprovedRejectedChartProps) {
+  // Always show last 6 months, independent of period filter
+  const fixedRange = useMemo(() => {
+    const now = new Date()
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0) // last day of current month
+    const startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1) // first day of 6 months ago
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+    }
+  }, [])
+
   const { data: approvedRejected = [], isLoading } = useQuery({
     queryKey: [
       'sales-approved-rejected',
-      searchParams?.startDate,
-      searchParams?.endDate,
+      fixedRange.startDate,
+      fixedRange.endDate,
       searchParams?.sellerId,
       searchParams?.originId,
     ],
@@ -54,8 +66,8 @@ export function ApprovedRejectedChart({
       getApprovedRejected({
         sellerId: searchParams?.sellerId as string,
         originId: searchParams?.originId as string,
-        startDate: searchParams?.startDate as string,
-        endDate: searchParams?.endDate as string,
+        startDate: fixedRange.startDate,
+        endDate: fixedRange.endDate,
       }),
   })
 
