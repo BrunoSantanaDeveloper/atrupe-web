@@ -27,6 +27,10 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
     setActiveTab(tab as FinancialTab)
     const params = new URLSearchParams(urlParams.toString())
     params.set('tab', tab)
+    // Reset filters that have different options per tab
+    params.set('status', 'received')
+    params.set('orderBy', tab === 'despesas' ? 'dueDate' : 'receivedDate')
+    params.set('page', '1')
     router.push(`?${params.toString()}`)
   }
 
