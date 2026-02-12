@@ -69,6 +69,7 @@ export function TablePagination({
             href={
               currentPage > 1 ? buildUrlWithPageParam(currentPage - 1) : '#'
             }
+            scroll={false}
             className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
@@ -86,6 +87,7 @@ export function TablePagination({
                 <PaginationLink
                   href={buildUrlWithPageParam(page as number)}
                   isActive={currentPage === page}
+                  scroll={false}
                 >
                   {page}
                 </PaginationLink>
@@ -100,6 +102,7 @@ export function TablePagination({
                 ? buildUrlWithPageParam(currentPage + 1)
                 : '#'
             }
+            scroll={false}
             className={
               currentPage === lastPage ? 'pointer-events-none opacity-50' : ''
             }
