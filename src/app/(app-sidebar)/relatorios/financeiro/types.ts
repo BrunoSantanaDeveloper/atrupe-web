@@ -44,6 +44,7 @@ export interface FinancialTableData {
   records: FinancialRecord[]
   groups?: FinancialGroup[]
   totalCount: number
+  totalValue: number
   pagination: {
     page: number
     totalPages: number

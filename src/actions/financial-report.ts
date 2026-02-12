@@ -60,6 +60,7 @@ export async function getFinancialTable(
       grouped: false,
       records: [],
       totalCount: 0,
+      totalValue: 0,
       pagination: {
         page: 1,
         totalPages: 0,

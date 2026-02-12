@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useMemo } from 'react'
+import { Fragment } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 
@@ -110,17 +110,10 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
     }
   }
 
-  const totalFiltered = useMemo(() => {
-    if (!data) return 0
-    if (data.grouped && data.groups) {
-      return data.groups.reduce((sum, g) => sum + g.total, 0)
-    }
-    return data.records.reduce((sum, r) => sum + r.value, 0)
-  }, [data])
-
   const getPct = (value: number) => {
-    if (totalFiltered <= 0) return '0.0'
-    return ((value / totalFiltered) * 100).toFixed(1)
+    const total = data?.totalValue || 0
+    if (total <= 0) return '0.0'
+    return ((value / total) * 100).toFixed(1)
   }
 
   return (
