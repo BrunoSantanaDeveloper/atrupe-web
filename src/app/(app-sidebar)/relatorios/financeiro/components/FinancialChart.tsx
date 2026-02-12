@@ -32,28 +32,30 @@ interface FinancialChartProps extends SearchParamsType {
   tab: FinancialTab
 }
 
-const chartConfig = {
-  received: {
-    label: 'Recebidas',
-    color: '#6CE9A6',
-  },
-  confirmed: {
-    label: 'Confirmadas',
-    color: '#3b82f6',
-  },
-  toReceive: {
-    label: 'A receber',
-    color: '#FEC84B',
-  },
-  overdue: {
-    label: 'Vencidas',
-    color: '#F97066',
-  },
-} satisfies ChartConfig
+const getChartConfig = (tab: FinancialTab) =>
+  ({
+    received: {
+      label: tab === 'receitas' ? 'Recebidas' : 'Pagas',
+      color: '#6CE9A6',
+    },
+    confirmed: {
+      label: 'Confirmadas',
+      color: '#3b82f6',
+    },
+    toReceive: {
+      label: tab === 'receitas' ? 'A receber' : 'A pagar',
+      color: '#FEC84B',
+    },
+    overdue: {
+      label: 'Vencidas',
+      color: '#F97066',
+    },
+  }) satisfies ChartConfig
 
 export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
   const { canProvision } = usePlanFeatures()
   const showConfirmed = canProvision()
+  const chartConfig = getChartConfig(tab)
 
   const { data, isLoading } = useQuery({
     queryKey: [
@@ -260,7 +262,9 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
         <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-success-400" />
-            <span className="text-gray-600">Recebidas</span>
+            <span className="text-gray-600">
+              {tab === 'receitas' ? 'Recebidas' : 'Pagas'}
+            </span>
           </div>
           {showConfirmed && (
             <div className="flex items-center gap-2">
@@ -270,7 +274,9 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
           )}
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-yellow-500" />
-            <span className="text-gray-600">A receber</span>
+            <span className="text-gray-600">
+              {tab === 'receitas' ? 'A receber' : 'A pagar'}
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-error" />

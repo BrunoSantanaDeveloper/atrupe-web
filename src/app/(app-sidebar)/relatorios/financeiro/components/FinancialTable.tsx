@@ -54,7 +54,9 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
 
   const status = (searchParams?.status as string) || 'received'
   const groupBy = (searchParams?.groupBy as 'none' | 'client') || 'client'
-  const orderBy = (searchParams?.orderBy as string) || 'receivedDate'
+  const orderBy =
+    (searchParams?.orderBy as string) ||
+    (tab === 'despesas' ? 'dueDate' : 'receivedDate')
   const page = Number(searchParams?.page) || 1
 
   // Helper to update URL params
@@ -180,8 +182,14 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                       </Badge>
                     </span>
                   </TableHead>
-                  <TableHead>Data do recebimento</TableHead>
-                  <TableHead className="text-right">Vendas</TableHead>
+                  <TableHead>
+                    {tab === 'receitas'
+                      ? 'Data do recebimento'
+                      : 'Data do pagamento'}
+                  </TableHead>
+                  <TableHead className="text-right">
+                    {tab === 'receitas' ? 'Vendas' : 'Pagamentos'}
+                  </TableHead>
                   <TableHead className="text-right w-16">100%</TableHead>
                 </TableRow>
               </TableHeader>

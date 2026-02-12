@@ -87,7 +87,7 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
           visibleCards.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3',
         )}
       >
-        {[1, 2, 3, 4].map((i) => (
+        {Array.from({ length: canProvision() ? 4 : 3 }, (_, i) => (
           <Card key={i} className="p-4 flex items-center gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
             <div className="flex flex-col gap-1">

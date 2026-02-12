@@ -41,8 +41,7 @@ export function FinancialReportPrintButton() {
     let endDate = searchParams.get('endDate') || undefined
 
     if (!startDate || !endDate) {
-      const period = (searchParams.get('period') ||
-        'current_month') as PeriodType
+      const period = (searchParams.get('period') || 'thisMonth') as PeriodType
       const dates = calculatePeriodDates(period)
       if (dates) {
         startDate = formatDateToISO(dates.startDate)
