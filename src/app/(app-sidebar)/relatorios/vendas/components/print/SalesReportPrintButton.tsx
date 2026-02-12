@@ -20,6 +20,12 @@ import { IconPrinter } from '@tabler/icons-react'
 // Actions
 import { getSalesReportPdfData } from '@/actions/sales-report-pdf'
 
+import {
+  calculatePeriodDates,
+  formatDateToISO,
+  type PeriodType,
+} from '@/lib/filter-utils'
+
 // PDF Component
 import { SalesReportPdf } from './SalesReportPdf'
 
@@ -30,11 +36,25 @@ export function SalesReportPrintButton() {
   const handleGeneratePDF = async () => {
     setIsLoading(true)
     try {
+      // Apply default dates (current month) when URL has none
+      let startDate = searchParams.get('startDate') || undefined
+      let endDate = searchParams.get('endDate') || undefined
+
+      if (!startDate || !endDate) {
+        const period = (searchParams.get('period') ||
+          'current_month') as PeriodType
+        const dates = calculatePeriodDates(period)
+        if (dates) {
+          startDate = formatDateToISO(dates.startDate)
+          endDate = formatDateToISO(dates.endDate)
+        }
+      }
+
       const filters = {
         sellerId: searchParams.get('sellerId') || undefined,
         originId: searchParams.get('originId') || undefined,
-        startDate: searchParams.get('startDate') || undefined,
-        endDate: searchParams.get('endDate') || undefined,
+        startDate,
+        endDate,
       }
 
       const pdfData = await getSalesReportPdfData(filters)
