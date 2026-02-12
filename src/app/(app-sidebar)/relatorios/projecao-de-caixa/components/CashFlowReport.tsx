@@ -1,5 +1,3 @@
-'use client'
-
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { FiltersBar } from './FiltersBar'

@@ -49,7 +49,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       icon: IconTrendingDown,
       variant: 'errorLight',
       label: 'Despesas Previstas',
-      value: formatCurrencyToBrl(-(data?.expectedExpenses || 0)),
+      value: formatCurrencyToBrl(data?.expectedExpenses || 0),
     },
     {
       icon: IconWallet,

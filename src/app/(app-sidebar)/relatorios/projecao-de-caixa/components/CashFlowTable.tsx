@@ -131,13 +131,13 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
               <TableRow className="bg-gray-50">
                 <TableHead>
                   <div className="flex items-center gap-2">
-                    <span>Serviços</span>
+                    <span>Movimentações</span>
                     <Badge variant="neutralLight" className="font-medium">
                       {data?.totalCount || 0}
                     </Badge>
                   </div>
                 </TableHead>
-                <TableHead>Vendas</TableHead>
+                <TableHead>Valor</TableHead>
                 <TableHead className="text-right">100%</TableHead>
               </TableRow>
             </TableHeader>
