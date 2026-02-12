@@ -9,12 +9,7 @@ import { FiltersBar } from './FiltersBar'
 import { SummaryCards } from './SummaryCards'
 import { FinancialChart } from './FinancialChart'
 import { FinancialTable } from './FinancialTable'
-
-// Icons
-import { IconPrinter } from '@tabler/icons-react'
-
-// UI
-import { Button } from '@/components/ui/button'
+import { FinancialReportPrintButton } from './print/FinancialReportPrintButton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Types
@@ -37,16 +32,7 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
 
   return (
     <div className="space-y-4">
-      <Topbar
-        title="Financeiro"
-        primaryCta={
-          <Button
-            variant="neutralOutline"
-            size="iconMd"
-            RightIcon={IconPrinter}
-          />
-        }
-      />
+      <Topbar title="Financeiro" primaryCta={<FinancialReportPrintButton />} />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
