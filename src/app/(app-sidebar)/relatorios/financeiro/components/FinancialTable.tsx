@@ -176,7 +176,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                 <TableRow>
                   <TableHead className="w-[40%]">
                     <span className="flex items-center gap-2">
-                      Serviços
+                      {tab === 'receitas' ? 'Receitas' : 'Despesas'}
                       <Badge variant="neutralLight">
                         {data?.totalCount || 0}
                       </Badge>

@@ -51,7 +51,7 @@ export function FinancialReportPrintButton() {
 
     return {
       tab: searchParams.get('tab') || 'receitas',
-      status: searchParams.get('status') || undefined,
+      status: searchParams.get('status') || 'received',
       startDate,
       endDate,
     }
