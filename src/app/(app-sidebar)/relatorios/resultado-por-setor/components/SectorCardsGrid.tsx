@@ -57,8 +57,9 @@ function GeneralCard({ total }: { total: number }) {
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-4">
-        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary-100">
-          <IconLayoutGrid className="h-6 w-6 text-primary-600" />
+        {/* TODO: Usar FeaturedIcon */}
+        <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-600">
+          <IconLayoutGrid className="h-6 w-6 text-gray-100" />
         </div>
         <span className="font-semibold text-gray-900">Geral</span>
       </div>

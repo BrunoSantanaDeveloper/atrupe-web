@@ -46,14 +46,10 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
         endDate: searchParams?.endDate as string,
         movement:
           (searchParams?.movement as 'all' | 'revenue' | 'expense') || 'all',
-        groupBy:
-          (searchParams?.groupBy as 'none' | 'date' | 'client') || 'date',
+        groupBy: (searchParams?.groupBy as 'none' | 'date') || 'date',
         orderBy:
-          (searchParams?.orderBy as
-            | 'dueDate'
-            | 'valueDesc'
-            | 'valueAsc'
-            | 'clientName') || 'dueDate',
+          (searchParams?.orderBy as 'dueDate' | 'valueDesc' | 'valueAsc') ||
+          'dueDate',
         page: Number(searchParams?.page) || 1,
         limit: 10,
       }),

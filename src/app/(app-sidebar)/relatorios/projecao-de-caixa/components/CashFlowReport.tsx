@@ -11,10 +11,31 @@ import { IconPrinter } from '@tabler/icons-react'
 // UI
 import { Button } from '@/components/ui/button'
 
+// Utils
+import {
+  calculatePeriodDates,
+  formatDateToISO,
+  type PeriodType,
+} from '@/lib/filter-utils'
+
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function CashFlowReport({ searchParams }: SearchParamsType) {
+  // Compute default dates from selected period when not present in URL
+  let effectiveParams = searchParams
+  if (!searchParams?.startDate || !searchParams?.endDate) {
+    const period = (searchParams?.period as PeriodType) || 'next_7_days'
+    const dates = calculatePeriodDates(period)
+    if (dates) {
+      effectiveParams = {
+        ...searchParams,
+        startDate: formatDateToISO(dates.startDate),
+        endDate: formatDateToISO(dates.endDate),
+      }
+    }
+  }
+
   return (
     <div className="space-y-5">
       <Topbar
@@ -24,21 +45,23 @@ export function CashFlowReport({ searchParams }: SearchParamsType) {
             variant="neutralOutline"
             size="iconMd"
             RightIcon={IconPrinter}
+            disabled
+            title="Exportar PDF (em breve)"
           />
         }
       />
 
       {/* Filters */}
-      <FiltersBar searchParams={searchParams} />
+      <FiltersBar searchParams={effectiveParams} />
 
       {/* Summary Cards */}
-      <SummaryCards searchParams={searchParams} />
+      <SummaryCards searchParams={effectiveParams} />
 
       {/* Cash Flow Chart */}
-      <CashFlowChart searchParams={searchParams} />
+      <CashFlowChart searchParams={effectiveParams} />
 
       {/* Table */}
-      <CashFlowTable searchParams={searchParams} />
+      <CashFlowTable searchParams={effectiveParams} />
     </div>
   )
 }

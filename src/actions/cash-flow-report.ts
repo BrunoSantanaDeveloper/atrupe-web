@@ -12,8 +12,8 @@ interface CashFlowFilters {
   startDate?: string
   endDate?: string
   movement?: 'all' | 'revenue' | 'expense'
-  groupBy?: 'none' | 'date' | 'client'
-  orderBy?: 'dueDate' | 'valueDesc' | 'valueAsc' | 'clientName'
+  groupBy?: 'none' | 'date'
+  orderBy?: 'dueDate' | 'valueDesc' | 'valueAsc'
   page?: number
   limit?: number
 }
