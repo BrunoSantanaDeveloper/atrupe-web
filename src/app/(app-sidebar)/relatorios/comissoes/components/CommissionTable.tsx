@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -45,7 +45,15 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
   const page = parseInt((searchParams?.page as string) || '1')
 
   const { data, isLoading } = useQuery({
-    queryKey: ['commission-table', searchParams, groupBy, orderBy, page],
+    queryKey: [
+      'commission-table',
+      searchParams?.commissionType,
+      searchParams?.startDate,
+      searchParams?.endDate,
+      groupBy,
+      orderBy,
+      page,
+    ],
     queryFn: () =>
       getCommissionTable({
         commissionType: searchParams?.commissionType as CommissionType,
@@ -58,27 +66,44 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       }),
   })
 
-  const renderRecord = (record: CommissionRecord) => (
-    <TableRow key={record.id}>
-      <TableCell>
-        <div className="flex flex-col">
-          <span className="font-medium">{record.clientName}</span>
-          <span className="text-sm text-gray">{record.description}</span>
-        </div>
-      </TableCell>
-      <TableCell className="text-gray-600">{record.saleDate}</TableCell>
-      <TableCell className="text-gray-600">{record.receivedDate}</TableCell>
-      <TableCell className="text-right text-gray-900">
-        {formatCurrencyToBrl(record.saleValue)}
-      </TableCell>
-      <TableCell className="text-right text-success-700 font-medium">
-        {formatCurrencyToBrl(record.receivedValue)}
-      </TableCell>
-      <TableCell className="text-right text-gray-600">
-        {record.percentage}%
-      </TableCell>
-    </TableRow>
-  )
+  const totalFiltered = useMemo(() => {
+    if (!data) return 0
+    if (data.grouped && data.groups?.length > 0) {
+      return data.groups.reduce((sum, g) => sum + g.saleTotal, 0)
+    }
+    return data.records.reduce((sum, r) => sum + r.saleValue, 0)
+  }, [data])
+
+  const renderRecord = (record: CommissionRecord) => {
+    const commissionValue = record.saleValue * (record.percentage / 100)
+    const pct =
+      totalFiltered > 0
+        ? ((record.saleValue / totalFiltered) * 100).toFixed(1)
+        : '0.0'
+
+    return (
+      <TableRow key={record.id}>
+        <TableCell>
+          <div className="flex flex-col">
+            <span className="font-medium">{record.clientName}</span>
+            <span className="text-sm text-gray">{record.description}</span>
+          </div>
+        </TableCell>
+        <TableCell className="text-gray-600">{record.saleDate}</TableCell>
+        <TableCell className="text-gray-600">{record.receivedDate}</TableCell>
+        <TableCell className="text-right text-gray-900">
+          {formatCurrencyToBrl(record.saleValue)}
+        </TableCell>
+        <TableCell className="text-right text-success-700 font-medium">
+          {formatCurrencyToBrl(record.receivedValue)}
+        </TableCell>
+        <TableCell className="text-right text-gray-900 font-medium">
+          {formatCurrencyToBrl(commissionValue)}
+        </TableCell>
+        <TableCell className="text-right text-gray-600">{pct}%</TableCell>
+      </TableRow>
+    )
+  }
 
   return (
     <Card>
@@ -103,13 +128,51 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
 
       <CardContent className="p-0">
         {isLoading ? (
-          <div className="p-6 space-y-4">
-            {Array(5)
-              .fill(0)
-              .map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>Serviços</TableHead>
+                <TableHead>Data da venda</TableHead>
+                <TableHead>Data do recebimento</TableHead>
+                <TableHead className="text-right">Venda</TableHead>
+                <TableHead className="text-right">Recebimento</TableHead>
+                <TableHead className="text-right">Comissão</TableHead>
+                <TableHead className="text-right w-16">%</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array(5)
+                .fill(0)
+                .map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-48" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-24 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-24 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-24 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-10 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
         ) : !data ||
           (data.records.length === 0 &&
             (!data.groups || data.groups.length === 0)) ? (
@@ -133,6 +196,7 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                   <TableHead>Data do recebimento</TableHead>
                   <TableHead className="text-right">Venda</TableHead>
                   <TableHead className="text-right">Recebimento</TableHead>
+                  <TableHead className="text-right">Comissão</TableHead>
                   <TableHead className="text-right w-16">100%</TableHead>
                 </TableRow>
               </TableHeader>
@@ -160,6 +224,15 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
                           </TableCell>
                           <TableCell className="text-right text-success-700 font-medium text-xs py-3">
                             {formatCurrencyToBrl(group.receivedTotal)}
+                          </TableCell>
+                          <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
+                            {formatCurrencyToBrl(
+                              group.records.reduce(
+                                (sum, r) =>
+                                  sum + r.saleValue * (r.percentage / 100),
+                                0,
+                              ),
+                            )}
                           </TableCell>
                           <TableCell />
                         </TableRow>

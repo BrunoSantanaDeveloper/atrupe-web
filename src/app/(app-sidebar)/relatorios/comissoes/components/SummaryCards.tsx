@@ -22,7 +22,12 @@ import type { CommissionType } from '../types'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
   const { data, isLoading } = useQuery({
-    queryKey: ['commission-summary', searchParams],
+    queryKey: [
+      'commission-summary',
+      searchParams?.commissionType,
+      searchParams?.startDate,
+      searchParams?.endDate,
+    ],
     queryFn: () =>
       getCommissionSummary({
         commissionType: searchParams?.commissionType as CommissionType,
@@ -56,11 +61,11 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-4 flex items-center gap-3">
-            <Skeleton className="h-10 w-10 rounded-full" />
+          <Card key={i} className="p-6 flex items-center gap-3 rounded-xl">
+            <Skeleton className="h-11 w-11 rounded-[10px]" />
             <div className="flex flex-col gap-1">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-5 w-20" />
+              <Skeleton className="h-3.5 w-28" />
+              <Skeleton className="h-6 w-24" />
             </div>
           </Card>
         ))}
