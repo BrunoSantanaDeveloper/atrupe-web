@@ -114,13 +114,37 @@ export function CashFlowTable({ searchParams }: SearchParamsType) {
 
       <CardContent className="p-0">
         {isLoading ? (
-          <div className="p-6 space-y-4">
-            {Array(5)
-              .fill(0)
-              .map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead>
+                  <Skeleton className="h-4 w-28" />
+                </TableHead>
+                <TableHead>
+                  <Skeleton className="h-4 w-12" />
+                </TableHead>
+                <TableHead className="text-right">
+                  <Skeleton className="h-4 w-8 ml-auto" />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }, (_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32 mb-1" />
+                    <Skeleton className="h-3.5 w-48" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-4 w-10 ml-auto" />
+                  </TableCell>
+                </TableRow>
               ))}
-          </div>
+            </TableBody>
+          </Table>
         ) : (
           <Table>
             <TableHeader>

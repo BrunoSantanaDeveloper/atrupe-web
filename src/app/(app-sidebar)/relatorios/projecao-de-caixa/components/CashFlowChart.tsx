@@ -65,8 +65,8 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
             Projeção de caixa
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[300px] w-full" />
+        <CardContent className="min-h-[320px]">
+          <Skeleton className="h-[304px] w-full" />
         </CardContent>
       </Card>
     )
@@ -80,10 +80,10 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
             Projeção de caixa
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="h-[300px] flex items-center justify-center text-gray-500">
+        <CardContent className="min-h-[320px] flex items-center justify-center">
+          <p className="text-gray-500">
             Nenhum dado disponível para o período selecionado
-          </div>
+          </p>
         </CardContent>
       </Card>
     )
@@ -96,7 +96,7 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
           Projeção de caixa
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-h-[320px]">
         <ChartContainer
           config={chartConfig}
           className="min-h-[280px] max-h-[320px] w-full"
