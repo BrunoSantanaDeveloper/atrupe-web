@@ -75,13 +75,41 @@ export function DfcTable({ searchParams }: SearchParamsType) {
     return (
       <Card>
         <CardContent className="p-0">
-          <div className="p-6 space-y-4">
-            {Array(5)
-              .fill(0)
-              .map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead className="min-w-[250px]">
+                  <Skeleton className="h-4 w-20" />
+                </TableHead>
+                {[1, 2, 3].map((i) => (
+                  <TableHead key={i} className="text-right min-w-[120px]">
+                    <Skeleton className="h-4 w-16 ml-auto" />
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 8 }, (_, i) => (
+                <TableRow key={i} className={i < 1 ? 'bg-gray-50' : ''}>
+                  <TableCell
+                    style={{
+                      paddingLeft: 16 + (i === 0 ? 0 : i < 3 ? 24 : 48),
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="w-4 h-4 rounded" />
+                      <Skeleton className="h-4 w-24" />
+                    </div>
+                  </TableCell>
+                  {[1, 2, 3].map((j) => (
+                    <TableCell key={j} className="text-right">
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))}
-          </div>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     )

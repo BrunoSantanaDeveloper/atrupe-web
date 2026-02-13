@@ -100,9 +100,19 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
             Fluxo de Caixa
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-6 min-h-[250px]">
           {loadingCashFlow ? (
-            <Skeleton className="h-[250px] w-full" />
+            <>
+              <Skeleton className="h-[254px] w-full" />
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+                {[1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Skeleton className="w-3 h-3 rounded" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <>
               <ChartContainer
@@ -195,9 +205,19 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
             Receitas x Despesas
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-6 min-h-[250px]">
           {loadingRevenueExpense ? (
-            <Skeleton className="h-[250px] w-full" />
+            <>
+              <Skeleton className="h-[254px] w-full" />
+              <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+                {[1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Skeleton className="w-3 h-3 rounded" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                ))}
+              </div>
+            </>
           ) : (
             <>
               <ChartContainer
