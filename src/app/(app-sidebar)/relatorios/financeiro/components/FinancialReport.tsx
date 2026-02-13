@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // Components
@@ -10,6 +11,7 @@ import { SummaryCards } from './SummaryCards'
 import { FinancialChart } from './FinancialChart'
 import { FinancialTable } from './FinancialTable'
 import { FinancialReportPrintButton } from './print/FinancialReportPrintButton'
+import { AdvancedReportDialog } from './print/AdvancedReportDialog'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Types
@@ -36,7 +38,11 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
 
   return (
     <div className="space-y-4">
-      <Topbar title="Financeiro" primaryCta={<FinancialReportPrintButton />} />
+      <Topbar
+        title="Financeiro"
+        primaryCta={<AdvancedReportDialog activeTab={activeTab} />}
+        secondaryCta={<FinancialReportPrintButton />}
+      />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
