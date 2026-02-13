@@ -104,7 +104,7 @@ export function SectorCardsGrid({ searchParams }: SearchParamsType) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Array(6)
+          {Array(8)
             .fill(0)
             .map((_, i) => (
               <Card key={i} className="p-6">

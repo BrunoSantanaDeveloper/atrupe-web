@@ -80,8 +80,17 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             {tab === 'receitas' ? 'Receitas' : 'Despesas'}
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[300px] w-full" />
+        <CardContent className="p-6">
+          <Skeleton className="h-[304px] w-full" />
+          {/* Legend skeleton */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-4">
+            {Array.from({ length: showConfirmed ? 4 : 3 }, (_, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <Skeleton className="w-3 h-3 rounded" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
     )
@@ -95,10 +104,12 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             {tab === 'receitas' ? 'Receitas' : 'Despesas'}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[300px]">
-          <p className="text-gray-500">
-            Nenhum dado disponível para o período selecionado
-          </p>
+        <CardContent>
+          <div className="flex items-center justify-center h-[384px]">
+            <p className="text-gray-500">
+              Nenhum dado disponível para o período selecionado
+            </p>
+          </div>
         </CardContent>
       </Card>
     )

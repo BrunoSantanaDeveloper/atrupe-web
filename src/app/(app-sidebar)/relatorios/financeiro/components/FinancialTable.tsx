@@ -158,11 +158,45 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
 
       <CardContent>
         {isLoading ? (
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <Skeleton key={i} className="w-full h-12" />
-            ))}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[40%]">
+                  <Skeleton className="h-4 w-24" />
+                </TableHead>
+                <TableHead>
+                  <Skeleton className="h-4 w-32" />
+                </TableHead>
+                <TableHead className="text-right">
+                  <Skeleton className="h-4 w-16 ml-auto" />
+                </TableHead>
+                <TableHead className="text-right w-16">
+                  <Skeleton className="h-4 w-8 ml-auto" />
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }, (_, i) => (
+                <TableRow key={i}>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3.5 w-48" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-4 w-20 ml-auto" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-4 w-10 ml-auto" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         ) : !data ||
           (data.records.length === 0 &&
             (!data.groups || data.groups.length === 0)) ? (
