@@ -281,7 +281,7 @@ export function ItemImageDialog({
                 >
                   Imagem grande
                 </Button>
-                <p className="text-xs text-gray">540×405</p>
+                <p className="text-xs text-gray">540×405px</p>
               </div>
             </div>
             <p className="text-xs text-gray">
