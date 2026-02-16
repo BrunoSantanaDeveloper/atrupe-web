@@ -23,6 +23,10 @@ export interface SalesSummary {
   rejectedCount: number
   noResponseTotal: number
   noResponseCount: number
+  expiredTotal: number
+  expiredCount: number
+  canceledTotal: number
+  canceledCount: number
   averageTicket: number
   commission: number
   approvalTime: string // e.g., "48h35"
@@ -37,6 +41,7 @@ export interface SalesEvolutionData {
 export interface ApprovedRejectedData {
   label: string
   approved: number
+  canceled: number
   expired: number
   rejected: number
 }
@@ -58,7 +63,7 @@ export interface TopClientData {
   value: number
 }
 
-export type SalePhase = 'em-producao' | 'entregue' | 'aguardando'
+export type SalePhase = 'em-producao' | 'entregue' | 'aguardando' | 'cancelada'
 
 export interface SaleRecord {
   id: string

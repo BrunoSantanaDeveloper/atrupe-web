@@ -55,6 +55,10 @@ const phaseConfig: Record<
     label: 'Aguardando',
     variant: 'warningLight',
   },
+  cancelada: {
+    label: 'Cancelada',
+    variant: 'errorLight',
+  },
 }
 
 interface SalesTableProps extends SearchParamsType {}

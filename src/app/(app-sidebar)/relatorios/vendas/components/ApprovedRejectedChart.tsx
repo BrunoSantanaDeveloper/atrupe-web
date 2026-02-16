@@ -28,6 +28,10 @@ const chartConfig = {
     label: 'Aprovadas',
     color: '#6CE9A6',
   },
+  canceled: {
+    label: 'Canceladas',
+    color: '#98A2B3',
+  },
   expired: {
     label: 'Vencidas',
     color: '#FEC84B',
@@ -115,7 +119,15 @@ export function ApprovedRejectedChart({
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Bar
                 dataKey="approved"
+                stackId="aprovadas"
                 fill="var(--color-approved)"
+                radius={[0, 0, 0, 0]}
+                barSize={12}
+              />
+              <Bar
+                dataKey="canceled"
+                stackId="aprovadas"
+                fill="var(--color-canceled)"
                 radius={[4, 4, 0, 0]}
                 barSize={12}
               />
@@ -141,6 +153,10 @@ export function ApprovedRejectedChart({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-brand" />
             <span className="text-gray-600">Aprovadas</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#98A2B3' }} />
+            <span className="text-gray-600">Canceladas</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-warning" />
