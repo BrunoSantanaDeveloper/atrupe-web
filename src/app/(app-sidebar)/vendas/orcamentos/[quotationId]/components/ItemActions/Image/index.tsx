@@ -263,7 +263,7 @@ export function ItemImageDialog({
                 >
                   Imagem pequena
                 </Button>
-                <p className="text-xs text-gray">80×60px</p>
+                <p className="text-xs text-gray">200×150px</p>
               </div>
               <div className="flex flex-col items-center gap-1">
                 <Button
