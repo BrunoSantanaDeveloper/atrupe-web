@@ -3,7 +3,7 @@
 import apiInstance from '@/lib/api'
 import type {
   SalesSummary,
-  SalesEvolutionData,
+  SalesEvolutionResponse,
   ApprovedRejectedData,
   OriginChartData,
   TopProductData,
@@ -16,7 +16,7 @@ interface SalesReportFilters {
   originId?: string
   startDate?: string
   endDate?: string
-  groupBy?: 'none' | 'client'
+  groupBy?: 'none' | 'client' | 'seller'
   orderBy?: 'approvedDate' | 'valueDesc' | 'valueAsc'
   page?: number
   limit?: number
@@ -39,14 +39,14 @@ export async function getSalesReportSummary(
 
 export async function getSalesEvolution(
   filters?: SalesReportFilters,
-): Promise<SalesEvolutionData[]> {
+): Promise<SalesEvolutionResponse> {
   const api = await apiInstance()
   try {
     const res = await api.get(`${BASE_ROUTE}/evolution`, { params: filters })
     return res.data
   } catch (error) {
     console.error('Error fetching sales evolution:', error)
-    return []
+    return { mode: 'daily', data: [], yearlyData: [] }
   }
 }
 
@@ -146,5 +146,29 @@ export async function getSalesTableData(
       totalCount: 0,
       pagination: { page: 1, totalPages: 1, totalRecords: 0 },
     }
+  }
+}
+
+export async function getSalesPermissions(): Promise<{
+  canSeeOtherSellers: boolean
+}> {
+  const api = await apiInstance()
+  try {
+    const res = await api.get(`${BASE_ROUTE}/permissions`)
+    return res.data
+  } catch (error) {
+    console.error('Error fetching sales permissions:', error)
+    return { canSeeOtherSellers: false }
+  }
+}
+
+export async function getSellers(): Promise<{ id: string; name: string }[]> {
+  const api = await apiInstance()
+  try {
+    const res = await api.get('/sellers')
+    return res.data
+  } catch (error) {
+    console.error('Error fetching sellers:', error)
+    return []
   }
 }

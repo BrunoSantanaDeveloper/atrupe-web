@@ -3,6 +3,7 @@ import {
   IconNews,
   IconBook,
   IconCoins,
+  IconGraph,
   IconUsers,
   IconShare2,
   IconUpload,
@@ -229,6 +230,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconCashBanknote,
         title: 'Financeiro',
         path: '/relatorios/financeiro',
+        permission: ['reports:financial:view', 'values:values:view'],
+      },
+      {
+        icon: IconGraph,
+        title: 'Projeção de caixa',
+        path: '/relatorios/projecao-de-caixa',
         permission: ['reports:financial:view', 'values:values:view'],
       },
       {

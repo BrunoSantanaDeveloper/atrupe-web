@@ -157,6 +157,18 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     }
   }, [update, refreshUserData])
 
+  // Periodic session refresh to detect blockLevel changes (every 5 minutes)
+  useEffect(() => {
+    const BLOCK_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
+
+    const interval = setInterval(async () => {
+      // Silently refresh session to get updated blockLevel from server
+      await update()
+    }, BLOCK_CHECK_INTERVAL)
+
+    return () => clearInterval(interval)
+  }, [update])
+
   return <>{children}</>
 }
 

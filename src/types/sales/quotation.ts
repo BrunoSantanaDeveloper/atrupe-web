@@ -14,6 +14,7 @@ export type QuotationItemType = {
   image: {
     url: string
     original: boolean
+    size?: 'small' | 'large'
   }
   technicalDescription: string
   product: {
@@ -159,7 +160,20 @@ export type QuotationType = {
   description: string
   status: string
   totalValue: number
-  // finalValue: number
+  // Dados para cálculo do total na listagem
+  deliveryInfo: DeliveryInfoType
+  quotationPayment?: {
+    finalValue?: number
+    discountTotal?: number
+    downPaymentAdditionalFee?: number
+    commission?: {
+      type?: string
+      totalCommission?: number
+    }
+    quotationInstallment?: {
+      additionalFee?: number
+    }[]
+  }
   tag: {
     id: string
     text: string
@@ -200,7 +214,6 @@ export type QuotationType = {
     notes?: string
   }
 
-  deliveryInfo: DeliveryInfoType
   paymentConditions: QuotationPaymentConditionsType
   quotationItems: QuotationItemType[]
   financial: FinancialInfoType

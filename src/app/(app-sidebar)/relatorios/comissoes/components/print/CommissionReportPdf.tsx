@@ -7,10 +7,10 @@ import { PdfHeader } from '@/components/common/PdfHeader'
 
 // Types
 import type {
-  SalesReportPdfData,
-  SalesReportPdfGroup,
-  SalesReportPdfRecord,
-} from '../pdf-types'
+  CommissionPdfData,
+  CommissionPdfGroup,
+  CommissionPdfRecord,
+} from '../../pdf-types'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -25,12 +25,6 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
     paddingTop: 90,
     backgroundColor: '#fff',
-  },
-  firstPage: {
-    paddingTop: 90,
-  },
-  otherPages: {
-    paddingTop: 30,
   },
   container: {
     padding: 30,
@@ -62,10 +56,11 @@ const styles = StyleSheet.create({
     color: '#667085',
     textTransform: 'uppercase',
   },
-  colServices: { width: '40%' },
-  colSeller: { width: '22%' },
-  colPhase: { width: '15%' },
-  colValue: { width: '13%', textAlign: 'right' },
+  colServices: { width: '30%' },
+  colSaleDate: { width: '14%' },
+  colReceivedDate: { width: '14%' },
+  colSaleValue: { width: '16%', textAlign: 'right' },
+  colReceivedValue: { width: '16%', textAlign: 'right' },
   colPercent: { width: '10%', textAlign: 'right' },
   // Group Header Row
   groupHeader: {
@@ -86,12 +81,6 @@ const styles = StyleSheet.create({
     color: '#1D2939',
     textAlign: 'right',
   },
-  groupPercent: {
-    fontSize: 9,
-    fontWeight: 'bold',
-    color: '#1D2939',
-    textAlign: 'right',
-  },
   // Table Row
   tableRow: {
     flexDirection: 'row',
@@ -107,13 +96,18 @@ const styles = StyleSheet.create({
     fontSize: 7,
     color: '#667085',
   },
-  cellPhase: {
+  cellDate: {
     fontSize: 8,
     color: '#667085',
   },
   cellValue: {
     fontSize: 8,
     color: '#1D2939',
+    textAlign: 'right',
+  },
+  cellReceivedValue: {
+    fontSize: 8,
+    color: '#027A48',
     textAlign: 'right',
   },
   cellPercent: {
@@ -134,27 +128,30 @@ const styles = StyleSheet.create({
 })
 
 interface Props {
-  data: SalesReportPdfData
+  data: CommissionPdfData
 }
 
-export function SalesReportPdf({ data }: Props) {
-  const renderRecord = (record: SalesReportPdfRecord) => (
+export function CommissionReportPdf({ data }: Props) {
+  const renderRecord = (record: CommissionPdfRecord) => (
     <View key={record.id} style={styles.tableRow} wrap={false}>
       <View style={styles.colServices}>
         <Text style={styles.cellText}>{record.clientName}</Text>
-        <Text style={styles.cellSubText}>
-          {record.serviceCode} - {record.description}
+        <Text style={styles.cellSubText}>{record.description}</Text>
+      </View>
+      <View style={styles.colSaleDate}>
+        <Text style={styles.cellDate}>{record.saleDate}</Text>
+      </View>
+      <View style={styles.colReceivedDate}>
+        <Text style={styles.cellDate}>{record.receivedDate}</Text>
+      </View>
+      <View style={styles.colSaleValue}>
+        <Text style={styles.cellValue}>
+          {formatCurrencyToBrl(record.saleValue)}
         </Text>
       </View>
-      <View style={styles.colSeller}>
-        <Text style={styles.cellText}>{record.approvedDate || ''}</Text>
-      </View>
-      <View style={styles.colPhase}>
-        <Text style={styles.cellPhase}>{record.phase}</Text>
-      </View>
-      <View style={styles.colValue}>
-        <Text style={styles.cellValue}>
-          {formatCurrencyToBrl(record.value)}
+      <View style={styles.colReceivedValue}>
+        <Text style={styles.cellReceivedValue}>
+          {formatCurrencyToBrl(record.receivedValue)}
         </Text>
       </View>
       <View style={styles.colPercent}>
@@ -163,23 +160,26 @@ export function SalesReportPdf({ data }: Props) {
     </View>
   )
 
-  const renderGroup = (group: SalesReportPdfGroup) => (
-    <View key={group.clientId} wrap={false}>
+  const renderGroup = (group: CommissionPdfGroup) => (
+    <View key={group.vendedorId} wrap={false}>
       {/* Group Header */}
       <View style={styles.groupHeader}>
         <View style={styles.colServices}>
-          <Text style={styles.groupName}>{group.clientName}</Text>
+          <Text style={styles.groupName}>{group.vendedorName}</Text>
         </View>
-        <View style={styles.colSeller} />
-        <View style={styles.colPhase} />
-        <View style={styles.colValue}>
+        <View style={styles.colSaleDate} />
+        <View style={styles.colReceivedDate} />
+        <View style={styles.colSaleValue}>
           <Text style={styles.groupValue}>
-            {formatCurrencyToBrl(group.total)}
+            {formatCurrencyToBrl(group.saleTotal)}
           </Text>
         </View>
-        <View style={styles.colPercent}>
-          <Text style={styles.groupPercent}>{group.percentage}%</Text>
+        <View style={styles.colReceivedValue}>
+          <Text style={styles.groupValue}>
+            {formatCurrencyToBrl(group.receivedTotal)}
+          </Text>
         </View>
+        <View style={styles.colPercent} />
       </View>
       {/* Group Records */}
       {group.records.map(renderRecord)}
@@ -189,32 +189,36 @@ export function SalesReportPdf({ data }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header - only on first page (fixed=false means only first page) */}
         <PdfHeader company={data.company} />
 
         <View style={styles.container}>
           {/* Title */}
           <Text style={styles.title}>Relatório</Text>
-          <Text style={styles.subtitle}>Vendas</Text>
+          <Text style={styles.subtitle}>Comissões</Text>
 
           {/* Table Header */}
           <View style={styles.tableHeader} fixed>
             <View style={styles.colServices}>
               <Text style={styles.tableHeaderCell}>SERVIÇOS</Text>
             </View>
-            <View style={styles.colSeller}>
-              <Text style={styles.tableHeaderCell}>VENDEDOR</Text>
+            <View style={styles.colSaleDate}>
+              <Text style={styles.tableHeaderCell}>DATA VENDA</Text>
             </View>
-            <View style={styles.colPhase} />
-            <View style={styles.colValue}>
+            <View style={styles.colReceivedDate}>
+              <Text style={styles.tableHeaderCell}>DATA RECEB.</Text>
+            </View>
+            <View style={styles.colSaleValue}>
               <Text style={styles.tableHeaderCell}>
-                {formatCurrencyToBrl(data.totalValue)}
+                {formatCurrencyToBrl(data.totalSaleValue)}
+              </Text>
+            </View>
+            <View style={styles.colReceivedValue}>
+              <Text style={styles.tableHeaderCell}>
+                {formatCurrencyToBrl(data.totalReceivedValue)}
               </Text>
             </View>
             <View style={styles.colPercent}>
-              <Text style={styles.tableHeaderCell}>
-                {data.totalPercentage}%
-              </Text>
+              <Text style={styles.tableHeaderCell}>%</Text>
             </View>
           </View>
 

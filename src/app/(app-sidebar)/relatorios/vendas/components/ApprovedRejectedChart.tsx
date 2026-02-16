@@ -1,6 +1,7 @@
 'use client'
 
 // React
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -27,6 +28,10 @@ const chartConfig = {
     label: 'Aprovadas',
     color: '#6CE9A6',
   },
+  canceled: {
+    label: 'Canceladas',
+    color: '#98A2B3',
+  },
   expired: {
     label: 'Vencidas',
     color: '#FEC84B',
@@ -42,14 +47,31 @@ interface ApprovedRejectedChartProps extends SearchParamsType {}
 export function ApprovedRejectedChart({
   searchParams,
 }: ApprovedRejectedChartProps) {
+  // Always show last 6 months, independent of period filter
+  const fixedRange = useMemo(() => {
+    const now = new Date()
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0) // last day of current month
+    const startDate = new Date(now.getFullYear(), now.getMonth() - 5, 1) // first day of 6 months ago
+    return {
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0],
+    }
+  }, [])
+
   const { data: approvedRejected = [], isLoading } = useQuery({
-    queryKey: ['sales-approved-rejected', searchParams],
+    queryKey: [
+      'sales-approved-rejected',
+      fixedRange.startDate,
+      fixedRange.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getApprovedRejected({
         sellerId: searchParams?.sellerId as string,
         originId: searchParams?.originId as string,
-        startDate: searchParams?.startDate as string,
-        endDate: searchParams?.endDate as string,
+        startDate: fixedRange.startDate,
+        endDate: fixedRange.endDate,
       }),
   })
 
@@ -62,7 +84,14 @@ export function ApprovedRejectedChart({
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (
-          <Skeleton className="h-[200px] w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-[200px] w-full" />
+            <div className="flex items-center justify-center gap-6">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          </div>
         ) : (
           <ChartContainer
             config={chartConfig}
@@ -90,7 +119,15 @@ export function ApprovedRejectedChart({
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
               <Bar
                 dataKey="approved"
+                stackId="aprovadas"
                 fill="var(--color-approved)"
+                radius={[0, 0, 0, 0]}
+                barSize={12}
+              />
+              <Bar
+                dataKey="canceled"
+                stackId="aprovadas"
+                fill="var(--color-canceled)"
                 radius={[4, 4, 0, 0]}
                 barSize={12}
               />
@@ -116,6 +153,10 @@ export function ApprovedRejectedChart({
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-brand" />
             <span className="text-gray-600">Aprovadas</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#98A2B3' }} />
+            <span className="text-gray-600">Canceladas</span>
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded bg-warning" />

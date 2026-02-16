@@ -3,7 +3,7 @@
 
 export interface SalesReportFilters {
   sellerId: string | null
-  origin: string | null
+  originId: string | null
   period:
     | 'current_month'
     | 'last_month'
@@ -12,7 +12,7 @@ export interface SalesReportFilters {
     | 'custom'
   startDate: Date | null
   endDate: Date | null
-  groupBy: 'none' | 'client'
+  groupBy: 'none' | 'client' | 'seller'
   orderBy: 'approvedDate' | 'valueDesc' | 'valueAsc'
 }
 
@@ -22,20 +22,37 @@ export interface SalesSummary {
   rejectedTotal: number
   rejectedCount: number
   noResponseTotal: number
+  noResponseCount: number
+  expiredTotal: number
+  expiredCount: number
+  canceledTotal: number
+  canceledCount: number
   averageTicket: number
   commission: number
   approvalTime: string // e.g., "48h35"
 }
 
 export interface SalesEvolutionData {
-  month: string
+  day: string
   approved: number
-  inProgress: number
+  count: number
+}
+
+export interface SalesEvolutionYearSeries {
+  year: number
+  data: { month: string; approved: number; count: number }[]
+}
+
+export interface SalesEvolutionResponse {
+  mode: 'daily' | 'monthly' | 'yearly'
+  data: SalesEvolutionData[]
+  yearlyData: SalesEvolutionYearSeries[]
 }
 
 export interface ApprovedRejectedData {
   label: string
   approved: number
+  canceled: number
   expired: number
   rejected: number
 }
@@ -48,7 +65,7 @@ export interface OriginChartData {
 
 export interface TopProductData {
   name: string
-  type: 'PDF' | 'Excel' | string
+  type: string
   value: number
 }
 
@@ -57,7 +74,7 @@ export interface TopClientData {
   value: number
 }
 
-export type SalePhase = 'em-producao' | 'entregue' | 'aguardando'
+export type SalePhase = 'em-producao' | 'entregue' | 'aguardando' | 'cancelada'
 
 export interface SaleRecord {
   id: string
@@ -79,10 +96,23 @@ export interface SalesClientGroup {
   records: SaleRecord[]
 }
 
-// Table data can be either flat (no grouping) or grouped by client
+// Grouped by seller - returned when groupBy = 'seller'
+export interface SalesSellerGroup {
+  sellerId: string
+  sellerName: string
+  count: number
+  total: number
+  records: SaleRecord[]
+}
+
+// Table data can be either flat (no grouping), grouped by client, or grouped by seller
 export type SalesTableData =
   | { grouped: false; records: SaleRecord[]; totalCount: number }
-  | { grouped: true; groups: SalesClientGroup[]; totalCount: number }
+  | {
+      grouped: true
+      groups: (SalesClientGroup | SalesSellerGroup)[]
+      totalCount: number
+    }
 
 export interface SalesReportData {
   summary: SalesSummary

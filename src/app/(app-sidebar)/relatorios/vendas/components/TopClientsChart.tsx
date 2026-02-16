@@ -40,7 +40,13 @@ interface TopClientsChartProps extends SearchParamsType {}
 
 export function TopClientsChart({ searchParams }: TopClientsChartProps) {
   const { data: topClients = [], isLoading } = useQuery({
-    queryKey: ['sales-top-clients', searchParams],
+    queryKey: [
+      'sales-top-clients',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getTopClients({
         sellerId: searchParams?.sellerId as string,

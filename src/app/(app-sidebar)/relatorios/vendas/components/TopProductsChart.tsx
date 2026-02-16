@@ -40,7 +40,13 @@ interface TopProductsChartProps extends SearchParamsType {}
 
 export function TopProductsChart({ searchParams }: TopProductsChartProps) {
   const { data: topProducts = [], isLoading } = useQuery({
-    queryKey: ['sales-top-products', searchParams],
+    queryKey: [
+      'sales-top-products',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getTopProducts({
         sellerId: searchParams?.sellerId as string,

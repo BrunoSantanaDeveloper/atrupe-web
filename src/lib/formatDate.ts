@@ -1,3 +1,31 @@
+// ============================================
+// URL PARAM DATE UTILITIES
+// ============================================
+
+/**
+ * Formats a Date to ISO string (YYYY-MM-DD) for URL params
+ * Manually formatted to avoid timezone issues
+ */
+export function formatDateToISO(date: Date): string {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+/**
+ * Parses an ISO date string (YYYY-MM-DD) to Date
+ * Sets time to noon to avoid timezone issues
+ */
+export function parseDateFromISO(dateString: string): Date {
+  const [year, month, day] = dateString.split('-').map(Number)
+  return new Date(year, month - 1, day, 12, 0, 0, 0)
+}
+
+// ============================================
+// LOCALE DATE UTILITIES
+// ============================================
+
 // Returns 12/03/2024
 export function formatToLocaleDate(date: string | Date | undefined) {
   if (!date) return '-'

@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     minHeight: 60,
   },
   itemImage: {
-    width: 70,
-    height: 51,
+    width: 80,
+    height: 60,
     backgroundColor: '#F3F4F6',
     borderRadius: 2,
     overflow: 'hidden',
@@ -342,8 +342,7 @@ const styles = StyleSheet.create({
   // Estilos para imagens grandes (não originais)
   itemImageLarge: {
     width: '100%',
-    height: 'auto',
-    maxHeight: 300,
+    aspectRatio: 4 / 3,
     borderRadius: 4,
     overflow: 'hidden',
     borderTopWidth: 1,
@@ -721,12 +720,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               // Para produtos simples (1 composição), renderizar apenas a linha da composição
               if (!isComposite && item.product.compositions.length === 1) {
                 const composition = item.product.compositions[0]
-                // Verificar se a imagem é original ou alterada
-                const isOriginalImage = item.image?.original !== false
+                // Determinar tamanho da imagem: usa size se disponível, senão fallback para lógica legada
+                const imageSize =
+                  item.image?.size ??
+                  (item.image?.original !== false ? 'small' : 'large')
                 const showSmallImage =
-                  printOptions.showImages && isOriginalImage && item.image?.url
+                  printOptions.showImages &&
+                  imageSize === 'small' &&
+                  item.image?.url
                 const showLargeImage =
-                  printOptions.showImages && !isOriginalImage && item.image?.url
+                  printOptions.showImages &&
+                  imageSize === 'large' &&
+                  item.image?.url
 
                 return (
                   <View
@@ -919,12 +924,18 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               }
 
               // Para produtos compostos, manter comportamento atual
-              // Verificar se a imagem é original ou alterada
-              const isOriginalImage = item.image?.original !== false
+              // Determinar tamanho da imagem: usa size se disponível, senão fallback para lógica legada
+              const imageSize =
+                item.image?.size ??
+                (item.image?.original !== false ? 'small' : 'large')
               const showSmallImage =
-                printOptions.showImages && isOriginalImage && item.image?.url
+                printOptions.showImages &&
+                imageSize === 'small' &&
+                item.image?.url
               const showLargeImage =
-                printOptions.showImages && !isOriginalImage && item.image?.url
+                printOptions.showImages &&
+                imageSize === 'large' &&
+                item.image?.url
 
               return (
                 <View

@@ -2,31 +2,26 @@
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-
-// Icons
-import { IconPrinter } from '@tabler/icons-react'
-
-// UI
-import { Button } from '@/components/ui/button'
+import { FiltersBar } from './FiltersBar'
+import { SectorCardsGrid } from './SectorCardsGrid'
+import { SectorReportPrintButton } from './print/SectorReportPrintButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
 export function SectorReport({ searchParams }: SearchParamsType) {
-  console.info(searchParams)
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <Topbar
-        title="Relatório de Resultado por Setor"
-        primaryCta={
-          <Button
-            variant="neutralOutline"
-            size="iconMd"
-            RightIcon={IconPrinter}
-          />
-        }
+        title="Resultados por setor"
+        primaryCta={<SectorReportPrintButton />}
       />
+
+      {/* Filters */}
+      <FiltersBar searchParams={searchParams} />
+
+      {/* Sector Cards Grid */}
+      <SectorCardsGrid searchParams={searchParams} />
     </div>
   )
 }

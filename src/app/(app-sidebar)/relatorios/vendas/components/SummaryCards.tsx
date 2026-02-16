@@ -31,7 +31,13 @@ interface SummaryCardsProps extends SearchParamsType {}
 
 export function SummaryCards({ searchParams }: SummaryCardsProps) {
   const { data: summary, isLoading } = useQuery({
-    queryKey: ['sales-summary', searchParams],
+    queryKey: [
+      'sales-summary',
+      searchParams?.startDate,
+      searchParams?.endDate,
+      searchParams?.sellerId,
+      searchParams?.originId,
+    ],
     queryFn: () =>
       getSalesReportSummary({
         sellerId: searchParams?.sellerId as string,
@@ -47,11 +53,11 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
         {Array(6)
           .fill(0)
           .map((_, i) => (
-            <Card key={i} className="p-4 flex items-center gap-3">
-              <Skeleton className="h-10 w-10 rounded-full" />
+            <Card key={i} className="p-6 flex items-center gap-3 rounded-xl">
+              <Skeleton className="h-11 w-11 rounded-[10px]" />
               <div className="flex flex-col gap-1">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-5 w-20" />
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-6 w-24" />
               </div>
             </Card>
           ))}
@@ -73,14 +79,16 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
     {
       icon: IconClockHour4,
       variant: 'warningLight',
-      label: `Aguardando (${summary.noResponseTotal})`,
+      label: `Aguardando (${summary.noResponseCount})`,
       value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
       icon: IconCircleX,
       variant: 'errorLight',
-      label: `Não aprovadas (${summary.rejectedCount})`,
-      value: formatCurrencyToBrl(summary.rejectedTotal),
+      label: `Não aprovadas / Canceladas (${summary.rejectedCount + summary.expiredCount + summary.canceledCount})`,
+      value: formatCurrencyToBrl(
+        summary.rejectedTotal + summary.expiredTotal + summary.canceledTotal,
+      ),
     },
     {
       icon: IconCoin,
@@ -105,14 +113,14 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
-        <Card key={index} className="p-4 flex items-center gap-3">
+        <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
           <FeaturedIcon
             size="md"
             variant={card.variant as FeaturedIconProps['variant']}
             Icon={card.icon}
           />
           <div className="flex flex-col min-w-0">
-            <span className="text-xs text-gray-500 truncate">{card.label}</span>
+            <span className="text-xs text-gray truncate">{card.label}</span>
             <span className="text-lg font-semibold text-gray-900">
               {card.value}
             </span>
