@@ -3,7 +3,7 @@
 import apiInstance from '@/lib/api'
 import type {
   SalesSummary,
-  SalesEvolutionData,
+  SalesEvolutionResponse,
   ApprovedRejectedData,
   OriginChartData,
   TopProductData,
@@ -39,14 +39,14 @@ export async function getSalesReportSummary(
 
 export async function getSalesEvolution(
   filters?: SalesReportFilters,
-): Promise<SalesEvolutionData[]> {
+): Promise<SalesEvolutionResponse> {
   const api = await apiInstance()
   try {
     const res = await api.get(`${BASE_ROUTE}/evolution`, { params: filters })
     return res.data
   } catch (error) {
     console.error('Error fetching sales evolution:', error)
-    return []
+    return { mode: 'daily', data: [], yearlyData: [] }
   }
 }
 
