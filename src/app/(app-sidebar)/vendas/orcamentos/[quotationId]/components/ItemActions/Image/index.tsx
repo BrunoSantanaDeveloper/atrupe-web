@@ -203,14 +203,14 @@ export function ItemImageDialog({
         <DialogBody className="space-y-6">
           {/* Preview da imagem */}
           <div className="relative flex justify-center rounded-xl bg-white border overflow-hidden">
-            <div className="relative h-[300px] w-full flex items-center justify-center">
+            <div className="relative w-full aspect-[4/3] flex items-center justify-center">
               <Image
                 src={previewUrl ?? noImage}
                 width={300}
                 height={300}
                 alt="Imagem do item"
                 className={cn(
-                  'max-h-[300px] w-full',
+                  'w-full h-full',
                   previewUrl ? 'object-contain' : 'object-cover',
                 )}
               />
@@ -247,38 +247,46 @@ export function ItemImageDialog({
               disabled={isLoading}
             />
             <div className="flex gap-4">
-              <Button
-                type="button"
-                size="sm"
-                variant="neutralOutline"
-                onClick={() => handleUploadClick('small')}
-                disabled={isLoading}
-                LeftIcon={
-                  isCompressing && pendingSize === 'small'
-                    ? undefined
-                    : IconCloudUpload
-                }
-                isLoading={isCompressing && pendingSize === 'small'}
-              >
-                Imagem pequena
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant="neutralOutline"
-                onClick={() => handleUploadClick('large')}
-                disabled={isLoading}
-                LeftIcon={
-                  isCompressing && pendingSize === 'large'
-                    ? undefined
-                    : IconCloudUpload
-                }
-                isLoading={isCompressing && pendingSize === 'large'}
-              >
-                Imagem grande
-              </Button>
+              <div className="flex flex-col items-center gap-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  onClick={() => handleUploadClick('small')}
+                  disabled={isLoading}
+                  LeftIcon={
+                    isCompressing && pendingSize === 'small'
+                      ? undefined
+                      : IconCloudUpload
+                  }
+                  isLoading={isCompressing && pendingSize === 'small'}
+                >
+                  Imagem pequena
+                </Button>
+                <p className="text-xs text-gray">80×60px</p>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  onClick={() => handleUploadClick('large')}
+                  disabled={isLoading}
+                  LeftIcon={
+                    isCompressing && pendingSize === 'large'
+                      ? undefined
+                      : IconCloudUpload
+                  }
+                  isLoading={isCompressing && pendingSize === 'large'}
+                >
+                  Imagem grande
+                </Button>
+                <p className="text-xs text-gray">540×405</p>
+              </div>
             </div>
-            <p className="text-xs text-gray">PNG ou JPG até 10MB e 400x250px</p>
+            <p className="text-xs text-gray">
+              PNG ou JPG até 10MB - (proporção 4:3)
+            </p>
             {compressionError && (
               <p className="text-xs text-error">{compressionError}</p>
             )}

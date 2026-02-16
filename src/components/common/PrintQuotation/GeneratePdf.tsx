@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     minHeight: 60,
   },
   itemImage: {
-    width: 70,
-    height: 51,
+    width: 80,
+    height: 60,
     backgroundColor: '#F3F4F6',
     borderRadius: 2,
     overflow: 'hidden',
@@ -342,8 +342,7 @@ const styles = StyleSheet.create({
   // Estilos para imagens grandes (não originais)
   itemImageLarge: {
     width: '100%',
-    height: 'auto',
-    maxHeight: 300,
+    aspectRatio: 4 / 3,
     borderRadius: 4,
     overflow: 'hidden',
     borderTopWidth: 1,
