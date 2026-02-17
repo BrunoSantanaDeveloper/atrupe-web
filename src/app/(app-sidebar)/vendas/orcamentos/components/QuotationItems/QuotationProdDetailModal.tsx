@@ -391,7 +391,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                   name="imageUrl"
                   className="w-full h-full"
                   maxSize={1024 * 50}
-                  customHelpText="PNG ou JPG até 50KB e 400x250px"
+                  customHelpText="PNG ou JPG até 50KB e 200x150px"
                 />
               </div>
               <div className="flex-1 flex flex-wrap gap-4">
