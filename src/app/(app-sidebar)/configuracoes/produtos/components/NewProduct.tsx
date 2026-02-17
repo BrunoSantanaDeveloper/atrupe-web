@@ -488,7 +488,7 @@ function NewProductModal({
                   control={control}
                   name="imageUrl"
                   maxSize={1024 * 50}
-                  customHelpText="PNG ou JPG até 50KB e 400x250px"
+                  customHelpText="PNG ou JPG até 50KB e 200×150px"
                 />
                 <FormTextarea
                   name="technicalDescription"

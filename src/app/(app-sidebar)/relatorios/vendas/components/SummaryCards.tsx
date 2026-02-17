@@ -85,9 +85,11 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
     {
       icon: IconCircleX,
       variant: 'errorLight',
-      label: `Não aprovadas / Canceladas (${summary.rejectedCount + summary.expiredCount + summary.canceledCount})`,
+      label: `Não aprovadas / Canceladas (${(summary.rejectedCount || 0) + (summary.expiredCount || 0) + (summary.canceledCount || 0)})`,
       value: formatCurrencyToBrl(
-        summary.rejectedTotal + summary.expiredTotal + summary.canceledTotal,
+        (summary.rejectedTotal || 0) +
+          (summary.expiredTotal || 0) +
+          (summary.canceledTotal || 0),
       ),
     },
     {
