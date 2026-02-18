@@ -14,8 +14,9 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Third-party
@@ -167,11 +168,20 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
                 variant={
                   showSyncOption
                     ? 'warningBorderedLight'
-                    : 'successBorderedLight'
+                    : checkResult?.message.includes('inadimplente')
+                      ? 'warningBorderedLight'
+                      : 'successBorderedLight'
                 }
-                Icon={showSyncOption ? IconAlertTriangle : IconCheck}
+                Icon={
+                  showSyncOption
+                    ? IconAlertTriangle
+                    : checkResult?.message.includes('inadimplente')
+                      ? IconAlertTriangle
+                      : IconCheck
+                }
                 size="lg"
                 rounded
+                isLoading={isLoading}
               />
               <span>Verificação Asaas</span>
             </div>
@@ -182,8 +192,22 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
         </DialogHeader>
         <DialogBody>
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <IconRefresh className="h-6 w-6 animate-spin text-gray-400" />
+            <div className="space-y-4">
+              <Skeleton className="mx-auto h-4 w-3/4" />
+              <div className="space-y-2 rounded-lg border p-4 bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-28" />
+                </div>
+              </div>
             </div>
           ) : checkResult ? (
             <div className="space-y-4">
