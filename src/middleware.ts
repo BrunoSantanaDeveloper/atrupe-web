@@ -5,26 +5,21 @@ import type { NextRequest } from 'next/server'
 // Libs
 import { auth } from '@/lib/auth'
 
-// Constants
-export const HOME_PAGE = '/dashboard'
-export const SYSTEM_HOME_PAGE = '/admin'
-const SUBSCRIPTION_PAGE = '/assinatura'
-const BLOCKED_PAGE = '/blocked'
-const GUEST_ROUTES = [
-  'login',
-  'cadastro',
-  'cadastro/inicio',
-  'cadastro/verificar-email',
-  'cadastro/nova-senha',
-  'validar-cadastro',
-  'termos-de-uso',
-  'aviso-de-privacidade',
-  'esqueci-minha-senha',
-  'esqueci-minha-senha/email-enviado',
-  'redefinir-senha',
-  'redefinindo-senha',
-]
-const SHARED_ROUTES = ['shared-route']
+// Config
+import {
+  GUEST_ROUTES,
+  SHARED_ROUTES,
+  ALLOWED_WHEN_PARTIAL,
+  ALLOWED_WHEN_TRIAL_EXPIRED,
+  HOME_PAGE,
+  SYSTEM_HOME_PAGE,
+  SUBSCRIPTION_PAGE,
+  BLOCKED_PAGE,
+  PARTIAL_BLOCKED_PAGE,
+} from '@/config/routes'
+
+// Re-export para compatibilidade
+export { HOME_PAGE, SYSTEM_HOME_PAGE }
 
 export async function middleware(req: NextRequest) {
   const pathname = req.nextUrl.pathname
@@ -40,6 +35,7 @@ export async function middleware(req: NextRequest) {
     : false
 
   const isFullBlocked = blockLevel === 'FULL'
+  const isPartialBlocked = blockLevel === 'PARTIAL'
 
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
@@ -74,22 +70,36 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectPage, req.url).toString())
   }
 
-  const isAllowedRouteWhenTrialExpired =
-    pathname.endsWith('logout') || pathname.startsWith(SUBSCRIPTION_PAGE)
-
   // If the user is logged in but the trial has expired, redirect to the subscription page
+  const isAllowedRouteWhenTrialExpired = ALLOWED_WHEN_TRIAL_EXPIRED.some(
+    (route) => pathname.endsWith('logout') || pathname.startsWith(route),
+  )
+
   if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
     return NextResponse.redirect(new URL(SUBSCRIPTION_PAGE, req.url).toString())
   }
 
+  // If the company is fully blocked, redirect to the blocked page
   const isAllowedRouteWhenBlocked =
     pathname.endsWith('logout') ||
     pathname.startsWith(BLOCKED_PAGE) ||
     pathname.startsWith(SUBSCRIPTION_PAGE)
 
-  // If the company is fully blocked, redirect to the blocked page
   if (isUserLoggedIn && isFullBlocked && !isAllowedRouteWhenBlocked) {
     return NextResponse.redirect(new URL(BLOCKED_PAGE, req.url).toString())
+  }
+
+  // If the company is partially blocked, restrict access to only allowed routes
+  if (isUserLoggedIn && isPartialBlocked) {
+    const isAllowedInPartial = ALLOWED_WHEN_PARTIAL.some(
+      (route) => pathname === route || pathname.startsWith(route + '/'),
+    )
+
+    if (!isAllowedInPartial) {
+      return NextResponse.redirect(
+        new URL(PARTIAL_BLOCKED_PAGE, req.url).toString(),
+      )
+    }
   }
 
   // Set pathname in the headers

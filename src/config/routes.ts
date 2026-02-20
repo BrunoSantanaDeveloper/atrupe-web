@@ -1,0 +1,50 @@
+/**
+ * Configuração centralizada de rotas do middleware.
+ * Extraído do middleware.ts para facilitar manutenção e testes.
+ */
+
+/** Rotas acessíveis sem autenticação */
+export const GUEST_ROUTES = [
+  'login',
+  'cadastro',
+  'cadastro/inicio',
+  'cadastro/verificar-email',
+  'cadastro/nova-senha',
+  'validar-cadastro',
+  'termos-de-uso',
+  'aviso-de-privacidade',
+  'esqueci-minha-senha',
+  'esqueci-minha-senha/email-enviado',
+  'redefinir-senha',
+  'redefinindo-senha',
+] as const
+
+/** Rotas compartilhadas (acessíveis por todos) */
+export const SHARED_ROUTES = ['shared-route'] as const
+
+/** Rotas permitidas quando a empresa está bloqueada (FULL ou PARTIAL) */
+export const ALLOWED_WHEN_BLOCKED = [
+  '/logout',
+  '/blocked',
+  '/assinatura',
+] as const
+
+/** Rotas permitidas em modo PARTIAL (empresa com restrições parciais) */
+export const ALLOWED_WHEN_PARTIAL = [
+  '/dashboard',
+  '/perfil',
+  '/assinatura',
+  '/blocked',
+  '/logout',
+  '/admin',
+] as const
+
+/** Rotas permitidas quando o trial expirou */
+export const ALLOWED_WHEN_TRIAL_EXPIRED = ['/logout', '/assinatura'] as const
+
+/** Páginas de destino */
+export const HOME_PAGE = '/dashboard'
+export const SYSTEM_HOME_PAGE = '/admin'
+export const SUBSCRIPTION_PAGE = '/assinatura'
+export const BLOCKED_PAGE = '/blocked'
+export const PARTIAL_BLOCKED_PAGE = '/blocked?level=partial'
