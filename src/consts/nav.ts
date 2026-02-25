@@ -269,11 +269,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
           'company_settings:sectors:view',
         ],
       },
-      // {
-      //   icon: IconReceiptTax,
-      //   title: 'Custos e precificação',
-      //   path: '/configuracoes/custos-e-precificacao',
-      // },
       {
         icon: IconBoxSeam,
         title: 'Produtos',
@@ -291,26 +286,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Nota Fiscal',
         path: '/configuracoes/nota-fiscal',
         permission: 'invoice_settings:nf:view',
-        children: [
-          {
-            icon: IconReceitaFederal,
-            title: 'Configuração',
-            path: '/configuracoes/nota-fiscal',
-            permission: 'invoice_settings:nf:view',
-          },
-          {
-            icon: IconReceitaFederal,
-            title: 'Invoicy',
-            path: '/configuracoes/nota-fiscal/invoicy',
-            permission: 'invoice_settings:nf:view',
-          },
-          {
-            icon: IconReceitaFederal,
-            title: 'Gestão de Notas',
-            path: '/configuracoes/nota-fiscal/gestao',
-            permission: 'invoice_settings:nf:view',
-          },
-        ],
+        requiredModule: 'nota_fiscal',
       },
       {
         icon: IconCoin,
