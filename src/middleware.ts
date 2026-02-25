@@ -9,13 +9,11 @@ import { auth } from '@/lib/auth'
 import {
   GUEST_ROUTES,
   SHARED_ROUTES,
-  ALLOWED_WHEN_PARTIAL,
   ALLOWED_WHEN_TRIAL_EXPIRED,
   HOME_PAGE,
   SYSTEM_HOME_PAGE,
   SUBSCRIPTION_PAGE,
   BLOCKED_PAGE,
-  PARTIAL_BLOCKED_PAGE,
 } from '@/config/routes'
 
 // Re-export para compatibilidade
@@ -35,7 +33,6 @@ export async function middleware(req: NextRequest) {
     : false
 
   const isFullBlocked = blockLevel === 'FULL'
-  const isPartialBlocked = blockLevel === 'PARTIAL'
 
   // If the user is not logged in and is trying to access a private route, redirect to the login page
   const privateRoute = ![...GUEST_ROUTES, ...SHARED_ROUTES].some((route) =>
@@ -89,18 +86,8 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(BLOCKED_PAGE, req.url).toString())
   }
 
-  // If the company is partially blocked, restrict access to only allowed routes
-  if (isUserLoggedIn && isPartialBlocked) {
-    const isAllowedInPartial = ALLOWED_WHEN_PARTIAL.some(
-      (route) => pathname === route || pathname.startsWith(route + '/'),
-    )
-
-    if (!isAllowedInPartial) {
-      return NextResponse.redirect(
-        new URL(PARTIAL_BLOCKED_PAGE, req.url).toString(),
-      )
-    }
-  }
+  // PARTIAL block: user can navigate normally, restrictions are applied at component/API level
+  // Only FULL block redirects to /blocked
 
   // Set pathname in the headers
   const requestHeaders = new Headers(req.headers)
