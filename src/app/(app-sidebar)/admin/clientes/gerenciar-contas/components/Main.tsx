@@ -39,7 +39,7 @@ export function Main({ searchParams }: SearchParamsType) {
     ativas: statusTotal?.ACTIVE,
     bloqueadas: statusTotal?.BLOCKED,
     inativas: statusTotal?.INACTIVE,
-    canceladas: statusTotal?.CANCELLED,
+    canceladas: statusTotal?.CANCELED,
     todos: statusTotal?.TOTAL,
   }
 

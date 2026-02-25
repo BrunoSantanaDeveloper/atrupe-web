@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
-import { IconProps } from '@tabler/icons-react'
+import { IconLoader2, IconProps } from '@tabler/icons-react'
 
 const featuredIconVariants = cva(
   'inline-flex items-center justify-center text-sm font-semibold shadow-sm ring-inset ring-transparent',
@@ -100,6 +100,7 @@ export interface FeaturedIconProps
     | React.ComponentType<IconProps>
     | React.ComponentType<SVGProps<SVGSVGElement>>
   rounded?: boolean
+  isLoading?: boolean
 }
 
 function FeaturedIcon({
@@ -108,15 +109,21 @@ function FeaturedIcon({
   className,
   Icon,
   rounded,
+  isLoading,
 }: FeaturedIconProps) {
   return (
     <div
       className={cn(
         featuredIconVariants({ variant, size, className }),
         rounded ? 'rounded-full' : '',
+        isLoading ? 'grayscale' : '',
       )}
     >
-      <Icon aria-hidden="true" />
+      {isLoading ? (
+        <IconLoader2 aria-hidden="true" className="animate-spin" />
+      ) : (
+        <Icon aria-hidden="true" />
+      )}
     </div>
   )
 }

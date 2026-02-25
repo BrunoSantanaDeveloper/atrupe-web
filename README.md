@@ -82,7 +82,7 @@ bun dev
 
 A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
-## 📁 Estrutura do Projeto
+## 📁 Estrutura do Projeto (deprecated)
 
 ```
 src/
@@ -134,23 +134,6 @@ O projeto segue rigorosos padrões de código estabelecidos pela equipe:
 - **Formulários:** React Hook Form + Zod para validação
 - **Data Fetching:** React Query para gerenciamento de estado do servidor
 - **Tipagem:** TypeScript estrito com interfaces bem definidas
-
-## 🚦 Status de Desenvolvimento
-
-- ✅ **Autenticação e Autorização**
-- ✅ **Gestão de Cadastros**
-- ✅ **Módulo Financeiro**
-- ✅ **Dashboard e Relatórios**
-- ✅ **Controle de Produção**
-- ✅ **Sistema de Vendas**
-- ✅ **Configurações do Sistema**
-
-## Acessos
-
-# Cliente teste
-
-    cliente@teste.com
-    atrupe123@
 
 ## 🤝 Contribuindo
 
