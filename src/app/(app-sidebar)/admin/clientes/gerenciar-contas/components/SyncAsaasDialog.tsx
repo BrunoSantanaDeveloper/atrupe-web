@@ -40,6 +40,8 @@ interface AsaasCheckResult {
   asaasPaymentStatus?: string
   asaasPaymentId?: string
   asaasSubscriptionId?: string
+  daysOverdue?: number
+  overdueDueDate?: string
   subscription?: {
     id: string
     plan: string
@@ -252,6 +254,25 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
                       <span className="text-gray-600">Plano:</span>
                       <span className="font-medium">
                         {checkResult.subscription.plan}
+                      </span>
+                    </div>
+                  )}
+                  {checkResult.daysOverdue !== undefined && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Dias em atraso:</span>
+                      <Badge variant="error">
+                        {checkResult.daysOverdue} dia
+                        {checkResult.daysOverdue !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
+                  )}
+                  {checkResult.overdueDueDate && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Vencimento:</span>
+                      <span className="font-medium text-error-600">
+                        {new Date(
+                          checkResult.overdueDueDate,
+                        ).toLocaleDateString('pt-BR')}
                       </span>
                     </div>
                   )}
