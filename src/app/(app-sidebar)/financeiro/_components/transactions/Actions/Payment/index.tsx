@@ -68,6 +68,7 @@ interface Props {
   transactionData?: TransactionListType
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
+  triggerLoading?: () => void
 }
 
 export function PaymentDialog({
@@ -77,6 +78,7 @@ export function PaymentDialog({
   transactionData,
   setOpen,
   transactionDialogOpen,
+  triggerLoading,
 }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -242,6 +244,7 @@ export function PaymentDialog({
       )
       handleOpenChange(false)
       transactionDialogOpen?.(false)
+      triggerLoading?.()
     } else {
       toast.error(response.message)
     }

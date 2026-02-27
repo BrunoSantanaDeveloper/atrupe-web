@@ -15,6 +15,7 @@ interface Props {
   rowData?: TransactionDetailsType['installments'][0]
   handleOpenChange: (open: boolean) => void
   transactionDialogOpen?: (open: boolean) => void
+  triggerLoading?: () => void
 }
 
 export function UnpayInstallment({
@@ -22,6 +23,7 @@ export function UnpayInstallment({
   rowData,
   handleOpenChange,
   transactionDialogOpen,
+  triggerLoading,
 }: Props) {
   const alertDialog = useAlertDialog()
 
@@ -48,6 +50,8 @@ export function UnpayInstallment({
       toast.error(res?.message || 'Erro ao desfazer pagamento')
       return
     }
+
+    triggerLoading?.()
 
     toast.success('Pagamento desfeito!')
     queryClient.invalidateQueries()

@@ -41,6 +41,7 @@ interface Props {
   transactionData?: TransactionListType
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
+  triggerLoading?: () => void
 }
 
 export function ViewPaymentDialog({
@@ -50,6 +51,7 @@ export function ViewPaymentDialog({
   transactionData,
   setOpen,
   transactionDialogOpen,
+  triggerLoading,
 }: Props) {
   const handleOpenChange = (openDialog: boolean) => {
     setOpen(openDialog ? 'payment' : '')
@@ -138,6 +140,7 @@ export function ViewPaymentDialog({
                 rowData={rowData}
                 handleOpenChange={handleOpenChange}
                 transactionDialogOpen={transactionDialogOpen}
+                triggerLoading={triggerLoading}
               />
             </PermissionGate>
           </div>

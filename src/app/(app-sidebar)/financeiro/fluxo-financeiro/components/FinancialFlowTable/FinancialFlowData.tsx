@@ -70,6 +70,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
+  const [isLoadingPayment, setIsLoadingPayment] = useState(false)
 
   const hasUrlDateParams = searchParams?.startDate && searchParams?.endDate
 
@@ -83,6 +84,13 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
 
   const transactionData: TransactionDataType[] = data?.data || []
   const hasData = transactionData.length
+
+  const triggerPaymentLoading = () => {
+    setIsLoadingPayment(true)
+    setTimeout(() => {
+      setIsLoadingPayment(false)
+    }, 4000)
+  }
 
   return (
     <>
@@ -365,6 +373,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                           }
                                         }}
                                         disabled={item?.status === 'CANCELED'}
+                                        isLoading={isLoadingPayment}
                                       />
                                     </PermissionGate>
                                   </TooltipProvider>
@@ -407,6 +416,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               rowData={installment}
               transactionData={rowData}
               type={rowData?.type}
+              triggerLoading={triggerPaymentLoading}
             />
             <CompensateDialog
               open={openDialog === 'compensate'}
@@ -414,6 +424,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               rowData={installment}
               transactionData={rowData}
               type={rowData?.type}
+              triggerLoading={triggerPaymentLoading}
             />
             <ViewPaymentDialog
               open={openDialog === 'view'}
@@ -421,6 +432,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
               rowData={installment}
               transactionData={rowData}
               type={rowData?.type}
+              triggerLoading={triggerPaymentLoading}
             />
           </>
         ) : (
