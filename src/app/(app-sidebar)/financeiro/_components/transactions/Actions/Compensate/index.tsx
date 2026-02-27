@@ -57,6 +57,7 @@ interface Props {
   type?: 'receivable' | 'payable'
   transactionDialogOpen?: (open: boolean) => void
   transactionData?: TransactionListType
+  triggerLoading?: () => void
 }
 
 export function CompensateDialog({
@@ -66,6 +67,7 @@ export function CompensateDialog({
   transactionData,
   setOpen,
   transactionDialogOpen,
+  triggerLoading,
 }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -141,6 +143,8 @@ export function CompensateDialog({
       toast.error(result.message)
       return
     }
+
+    triggerLoading?.()
 
     queryClient.invalidateQueries()
     toast.success(
