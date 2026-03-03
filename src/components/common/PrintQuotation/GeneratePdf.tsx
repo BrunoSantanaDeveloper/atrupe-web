@@ -1351,7 +1351,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               <View style={styles.infoDate}>
                 <View>
                   <Text>Atenciosamente</Text>
-                  <Text style={styles.textBold}>{data.client?.name}</Text>
+                  <Text style={styles.textBold}>
+                    {data.quotation?.seller?.name}
+                  </Text>
                 </View>
                 <View>
                   <Text>De acordo, ____/____/______</Text>
@@ -1361,10 +1363,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               {/* Assinaturas */}
               <View style={styles.signatures}>
                 <View style={styles.signatureLine}>
-                  <Text>{data.client?.name}</Text>
-                </View>
-                <View style={styles.signatureSpacing} />
-                <View style={styles.signatureLine}>
                   {data.quotation?.seller?.signature && (
                     <PDFImage
                       src={getProxiedImageUrl(data.quotation.seller.signature)}
@@ -1373,6 +1371,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   )}
                   <Text>{data.company?.name}</Text>
                   <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                </View>
+                <View style={styles.signatureSpacing} />
+                <View style={styles.signatureLine}>
+                  <Text>{data.client?.name}</Text>
+                  <Text>{maskCpfCnpj(data.client?.document?.value)}</Text>
                 </View>
               </View>
             </>
