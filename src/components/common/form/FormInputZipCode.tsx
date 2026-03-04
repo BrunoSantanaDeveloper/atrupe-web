@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import {
   FormItem,
@@ -44,6 +44,7 @@ export function FormInputZipCode({
 }: Props) {
   const { control, setValue } = useFormContext()
   const [currentZipCode, setCurrentZipCode] = useState('')
+  const lastAppliedZipCode = useRef('')
 
   // Hook para buscar dados do CEP (só ativa quando CEP tem 8 dígitos)
   const shouldFetchZipcode = currentZipCode.length === 8
@@ -52,8 +53,15 @@ export function FormInputZipCode({
   )
 
   // Preenche os campos automaticamente quando os dados do CEP são retornados
+  // Usa ref para garantir que só aplica uma vez por CEP, evitando sobrescrever edições manuais
   useEffect(() => {
-    if (zipcodeData && shouldFetchZipcode) {
+    if (
+      zipcodeData &&
+      shouldFetchZipcode &&
+      lastAppliedZipCode.current !== currentZipCode
+    ) {
+      lastAppliedZipCode.current = currentZipCode
+
       const addressData = {
         street: zipcodeData.street || '',
         neighborhood: zipcodeData.neighborhood || '',
@@ -78,7 +86,14 @@ export function FormInputZipCode({
       // Callback opcional
       onAddressFound?.(addressData)
     }
-  }, [zipcodeData, shouldFetchZipcode, setValue, addressFields, onAddressFound])
+  }, [
+    zipcodeData,
+    shouldFetchZipcode,
+    currentZipCode,
+    setValue,
+    addressFields,
+    onAddressFound,
+  ])
 
   const handleZipCodeChange = (value: string) => {
     let zipCode = String(value).replace(/\D/g, '') // Remove tudo que não é número
