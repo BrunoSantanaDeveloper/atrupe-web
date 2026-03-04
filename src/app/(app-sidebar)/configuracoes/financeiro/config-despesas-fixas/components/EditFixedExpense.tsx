@@ -139,7 +139,7 @@ function NewFixedExpenseModal({
 
     toast.success('Despesa fixa salva')
 
-    await queryClient.invalidateQueries()
+    queryClient.invalidateQueries()
   }
 
   const handleInactivate = async (status: boolean) => {
@@ -148,8 +148,8 @@ function NewFixedExpenseModal({
     await alertDialog.open({
       title: `Deseja ${status ? 'inativar' : 'ativar'} esta despesa fixa?`,
       confirmLabel: status ? 'Inativar' : 'Ativar',
-      onConfirm: () => {
-        updateItemNew({
+      onConfirm: async () => {
+        await updateItemNew({
           route: `/financial/scheduled-expense/${fixedExpenseId}`,
           data: {
             isActive: newStatus,
