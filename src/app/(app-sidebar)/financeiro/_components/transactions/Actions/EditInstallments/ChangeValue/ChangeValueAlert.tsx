@@ -32,7 +32,7 @@ import { FormType as EditFormType } from '../schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Actions
-import { updateItem } from '@/actions/_cruds'
+import { updateItemNew } from '@/actions/_cruds'
 
 // Icons
 import { IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
@@ -77,12 +77,19 @@ export function ChangeTotalValueAlertDialog(props: Props) {
 
   const mutation = useMutation({
     mutationFn: (data: unknown) =>
-      updateItem(`${type}Route`, `${rowData?.id}/upsert-installments`, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries()
-      toast.success('Movimentação alterada!')
-      handleOpenChange(false)
-      onCloseParentDialog?.()
+      updateItemNew({
+        route: `/financial/${type}/${rowData?.id}/upsert-installments`,
+        data,
+      }),
+    onSuccess: (result) => {
+      if (result.success) {
+        queryClient.invalidateQueries()
+        toast.success('Movimentação alterada!')
+        handleOpenChange(false)
+        onCloseParentDialog?.()
+      } else {
+        toast.error(result.message || 'Ocorreu um erro!')
+      }
     },
   })
 
@@ -161,6 +168,7 @@ export function ChangeTotalValueAlertDialog(props: Props) {
               type="submit"
               form="change-transaction-value"
               RightIcon={IconCircleCheck}
+              isLoading={mutation.isPending}
             >
               Alterar
             </Button>

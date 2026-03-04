@@ -74,7 +74,7 @@ export function EditTransactionData({
     },
   })
 
-  const { watch, reset, handleSubmit } = form
+  const { watch, reset, handleSubmit, formState } = form
 
   const queryClient = useQueryClient()
 
@@ -201,6 +201,7 @@ export function EditTransactionData({
               type="submit"
               form="edit-transaction-data"
               RightIcon={IconCircleCheck}
+              isLoading={formState.isSubmitting}
             >
               Salvar
             </Button>

@@ -89,7 +89,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
     setIsLoadingPayment(true)
     setTimeout(() => {
       setIsLoadingPayment(false)
-    }, 4000)
+    }, 2000)
   }
 
   return (
