@@ -72,7 +72,7 @@ export function CancelAlertDialog(props: Props) {
     },
   })
 
-  const { handleSubmit } = form
+  const { handleSubmit, formState } = form
 
   const hasInstallments =
     rowData?.installments && rowData?.installments?.length > 1
@@ -158,7 +158,12 @@ export function CancelAlertDialog(props: Props) {
         <AlertDialogFooter>
           <AlertDialogCancel>Voltar</AlertDialogCancel>
           {canCancel && (
-            <Button type="submit" form="cancel-transaction" variant="error">
+            <Button
+              type="submit"
+              form="cancel-transaction"
+              variant="error"
+              isLoading={formState.isSubmitting}
+            >
               Cancelar movimentação
             </Button>
           )}
