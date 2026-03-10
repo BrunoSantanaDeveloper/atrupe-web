@@ -22,7 +22,7 @@ interface Props<T extends FieldValues> {
 
 export function InUsePaymentConditionsSelectField<T extends FieldValues>({
   name,
-  label = 'Condição de pagamento',
+  label = 'Forma de pagamento',
   placeholder = label,
   width = 'flex-[1_0_100px]',
   additionalOnChange,

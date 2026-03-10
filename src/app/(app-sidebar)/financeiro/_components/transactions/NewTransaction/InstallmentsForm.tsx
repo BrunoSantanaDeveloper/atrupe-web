@@ -85,7 +85,7 @@ export function InstallmentsForm({
             />
             <PaymentConditionsSelectField
               name={`installments.${index}.paymentConditionId`}
-              label="Condição de pagamento"
+              label="Forma de pagamento"
               width="flex-[1_0_200px]"
             />
             <FormBrlInput

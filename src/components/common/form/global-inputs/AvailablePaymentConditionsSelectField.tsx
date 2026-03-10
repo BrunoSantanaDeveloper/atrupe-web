@@ -24,7 +24,7 @@ interface Props<T extends FieldValues> {
 export function AvailablePaymentConditionsSelectField<T extends FieldValues>({
   name,
   type,
-  label = 'Condição de pagamento',
+  label = 'Forma de pagamento',
   placeholder = label,
   width = 'flex-[1_0_100px]',
   additionalOnChange,

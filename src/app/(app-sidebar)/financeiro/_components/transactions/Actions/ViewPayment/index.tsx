@@ -93,7 +93,7 @@ export function ViewPaymentDialog({
           </DetailCardRowItem>
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             <TextSupportingText
-              supporting="Condição de pagamento"
+              supporting="Forma de pagamento"
               text={rowData?.paymentCondition?.name}
             />
             <TextSupportingText
