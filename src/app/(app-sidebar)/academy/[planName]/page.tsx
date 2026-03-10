@@ -214,8 +214,12 @@ export default function AcademyPage() {
                 <Separator />
                 <CardContent className="p-0">
                   {section.items.length > 0 ? (
-                    section.items.map((item) => (
-                      <AcademyItemRow key={item.id} data={item} />
+                    section.items.map((item, itemIndex) => (
+                      <AcademyItemRow
+                        key={item.id}
+                        data={item}
+                        showVideoInline={index === 0 && itemIndex === 0}
+                      />
                     ))
                   ) : (
                     <div className="p-4 text-center text-gray-500 text-sm">

@@ -10,10 +10,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 
-type VideoType = 'youtube' | 'vimeo' | 'hls' | 'direct'
+export type VideoType = 'youtube' | 'vimeo' | 'hls' | 'direct'
 
 // Detecta o tipo de vídeo baseado na URL
-function getVideoType(url: string): VideoType {
+export function getVideoType(url: string): VideoType {
   if (url.includes('youtube.com') || url.includes('youtu.be')) {
     return 'youtube'
   }
@@ -27,7 +27,7 @@ function getVideoType(url: string): VideoType {
 }
 
 // Converte URLs do YouTube e Vimeo para formato de embed
-function getEmbedUrl(url: string): string {
+export function getEmbedUrl(url: string): string {
   // Se já é uma URL de embed válida, retorna como está
   if (url.includes('embed') || url.includes('player.vimeo.com')) {
     return url
@@ -57,7 +57,7 @@ function getEmbedUrl(url: string): string {
 }
 
 // Componente para HLS Player
-function HlsPlayer({
+export function HlsPlayer({
   src,
   autoPlay = true,
 }: {
