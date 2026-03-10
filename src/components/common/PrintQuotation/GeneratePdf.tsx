@@ -241,6 +241,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   // Estilos para colunas da tabela
+  columnNumber: {
+    justifyContent: 'flex-start',
+    paddingTop: 1,
+  },
+  columnNumberText: {
+    fontSize: 7,
+    color: '#374151',
+  },
   columnReference: {
     flexDirection: 'row',
     gap: 8,
@@ -443,9 +451,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
   // Função para calcular larguras dinâmicas das colunas
   const getColumnWidths = () => {
+    const numberWidth = 4
+
     if (isProduction) {
       return {
-        reference: '55%',
+        number: `${numberWidth}%`,
+        reference: `${55 - numberWidth}%`,
         qtyItem: '15%',
         details: '15%',
         qtyTotal: '15%',
@@ -457,7 +468,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
     // Larguras base quando todas as colunas estão visíveis
     const baseWidths = {
-      reference: 35,
+      reference: 35 - numberWidth,
       qtyItem: 10,
       details: 15,
       qtyTotal: 12,
@@ -487,6 +498,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
     }
 
     return {
+      number: `${numberWidth}%`,
       reference: adjustWidth(baseWidths.reference),
       qtyItem: adjustWidth(baseWidths.qtyItem),
       details: adjustWidth(baseWidths.details),
@@ -600,6 +612,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           {/* Tabela de Itens */}
           <View style={styles.table}>
             <View style={styles.tableHeader}>
+              <Text
+                style={[
+                  styles.tableHeaderCell,
+                  { width: columnWidths.number, textAlign: 'center' },
+                ]}
+              >
+                #
+              </Text>
               <Text
                 style={[
                   styles.tableHeaderCell,
@@ -741,6 +761,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   >
                     {/* Linha com informações do produto */}
                     <View style={styles.itemRowContent}>
+                      {/* Coluna Número */}
+                      <View style={[styles.columnNumber, { width: columnWidths.number }]}>
+                        <Text style={styles.columnNumberText}>{index + 1}.</Text>
+                      </View>
                       {/* Coluna Referência - Nome da composição diretamente */}
                       <View
                         style={[
@@ -944,6 +968,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 >
                   {/* Linha com informações do produto */}
                   <View style={styles.itemRowContent}>
+                    {/* Coluna Número */}
+                    <View style={[styles.columnNumber, { width: columnWidths.number }]}>
+                      <Text style={styles.columnNumberText}>{index + 1}.</Text>
+                    </View>
                     {/* Coluna Referência - Imagem e Descrição do item */}
                     <View
                       style={[
