@@ -256,7 +256,7 @@ export function NewTransaction({ type }: Props) {
                   ) : (
                     <SupplierSelector
                       name="clientOrSupplierId"
-                      label="Cliente"
+                      label="Fornecedor"
                       width="flex-[1_0_300px]"
                     />
                   )}
