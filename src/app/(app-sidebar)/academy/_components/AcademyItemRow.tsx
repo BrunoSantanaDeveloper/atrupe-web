@@ -103,6 +103,23 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
     }
   }
 
+  const handleToggleChecked = async () => {
+    if (isCheckLoading) return
+    setIsCheckLoading(true)
+
+    try {
+      await createItemNew({
+        route: 'academy/progress/toggle',
+        data: { itemId: id },
+      })
+      queryClient.invalidateQueries()
+    } catch (error) {
+      console.error('Erro ao alternar status do item:', error)
+    } finally {
+      setIsCheckLoading(false)
+    }
+  }
+
   const renderModal = () => {
     if (!activeModal || !modalRegistry[activeModal]) {
       return null
@@ -155,11 +172,24 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
     <div className="border-b last:border-b-0">
       <div className="flex items-center justify-between p-5 pl-14">
         <div className="flex items-center gap-3">
-          {checked ? (
-            <IconCircleCheckFilled className="text-success" />
-          ) : (
-            <IconCircleFilled className="text-gray-200" />
-          )}
+          <button
+            type="button"
+            onClick={handleToggleChecked}
+            disabled={isCheckLoading}
+            className={cn(
+              'flex-shrink-0 cursor-pointer transition-opacity hover:opacity-70',
+              isCheckLoading && 'opacity-50 pointer-events-none',
+            )}
+            title={
+              checked ? 'Desmarcar como concluído' : 'Marcar como concluído'
+            }
+          >
+            {checked ? (
+              <IconCircleCheckFilled className="text-success" />
+            ) : (
+              <IconCircleFilled className="text-gray-200" />
+            )}
+          </button>
           <div className="max-w-xs md:max-w-md lg:max-w-full">
             <span
               className={cn(
