@@ -33,7 +33,10 @@ interface Props {
 }
 
 export function PayrollDetail({ payrollId }: Props) {
-  const previousUrl = usePreviousUrl('/financeiro/folha-de-pagamento')
+  const previousUrl = usePreviousUrl(
+    '/financeiro/folha-de-pagamento',
+    '/financeiro/folha-de-pagamento',
+  )
 
   const { data, isLoading, error } = useQuery({
     staleTime: Infinity,
