@@ -36,10 +36,12 @@ import {
   IconEye,
   IconCash,
   IconEyeOff,
+  IconTrash,
   IconPencil,
   IconPrinter,
   IconCirclePlus,
   IconLayoutGrid,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 
 // Types
@@ -51,12 +53,18 @@ import type {
 
 // Libs
 import { pdf } from '@react-pdf/renderer'
-import { getItem } from '@/actions/_cruds'
+import { getItem, deleteItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDateTime } from '@/lib/formatDate'
 
 // Consts
 import { payrollItemTypeObj } from '@/consts/payroll'
+
+// Store
+import { useAlertDialog } from '@/store/useAlertDialog'
+
+// Third-party
+import { useQueryClient } from '@tanstack/react-query'
 
 interface Props {
   data: PayrollDetailType
@@ -68,6 +76,8 @@ export function PayrollItems({ data }: Props) {
   const [isAdvance, setIsAdvance] = useState(false)
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
   const [showValues, setShowValues] = useState(true)
+  const { open: openAlertDialog } = useAlertDialog()
+  const queryClient = useQueryClient()
 
   const handleGeneratePDF = async (itemId: string) => {
     setIsLoadingPDF(true)
@@ -95,6 +105,32 @@ export function PayrollItems({ data }: Props) {
     } finally {
       setIsLoadingPDF(false)
     }
+  }
+
+  const handleDeleteItem = async (item: PayrollItemType) => {
+    await openAlertDialog({
+      title: 'Excluir item da folha?',
+      description: `Deseja excluir "${item.description}"? ${item.type === 'ADVANCE' ? 'A despesa financeira do adiantamento também será removida.' : 'A despesa de salário será recalculada.'}`,
+      confirmLabel: 'Excluir',
+      Icon: IconAlertTriangle,
+      iconVariant: 'errorBorderedLight',
+      onConfirm: async () => {
+        const result = await deleteItemNew({
+          route: `/financial/payroll/item/${item.id}`,
+        })
+
+        if (!result.success) {
+          throw new Error(result.message)
+        }
+
+        queryClient.invalidateQueries()
+      },
+      toastMsg: {
+        loading: 'Excluindo item...',
+        success: 'Item excluído com sucesso!',
+        error: 'Erro ao excluir item',
+      },
+    })
   }
 
   return (
@@ -146,6 +182,8 @@ export function PayrollItems({ data }: Props) {
               {data?.items?.map((item: PayrollItemType) => {
                 const typeConfig = payrollItemTypeObj[item.type]
                 const isAdvance = item.type === 'ADVANCE'
+                const isAdvancePaid =
+                  isAdvance && item.payable?.status === 'PAID'
 
                 return (
                   <TableRow key={item.id}>
@@ -190,7 +228,7 @@ export function PayrollItems({ data }: Props) {
                             <ActionButton
                               Icon={IconPencil}
                               tooltip={
-                                isAdvance && item.payable?.status === 'PAID'
+                                isAdvancePaid
                                   ? 'Adiantamento já pago'
                                   : 'Editar item'
                               }
@@ -200,8 +238,23 @@ export function PayrollItems({ data }: Props) {
                                 setOpenDialog('newItem')
                               }}
                               disabled={
-                                data?.status === 'CLOSED' ||
-                                (isAdvance && item.payable?.status === 'PAID')
+                                data?.status === 'CLOSED' || isAdvancePaid
+                              }
+                            />
+                          </PermissionGate>
+                          <PermissionGate
+                            permissions={['financial:payroll:edit']}
+                          >
+                            <ActionButton
+                              Icon={IconTrash}
+                              tooltip={
+                                isAdvancePaid
+                                  ? 'Estorne o pagamento antes de excluir'
+                                  : 'Excluir item'
+                              }
+                              onClick={() => handleDeleteItem(item)}
+                              disabled={
+                                data?.status === 'CLOSED' || isAdvancePaid
                               }
                             />
                           </PermissionGate>
@@ -276,3 +329,4 @@ export function PayrollItems({ data }: Props) {
     </>
   )
 }
+
