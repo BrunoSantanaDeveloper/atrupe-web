@@ -249,8 +249,12 @@ export function UnitCostInput({
       const calculatedRawUnitCost = salePrice / totalQuantity
       const currentUnitCost = getValues(`items.${index}.unitCost`)
 
-      // Só atualiza se o valor for diferente para evitar loops (tolerância de 1 centavo)
-      if (Math.abs(calculatedRawUnitCost - (currentUnitCost || 0)) > 1) {
+      // Tolerância para ruído de ponto flutuante (não há risco de loop, pois os
+      // useEffects dependem de variáveis distintas: salePrice vs totalQuantity)
+      const tolerance = Math.abs(calculatedRawUnitCost) * 1e-8 || 1e-10
+      if (
+        Math.abs(calculatedRawUnitCost - (currentUnitCost || 0)) > tolerance
+      ) {
         setValue(`items.${index}.unitCost`, calculatedRawUnitCost, {
           shouldValidate: false,
           shouldDirty: true,

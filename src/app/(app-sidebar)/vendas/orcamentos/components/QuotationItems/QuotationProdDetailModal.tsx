@@ -499,8 +499,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                         }}
                       />
                       <FormBrlInput<ProductsFormType>
-                        readOnly
-                        disabled
+                        disabled={!canEditValue}
                         name={`items.${index}.salePrice`}
                         label="Valor de venda"
                         placeholder="0,00"
