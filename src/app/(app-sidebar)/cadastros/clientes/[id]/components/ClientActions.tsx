@@ -41,7 +41,7 @@ export function ClientActions({ params, data, entityType }: Props) {
       confirmLabel: type === 'active' ? 'Ativar' : 'Inativar',
       onConfirm: async () => {
         const res = await updateItemNew({
-          route: `/${entityType}/${params.id}/toggle-status`,
+          route: `/${entityType}/${params.id}/status`,
           data: {},
         })
 
