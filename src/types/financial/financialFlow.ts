@@ -105,6 +105,7 @@ export type TransactionApiResponse = {
 export type HistoryAction =
   | 'CREATE'
   | 'PAY_INSTALLMENT'
+  | 'PAID_WITH_DIFFERENCE'
   | 'UPDATE_INSTALLMENTS'
   | 'UPDATE_DETAILS'
   | 'CANCEL'
@@ -147,6 +148,10 @@ export type HistoryMetadata = {
   totalAmountAfter?: number
   totalInstallmentsBefore?: number
   totalInstallmentsAfter?: number
+  hasDifference?: boolean
+  differenceAmount?: number
+  differenceType?: 'income' | 'expense'
+  reasonDescription?: string
   [key: string]: unknown
 }
 
