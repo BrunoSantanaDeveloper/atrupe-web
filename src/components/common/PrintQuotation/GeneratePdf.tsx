@@ -762,8 +762,15 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {/* Linha com informações do produto */}
                     <View style={styles.itemRowContent}>
                       {/* Coluna Número */}
-                      <View style={[styles.columnNumber, { width: columnWidths.number }]}>
-                        <Text style={styles.columnNumberText}>{index + 1}.</Text>
+                      <View
+                        style={[
+                          styles.columnNumber,
+                          { width: columnWidths.number },
+                        ]}
+                      >
+                        <Text style={styles.columnNumberText}>
+                          {index + 1}.
+                        </Text>
                       </View>
                       {/* Coluna Referência - Nome da composição diretamente */}
                       <View
@@ -969,7 +976,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {/* Linha com informações do produto */}
                   <View style={styles.itemRowContent}>
                     {/* Coluna Número */}
-                    <View style={[styles.columnNumber, { width: columnWidths.number }]}>
+                    <View
+                      style={[
+                        styles.columnNumber,
+                        { width: columnWidths.number },
+                      ]}
+                    >
                       <Text style={styles.columnNumberText}>{index + 1}.</Text>
                     </View>
                     {/* Coluna Referência - Imagem e Descrição do item */}

@@ -12,6 +12,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { SubscriptionSummaryCards } from './SubscriptionSummaryCards'
 import { PaymentsTable } from './PaymentsTable'
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog'
+import { ContractModal } from './ContractModal'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -43,6 +44,7 @@ export function SubscriptionManagementClient({
   searchParams,
 }: SearchParamsType) {
   const [cancelOpen, setCancelOpen] = useState(false)
+  const [contractOpen, setContractOpen] = useState(false)
 
   const page = Number(searchParams?.page) || 1
 
@@ -86,10 +88,11 @@ export function SubscriptionManagementClient({
                 Icon={IconPrinter}
               />
               <ActionButton
-                tooltip="Baixar"
+                tooltip="Contrato"
                 size="iconMd"
                 variant="neutralOutline"
                 Icon={IconFileText}
+                onClick={() => setContractOpen(true)}
               />
               {subscription.status === 'ACTIVE' && (
                 <Button
@@ -136,6 +139,8 @@ export function SubscriptionManagementClient({
             onOpenChange={setCancelOpen}
             subscriptionId={subscription.id}
           />
+
+          <ContractModal open={contractOpen} onOpenChange={setContractOpen} />
         </div>
       )}
     </div>

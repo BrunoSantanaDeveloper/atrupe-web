@@ -2,6 +2,7 @@
 
 // Next
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 // UI
 import {
@@ -29,6 +30,7 @@ import { cn } from '@/lib/utils'
 
 export function UserDropdown({ collapsed }: { collapsed: boolean }) {
   const router = useRouter()
+  const { data: session } = useSession()
 
   const handleLogOut = () => {
     router.push('/logout')
@@ -60,14 +62,16 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
             </DialogTrigger>
-            <DropdownMenuItem
-              onClick={() =>
-                router.push('/configuracoes/empresa-e-sistema/assinatura')
-              }
-            >
-              <CreditCard size={16} className="mr-2" />
-              <span>Assinatura</span>
-            </DropdownMenuItem>
+            {session?.user?.isAdmin && (
+              <DropdownMenuItem
+                onClick={() =>
+                  router.push('/configuracoes/empresa-e-sistema/assinatura')
+                }
+              >
+                <CreditCard size={16} className="mr-2" />
+                <span>Assinatura</span>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogOut}>

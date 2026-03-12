@@ -329,4 +329,3 @@ export function PayrollItems({ data }: Props) {
     </>
   )
 }
-
