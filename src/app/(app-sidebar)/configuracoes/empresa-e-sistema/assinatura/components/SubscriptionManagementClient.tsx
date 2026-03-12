@@ -21,7 +21,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Icons
-import { IconPencil, IconPrinter, IconFileText } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconPrinter,
+  IconFileText,
+  IconPlus,
+} from '@tabler/icons-react'
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
@@ -71,6 +76,7 @@ export function SubscriptionManagementClient({
   const isLoading = loadingSub || loadingPayments
 
   const statusInfo = subscription ? statusMap[subscription.status] : undefined
+  const isTrial = subscription?.plan?.planType === 'TRIAL'
 
   return (
     <div className="space-y-5">
@@ -87,14 +93,16 @@ export function SubscriptionManagementClient({
                 variant="neutralOutline"
                 Icon={IconPrinter}
               />
-              <ActionButton
-                tooltip="Contrato"
-                size="iconMd"
-                variant="neutralOutline"
-                Icon={IconFileText}
-                onClick={() => setContractOpen(true)}
-              />
-              {subscription.status === 'ACTIVE' && (
+              {!isTrial && (
+                <ActionButton
+                  tooltip="Contrato"
+                  size="iconMd"
+                  variant="neutralOutline"
+                  Icon={IconFileText}
+                  onClick={() => setContractOpen(true)}
+                />
+              )}
+              {subscription.status === 'ACTIVE' && !isTrial && (
                 <Button
                   variant="neutralOutline"
                   onClick={() => setCancelOpen(true)}
@@ -107,8 +115,10 @@ export function SubscriptionManagementClient({
         }
         primaryCta={
           subscription ? (
-            <Button asChild LeftIcon={IconPencil}>
-              <Link href="/assinatura">Editar assinatura</Link>
+            <Button asChild LeftIcon={isTrial ? IconPlus : IconPencil}>
+              <Link href="/assinatura">
+                {isTrial ? 'Contratar plano' : 'Editar assinatura'}
+              </Link>
             </Button>
           ) : undefined
         }

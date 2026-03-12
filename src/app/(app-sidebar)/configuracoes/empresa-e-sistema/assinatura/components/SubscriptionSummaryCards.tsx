@@ -70,12 +70,20 @@ export function SubscriptionSummaryCards({
       {/* Plan Card */}
       <Card>
         <CardContent className="p-5 flex items-center justify-center min-h-[88px]">
-          <Image
-            src={planLogos[subscription.plan.planType] || startLogo}
-            alt={subscription.plan.name}
-            priority
-            className="h-7 w-auto"
-          />
+          {subscription.plan.planType === 'TRIAL' ? (
+            <div className="flex flex-col items-center justify-center">
+              <span className="font-semibold text-gray-700 text-lg">
+                Período de Teste
+              </span>
+            </div>
+          ) : (
+            <Image
+              src={planLogos[subscription.plan.planType] || startLogo}
+              alt={subscription.plan.name}
+              priority
+              className="h-7 w-auto"
+            />
+          )}
         </CardContent>
       </Card>
 
