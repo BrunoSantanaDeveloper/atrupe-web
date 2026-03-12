@@ -134,6 +134,8 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   // Calcular colSpan baseado no número de colunas
   const totalColumns = showCurrentPhase ? 5 : 4
 
+  const hasFiscalModule = false // TODO: Implementar verificação de módulo fiscal
+
   return (
     <>
       <CardContent>
@@ -297,46 +299,48 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         tooltip="Duplicar orçamento"
                                       />
                                     </PermissionGate>
-                                    {order?.status !== 'CANCELED' && (
-                                      <PermissionGate
-                                        permissions={['sale:order:view']}
-                                      >
-                                        {order?.nfes?.[0]?.status ===
-                                        'AUTHORIZED' ? (
-                                          <ActionButton
-                                            Icon={IconFileInvoice}
-                                            tooltip={`DANFE ${order.nfes[0].numero}/${order.nfes[0].serie}`}
-                                            onClick={() => {
-                                              if (order.nfes?.[0]?.danfeUrl) {
-                                                window.open(
-                                                  order.nfes[0].danfeUrl,
-                                                  '_blank',
-                                                )
-                                              }
-                                            }}
+                                    {hasFiscalModule &&
+                                      order?.status !== 'CANCELED' && (
+                                        <PermissionGate
+                                          permissions={['sale:order:view']}
+                                        >
+                                          {order?.nfes?.[0]?.status ===
+                                          'AUTHORIZED' ? (
+                                            <ActionButton
+                                              Icon={IconFileInvoice}
+                                              tooltip={`DANFE ${order.nfes[0].numero}/${order.nfes[0].serie}`}
+                                              onClick={() => {
+                                                if (order.nfes?.[0]?.danfeUrl) {
+                                                  window.open(
+                                                    order.nfes[0].danfeUrl,
+                                                    '_blank',
+                                                  )
+                                                }
+                                              }}
+                                            />
+                                          ) : (
+                                            <ActionButton
+                                              Icon={IconFileInvoice}
+                                              tooltip="Emitir NF-e"
+                                              onClick={() => {
+                                                setRowData(order)
+                                                setOpenNfeDialog(true)
+                                              }}
+                                            />
+                                          )}
+                                        </PermissionGate>
+                                      )}
+                                    {hasFiscalModule &&
+                                      order?.status !== 'CANCELED' && (
+                                        <PermissionGate
+                                          permissions={['sale:order:view']}
+                                        >
+                                          <EmitNfseButton
+                                            orderId={order?.id}
+                                            orderStatus={order?.status}
                                           />
-                                        ) : (
-                                          <ActionButton
-                                            Icon={IconFileInvoice}
-                                            tooltip="Emitir NF-e"
-                                            onClick={() => {
-                                              setRowData(order)
-                                              setOpenNfeDialog(true)
-                                            }}
-                                          />
-                                        )}
-                                      </PermissionGate>
-                                    )}
-                                    {order?.status !== 'CANCELED' && (
-                                      <PermissionGate
-                                        permissions={['sale:order:view']}
-                                      >
-                                        <EmitNfseButton
-                                          orderId={order?.id}
-                                          orderStatus={order?.status}
-                                        />
-                                      </PermissionGate>
-                                    )}
+                                        </PermissionGate>
+                                      )}
                                     <PermissionGate
                                       permissions={['sale:order:view']}
                                     >

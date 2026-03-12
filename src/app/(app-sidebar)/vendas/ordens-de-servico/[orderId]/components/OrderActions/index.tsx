@@ -80,6 +80,8 @@ export function OrderActions({ data }: Props) {
 
   const canCancel = status.notCanceled
 
+  const hasFiscalModule = false // TODO: Implementar verificação de módulo fiscal
+
   return (
     <>
       <div className="flex flex-wrap justify-between gap-4">
@@ -100,9 +102,11 @@ export function OrderActions({ data }: Props) {
               }}
             />
           </PermissionGate>
-          <PermissionGate permissions={['invoice_settings:nf:view']}>
-            <EmitNfe data={data} />
-          </PermissionGate>
+          {hasFiscalModule && (
+            <PermissionGate permissions={['invoice_settings:nf:view']}>
+              <EmitNfe data={data} />
+            </PermissionGate>
+          )}
         </div>
         <div className="flex flex-wrap gap-4">
           {canCancel ? (
