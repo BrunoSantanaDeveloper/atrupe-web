@@ -103,7 +103,7 @@ export function SignupForm() {
 
         <FormInput
           name="company"
-          label="Empresa"
+          label="Nome fantasia"
           placeholder="Digite aqui"
           width="w-full"
         />
