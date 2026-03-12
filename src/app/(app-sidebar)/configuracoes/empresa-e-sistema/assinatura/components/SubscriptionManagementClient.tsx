@@ -20,7 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Icons
-import { IconPencil, IconPrinter, IconFileDownload } from '@tabler/icons-react'
+import { IconPencil, IconPrinter, IconFileText } from '@tabler/icons-react'
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
@@ -89,7 +89,7 @@ export function SubscriptionManagementClient({
                 tooltip="Baixar"
                 size="iconMd"
                 variant="neutralOutline"
-                Icon={IconFileDownload}
+                Icon={IconFileText}
               />
               {subscription.status === 'ACTIVE' && (
                 <Button
