@@ -1,15 +1,33 @@
 'use client'
 
+// Next
+import Image, { StaticImageData } from 'next/image'
+
 // UI
 import { Card, CardContent } from '@/components/ui/card'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 
 // Icons
-import { IconReceipt, IconUsers, IconPlus } from '@tabler/icons-react'
+import { IconReceipt, IconPlus, IconUserPlus } from '@tabler/icons-react'
+
+// Logos
+import startLogo from '@/assets/images/start-logo.png'
+import liteLogo from '@/assets/images/lite-logo.png'
+import proLogo from '@/assets/images/pro-logo.png'
+import eliteLogo from '@/assets/images/elite-logo.png'
+import fullLogo from '@/assets/images/full-logo.png'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+
+const planLogos: Record<string, StaticImageData> = {
+  START: startLogo,
+  LITE: liteLogo,
+  PRO: proLogo,
+  ELITE: eliteLogo,
+  FULL: fullLogo,
+}
 
 interface SubscriptionSummaryCardsProps {
   subscription: {
@@ -52,16 +70,19 @@ export function SubscriptionSummaryCards({
       {/* Plan Card */}
       <Card>
         <CardContent className="p-5 flex items-center justify-center min-h-[88px]">
-          <span className="text-lg font-bold text-gray-800 tracking-tight">
-            {subscription.plan.name}
-          </span>
+          <Image
+            src={planLogos[subscription.plan.planType] || startLogo}
+            alt={subscription.plan.name}
+            priority
+            className="h-7 w-auto"
+          />
         </CardContent>
       </Card>
 
       {/* NF Card */}
       <Card>
         <CardContent className="p-5 flex items-center gap-3 min-h-[88px]">
-          <FeaturedIcon rounded variant="neutralOutline" Icon={IconReceipt} />
+          <FeaturedIcon variant="neutralLight" Icon={IconReceipt} />
           <div className="min-w-0">
             <p className="text-sm text-gray-500">NF ({nfFeatures.length})</p>
             <p className="text-lg font-semibold text-gray-800">
@@ -73,8 +94,8 @@ export function SubscriptionSummaryCards({
 
       {/* NF Adicional Card */}
       <Card>
-        <CardContent className="p-5 flex items-center gap-3 min-h-[88px]">
-          <FeaturedIcon rounded variant="neutralOutline" Icon={IconReceipt} />
+        <CardContent className="relative p-5 flex items-center gap-3 min-h-[88px]">
+          <FeaturedIcon variant="neutralLight" Icon={IconReceipt} />
           <div className="min-w-0 flex-1">
             <p className="text-sm text-gray-500">
               NF adicional ({nfAdicionalFeatures.length})
@@ -85,17 +106,18 @@ export function SubscriptionSummaryCards({
           </div>
           <Button
             type="button"
-            size="icon"
-            variant="neutralOutline"
+            variant="light"
+            size="iconSm"
             RightIcon={IconPlus}
+            className="absolute top-3 right-3"
           />
         </CardContent>
       </Card>
 
       {/* Usuário Adicional Card */}
       <Card>
-        <CardContent className="p-5 flex items-center gap-3 min-h-[88px]">
-          <FeaturedIcon rounded variant="neutralOutline" Icon={IconUsers} />
+        <CardContent className="relative p-5 flex items-center gap-3 min-h-[88px]">
+          <FeaturedIcon variant="neutralLight" Icon={IconUserPlus} />
           <div className="min-w-0 flex-1">
             <p className="text-sm text-gray-500">
               Usuário adicional ({subscription.additionalUsers || 0})
@@ -106,9 +128,10 @@ export function SubscriptionSummaryCards({
           </div>
           <Button
             type="button"
-            size="icon"
-            variant="neutralOutline"
+            variant="light"
+            size="iconSm"
             RightIcon={IconPlus}
+            className="absolute top-3 right-3"
           />
         </CardContent>
       </Card>

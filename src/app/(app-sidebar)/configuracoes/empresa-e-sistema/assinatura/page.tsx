@@ -2,7 +2,10 @@
 import { SubscriptionManagementClient } from './components/SubscriptionManagementClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-export default function Page() {
+// Types
+import type { SearchParamsType } from '@/types/coreTypes'
+
+export default function Page({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
       permissions={['company_settings:subscription:view']}
@@ -12,7 +15,7 @@ export default function Page() {
         </div>
       }
     >
-      <SubscriptionManagementClient />
+      <SubscriptionManagementClient searchParams={searchParams} />
     </PermissionGate>
   )
 }

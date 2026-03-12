@@ -26,7 +26,7 @@ import { IconPencil, IconPrinter, IconFileDownload } from '@tabler/icons-react'
 import { getItem, getData } from '@/actions/_cruds'
 
 // Types
-import { BadgeType } from '@/types/coreTypes'
+import type { BadgeType, SearchParamsType } from '@/types/coreTypes'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -39,9 +39,12 @@ const statusMap: Record<string, BadgeType> = {
   CANCELED: { text: 'Cancelada', variant: 'errorLight' },
 }
 
-export function SubscriptionManagementClient() {
+export function SubscriptionManagementClient({
+  searchParams,
+}: SearchParamsType) {
   const [cancelOpen, setCancelOpen] = useState(false)
-  const [page, setPage] = useState(1)
+
+  const page = Number(searchParams?.page) || 1
 
   const { data: subscriptionRes, isLoading: loadingSub } = useQuery({
     staleTime: Infinity,
@@ -124,9 +127,8 @@ export function SubscriptionManagementClient() {
 
           <PaymentsTable
             payments={payments}
-            page={page}
             lastPage={paymentsLastPage}
-            onPageChange={setPage}
+            searchParams={searchParams}
           />
 
           <CancelSubscriptionDialog
