@@ -276,27 +276,27 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     product?.allowEditDescription || data?.allowEditDescription
 
   async function onSubmit(data: ProductsFormType) {
-    // Função auxiliar para omitir campos null/undefined
+    // Função auxiliar para omitir campos undefined (null é mantido para limpar campos no backend)
     // eslint-disable-next-line
-    const omitNullish = (obj: Record<string, any>) => {
+    const omitUndefined = (obj: Record<string, any>) => {
       return Object.fromEntries(
-        Object.entries(obj).filter(
-          ([_, value]) => value !== null && value !== undefined,
-        ),
+        Object.entries(obj).filter(([_, value]) => value !== undefined),
       )
     }
 
     // ✅ Payload ajustado conforme orientação do backend
-    const newFormData = omitNullish({
+    const newFormData = omitUndefined({
       productId: data.productId,
       quantity: data.quantity,
       description: data.description,
       technicalDescription: canEditDescription
-        ? data.technicalDescription || undefined
+        ? data.technicalDescription?.trim()
+          ? data.technicalDescription.trim()
+          : null
         : undefined,
       imageUrl: data.imageUrl || undefined,
       items: data?.items?.map((item) =>
-        omitNullish({
+        omitUndefined({
           id: item.id,
           quantity: item.quantity,
           unitCost: item.unitCost,
