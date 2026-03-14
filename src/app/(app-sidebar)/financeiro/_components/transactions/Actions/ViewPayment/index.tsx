@@ -57,14 +57,16 @@ export function ViewPaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
+  const typeText = type === 'payable' ? 'pagamento' : 'recebimento'
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 capitalize">
               <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-              {type === 'payable' ? 'Pagamento' : 'Recebimento'}
+              {typeText}
             </div>
           </DialogTitle>
           <DialogDescription className="sr-only"></DialogDescription>
@@ -93,7 +95,7 @@ export function ViewPaymentDialog({
           </DetailCardRowItem>
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             <TextSupportingText
-              supporting="Forma de pagamento"
+              supporting={`Forma de ${typeText}`}
               text={rowData?.paymentCondition?.name}
             />
             <TextSupportingText
@@ -101,7 +103,7 @@ export function ViewPaymentDialog({
               text={rowData?.bankAccount?.name}
             />
             <TextSupportingText
-              supporting="Data de pagamento"
+              supporting={`Data de ${typeText}`}
               text={formatToLocaleDate(rowData?.paymentDate)}
             />
           </DetailCardRowItem>

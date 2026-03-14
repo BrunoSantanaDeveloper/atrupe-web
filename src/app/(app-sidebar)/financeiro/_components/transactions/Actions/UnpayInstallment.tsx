@@ -29,13 +29,15 @@ export function UnpayInstallment({
 
   const queryClient = useQueryClient()
 
+  const typeText = type === 'payable' ? 'pagamento' : 'recebimento'
+
   const handleUndoPayment = async () => {
     const confirmed = await alertDialog.open({
-      title: `Deseja desfazer o pagamento?`,
+      title: `Deseja desfazer o ${typeText}?`,
       description: '',
       cancelLabel: 'Voltar',
       confirmVariant: 'error',
-      confirmLabel: 'Desfazer pagamento',
+      confirmLabel: `Desfazer ${typeText}`,
       toastMsg: undefined,
     })
 
@@ -47,13 +49,13 @@ export function UnpayInstallment({
     })
 
     if (!res?.success) {
-      toast.error(res?.message || 'Erro ao desfazer pagamento')
+      toast.error(res?.message || `Erro ao desfazer ${typeText}`)
       return
     }
 
     triggerLoading?.()
 
-    toast.success('Pagamento desfeito!')
+    toast.success(`${typeText} desfeito!`)
     queryClient.invalidateQueries()
 
     queryClient.invalidateQueries()
@@ -63,7 +65,7 @@ export function UnpayInstallment({
 
   return (
     <Button type="button" variant="error" onClick={handleUndoPayment}>
-      Desfazer pagamento
+      Desfazer {typeText}
     </Button>
   )
 }
