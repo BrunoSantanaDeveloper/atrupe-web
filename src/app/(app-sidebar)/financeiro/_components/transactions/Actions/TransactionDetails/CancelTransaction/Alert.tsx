@@ -120,7 +120,7 @@ export function CancelAlertDialog(props: Props) {
           {hasInstallments && canCancel && (
             <AlertDialogDescription>
               Apenas as parcelas não realizadas serão canceladas. Havendo
-              parcelas realizadas é preciso extornar seus valores manualmente,
+              parcelas realizadas é preciso estornar seus valores manualmente,
               se necessário. <br /> <br /> Deseja prosseguir?
             </AlertDialogDescription>
           )}
