@@ -422,6 +422,7 @@ export function PaymentDialog({
               type={type}
               installmentId={rowData?.id}
               paidDate={watch('paidDate')}
+              paidAmount={watch('amount')}
             />
           </div>
           <div className="space-x-4">

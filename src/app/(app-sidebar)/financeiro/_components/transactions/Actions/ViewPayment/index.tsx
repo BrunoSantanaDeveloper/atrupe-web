@@ -104,7 +104,9 @@ export function ViewPaymentDialog({
             />
             <TextSupportingText
               supporting={`Data de ${typeText}`}
-              text={formatToLocaleDate(rowData?.paymentDate)}
+              text={formatToLocaleDate(
+                rowData?.paymentDate || rowData?.paidDate,
+              )}
             />
           </DetailCardRowItem>
           <DetailCardRowItem
@@ -113,15 +115,19 @@ export function ViewPaymentDialog({
           >
             <TextSupportingText
               supporting="Data de compensação"
-              text={formatToLocaleDate(rowData?.compensateDate)}
+              text={formatToLocaleDate(
+                rowData?.compensateDate || rowData?.paidDate,
+              )}
             />
             <TextSupportingText
               supporting="Valor"
-              text={formatCurrencyToBrl(rowData?.value)}
+              text={formatCurrencyToBrl(rowData?.value || rowData?.amount)}
             />
             <TextSupportingText
               supporting="Realizado"
-              text={formatCurrencyToBrl(rowData?.paidValue || 0)}
+              text={formatCurrencyToBrl(
+                rowData?.paidValue ?? rowData?.paidAmount ?? 0,
+              )}
             />
           </DetailCardRowItem>
         </DialogBody>
@@ -131,7 +137,14 @@ export function ViewPaymentDialog({
               type={type}
               installmentId={rowData?.id}
               paidDate={
-                rowData?.paymentDate ? new Date(rowData.paymentDate) : undefined
+                rowData?.paymentDate
+                  ? new Date(rowData.paymentDate)
+                  : rowData?.paidDate
+                    ? new Date(rowData.paidDate)
+                    : undefined
+              }
+              paidAmount={
+                rowData?.paidValue ?? rowData?.paidAmount ?? rowData?.amount
               }
             />
           </div>
