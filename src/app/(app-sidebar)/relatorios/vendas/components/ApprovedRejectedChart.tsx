@@ -155,7 +155,10 @@ export function ApprovedRejectedChart({
             <span className="text-gray-600">Aprovadas</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded" style={{ backgroundColor: '#98A2B3' }} />
+            <div
+              className="w-3 h-3 rounded"
+              style={{ backgroundColor: '#98A2B3' }}
+            />
             <span className="text-gray-600">Canceladas</span>
           </div>
           <div className="flex items-center gap-2">

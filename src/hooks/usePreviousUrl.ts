@@ -7,7 +7,7 @@ type NavigationHistoryType = {
   currentPage: string | null
 }
 
-export function usePreviousUrl(defaultUrl: string) {
+export function usePreviousUrl(defaultUrl: string, allowedPrefix?: string) {
   const [previousUrl, setPreviousUrl] = useState<string>(defaultUrl)
 
   useEffect(() => {
@@ -17,12 +17,17 @@ export function usePreviousUrl(defaultUrl: string) {
           JSON.stringify({ previousPage: null, currentPage: null }),
       ) as NavigationHistoryType
 
-      setPreviousUrl(navigationHistory.previousPage || defaultUrl)
+      const prev = navigationHistory.previousPage
+      if (prev && (!allowedPrefix || prev.startsWith(allowedPrefix))) {
+        setPreviousUrl(prev)
+      } else {
+        setPreviousUrl(defaultUrl)
+      }
     } catch (error) {
       console.error('Error reading navigation history:', error)
       setPreviousUrl(defaultUrl)
     }
-  }, [defaultUrl])
+  }, [defaultUrl, allowedPrefix])
 
   return previousUrl
 }

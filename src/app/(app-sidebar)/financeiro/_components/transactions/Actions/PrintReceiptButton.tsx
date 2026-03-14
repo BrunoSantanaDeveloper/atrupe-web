@@ -20,6 +20,8 @@ import { pdf } from '@react-pdf/renderer'
 interface PrintReceiptButtonProps {
   type?: 'receivable' | 'payable'
   installmentId?: string
+  paidDate?: Date | null
+  paidAmount?: number | null
   variant?: 'outline' | 'default' | 'neutralOutline'
   className?: string
 }
@@ -27,6 +29,8 @@ interface PrintReceiptButtonProps {
 export function PrintReceiptButton({
   type,
   installmentId,
+  paidDate,
+  paidAmount,
   variant = 'outline',
   className,
 }: PrintReceiptButtonProps) {
@@ -38,8 +42,16 @@ export function PrintReceiptButton({
     setIsLoadingPDF(true)
     try {
       // Buscar dados do PDF da API
+      const route = `/financial/${type}/installment/${installmentId}/receipt-data`
+      const params = new URLSearchParams()
+      if (paidDate) params.append('paidDate', paidDate.toISOString())
+      if (paidAmount !== undefined && paidAmount !== null)
+        params.append('paidAmount', paidAmount.toString())
+
+      const queryString = params.toString() ? `?${params.toString()}` : ''
+
       const result = await getItem({
-        route: `/financial/${type}/installment/${installmentId}/receipt-data`,
+        route: `${route}${queryString}`,
       })
 
       if (!result.success) {

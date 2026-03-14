@@ -256,7 +256,7 @@ export function NewTransaction({ type }: Props) {
                   ) : (
                     <SupplierSelector
                       name="clientOrSupplierId"
-                      label="Cliente"
+                      label="Fornecedor"
                       width="flex-[1_0_300px]"
                     />
                   )}
@@ -279,7 +279,7 @@ export function NewTransaction({ type }: Props) {
                   />
                   <PaymentConditionsSelectField
                     name="paymentConditionId"
-                    label="Condição de pagamento"
+                    label="Forma de pagamento"
                     width="flex-[1_0_280px]"
                     additionalOnChange={(value) => {
                       fields.forEach((_, index) => {

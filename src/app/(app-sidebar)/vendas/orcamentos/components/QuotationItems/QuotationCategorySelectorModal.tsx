@@ -21,40 +21,46 @@ interface QuotationCategorySelectorModalProps {
   onSelect: () => void
 }
 
-// Função para ordenar os setores com Criação primeiro e Instalação por último
+// Ordem fixa: Criação → Impressão → Gráfica → CNC → Serralheria → (outros) → Instalação
+const SECTOR_ORDER: Array<string[]> = [
+  ['criação', 'criacao'],
+  ['impressão', 'impressao'],
+  ['gráfica', 'grafica'],
+  ['cnc'],
+  ['serralheria'],
+]
+
+const INSTALACAO_KEYWORDS = ['instalação', 'instalacao']
+
+function getSectorPriority(name: string): number {
+  const lower = name.toLowerCase()
+
+  // Instalação sempre último (prioridade alta = final)
+  if (INSTALACAO_KEYWORDS.some((kw) => lower.includes(kw))) {
+    return SECTOR_ORDER.length + 1
+  }
+
+  // Verificar ordem fixa
+  for (let i = 0; i < SECTOR_ORDER.length; i++) {
+    if (SECTOR_ORDER[i].some((kw) => lower.includes(kw))) {
+      return i
+    }
+  }
+
+  // Setores não mapeados ficam antes de Instalação
+  return SECTOR_ORDER.length
+}
+
 function sortSectors(
   sectors: Array<{ id: string; name: string; icon: string }>,
 ) {
-  return sectors.sort((a, b) => {
-    // Criação sempre primeiro
-    if (
-      a.name.toLowerCase().includes('criação') ||
-      a.name.toLowerCase().includes('criacao')
-    ) {
-      return -1
-    }
-    if (
-      b.name.toLowerCase().includes('criação') ||
-      b.name.toLowerCase().includes('criacao')
-    ) {
-      return 1
-    }
+  return [...sectors].sort((a, b) => {
+    const priorityA = getSectorPriority(a.name)
+    const priorityB = getSectorPriority(b.name)
 
-    // Instalação sempre por último
-    if (
-      a.name.toLowerCase().includes('instalação') ||
-      a.name.toLowerCase().includes('instalacao')
-    ) {
-      return 1
-    }
-    if (
-      b.name.toLowerCase().includes('instalação') ||
-      b.name.toLowerCase().includes('instalacao')
-    ) {
-      return -1
-    }
+    if (priorityA !== priorityB) return priorityA - priorityB
 
-    // Para os demais, manter ordem alfabética
+    // Mesma prioridade → ordem alfabética
     return a.name.localeCompare(b.name)
   })
 }
@@ -78,7 +84,7 @@ export function QuotationCategorySelectorModal({
 
   return (
     <Dialog open={open} onOpenChange={openChangeModal}>
-      <DialogContent className="sm:max-w-[696px]">
+      <DialogContent className="sm:max-w-fit">
         <DialogHeader className="border-0">
           <DialogTitle className="flex items-center justify-center gap-4 flex-col">
             <FeaturedIcon
@@ -96,7 +102,17 @@ export function QuotationCategorySelectorModal({
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
-          <div className="gap-3 grid grid-cols-4 sm:grid-cols-5">
+          <div
+            className={`gap-3 grid ${
+              sortedData.length <= 1
+                ? 'grid-cols-1'
+                : sortedData.length === 2
+                  ? 'grid-cols-2'
+                  : sortedData.length === 3
+                    ? 'grid-cols-3'
+                    : 'grid-cols-4'
+            }`}
+          >
             {isLoading ? (
               <div className="col-span-full flex items-center justify-center py-8">
                 <Loader2 className="text-gray size-6 animate-spin" />
@@ -107,7 +123,7 @@ export function QuotationCategorySelectorModal({
                   key={option.id}
                   type="button"
                   variant="neutralOutline"
-                  className="p-2 flex-col aspect-square h-full w-full rounded-xl border-none text-gray-600 overflow-hidden shadow-sm"
+                  className="p-2 flex-col w-[120px] h-[120px] rounded-xl border-none text-gray-600 overflow-hidden shadow-sm"
                   onClick={() => handleSelect(option.id)}
                 >
                   {option.icon ? (

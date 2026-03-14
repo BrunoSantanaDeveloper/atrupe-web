@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { Fragment, useState } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 
 // Components
 import { Badge } from '@/components/ui/badge'
@@ -37,7 +37,9 @@ import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil } from '@tabler/icons-react'
+import { IconPencil, IconCopy } from '@tabler/icons-react'
+
+import { toast } from 'sonner'
 
 export interface IncompleteRegistrationItem {
   id: string
@@ -48,6 +50,8 @@ export interface IncompleteRegistrationItem {
   email: string
   createdAt: string
   emailVerified: boolean
+  token: string | null
+  expiresAt: string | null
 }
 
 interface GroupedData {
@@ -58,6 +62,72 @@ interface GroupedData {
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
   searchDescription?: string
+}
+
+function TokenCell({ item }: { item: IncompleteRegistrationItem }) {
+  const [isExpired, setIsExpired] = useState(
+    item.expiresAt ? new Date() > new Date(item.expiresAt) : false,
+  )
+  const [timeLeft, setTimeLeft] = useState('')
+
+  useEffect(() => {
+    if (!item.expiresAt) return
+
+    const update = () => {
+      const diff = new Date(item.expiresAt!).getTime() - new Date().getTime()
+      if (diff <= 0) {
+        setIsExpired(true)
+        setTimeLeft('Expirado')
+        return false
+      }
+      const m = Math.floor(diff / 60000)
+      const s = Math.floor((diff % 60000) / 1000)
+      setTimeLeft(
+        `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`,
+      )
+      return true
+    }
+
+    const active = update()
+    if (!active) return
+
+    const interval = setInterval(() => {
+      if (!update()) clearInterval(interval)
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [item.expiresAt])
+
+  if (!item.token) return <span className="text-gray-400">-</span>
+
+  return (
+    <div className="flex flex-col text-nowrap">
+      <div className="flex items-center gap-2">
+        <span
+          className={`font-medium ${isExpired ? 'text-gray-400' : 'text-success-700'}`}
+        >
+          {item.token}
+        </span>
+        {!isExpired && (
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(item.token!)
+              toast.success('Token copiado!')
+            }}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+            title="Copiar token"
+          >
+            <IconCopy size={14} />
+          </button>
+        )}
+      </div>
+      <span
+        className={`text-[10px] mt-0.5 ${isExpired ? 'text-error-500' : 'text-success-600'}`}
+      >
+        {timeLeft || '...'}
+      </span>
+    </div>
+  )
 }
 
 export function Data({ searchParams, searchDescription }: Props) {
@@ -89,7 +159,7 @@ export function Data({ searchParams, searchDescription }: Props) {
               <TableHeader>
                 <TableRow className="bg-gray-50">
                   <TableHead>Conta</TableHead>
-                  <TableHead>Código</TableHead>
+                  <TableHead>Token</TableHead>
                   <TableHead>Usuário</TableHead>
                   <TableHead>Contato</TableHead>
                   <TableHead>Validação e-mail</TableHead>
@@ -113,12 +183,17 @@ export function Data({ searchParams, searchDescription }: Props) {
                           return (
                             <TableRow key={item.id}>
                               <TableCell>
-                                <p className="font-medium">
-                                  {item.companyName}
-                                </p>
+                                <div>
+                                  <p className="font-medium text-sm">
+                                    {item.companyName}
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    {item.code}
+                                  </p>
+                                </div>
                               </TableCell>
-                              <TableCell className="text-success-700 text-nowrap">
-                                {item.code}
+                              <TableCell>
+                                <TokenCell item={item} />
                               </TableCell>
                               <TableCell>{item.userName}</TableCell>
                               <TableCell>

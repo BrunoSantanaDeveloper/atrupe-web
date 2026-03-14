@@ -199,7 +199,7 @@ export function CompensateDialog({
               />
               <AvailablePaymentConditionsSelectField
                 name="paymentConditionId"
-                label="Condição de pagamento"
+                label="Forma de pagamento"
                 width="flex-[1_0_150px]"
                 type={type}
                 disabled
@@ -239,7 +239,12 @@ export function CompensateDialog({
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <PrintReceiptButton type={type} installmentId={rowData?.id} />
+            <PrintReceiptButton
+              type={type}
+              installmentId={rowData?.id}
+              paidDate={watch('paidDate')}
+              paidAmount={watch('amount')}
+            />
           </div>
           <div className="space-x-4">
             <PermissionGate permissions={['financial:flow:edit']}>

@@ -320,7 +320,7 @@ export function PaymentDialog({
               />
               <AvailablePaymentConditionsSelectField
                 name="paymentConditionId"
-                label="Condição de pagamento"
+                label="Forma de pagamento"
                 width="flex-[1_0_250px]"
                 type={type}
               />
@@ -418,7 +418,12 @@ export function PaymentDialog({
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <PrintReceiptButton type={type} installmentId={rowData?.id} />
+            <PrintReceiptButton
+              type={type}
+              installmentId={rowData?.id}
+              paidDate={watch('paidDate')}
+              paidAmount={watch('amount')}
+            />
           </div>
           <div className="space-x-4">
             <DialogClose asChild>

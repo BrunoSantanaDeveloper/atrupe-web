@@ -11,6 +11,7 @@ import type { CompanySettingsType } from '../../components/CompanySettingsList'
 import {
   IconRuler2,
   IconBuilding,
+  // IconFileDollar,
   IconUserShield,
   IconSettingsCog,
 } from '@tabler/icons-react'
@@ -31,6 +32,14 @@ export function CompanySettingsClient() {
           cta: <CompanyInfo />,
           permission: 'company_settings:company:edit',
         },
+        // {
+        //   title: 'Assinatura',
+        //   icon: IconFileDollar,
+        //   description:
+        //     'Gerencie a assinatura do seu plano, usuários adicionais e faturas.',
+        //   link: `${defaultPath}/assinatura`,
+        //   permission: 'company_settings:subscription:view',
+        // },
         {
           title: 'Setores',
           icon: IconSettingsCog,

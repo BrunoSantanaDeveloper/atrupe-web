@@ -57,14 +57,16 @@ export function ViewPaymentDialog({
     setOpen(openDialog ? 'payment' : '')
   }
 
+  const typeText = type === 'payable' ? 'pagamento' : 'recebimento'
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 capitalize">
               <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
-              {type === 'payable' ? 'Pagamento' : 'Recebimento'}
+              {typeText}
             </div>
           </DialogTitle>
           <DialogDescription className="sr-only"></DialogDescription>
@@ -93,7 +95,7 @@ export function ViewPaymentDialog({
           </DetailCardRowItem>
           <DetailCardRowItem className="lg:grid-cols-3 px-0">
             <TextSupportingText
-              supporting="Condição de pagamento"
+              supporting={`Forma de ${typeText}`}
               text={rowData?.paymentCondition?.name}
             />
             <TextSupportingText
@@ -101,8 +103,10 @@ export function ViewPaymentDialog({
               text={rowData?.bankAccount?.name}
             />
             <TextSupportingText
-              supporting="Data de pagamento"
-              text={formatToLocaleDate(rowData?.paymentDate)}
+              supporting={`Data de ${typeText}`}
+              text={formatToLocaleDate(
+                rowData?.paymentDate || rowData?.paidDate,
+              )}
             />
           </DetailCardRowItem>
           <DetailCardRowItem
@@ -111,21 +115,38 @@ export function ViewPaymentDialog({
           >
             <TextSupportingText
               supporting="Data de compensação"
-              text={formatToLocaleDate(rowData?.compensateDate)}
+              text={formatToLocaleDate(
+                rowData?.compensateDate || rowData?.paidDate,
+              )}
             />
             <TextSupportingText
               supporting="Valor"
-              text={formatCurrencyToBrl(rowData?.value)}
+              text={formatCurrencyToBrl(rowData?.value || rowData?.amount)}
             />
             <TextSupportingText
               supporting="Realizado"
-              text={formatCurrencyToBrl(rowData?.paidValue || 0)}
+              text={formatCurrencyToBrl(
+                rowData?.paidValue ?? rowData?.paidAmount ?? 0,
+              )}
             />
           </DetailCardRowItem>
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <PrintReceiptButton type={type} installmentId={rowData?.id} />
+            <PrintReceiptButton
+              type={type}
+              installmentId={rowData?.id}
+              paidDate={
+                rowData?.paymentDate
+                  ? new Date(rowData.paymentDate)
+                  : rowData?.paidDate
+                    ? new Date(rowData.paidDate)
+                    : undefined
+              }
+              paidAmount={
+                rowData?.paidValue ?? rowData?.paidAmount ?? rowData?.amount
+              }
+            />
           </div>
           <div className="space-x-4">
             <DialogClose asChild>

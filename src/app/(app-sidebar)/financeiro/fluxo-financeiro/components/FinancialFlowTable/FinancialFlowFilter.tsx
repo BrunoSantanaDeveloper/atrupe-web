@@ -21,7 +21,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
 
-  const { canCreateBankAccount } = usePlanFeatures()
+  const { canCreateBankAccount, canProvision } = usePlanFeatures()
 
   const hasUrlParams = searchParams?.startDate && searchParams?.endDate
 
@@ -108,7 +108,7 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
             { value: 'PROVISIONED', label: 'Provisionado' },
             { value: 'OVERDUE', label: 'Atrasado' },
             { value: 'CANCELED', label: 'Cancelado' },
-          ]}
+          ].filter((opt) => canProvision() || opt.value !== 'PROVISIONED')}
           value={searchParams?.status || 'all'}
           onChange={(value) => handleFilter('status', value)}
         />

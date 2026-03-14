@@ -62,7 +62,7 @@ import {
 // Actions
 import { getItem, updateItemNew } from '@/actions/_cruds'
 
-// import { addMonths } from 'date-fns'
+import { addMonths } from 'date-fns'
 
 interface Props {
   open: boolean
@@ -278,7 +278,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                               />
                               <PaymentConditionsSelectField
                                 name={`installments.${index}.paymentConditionId`}
-                                label="Condição de pagamento"
+                                label="Forma de pagamento"
                                 width="flex-[1_0_200px]"
                               />
                               <FormBrlInput
@@ -363,15 +363,19 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                         variant="none"
                         className="flex justify-center items-center mx-auto gap-3 py-8"
                         onClick={() => {
-                          // const lastIndex = data?.installments?.length - 1 // TODO: Add nova data
-
-                          // const nextMonth = addMonths(
-                          // new Date(data?.installments[lastIndex]?.dueDate),
-                          // )
+                          const lastInstallment =
+                            installments.length > 0
+                              ? installments[installments.length - 1]
+                              : null
+                          const nextDueDate = lastInstallment?.dueDate
+                            ? addMonths(new Date(lastInstallment.dueDate), 1)
+                            : (null as unknown as Date)
+                          const nextPaymentCondition =
+                            lastInstallment?.paymentConditionId || ''
 
                           append({
-                            dueDate: null as unknown as Date,
-                            paymentConditionId: '',
+                            dueDate: nextDueDate,
+                            paymentConditionId: nextPaymentCondition,
                             amount: 0,
                             additionalFee: 0,
                           })

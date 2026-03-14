@@ -240,6 +240,7 @@ export type QuotationHistoryAction =
   | 'VALUE_CHANGED'
   | 'APPROVED'
   | 'DUPLICATED'
+  | 'EDITED'
 
 export type QuotationHistoryChanges = {
   before: Record<string, unknown>

@@ -72,7 +72,7 @@ export function DownPayment() {
       {/* TODO : Filtrar condições de pagamento permitidas para a entrada */}
       <PaymentConditionsSelectField<QuotationPaymentConditionsType>
         name={`downPayment.paymentConditionId`}
-        label="Condição de pagamento"
+        label="Forma de pagamento"
         width="flex-[1_0_200px]"
         additionalOnChange={handleChangePaymentCondition}
       />

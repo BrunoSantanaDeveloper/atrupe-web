@@ -73,7 +73,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
   return (
     <PaymentConditionsSelectField<QuotationPaymentConditionsType>
       name="paymentConditionId"
-      label="Condição de pagamento"
+      label="Forma de pagamento"
       width="flex-[1_0_150px]"
       additionalOnChange={handleChangePaymentCondition}
     />

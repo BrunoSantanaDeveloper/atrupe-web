@@ -27,6 +27,7 @@ export function formatHistoryEvent(
   // Format based on action type
   switch (item.action) {
     case 'PAY_INSTALLMENT':
+    case 'PAID_WITH_DIFFERENCE':
       if (item.metadata) {
         if (item.metadata.paidAmount) {
           details.push(
@@ -40,6 +41,13 @@ export function formatHistoryEvent(
         }
         if (item.metadata.bankAccountName) {
           details.push(`Conta: ${item.metadata.bankAccountName}`)
+        }
+        if (item.metadata.hasDifference && item.metadata.differenceAmount) {
+          const diffType =
+            item.metadata.differenceType === 'expense' ? 'a menos' : 'a mais'
+          details.push(
+            `Diferença: ${formatCurrencyToBrl(Math.abs(item.metadata.differenceAmount as number))} (${diffType})`,
+          )
         }
       }
       break
@@ -408,6 +416,9 @@ export function formatQuotationHistoryEvent(
       break
 
     case 'REJECTED':
+      if (item.metadata?.reasonDescription) {
+        details.push(`Motivo: ${item.metadata.reasonDescription}`)
+      }
       if (item.metadata?.rejectionReason) {
         details.push(`Motivo: ${item.metadata.rejectionReason}`)
       }
@@ -446,6 +457,23 @@ export function formatQuotationHistoryEvent(
     case 'DUPLICATED':
       if (item.metadata?.sourceQuotationId) {
         details.push(`Orçamento original: #${item.metadata.sourceQuotationId}`)
+      }
+      break
+
+    case 'EDITED':
+      if (item.changes) {
+        const { before, after } = item.changes
+        if (before && after) {
+          Object.keys(after).forEach((field) => {
+            const beforeVal = before[field]
+            const afterVal = after[field]
+            if (beforeVal !== afterVal) {
+              details.push(
+                `${formatKey(field)}: ${beforeVal ?? '(vazio)'} 🡢 ${afterVal ?? '(vazio)'}`,
+              )
+            }
+          })
+        }
       }
       break
   }

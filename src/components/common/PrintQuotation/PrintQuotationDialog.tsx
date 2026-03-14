@@ -290,7 +290,7 @@ export function PrintQuotationDialog({
                       />
                       <FormCheckbox<PrintOptionsType>
                         name="showFinalValue"
-                        label="Exibir valor final"
+                        label="Exibir valor final do item"
                       />
                     </>
                   )}
@@ -303,12 +303,12 @@ export function PrintQuotationDialog({
                   {hasValuesPermission && (
                     <FormCheckbox<PrintOptionsType>
                       name="showTotalValue"
-                      label="Exibir valores totais"
+                      label="Exibir valores totais da proposta"
                     />
                   )}
                   <FormCheckbox<PrintOptionsType>
                     name="showPaymentDelivery"
-                    label="Exibir especificação de pagamento e entrega"
+                    label="Exibir especificações de pagamento e entrega"
                   />
                   {canShowQuotationItemDetails() && (
                     <FormCheckbox<PrintOptionsType>

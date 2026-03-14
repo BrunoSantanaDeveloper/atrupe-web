@@ -2,6 +2,7 @@
 
 // Next
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 // UI
 import {
@@ -19,7 +20,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import { MyProfileDialog } from './MyProfile'
 
 // Icons
-import { LogOut, User } from 'lucide-react'
+import { CreditCard, LogOut, User } from 'lucide-react'
 
 // Actions
 import { IconDotsVertical } from '@tabler/icons-react'
@@ -29,6 +30,7 @@ import { cn } from '@/lib/utils'
 
 export function UserDropdown({ collapsed }: { collapsed: boolean }) {
   const router = useRouter()
+  const { data: session } = useSession()
 
   const handleLogOut = () => {
     router.push('/logout')
@@ -55,11 +57,22 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
         <DropdownMenuContent className="min-w-40" align="start">
           <DropdownMenuGroup>
             <DialogTrigger asChild>
-              <DropdownMenuItem onClick={() => {}}>
+              <DropdownMenuItem>
                 <User size={16} className="mr-2" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
             </DialogTrigger>
+            {session?.user?.isAdmin && (
+              <DropdownMenuItem
+                onClick={() =>
+                  router.push('/configuracoes/empresa-e-sistema/assinatura')
+                }
+                className="hidden"
+              >
+                <CreditCard size={16} className="mr-2" />
+                <span>Assinatura</span>
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogOut}>
