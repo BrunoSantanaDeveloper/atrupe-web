@@ -125,7 +125,13 @@ export function ViewPaymentDialog({
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <PrintReceiptButton type={type} installmentId={rowData?.id} />
+            <PrintReceiptButton
+              type={type}
+              installmentId={rowData?.id}
+              paidDate={
+                rowData?.paymentDate ? new Date(rowData.paymentDate) : undefined
+              }
+            />
           </div>
           <div className="space-x-4">
             <DialogClose asChild>
