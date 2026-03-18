@@ -737,7 +737,7 @@ export default function SubscriptionPage() {
                         da Atrupe.
                       </label>
                     </div>
-                    {process.env.NODE_ENV === 'production' && (
+                    {!IS_DEV_ENV && (
                       <Button
                         type="submit"
                         form="subscription-form"
