@@ -229,6 +229,10 @@ LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC
         // Invalidar queries para recarregar a lista
         await queryClient.invalidateQueries({ queryKey: ['product-list'] })
         await queryClient.invalidateQueries({ queryKey: ['product-totals'] })
+        await queryClient.invalidateQueries({
+          queryKey: ['product-group-list'],
+        })
+        await queryClient.invalidateQueries({ queryKey: ['category-list'] })
 
         // Fechar modal
         handleOpenChange(false)
