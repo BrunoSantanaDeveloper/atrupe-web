@@ -400,6 +400,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                   label="Descrição do item"
                   width="flex-[1_0_380px]"
                   placeholder="Digite aqui"
+                  disabled={!canEditDescription}
                 />
                 {items?.fields?.length > 1 && (
                   <>
