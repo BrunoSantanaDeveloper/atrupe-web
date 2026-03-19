@@ -278,7 +278,11 @@ export function QuotationItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={[
+                                        'sale:quotation:edit',
+                                        'values:values:view',
+                                      ]}
+                                      requireAll
                                     >
                                       <ActionButton
                                         Icon={IconCoin}
@@ -443,7 +447,11 @@ export function QuotationItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:quotation:edit']}
+                                      permissions={[
+                                        'sale:quotation:edit',
+                                        'values:values:view',
+                                      ]}
+                                      requireAll
                                     >
                                       <ActionButton
                                         Icon={IconCoin}
