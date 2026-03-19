@@ -7,13 +7,19 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
-import { IconCirclePlus, IconCircleMinus } from '@tabler/icons-react'
+import {
+  IconCirclePlus,
+  IconCircleMinus,
+  IconArrowsExchange,
+} from '@tabler/icons-react'
 
 // Types
 import type { ClientInfoType } from '@/types/cadastros/client'
 
 // Lib
-import { updateItemNew } from '@/actions/_cruds'
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { ActionButton } from '@/components/common/ActionButton'
 
 interface Props {
   params: {
@@ -30,6 +36,40 @@ export function ClientActions({ params, data, entityType }: Props) {
   const queryClient = useQueryClient()
 
   const status = data?.status
+
+  const isClient = entityType === 'client'
+  const targetLabel = isClient ? 'fornecedor' : 'cliente'
+
+  // Criar cadastro espelho (cliente → fornecedor ou vice-versa)
+  const handleExchange = async () => {
+    await alertDialog.open({
+      title: `Cadastrar como ${targetLabel}?`,
+      description: `Os dados deste ${isClient ? 'cliente' : 'fornecedor'} serão usados para criar um novo ${targetLabel}.`,
+      cancelLabel: 'Cancelar',
+      confirmLabel: `Criar ${targetLabel}`,
+      onConfirm: async () => {
+        const route = isClient
+          ? `/client/${params.id}/convert-to-supplier`
+          : `/supplier/${params.id}/convert-to-client`
+
+        const res = await createItemNew({
+          route,
+          data: {},
+        })
+
+        if (!res.success) {
+          throw new Error(res.message)
+        }
+
+        queryClient.invalidateQueries()
+      },
+      toastMsg: {
+        loading: 'Criando cadastro...',
+        success: `${targetLabel.charAt(0).toUpperCase() + targetLabel.slice(1)} criado com sucesso!`,
+        error: `Erro ao criar ${targetLabel}`,
+      },
+    })
+  }
 
   // Ativar ou inativar cadastro
   const handleActiveToggle = async (type: 'active' | 'inactive') => {
@@ -66,24 +106,15 @@ export function ClientActions({ params, data, entityType }: Props) {
   return (
     <PermissionGate permissions={['register:client:edit']}>
       <div className="flex items-center gap-4">
-        {/* <TooltipProvider>
+        <TooltipProvider>
           <ActionButton
-            tooltip="Atualizar cadastro automaticamente"
+            tooltip={`Tornar ${isClient ? 'cliente' : 'fornecedor'} em ${targetLabel}`}
             size="iconMd"
             variant="neutralOutline"
-            Icon={IconReload}
-            // link={`#`}
-            // onClick={() => {}}
+            Icon={IconArrowsExchange}
+            onClick={handleExchange}
           />
-          <ActionButton
-            tooltip="Editar cadastro"
-            size="iconMd"
-            variant="neutralOutline"
-            Icon={IconPencil}
-            // link={`#`}
-            // onClick={() => {}}
-          />
-        </TooltipProvider> */}
+        </TooltipProvider>
 
         <PermissionGate permissions={[`register:${entityType}:delete`]}>
           {(status === 'ACTIVE' || status === 'PROSPECT') && (
@@ -106,22 +137,6 @@ export function ClientActions({ params, data, entityType }: Props) {
             </Button>
           )}
         </PermissionGate>
-        {/* <ToggleStatusModal
-          id={params.id}
-          open={isToggleModalOpen === 'active'}
-          setOpen={setIsToggleModalOpen}
-          entityType={entityType}
-          type="active"
-          onSuccess={() => {}}
-        />
-        <ToggleStatusModal
-          id={params.id}
-          open={isToggleModalOpen === 'inactive'}
-          setOpen={setIsToggleModalOpen}
-          entityType={entityType}
-          type="inactive"
-          onSuccess={() => {}}
-        /> */}
       </div>
     </PermissionGate>
   )
