@@ -23,6 +23,7 @@ export const newProductsSchema = z.object({
   allowEditDescription: z.boolean().default(true),
   isService: z.boolean().default(false),
   imageUrl: z.string().optional().nullable(),
+  imageSize: z.string().optional().nullable(),
   items: z.array(
     z.object({
       id: z.string({ required_error: 'Campo obrigatório' }).trim().optional(),
@@ -143,6 +144,7 @@ export const defaultNewProductValues: NewProductsFormType = {
   allowEditDescription: true,
   isService: false,
   imageUrl: null,
+  imageSize: 'small',
   items: [
     {
       name: '',

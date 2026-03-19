@@ -26,7 +26,7 @@ import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
-import { FormImageUpload } from '@/components/common/form/ImageUpload'
+import { FormImageUploadBigSmall } from '@/components/common/form/global-inputs/FormImageUploadBigSmall'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
@@ -190,6 +190,7 @@ function NewProductModal({
       allowEditDescription: data.allowEditDescription,
       isService: data.isService,
       imageUrl: data.imageUrl || null,
+      imageSize: data.imageSize || null,
       items: data.items?.map((item) => ({
         id: editMode ? item.id : undefined,
         name: item.name,
@@ -484,11 +485,10 @@ function NewProductModal({
                     </Button>
                   </div>
                 )}
-                <FormImageUpload
+                <FormImageUploadBigSmall
                   control={control}
-                  name="imageUrl"
-                  maxSize={1024 * 50}
-                  customHelpText="PNG ou JPG até 50KB e 200×150px"
+                  imageName="imageUrl"
+                  sizeName="imageSize"
                 />
                 <FormTextarea
                   name="technicalDescription"
