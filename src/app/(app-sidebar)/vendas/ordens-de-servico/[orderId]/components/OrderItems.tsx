@@ -263,7 +263,11 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <PermissionGate
-                                      permissions={['sale:order:edit']}
+                                      permissions={[
+                                        'sale:order:edit',
+                                        'values:values:view',
+                                      ]}
+                                      requireAll
                                     >
                                       <ActionButton
                                         Icon={IconCoin}
@@ -403,11 +407,19 @@ export function OrderItems({ data }: Props) {
                                       tooltip="Editar item"
                                       disabled
                                     />
-                                    <ActionButton
-                                      Icon={IconCoin}
-                                      tooltip="Valores"
-                                      disabled
-                                    />
+                                    <PermissionGate
+                                      permissions={[
+                                        'sale:order:edit',
+                                        'values:values:view',
+                                      ]}
+                                      requireAll
+                                    >
+                                      <ActionButton
+                                        Icon={IconCoin}
+                                        tooltip="Valores"
+                                        disabled
+                                      />
+                                    </PermissionGate>
                                     <ActionButton
                                       Icon={IconTrashX}
                                       tooltip="Excluir item"

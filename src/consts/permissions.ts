@@ -115,10 +115,11 @@ export const permissionsData = [
         name: 'Plano de contas',
         key: 'chart_accounts',
       },
-      {
-        name: 'Limites de crédito',
-        key: 'credit_limits',
-      },
+      // TODO: Reativar no plano LITE
+      // {
+      //   name: 'Limites de crédito',
+      //   key: 'credit_limits',
+      // },
       {
         name: 'Folha de pagamento',
         key: 'payroll',
@@ -137,14 +138,15 @@ export const permissionsData = [
         name: 'Perfil de vendedor',
         key: 'seller_profile',
       },
-      {
-        name: 'Motivos de rejeições e cancelamentos',
-        key: 'rejection_reasons',
-      },
-      {
-        name: 'Status de orçamento',
-        key: 'quotation_status',
-      },
+      // TODO: Reativar no plano LITE
+      // {
+      //   name: 'Motivos de rejeições e cancelamentos',
+      //   key: 'rejection_reasons',
+      // },
+      // {
+      //   name: 'Status de orçamento',
+      //   key: 'quotation_status',
+      // },
     ],
   },
   {

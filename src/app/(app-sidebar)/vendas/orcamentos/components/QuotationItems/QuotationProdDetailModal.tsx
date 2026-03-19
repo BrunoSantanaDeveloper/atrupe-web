@@ -21,6 +21,7 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 
 // Icon Imports
+import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   IconCircleCheck,
   IconHelpCircle,
@@ -400,6 +401,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                   label="Descrição do item"
                   width="flex-[1_0_380px]"
                   placeholder="Digite aqui"
+                  disabled={!canEditDescription}
                 />
                 {items?.fields?.length > 1 && (
                   <>
@@ -480,32 +482,34 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                           )
                         }}
                       />
-                      <UnitCostInput
-                        name={`items.${index}.unitCost`}
-                        placeholder="0,00"
-                        width="flex-[1_0_130px]"
-                        index={index}
-                        disabled={!canEditValue}
-                        onHasChanged={() => {
-                          if (!canEditValue) return
+                      <PermissionGate permissions={['values:values:view']}>
+                        <UnitCostInput
+                          name={`items.${index}.unitCost`}
+                          placeholder="0,00"
+                          width="flex-[1_0_130px]"
+                          index={index}
+                          disabled={!canEditValue}
+                          onHasChanged={() => {
+                            if (!canEditValue) return
 
-                          const { total, measurementValue } =
-                            calculateSalesValue(index)
-                          setValue(`items.${index}.salePrice`, total)
-                          setValue(
-                            `items.${index}.measurementValue`,
-                            measurementValue,
-                          )
-                        }}
-                      />
-                      <FormBrlInput<ProductsFormType>
-                        disabled={!canEditValue}
-                        name={`items.${index}.salePrice`}
-                        label="Valor de venda"
-                        placeholder="0,00"
-                        startAdornment={<>R$</>}
-                        width="flex-[1_0_130px]"
-                      />
+                            const { total, measurementValue } =
+                              calculateSalesValue(index)
+                            setValue(`items.${index}.salePrice`, total)
+                            setValue(
+                              `items.${index}.measurementValue`,
+                              measurementValue,
+                            )
+                          }}
+                        />
+                        <FormBrlInput<ProductsFormType>
+                          disabled={!canEditValue}
+                          name={`items.${index}.salePrice`}
+                          label="Valor de venda"
+                          placeholder="0,00"
+                          startAdornment={<>R$</>}
+                          width="flex-[1_0_130px]"
+                        />
+                      </PermissionGate>
                     </div>
                   )
                 })}
@@ -520,14 +524,16 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
           </Form>
         </DialogBody>
         <DialogFooter className="sm:justify-between">
-          <div className="flex flex-col">
-            <strong className="font-semibold text-lg text-gray-900">
-              R$ {parseCurrencyToBrl(calculateFinalValue())}
-            </strong>
-            <span className="font-medium text-gray-700 text-sm">
-              Valor Final
-            </span>
-          </div>
+          <PermissionGate permissions={['values:values:view']}>
+            <div className="flex flex-col">
+              <strong className="font-semibold text-lg text-gray-900">
+                R$ {parseCurrencyToBrl(calculateFinalValue())}
+              </strong>
+              <span className="font-medium text-gray-700 text-sm">
+                Valor Final
+              </span>
+            </div>
+          </PermissionGate>
           <div className="space-x-4">
             {process.env.NODE_ENV === 'development' && (
               <Button

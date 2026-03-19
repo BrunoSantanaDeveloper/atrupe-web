@@ -94,6 +94,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     icon: IconCalculator,
     title: 'Financeiro',
     path: '/financeiro',
+    permission: 'values:values:view',
     children: [
       {
         icon: IconTrendingUp,
@@ -213,6 +214,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     icon: IconChartBar,
     title: 'Relatórios',
     path: '/relatorios',
+    permission: 'values:values:view',
     children: [
       {
         icon: IconLayoutGrid,
