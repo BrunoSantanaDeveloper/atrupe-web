@@ -59,12 +59,15 @@ export async function uploadImportFile(formData: FormData) {
   }
 }
 
-export async function validateImport(importId: string) {
+export async function validateImport(
+  importId: string,
+  allowOverride: boolean = false,
+) {
   const api = await apiInstance()
 
   try {
     const response = await api.post<ValidateImportResponse>(
-      `/import/${importId}/validate`,
+      `/import/${importId}/validate?allowOverride=${allowOverride}`,
     )
     return { success: true, data: response.data }
   } catch (error: any) {

@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Switch } from '@/components/ui/switch'
 import {
   IconTrash,
   IconUpload,
@@ -80,6 +81,7 @@ export function ImportProductModal() {
   const [isValidating, setIsValidating] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
   const [showErrors, setShowErrors] = useState(false)
+  const [allowOverride, setAllowOverride] = useState(false)
   const [_importId, setImportId] = useState<string | null>(null)
 
   const queryClient = useQueryClient()
@@ -110,19 +112,14 @@ export function ImportProductModal() {
     setUploadProgress(0)
     setErrors([])
     setImportId(null)
+    setAllowOverride(false)
   }
 
   const handleDownloadTemplate = () => {
     // Criar um CSV de exemplo com NOVOS produtos (não duplicar códigos do seed)
     // Setores já existem no seed: Impressão, Gráfica Rápida, CNC, Serralheria
     // Grupos já existem no seed: Lonas, Adesivos, Revenda Gráfica Rápida, Estruturas, PVC
-    const csvContent = `codigo,nome,descricao,grupo,setor,servico,unidadeMedida,largura,altura,custo,preco,permitirEditarValor,permitirEditarDescricao
-BANER2,Banner Lona 280g,Banner em lona econômica 280g com acabamento simples,Lonas,Impressão,Impressão Digital,M2,1.00,1.00,40.00,80.00,SIM,NAO
-CARTV2,Cartão Visita Premium,Cartão de visita laminação fosca com hot stamping,Revenda Gráfica Rápida,Gráfica Rápida,Impressão Offset,UN,0.09,0.05,150.00,350.00,SIM,SIM
-ADFOS2,Adesivo Perfurado Veicular,Adesivo perfurado para aplicação em vidros de veículos,Adesivos,Impressão,Impressão Digital,M2,1.00,1.00,80.00,180.00,SIM,SIM
-PNACM2,Painel ACM Luminoso,Painel em ACM com caixa de luz LED embutida,Estruturas,Serralheria,Estrutura Metálica,M2,1.00,1.00,350.00,750.00,SIM,NAO
-LONA2,Lona Blackout,Lona blackout para projeção traseira,Lonas,Impressão,Impressão Digital,M2,1.00,1.00,60.00,120.00,SIM,NAO
-LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC,CNC,Corte CNC,M2,1.00,1.00,200.00,450.00,SIM,NAO`
+    const csvContent = `codigo,nome,descricao,setor,grupo,unidadeMedida,largura,altura,duracao,valorUnitario,permitirEdicao\nBANER2,Banner Lona 280g,Banner em lona econômica 280g com acabamento simples,Impressão,Lonas,M2,1.00,1.00,,40.00,SIM\nCARTV2,Cartão Visita Premium,Cartão laminação fosca,Gráfica Rápida,Revenda Gráfica Rápida,UN,0.09,0.05,,150.00,SIM\nADFOS2,Adesivo Perfurado Veicular,Adesivo perfurado para aplicação em vidros,Impressão,Adesivos,M2,1.00,1.00,,80.00,SIM\nPNACM2,Painel ACM Luminoso,Painel em ACM com caixa de luz LED,Serralheria,Estruturas,M2,1.00,1.00,,350.00,SIM\nLONA2,Lona Blackout,Lona blackout para projeção traseira,Impressão,Lonas,M2,1.00,1.00,,60.00,SIM\nLTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED,CNC,PVC,M2,1.00,1.00,,200.00,SIM`
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
     const link = document.createElement('a')
@@ -176,7 +173,10 @@ LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC
       setIsUploading(false)
       setIsValidating(true)
 
-      const validateResult = await validateImport(uploadedImportId)
+      const validateResult = await validateImport(
+        uploadedImportId,
+        allowOverride,
+      )
 
       setIsValidating(false)
 
@@ -256,6 +256,7 @@ LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC
       setImportId(null)
       setIsUploading(false)
       setIsValidating(false)
+      setAllowOverride(false)
     }
     setOpen(value)
   }
@@ -356,6 +357,23 @@ LTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED interno,PVC
               >
                 Baixar planilha modelo
               </Button>
+
+              {file && (
+                <div className="flex items-center gap-2 pt-2 border-t mt-4">
+                  <Switch
+                    id="allowOverride"
+                    checked={allowOverride}
+                    onCheckedChange={setAllowOverride}
+                  />
+                  <label
+                    htmlFor="allowOverride"
+                    className="text-sm cursor-pointer select-none text-gray-700 font-medium"
+                  >
+                    Sobrescrever produtos com mesmo código (Atualizar
+                    existentes)
+                  </label>
+                </div>
+              )}
             </div>
           </DialogBody>
 
