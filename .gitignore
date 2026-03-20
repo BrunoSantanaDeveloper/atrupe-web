@@ -46,3 +46,6 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Audit test results (runtime data)
+data/
