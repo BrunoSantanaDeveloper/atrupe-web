@@ -524,16 +524,16 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
           </Form>
         </DialogBody>
         <DialogFooter className="sm:justify-between">
-          <PermissionGate permissions={['values:values:view']}>
-            <div className="flex flex-col">
+          <div className="flex flex-col">
+            <PermissionGate permissions={['values:values:view']}>
               <strong className="font-semibold text-lg text-gray-900">
                 R$ {parseCurrencyToBrl(calculateFinalValue())}
               </strong>
               <span className="font-medium text-gray-700 text-sm">
                 Valor Final
               </span>
-            </div>
-          </PermissionGate>
+            </PermissionGate>
+          </div>
           <div className="space-x-4">
             {process.env.NODE_ENV === 'development' && (
               <Button

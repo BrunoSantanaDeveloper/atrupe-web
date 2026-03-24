@@ -54,6 +54,7 @@ import {
   deliveryTypeOptions,
   deliveryModalityOptions,
 } from '@/consts/quotations'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
   quotationData: QuotationType
@@ -305,18 +306,20 @@ export function DeliveryDialog({ quotationData }: Props) {
                 disabled
               />
               {/* TODO : Se houver custo, deve ir para despesas */}
-              <FormBrlInput
-                name="cost"
-                label="Custo"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-              />
-              <FormBrlInput
-                name="value"
-                label="Valor"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-              />
+              <PermissionGate permissions={['values:values:create']}>
+                <FormBrlInput
+                  name="cost"
+                  label="Custo"
+                  startAdornment={<>R$</>}
+                  width="flex-[1_0_200px]"
+                />
+                <FormBrlInput
+                  name="value"
+                  label="Valor"
+                  startAdornment={<>R$</>}
+                  width="flex-[1_0_200px]"
+                />
+              </PermissionGate>
               <FormTextarea name="notes" label="Observações" width="w-full" />
             </form>
           </Form>

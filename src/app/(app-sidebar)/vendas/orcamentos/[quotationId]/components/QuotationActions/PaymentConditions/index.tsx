@@ -63,6 +63,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
 import { CustomButton } from '@/components/common/CustomButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
   quotationData: QuotationType
@@ -277,23 +278,25 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div className="flex gap-6">
-            <div>
-              <p className="text-lg font-semibold text-gray-500 text-nowrap">
-                {formatCurrencyToBrl(
-                  quotationData?.quotationItems?.reduce(
-                    (acc, item) => acc + (item?.totalValue || 0),
-                    0,
-                  ),
-                )}
-              </p>
-              <p className="text-sm font-medium text-gray-400">Valor base</p>
-            </div>
+            <PermissionGate permissions={['values:values:view']}>
+              <div>
+                <p className="text-lg font-semibold text-gray-500 text-nowrap">
+                  {formatCurrencyToBrl(
+                    quotationData?.quotationItems?.reduce(
+                      (acc, item) => acc + (item?.totalValue || 0),
+                      0,
+                    ),
+                  )}
+                </p>
+                <p className="text-sm font-medium text-gray-400">Valor base</p>
+              </div>
 
-            <FinalValue
-              form={form}
-              quotationData={quotationData}
-              addComissionValue={addComissionValue}
-            />
+              <FinalValue
+                form={form}
+                quotationData={quotationData}
+                addComissionValue={addComissionValue}
+              />
+            </PermissionGate>
 
             <CommissionDialog paymentConditionsForm={form} disabled={isBusy} />
           </div>

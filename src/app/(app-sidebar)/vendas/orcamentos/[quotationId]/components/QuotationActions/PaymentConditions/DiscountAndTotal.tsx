@@ -10,6 +10,7 @@ import { calculatePercentCommission } from './utils'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
   addComissionValue: number
@@ -232,7 +233,7 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
     <>
       <div className="flex-[1_0_200px]">
         {discountType === 'VALUE' ? (
-          <FormBrlInput<QuotationPaymentConditionsType>
+          <FormBrlInput
             name="discount.discountValue"
             label="Desconto"
             className="[&>input]:-ml-1"
@@ -249,7 +250,7 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
             }
           />
         ) : (
-          <FormInput<QuotationPaymentConditionsType>
+          <FormInput
             type="number"
             name="discount.discountValue"
             label="Desconto"
@@ -271,13 +272,15 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
         )}
       </div>
 
-      <FormBrlInput<QuotationPaymentConditionsType>
-        name="totalValue"
-        label="Valor Total"
-        startAdornment={<>R$</>}
-        width="flex-[1_0_200px]"
-        additionalOnChange={handleTotalValueChange}
-      />
+      <PermissionGate permissions={['values:values:edit']}>
+        <FormBrlInput
+          name="totalValue"
+          label="Valor Total"
+          startAdornment={<>R$</>}
+          width="flex-[1_0_200px]"
+          additionalOnChange={handleTotalValueChange}
+        />
+      </PermissionGate>
     </>
   )
 }

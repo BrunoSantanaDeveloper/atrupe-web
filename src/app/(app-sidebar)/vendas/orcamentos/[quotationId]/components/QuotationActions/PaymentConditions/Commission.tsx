@@ -43,6 +43,7 @@ import {
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { defaultCommissionValues, calculatePercentCommission } from './utils'
 import { FormInput } from '@/components/common/form/FormInput'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 const transferOptions = [
   { value: 'SINGLE', label: 'Parcela única' },
@@ -303,13 +304,16 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
                   clearErrors('supplier')
                 }}
               />
-              <FormBrlInput
-                name="baseValue"
-                label="Valor base"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-                disabled
-              />
+
+              <PermissionGate permissions={['values:values:view']}>
+                <FormBrlInput
+                  name="baseValue"
+                  label="Valor base"
+                  startAdornment={<>R$</>}
+                  width="flex-[1_0_200px]"
+                  disabled
+                />
+              </PermissionGate>
               <FormSelect
                 name="transferMethod"
                 label="Forma de repasse"
@@ -384,10 +388,14 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
         </DialogBody>
         <DialogFooter className="sm:justify-between">
           <div>
-            <p className="text-lg font-semibold">
-              {formatCurrencyToBrl(watch('totalCommission'))}
-            </p>
-            <p className="text-sm font-medium text-gray-700">Total Comissão</p>
+            <PermissionGate permissions={['values:values:view']}>
+              <p className="text-lg font-semibold">
+                {formatCurrencyToBrl(watch('totalCommission'))}
+              </p>
+              <p className="text-sm font-medium text-gray-700">
+                Total Comissão
+              </p>
+            </PermissionGate>
           </div>
           <div className="space-x-4">
             <DialogTrigger asChild>

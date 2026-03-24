@@ -7,6 +7,7 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 import { QuotationPaymentConditionsType } from './schema'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 export function Installments() {
   const form = useFormContext<QuotationPaymentConditionsType>()
@@ -92,16 +93,19 @@ export function Installments() {
           startAdornment={<>R$</>}
           disabled
         />
-        <FormBrlInput
-          name={`installments.${index}.amount`}
-          placeholder="0,00"
-          label="Valor da parcela"
-          startAdornment={<>R$</>}
-          additionalOnChange={(value) =>
-            handleInstallmentAmountChange(value, index)
-          }
-          readOnly
-        />
+
+        <PermissionGate permissions={['values:values:view']}>
+          <FormBrlInput
+            name={`installments.${index}.amount`}
+            placeholder="0,00"
+            label="Valor da parcela"
+            startAdornment={<>R$</>}
+            additionalOnChange={(value) =>
+              handleInstallmentAmountChange(value, index)
+            }
+            readOnly
+          />
+        </PermissionGate>
       </div>
       <Separator />
     </Fragment>
