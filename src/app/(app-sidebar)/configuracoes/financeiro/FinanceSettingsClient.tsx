@@ -57,7 +57,10 @@ export function FinanceSettingsClient() {
           description:
             'Cadastre as despesas regulares de acordo com a sua recorrência',
           link: `${defaultPath}/config-despesas-fixas`,
-          permission: 'financial_settings:fixed_expenses:view',
+          permission: [
+            'financial_settings:fixed_expenses:view',
+            'values:values:view',
+          ],
         },
         // Mostra limite de crédito apenas se o plano permitir
         ...(hasFinancialModule('credit_limit')
@@ -77,7 +80,7 @@ export function FinanceSettingsClient() {
           icon: IconFileDollar,
           description: 'Gerencie os custos por colaborador',
           link: `${defaultPath}/folhas-de-pagamento`,
-          permission: 'financial_settings:payroll:view',
+          permission: ['financial_settings:payroll:view', 'values:values:view'],
         },
       ],
     },

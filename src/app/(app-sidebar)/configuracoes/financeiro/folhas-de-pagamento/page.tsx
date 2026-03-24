@@ -14,7 +14,8 @@ export function metadata() {
 export default function Page({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['financial_settings:payroll:view']}
+      requireAll
+      permissions={['financial_settings:payroll:view', 'values:values:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as configurações de folha de

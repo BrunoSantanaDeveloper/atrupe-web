@@ -27,7 +27,7 @@ export type CompanySettingsType = {
     cta?: JSX.Element
     showPrimaryElement?: boolean
     isInactive?: boolean
-    permission?: string
+    permission?: string | string[]
   }[]
 }
 
@@ -48,7 +48,14 @@ export function CompanySettingsList({
           {setting.items.map((item, itemIndex) => (
             <PermissionGate
               key={itemIndex}
-              permissions={item.permission ? [item.permission] : []}
+              requireAll
+              permissions={
+                item.permission
+                  ? Array.isArray(item.permission)
+                    ? item.permission
+                    : [item.permission]
+                  : []
+              }
             >
               <div
                 className={cn(

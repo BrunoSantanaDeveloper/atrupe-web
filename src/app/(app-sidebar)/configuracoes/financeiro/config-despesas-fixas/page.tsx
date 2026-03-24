@@ -13,7 +13,11 @@ export default function scheduledExpensePage({
 }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['financial_settings:fixed_expenses:view']}
+      requireAll
+      permissions={[
+        'financial_settings:fixed_expenses:view',
+        'values:values:view',
+      ]}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as configurações de despesas
