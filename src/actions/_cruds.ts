@@ -155,7 +155,20 @@ export const createItem = async ({
 
     return res.data
   } catch (error: any) {
-    throw Error(error.response.data.data.message)
+    const rawData = error.response?.data
+    const extractedMsg =
+      rawData?.message ||
+      rawData?.data?.message ||
+      rawData?.userMessage?.message ||
+      error.message ||
+      'Erro ao processar requisição'
+
+    const finalMsg = Array.isArray(extractedMsg)
+      ? extractedMsg[0]
+      : extractedMsg
+    throw new Error(
+      typeof finalMsg === 'string' ? finalMsg : JSON.stringify(finalMsg),
+    )
   }
 }
 
