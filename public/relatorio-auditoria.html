@@ -135,17 +135,17 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <header><h1>🔍 Auditoria de Requisitos vs Codigo Fonte</h1>
 <p>Cruzamento empirico das solicitacoes do Levantamento e Contrato PRO-000003 com a presenca real de codigo nos repositorios <code>app-web</code> e <code>atrupe-back</code></p></header>
 <div class="summary-cards">
-<div class="card prod" data-filter="prod" onclick="filterBy(this,'prod')"><div class="number">114</div><div class="label">🚀 Solicitado e Em Producao</div><div class="pct">97% dos requisitos</div></div>
-<div class="card partial" data-filter="partial" onclick="filterBy(this,'partial')"><div class="number">3</div><div class="label">🚧 Solicitado - Parcial</div><div class="pct">3% dos requisitos</div></div>
-<div class="card missing" data-filter="missing" onclick="filterBy(this,'missing')"><div class="number">0</div><div class="label">❌ Solicitado - Nao Encontrado</div><div class="pct">0% dos requisitos</div></div>
-<div class="card contract" data-filter="contract" onclick="filterBy(this,'contract')"><div class="number">37</div><div class="label">📜 Contrato PRO-000003</div><div class="pct">36 prod, 1 parcial</div></div>
-<div class="card extra" data-filter="extra" onclick="filterBy(this,'extra')"><div class="number">14</div><div class="label">🧩 Desenvolvido Sem Solicitacao</div><div class="pct">Itens extras no codigo</div></div>
+<div class="card prod" data-filter="prod" onclick="filterBy(this,'prod')"><div class="number">114</div><div class="label">🚀 Itens Atendidos</div><div class="pct">97% do solicitado</div></div>
+<div class="card partial" data-filter="partial" onclick="filterBy(this,'partial')"><div class="number">3</div><div class="label">🚧 Atendimento Parcial</div><div class="pct">3% em desenvolvimento</div></div>
+<div class="card missing" data-filter="missing" onclick="filterBy(this,'missing')"><div class="number">0</div><div class="label">❌ Nao Localizado</div><div class="pct">0% nao encontrados</div></div>
+<div class="card" style="border-color:#eab308" data-filter="correcoes" onclick="filterBy(this,'correcoes')"><div class="number" style="color:#eab308">43</div><div class="label">📋 Ajustes / Melhorias (PDFs)</div><div class="pct">Demandas extras das listas</div></div>
+<div class="card extra" data-filter="extra" onclick="filterBy(this,'extra')"><div class="number">14</div><div class="label">🧩 Extras Identificados</div><div class="pct">Itens extras no codigo</div></div>
 </div>
-<div class="section-title" style="margin-top:10px;margin-bottom:12px;font-size:1em;border:none">🟢 Validacao Funcional</div>
+<div class="section-title" style="margin-top:10px;margin-bottom:12px;font-size:1em;border:none">🟢 Qualidade da Implementacao</div>
 <div class="summary-cards">
-<div class="card fl-compl" data-filter="fl-complete" onclick="filterBy(this,'fl-complete')"><div class="number">111</div><div class="label">🟢 Completo para Entrega</div><div class="pct">Frontend+API+Backend completos</div></div>
-<div class="card fl-parc" data-filter="fl-partial" onclick="filterBy(this,'fl-partial')"><div class="number">3</div><div class="label">🟡 Parcialmente Funcional</div><div class="pct">Codigo existe, falta integracao</div></div>
-<div class="card fl-scaf" data-filter="fl-scaffold" onclick="filterBy(this,'fl-scaffold')"><div class="number">3</div><div class="label">🔴 Apenas Estrutura</div><div class="pct">Diretorios/scaffold sem logica</div></div>
+<div class="card fl-compl" data-filter="fl-complete" onclick="filterBy(this,'fl-complete')"><div class="number">111</div><div class="label">🟢 100% Funcional</div><div class="pct">Frontend+API+Backend completos</div></div>
+<div class="card fl-parc" data-filter="fl-partial" onclick="filterBy(this,'fl-partial')"><div class="number">3</div><div class="label">🟡 Integracao Pendente</div><div class="pct">Codigo existe, falta integracao</div></div>
+<div class="card fl-scaf" data-filter="fl-scaffold" onclick="filterBy(this,'fl-scaffold')"><div class="number">3</div><div class="label">🔴 Sem Logica / Scaffold</div><div class="pct">Diretorios/scaffold sem logica</div></div>
 </div>
 <button class="btn-all active" onclick="showAll(this)">Mostrar Todos</button>
 <div class="search-box"><input type="text" id="searchInput" placeholder="Buscar requisito..." oninput="searchFilter(this.value)"></div>
@@ -751,7 +751,7 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 </tbody></table></div>
 <div class="section-title" style="margin-top:50px" data-section="contract">📜 Contrato Aditivo PRO-000003 (TriboDEV)</div>
 <p class="section-subtitle" data-section="contract">Itens do contrato de aditivo de tarefas (30/09/2024) - Valor: R$ 28.000,00 - Prazo: 60 dias</p>
-<div class="module-section" data-has="prod partial contract fl-complete fl-scaffold"><div class="module-header"><h2>Prototipacao e UI (76h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 14</span><span class="badge badge-partial">🚧 1</span></div></div>
+<div class="module-section" data-has="contract prod partial fl-scaffold fl-complete"><div class="module-header"><h2>Prototipacao e UI (76h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 14</span><span class="badge badge-partial">🚧 1</span></div></div>
 <table><thead><tr><th width="56">Status</th><th width="100">Nivel</th><th width="160">Origem</th><th>Requisito</th><th>Evidencia no Codigo</th><th width="280">Validacao Funcional</th><th width="160">Guia de Teste</th></tr></thead><tbody>
 <tr data-status="partial contract fl-scaffold"><td class="status-cell">🚧</td>
 <td class="func-level fl-scaffold"><span class="fl-icon">🔴</span><span class="fl-label">Estrutura</span></td>
@@ -859,7 +859,7 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="evidence"><div class="func-group"><span class="tag tag-front">Front</span> <span class="func-check ok">✓ Pagina (page.tsx)</span> <span class="func-check ok">✓ Componentes (34)</span> <span class="func-check ok">✓ API integrada (73)</span> <span class="func-check ok">✓ Forms (65)</span></div><div class="func-group"><span class="tag tag-back">Back</span> <span class="func-check ok">✓ Controller (2)</span> <span class="func-check ok">✓ Service (4)</span> <span class="func-check ok">✓ Entity (1)</span> <span class="func-check ok">✓ Endpoints (14)</span> <span class="func-check ok">✓ Testes (1)</span></div></td>
 <td class="evidence"><div class="test-cell" id="cell_modal_91"><span class="test-status test-status-pending" id="status_modal_91">⏳ Teste Pendente</span><button class="tg-toggle" onclick="openGuideModal('modal_91')">📋 Ver guia (6 passos)</button><div id="modal_91" class="modal-data" style="display:none" data-title="Configuracoes > Empresa > Modal cadastrar mais de uma empresa" data-route="Menu superior → Trocar empresa" data-pre="Plano multi-empresa" data-steps="Acessar modal de nova empresa;;Modal abre|Preencher dados (CNPJ, razão social);;Campos validam|Salvar;;Empresa criada|Trocar para nova empresa;;Contexto muda|Verificar isolamento de dados;;Dados separados por empresa|Trocar de volta;;Dados originais mantidos" data-count="6"></div></div></td></tr>
 </tbody></table></div>
-<div class="module-section" data-has="prod contract fl-complete"><div class="module-header"><h2>Mapeamento de Processos (8.5h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 16</span></div></div>
+<div class="module-section" data-has="contract prod fl-complete"><div class="module-header"><h2>Mapeamento de Processos (8.5h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 16</span></div></div>
 <table><thead><tr><th width="56">Status</th><th width="100">Nivel</th><th width="160">Origem</th><th>Requisito</th><th>Evidencia no Codigo</th><th width="280">Validacao Funcional</th><th width="160">Guia de Teste</th></tr></thead><tbody>
 <tr data-status="prod contract fl-complete"><td class="status-cell">🚀</td>
 <td class="func-level fl-complete"><span class="fl-icon">🟢</span><span class="fl-label">Completo</span></td>
@@ -974,7 +974,7 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="evidence"><div class="func-group"><span class="tag tag-front">Front</span> <span class="func-check ok">✓ Pagina (page.tsx)</span> <span class="func-check ok">✓ Componentes (34)</span> <span class="func-check ok">✓ API integrada (73)</span> <span class="func-check ok">✓ Forms (65)</span></div><div class="func-group"><span class="tag tag-back">Back</span> <span class="func-check ok">✓ Controller (2)</span> <span class="func-check ok">✓ Service (4)</span> <span class="func-check ok">✓ Entity (1)</span> <span class="func-check ok">✓ Endpoints (14)</span> <span class="func-check ok">✓ Testes (1)</span></div></td>
 <td class="evidence"><div class="test-cell" id="cell_modal_104"><span class="test-status test-status-pending" id="status_modal_104">⏳ Teste Pendente</span><button class="tg-toggle" onclick="openGuideModal('modal_104')">📋 Ver guia (6 passos)</button><div id="modal_104" class="modal-data" style="display:none" data-title="Configuracoes > Empresa > Modal cadastrar mais de uma empresa" data-route="Menu superior → Trocar empresa" data-pre="Plano multi-empresa" data-steps="Acessar modal de nova empresa;;Modal abre|Preencher dados (CNPJ, razão social);;Campos validam|Salvar;;Empresa criada|Trocar para nova empresa;;Contexto muda|Verificar isolamento de dados;;Dados separados por empresa|Trocar de volta;;Dados originais mantidos" data-count="6"></div></div></td></tr>
 </tbody></table></div>
-<div class="module-section" data-has="prod contract fl-complete"><div class="module-header"><h2>Front-End (50h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 6</span></div></div>
+<div class="module-section" data-has="contract prod fl-complete"><div class="module-header"><h2>Front-End (50h)</h2><div class="module-badges"><span class="badge badge-prod">🚀 6</span></div></div>
 <table><thead><tr><th width="56">Status</th><th width="100">Nivel</th><th width="160">Origem</th><th>Requisito</th><th>Evidencia no Codigo</th><th width="280">Validacao Funcional</th><th width="160">Guia de Teste</th></tr></thead><tbody>
 <tr data-status="prod contract fl-complete"><td class="status-cell">🚀</td>
 <td class="func-level fl-complete"><span class="fl-icon">🟢</span><span class="fl-label">Completo</span></td>
@@ -1030,12 +1030,12 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(app-sidebar)/relatorios/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
-<td><div class="req-title">Relatorio de Comissoes</div><div class="req-meta">Tipo: Pagina</div></td>
-<td class="evidence"><span class="tag tag-front">Front</span> <code>(app-sidebar)/relatorios/comissoes/</code></td></tr>
-<tr data-status="extra"><td class="status-cell">🧩</td>
-<td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Resultado por Setor</div><div class="req-meta">Tipo: Pagina</div></td>
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(app-sidebar)/relatorios/resultado-por-setor/</code></td></tr>
+<tr data-status="extra"><td class="status-cell">🧩</td>
+<td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
+<td><div class="req-title">Relatorio de Comissoes</div><div class="req-meta">Tipo: Pagina</div></td>
+<td class="evidence"><span class="tag tag-front">Front</span> <code>(app-sidebar)/relatorios/comissoes/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Projecao de Caixa</div><div class="req-meta">Tipo: Pagina</div></td>
@@ -1046,6 +1046,10 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(app-sidebar)/relatorios/dfc/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
+<td><div class="req-title">Logout</div><div class="req-meta">Tipo: Pagina</div></td>
+<td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/logout/</code></td></tr>
+<tr data-status="extra"><td class="status-cell">🧩</td>
+<td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Controle de Versao</div><div class="req-meta">Tipo: Pagina</div></td>
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/version/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
@@ -1054,8 +1058,8 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/redefinindo-senha/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
-<td><div class="req-title">Logout</div><div class="req-meta">Tipo: Pagina</div></td>
-<td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/logout/</code></td></tr>
+<td><div class="req-title">Autenticacao (Login/Register)</div><div class="req-meta">Tipo: Pagina</div></td>
+<td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/(auth)/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Validacao de Cadastro</div><div class="req-meta">Tipo: Pagina</div></td>
@@ -1064,10 +1068,6 @@ footer{text-align:center;padding:40px;color:#3a3a5a;font-size:.8em;margin-top:20
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Pagina de Bloqueio</div><div class="req-meta">Tipo: Pagina</div></td>
 <td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/blocked/</code></td></tr>
-<tr data-status="extra"><td class="status-cell">🧩</td>
-<td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
-<td><div class="req-title">Autenticacao (Login/Register)</div><div class="req-meta">Tipo: Pagina</div></td>
-<td class="evidence"><span class="tag tag-front">Front</span> <code>(blank-layout-pages)/(auth)/</code></td></tr>
 <tr data-status="extra"><td class="status-cell">🧩</td>
 <td class="origin-cell"><span class="origin-tag origin-extra">🧩 Sem Solicitacao</span></td>
 <td><div class="req-title">Gestao de Assinatura</div><div class="req-meta">Tipo: Pagina</div></td>
