@@ -36,7 +36,7 @@ import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
 import type { IconProps } from '@tabler/icons-react'
 
-interface MainNavigationType {
+export interface MainNavigationType {
   icon:
     | React.ComponentType<IconProps>
     | React.ComponentType<SVGProps<SVGSVGElement>>
@@ -47,6 +47,7 @@ interface MainNavigationType {
   counter?: number // ** 3
   action?: boolean
   permission?: string | string[] // Nova propriedade para permissões (string ou array para múltiplas permissões)
+  requireAllPermissions?: boolean // Se true, requer todas as permissões (AND), senão requer qualquer uma (OR)
   requiredModule?: string // Módulo contratado necessário para exibir o item
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
@@ -101,42 +102,49 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'A receber',
         path: '/financeiro/a-receber',
         permission: ['financial:flow:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconTrendingDown,
         title: 'A pagar',
         path: '/financeiro/a-pagar',
         permission: ['financial:flow:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconArrowsExchange,
         title: 'Fluxo financeiro',
         path: '/financeiro/fluxo-financeiro',
         permission: ['financial:flow:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconCoins,
         title: 'Controle de caixa',
         path: '/financeiro/controle-de-caixa',
         permission: ['financial:flow:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconDeviceDesktopDollar,
         title: 'PDV',
         path: '/financeiro/frente-de-caixa',
         permission: ['financial:flow:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconCalendarDollar,
         title: 'Despesas fixas',
         path: '/financeiro/despesas-fixas',
         permission: ['financial:fixed_expense:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconBusinessplan,
         title: 'Folha de pagamento',
         path: '/financeiro/folha-de-pagamento',
         permission: ['financial:payroll:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
     ],
   },
@@ -221,36 +229,42 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Resultado por setor',
         path: '/relatorios/resultado-por-setor',
         permission: ['reports:sector_result:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconCoin,
         title: 'Vendas',
         path: '/relatorios/vendas',
         permission: ['reports:sales:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconCashBanknote,
         title: 'Financeiro',
         path: '/relatorios/financeiro',
         permission: ['reports:financial:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconGraph,
         title: 'Projeção de caixa',
         path: '/relatorios/projecao-de-caixa',
         permission: ['reports:financial:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconCoins,
         title: 'DFC',
         path: '/relatorios/dfc',
         permission: ['reports:dfc:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
       {
         icon: IconUserDollar,
         title: 'Comissões',
         path: '/relatorios/comissoes',
         permission: ['reports:commission:view', 'values:values:view'],
+        requireAllPermissions: true,
       },
     ],
   },
@@ -270,6 +284,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
           'company_settings:roles:view',
           'company_settings:sectors:view',
         ],
+        requireAllPermissions: false,
       },
       {
         icon: IconBoxSeam,
@@ -386,18 +401,6 @@ export const adminMainNavigation: MainNavigationType[] = [
       },
     ],
   },
-  // {
-  //   icon: IconUserScan,
-  //   title: 'Usuários',
-  //   path: '/admin/usuarios',
-  //   children: [
-  //     {
-  //       icon: IconUserCog,
-  //       title: 'Colaboradores',
-  //       path: '/admin/usuarios/colaboradores',
-  //     },
-  //   ],
-  // },
 ]
 
 export const secondaryNavigation: SecondaryNavigationType = {

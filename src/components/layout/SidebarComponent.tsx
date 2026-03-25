@@ -47,27 +47,10 @@ import { IconChevronLeft } from '@tabler/icons-react'
 
 // Types
 import type { Session } from 'next-auth'
-import type { SecondaryNavigationType } from '@/consts/nav'
-import type { IconProps } from '@tabler/icons-react'
-import type { SVGProps } from 'react'
+import type { MainNavigationType, SecondaryNavigationType } from '@/consts/nav'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useSession } from 'next-auth/react'
-
-interface NavigationItem {
-  icon:
-    | React.ComponentType<IconProps>
-    | React.ComponentType<SVGProps<SVGSVGElement>>
-  iconColor?: string
-  title: string
-  path?: string
-  query?: string
-  counter?: number
-  action?: boolean
-  permission?: string | string[]
-  requiredModule?: string
-  children?: NavigationItem[]
-}
 
 interface Props {
   defaultCollapsed: boolean
@@ -96,7 +79,7 @@ export function SidebarComponent(props: Props) {
 
   const mainNavigation = getMainNavigation(user)
 
-  const { hasAllPermissions } = usePermissions()
+  const { hasAnyPermission, hasAllPermissions } = usePermissions()
   const {
     hasFinancialModule,
     canManageRejectionReasons,
@@ -123,19 +106,28 @@ export function SidebarComponent(props: Props) {
 
   // Função auxiliar que verifica permissão considerando admin
   // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica AND)
-  const checkPermission = (permission?: string | string[]) => {
+  const checkPermission = (item: MainNavigationType) => {
+    const { permission, requireAllPermissions } = item
+
     if (!permission) return true
+
     if (session.user.isAdmin) return true
 
-    return hasAllPermissions(
+    if (requireAllPermissions) {
+      return hasAllPermissions(
+        Array.isArray(permission) ? permission : [permission],
+      )
+    }
+
+    return hasAnyPermission(
       Array.isArray(permission) ? permission : [permission],
     )
   }
 
   // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
-  const checkItemAccess = (item: NavigationItem): boolean => {
+  const checkItemAccess = (item: MainNavigationType): boolean => {
     // Primeiro verifica permissões
-    if (!checkPermission(item.permission)) {
+    if (!checkPermission(item)) {
       return false
     }
 
