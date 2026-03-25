@@ -13,6 +13,7 @@ export default function CompanySystemSettings() {
     <PermissionGate
       permissions={[
         'company_settings:company:view',
+        'company_settings:sectors:view',
         'company_settings:measurement_standards:view',
         'company_settings:users:view',
         'company_settings:roles:view',

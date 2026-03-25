@@ -27,7 +27,6 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
 import { updateItem } from '@/actions/_cruds'
-import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props extends SearchParamsType {
   rowData?: UserType
@@ -64,46 +63,41 @@ export function InactiveUserAlertDialog(props: Props) {
   }
 
   return (
-    <PermissionGate permissions={['company_settings:users:edit']}>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button type="button" variant={rowData?.isActive ? 'error' : 'default'}>
+          {rowData?.isActive ? 'Inativar' : 'Ativar'}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <FeaturedIcon
+            Icon={IconAlertTriangle}
+            rounded
+            size="lg"
+            variant="warningBorderedLight"
+            className="mx-auto mb-2"
+          />
+          <AlertDialogTitle>
+            Deseja {rowData?.isActive ? 'inativar' : 'ativar'} este usuário?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {rowData?.isActive
+              ? `Ao inativar ${rowData?.name || 'este usuário'}, ele não poderá mais acessar o sistema.`
+              : `Ao ativar ${rowData?.name || 'este usuário'}, o colaborador será ativado e poderá acessar o sistema.`}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Voltar</AlertDialogCancel>
           <Button
             type="button"
-            variant={rowData?.isActive ? 'error' : 'default'}
+            onClick={handleDisable}
+            isLoading={mutation.isPending}
           >
             {rowData?.isActive ? 'Inativar' : 'Ativar'}
           </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <FeaturedIcon
-              Icon={IconAlertTriangle}
-              rounded
-              size="lg"
-              variant="warningBorderedLight"
-              className="mx-auto mb-2"
-            />
-            <AlertDialogTitle>
-              Deseja {rowData?.isActive ? 'inativar' : 'ativar'} este usuário?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              {rowData?.isActive
-                ? `Ao inativar ${rowData?.name || 'este usuário'}, ele não poderá mais acessar o sistema.`
-                : `Ao ativar ${rowData?.name || 'este usuário'}, o colaborador será ativado e poderá acessar o sistema.`}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
-            <Button
-              type="button"
-              onClick={handleDisable}
-              isLoading={mutation.isPending}
-            >
-              {rowData?.isActive ? 'Inativar' : 'Ativar'}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </PermissionGate>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }

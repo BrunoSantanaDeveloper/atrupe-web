@@ -100,20 +100,20 @@ export const permissionsData = [
     key: 'financial_settings',
     items: [
       {
-        name: 'Formas de pagamento',
-        key: 'payment_methods',
-      },
-      {
         name: 'Bancos e contas bancárias',
         key: 'bank_accounts',
       },
       {
-        name: 'Despesas fixas',
-        key: 'fixed_expenses',
+        name: 'Formas de pagamento',
+        key: 'payment_methods',
       },
       {
         name: 'Plano de contas',
         key: 'chart_accounts',
+      },
+      {
+        name: 'Despesas fixas',
+        key: 'fixed_expenses',
       },
       // TODO: Reativar no plano LITE
       // {

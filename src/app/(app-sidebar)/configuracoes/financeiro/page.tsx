@@ -12,11 +12,12 @@ export default function FinanceSettings() {
   return (
     <PermissionGate
       permissions={[
-        'financial_settings:payment_methods:view',
         'financial_settings:bank_accounts:view',
-        'financial_settings:fixed_expenses:view',
+        'financial_settings:payment_methods:view',
         'financial_settings:chart_accounts:view',
+        'financial_settings:fixed_expenses:view',
         'financial_settings:credit_limits:view',
+        'financial_settings:payroll:view',
       ]}
       requireAll={false}
       fallback={

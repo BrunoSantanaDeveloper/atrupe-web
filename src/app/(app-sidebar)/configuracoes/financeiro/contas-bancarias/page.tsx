@@ -14,7 +14,7 @@ export function metadata() {
 export default function BankAccountsPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['financial_settings:payment_methods:view']} // TODO: verificar permissão
+      permissions={['financial_settings:bank_accounts:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as contas bancárias.

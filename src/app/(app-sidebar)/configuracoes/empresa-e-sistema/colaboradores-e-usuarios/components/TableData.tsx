@@ -229,7 +229,9 @@ export function TableData({ tabs, searchParams }: Props) {
                                     </PermissionGate>
                                     <PermissionGate
                                       permissions={[
-                                        'company_settings:users:edit',
+                                        !item?.user
+                                          ? 'company_settings:users:create'
+                                          : 'company_settings:users:edit',
                                       ]}
                                     >
                                       <ActionButton

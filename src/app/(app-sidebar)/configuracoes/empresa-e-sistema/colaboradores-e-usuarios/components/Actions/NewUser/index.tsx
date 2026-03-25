@@ -47,6 +47,7 @@ import {
   IconCircleCheck,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props extends SearchParamsType {
   editMode?: boolean
@@ -271,11 +272,13 @@ export function NewUserDialog({
         <DialogFooter className="sm:justify-between">
           <div>
             {editMode && !rowData?.role?.isAdmin && (
-              <InactiveUserAlertDialog
-                rowData={rowData?.user}
-                onChange={handleOpenChange}
-                searchParams={searchParams}
-              />
+              <PermissionGate permissions={['company_settings:users:delete']}>
+                <InactiveUserAlertDialog
+                  rowData={rowData?.user}
+                  onChange={handleOpenChange}
+                  searchParams={searchParams}
+                />
+              </PermissionGate>
             )}
           </div>
           <div className="space-x-4">
