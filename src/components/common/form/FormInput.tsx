@@ -110,7 +110,7 @@ export function FormInput<T extends FieldValues>({
                 size="iconSm"
                 onClick={() => setShowPassword(!showPassword)}
                 RightIcon={showPassword ? IconEyeOff : IconEye}
-                className="absolute right-2 top-5 hover:bg-transparent active:bg-transparent"
+                className="absolute right-2 top-5 bg-white hover:bg-white active:bg-white"
                 tabIndex={-1}
               />
             )}

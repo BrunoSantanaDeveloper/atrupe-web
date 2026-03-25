@@ -47,9 +47,6 @@ export async function POST(request: NextRequest) {
     await saveData(data)
     return NextResponse.json({ ok: true })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Invalid request body' },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
 }
