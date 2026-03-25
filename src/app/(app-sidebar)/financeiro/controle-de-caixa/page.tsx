@@ -28,7 +28,7 @@ export default function CashControlPage({ searchParams }: SearchParamsType) {
       }
     >
       <PermissionGate
-        permissions={['financial:cash_control:view', 'values:values:view']}
+        permissions={['financial:cash_control:view']}
         fallback={<div>Você não tem permissão para acessar esta página.</div>}
       >
         <CashControl searchParams={searchParams} />

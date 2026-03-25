@@ -18,7 +18,7 @@ export default function PayrollPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
       requireAll
-      permissions={['financial:flow:view', 'values:values:view']}
+      permissions={['financial:payroll:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar a folha de pagamento.

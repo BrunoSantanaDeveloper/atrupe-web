@@ -10,7 +10,7 @@ interface Props extends SearchParamsType, ParamsType {}
 export default function PDVPage({ searchParams, params }: Props) {
   return (
     <PermissionGate
-      permissions={['financial:pdv:edit', 'values:values:view']}
+      permissions={['financial:pdv:edit']}
       fallback={
         <div className="p-4">Você não tem permissão para visualizar o PDV.</div>
       }

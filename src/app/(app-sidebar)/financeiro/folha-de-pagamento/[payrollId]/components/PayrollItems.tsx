@@ -243,7 +243,7 @@ export function PayrollItems({ data }: Props) {
                             />
                           </PermissionGate>
                           <PermissionGate
-                            permissions={['financial:payroll:edit']}
+                            permissions={['financial:payroll:delete']}
                           >
                             <ActionButton
                               Icon={IconTrash}

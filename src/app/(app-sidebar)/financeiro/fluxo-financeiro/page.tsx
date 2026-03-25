@@ -13,10 +13,7 @@ export function metadata() {
 
 export default function FinancialFlowPage({ searchParams }: SearchParamsType) {
   return (
-    <PermissionGate
-      requireAll
-      permissions={['financial:flow:view', 'values:values:view']}
-    >
+    <PermissionGate requireAll permissions={['financial:flow:view']}>
       <FinancialFlow searchParams={searchParams} />
     </PermissionGate>
   )

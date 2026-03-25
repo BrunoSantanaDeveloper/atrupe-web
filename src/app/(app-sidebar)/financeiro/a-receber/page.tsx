@@ -29,7 +29,7 @@ export default function ReceivablesPage({ searchParams }: SearchParamsType) {
     >
       <PermissionGate
         requireAll
-        permissions={['financial:flow:view', 'values:values:view']}
+        permissions={['financial:flow:view']}
         fallback={
           <div className="p-4">
             Você não tem permissão para visualizar contas a receber.

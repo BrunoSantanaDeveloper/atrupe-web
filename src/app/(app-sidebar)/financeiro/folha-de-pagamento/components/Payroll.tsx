@@ -43,6 +43,7 @@ import { IconPlus, IconPencil, IconBusinessplan } from '@tabler/icons-react'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 import type { PayrollListType } from '@/types/financial/payroll'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 const EMPTY_STATUS = 'EMPTY'
 
@@ -255,18 +256,22 @@ export function Payroll({ searchParams }: SearchParamsType) {
                                   link={`/financeiro/folha-de-pagamento/${item?.id}`}
                                 />
                               ) : (
-                                <ActionButton
-                                  Icon={IconPlus}
-                                  tooltip="Lançar"
-                                  isLoading={isGenerating?.includes(
-                                    item?.employee?.id,
-                                  )}
-                                  onClick={() =>
-                                    handleGenerateTransaction([
+                                <PermissionGate
+                                  permissions={['financial:payroll:create']}
+                                >
+                                  <ActionButton
+                                    Icon={IconPlus}
+                                    tooltip="Lançar"
+                                    isLoading={isGenerating?.includes(
                                       item?.employee?.id,
-                                    ])
-                                  }
-                                />
+                                    )}
+                                    onClick={() =>
+                                      handleGenerateTransaction([
+                                        item?.employee?.id,
+                                      ])
+                                    }
+                                  />
+                                </PermissionGate>
                               )}
                             </TooltipProvider>
                           </div>

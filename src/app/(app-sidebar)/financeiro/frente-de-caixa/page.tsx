@@ -28,7 +28,7 @@ export default function PDVsPage({ searchParams }: SearchParamsType) {
       }
     >
       <PermissionGate
-        permissions={['financial:pdv:view', 'values:values:view']}
+        permissions={['financial:pdv:view']}
         fallback={
           <div className="p-4">
             Você não tem permissão para visualizar a frente de caixa.
