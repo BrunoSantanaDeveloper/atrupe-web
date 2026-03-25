@@ -96,7 +96,7 @@ export function SidebarComponent(props: Props) {
 
   const mainNavigation = getMainNavigation(user)
 
-  const { hasPermission } = usePermissions()
+  const { hasAllPermissions } = usePermissions()
   const {
     hasFinancialModule,
     canManageRejectionReasons,
@@ -121,19 +121,15 @@ export function SidebarComponent(props: Props) {
   // Conversão: getUserLimit usando acesso direto à sessão
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
-  // TODO: Verificar se o usuário é admin com isAdmin
   // Função auxiliar que verifica permissão considerando admin
-  // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica OR)
+  // Suporta uma única permissão (string) ou múltiplas permissões (array - lógica AND)
   const checkPermission = (permission?: string | string[]) => {
     if (!permission) return true
-    if (session.user.role === 'Admin') return true
+    if (session.user.isAdmin) return true
 
-    // Se for array, verifica se o usuário tem pelo menos uma das permissões
-    if (Array.isArray(permission)) {
-      return permission.some((perm) => hasPermission(perm))
-    }
-
-    return hasPermission(permission)
+    return hasAllPermissions(
+      Array.isArray(permission) ? permission : [permission],
+    )
   }
 
   // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
