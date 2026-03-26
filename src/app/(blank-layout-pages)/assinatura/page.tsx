@@ -737,18 +737,16 @@ export default function SubscriptionPage() {
                         da Atrupe.
                       </label>
                     </div>
-                    {!IS_DEV_ENV && (
-                      <Button
-                        type="submit"
-                        form="subscription-form"
-                        className="w-full"
-                        disabled={!agreedToTerms}
-                        isLoading={isSubmitting}
-                      >
-                        Avançar
-                        {!isSubmitting && <IconArrowRight />}
-                      </Button>
-                    )}
+                    <Button
+                      type="submit"
+                      form="subscription-form"
+                      className="w-full"
+                      disabled={!agreedToTerms}
+                      isLoading={isSubmitting}
+                    >
+                      Avançar
+                      {!isSubmitting && <IconArrowRight />}
+                    </Button>
                   </CardContent>
                 </Card>
               </div>
