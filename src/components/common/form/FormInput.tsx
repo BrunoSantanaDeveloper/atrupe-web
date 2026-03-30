@@ -101,6 +101,22 @@ export function FormInput<T extends FieldValues>({
                   field.onChange(value)
                   additionalOnChange?.(value)
                 }}
+                onBlur={(e) => {
+                  field.onBlur()
+                  props.onBlur?.(e)
+
+                  if (
+                    type !== 'password' &&
+                    type !== 'number' &&
+                    typeof e.target.value === 'string'
+                  ) {
+                    const trimmedValue = e.target.value.trim()
+                    if (trimmedValue !== e.target.value) {
+                      field.onChange(trimmedValue)
+                      additionalOnChange?.(trimmedValue)
+                    }
+                  }
+                }}
               />
             </FormControl>
             {type === 'password' && showPasswordToggle && (

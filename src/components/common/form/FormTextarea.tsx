@@ -52,6 +52,15 @@ export function FormTextarea<T extends FieldValues>({
               disabled={disabled}
               rows={rows}
               {...field}
+              onBlur={(e) => {
+                field.onBlur()
+                if (typeof e.target.value === 'string') {
+                  const trimmedValue = e.target.value.trim()
+                  if (trimmedValue !== e.target.value) {
+                    field.onChange(trimmedValue)
+                  }
+                }
+              }}
             />
           </FormControl>
           <FormMessage />
