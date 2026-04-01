@@ -8,6 +8,7 @@ export type QuotationItemType = {
   discount: number
   unitValue: number
   totalValue: number
+  originalValue: number
   finalValue: number
   allowEditDescription: boolean
   allowEditValues: boolean

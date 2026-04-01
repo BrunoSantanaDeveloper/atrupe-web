@@ -71,8 +71,6 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
       data: { password: data.password },
     })
 
-    console.log('ASDFASDFASDF', res)
-
     if (!res.success) {
       toast.error(res.message)
       return
