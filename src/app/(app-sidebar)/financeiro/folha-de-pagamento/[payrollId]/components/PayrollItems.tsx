@@ -53,7 +53,7 @@ import type {
 
 // Libs
 import { pdf } from '@react-pdf/renderer'
-import { getItem, deleteItemNew } from '@/actions/_cruds'
+import { getItem, deleteItemNew, createItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDateTime } from '@/lib/formatDate'
 
@@ -129,6 +129,32 @@ export function PayrollItems({ data }: Props) {
         loading: 'Excluindo item...',
         success: 'Item excluído com sucesso!',
         error: 'Erro ao excluir item',
+      },
+    })
+  }
+
+  const handleCancelAdvance = async (item: PayrollItemType) => {
+    await openAlertDialog({
+      title: 'Cancelar adiantamento?',
+      description: `Deseja cancelar "${item.description}"? O pagamento será estornado e o item removido da folha.`,
+      confirmLabel: 'Cancelar adiantamento',
+      Icon: IconAlertTriangle,
+      iconVariant: 'errorBorderedLight',
+      onConfirm: async () => {
+        const result = await createItemNew({
+          route: `/financial/payroll/item/${item.id}/cancel-advance`,
+        })
+
+        if (!result.success) {
+          throw new Error(result.message)
+        }
+
+        queryClient.invalidateQueries()
+      },
+      toastMsg: {
+        loading: 'Cancelando adiantamento...',
+        success: 'Adiantamento cancelado e estornado com sucesso!',
+        error: 'Erro ao cancelar adiantamento',
       },
     })
   }
@@ -242,22 +268,29 @@ export function PayrollItems({ data }: Props) {
                               }
                             />
                           </PermissionGate>
-                          <PermissionGate
-                            permissions={['financial:payroll:delete']}
-                          >
-                            <ActionButton
-                              Icon={IconTrash}
-                              tooltip={
-                                isAdvancePaid
-                                  ? 'Estorne o pagamento antes de excluir'
-                                  : 'Excluir item'
-                              }
-                              onClick={() => handleDeleteItem(item)}
-                              disabled={
-                                data?.status === 'CLOSED' || isAdvancePaid
-                              }
-                            />
-                          </PermissionGate>
+                          {isAdvancePaid ? (
+                            <PermissionGate
+                              permissions={['financial:payroll:delete']}
+                            >
+                              <ActionButton
+                                Icon={IconTrash}
+                                tooltip="Cancelar adiantamento e estornar pagamento"
+                                onClick={() => handleCancelAdvance(item)}
+                                disabled={data?.status === 'CLOSED'}
+                              />
+                            </PermissionGate>
+                          ) : (
+                            <PermissionGate
+                              permissions={['financial:payroll:delete']}
+                            >
+                              <ActionButton
+                                Icon={IconTrash}
+                                tooltip="Excluir item"
+                                onClick={() => handleDeleteItem(item)}
+                                disabled={data?.status === 'CLOSED'}
+                              />
+                            </PermissionGate>
+                          )}
                         </TooltipProvider>
                       </div>
                     </TableCell>

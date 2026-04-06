@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 // Components
 import {
@@ -44,6 +45,21 @@ const buttonVariant: Record<string, ButtonProps['variant']> = {
   xlsx: 'successGhost',
   ppt: 'warningGhost',
   other: 'neutralGhost',
+}
+
+function getVideoThumbnail(url: string): string | null {
+  // YouTube
+  const ytRegex =
+    /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/
+  const ytMatch = url.match(ytRegex)
+  if (ytMatch) return `https://img.youtube.com/vi/${ytMatch[1]}/mqdefault.jpg`
+
+  // Vimeo — returns placeholder, real thumb requires API call
+  const vimeoRegex = /(?:vimeo\.com\/)(\d+)/
+  const vimeoMatch = url.match(vimeoRegex)
+  if (vimeoMatch) return `https://vumbnail.com/${vimeoMatch[1]}.jpg`
+
+  return null
 }
 
 interface Props {
@@ -240,15 +256,28 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
             </TooltipProvider>
           </div>
 
-          {video && !showVideoInline && (
-            <Button
-              type="button"
-              variant="neutralLight"
-              size="iconSm"
-              onClick={() => handleAction('video', video)}
-              RightIcon={IconVideo}
-            />
-          )}
+          {video && !showVideoInline && (() => {
+            const thumb = getVideoThumbnail(video)
+            return (
+              <button
+                type="button"
+                onClick={() => handleAction('video', video)}
+                className="flex items-center gap-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors px-1.5 py-1 cursor-pointer"
+              >
+                {thumb ? (
+                  <Image
+                    src={thumb}
+                    alt={title || 'Vídeo'}
+                    width={64}
+                    height={36}
+                    className="rounded object-cover"
+                    unoptimized
+                  />
+                ) : null}
+                <IconVideo className="size-4 text-gray-500" />
+              </button>
+            )
+          })()}
 
           {(page || modal) && !activeModal && (
             <Button

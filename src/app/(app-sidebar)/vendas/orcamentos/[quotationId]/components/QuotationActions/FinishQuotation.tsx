@@ -131,19 +131,12 @@ export function FinishQuotation({ data, canFinish }: Props) {
     <>
       {canFinish ? (
         <AlertDialog open={open} onOpenChange={setOpen}>
-          {canFinishDirectly ? (
-            <CustomButton
-              icon={IconProgressCheck}
-              title="Concluir orçamento"
-              iconVariant="lightBlueBorderedLight"
-              onClick={handleFinish}
-            />
-          ) : (
-            <PaymentConditionsDialog
-              quotationData={data}
-              onFinish={handleFinish}
-            />
-          )}
+          <CustomButton
+            icon={IconProgressCheck}
+            title="Concluir orçamento"
+            iconVariant="lightBlueBorderedLight"
+            onClick={handleFinish}
+          />
           <AlertDialogContent className="max-w-96">
             <AlertDialogHeader>
               <FeaturedIcon

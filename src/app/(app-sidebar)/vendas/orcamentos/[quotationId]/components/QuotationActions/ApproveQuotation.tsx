@@ -14,7 +14,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogContent,
-  AlertDialogTrigger,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -47,6 +46,20 @@ export function ApproveQuotation({ data }: Props) {
 
   const router = useRouter()
 
+  const hasInstallments = data?.paymentConditions?.installmentQty > 0
+  const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
+  const hasPaymentCondition = hasInstallments || isNoInvoice
+
+  const handleTriggerClick = () => {
+    if (!hasPaymentCondition) {
+      toast.error(
+        'Configure a condição de pagamento antes de aprovar o orçamento.',
+      )
+      return
+    }
+    setOpen(true)
+  }
+
   const handleApprove = async () => {
     const res = await createItemNew({
       route: `/sale/quotation/${data.id}/approve`,
@@ -78,13 +91,12 @@ export function ApproveQuotation({ data }: Props) {
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <CustomButton
-          icon={IconCircleCheck}
-          title="Aprovar orçamento"
-          iconVariant="successLight"
-        />
-      </AlertDialogTrigger>
+      <CustomButton
+        icon={IconCircleCheck}
+        title="Aprovar orçamento"
+        iconVariant="successLight"
+        onClick={handleTriggerClick}
+      />
       <AlertDialogContent>
         <AlertDialogHeader>
           <FeaturedIcon

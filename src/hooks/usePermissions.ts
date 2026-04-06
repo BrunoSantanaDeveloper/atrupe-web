@@ -8,10 +8,23 @@ export function usePermissions() {
   const hasPermission = (permission: string) => {
     if (!session?.user?.permissions) return false
 
-    // Se o usuário for ADMIN, tem todas as permissões
+    // Admin bypass — has all permissions
     if (session.user.isAdmin) return true
 
-    return session.user.permissions.includes(permission)
+    // Direct match
+    if (session.user.permissions.includes(permission)) return true
+
+    // Hierarchy: edit/create/delete imply view
+    if (permission.endsWith(':view')) {
+      const base = permission.replace(/:view$/, '')
+      return (
+        session.user.permissions.includes(`${base}:edit`) ||
+        session.user.permissions.includes(`${base}:create`) ||
+        session.user.permissions.includes(`${base}:delete`)
+      )
+    }
+
+    return false
   }
 
   const hasAnyPermission = (permissions: string[]) => {

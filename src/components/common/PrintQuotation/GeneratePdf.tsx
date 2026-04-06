@@ -1243,10 +1243,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               </View>
 
-              <View style={styles.totalRow}>
-                <Text>Frete</Text>
-                <Text>{formatCurrencyToBrl(data.delivery?.freightPrice)}</Text>
-              </View>
+              {freightPrice > 0 && (
+                <View style={styles.totalRow}>
+                  <Text>Frete</Text>
+                  <Text>{formatCurrencyToBrl(data.delivery?.freightPrice)}</Text>
+                </View>
+              )}
 
               <View style={styles.totalRowFinal}>
                 <Text style={styles.textBold}>Total</Text>
@@ -1326,8 +1328,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <MoneySignIcon />
                 <Text style={styles.sectionTitle}>Pagamento</Text>
 
-                {printOptions.showPaymentDelivery ? (
-                  // Exibição específica quando showPaymentDelivery está ativo
+                {printOptions.showPaymentDelivery && data.payment?.method ? (
+                  // Exibição específica quando showPaymentDelivery está ativo e há dados
                   <>
                     {data.payment?.downPayment && (
                       <Text>
@@ -1344,6 +1346,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         {data.payment.description}
                       </Text>
                     )}
+                    {data.client?.financialNotes && (
+                      <Text style={styles.textSmallGray}>
+                        {data.client.financialNotes}
+                      </Text>
+                    )}
+                  </>
+                ) : printOptions.showPaymentDelivery ? (
+                  // showPaymentDelivery ativo mas sem dados de pagamento
+                  <>
+                    <Text>A definir</Text>
                     {data.client?.financialNotes && (
                       <Text style={styles.textSmallGray}>
                         {data.client.financialNotes}

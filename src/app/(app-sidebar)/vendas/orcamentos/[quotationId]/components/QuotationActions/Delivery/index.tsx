@@ -118,8 +118,11 @@ export function DeliveryDialog({ quotationData }: Props) {
   const deliveryType = watch('deliveryType')
   const cost = watch('cost')
   const clientAddressId = watch('clientAddressId')
+  const modality = watch('modality')
 
-  const showSupplierField = deliveryType === 'CARRIER' || cost > 0
+  const isFOB = modality?.includes('FOB')
+  const showSupplierField = deliveryType === 'CARRIER' || cost > 0 || isFOB
+  const showCostFields = !isFOB
   const showCustomAddressFields = clientAddressId === 'custom'
 
   const queryClient = useQueryClient()
@@ -303,23 +306,24 @@ export function DeliveryDialog({ quotationData }: Props) {
                 label="Modalidade frete"
                 options={deliveryModalityOptions}
                 width="flex-[1_0_200px]"
-                disabled
               />
               {/* TODO : Se houver custo, deve ir para despesas */}
-              <PermissionGate permissions={['values:values:create']}>
-                <FormBrlInput
-                  name="cost"
-                  label="Custo"
-                  startAdornment={<>R$</>}
-                  width="flex-[1_0_200px]"
-                />
-                <FormBrlInput
-                  name="value"
-                  label="Valor"
-                  startAdornment={<>R$</>}
-                  width="flex-[1_0_200px]"
-                />
-              </PermissionGate>
+              {showCostFields && (
+                <PermissionGate permissions={['values:values:create']}>
+                  <FormBrlInput
+                    name="cost"
+                    label="Custo"
+                    startAdornment={<>R$</>}
+                    width="flex-[1_0_200px]"
+                  />
+                  <FormBrlInput
+                    name="value"
+                    label="Valor"
+                    startAdornment={<>R$</>}
+                    width="flex-[1_0_200px]"
+                  />
+                </PermissionGate>
+              )}
               <FormTextarea name="notes" label="Observações" width="w-full" />
             </form>
           </Form>
