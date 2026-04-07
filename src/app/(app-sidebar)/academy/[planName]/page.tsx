@@ -173,7 +173,39 @@ export default function AcademyPage() {
       : ''
   }
 
+  const totalItems = academyData.sections.reduce(
+    (acc, s) => acc + s.items.length,
+    0,
+  )
+  const totalChecked = academyData.sections.reduce(
+    (acc, s) => acc + s.items.filter((i) => i.checked).length,
+    0,
+  )
+  const overallPercent =
+    totalItems > 0 ? Math.round((totalChecked / totalItems) * 100) : 0
+
   return (
+    <>
+      {/* Overall Progress */}
+      <Card className="w-full mb-4">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Progresso geral
+            </span>
+            <span className="text-sm font-semibold text-brand-600">
+              {totalChecked}/{totalItems} ({overallPercent}%)
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-brand-600 rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${overallPercent}%` }}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
     <Accordion type="single" collapsible defaultValue={getDefaultOpenSection()}>
       <div className="flex flex-col gap-4">
         {academyData.sections.map((section, index) => (
@@ -196,6 +228,10 @@ export default function AcademyPage() {
                     <CardTitle className="text-gray-700 font-semibold text-base">
                       {section.title}
                     </CardTitle>
+                    <span className="text-xs text-gray-400 ml-2">
+                      {section.items.filter((i) => i.checked).length}/
+                      {section.items.length}
+                    </span>
                   </div>
                   <div className="flex gap-3">
                     <AccordionTrigger
@@ -233,5 +269,6 @@ export default function AcademyPage() {
         ))}
       </div>
     </Accordion>
+    </>
   )
 }
