@@ -1243,6 +1243,15 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               </View>
 
+              {(data.total?.commissionTotal ?? 0) > 0 && (
+                <View style={styles.totalRow}>
+                  <Text>Comissão</Text>
+                  <Text>
+                    {formatCurrencyToBrl(data.total?.commissionTotal ?? 0)}
+                  </Text>
+                </View>
+              )}
+
               {freightPrice > 0 && (
                 <View style={styles.totalRow}>
                   <Text>Frete</Text>

@@ -206,6 +206,7 @@ type PaymentType = {
 type TotalType = {
   subtotal: number
   totalDiscount: number
+  commissionTotal?: number
   finalTotal: number
 }
 
