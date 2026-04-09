@@ -62,9 +62,10 @@ export function NewPaymentCondition({
   const [maxInstallmentsLength, setMaxInstallmentsLength] = useState(0)
 
   const queryClient = useQueryClient()
-  const { canManageBankTaxTransfer } = usePlanFeatures()
+  const { canManageBankTaxTransfer, hasFeature } = usePlanFeatures()
 
   const canManageTaxInput = canManageBankTaxTransfer()
+  const hasFiscalModule = hasFeature('nota_fiscal')
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -87,6 +88,8 @@ export function NewPaymentCondition({
       ],
       receivingType: rowData?.receivingType || 'CASH',
       dayInterval: rowData?.dayInterval || 0,
+      generateInvoice: (rowData as any)?.generateInvoice || false,
+      invoiceType: (rowData as any)?.invoiceType || undefined,
     },
   })
 
@@ -95,6 +98,7 @@ export function NewPaymentCondition({
   const acceptInstallments = watch('acceptInstallments')
   const maxInstallments = watch('maxInstallments') || 0
   const receivingType = watch('receivingType')
+  const generateInvoice = watch('generateInvoice')
 
   const costType = watch('costType')
   const installments = watch('installments')
@@ -404,6 +408,31 @@ export function NewPaymentCondition({
                     />
                   </>
                 )
+              )}
+
+              {hasFiscalModule && (
+                <>
+                  <p className="w-full font-semibold">Nota Fiscal</p>
+
+                  <FormSwitch
+                    name="generateInvoice"
+                    label="Gerar NF automaticamente ao aprovar"
+                    className="w-full"
+                  />
+
+                  {generateInvoice && (
+                    <FormSelect
+                      name="invoiceType"
+                      label="Tipo de nota"
+                      options={[
+                        { value: 'NFE', label: 'NF-e (Produto)' },
+                        { value: 'NFSE', label: 'NFS-e (Serviço)' },
+                        { value: 'NFCE', label: 'NFC-e (Consumidor)' },
+                      ]}
+                      width="w-full"
+                    />
+                  )}
+                </>
               )}
 
               <p className="w-full font-semibold">Recebimento</p>

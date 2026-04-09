@@ -151,11 +151,23 @@ export const permissionsData = [
   },
   {
     section: 'Nota Fiscal',
-    key: 'invoice_settings',
+    key: 'nota_fiscal',
     items: [
       {
-        name: 'NF',
-        key: 'nf',
+        name: 'Emitir NF-e / NFS-e / NFC-e',
+        key: 'emitir',
+      },
+      {
+        name: 'Notas emitidas',
+        key: 'emitidas',
+      },
+      {
+        name: 'Cancelar nota',
+        key: 'cancelar',
+      },
+      {
+        name: 'Configurações fiscais',
+        key: 'config',
       },
     ],
   },

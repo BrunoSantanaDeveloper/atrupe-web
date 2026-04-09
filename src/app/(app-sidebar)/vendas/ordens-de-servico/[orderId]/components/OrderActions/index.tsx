@@ -20,6 +20,7 @@ import { OrderType } from '@/types/sales/order'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 
 import { getItem } from '@/actions/_cruds'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   data: OrderType
@@ -80,7 +81,8 @@ export function OrderActions({ data }: Props) {
 
   const canCancel = status.notCanceled
 
-  const hasFiscalModule = false // TODO: Implementar verificação de módulo fiscal
+  const { hasFeature } = usePlanFeatures()
+  const hasFiscalModule = hasFeature('nota_fiscal')
 
   return (
     <>

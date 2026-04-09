@@ -73,6 +73,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   const { hasPermission } = usePermissions()
   const {
     hasFinancialModule,
+    hasFeature,
     canManageRejectionReasons,
     canManageDeliverySchedule,
   } = usePlanFeatures()
@@ -86,17 +87,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
 
   const mainNavigation = getMainNavigation(user)
 
-  // Módulos contratados mockados
-  const contractedModules = {
-    nota_fiscal: false,
-  }
-
+  // Checks if a subscription module (additional feature) is contracted by the company
   const hasContractedModule = (requiredModule?: string): boolean => {
     if (!requiredModule) return true
-    return (
-      contractedModules[requiredModule as keyof typeof contractedModules] ??
-      false
-    )
+    return hasFeature(requiredModule)
   }
 
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0

@@ -64,6 +64,17 @@ interface OrderData {
       cnpj?: string
       cpf?: string
       email?: string
+      phone?: string
+      mobile?: string
+      address?: Array<{
+        street?: string
+        number?: string
+        complement?: string
+        neighborhood?: string
+        city?: string
+        state?: string
+        zipcode?: string
+      }>
     }
     quotationItems: QuotationItem[]
   }
@@ -351,6 +362,72 @@ export function IssueNfseForm({ id }: Props) {
                 </p>
               </div>
             </div>
+
+            {/* Endereço do Tomador */}
+            {client?.address?.[0] && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">
+                  Endereço
+                </p>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="space-y-1 lg:col-span-2">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      Logradouro
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {client.address[0].street || 'N/D'}
+                      {client.address[0].number ? `, ${client.address[0].number}` : ''}
+                      {client.address[0].complement ? ` - ${client.address[0].complement}` : ''}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      Bairro
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {client.address[0].neighborhood || 'N/D'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      Cidade/UF
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {client.address[0].city || 'N/D'}
+                      {client.address[0].state ? `/${client.address[0].state}` : ''}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      CEP
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {client.address[0].zipcode || 'N/D'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                      Telefone
+                    </p>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {client?.phone || client?.mobile || 'N/D'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Warning: missing address */}
+            {!client?.address?.[0] && (
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="flex items-center gap-2 text-orange-600">
+                  <IconAlertTriangle size={16} />
+                  <p className="text-sm">
+                    Tomador sem endereço cadastrado. O endereço pode ser exigido pela prefeitura.
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

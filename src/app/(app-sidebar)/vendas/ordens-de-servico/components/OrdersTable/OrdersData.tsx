@@ -73,7 +73,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
-  const { canManageSalesOrders } = usePlanFeatures()
+  const { canManageSalesOrders, hasFeature } = usePlanFeatures()
   const showCurrentPhase = canManageSalesOrders()
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
@@ -134,7 +134,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   // Calcular colSpan baseado no número de colunas
   const totalColumns = showCurrentPhase ? 5 : 4
 
-  const hasFiscalModule = false // TODO: Implementar verificação de módulo fiscal
+  const hasFiscalModule = hasFeature('nota_fiscal')
 
   return (
     <>

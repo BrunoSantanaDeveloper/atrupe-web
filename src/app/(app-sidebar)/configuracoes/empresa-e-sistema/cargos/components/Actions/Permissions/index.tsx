@@ -106,6 +106,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
   const { data: session } = useSession()
   const {
+    hasFeature,
     hasFinancialModule,
     canManageClients,
     canManageSuppliers,
@@ -192,6 +193,11 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
       if (item === 'order') {
         return canManageSalesOrders()
       }
+    }
+
+    // Fiscal section only shown if company has contracted the module
+    if (section === 'nota_fiscal') {
+      return hasFeature('nota_fiscal')
     }
 
     return true
@@ -369,12 +375,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                       className={cn(isLoadingPermissions && 'opacity-50')}
                     >
                       {permissionsData.map((section) => {
-                        // Filtra os itens da seção baseado nas features do plano
-                        // const filteredItems = section.items.filter((item) =>
-                        //   shouldShowPermission(section.key, item.key),
-                        // )
-
-                        const filteredItems = section.items
+                        const filteredItems = section.items.filter((item) =>
+                          _shouldShowPermission(section.key, item.key),
+                        )
 
                         // Se não houver itens na seção após o filtro, não exibe a seção
                         if (filteredItems.length === 0) return null

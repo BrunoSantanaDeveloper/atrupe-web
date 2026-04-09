@@ -184,6 +184,13 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requiredModule: 'nota_fiscal',
       },
       {
+        icon: IconDeviceDesktopDollar,
+        title: 'Emitir NFC-e (PDV)',
+        path: '/nota-fiscal/emitir-nfce',
+        permission: 'nota_fiscal:emitir:view',
+        requiredModule: 'nota_fiscal',
+      },
+      {
         icon: IconFileCheck,
         title: 'Notas emitidas',
         path: '/nota-fiscal/emitidas',

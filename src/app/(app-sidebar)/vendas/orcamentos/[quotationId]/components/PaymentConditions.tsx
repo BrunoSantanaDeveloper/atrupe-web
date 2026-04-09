@@ -18,13 +18,14 @@ import { TextSupportingText } from '@/components/common/TextSupportingText'
 import { PaymentConditionsDialog } from './QuotationActions/PaymentConditions'
 
 // Icons
-import { IconCoin } from '@tabler/icons-react'
+import { IconCoin, IconFileInvoice } from '@tabler/icons-react'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
 
 // Util
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 // Consts
 import { paymentConditionsTypeObj } from '@/consts/quotations'
@@ -132,10 +133,18 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                   supporting="Tipo de nota"
                   text={paymentConditionsTypeObj[data?.type]?.text}
                 />
-                <TextSupportingText
-                  supporting="Pagamento"
-                  text={data?.paymentCondition?.name}
-                />
+                <div className="flex items-center gap-2">
+                  <TextSupportingText
+                    supporting="Pagamento"
+                    text={data?.paymentCondition?.name}
+                  />
+                  {data?.paymentCondition?.generateInvoice && data?.paymentCondition?.invoiceType && (
+                    <Badge variant="outline" className="text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 gap-1 mt-1">
+                      <IconFileInvoice className="h-3 w-3" />
+                      Gera {data.paymentCondition.invoiceType === 'NFE' ? 'NF-e' : data.paymentCondition.invoiceType === 'NFSE' ? 'NFS-e' : 'NFC-e'}
+                    </Badge>
+                  )}
+                </div>
                 <PermissionGate permissions={['values:values:view']}>
                   <TextSupportingText
                     supporting="Itens"

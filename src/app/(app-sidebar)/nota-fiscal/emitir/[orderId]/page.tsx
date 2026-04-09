@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function IssueInvoicePage({ params }: ParamsType) {
   return (
     <PermissionGate
-      permissions={['sale:invoice:create']}
+      permissions={['nota_fiscal:emitir:create']}
       fallback={
         <div className="p-4">
           Você não tem permissão para emitir nota fiscal.

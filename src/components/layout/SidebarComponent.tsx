@@ -82,23 +82,15 @@ export function SidebarComponent(props: Props) {
   const { hasAnyPermission, hasAllPermissions } = usePermissions()
   const {
     hasFinancialModule,
+    hasFeature,
     canManageRejectionReasons,
     canManageDeliverySchedule,
   } = usePlanFeatures()
 
-  // TODO: Implementar verificação real de módulos contratados via API/sessão
-  // Por enquanto, usando booleano mockado para o módulo de nota fiscal
-  const contractedModules = {
-    nota_fiscal: false, // Alterar para true/false para testar a restrição
-  }
-
-  // Função que verifica se o módulo contratado está disponível
+  // Checks if a subscription module (additional feature) is contracted by the company
   const hasContractedModule = (requiredModule?: string): boolean => {
-    if (!requiredModule) return true // Se não requer módulo, permite acesso
-    return (
-      contractedModules[requiredModule as keyof typeof contractedModules] ??
-      false
-    )
+    if (!requiredModule) return true
+    return hasFeature(requiredModule)
   }
 
   // Conversão: getUserLimit usando acesso direto à sessão

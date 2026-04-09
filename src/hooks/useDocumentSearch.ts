@@ -16,8 +16,12 @@ export interface DocumentSearchData {
   rg?: string
   rgIssuingAgency?: string
   rgIssuingState?: string
+  existsInSystem?: boolean
+  existingClient?: { id: string; name: string; status: string } | null
   address?: {
     street: string
+    number?: string
+    complement?: string
     city: string
     state: string
     zipcode: string
@@ -39,6 +43,84 @@ const fetchDocumentData = async (
   }
 
   const isCNPJ = cleanDocument.length === 14
+
+  // Try the new lookup endpoint first (includes existsInSystem check)
+  const lookupRes = await getItem({ route: `/client/lookup/${cleanDocument}` })
+
+  if (lookupRes.success && lookupRes.data) {
+    const data = lookupRes.data
+    const autoFill = data.autoFill
+
+    if (!autoFill) {
+      // API external failed but we still have existsInSystem info
+      if (data.existsInSystem && data.existingClient) {
+        toast.warning(
+          `Este ${isCNPJ ? 'CNPJ' : 'CPF'} já está cadastrado como "${data.existingClient.name}"`,
+        )
+      }
+      if (data.error) {
+        toast.error(data.error)
+      }
+      return null
+    }
+
+    // Show warning if document already exists in system
+    if (data.existsInSystem && data.existingClient) {
+      toast.warning(
+        `Este ${isCNPJ ? 'CNPJ' : 'CPF'} já está cadastrado como "${data.existingClient.name}"`,
+      )
+    }
+
+    const searchData: DocumentSearchData = isCNPJ
+      ? {
+          document: autoFill.cnpj || cleanDocument,
+          documentType: 'CNPJ',
+          name: capitalize(autoFill.name),
+          legalName: capitalize(autoFill.corporateName),
+          corporateName: capitalize(autoFill.corporateName),
+          phone: autoFill.phone || '',
+          existsInSystem: data.existsInSystem,
+          existingClient: data.existingClient,
+          address: autoFill.address
+            ? {
+                street: capitalize(autoFill.address.street),
+                number: autoFill.address.number || '',
+                complement: autoFill.address.complement || '',
+                city: capitalize(autoFill.address.city),
+                state: autoFill.address.state || '',
+                zipcode: autoFill.address.zipcode || '',
+                country: 'BR',
+                neighborhood: capitalize(autoFill.address.neighborhood),
+              }
+            : undefined,
+        }
+      : {
+          document: autoFill.cpf || cleanDocument,
+          documentType: 'CPF',
+          name: capitalize(autoFill.name),
+          phone: autoFill.phone || '',
+          birthdate: autoFill.birthdate || '',
+          rg: autoFill.rg || '',
+          existsInSystem: data.existsInSystem,
+          existingClient: data.existingClient,
+          address: autoFill.address
+            ? {
+                street: capitalize(autoFill.address.street),
+                number: autoFill.address.number || '',
+                complement: autoFill.address.complement || '',
+                city: capitalize(autoFill.address.city),
+                state: autoFill.address.state || '',
+                zipcode: autoFill.address.zipcode || '',
+                country: 'BR',
+                neighborhood: capitalize(autoFill.address.neighborhood),
+              }
+            : undefined,
+        }
+
+    return searchData
+  }
+
+  // Fallback to old routes if lookup endpoint fails
   const route = isCNPJ
     ? `/utils/company/${cleanDocument}`
     : `/utils/people/${cleanDocument}`
@@ -65,6 +147,8 @@ const fetchDocumentData = async (
         phone: res.data.phone || '',
         address: {
           street: capitalize(res.data.address?.street),
+          number: res.data.address?.number || '',
+          complement: res.data.address?.complement || '',
           city: capitalize(res.data.address?.city),
           state: res.data.address?.state || '',
           zipcode: res.data.address?.zipcode || '',
@@ -84,6 +168,8 @@ const fetchDocumentData = async (
         phone: res.data.phone || '',
         address: {
           street: capitalize(res.data.address?.street),
+          number: res.data.address?.number || '',
+          complement: res.data.address?.complement || '',
           city: capitalize(res.data.address?.city),
           state: res.data.address?.state || '',
           zipcode: res.data.address?.zipcode || '',

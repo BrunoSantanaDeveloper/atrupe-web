@@ -129,6 +129,8 @@ export type QuotationPaymentConditionsType = {
   paymentCondition: {
     id: string
     name: string
+    generateInvoice?: boolean
+    invoiceType?: 'NFE' | 'NFSE' | 'NFCE' | null
   }
   totalValue: number
   finalValue: number
