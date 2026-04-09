@@ -21,7 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type VerifyEmailType, verifyEmailSchema } from './schema'
 
 // Icons
-import { IconArrowNarrowRight } from '@tabler/icons-react'
+import { IconArrowNarrowRight, IconBug } from '@tabler/icons-react'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
@@ -34,11 +34,15 @@ export function VerifyEmailForm() {
   const {
     setVerifyEmailData,
     signupData,
+    verificationToken,
     countdown,
     setCountdown,
     decrementCountdown,
     clearSignupData,
+    setVerificationToken,
   } = useSignupStore()
+
+  const isDevEnv = process.env.NEXT_PUBLIC_ENV !== 'production'
   const [isResending, setIsResending] = useState(false)
 
   // Verificar se o email existe, caso contrário redirecionar para o cadastro
@@ -125,6 +129,11 @@ export function VerifyEmailForm() {
       return
     }
 
+    // In dev/homolog, store the new token
+    if (res.data?.devToken) {
+      setVerificationToken(res.data.devToken)
+    }
+
     // Iniciar contagem regressiva de 2 minutos (120 segundos)
     setCountdown(120)
 
@@ -184,6 +193,23 @@ export function VerifyEmailForm() {
           </Link>
         </div>
       </form>
+
+      {isDevEnv && verificationToken && (
+        <div className="mt-6 rounded-lg border border-dashed border-amber-400 bg-amber-50 p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <IconBug size={16} className="text-amber-600" />
+            <span className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+              Dev / Homolog only
+            </span>
+          </div>
+          <p className="text-sm text-amber-800">
+            Token de verificação:{' '}
+            <span className="font-mono font-bold text-lg tracking-widest text-amber-900">
+              {verificationToken}
+            </span>
+          </p>
+        </div>
+      )}
     </Form>
   )
 }

@@ -33,7 +33,7 @@ import { MaskPhoneNumber } from '@/lib/utils'
 
 export function SignupForm() {
   const router = useRouter()
-  const { signupData, setSignupData, setCountdown } = useSignupStore()
+  const { signupData, setSignupData, setCountdown, setVerificationToken } = useSignupStore()
 
   const form = useForm<SignupType>({
     resolver: zodResolver(signupSchema),
@@ -74,6 +74,11 @@ export function SignupForm() {
     // Usar o tempo retornado pela API ou 120 como fallback
     const countdownTime = res.data?.canResendIn || 120
     setCountdown(countdownTime)
+
+    // In dev/homolog, store the token for easy testing
+    if (res.data?.devToken) {
+      setVerificationToken(res.data.devToken)
+    }
 
     router.replace('/cadastro/verificar-email')
   }
