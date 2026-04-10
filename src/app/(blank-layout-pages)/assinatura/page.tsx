@@ -14,6 +14,7 @@ import {
   IconCreditCard,
   IconBuildingCommunity,
 } from '@tabler/icons-react'
+import { HandleValidateCpf, HandleValidateCnpj } from '@/lib/validateDocs'
 import { toast } from 'sonner'
 import type { ModuleType, VisualPlanType } from '@/types/plans'
 import { Logo } from '@/components/Logo'
@@ -27,6 +28,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import { IconPix } from '@/assets/icons/CustomIcons'
 import { ModuleCard } from './components/ModuleCard'
+import { CpfOrCnpjField } from '@/components/common/form/global-inputs/CpfOrCnpjField'
 import { useState, useEffect, useMemo } from 'react'
 import { Separator } from '@/components/ui/separator'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -74,13 +76,30 @@ const billingTypeOptions = [
   },
 ]
 
+const stripNonDigits = (value: string) => value.replace(/\D/g, '')
+
 const baseSchema = z.object({
   personType: z.enum(['PF', 'PJ']),
   // Campos comuns
   email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
   phone: z.string().optional(),
-  mobile: z.string().min(1, 'Celular é obrigatório'),
-  zipCode: z.string().min(1, 'CEP é obrigatório'),
+  mobile: z
+    .string()
+    .min(1, 'Celular é obrigatório')
+    .refine(
+      (val) => {
+        const digits = stripNonDigits(val)
+        return digits.length >= 10 && digits.length <= 11
+      },
+      { message: 'Celular inválido. Use o formato (99) 99999-9999' },
+    ),
+  zipCode: z
+    .string()
+    .min(1, 'CEP é obrigatório')
+    .refine(
+      (val) => stripNonDigits(val).length === 8,
+      { message: 'CEP inválido. Deve conter 8 dígitos' },
+    ),
   state: z.string().min(1, 'Estado é obrigatório'),
   city: z.string().min(1, 'Cidade é obrigatória'),
   neighborhood: z.string().min(1, 'Bairro é obrigatório'),
@@ -93,17 +112,35 @@ const baseSchema = z.object({
 const schemaPF = baseSchema.extend({
   personType: z.literal('PF'),
   name: z.string().min(1, 'Nome completo é obrigatório'),
-  taxId: z.string().min(1, 'CPF é obrigatório'),
+  taxId: z
+    .string()
+    .min(1, 'CPF é obrigatório')
+    .refine(
+      (val) => HandleValidateCpf(stripNonDigits(val)),
+      { message: 'CPF inválido' },
+    ),
 })
 
 const schemaPJ = baseSchema.extend({
   personType: z.literal('PJ'),
   razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
-  cnpj: z.string().min(1, 'CNPJ é obrigatório'),
+  cnpj: z
+    .string()
+    .min(1, 'CNPJ é obrigatório')
+    .refine(
+      (val) => HandleValidateCnpj(stripNonDigits(val)),
+      { message: 'CNPJ inválido' },
+    ),
   nomeResponsavel: z
     .string()
     .min(1, 'Nome completo do responsável é obrigatório'),
-  cpfResponsavel: z.string().min(1, 'CPF do responsável é obrigatório'),
+  cpfResponsavel: z
+    .string()
+    .min(1, 'CPF do responsável é obrigatório')
+    .refine(
+      (val) => HandleValidateCpf(stripNonDigits(val)),
+      { message: 'CPF do responsável inválido' },
+    ),
 })
 
 const schema = z.discriminatedUnion('personType', [schemaPF, schemaPJ])
@@ -259,20 +296,30 @@ export default function SubscriptionPage() {
       return
     }
 
+    // Strip non-digits from document and phone fields before sending to API
+    const cleanDigits = (val?: string) => val?.replace(/\D/g, '') || ''
+
+    const customerName =
+      customerData.personType === 'PF'
+        ? customerData.name
+        : customerData.razaoSocial
+
+    const customerDocument =
+      customerData.personType === 'PF'
+        ? cleanDigits(customerData.taxId)
+        : cleanDigits(customerData.cnpj)
+
     const data = {
       planId: selectedPlanId,
       additionalUsers,
       additionalFeatures: selectedModules,
-      billingType: customerData.billingType, // Deve escolher no ckeckout
+      billingType: customerData.billingType,
       customer: {
-        name: '',
-        document: '',
-        // razaoSocial: '', // Falta back receber
-        // cnpj: '', // Falta back receber
+        name: customerName,
+        document: customerDocument,
         email: customerData.email,
-        phone: customerData.phone,
-        // mobile: customerData.mobile, // Falta back receber
-        postalCode: customerData.zipCode,
+        phone: cleanDigits(customerData.phone),
+        postalCode: cleanDigits(customerData.zipCode),
         state: customerData.state,
         city: customerData.city,
         province: customerData.neighborhood,
@@ -280,18 +327,9 @@ export default function SubscriptionPage() {
         address: customerData.street,
         complement: customerData.complement,
       },
-      // successUrl: `${window.location.origin}/assinatura/concluir`,
       successUrl: IS_DEV_ENV
         ? 'https://homolog.atrupe.com.br/assinatura/concluir'
         : 'https://app.atrupe.com.br/assinatura/concluir',
-    }
-
-    if (customerData.personType === 'PF') {
-      data.customer.name = customerData.name
-      data.customer.document = customerData.taxId
-    } else {
-      data.customer.name = customerData.razaoSocial
-      data.customer.document = customerData.cnpj
     }
 
     const subscriptionId = ''
@@ -488,9 +526,10 @@ export default function SubscriptionPage() {
                             width="w-full mt-2"
                           />
                           <div className="flex w-full flex-wrap gap-5">
-                            <FormInput
+                            <CpfOrCnpjField
                               name="taxId"
                               label="CPF"
+                              placeholder="000.000.000-00"
                               width="flex-[1_1_300px]"
                             />
                             <FormInput
@@ -507,16 +546,22 @@ export default function SubscriptionPage() {
                             label="Razão social"
                             width="w-full mt-2"
                           />
-                          <FormInput name="cnpj" label="CNPJ" width="w-full" />
+                          <CpfOrCnpjField
+                            name="cnpj"
+                            label="CNPJ"
+                            placeholder="00.000.000/0000-00"
+                            width="w-full"
+                          />
                           <FormInput
                             name="nomeResponsavel"
                             label="Nome completo do responsável"
                             width="w-full"
                           />
                           <div className="flex w-full flex-wrap gap-5">
-                            <FormInput
+                            <CpfOrCnpjField
                               name="cpfResponsavel"
                               label="CPF do responsável"
+                              placeholder="000.000.000-00"
                               width="flex-[1_1_300px]"
                             />
                             <FormInput
