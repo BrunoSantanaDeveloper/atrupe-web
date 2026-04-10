@@ -19,26 +19,33 @@ export const getDataOld = async ({
   perPage?: string
   customPath?: string
 }) => {
-  const api = await apiInstance()
+  try {
+    const api = await apiInstance()
 
-  const params = filters
-    ? Object.fromEntries(
-        Object.entries(filters).filter(
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          ([_, value]) => value !== null && value !== '' && value !== undefined,
-        ),
-      )
-    : {}
+    const params = filters
+      ? Object.fromEntries(
+          Object.entries(filters).filter(
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            ([_, value]) => value !== null && value !== '' && value !== undefined,
+          ),
+        )
+      : {}
 
-  if (perPage) params.limit = perPage
+    if (perPage) params.limit = perPage
 
-  const url = ((route && defaultRoute[route]) || '') + (customPath || '')
+    const url = ((route && defaultRoute[route]) || '') + (customPath || '')
 
-  if (!url) console.error('Rota principal não definida ou não existe:', route)
+    if (!url) console.error('Rota principal não definida ou não existe:', route)
 
-  const res = await api.get(url, { params })
+    const res = await api.get(url, { params })
 
-  return res.data
+    return res.data
+  } catch (error: any) {
+    // Re-throw Next.js redirect errors (ex: redirect('/logout') no interceptor)
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
+    console.error(`Erro em getDataOld [${route}]:`, error?.response?.status, error?.message)
+    return null
+  }
 }
 
 // LISTAR (usar sempre este em vez de getDataOld)
@@ -98,13 +105,19 @@ export const getItemOld = async ({
   route: string
   id: string | number
 }) => {
-  const api = await apiInstance()
+  try {
+    const api = await apiInstance()
 
-  const url = `${defaultRoute[route]}/${id}`
+    const url = `${defaultRoute[route]}/${id}`
 
-  const res = await api.get(url)
+    const res = await api.get(url)
 
-  return res.data
+    return res.data
+  } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
+    console.error(`Erro em getItemOld [${route}/${id}]:`, error?.response?.status, error?.message)
+    return null
+  }
 }
 
 // BUSCAR POR ID (usar sempre este em vez de getItemOld)

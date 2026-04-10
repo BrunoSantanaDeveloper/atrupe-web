@@ -1,10 +1,11 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // Next
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -30,6 +31,7 @@ import {
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
+import { refreshPlanFeatures } from '@/actions/subscription'
 
 // Types
 import type { BadgeType, SearchParamsType } from '@/types/coreTypes'
@@ -48,6 +50,7 @@ const statusMap: Record<string, BadgeType> = {
 export function SubscriptionManagementClient({
   searchParams,
 }: SearchParamsType) {
+  const { data: session, update } = useSession()
   const [cancelOpen, setCancelOpen] = useState(false)
   const [contractOpen, setContractOpen] = useState(false)
 
@@ -77,6 +80,40 @@ export function SubscriptionManagementClient({
 
   const statusInfo = subscription ? statusMap[subscription.status] : undefined
   const isTrial = subscription?.plan?.planType === 'TRIAL'
+
+  // Auto-sync: atualiza a sessão se as features do backend diferirem do JWT
+  useEffect(() => {
+    if (!subscription || !session) return
+
+    async function syncSession() {
+      const result = await refreshPlanFeatures()
+      if (!result.success) return
+
+      const sessionFeatures = session?.company?.plan?.features || []
+      const backendFeatures = result.features
+
+      // Comparar features: se divergirem, atualizar a sessão
+      const isDifferent =
+        sessionFeatures.length !== backendFeatures.length ||
+        backendFeatures.some((f) => !sessionFeatures.includes(f))
+
+      if (isDifferent) {
+        await update({
+          company: {
+            plan: {
+              name: result.planName,
+              active: result.active,
+              features: result.features,
+              limits: result.limits,
+            },
+          },
+        })
+      }
+    }
+
+    syncSession()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subscription])
 
   return (
     <div className="space-y-5">
