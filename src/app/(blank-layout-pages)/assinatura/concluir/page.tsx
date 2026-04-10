@@ -119,7 +119,7 @@ export default function FinishSubscriptionPage() {
               ?.filter((sf) => sf.isActive !== false && sf.feature)
               .map((sf) => sf.feature.key) || []
 
-          const features = [...new Set([...planFeatureKeys, ...subFeatureKeys])]
+          const features = Array.from(new Set([...planFeatureKeys, ...subFeatureKeys]))
 
           // Construir limits object dos planLimits
           const limits: { [key: string]: number } = {}
@@ -211,7 +211,7 @@ export default function FinishSubscriptionPage() {
                 ?.filter((sf) => sf.isActive !== false && sf.feature)
                 .map((sf) => sf.feature.key) || []
 
-            const features = [...new Set([...planFeatureKeys, ...subFeatureKeys])]
+            const features = Array.from(new Set([...planFeatureKeys, ...subFeatureKeys]))
 
             // Construir limits object dos planLimits
             const limits: { [key: string]: number } = {}
