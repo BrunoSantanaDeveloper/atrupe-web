@@ -234,6 +234,26 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         className="col-span-2"
       />
 
+      {type === 'COMPANY' && (
+        <>
+          <FormInput
+            name="general.stateRegistration"
+            label="Inscrição Estadual (IE)"
+            placeholder="Somente números"
+            maxLength={14}
+          />
+          <FormSelect
+            name="general.indicadorIE"
+            label="Indicador IE"
+            options={[
+              { label: 'Contribuinte ICMS', value: '1' },
+              { label: 'Contribuinte Isento', value: '2' },
+              { label: 'Não Contribuinte', value: '9' },
+            ]}
+          />
+        </>
+      )}
+
       {type === 'PERSON' && (
         <>
           <FormDatePickerInput

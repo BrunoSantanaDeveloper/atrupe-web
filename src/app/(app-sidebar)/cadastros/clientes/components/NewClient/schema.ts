@@ -17,6 +17,8 @@ export const newClientSchema = z
       mobile: z.string(),
       notes: z.string().optional(),
       isBranch: z.boolean().optional(),
+      stateRegistration: z.string().optional(),
+      indicadorIE: z.coerce.number().optional(),
     }),
     addresses: z.array(
       z.object({

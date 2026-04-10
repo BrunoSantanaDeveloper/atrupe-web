@@ -108,6 +108,8 @@ export function NewClientModal({
         mobile: apiData.general?.mobile || '',
         notes: apiData.general?.notes || '',
         isBranch: apiData.general?.isBranch || false,
+        stateRegistration: apiData.general?.stateRegistration || '',
+        indicadorIE: apiData.general?.indicadorIE ?? 9,
       },
       addresses: apiData.addresses?.length
         ? apiData.addresses.map((address: any) => ({
