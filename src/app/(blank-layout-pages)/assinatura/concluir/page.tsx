@@ -39,9 +39,17 @@ interface Plan {
   planLimits?: PlanLimit[]
 }
 
+interface SubscriptionFeature {
+  isActive: boolean
+  feature: {
+    key: string
+  }
+}
+
 interface Subscription {
   status: 'ACTIVE' | 'INACTIVE'
   plan?: Plan
+  subscriptionFeatures?: SubscriptionFeature[]
 }
 
 export default function FinishSubscriptionPage() {
@@ -100,10 +108,18 @@ export default function FinishSubscriptionPage() {
         const plan = subscription?.plan
         if (plan && subscription) {
           // Construir features array dos planFeatures ativos
-          const features =
+          const planFeatureKeys =
             plan.planFeatures
               ?.filter((pf) => pf.isActive && pf.feature)
               .map((pf) => pf.feature.key) || []
+
+          // Incluir módulos adicionais contratados (subscriptionFeatures)
+          const subFeatureKeys =
+            subscription.subscriptionFeatures
+              ?.filter((sf) => sf.isActive !== false && sf.feature)
+              .map((sf) => sf.feature.key) || []
+
+          const features = [...new Set([...planFeatureKeys, ...subFeatureKeys])]
 
           // Construir limits object dos planLimits
           const limits: { [key: string]: number } = {}
@@ -184,10 +200,18 @@ export default function FinishSubscriptionPage() {
           const plan = subscription?.plan
           if (plan && subscription) {
             // Construir features array dos planFeatures ativos
-            const features =
+            const planFeatureKeys =
               plan.planFeatures
                 ?.filter((pf) => pf.isActive && pf.feature)
                 .map((pf) => pf.feature.key) || []
+
+            // Incluir módulos adicionais contratados (subscriptionFeatures)
+            const subFeatureKeys =
+              subscription.subscriptionFeatures
+                ?.filter((sf) => sf.isActive !== false && sf.feature)
+                .map((sf) => sf.feature.key) || []
+
+            const features = [...new Set([...planFeatureKeys, ...subFeatureKeys])]
 
             // Construir limits object dos planLimits
             const limits: { [key: string]: number } = {}

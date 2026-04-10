@@ -92,6 +92,7 @@ export function SubscriptionManagementClient({
                 size="iconMd"
                 variant="neutralOutline"
                 Icon={IconPrinter}
+                onClick={() => window.print()}
               />
               {!isTrial && (
                 <ActionButton
