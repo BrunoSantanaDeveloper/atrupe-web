@@ -138,12 +138,21 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                     supporting="Pagamento"
                     text={data?.paymentCondition?.name}
                   />
-                  {data?.paymentCondition?.generateInvoice && data?.paymentCondition?.invoiceType && (
-                    <Badge variant="outline" className="text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 gap-1 mt-1">
-                      <IconFileInvoice className="h-3 w-3" />
-                      Gera {data.paymentCondition.invoiceType === 'NFE' ? 'NF-e' : data.paymentCondition.invoiceType === 'NFSE' ? 'NFS-e' : 'NFC-e'}
-                    </Badge>
-                  )}
+                  {data?.paymentCondition?.generateInvoice &&
+                    data?.paymentCondition?.invoiceType && (
+                      <Badge
+                        variant="outline"
+                        className="text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 gap-1 mt-1"
+                      >
+                        <IconFileInvoice className="h-3 w-3" />
+                        Gera{' '}
+                        {data.paymentCondition.invoiceType === 'NFE'
+                          ? 'NF-e'
+                          : data.paymentCondition.invoiceType === 'NFSE'
+                            ? 'NFS-e'
+                            : 'NFC-e'}
+                      </Badge>
+                    )}
                 </div>
                 <PermissionGate permissions={['values:values:view']}>
                   <TextSupportingText

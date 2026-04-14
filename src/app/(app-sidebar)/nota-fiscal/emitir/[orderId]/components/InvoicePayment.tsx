@@ -274,11 +274,12 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                   {data.duplicatas?.map((dup, index) => (
                     <div
                       key={index}
-                      className="p-3 border border-gray-200 rounded-lg relative hover:border-blue-300 transition-colors bg-white shadow-sm"
+                      className="p-3 border border-gray-200 rounded-lg relative hover:border-brand-200 transition-colors bg-white shadow-sm"
                     >
                       <button
                         onClick={() => removeDuplicata(index)}
                         className="absolute right-2 top-2 text-gray-400 hover:text-error-600 p-1"
+                        aria-label="Remover duplicata"
                       >
                         <IconTrash size={14} />
                       </button>

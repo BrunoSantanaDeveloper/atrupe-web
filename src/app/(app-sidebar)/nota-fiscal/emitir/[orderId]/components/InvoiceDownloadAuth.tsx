@@ -142,6 +142,7 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                       size="iconSm"
                       className="text-gray-400 hover:text-error-600"
                       onClick={() => removeDoc(idx)}
+                      aria-label="Remover autorização"
                     >
                       <IconTrash size={16} />
                     </Button>

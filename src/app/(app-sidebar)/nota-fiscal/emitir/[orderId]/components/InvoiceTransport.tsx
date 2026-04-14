@@ -303,8 +303,9 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                       <Button
                         variant="ghost"
                         size="iconSm"
-                        className="text-gray-400 hover:text-error-600"
+                        className="text-error-600 hover:text-error-700 hover:bg-error-50"
                         onClick={() => removeVolume(index)}
+                        aria-label="Remover volume"
                       >
                         <IconTrash size={16} />
                       </Button>

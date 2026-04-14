@@ -37,11 +37,16 @@ import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
-import { createItemNew, getData, updateItemNew } from '@/actions/_cruds'
-import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
+import {
+  createItemNew,
+  getData,
+  getItem,
+  updateItemNew,
+} from '@/actions/_cruds'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 import { generateIdempotencyKey } from '@/lib/idempotency'
 import { useRouter } from 'next/navigation'
+import { refreshPlanFeatures } from '@/actions/subscription'
 
 const IS_DEV_ENV = process.env.NEXT_PUBLIC_ENV !== 'production'
 
@@ -82,30 +87,6 @@ const baseSchema = z.object({
   personType: z.enum(['PF', 'PJ']),
   // Campos comuns
   email: z.string().email('E-mail inválido').min(1, 'E-mail é obrigatório'),
-  phone: z.string().optional(),
-  mobile: z
-    .string()
-    .min(1, 'Celular é obrigatório')
-    .refine(
-      (val) => {
-        const digits = stripNonDigits(val)
-        return digits.length >= 10 && digits.length <= 11
-      },
-      { message: 'Celular inválido. Use o formato (99) 99999-9999' },
-    ),
-  zipCode: z
-    .string()
-    .min(1, 'CEP é obrigatório')
-    .refine(
-      (val) => stripNonDigits(val).length === 8,
-      { message: 'CEP inválido. Deve conter 8 dígitos' },
-    ),
-  state: z.string().min(1, 'Estado é obrigatório'),
-  city: z.string().min(1, 'Cidade é obrigatória'),
-  neighborhood: z.string().min(1, 'Bairro é obrigatório'),
-  number: z.string(),
-  street: z.string().min(1, 'Rua é obrigatória'),
-  complement: z.string().optional(),
   billingType: z.enum(['CREDIT_CARD', 'PIX', 'BOLETO']),
 })
 
@@ -115,10 +96,9 @@ const schemaPF = baseSchema.extend({
   taxId: z
     .string()
     .min(1, 'CPF é obrigatório')
-    .refine(
-      (val) => HandleValidateCpf(stripNonDigits(val)),
-      { message: 'CPF inválido' },
-    ),
+    .refine((val) => HandleValidateCpf(stripNonDigits(val)), {
+      message: 'CPF inválido',
+    }),
 })
 
 const schemaPJ = baseSchema.extend({
@@ -127,20 +107,9 @@ const schemaPJ = baseSchema.extend({
   cnpj: z
     .string()
     .min(1, 'CNPJ é obrigatório')
-    .refine(
-      (val) => HandleValidateCnpj(stripNonDigits(val)),
-      { message: 'CNPJ inválido' },
-    ),
-  nomeResponsavel: z
-    .string()
-    .min(1, 'Nome completo do responsável é obrigatório'),
-  cpfResponsavel: z
-    .string()
-    .min(1, 'CPF do responsável é obrigatório')
-    .refine(
-      (val) => HandleValidateCpf(stripNonDigits(val)),
-      { message: 'CPF do responsável inválido' },
-    ),
+    .refine((val) => HandleValidateCnpj(stripNonDigits(val)), {
+      message: 'CNPJ inválido',
+    }),
 })
 
 const schema = z.discriminatedUnion('personType', [schemaPF, schemaPJ])
@@ -155,12 +124,39 @@ export default function SubscriptionPage() {
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
 
-  const { data: session } = useSession()
+  const { data: session, update: updateSession } = useSession()
   const router = useRouter()
 
   const trialEndsAt = session?.company?.plan?.trialEndsAt
 
   const isExpired = trialEndsAt ? new Date(trialEndsAt) < new Date() : false
+
+  // Fetch active subscription to detect if user already has a paid plan
+  const { data: activeSubRes, isLoading: isLoadingActiveSub } = useQuery({
+    queryKey: ['active-subscription-check'],
+    queryFn: async () => {
+      const response = await getItem({ route: '/subscriptions/active' })
+      if (!response.success) return null
+      return response.data
+    },
+    refetchOnWindowFocus: false,
+  })
+
+  // Determine if we're in "add module" mode (user has active non-TRIAL subscription)
+  const activeSubscription = activeSubRes
+  const isAddModuleMode =
+    !!activeSubscription &&
+    activeSubscription.status === 'ACTIVE' &&
+    activeSubscription.plan?.planType !== 'TRIAL'
+
+  // Keys of modules already contracted in the active subscription
+  const alreadyContractedModuleKeys: string[] = useMemo(() => {
+    if (!isAddModuleMode || !activeSubscription?.subscriptionFeatures) return []
+    return activeSubscription.subscriptionFeatures
+      .filter((sf: any) => sf.isActive !== false)
+      .map((sf: any) => sf.feature?.key)
+      .filter(Boolean)
+  }, [isAddModuleMode, activeSubscription])
 
   // Verificar se há assinatura paga pendente de ativação
   // Isso cobre o caso onde o usuário pagou mas fechou a página antes de ir para /concluir
@@ -230,10 +226,18 @@ export default function SubscriptionPage() {
     [plansResponse],
   )
 
-  const modules: ModuleType[] = useMemo(
+  const allModules: ModuleType[] = useMemo(
     () => modulesResponse || [],
     [modulesResponse],
   )
+
+  // In add-module mode, filter out modules already contracted
+  const modules: ModuleType[] = useMemo(() => {
+    if (!isAddModuleMode) return allModules
+    return allModules.filter(
+      (m) => !alreadyContractedModuleKeys.includes(m.key),
+    )
+  }, [allModules, isAddModuleMode, alreadyContractedModuleKeys])
 
   // Definir o primeiro plano como selecionado quando os dados forem carregados
   useEffect(() => {
@@ -246,22 +250,29 @@ export default function SubscriptionPage() {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      personType: 'PF',
+      personType: 'PJ',
       billingType: 'CREDIT_CARD',
       name: '',
       taxId: '',
       email: '',
-      phone: '',
-      mobile: '',
-      zipCode: '',
-      state: '',
-      city: '',
-      neighborhood: '',
-      number: '',
-      street: '',
-      complement: '',
-    },
+      razaoSocial: '',
+      cnpj: '',
+    } as any,
   })
+
+  // Prefill form based on user session data
+  useEffect(() => {
+    if (session) {
+      if (!form.getValues('email')) {
+        form.setValue('email', session.user?.email || '')
+      }
+      form.setValue('name', session.user?.name || '')
+      form.setValue(
+        'razaoSocial',
+        session.company?.legalName || session.company?.name || '',
+      )
+    }
+  }, [session, form])
 
   const {
     handleSubmit,
@@ -282,10 +293,78 @@ export default function SubscriptionPage() {
   const selectedPlan = plans.find((plan) => plan.id === selectedPlanId)
 
   // Cálculo do total
-  const totalPrice =
-    (selectedPlan?.basePrice || 0) + modulesTotal + additionalUsersTotal
+  // In add-module mode, only charge for new modules (no plan base price)
+  const totalPrice = isAddModuleMode
+    ? modulesTotal
+    : (selectedPlan?.basePrice || 0) + modulesTotal + additionalUsersTotal
+
+  // Handler for add-module mode (adds modules to existing subscription)
+  const onSubmitAddModule = async () => {
+    if (selectedModules.length === 0) {
+      toast.warning('Selecione pelo menos um módulo para adicionar')
+      return
+    }
+
+    if (!agreedToTerms) {
+      toast.warning('Você deve aceitar os termos para continuar')
+      return
+    }
+
+    try {
+      const subId = activeSubscription.id
+
+      // Add each selected module sequentially
+      for (const moduleKey of selectedModules) {
+        const res = await updateItemNew({
+          route: `/subscriptions/${subId}/modules/${moduleKey}`,
+          data: {},
+        })
+
+        if (!res.success) {
+          toast.error(res.message || `Erro ao adicionar módulo ${moduleKey}`)
+          return
+        }
+      }
+
+      // Refresh session to include new features
+      const refreshResult = await refreshPlanFeatures()
+      if (refreshResult.success) {
+        await updateSession({
+          company: {
+            plan: {
+              name: refreshResult.planName,
+              active: refreshResult.active,
+              features: refreshResult.features,
+              limits: refreshResult.limits,
+            },
+          },
+        })
+      }
+
+      toast.success(
+        selectedModules.length === 1
+          ? 'Módulo adicionado com sucesso!'
+          : `${selectedModules.length} módulos adicionados com sucesso!`,
+      )
+
+      // NOTE: The added module value will be included in the next billing cycle.
+      // No immediate charge is generated — the subscription value in Asaas is updated
+      // and the new total takes effect on the next invoice.
+
+      router.replace('/configuracoes/empresa-e-sistema/assinatura')
+    } catch (error) {
+      console.error('Erro ao adicionar módulo:', error)
+      toast.error('Erro ao adicionar módulo')
+    }
+  }
 
   const onSubmit = async (customerData: FormType) => {
+    // In add-module mode, use the dedicated handler
+    if (isAddModuleMode) {
+      await onSubmitAddModule()
+      return
+    }
+
     if (!selectedPlanId) {
       toast.warning('Por favor, selecione um plano')
       return
@@ -318,45 +397,63 @@ export default function SubscriptionPage() {
         name: customerName,
         document: customerDocument,
         email: customerData.email,
-        phone: cleanDigits(customerData.phone) || undefined,
-        mobilePhone: cleanDigits(customerData.mobile),
-        postalCode: cleanDigits(customerData.zipCode),
-        state: customerData.state,
-        city: customerData.city,
-        province: customerData.neighborhood,
-        addressNumber: customerData.number,
-        address: customerData.street,
-        complement: customerData.complement,
+        mobilePhone: undefined,
+        postalCode: undefined,
+        state: undefined,
+        city: undefined,
+        province: undefined,
+        addressNumber: undefined,
+        address: undefined,
+        complement: undefined,
       },
       successUrl: IS_DEV_ENV
         ? 'https://homolog.atrupe.com.br/assinatura/concluir'
         : 'https://app.atrupe.com.br/assinatura/concluir',
     }
 
-    const subscriptionId = ''
-
     let res = null
 
     try {
-      if (subscriptionId) {
-        // Upgrade de subscription
-        res = await updateItemNew({
-          route: `/subscriptions/${subscriptionId}/upgrade`,
-          data,
-        })
-      } else {
-        // Criar subscription com chave de idempotência para prevenir duplicação
-        const idempotencyKey = generateIdempotencyKey()
-        res = await createItemNew({
-          route: '/subscriptions',
-          data,
-          headers: {
-            'idempotency-key': idempotencyKey,
-          },
-        })
-      }
+      // Criar subscription com chave de idempotência para prevenir duplicação
+      const idempotencyKey = generateIdempotencyKey()
+      res = await createItemNew({
+        route: '/subscriptions',
+        data,
+        headers: {
+          'idempotency-key': idempotencyKey,
+        },
+      })
 
       if (!res.success) {
+        const msg = (res.message || '').toLowerCase()
+        if (
+          res.status === 401 ||
+          msg.includes('unauthorized') ||
+          msg.includes('não autorizado')
+        ) {
+          toast.error(
+            'Sua sessão expirou. Faça login novamente para continuar.',
+            {
+              action: {
+                label: 'Fazer login',
+                onClick: () => {
+                  window.location.href = '/login'
+                },
+              },
+              duration: 10000,
+            },
+          )
+          return
+        }
+
+        if (msg.includes('checkout já está em andamento')) {
+          toast.warning(
+            'Já existe um checkout em andamento. Aguarde a confirmação ou acesse a cobrança pendente na página de assinatura.',
+            { duration: 8000 },
+          )
+          return
+        }
+
         toast.error(res.message || 'Erro ao criar checkout!')
         return
       }
@@ -375,7 +472,7 @@ export default function SubscriptionPage() {
       window.location.href = paymentUrl
     } catch (error) {
       console.error('Erro ao processar assinatura:', error)
-      toast.error('Erro ao processar assinatura')
+      toast.error('Erro inesperado ao processar assinatura. Tente novamente.')
     }
   }
 
@@ -395,11 +492,21 @@ export default function SubscriptionPage() {
             variant="neutralLight"
             className="bg-transparent"
           >
-            <Link href={isExpired ? '/logout' : '/dashboard'}>
+            <Link
+              href={
+                isAddModuleMode
+                  ? '/configuracoes/empresa-e-sistema/assinatura'
+                  : isExpired
+                    ? '/logout'
+                    : '/dashboard'
+              }
+            >
               <IconArrowLeft />
             </Link>
           </Button>
-          <h1 className="text-gray-800 font-semibold text-lg">Assinatura</h1>
+          <h1 className="text-gray-800 font-semibold text-lg">
+            {isAddModuleMode ? 'Adicionar módulo' : 'Assinatura'}
+          </h1>
         </div>
         <Logo text />
       </header>
@@ -409,235 +516,215 @@ export default function SubscriptionPage() {
           <Form {...form}>
             {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Plano Section */}
-              <div>
-                <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                  Plano
-                </h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Escolha o plano mais compatível com o seu negócio.
-                </p>
-                <div className="space-y-4">
-                  <PlanCard
-                    plans={plans}
-                    selectedPlanId={selectedPlanId}
-                    onSelectPlan={setSelectedPlanId}
-                    isLoading={isLoadingPlans}
-                  />
+              {/* Add Module Mode — info banner */}
+              {isAddModuleMode && (
+                <Card className="border-brand-200 bg-brand-50">
+                  <CardContent className="p-4">
+                    <p className="text-sm text-brand-800 font-medium">
+                      Seu plano{' '}
+                      <span className="font-bold">
+                        {activeSubscription.plan?.name}
+                      </span>{' '}
+                      está ativo. Selecione os módulos adicionais que deseja
+                      contratar.
+                    </p>
+                    <p className="text-xs text-brand-600 mt-1">
+                      O valor dos novos módulos será incluído na sua próxima
+                      fatura mensal.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Plano Section — hidden in add-module mode */}
+              {!isAddModuleMode && (
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                    Plano
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Escolha o plano mais compatível com o seu negócio.
+                  </p>
+                  <div className="space-y-4">
+                    <PlanCard
+                      plans={plans}
+                      selectedPlanId={selectedPlanId}
+                      onSelectPlan={setSelectedPlanId}
+                      isLoading={isLoadingPlans}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Módulos Adicionais Section */}
               <div>
                 <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                  Módulos adicionais
+                  {isAddModuleMode
+                    ? 'Módulos disponíveis'
+                    : 'Módulos adicionais'}
                 </h2>
                 <p className="text-sm text-gray-600 mb-4">
-                  Contrate recursos adicionais para impulsionar o seu plano.
+                  {isAddModuleMode
+                    ? 'Selecione os módulos que deseja adicionar ao seu plano.'
+                    : 'Contrate recursos adicionais para impulsionar o seu plano.'}
                 </p>
                 <div className="space-y-4">
-                  <ModuleCard
-                    modules={modules}
-                    selectedModules={selectedModules}
-                    onSelectModule={setSelectedModules}
-                  />
+                  {modules.length > 0 ? (
+                    <ModuleCard
+                      modules={modules}
+                      selectedModules={selectedModules}
+                      onSelectModule={setSelectedModules}
+                    />
+                  ) : isAddModuleMode ? (
+                    <Card>
+                      <CardContent className="p-6 text-center">
+                        <p className="text-gray-500 text-sm">
+                          Todos os módulos disponíveis já estão contratados no
+                          seu plano.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  ) : null}
                 </div>
               </div>
 
-              {/* Usuários adicionais Section */}
-              <div>
-                <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                  Usuários adicionais
-                </h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Contrate usuários adicionais para uma melhor organização do
-                  seu time.
-                </p>
-                <Card>
-                  <CardContent className="flex justify-between items-center p-6">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xl text-gray-700 font-semibold">
-                        {formatCurrencyToBrl(ADDITIONAL_USER_PRICE)}
-                      </span>
-                      <span className="text-sm text-gray">
-                        {' '}
-                        /mês por usuário
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        type="button"
-                        size="iconMd"
-                        aria-label="Remover usuário"
-                        RightIcon={IconMinus}
-                        disabled={additionalUsers === 0}
-                        onClick={() => {
-                          setAdditionalUsers((prev) => Math.max(0, prev - 1))
-                        }}
-                      />
-                      <Input
-                        inputMode="numeric"
-                        className="w-16 text-center"
-                        value={additionalUsers}
-                        onChange={(e) => {
-                          setAdditionalUsers(Number(e.target.value))
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        size="iconMd"
-                        aria-label="Adicionar usuário"
-                        RightIcon={IconPlus}
-                        onClick={() => {
-                          setAdditionalUsers((prev) => prev + 1)
-                        }}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Dados complementares Section */}
-              <div>
-                <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                  Dados complementares
-                </h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Informações para emissão de suas Notas Fiscais.
-                </p>
-                <Card>
-                  <CardContent className="p-6">
-                    <form
-                      id="subscription-form"
-                      onSubmit={handleSubmit(onSubmit)}
-                      noValidate
-                      className="flex flex-wrap gap-5"
-                    >
-                      <FormToggleCard
-                        name="personType"
-                        options={personTypeOptions}
-                      />
-
-                      {/* Campos específicos por tipo */}
-                      {selectedPersonType === 'PF' ? (
-                        <>
-                          <FormInput
-                            name="name"
-                            label="Nome completo"
-                            width="w-full mt-2"
-                          />
-                          <div className="flex w-full flex-wrap gap-5">
-                            <CpfOrCnpjField
-                              name="taxId"
-                              label="CPF"
-                              placeholder="000.000.000-00"
-                              width="flex-[1_1_300px]"
-                            />
-                            <FormInput
-                              name="email"
-                              label="E-mail"
-                              width="flex-[1_1_300px]"
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <FormInput
-                            name="razaoSocial"
-                            label="Razão social"
-                            width="w-full mt-2"
-                          />
-                          <CpfOrCnpjField
-                            name="cnpj"
-                            label="CNPJ"
-                            placeholder="00.000.000/0000-00"
-                            width="w-full"
-                          />
-                          <FormInput
-                            name="nomeResponsavel"
-                            label="Nome completo do responsável"
-                            width="w-full"
-                          />
-                          <div className="flex w-full flex-wrap gap-5">
-                            <CpfOrCnpjField
-                              name="cpfResponsavel"
-                              label="CPF do responsável"
-                              placeholder="000.000.000-00"
-                              width="flex-[1_1_300px]"
-                            />
-                            <FormInput
-                              name="email"
-                              label="E-mail"
-                              width="flex-[1_1_300px]"
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {/* Campos comuns */}
-                      <div className="flex w-full flex-wrap gap-5">
-                        <FormInput
-                          name="phone"
-                          label="Telefone"
-                          width="flex-[1_1_300px]"
-                        />
-                        <FormInput
-                          name="mobile"
-                          label="Celular"
-                          width="flex-[1_1_300px]"
-                        />
+              {/* Usuários adicionais Section — hidden in add-module mode */}
+              {!isAddModuleMode && (
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                    Usuários adicionais
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Contrate usuários adicionais para uma melhor organização do
+                    seu time.
+                  </p>
+                  <Card>
+                    <CardContent className="flex justify-between items-center p-6">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xl text-gray-700 font-semibold">
+                          {formatCurrencyToBrl(ADDITIONAL_USER_PRICE)}
+                        </span>
+                        <span className="text-sm text-gray">
+                          {' '}
+                          /mês por usuário
+                        </span>
                       </div>
-                      <div className="flex w-full flex-wrap gap-5">
-                        <FormInputZipCode
-                          name="zipCode"
-                          label="CEP"
-                          width="flex-[1_1_300px]"
-                          addressFields={{
-                            street: 'street',
-                            neighborhood: 'neighborhood',
-                            city: 'city',
-                            state: 'state',
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="iconMd"
+                          aria-label="Remover usuário"
+                          RightIcon={IconMinus}
+                          disabled={additionalUsers === 0}
+                          onClick={() => {
+                            setAdditionalUsers((prev) => Math.max(0, prev - 1))
                           }}
                         />
-                        <FormInput
-                          name="state"
-                          label="Estado"
-                          width="flex-[1_1_300px]"
+                        <Input
+                          inputMode="numeric"
+                          className="w-16 text-center"
+                          value={additionalUsers}
+                          onChange={(e) => {
+                            setAdditionalUsers(Number(e.target.value))
+                          }}
+                        />
+                        <Button
+                          type="button"
+                          size="iconMd"
+                          aria-label="Adicionar usuário"
+                          RightIcon={IconPlus}
+                          onClick={() => {
+                            setAdditionalUsers((prev) => prev + 1)
+                          }}
                         />
                       </div>
-                      <div className="flex w-full flex-wrap gap-5">
-                        <FormInput
-                          name="city"
-                          label="Cidade"
-                          width="flex-[1_1_300px]"
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Dados complementares Section — hidden in add-module mode */}
+              {!isAddModuleMode && (
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                    Dados complementares
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Informações do responsável pela contratação.
+                  </p>
+                  <Card>
+                    <CardContent className="p-6">
+                      <form
+                        id="subscription-form"
+                        onSubmit={handleSubmit(onSubmit as any)}
+                        noValidate
+                        className="flex flex-wrap gap-5"
+                      >
+                        <FormToggleCard
+                          name="personType"
+                          options={personTypeOptions}
                         />
-                        <FormInput
-                          name="neighborhood"
-                          label="Bairro"
-                          width="flex-[1_1_300px]"
-                        />
-                      </div>
-                      <div className="flex w-full flex-wrap gap-5">
-                        <FormInput
-                          name="number"
-                          label="Número"
-                          width="flex-[1_0_100px]"
-                        />
-                        <FormInput
-                          name="street"
-                          label="Rua"
-                          width="flex-[1_1_400px]"
-                        />
-                      </div>
-                      <FormInput
-                        name="complement"
-                        label="Complemento"
-                        width="w-full"
-                      />
-                    </form>
-                  </CardContent>
-                </Card>
-              </div>
+
+                        {/* Campos específicos por tipo */}
+                        {selectedPersonType === 'PF' ? (
+                          <div className="w-full space-y-5">
+                            <FormInput
+                              name="name"
+                              label="Nome completo"
+                              width="w-full mt-2"
+                            />
+                            <div className="flex w-full flex-wrap gap-5">
+                              <CpfOrCnpjField
+                                name="taxId"
+                                label="CPF"
+                                placeholder="000.000.000-00"
+                                width="flex-[1_1_300px]"
+                              />
+                              <FormInput
+                                name="email"
+                                label="E-mail"
+                                width="flex-[1_1_300px]"
+                              />
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full space-y-5">
+                            <FormInput
+                              name="razaoSocial"
+                              label="Razão social"
+                              width="w-full mt-2"
+                            />
+                            <div className="flex w-full flex-wrap gap-5">
+                              <CpfOrCnpjField
+                                name="cnpj"
+                                label="CNPJ"
+                                placeholder="00.000.000/0000-00"
+                                width="flex-[1_1_300px]"
+                              />
+                              <FormInput
+                                name="email"
+                                label="E-mail"
+                                width="flex-[1_1_300px]"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </form>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Hidden form for add-module mode (bypasses validation) */}
+              {isAddModuleMode && (
+                <form
+                  id="subscription-form"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    onSubmitAddModule()
+                  }}
+                />
+              )}
             </div>
 
             {/* Summary - Right Column */}
@@ -646,13 +733,16 @@ export default function SubscriptionPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle className="text-lg text-gray-700">
-                      Resumo da assinatura
+                      {isAddModuleMode
+                        ? 'Resumo dos módulos'
+                        : 'Resumo da assinatura'}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-6 pt-2 space-y-6">
                     <Separator />
                     <div className="space-y-6">
-                      {selectedPlanId && (
+                      {/* Show plan info only in checkout mode */}
+                      {!isAddModuleMode && selectedPlanId && (
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <IconCheck
@@ -703,7 +793,7 @@ export default function SubscriptionPage() {
                           </div>
                         )
                       })}
-                      {additionalUsers > 0 && (
+                      {!isAddModuleMode && additionalUsers > 0 && (
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
                             <IconCheck
@@ -725,12 +815,19 @@ export default function SubscriptionPage() {
                           </div>
                         </div>
                       )}
-                      {isLoadingPlans ? (
+                      {isLoadingPlans || isLoadingActiveSub ? (
                         <div className="flex justify-between">
                           <Skeleton className="h-5 w-24" />
                           <Skeleton className="h-5 w-24" />
                         </div>
+                      ) : isAddModuleMode && selectedModules.length === 0 ? (
+                        <div>
+                          <p className="text-gray text-sm">
+                            Selecione um módulo para adicionar
+                          </p>
+                        </div>
                       ) : (
+                        !isAddModuleMode &&
                         !selectedPlanId &&
                         selectedModules.length === 0 &&
                         additionalUsers === 0 && (
@@ -744,16 +841,19 @@ export default function SubscriptionPage() {
                     </div>
                     <Separator />
 
-                    <FormToggleCard
-                      name="billingType"
-                      options={billingTypeOptions}
-                      groupClassName="flex-wrap"
-                    />
+                    {/* Billing type — hidden in add-module mode (uses existing) */}
+                    {!isAddModuleMode && (
+                      <FormToggleCard
+                        name="billingType"
+                        options={billingTypeOptions}
+                        groupClassName="flex-wrap"
+                      />
+                    )}
 
                     <Separator />
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm text-gray-700 font-semibold">
-                        Total
+                        {isAddModuleMode ? 'Acréscimo mensal' : 'Total'}
                       </span>
                       <div className="flex items-center gap-1">
                         <IconCoin className="text-blue" />
@@ -787,10 +887,13 @@ export default function SubscriptionPage() {
                       type="submit"
                       form="subscription-form"
                       className="w-full"
-                      disabled={!agreedToTerms}
+                      disabled={
+                        !agreedToTerms ||
+                        (isAddModuleMode && selectedModules.length === 0)
+                      }
                       isLoading={isSubmitting}
                     >
-                      Avançar
+                      {isAddModuleMode ? 'Adicionar módulo' : 'Avançar'}
                       {!isSubmitting && <IconArrowRight />}
                     </Button>
                   </CardContent>

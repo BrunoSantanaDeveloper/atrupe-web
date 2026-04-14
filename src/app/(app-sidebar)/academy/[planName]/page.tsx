@@ -206,69 +206,73 @@ export default function AcademyPage() {
         </CardContent>
       </Card>
 
-    <Accordion type="single" collapsible defaultValue={getDefaultOpenSection()}>
-      <div className="flex flex-col gap-4">
-        {academyData.sections.map((section, index) => (
-          <Card key={section.title + index} className="w-full">
-            <AccordionItem
-              value={`item-${section.title}`}
-              className="p-0 m-0 border-0"
-            >
-              <CardHeader>
-                <div className="flex justify-between">
-                  <div className="flex gap-3 items-center">
-                    {section.items.every((item) => item.checked) &&
-                    section.items.length > 0 ? (
-                      <IconCircleCheckFilled className="text-success" />
-                    ) : section.items.some((item) => item.checked) ? (
-                      <IconCircleDotFilled className="text-blue" />
-                    ) : (
-                      <IconCircleFilled className="text-gray-200" />
-                    )}
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      {section.title}
-                    </CardTitle>
-                    <span className="text-xs text-gray-400 ml-2">
-                      {section.items.filter((i) => i.checked).length}/
-                      {section.items.length}
-                    </span>
-                  </div>
-                  <div className="flex gap-3">
-                    <AccordionTrigger
-                      className={cn(
-                        buttonVariants({
-                          variant: 'neutralLight',
-                          size: 'icon',
-                        }),
-                        'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+      <Accordion
+        type="single"
+        collapsible
+        defaultValue={getDefaultOpenSection()}
+      >
+        <div className="flex flex-col gap-4">
+          {academyData.sections.map((section, index) => (
+            <Card key={section.title + index} className="w-full">
+              <AccordionItem
+                value={`item-${section.title}`}
+                className="p-0 m-0 border-0"
+              >
+                <CardHeader>
+                  <div className="flex justify-between">
+                    <div className="flex gap-3 items-center">
+                      {section.items.every((item) => item.checked) &&
+                      section.items.length > 0 ? (
+                        <IconCircleCheckFilled className="text-success" />
+                      ) : section.items.some((item) => item.checked) ? (
+                        <IconCircleDotFilled className="text-blue" />
+                      ) : (
+                        <IconCircleFilled className="text-gray-200" />
                       )}
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <AccordionContent>
-                <Separator />
-                <CardContent className="p-0">
-                  {section.items.length > 0 ? (
-                    section.items.map((item, itemIndex) => (
-                      <AcademyItemRow
-                        key={item.id}
-                        data={item}
-                        showVideoInline={index === 0 && itemIndex === 0}
-                      />
-                    ))
-                  ) : (
-                    <div className="p-4 text-center text-gray-500 text-sm">
-                      Em breve
+                      <CardTitle className="text-gray-700 font-semibold text-base">
+                        {section.title}
+                      </CardTitle>
+                      <span className="text-xs text-gray-400 ml-2">
+                        {section.items.filter((i) => i.checked).length}/
+                        {section.items.length}
+                      </span>
                     </div>
-                  )}
-                </CardContent>
-              </AccordionContent>
-            </AccordionItem>
-          </Card>
-        ))}
-      </div>
-    </Accordion>
+                    <div className="flex gap-3">
+                      <AccordionTrigger
+                        className={cn(
+                          buttonVariants({
+                            variant: 'neutralLight',
+                            size: 'icon',
+                          }),
+                          'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                        )}
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
+                <AccordionContent>
+                  <Separator />
+                  <CardContent className="p-0">
+                    {section.items.length > 0 ? (
+                      section.items.map((item, itemIndex) => (
+                        <AcademyItemRow
+                          key={item.id}
+                          data={item}
+                          showVideoInline={index === 0 && itemIndex === 0}
+                        />
+                      ))
+                    ) : (
+                      <div className="p-4 text-center text-gray-500 text-sm">
+                        Em breve
+                      </div>
+                    )}
+                  </CardContent>
+                </AccordionContent>
+              </AccordionItem>
+            </Card>
+          ))}
+        </div>
+      </Accordion>
     </>
   )
 }

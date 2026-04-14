@@ -256,28 +256,30 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
             </TooltipProvider>
           </div>
 
-          {video && !showVideoInline && (() => {
-            const thumb = getVideoThumbnail(video)
-            return (
-              <button
-                type="button"
-                onClick={() => handleAction('video', video)}
-                className="flex items-center gap-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors px-1.5 py-1 cursor-pointer"
-              >
-                {thumb ? (
-                  <Image
-                    src={thumb}
-                    alt={title || 'Vídeo'}
-                    width={64}
-                    height={36}
-                    className="rounded object-cover"
-                    unoptimized
-                  />
-                ) : null}
-                <IconVideo className="size-4 text-gray-500" />
-              </button>
-            )
-          })()}
+          {video &&
+            !showVideoInline &&
+            (() => {
+              const thumb = getVideoThumbnail(video)
+              return (
+                <button
+                  type="button"
+                  onClick={() => handleAction('video', video)}
+                  className="flex items-center gap-2 rounded-md border border-gray-200 hover:border-gray-300 transition-colors px-1.5 py-1 cursor-pointer"
+                >
+                  {thumb ? (
+                    <Image
+                      src={thumb}
+                      alt={title || 'Vídeo'}
+                      width={64}
+                      height={36}
+                      className="rounded object-cover"
+                      unoptimized
+                    />
+                  ) : null}
+                  <IconVideo className="size-4 text-gray-500" />
+                </button>
+              )
+            })()}
 
           {(page || modal) && !activeModal && (
             <Button

@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 // Components
 import { IssueNfseForm } from './components/IssueNfseForm'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FiscalModuleGate } from '../../components/FiscalModuleGate'
 
 // Types
 import { ParamsType } from '@/types/coreTypes'
@@ -15,17 +16,19 @@ export const metadata: Metadata = {
 
 export default async function IssueNfsePage({ params }: ParamsType) {
   return (
-    <PermissionGate
-      permissions={['nota_fiscal:emitir:create']}
-      fallback={
-        <div className="p-4">
-          Você não tem permissão para emitir nota fiscal de serviço.
-        </div>
-      }
-    >
-      <Suspense fallback={null}>
-        <IssueNfseForm id={params.orderId} />
-      </Suspense>
-    </PermissionGate>
+    <FiscalModuleGate>
+      <PermissionGate
+        permissions={['nota_fiscal:emitir:create']}
+        fallback={
+          <div className="p-4">
+            Você não tem permissão para emitir nota fiscal de serviço.
+          </div>
+        }
+      >
+        <Suspense fallback={null}>
+          <IssueNfseForm id={params.orderId} />
+        </Suspense>
+      </PermissionGate>
+    </FiscalModuleGate>
   )
 }

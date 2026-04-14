@@ -204,6 +204,7 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
                         size="iconSm"
                         className="text-gray-400 hover:text-error-600"
                         onClick={() => removeDuplicate(idx)}
+                        aria-label="Remover duplicata"
                       >
                         <IconTrash size={16} />
                       </Button>

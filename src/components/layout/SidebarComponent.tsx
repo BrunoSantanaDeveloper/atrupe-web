@@ -50,6 +50,7 @@ import type { Session } from 'next-auth'
 import type { MainNavigationType, SecondaryNavigationType } from '@/consts/nav'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { useSession } from 'next-auth/react'
 
 interface Props {
@@ -86,6 +87,8 @@ export function SidebarComponent(props: Props) {
     canManageRejectionReasons,
     canManageDeliverySchedule,
   } = usePlanFeatures()
+  const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
+    useFiscalOnboardingStatus()
 
   // Checks if a subscription module (additional feature) is contracted by the company
   const hasContractedModule = (requiredModule?: string): boolean => {
@@ -400,7 +403,26 @@ export function SidebarComponent(props: Props) {
                                             {navChild?.title}
                                           </span>
                                         </div>
-                                        {navChild?.counter ? (
+                                        {navChild?.requiredModule ===
+                                          'nota_fiscal' &&
+                                        (isFiscalPending ||
+                                          isFiscalNeedsSetup) ? (
+                                          <Badge
+                                            variant={
+                                              isFiscalPending
+                                                ? 'warningLight'
+                                                : 'neutralLight'
+                                            }
+                                            className={cn(
+                                              'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500',
+                                              collapsed && 'opacity-0',
+                                            )}
+                                          >
+                                            {isFiscalPending
+                                              ? 'Pendente'
+                                              : 'Configurar'}
+                                          </Badge>
+                                        ) : navChild?.counter ? (
                                           <Badge
                                             variant="neutralLight"
                                             className={cn(

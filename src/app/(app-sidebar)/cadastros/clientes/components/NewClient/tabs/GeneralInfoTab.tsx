@@ -94,13 +94,15 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
 
   const [isRefreshing, setIsRefreshing] = useState(false)
 
-  const currentDocument = type === 'PERSON'
-    ? watch('general.cpf')?.replace(/[.\-/]/g, '') || ''
-    : watch('general.cnpj')?.replace(/[.\-/]/g, '') || ''
+  const currentDocument =
+    type === 'PERSON'
+      ? watch('general.cpf')?.replace(/[.\-/]/g, '') || ''
+      : watch('general.cnpj')?.replace(/[.\-/]/g, '') || ''
 
-  const hasDocument = type === 'PERSON'
-    ? currentDocument.length === 11
-    : currentDocument.length === 14
+  const hasDocument =
+    type === 'PERSON'
+      ? currentDocument.length === 11
+      : currentDocument.length === 14
 
   const handleRefreshOfficialData = useCallback(async () => {
     if (!hasDocument || !currentDocument) return
@@ -119,7 +121,11 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         setValue('general.name', freshData.name)
         updated.push('Nome')
       }
-      if (type === 'COMPANY' && freshData.corporateName && freshData.corporateName !== watch('general.corporateName')) {
+      if (
+        type === 'COMPANY' &&
+        freshData.corporateName &&
+        freshData.corporateName !== watch('general.corporateName')
+      ) {
         setValue('general.corporateName', freshData.corporateName)
         updated.push('Razão Social')
       }
@@ -128,27 +134,45 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
         updated.push('Telefone')
       }
       if (freshData.address) {
-        if (freshData.address.street && freshData.address.street !== watch('addresses.0.street')) {
+        if (
+          freshData.address.street &&
+          freshData.address.street !== watch('addresses.0.street')
+        ) {
           setValue('addresses.0.street', freshData.address.street)
           updated.push('Rua')
         }
-        if (freshData.address.number && freshData.address.number !== watch('addresses.0.number')) {
+        if (
+          freshData.address.number &&
+          freshData.address.number !== watch('addresses.0.number')
+        ) {
           setValue('addresses.0.number', freshData.address.number)
           updated.push('Número')
         }
-        if (freshData.address.neighborhood && freshData.address.neighborhood !== watch('addresses.0.neighborhood')) {
+        if (
+          freshData.address.neighborhood &&
+          freshData.address.neighborhood !== watch('addresses.0.neighborhood')
+        ) {
           setValue('addresses.0.neighborhood', freshData.address.neighborhood)
           updated.push('Bairro')
         }
-        if (freshData.address.city && freshData.address.city !== watch('addresses.0.city')) {
+        if (
+          freshData.address.city &&
+          freshData.address.city !== watch('addresses.0.city')
+        ) {
           setValue('addresses.0.city', freshData.address.city)
           updated.push('Cidade')
         }
-        if (freshData.address.state && freshData.address.state !== watch('addresses.0.state')) {
+        if (
+          freshData.address.state &&
+          freshData.address.state !== watch('addresses.0.state')
+        ) {
           setValue('addresses.0.state', freshData.address.state)
           updated.push('UF')
         }
-        if (freshData.address.zipcode && freshData.address.zipcode !== watch('addresses.0.zipcode')) {
+        if (
+          freshData.address.zipcode &&
+          freshData.address.zipcode !== watch('addresses.0.zipcode')
+        ) {
           setValue('addresses.0.zipcode', freshData.address.zipcode)
           updated.push('CEP')
         }
@@ -177,146 +201,148 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             onClick={handleRefreshOfficialData}
             disabled={isRefreshing}
           >
-            <IconRefresh className={`h-4 w-4 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <IconRefresh
+              className={`h-4 w-4 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`}
+            />
             {isRefreshing ? 'Atualizando...' : 'Atualizar dados oficiais'}
           </Button>
         </div>
       )}
-    <div className="grid grid-cols-2 gap-4">
-      {type === 'PERSON' && (
-        <>
-          <FormInput
-            name="general.cpf"
-            label="CPF"
-            placeholder="Digite aqui"
-            additionalOnChange={(value) => {
-              const maskedValue = maskCpf(String(value)) || ''
-              setValue('general.cpf', maskedValue)
-            }}
-            onBlur={(e) => {
-              handleDocumentChange(e.target.value, 'CPF')
-            }}
-            maxLength={14}
-          />
-        </>
-      )}
-      {type === 'COMPANY' && (
-        <>
-          <FormInput
-            name="general.cnpj"
-            label="CNPJ"
-            placeholder="Digite aqui"
-            additionalOnChange={(value) => {
-              const maskedValue = maskCnpj(String(value)) || ''
-              setValue('general.cnpj', maskedValue)
-            }}
-            onBlur={(e) => {
-              handleDocumentChange(e.target.value, 'CNPJ')
-            }}
-            maxLength={18}
-          />
-        </>
-      )}
-      {type === 'COMPANY' && (
-        <>
-          <FormInput
-            name="general.corporateName"
-            label="Razão social"
-            placeholder="Digite aqui"
-            className="col-span-2"
-          />
-        </>
-      )}
-      <FormInput
-        name="general.name"
-        label={type === 'PERSON' ? 'Nome' : 'Nome fantasia'}
-        placeholder="Digite aqui"
-        className="col-span-2"
-      />
-
-      {type === 'COMPANY' && (
-        <>
-          <FormInput
-            name="general.stateRegistration"
-            label="Inscrição Estadual (IE)"
-            placeholder="Somente números"
-            maxLength={14}
-          />
-          <FormSelect
-            name="general.indicadorIE"
-            label="Indicador IE"
-            options={[
-              { label: 'Contribuinte ICMS', value: '1' },
-              { label: 'Contribuinte Isento', value: '2' },
-              { label: 'Não Contribuinte', value: '9' },
-            ]}
-          />
-        </>
-      )}
-
-      {type === 'PERSON' && (
-        <>
-          <FormDatePickerInput
-            name="general.birthdate"
-            label="Data de nascimento"
-            placeholder="Selecione a data"
-          />
-          <FormInput name="general.rg" label="RG" />
-        </>
-      )}
-      <FormInput
-        name="general.email"
-        label="E-mail"
-        placeholder="Digite aqui"
-        type="email"
-      />
-
-      {/* <FormInput name="general.activity" label="Atividade" /> */}
-
-      <FormSelect
-        name="general.categoryId"
-        label="Grupo"
-        options={categoryOptions}
-      />
-
-      <FormInput
-        name="general.phone"
-        label="Telefone"
-        inputMode="tel"
-        placeholder="Digite aqui"
-        additionalOnChange={(value) => {
-          setValue('general.phone', MaskPhoneNumber(value) || '')
-        }}
-        maxLength={15}
-      />
-
-      <FormInput
-        name="general.mobile"
-        label="Celular"
-        inputMode="tel"
-        placeholder="Digite aqui"
-        additionalOnChange={(value) => {
-          setValue('general.mobile', MaskPhoneNumber(value) || '')
-        }}
-        maxLength={15}
-      />
-
-      <FormCheckbox
-        name="general.isBranch"
-        label="Filial (Não validar CPF / CNPJ)"
-        className="my-4"
-      />
-
-      <div className="col-span-2">
-        <FormTextarea
-          name="general.notes"
-          label="Observações gerais"
+      <div className="grid grid-cols-2 gap-4">
+        {type === 'PERSON' && (
+          <>
+            <FormInput
+              name="general.cpf"
+              label="CPF"
+              placeholder="Digite aqui"
+              additionalOnChange={(value) => {
+                const maskedValue = maskCpf(String(value)) || ''
+                setValue('general.cpf', maskedValue)
+              }}
+              onBlur={(e) => {
+                handleDocumentChange(e.target.value, 'CPF')
+              }}
+              maxLength={14}
+            />
+          </>
+        )}
+        {type === 'COMPANY' && (
+          <>
+            <FormInput
+              name="general.cnpj"
+              label="CNPJ"
+              placeholder="Digite aqui"
+              additionalOnChange={(value) => {
+                const maskedValue = maskCnpj(String(value)) || ''
+                setValue('general.cnpj', maskedValue)
+              }}
+              onBlur={(e) => {
+                handleDocumentChange(e.target.value, 'CNPJ')
+              }}
+              maxLength={18}
+            />
+          </>
+        )}
+        {type === 'COMPANY' && (
+          <>
+            <FormInput
+              name="general.corporateName"
+              label="Razão social"
+              placeholder="Digite aqui"
+              className="col-span-2"
+            />
+          </>
+        )}
+        <FormInput
+          name="general.name"
+          label={type === 'PERSON' ? 'Nome' : 'Nome fantasia'}
           placeholder="Digite aqui"
           className="col-span-2"
-          rows={5}
         />
+
+        {type === 'COMPANY' && (
+          <>
+            <FormInput
+              name="general.stateRegistration"
+              label="Inscrição Estadual (IE)"
+              placeholder="Somente números"
+              maxLength={14}
+            />
+            <FormSelect
+              name="general.indicadorIE"
+              label="Indicador IE"
+              options={[
+                { label: 'Contribuinte ICMS', value: '1' },
+                { label: 'Contribuinte Isento', value: '2' },
+                { label: 'Não Contribuinte', value: '9' },
+              ]}
+            />
+          </>
+        )}
+
+        {type === 'PERSON' && (
+          <>
+            <FormDatePickerInput
+              name="general.birthdate"
+              label="Data de nascimento"
+              placeholder="Selecione a data"
+            />
+            <FormInput name="general.rg" label="RG" />
+          </>
+        )}
+        <FormInput
+          name="general.email"
+          label="E-mail"
+          placeholder="Digite aqui"
+          type="email"
+        />
+
+        {/* <FormInput name="general.activity" label="Atividade" /> */}
+
+        <FormSelect
+          name="general.categoryId"
+          label="Grupo"
+          options={categoryOptions}
+        />
+
+        <FormInput
+          name="general.phone"
+          label="Telefone"
+          inputMode="tel"
+          placeholder="Digite aqui"
+          additionalOnChange={(value) => {
+            setValue('general.phone', MaskPhoneNumber(value) || '')
+          }}
+          maxLength={15}
+        />
+
+        <FormInput
+          name="general.mobile"
+          label="Celular"
+          inputMode="tel"
+          placeholder="Digite aqui"
+          additionalOnChange={(value) => {
+            setValue('general.mobile', MaskPhoneNumber(value) || '')
+          }}
+          maxLength={15}
+        />
+
+        <FormCheckbox
+          name="general.isBranch"
+          label="Filial (Não validar CPF / CNPJ)"
+          className="my-4"
+        />
+
+        <div className="col-span-2">
+          <FormTextarea
+            name="general.notes"
+            label="Observações gerais"
+            placeholder="Digite aqui"
+            className="col-span-2"
+            rows={5}
+          />
+        </div>
       </div>
-    </div>
     </div>
   )
 }

@@ -1255,7 +1255,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               {freightPrice > 0 && (
                 <View style={styles.totalRow}>
                   <Text>Frete</Text>
-                  <Text>{formatCurrencyToBrl(data.delivery?.freightPrice)}</Text>
+                  <Text>
+                    {formatCurrencyToBrl(data.delivery?.freightPrice)}
+                  </Text>
                 </View>
               )}
 

@@ -106,6 +106,7 @@ export default function FinishSubscriptionPage() {
           | Subscription
           | undefined
         const plan = subscription?.plan
+        let features: string[] = []
         if (plan && subscription) {
           // Construir features array dos planFeatures ativos
           const planFeatureKeys =
@@ -119,7 +120,9 @@ export default function FinishSubscriptionPage() {
               ?.filter((sf) => sf.isActive !== false && sf.feature)
               .map((sf) => sf.feature.key) || []
 
-          const features = Array.from(new Set([...planFeatureKeys, ...subFeatureKeys]))
+          features = Array.from(
+            new Set([...planFeatureKeys, ...subFeatureKeys]),
+          )
 
           // Construir limits object dos planLimits
           const limits: { [key: string]: number } = {}
@@ -142,7 +145,12 @@ export default function FinishSubscriptionPage() {
         }
 
         setTimeout(() => {
-          router.replace('/dashboard')
+          // If nota_fiscal was contracted, redirect to fiscal onboarding
+          if (features.includes('nota_fiscal')) {
+            router.replace('/assinatura/configurar-fiscal')
+          } else {
+            router.replace('/dashboard')
+          }
         }, 3000)
       } else {
         setStatus('waiting_payment')
@@ -198,6 +206,7 @@ export default function FinishSubscriptionPage() {
             | Subscription
             | undefined
           const plan = subscription?.plan
+          let features: string[] = []
           if (plan && subscription) {
             // Construir features array dos planFeatures ativos
             const planFeatureKeys =
@@ -211,7 +220,9 @@ export default function FinishSubscriptionPage() {
                 ?.filter((sf) => sf.isActive !== false && sf.feature)
                 .map((sf) => sf.feature.key) || []
 
-            const features = Array.from(new Set([...planFeatureKeys, ...subFeatureKeys]))
+            features = Array.from(
+              new Set([...planFeatureKeys, ...subFeatureKeys]),
+            )
 
             // Construir limits object dos planLimits
             const limits: { [key: string]: number } = {}
@@ -233,9 +244,13 @@ export default function FinishSubscriptionPage() {
             })
           }
 
-          // Redirecionar para o dashboard após 3 segundos
+          // Redirecionar após 3 segundos
           setTimeout(() => {
-            router.replace('/dashboard')
+            if (features.includes('nota_fiscal')) {
+              router.replace('/assinatura/configurar-fiscal')
+            } else {
+              router.replace('/dashboard')
+            }
           }, 3000)
         } else if (checkResult.status === 'payment_pending') {
           // Pagamento ainda pendente (PIX ou Boleto)

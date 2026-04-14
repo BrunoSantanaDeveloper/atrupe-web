@@ -13,7 +13,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
@@ -24,7 +23,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconSearch, IconFileInvoice } from '@tabler/icons-react'
+import { IconFileInvoice } from '@tabler/icons-react'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -192,7 +191,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50 border-y border-gray-100">
-              <TableHead className="w-12"></TableHead>
               <TableHead>Referência</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Status</TableHead>
@@ -204,7 +202,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
               <Fragment key={group.date}>
                 <TableRow className="bg-gray-100">
                   <TableCell
-                    colSpan={5}
+                    colSpan={4}
                     className="text-gray font-medium text-xs py-3"
                   >
                     {formatDate(group.date)}
@@ -219,9 +217,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                   return (
                     <TableRow key={order.id} className="hover:bg-gray-50">
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
                       <TableCell>
                         <p className="font-medium text-gray-800">
                           {clientName}
@@ -239,7 +234,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                       <TableCell>
                         <div className="flex justify-end gap-1">
                           <ActionButton
-                            Icon={IconSearch}
+                            Icon={IconFileInvoice}
                             tooltip="Emitir NF-e"
                             link={`/nota-fiscal/emitir/${order.id}`}
                           />

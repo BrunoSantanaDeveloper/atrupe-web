@@ -26,7 +26,8 @@ export const getDataOld = async ({
       ? Object.fromEntries(
           Object.entries(filters).filter(
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            ([_, value]) => value !== null && value !== '' && value !== undefined,
+            ([_, value]) =>
+              value !== null && value !== '' && value !== undefined,
           ),
         )
       : {}
@@ -43,7 +44,11 @@ export const getDataOld = async ({
   } catch (error: any) {
     // Re-throw Next.js redirect errors (ex: redirect('/logout') no interceptor)
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    console.error(`Erro em getDataOld [${route}]:`, error?.response?.status, error?.message)
+    console.error(
+      `Erro em getDataOld [${route}]:`,
+      error?.response?.status,
+      error?.message,
+    )
     return null
   }
 }
@@ -115,7 +120,11 @@ export const getItemOld = async ({
     return res.data
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    console.error(`Erro em getItemOld [${route}/${id}]:`, error?.response?.status, error?.message)
+    console.error(
+      `Erro em getItemOld [${route}/${id}]:`,
+      error?.response?.status,
+      error?.message,
+    )
     return null
   }
 }
@@ -210,8 +219,12 @@ export const createItemNew = async ({
 
     return {
       success: false,
+      status: error?.response?.status,
       code: userMessage?.statusCode || 'unknown',
-      message: userMessage?.message || 'Erro desconhecido.',
+      message:
+        userMessage?.message ||
+        error?.response?.data?.message ||
+        'Erro desconhecido.',
     }
   }
 }

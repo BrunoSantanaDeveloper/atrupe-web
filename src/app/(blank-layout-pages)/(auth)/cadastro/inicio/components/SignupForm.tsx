@@ -33,7 +33,8 @@ import { MaskPhoneNumber } from '@/lib/utils'
 
 export function SignupForm() {
   const router = useRouter()
-  const { signupData, setSignupData, setCountdown, setVerificationToken } = useSignupStore()
+  const { signupData, setSignupData, setCountdown, setVerificationToken } =
+    useSignupStore()
 
   const form = useForm<SignupType>({
     resolver: zodResolver(signupSchema),

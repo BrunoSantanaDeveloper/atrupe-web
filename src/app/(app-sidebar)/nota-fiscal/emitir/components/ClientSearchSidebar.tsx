@@ -11,8 +11,12 @@ import { Label } from '@/components/ui/label'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { Search, Loader2 } from 'lucide-react'
-import { IconSearch, IconUserSearch, IconCheck } from '@tabler/icons-react'
+import {
+  IconSearch,
+  IconUserSearch,
+  IconCheck,
+  IconLoader2,
+} from '@tabler/icons-react'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -108,15 +112,18 @@ export function ClientSearchSidebar({ searchParams }: Props) {
               placeholder="Buscar por nome ou CNPJ..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              startAdornment={<Search size={18} className="text-gray-400" />}
+              startAdornment={
+                <IconSearch size={18} className="text-gray-400" />
+              }
             />
           </div>
           <Button
             type="submit"
             size="iconMd"
-            LeftIcon={isSearching ? Loader2 : IconSearch}
+            LeftIcon={isSearching ? IconLoader2 : IconSearch}
             disabled={isSearching}
-            className={isSearching ? 'animate-spin' : ''}
+            className={isSearching ? '[&>svg]:animate-spin' : ''}
+            aria-label="Buscar clientes"
           />
         </form>
       </CardHeader>

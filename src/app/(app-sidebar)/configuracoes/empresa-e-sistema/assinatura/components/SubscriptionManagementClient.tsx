@@ -22,12 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Icons
-import {
-  IconPencil,
-  IconPrinter,
-  IconFileText,
-  IconPlus,
-} from '@tabler/icons-react'
+import { IconPrinter, IconFileText, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
@@ -153,9 +148,13 @@ export function SubscriptionManagementClient({
         }
         primaryCta={
           subscription ? (
-            <Button asChild LeftIcon={isTrial ? IconPlus : IconPencil}>
+            <Button asChild LeftIcon={IconPlus}>
               <Link href="/assinatura">
-                {isTrial ? 'Contratar plano' : 'Editar assinatura'}
+                {subscription.status !== 'ACTIVE'
+                  ? 'Recontratar plano'
+                  : isTrial
+                    ? 'Contratar plano'
+                    : 'Adicionar módulo'}
               </Link>
             </Button>
           ) : undefined

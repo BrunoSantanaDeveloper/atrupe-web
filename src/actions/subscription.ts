@@ -44,37 +44,59 @@ export async function refreshPlanFeatures(): Promise<{
     })
 
     if (!response?.success || !response?.data) {
-      return { success: false, features: [], limits: {}, planName: null, active: false }
+      return {
+        success: false,
+        features: [],
+        limits: {},
+        planName: null,
+        active: false,
+      }
     }
 
     const subscription = response.data
     const plan = subscription.plan
 
     if (!plan) {
-      return { success: false, features: [], limits: {}, planName: null, active: false }
+      return {
+        success: false,
+        features: [],
+        limits: {},
+        planName: null,
+        active: false,
+      }
     }
 
     // Features do plano base
     const planFeatureKeys: string[] =
       plan.planFeatures
-        ?.filter((pf: { isActive: boolean; feature: { key: string } }) => pf.isActive && pf.feature)
+        ?.filter(
+          (pf: { isActive: boolean; feature: { key: string } }) =>
+            pf.isActive && pf.feature,
+        )
         .map((pf: { feature: { key: string } }) => pf.feature.key) || []
 
     // Features adicionais da subscription (ex: nota_fiscal)
     const subFeatureKeys: string[] =
       subscription.subscriptionFeatures
-        ?.filter((sf: { isActive: boolean; feature: { key: string } }) => sf.isActive !== false && sf.feature)
+        ?.filter(
+          (sf: { isActive: boolean; feature: { key: string } }) =>
+            sf.isActive !== false && sf.feature,
+        )
         .map((sf: { feature: { key: string } }) => sf.feature.key) || []
 
-    const features = Array.from(new Set([...planFeatureKeys, ...subFeatureKeys]))
+    const features = Array.from(
+      new Set([...planFeatureKeys, ...subFeatureKeys]),
+    )
 
     // Limits do plano
     const limits: Record<string, number> = {}
-    plan.planLimits?.forEach((pl: { limit?: { key: string }; value?: number }) => {
-      if (pl.limit?.key) {
-        limits[pl.limit.key] = pl.value || 0
-      }
-    })
+    plan.planLimits?.forEach(
+      (pl: { limit?: { key: string }; value?: number }) => {
+        if (pl.limit?.key) {
+          limits[pl.limit.key] = pl.value || 0
+        }
+      },
+    )
 
     return {
       success: true,
@@ -85,7 +107,12 @@ export async function refreshPlanFeatures(): Promise<{
     }
   } catch (error) {
     console.error('Error refreshing plan features:', error)
-    return { success: false, features: [], limits: {}, planName: null, active: false }
+    return {
+      success: false,
+      features: [],
+      limits: {},
+      planName: null,
+      active: false,
+    }
   }
 }
-

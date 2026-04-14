@@ -3,6 +3,7 @@ import { DashboardRevenues } from './Revenues'
 import { DashboardExpenses } from './Expenses'
 import { DashboardQuotations } from './Quotations'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FiscalOnboardingBanner } from './FiscalOnboardingBanner'
 // import { DashboardTopClients } from './TopClients'
 // import { DashboardQuickAccess } from './QuickAccess'
 // import { DashboardSalesBySeller } from './SalesBySeller'
@@ -11,6 +12,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 export function Dashboard() {
   return (
     <div className="space-y-4 mt-1 w-full">
+      <FiscalOnboardingBanner />
       <div className="flex flex-wrap gap-4">
         <PermissionGate permissions={['financial:flow:view']}>
           <DashboardRevenues />

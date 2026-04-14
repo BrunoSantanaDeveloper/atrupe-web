@@ -6,6 +6,7 @@ import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // UI
 import { Badge, BadgeProps } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import {
   Table,
@@ -17,7 +18,7 @@ import {
 } from '@/components/ui/table'
 
 // Icons
-import { IconReceipt, IconChevronRight } from '@tabler/icons-react'
+import { IconReceipt, IconExternalLink } from '@tabler/icons-react'
 
 // Utils
 import { formatToLocaleDate } from '@/lib/formatDate'
@@ -90,13 +91,18 @@ export function PaymentsTable({
               <TableHead>Status</TableHead>
               <TableHead>Data de pagamento</TableHead>
               <TableHead className="text-right">Valor</TableHead>
-              <TableHead className="w-10" />
+              <TableHead className="w-24" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {payments.map((payment) => {
               const statusInfo =
                 paymentStatusMap[payment.status] || paymentStatusMap.PENDING
+
+              const canPay =
+                (payment.status === 'PENDING' ||
+                  payment.status === 'OVERDUE') &&
+                payment.invoiceUrl
 
               return (
                 <TableRow key={payment.id}>
@@ -120,10 +126,25 @@ export function PaymentsTable({
                     )}
                   </TableCell>
                   <TableCell className="text-right font-medium">
-                    {formatCurrencyToBrl(payment.value)}
+                    {formatCurrencyToBrl(payment.value * 100)}
                   </TableCell>
-                  <TableCell>
-                    <IconChevronRight size={16} className="text-gray-400" />
+                  <TableCell className="text-right">
+                    {canPay ? (
+                      <Button
+                        asChild
+                        variant="successOutline"
+                        size="sm"
+                        RightIcon={IconExternalLink}
+                      >
+                        <a
+                          href={payment.invoiceUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Pagar
+                        </a>
+                      </Button>
+                    ) : null}
                   </TableCell>
                 </TableRow>
               )

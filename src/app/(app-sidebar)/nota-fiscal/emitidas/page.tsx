@@ -1,5 +1,6 @@
 import { IssuedInvoicesClient } from './components/IssuedInvoicesClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FiscalModuleGate } from '../components/FiscalModuleGate'
 
 export default function IssuedInvoicePage() {
   return (
@@ -11,7 +12,9 @@ export default function IssuedInvoicePage() {
         </div>
       }
     >
-      <IssuedInvoicesClient />
+      <FiscalModuleGate>
+        <IssuedInvoicesClient />
+      </FiscalModuleGate>
     </PermissionGate>
   )
 }

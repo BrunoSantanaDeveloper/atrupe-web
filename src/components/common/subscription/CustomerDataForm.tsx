@@ -44,7 +44,7 @@ export function CustomerDataForm({
           Dados complementares
         </h3>
         <p className="text-xs text-muted-foreground mb-4">
-          Informações para emissão de suas Notas Fiscais.
+          Informações do responsável pela contratação.
         </p>
 
         {/* Person Type Toggle */}

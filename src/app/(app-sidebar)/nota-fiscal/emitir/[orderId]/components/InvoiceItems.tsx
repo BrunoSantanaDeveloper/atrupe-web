@@ -5,6 +5,14 @@ import { useState } from 'react'
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button, buttonVariants } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 import { Badge } from '@/components/ui/badge'
 
@@ -77,7 +85,6 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                   <Button
                     variant="success"
                     size="sm"
-                    className="bg-[#32BCAD] border-[#32BCAD] hover:bg-[#2da89b]"
                     LeftIcon={IconSettings}
                     onClick={() => {
                       /* Just open first for now or let user handle per row */
@@ -104,41 +111,41 @@ export function InvoiceItems({ data, onUpdate }: Props) {
             <AccordionContent>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm border-collapse">
-                    <thead className="bg-gray-50 border-y border-gray-100">
-                      <tr>
-                        <th className="px-6 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[35%]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50 border-y border-gray-100">
+                        <TableHead className="px-6 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[35%]">
                           Referência
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[20%]">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[20%]">
                           CST
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
                           Frete
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
                           Seguro
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
                           Valor unitário
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-center">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-center">
                           Qtd.
-                        </th>
-                        <th className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        </TableHead>
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
                           Valor final
-                        </th>
-                        <th className="px-6 py-3 w-[50px]"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
+                        </TableHead>
+                        <TableHead className="px-6 py-3 w-[50px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {filteredItems.map((item) => (
-                        <tr
+                        <TableRow
                           key={item.itemNumber}
                           className="group hover:bg-gray-50/50 transition-colors"
                         >
                           {/* Referência */}
-                          <td className="px-6 py-4 align-top">
+                          <TableCell className="px-6 py-4 align-top">
                             <div className="space-y-1">
                               <p className="font-medium text-gray-900 line-clamp-2">
                                 {item.itemNumber} - {item.description}
@@ -164,10 +171,10 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                 </div>
                               )}
                             </div>
-                          </td>
+                          </TableCell>
 
                           {/* CST / Configurar */}
-                          <td className="px-4 py-4 align-top">
+                          <TableCell className="px-4 py-4 align-top">
                             {item.needsConfiguration ? (
                               <Button
                                 variant="success"
@@ -215,38 +222,38 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                 <Button
                                   variant="link"
                                   size="sm"
-                                  className="h-auto p-0 text-[10px] text-blue-600 mt-1 hover:text-blue-700"
+                                  className="h-auto p-0 text-[10px] text-brand-600 mt-1 hover:text-brand-700"
                                   onClick={() => setConfigItem(item)}
                                 >
                                   Editar tributos
                                 </Button>
                               </div>
                             )}
-                          </td>
+                          </TableCell>
 
                           {/* Valores e Quantidade */}
-                          <td className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                          <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
                             {item.freight > 0
                               ? formatCurrency(item.freight)
                               : '-'}
-                          </td>
-                          <td className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                          </TableCell>
+                          <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
                             {item.insurance > 0
                               ? formatCurrency(item.insurance)
                               : '-'}
-                          </td>
-                          <td className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
+                          </TableCell>
+                          <TableCell className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
                             {formatCurrency(item.unitValue)}
-                          </td>
-                          <td className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
+                          </TableCell>
+                          <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
                             {item.quantity}
-                          </td>
-                          <td className="px-4 py-4 text-right text-success-700 font-bold text-sm align-top tabular-nums">
+                          </TableCell>
+                          <TableCell className="px-4 py-4 text-right text-success-700 font-bold text-sm align-top tabular-nums">
                             {formatCurrency(item.totalValue)}
-                          </td>
+                          </TableCell>
 
                           {/* Ações */}
-                          <td className="px-6 py-4 text-right align-top">
+                          <TableCell className="px-6 py-4 text-right align-top">
                             <Button
                               variant="neutralGhost"
                               size="iconSm"
@@ -255,11 +262,11 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                             >
                               <IconPencil size={16} />
                             </Button>
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
+                    </TableBody>
+                  </Table>
                 </div>
               </CardContent>
             </AccordionContent>
