@@ -43,7 +43,10 @@ import {
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Types
-import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
+import type {
+  NfePrepareResponse,
+  NfePrepareItem,
+} from '@/types/fiscal/nfe-prepare'
 
 interface Props {
   id: string
@@ -54,6 +57,9 @@ export function IssueInvoiceForm({ id }: Props) {
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<NfePrepareResponse | null>(null)
+  const [originalItems, setOriginalItems] = useState<
+    NfePrepareResponse['items'] | null
+  >(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
 
   const router = useRouter()
@@ -81,6 +87,9 @@ export function IssueInvoiceForm({ id }: Props) {
       }
 
       setData(preparedData)
+      setOriginalItems(
+        preparedData.items.map((item: NfePrepareItem) => ({ ...item })),
+      )
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao carregar dados'
@@ -95,20 +104,60 @@ export function IssueInvoiceForm({ id }: Props) {
     fetchData()
   }, [fetchData])
 
+  // Recalculate totais from current items whenever data changes
+  const computedTotais = data
+    ? (() => {
+        const productItems = data.items.filter((item) => !item.isService)
+        const valorProdutos = productItems.reduce(
+          (sum, item) => sum + item.unitValue * item.quantity,
+          0,
+        )
+        const valorDesconto = productItems.reduce(
+          (sum, item) => sum + item.discount,
+          0,
+        )
+        const valorFrete = productItems.reduce(
+          (sum, item) => sum + item.freight,
+          0,
+        )
+        const valorSeguro = productItems.reduce(
+          (sum, item) => sum + item.insurance,
+          0,
+        )
+        const valorNota =
+          valorProdutos - valorDesconto + valorFrete + valorSeguro
+        return {
+          ...data.totais,
+          valorProdutos: Number(valorProdutos.toFixed(2)),
+          valorDesconto: Number(valorDesconto.toFixed(2)),
+          valorFrete: Number(valorFrete.toFixed(2)),
+          valorSeguro: Number(valorSeguro.toFixed(2)),
+          valorNota: Number(valorNota.toFixed(2)),
+        }
+      })()
+    : null
+
+  // Check if any item value was manually edited vs original
+  const valuesModified =
+    originalItems != null &&
+    data != null &&
+    data.items.some((item) => {
+      const orig = originalItems.find((o) => o.itemNumber === item.itemNumber)
+      if (!orig) return false
+      return (
+        item.unitValue !== orig.unitValue ||
+        item.quantity !== orig.quantity ||
+        item.discount !== orig.discount ||
+        item.freight !== orig.freight ||
+        item.insurance !== orig.insurance
+      )
+    })
+
   // Handle emit
   const handleEmit = async () => {
     if (!data) return
 
-    const productItems = data.items.filter((item) => !item.isService)
-
-    if (productItems.length === 0) {
-      toast.error(
-        'Esta ordem não possui produtos para emissão de NF-e. Use a emissão de NFS-e para serviços.',
-      )
-      return
-    }
-
-    const invalidItems = productItems.filter((item) => item.needsConfiguration)
+    const invalidItems = data.items.filter((item) => item.needsConfiguration)
     if (invalidItems.length > 0) {
       const itemNames = invalidItems.map((i) => i.description).join(', ')
       toast.error(
@@ -149,7 +198,7 @@ export function IssueInvoiceForm({ id }: Props) {
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
           destPais: data.destinatario.pais,
-          items: productItems.map((item) => ({
+          items: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
             unitValue: item.unitValue,
@@ -334,7 +383,10 @@ export function IssueInvoiceForm({ id }: Props) {
             </Accordion>
           </Card>
 
-          <InvoiceTotalsSection totais={data.totais} />
+          <InvoiceTotalsSection
+            totais={computedTotais ?? data.totais}
+            valuesModified={valuesModified}
+          />
         </div>
       </div>
 

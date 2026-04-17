@@ -24,7 +24,10 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconFileInvoice, IconSearch } from '@tabler/icons-react'
+import { IconFileInvoice, IconSearch, IconReceipt } from '@tabler/icons-react'
+
+// Components (modal)
+import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -84,6 +87,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const [isLoading, setIsLoading] = useState(true)
   const [orderGroups, setOrderGroups] = useState<OrderGroupFromBackend[]>([])
   const [totalPages, setTotalPages] = useState(1)
+  const [modalOrderId, setModalOrderId] = useState<string | null>(null)
 
   const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
@@ -263,6 +267,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             tooltip="Detalhes da Ordem"
                             link={`/nota-fiscal/emitir/${order.id}`}
                           />
+                          <ActionButton
+                            Icon={IconReceipt}
+                            tooltip="Emitir Nota Fiscal"
+                            onClick={() => setModalOrderId(order.id)}
+                          />
                         </div>
                       </TableCell>
                     </TableRow>
@@ -281,6 +290,14 @@ export function InvoiceResultsTable({ searchParams }: Props) {
           activeVariant="success"
         />
       </CardFooter>
+
+      <InvoiceTypeSelectModal
+        open={!!modalOrderId}
+        onOpenChange={(open) => {
+          if (!open) setModalOrderId(null)
+        }}
+        orderId={modalOrderId ?? ''}
+      />
     </Card>
   )
 }
