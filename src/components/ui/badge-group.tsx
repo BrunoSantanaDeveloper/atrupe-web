@@ -19,7 +19,7 @@ const badgeGroupVariants = cva(
     defaultVariants: {
       variant: 'gray',
     },
-  }
+  },
 )
 
 export interface BadgeGroupProps
@@ -40,9 +40,7 @@ function BadgeGroup({
   return (
     <div className={cn(badgeGroupVariants({ variant }), className)} {...props}>
       {badge}
-      {message && (
-        <span className="text-sm font-medium px-1">{message}</span>
-      )}
+      {message && <span className="text-sm font-medium px-1">{message}</span>}
       {children}
     </div>
   )

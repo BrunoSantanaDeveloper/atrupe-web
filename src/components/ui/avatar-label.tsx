@@ -70,12 +70,14 @@ const AvatarLabel = React.forwardRef<HTMLDivElement, AvatarLabelProps>(
         <div className="flex flex-col justify-start items-start">
           <p className={cn(avatarLabelNameVariants({ size }))}>{name}</p>
           {subtitle && (
-            <p className={cn(avatarLabelSubtitleVariants({ size }))}>{subtitle}</p>
+            <p className={cn(avatarLabelSubtitleVariants({ size }))}>
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
     )
-  }
+  },
 )
 AvatarLabel.displayName = 'AvatarLabel'
 
@@ -87,11 +89,7 @@ const AvatarLabelGroup = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('flex flex-wrap gap-4', className)}
-    {...props}
-  />
+  <div ref={ref} className={cn('flex flex-wrap gap-4', className)} {...props} />
 ))
 AvatarLabelGroup.displayName = 'AvatarLabelGroup'
 

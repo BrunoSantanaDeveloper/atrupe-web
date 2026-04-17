@@ -73,9 +73,7 @@ export function PdvTotalsPanel({
             <span className="text-gray-500">Pago</span>
             <span
               className={
-                totalPago >= totalNota
-                  ? 'text-success-600'
-                  : 'text-error-500'
+                totalPago >= totalNota ? 'text-success-600' : 'text-error-500'
               }
             >
               {formatBRL(totalPago)}

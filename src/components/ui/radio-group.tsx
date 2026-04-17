@@ -20,7 +20,7 @@ const radioItemVariants = cva(
     defaultVariants: {
       size: 'sm',
     },
-  }
+  },
 )
 
 const RadioGroup = React.forwardRef<
@@ -52,11 +52,11 @@ const RadioGroupItem = React.forwardRef<
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center h-full w-full">
-        <Circle 
+        <Circle
           className={cn(
-            'fill-current text-current', 
-            size === 'md' ? 'h-2 w-2' : 'h-1.5 w-1.5'
-          )} 
+            'fill-current text-current',
+            size === 'md' ? 'h-2 w-2' : 'h-1.5 w-1.5',
+          )}
         />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>

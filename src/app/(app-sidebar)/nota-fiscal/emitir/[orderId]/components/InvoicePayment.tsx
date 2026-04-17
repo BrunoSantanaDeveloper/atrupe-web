@@ -15,6 +15,7 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
+import { EmptyState } from '@/components/ui/empty-state'
 
 // Icons
 import {
@@ -222,15 +223,17 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                 >
                   Adicionar
                 </Button>
-                <AccordionTrigger
-                  className={cn(
-                    buttonVariants({
-                      variant: 'neutralLight',
-                      size: 'icon',
-                    }),
-                    'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                  )}
-                />
+                <div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </div>
               </div>
             </CardHeader>
             <AccordionContent>
@@ -265,9 +268,11 @@ export function InvoicePayment({ data, onUpdate }: Props) {
 
                 {/* Lista de Duplicatas */}
                 {(!data.duplicatas || data.duplicatas.length === 0) && (
-                  <div className="text-center py-4 text-gray-400 text-sm">
-                    Nenhuma duplicata informada.
-                  </div>
+                  <EmptyState
+                    iconType="search"
+                    title="Nenhuma duplicata informada"
+                    description="Adicione duplicatas ou gere parcelas automáticas."
+                  />
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

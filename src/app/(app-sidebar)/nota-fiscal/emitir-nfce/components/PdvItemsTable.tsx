@@ -1,11 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -34,9 +29,7 @@ export function PdvItemsTable({
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">
-            Itens ({items.length})
-          </CardTitle>
+          <CardTitle className="text-base">Itens ({items.length})</CardTitle>
           <Badge variant="blue" className="text-sm">
             Total: {formatBRL(totalNota)}
           </Badge>
@@ -67,14 +60,10 @@ export function PdvItemsTable({
               <TableBody>
                 {items.map((item, idx) => (
                   <TableRow key={item.id}>
-                    <TableCell className="text-gray-500">
-                      {idx + 1}
-                    </TableCell>
+                    <TableCell className="text-gray-500">{idx + 1}</TableCell>
                     <TableCell>
                       <div>
-                        <span className="font-medium">
-                          {item.descricao}
-                        </span>
+                        <span className="font-medium">{item.descricao}</span>
                         <span className="text-xs text-gray-400 ml-2">
                           {item.codigo}
                         </span>

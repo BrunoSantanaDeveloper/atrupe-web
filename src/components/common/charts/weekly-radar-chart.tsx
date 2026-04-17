@@ -1,13 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
-  Legend,
-} from 'recharts'
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart, Legend } from 'recharts'
 
 import {
   ChartConfig,
@@ -52,10 +46,7 @@ interface WeeklyRadarChartProps {
   title?: string
 }
 
-export function WeeklyRadarChart({
-  data,
-  title,
-}: WeeklyRadarChartProps) {
+export function WeeklyRadarChart({ data, title }: WeeklyRadarChartProps) {
   return (
     <div className="flex flex-col items-center justify-center p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       {title && (
@@ -108,7 +99,11 @@ export function WeeklyRadarChart({
           <Legend
             verticalAlign="bottom"
             iconType="circle"
-            wrapperStyle={{ fontSize: '12px', color: '#667085', paddingTop: '16px' }}
+            wrapperStyle={{
+              fontSize: '12px',
+              color: '#667085',
+              paddingTop: '16px',
+            }}
           />
         </RadarChart>
       </ChartContainer>

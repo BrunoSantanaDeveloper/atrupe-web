@@ -12,7 +12,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         // ── Legacy variants (backward compatible) ──────────────────
-        default: 'bg-brand text-white hover:bg-brand-700 active:bg-brand-600 border border-brand',
+        default:
+          'bg-brand text-white hover:bg-brand-700 active:bg-brand-600 border border-brand',
         outline:
           'border-2 border-brand-300 bg-white text-brand hover:border-brand-400 hover:bg-brand-100 hover:text-brand-600 active:border-brand-300 active:bg-brand-50 active:text-brand',
         light:
@@ -69,7 +70,7 @@ const buttonVariants = cva(
           'bg-brand-600 text-white border border-brand-600 hover:bg-brand-700 hover:border-brand-700 active:bg-brand-800 active:border-brand-800',
         primaryOutline:
           'bg-brand-200 border-2 border-brand-800 text-brand-800 hover:bg-brand-100 hover:border-brand-700 hover:text-brand-700 active:bg-brand-50 active:border-brand-600 active:text-brand-600',
-        
+
         secondary:
           'bg-gray-100 border border-gray-100 text-gray-500 hover:bg-gray-300 hover:border-gray-300 hover:text-gray-700 active:bg-gray-200 active:border-gray-200 active:text-gray-600',
         secondaryOutline:
@@ -83,6 +84,12 @@ const buttonVariants = cva(
           'bg-white border-2 border-error-300 text-error-600 hover:bg-error-100 hover:border-error-400 hover:text-error-700 active:bg-error-50 active:border-error-300 active:text-error-600',
         destructiveGhost:
           'bg-transparent text-error-600 hover:bg-error-100 hover:text-error-700 active:bg-error-50 active:text-error-600',
+
+        // ── Overlays / Glassmorphism ───────────────────────────────────────
+        glassDark:
+          'bg-black/90 backdrop-blur text-white border border-transparent shadow-sm hover:bg-black/80 hover:border-white/10 active:bg-black',
+        glassLight:
+          'bg-white/90 backdrop-blur text-gray-800 border border-gray-200 shadow-sm hover:bg-white/100 hover:border-gray-300 active:bg-gray-50',
       },
       size: {
         default: 'h-11 px-4 text-sm',

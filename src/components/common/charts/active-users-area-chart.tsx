@@ -71,7 +71,11 @@ export function ActiveUsersAreaChart({
               />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="#E4E4E7" strokeDasharray="3 3" />
+          <CartesianGrid
+            vertical={false}
+            stroke="#E4E4E7"
+            strokeDasharray="3 3"
+          />
           <XAxis
             dataKey="month"
             tickLine={false}

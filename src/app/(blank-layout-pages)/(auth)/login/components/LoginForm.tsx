@@ -22,7 +22,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { type LoginType, loginSchema } from './schema'
 
 // Icons
-import { IconArrowNarrowRight } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
 export function LoginForm() {
   const [errorState, setErrorState] = useState<string | null>(null)
@@ -106,14 +106,14 @@ export function LoginForm() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         method="post"
-        className="flex flex-col gap-4"
+        className="flex flex-col gap-5 w-full"
         noValidate
       >
         <FormInput
           name="username"
           type="email"
           label="E-mail"
-          placeholder="Digite seu e-mail"
+          placeholder="Digite aqui"
           width="w-full"
         />
         <FormInput
@@ -121,37 +121,43 @@ export function LoginForm() {
           type="password"
           label="Senha"
           width="w-full"
-          placeholder="Digite sua senha"
+          placeholder="Digite"
         />
         {errorState && (
           <span className="text-sm font-medium text-error text-center">
             {errorState}
           </span>
         )}
-        <div className="flex flex-col sm:flex-row sm:justify-between items-center gap-4">
+        <div className="flex justify-between items-center w-full">
           <FormCheckbox name="remember" label="Continuar conectado" />
           <Link
             href="/esqueci-minha-senha"
-            className="text-sm text-brand font-semibold hover:underline"
+            className="text-sm font-semibold text-success hover:underline"
           >
             Esqueci minha senha
           </Link>
         </div>
         <Button
           type="submit"
-          className="mt-4 [&>svg]:ml-0"
-          RightIcon={IconArrowNarrowRight}
+          variant="default"
+          className="mt-2 w-full [&>svg]:ml-0"
+          RightIcon={IconArrowRight}
           isLoading={isLoading || isSubmitting}
         >
           Entrar
         </Button>
       </form>
-      <p className="text-sm font-medium text-gray-700 text-center mt-6 flex flex-col sm:flex-row sm:justify-center items-center sm:gap-2">
-        <span>Não tem uma conta?</span>
-        <Link href="/cadastro/inicio" className="text-brand hover:underline">
+      <div className="flex justify-center items-center mt-6 w-full gap-1">
+        <span className="text-sm font-medium text-[#344054]">
+          Não tem uma conta?
+        </span>
+        <Link
+          href="/cadastro/inicio"
+          className="text-sm font-semibold text-success hover:underline"
+        >
           Experimente grátis!
         </Link>
-      </p>
+      </div>
     </Form>
   )
 }

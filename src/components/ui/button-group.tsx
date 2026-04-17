@@ -38,7 +38,9 @@ const ButtonGroup = React.forwardRef<HTMLDivElement, ButtonGroupProps>(
           ref={ref}
           className={cn(
             buttonGroupVariants({ orientation: safeOrientation }),
-            safeOrientation === 'horizontal' ? 'divide-x divide-gray-300' : 'divide-y divide-gray-300',
+            safeOrientation === 'horizontal'
+              ? 'divide-x divide-gray-300'
+              : 'divide-y divide-gray-300',
             className,
           )}
           {...props}
@@ -56,7 +58,8 @@ const buttonGroupItemVariants = cva(
   {
     variants: {
       variant: {
-        default: 'text-gray-700 hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100',
+        default:
+          'text-gray-700 hover:bg-gray-50 hover:text-gray-800 active:bg-gray-100',
         active: 'text-gray-800 bg-gray-50',
       },
       size: {
@@ -79,18 +82,19 @@ export interface ButtonGroupItemProps
   asChild?: boolean
 }
 
-const ButtonGroupItem = React.forwardRef<HTMLButtonElement, ButtonGroupItemProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'button'
-    return (
-      <Comp
-        ref={ref}
-        className={cn(buttonGroupItemVariants({ variant, size, className }))}
-        {...props}
-      />
-    )
-  },
-)
+const ButtonGroupItem = React.forwardRef<
+  HTMLButtonElement,
+  ButtonGroupItemProps
+>(({ className, variant, size, asChild = false, ...props }, ref) => {
+  const Comp = asChild ? Slot : 'button'
+  return (
+    <Comp
+      ref={ref}
+      className={cn(buttonGroupItemVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+})
 ButtonGroupItem.displayName = 'ButtonGroupItem'
 
 export { ButtonGroup, ButtonGroupItem }

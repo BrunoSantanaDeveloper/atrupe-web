@@ -1,12 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import {
-  Label,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from 'recharts'
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from 'recharts'
 
 import {
   ChartConfig,
@@ -75,18 +70,23 @@ export function RadialProgressChart({
 }: RadialProgressChartProps) {
   // Normalize data relative to radial maximum of `totalValue` so it fills part of the ring.
   // Recharts RadialBar natively uses domain in PolarRadiusAxis, but standard way is 0-max in PolarAngleAxis.
-  
+
   return (
     <div className="flex flex-col items-center justify-center p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       {(title || subtitle) && (
         <div className="w-full mb-2 text-center">
-          {title && <h3 className="text-sm font-semibold text-gray-900">{title}</h3>}
+          {title && (
+            <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
+          )}
           {subtitle && (
             <p className="text-xs font-medium text-[#667085]">{subtitle}</p>
           )}
         </div>
       )}
-      <ChartContainer config={chartConfig} className="mx-auto aspect-square min-h-[200px] w-full max-w-[200px]">
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square min-h-[200px] w-full max-w-[200px]"
+      >
         <RadialBarChart
           data={data}
           startAngle={startAngle}

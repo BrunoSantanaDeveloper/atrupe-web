@@ -95,7 +95,9 @@ export function CorrectionLetterDialog({
           <p className="text-xs text-gray-500 text-right">
             {correctionText.length}/1000 caracteres
             {correctionText.length > 0 && correctionText.length < 15 && (
-              <span className="text-warning-500 ml-2">Mínimo 15 caracteres</span>
+              <span className="text-warning-500 ml-2">
+                Mínimo 15 caracteres
+              </span>
             )}
           </p>
         </div>

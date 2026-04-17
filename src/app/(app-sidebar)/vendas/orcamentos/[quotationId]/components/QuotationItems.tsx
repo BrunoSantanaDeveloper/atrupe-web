@@ -150,428 +150,402 @@ export function QuotationItems({ data }: Props) {
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody className="[&_tr:last-child]:border-b">
-                    {items?.map((item, index) => {
-                      const isComposite = item.product.compositions.length > 1
+                  {items?.map((item, index) => {
+                    const isComposite = item.product.compositions.length > 1
 
-                      // Renderização para produtos simples (apenas 1 composição)
-                      if (
-                        !isComposite &&
-                        item.product.compositions.length === 1
-                      ) {
-                        const composition = item.product.compositions[0]
+                    // Renderização para produtos simples (apenas 1 composição)
+                    if (
+                      !isComposite &&
+                      item.product.compositions.length === 1
+                    ) {
+                      const composition = item.product.compositions[0]
 
-                        return (
-                          <Fragment key={item?.id + index}>
-                            {/* Linha única para produtos simples - dados da composição diretamente */}
-                            <TableRow className="border-b">
-                              <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
-                                {item?.description}
-                              </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
-                                {item.product.quantity}
-                              </TableCell>
-                              <TableCell className="py-4 text-sm text-gray">
-                                {generateFormattedQuantityDetails(composition)}
-                              </TableCell>
-                              <TableCell className="py-4 text-sm text-gray text-nowrap">
-                                {
-                                  calculateTotalQuantity(
-                                    item.product.quantity,
-                                    composition,
-                                  ).formatted
-                                }
-                              </TableCell>
-                              <PermissionGate
-                                permissions={['values:values:view']}
-                              >
-                                <TableCell className="py-4 text-sm text-gray">
-                                  {formatCurrencyToBrl(
-                                    item?.totalValue /
-                                      calculateTotalQuantity(
-                                        item.product.quantity,
-                                        composition,
-                                      ).value,
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-warning-600 text-nowrap py-4">
-                                  -
-                                  {formatCurrencyToBrl(
-                                    Math.max(
-                                      0,
-                                      item?.totalValue - item?.finalValue,
-                                    ),
-                                  )}
-                                </TableCell>
-                                <TableCell className="py-4 text-sm text-gray">
-                                  {formatCurrencyToBrl(item?.finalValue)}
-                                </TableCell>
-                              </PermissionGate>
-                              <TableCell className="py-4">
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:edit']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconMessage}
-                                        tooltip="Observações"
-                                        onClick={() => {
-                                          setOpenDialog('notes')
-                                          setRowData(item)
-                                        }}
-                                        badge={
-                                          item?.notes
-                                            ? 'warningLight'
-                                            : undefined
-                                        }
-                                        disabled={actionDisabled(
-                                          'notes',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPhoto}
-                                        tooltip="Imagem"
-                                        onClick={() => {
-                                          setOpenDialog('image')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'image',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:create']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconCopy}
-                                        tooltip="Duplicar item"
-                                        onClick={() =>
-                                          handleDuplicateItem(item)
-                                        }
-                                        disabled={actionDisabled(
-                                          'duplicate',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:edit']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Editar item"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          openChangeModal(
-                                            true,
-                                            'productDetailEdit',
-                                          )
-                                        }}
-                                        disabled={actionDisabled(
-                                          'edit',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={[
-                                        'sale:quotation:edit',
-                                        'values:values:view',
-                                      ]}
-                                      requireAll
-                                    >
-                                      <ActionButton
-                                        Icon={IconCoin}
-                                        tooltip="Valores"
-                                        onClick={() => {
-                                          setOpenDialog('values')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'values',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:delete']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconTrashX}
-                                        tooltip="Excluir item"
-                                        onClick={() => {
-                                          setOpenDialog('delete')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'delete',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          </Fragment>
-                        )
-                      }
-
-                      // Renderização para produtos compostos
                       return (
-                        <AccordionItem
-                          asChild
+                        <TableBody
                           key={item?.id + index}
-                          value={item?.id + index}
+                          className="[&_tr:last-child]:border-b"
                         >
-                          <Fragment>
-                            <TableRow
-                              className={cn(
-                                accordionValue?.includes(item?.id + index)
-                                  ? 'bg-gray-100'
-                                  : 'border-0',
-                              )}
+                          {/* Linha única para produtos simples - dados da composição diretamente */}
+                          <TableRow className="border-b">
+                            <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
+                              {item?.description}
+                            </TableCell>
+                            <TableCell className="py-4 text-sm text-gray">
+                              {item.product.quantity}
+                            </TableCell>
+                            <TableCell className="py-4 text-sm text-gray">
+                              {generateFormattedQuantityDetails(composition)}
+                            </TableCell>
+                            <TableCell className="py-4 text-sm text-gray text-nowrap">
+                              {
+                                calculateTotalQuantity(
+                                  item.product.quantity,
+                                  composition,
+                                ).formatted
+                              }
+                            </TableCell>
+                            <PermissionGate
+                              permissions={['values:values:view']}
                             >
-                              <TableCell>
-                                <AccordionTrigger className="flex-row-reverse justify-end px-1 [&>svg]:text-gray [&>svg]:size-5 gap-3">
-                                  {item?.description || '-'}
-                                </AccordionTrigger>
+                              <TableCell className="py-4 text-sm text-gray">
+                                {formatCurrencyToBrl(
+                                  item?.totalValue /
+                                    calculateTotalQuantity(
+                                      item.product.quantity,
+                                      composition,
+                                    ).value,
+                                )}
                               </TableCell>
-                              <TableCell className="text-sm text-gray">
-                                {item?.product?.quantity || 1}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray">
+                              <TableCell className="text-warning-600 text-nowrap py-4">
                                 -
+                                {formatCurrencyToBrl(
+                                  Math.max(
+                                    0,
+                                    item?.totalValue - item?.finalValue,
+                                  ),
+                                )}
+                              </TableCell>
+                              <TableCell className="py-4 text-sm text-gray">
+                                {formatCurrencyToBrl(item?.finalValue)}
+                              </TableCell>
+                            </PermissionGate>
+                            <TableCell className="py-4">
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconMessage}
+                                      tooltip="Observações"
+                                      onClick={() => {
+                                        setOpenDialog('notes')
+                                        setRowData(item)
+                                      }}
+                                      badge={
+                                        item?.notes ? 'warningLight' : undefined
+                                      }
+                                      disabled={actionDisabled('notes', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:view']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPhoto}
+                                      tooltip="Imagem"
+                                      onClick={() => {
+                                        setOpenDialog('image')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled('image', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:create']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconCopy}
+                                      tooltip="Duplicar item"
+                                      onClick={() => handleDuplicateItem(item)}
+                                      disabled={actionDisabled(
+                                        'duplicate',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar item"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        openChangeModal(
+                                          true,
+                                          'productDetailEdit',
+                                        )
+                                      }}
+                                      disabled={actionDisabled('edit', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={[
+                                      'sale:quotation:edit',
+                                      'values:values:view',
+                                    ]}
+                                    requireAll
+                                  >
+                                    <ActionButton
+                                      Icon={IconCoin}
+                                      tooltip="Valores"
+                                      onClick={() => {
+                                        setOpenDialog('values')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'values',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:delete']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconTrashX}
+                                      tooltip="Excluir item"
+                                      onClick={() => {
+                                        setOpenDialog('delete')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'delete',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </TableBody>
+                      )
+                    }
+
+                    // Renderização para produtos compostos
+                    return (
+                      <AccordionItem
+                        asChild
+                        key={item?.id + index}
+                        value={item?.id + index}
+                      >
+                        <TableBody className="[&_tr:last-child]:border-b">
+                          <TableRow
+                            className={cn(
+                              accordionValue?.includes(item?.id + index)
+                                ? 'bg-gray-100'
+                                : 'border-0',
+                            )}
+                          >
+                            <TableCell>
+                              <AccordionTrigger className="flex-row-reverse justify-end px-1 [&>svg]:text-gray [&>svg]:size-5 gap-3">
+                                {item?.description || '-'}
+                              </AccordionTrigger>
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {item?.product?.quantity || 1}
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              -
+                            </TableCell>
+                            <TableCell className="text-sm text-gray">
+                              {`${item?.product?.quantity || 1} un`}
+                            </TableCell>
+                            <PermissionGate
+                              permissions={['values:values:view']}
+                            >
+                              <TableCell className="text-sm text-gray">
+                                {formatCurrencyToBrl(
+                                  item?.totalValue /
+                                    (item?.product?.quantity || 1),
+                                )}
+                              </TableCell>
+                              <TableCell className="text-warning-600 text-nowrap">
+                                -
+                                {formatCurrencyToBrl(
+                                  Math.max(
+                                    0,
+                                    item?.totalValue - item?.finalValue,
+                                  ),
+                                )}
                               </TableCell>
                               <TableCell className="text-sm text-gray">
-                                {`${item?.product?.quantity || 1} un`}
+                                {formatCurrencyToBrl(item?.finalValue)}
                               </TableCell>
-                              <PermissionGate
-                                permissions={['values:values:view']}
-                              >
-                                <TableCell className="text-sm text-gray">
-                                  {formatCurrencyToBrl(
-                                    item?.totalValue /
-                                      (item?.product?.quantity || 1),
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-warning-600 text-nowrap">
-                                  -
-                                  {formatCurrencyToBrl(
-                                    Math.max(
-                                      0,
-                                      item?.totalValue - item?.finalValue,
-                                    ),
-                                  )}
-                                </TableCell>
-                                <TableCell className="text-sm text-gray">
-                                  {formatCurrencyToBrl(item?.finalValue)}
-                                </TableCell>
-                              </PermissionGate>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:edit']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconMessage}
-                                        tooltip="Observações"
-                                        onClick={() => {
-                                          setOpenDialog('notes')
-                                          setRowData(item)
-                                        }}
-                                        badge={
-                                          item?.notes
-                                            ? 'warningLight'
-                                            : undefined
-                                        }
-                                        disabled={actionDisabled(
-                                          'notes',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPhoto}
-                                        tooltip="Imagem"
-                                        onClick={() => {
-                                          setOpenDialog('image')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'image',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:create']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconCopy}
-                                        tooltip="Duplicar item"
-                                        onClick={() =>
-                                          handleDuplicateItem(item)
-                                        }
-                                        disabled={actionDisabled(
-                                          'duplicate',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:edit']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPencil}
-                                        tooltip="Editar item"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          openChangeModal(
-                                            true,
-                                            'productDetailEdit',
-                                          )
-                                        }}
-                                        disabled={actionDisabled(
-                                          'edit',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={[
-                                        'sale:quotation:edit',
-                                        'values:values:view',
-                                      ]}
-                                      requireAll
-                                    >
-                                      <ActionButton
-                                        Icon={IconCoin}
-                                        tooltip="Valores"
-                                        onClick={() => {
-                                          setOpenDialog('values')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'values',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:delete']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconTrashX}
-                                        tooltip="Excluir item"
-                                        onClick={() => {
-                                          setOpenDialog('delete')
-                                          setRowData(item)
-                                        }}
-                                        disabled={actionDisabled(
-                                          'delete',
-                                          status,
-                                        )}
-                                      />
-                                    </PermissionGate>
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
+                            </PermissionGate>
+                            <TableCell>
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconMessage}
+                                      tooltip="Observações"
+                                      onClick={() => {
+                                        setOpenDialog('notes')
+                                        setRowData(item)
+                                      }}
+                                      badge={
+                                        item?.notes ? 'warningLight' : undefined
+                                      }
+                                      disabled={actionDisabled('notes', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:view']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPhoto}
+                                      tooltip="Imagem"
+                                      onClick={() => {
+                                        setOpenDialog('image')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled('image', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:create']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconCopy}
+                                      tooltip="Duplicar item"
+                                      onClick={() => handleDuplicateItem(item)}
+                                      disabled={actionDisabled(
+                                        'duplicate',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:edit']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar item"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        openChangeModal(
+                                          true,
+                                          'productDetailEdit',
+                                        )
+                                      }}
+                                      disabled={actionDisabled('edit', status)}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={[
+                                      'sale:quotation:edit',
+                                      'values:values:view',
+                                    ]}
+                                    requireAll
+                                  >
+                                    <ActionButton
+                                      Icon={IconCoin}
+                                      tooltip="Valores"
+                                      onClick={() => {
+                                        setOpenDialog('values')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'values',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={['sale:quotation:delete']}
+                                  >
+                                    <ActionButton
+                                      Icon={IconTrashX}
+                                      tooltip="Excluir item"
+                                      onClick={() => {
+                                        setOpenDialog('delete')
+                                        setRowData(item)
+                                      }}
+                                      disabled={actionDisabled(
+                                        'delete',
+                                        status,
+                                      )}
+                                    />
+                                  </PermissionGate>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
 
-                            {item?.product?.compositions?.length
-                              ? item?.product?.compositions?.map(
-                                  (composition, index) => (
-                                    <Fragment key={composition?.id}>
-                                      <TableRow
-                                        className={cn(
-                                          item?.product?.compositions
-                                            ?.length ===
-                                            index + 1
-                                            ? 'border-b'
-                                            : 'border-0',
-                                          'bg-gray-50 ',
-                                        )}
-                                      >
-                                        <TableCell className="pl-14 py-0">
-                                          <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
-                                            <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
-                                            {composition?.name}
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {item.product.quantity}
-                                          </AccordionContent>
-                                        </TableCell>
-                                        <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4">
-                                            {generateFormattedQuantityDetails(
+                          {item?.product?.compositions?.length
+                            ? item?.product?.compositions?.map(
+                                (composition, index) => (
+                                  <Fragment key={composition?.id}>
+                                    <TableRow
+                                      className={cn(
+                                        item?.product?.compositions?.length ===
+                                          index + 1
+                                          ? 'border-b'
+                                          : 'border-0',
+                                        'bg-gray-50 ',
+                                      )}
+                                    >
+                                      <TableCell className="pl-14 py-0">
+                                        <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
+                                          <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
+                                          {composition?.name}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {item.product.quantity}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {generateFormattedQuantityDetails(
+                                            composition,
+                                          )}
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4">
+                                          {
+                                            calculateTotalQuantity(
+                                              item.product.quantity,
                                               composition,
+                                            ).formatted
+                                          }
+                                        </AccordionContent>
+                                      </TableCell>
+                                      <PermissionGate
+                                        permissions={['values:values:view']}
+                                      >
+                                        <TableCell className="py-0 text-sm text-gray">
+                                          <AccordionContent className="py-4">
+                                            {formatCurrencyToBrl(
+                                              calculateDisplayUnitValue(
+                                                item.product.quantity,
+                                                composition,
+                                              ),
                                             )}
                                           </AccordionContent>
                                         </TableCell>
                                         <TableCell className="py-0 text-sm text-gray">
                                           <AccordionContent className="py-4">
-                                            {
-                                              calculateTotalQuantity(
-                                                item.product.quantity,
-                                                composition,
-                                              ).formatted
-                                            }
+                                            -
                                           </AccordionContent>
                                         </TableCell>
-                                        <PermissionGate
-                                          permissions={['values:values:view']}
-                                        >
-                                          <TableCell className="py-0 text-sm text-gray">
-                                            <AccordionContent className="py-4">
-                                              {formatCurrencyToBrl(
-                                                calculateDisplayUnitValue(
-                                                  item.product.quantity,
-                                                  composition,
-                                                ),
-                                              )}
-                                            </AccordionContent>
-                                          </TableCell>
-                                          <TableCell className="py-0 text-sm text-gray">
-                                            <AccordionContent className="py-4">
-                                              -
-                                            </AccordionContent>
-                                          </TableCell>
-                                          <TableCell className="py-0 text-sm text-gray">
-                                            <AccordionContent className="py-4">
-                                              {formatCurrencyToBrl(
-                                                composition?.totalValue,
-                                              )}
-                                            </AccordionContent>
-                                          </TableCell>
-                                        </PermissionGate>
                                         <TableCell className="py-0 text-sm text-gray">
-                                          <AccordionContent className="py-4"></AccordionContent>
+                                          <AccordionContent className="py-4">
+                                            {formatCurrencyToBrl(
+                                              composition?.totalValue,
+                                            )}
+                                          </AccordionContent>
                                         </TableCell>
-                                      </TableRow>
-                                    </Fragment>
-                                  ),
-                                )
-                              : null}
-                          </Fragment>
-                        </AccordionItem>
-                      )
-                    })}
-                  </TableBody>
+                                      </PermissionGate>
+                                      <TableCell className="py-0 text-sm text-gray">
+                                        <AccordionContent className="py-4"></AccordionContent>
+                                      </TableCell>
+                                    </TableRow>
+                                  </Fragment>
+                                ),
+                              )
+                            : null}
+                        </TableBody>
+                      </AccordionItem>
+                    )
+                  })}
                 </Table>
               </Accordion>
 

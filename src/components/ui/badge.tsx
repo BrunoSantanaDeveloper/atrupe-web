@@ -174,7 +174,11 @@ function Badge({
   const showDot = dot || status
   return (
     <div className={cn(badgeVariants({ variant, size }), className)} {...props}>
-      {avatar && <div className="flex shrink-0 items-center overflow-hidden">{avatar}</div>}
+      {avatar && (
+        <div className="flex shrink-0 items-center overflow-hidden">
+          {avatar}
+        </div>
+      )}
       {showDot && <span className={cn(badgeDotVariants({ variant }))} />}
       {icon && iconPosition === 'left' && (
         <span className="flex shrink-0 items-center">{icon}</span>
@@ -190,4 +194,3 @@ function Badge({
 }
 
 export { Badge, badgeVariants }
-

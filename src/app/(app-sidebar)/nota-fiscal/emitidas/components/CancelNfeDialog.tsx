@@ -91,7 +91,9 @@ export function CancelNfeDialog({
           <p className="text-xs text-gray-500 text-right">
             {justificativa.length}/255 caracteres
             {justificativa.length > 0 && justificativa.length < 15 && (
-              <span className="text-warning-500 ml-2">Mínimo 15 caracteres</span>
+              <span className="text-warning-500 ml-2">
+                Mínimo 15 caracteres
+              </span>
             )}
           </p>
         </div>

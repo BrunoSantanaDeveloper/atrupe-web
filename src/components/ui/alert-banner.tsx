@@ -30,7 +30,10 @@ export interface AlertBannerProps
 }
 
 const AlertBanner = React.forwardRef<HTMLDivElement, AlertBannerProps>(
-  ({ className, variant, icon: Icon, title, description, action, ...props }, ref) => {
+  (
+    { className, variant, icon: Icon, title, description, action, ...props },
+    ref,
+  ) => {
     return (
       <div
         ref={ref}
@@ -40,7 +43,7 @@ const AlertBanner = React.forwardRef<HTMLDivElement, AlertBannerProps>(
       >
         <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-4 sm:gap-3">
           {Icon && <Icon className="w-8 h-8 shrink-0" aria-hidden="true" />}
-          
+
           <div className="flex flex-col items-center sm:items-start text-center sm:text-left">
             {title && (
               <div className="text-sm font-semibold leading-5 text-inherit">
@@ -55,9 +58,7 @@ const AlertBanner = React.forwardRef<HTMLDivElement, AlertBannerProps>(
           </div>
 
           {action && (
-            <div className="shrink-0 mt-3 sm:mt-0 sm:ml-4">
-              {action}
-            </div>
+            <div className="shrink-0 mt-3 sm:mt-0 sm:ml-4">{action}</div>
           )}
         </div>
       </div>

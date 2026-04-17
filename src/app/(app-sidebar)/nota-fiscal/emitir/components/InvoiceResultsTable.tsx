@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Checkbox } from '@/components/ui/checkbox'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
@@ -23,7 +24,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconFileInvoice } from '@tabler/icons-react'
+import { IconFileInvoice, IconSearch } from '@tabler/icons-react'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -63,6 +64,21 @@ interface OrderGroupFromBackend {
 }
 
 interface Props extends SearchParamsType {}
+
+// Helper para traduzir o status do pedido para o status visual na tela de Notas Fiscais da UI
+const getInvoiceStatusProps = (statusStr: string) => {
+  const s = statusStr?.toUpperCase() || ''
+  if (s === 'FINISHED' || s === 'PENDING') {
+    return { label: 'Não emitida', variant: 'neutralLight' as const }
+  }
+  if (s === 'DRAFT' || s === 'DIGITACAO') {
+    return { label: 'Em digitação', variant: 'infoLight' as const }
+  }
+  return {
+    label: statusStr || 'Não definida',
+    variant: 'neutralLight' as const,
+  }
+}
 
 export function InvoiceResultsTable({ searchParams }: Props) {
   const [isLoading, setIsLoading] = useState(true)
@@ -191,9 +207,12 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <Table>
           <TableHeader>
             <TableRow className="bg-gray-50 border-y border-gray-100">
+              <TableHead className="w-[40px] px-4">
+                <Checkbox id="select-all" />
+              </TableHead>
               <TableHead>Referência</TableHead>
               <TableHead>Valor</TableHead>
-              <TableHead>Status</TableHead>
+              <TableHead>Fase atual</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -202,7 +221,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
               <Fragment key={group.date}>
                 <TableRow className="bg-gray-100">
                   <TableCell
-                    colSpan={4}
+                    colSpan={5}
                     className="text-gray font-medium text-xs py-3"
                   >
                     {formatDate(group.date)}
@@ -217,6 +236,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                   return (
                     <TableRow key={order.id} className="hover:bg-gray-50">
+                      <TableCell className="px-4">
+                        <Checkbox id={`check-${order.id}`} />
+                      </TableCell>
                       <TableCell>
                         <p className="font-medium text-gray-800">
                           {clientName}
@@ -227,21 +249,19 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         {formatCurrency(order.quotation?.totalValue)}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="neutralLight" status>
-                          {order.status}
+                        <Badge
+                          variant={getInvoiceStatusProps(order.status).variant}
+                          status
+                        >
+                          {getInvoiceStatusProps(order.status).label}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex justify-end gap-1">
                           <ActionButton
-                            Icon={IconFileInvoice}
-                            tooltip="Emitir NF-e"
+                            Icon={IconSearch}
+                            tooltip="Detalhes da Ordem"
                             link={`/nota-fiscal/emitir/${order.id}`}
-                          />
-                          <ActionButton
-                            Icon={IconFileInvoice}
-                            tooltip="Emitir NFS-e"
-                            link={`/nota-fiscal/emitir-nfse/${order.id}`}
                           />
                         </div>
                       </TableCell>
@@ -255,7 +275,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       </CardContent>
 
       <CardFooter className="border-t border-gray-100 p-4 mt-auto">
-        <TablePagination searchParams={searchParams} lastPage={totalPages} />
+        <TablePagination
+          searchParams={searchParams}
+          lastPage={totalPages}
+          activeVariant="success"
+        />
       </CardFooter>
     </Card>
   )

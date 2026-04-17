@@ -217,9 +217,10 @@ export function DuplicateDialog(props: Props) {
             <AlertDialogCancel onClick={() => setOpenSuccess(false)}>
               Fechar
             </AlertDialogCancel>
-            <Button asChild type="button" RightIcon={IconArrowRight}>
+            <Button asChild type="button">
               <Link href={`/vendas/orcamentos/${newQuotationId}`}>
                 Ver orçamento
+                <IconArrowRight size={24} className="ml-auto" />
               </Link>
             </Button>
           </AlertDialogFooter>

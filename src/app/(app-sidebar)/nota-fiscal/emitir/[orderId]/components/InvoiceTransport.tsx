@@ -14,6 +14,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { EmptyState } from '@/components/ui/empty-state'
 
 // Icons
 import {
@@ -264,34 +265,32 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                 >
                   Adicionar volume
                 </Button>
-                <AccordionTrigger
-                  className={cn(
-                    buttonVariants({
-                      variant: 'neutralLight',
-                      size: 'icon',
-                    }),
-                    'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                  )}
-                />
+                <div>
+                  <AccordionTrigger
+                    className={cn(
+                      buttonVariants({
+                        variant: 'neutralLight',
+                        size: 'icon',
+                      }),
+                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                    )}
+                  />
+                </div>
               </div>
             </CardHeader>
             <AccordionContent>
               <CardContent className="space-y-4 p-6">
                 {(!data.volumes || data.volumes.length === 0) && (
-                  <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
-                    <IconPackage
-                      className="mx-auto text-gray-300 mb-2"
-                      size={32}
-                    />
-                    <p>Nenhum volume adicionado</p>
-                    <Button
-                      variant="link"
-                      className="text-success-600"
-                      onClick={addVolume}
-                    >
-                      Adicionar o primeiro volume
-                    </Button>
-                  </div>
+                  <EmptyState
+                    iconType="data"
+                    title="Nenhum volume adicionado"
+                    description="Adicione os volumes transportados para que sejam exibidos na nota fiscal."
+                    action={
+                      <Button variant="default" onClick={addVolume}>
+                        Adicionar o primeiro volume
+                      </Button>
+                    }
+                  />
                 )}
 
                 {data.volumes?.map((vol, index) => (

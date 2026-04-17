@@ -15,50 +15,60 @@ export interface CheckboxFieldProps
 export const CheckboxField = React.forwardRef<
   React.ElementRef<typeof Checkbox>,
   CheckboxFieldProps
->(({ className, containerClassName, size = 'sm', label, hint, id, ...props }, ref) => {
-  const generatedId = React.useId()
-  const checkboxId = id || generatedId
+>(
+  (
+    { className, containerClassName, size = 'sm', label, hint, id, ...props },
+    ref,
+  ) => {
+    const generatedId = React.useId()
+    const checkboxId = id || generatedId
 
-  return (
-    <div
-      className={cn(
-        'flex items-start justify-start',
-        size === 'md' ? 'gap-3' : 'gap-2',
-        props.disabled && 'opacity-50 cursor-not-allowed',
-        containerClassName
-      )}
-    >
-      <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 pt-0.5 relative">
-        <Checkbox
-          id={checkboxId}
-          ref={ref}
-          size={size}
-          className={className}
-          {...props}
-        />
-      </div>
-      <div className={cn('flex flex-col justify-start items-start flex-grow relative', size === 'md' && 'gap-0.5')}>
-        <Label
-          htmlFor={checkboxId}
+    return (
+      <div
+        className={cn(
+          'flex items-start justify-start',
+          size === 'md' ? 'gap-3' : 'gap-2',
+          props.disabled && 'opacity-50 cursor-not-allowed',
+          containerClassName,
+        )}
+      >
+        <div className="flex justify-center items-center flex-grow-0 flex-shrink-0 pt-0.5 relative">
+          <Checkbox
+            id={checkboxId}
+            ref={ref}
+            size={size}
+            className={className}
+            {...props}
+          />
+        </div>
+        <div
           className={cn(
-            'self-stretch w-full font-medium text-[#344054] cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-            size === 'md' ? 'text-base' : 'text-sm'
+            'flex flex-col justify-start items-start flex-grow relative',
+            size === 'md' && 'gap-0.5',
           )}
         >
-          {label}
-        </Label>
-        {hint && (
-          <p
+          <Label
+            htmlFor={checkboxId}
             className={cn(
-              'self-stretch w-full text-[#667085]',
-              size === 'md' ? 'text-base' : 'text-sm'
+              'self-stretch w-full font-medium text-[#344054] cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+              size === 'md' ? 'text-base' : 'text-sm',
             )}
           >
-            {hint}
-          </p>
-        )}
+            {label}
+          </Label>
+          {hint && (
+            <p
+              className={cn(
+                'self-stretch w-full text-[#667085]',
+                size === 'md' ? 'text-base' : 'text-sm',
+              )}
+            >
+              {hint}
+            </p>
+          )}
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  },
+)
 CheckboxField.displayName = 'CheckboxField'

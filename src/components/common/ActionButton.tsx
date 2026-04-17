@@ -41,12 +41,14 @@ export const ActionButton = forwardRef<HTMLButtonElement, ButtonProps & Props>(
               asChild={!!link}
               size="icon"
               variant={variant}
-              RightIcon={Icon}
+              RightIcon={!link ? Icon : undefined}
               {...rest}
             >
-              {link && (
-                <Link href={link} target={newTab ? '_blank' : ''}></Link>
-              )}
+              {link ? (
+                <Link href={link} target={newTab ? '_blank' : ''}>
+                  <Icon className="size-5" />
+                </Link>
+              ) : undefined}
             </Button>
           </TooltipTrigger>
           <TooltipContent>

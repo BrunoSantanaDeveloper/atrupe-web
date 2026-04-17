@@ -19,24 +19,21 @@ const checkboxVariants = cva(
     defaultVariants: {
       size: 'sm',
     },
-  }
+  },
 )
 
-const indicatorVariants = cva(
-  'flex items-center justify-center text-current',
-  {
-    variants: {
-      size: {
-        default: 'h-4 w-4',
-        sm: 'h-4 w-4',
-        md: 'h-5 w-5',
-      },
+const indicatorVariants = cva('flex items-center justify-center text-current', {
+  variants: {
+    size: {
+      default: 'h-4 w-4',
+      sm: 'h-4 w-4',
+      md: 'h-5 w-5',
     },
-    defaultVariants: {
-      size: 'sm',
-    },
-  }
-)
+  },
+  defaultVariants: {
+    size: 'sm',
+  },
+})
 
 export interface CheckboxProps
   extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
@@ -51,11 +48,21 @@ const Checkbox = React.forwardRef<
     className={cn(checkboxVariants({ size, className }))}
     {...props}
   >
-    <CheckboxPrimitive.Indicator
-      className={cn(indicatorVariants({ size }))}
-    >
-      <Check strokeWidth={3} className={cn('hidden group-data-[state=checked]:block', size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3')} />
-      <Minus strokeWidth={3} className={cn('hidden group-data-[state=indeterminate]:block', size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3')} />
+    <CheckboxPrimitive.Indicator className={cn(indicatorVariants({ size }))}>
+      <Check
+        strokeWidth={3}
+        className={cn(
+          'hidden group-data-[state=checked]:block',
+          size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3',
+        )}
+      />
+      <Minus
+        strokeWidth={3}
+        className={cn(
+          'hidden group-data-[state=indeterminate]:block',
+          size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3',
+        )}
+      />
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))

@@ -199,14 +199,14 @@ export function SidebarComponent(props: Props) {
   return (
     <aside
       className={cn(
-        'bg-white border-r hidden lg:block transition-all ease-in-out duration-500 text-nowrap overflow-hidden space-y-4',
+        'bg-white border-r border-gray-200 hidden lg:block transition-all ease-in-out duration-500 text-nowrap overflow-hidden space-y-4',
         collapsed ? 'max-w-24 min-w-24' : 'max-w-[296px] min-w-[296px]',
       )}
     >
       <TooltipProvider>
         <div className="flex flex-col h-full">
           {/* header */}
-          <div className="border-b">
+          <div className="border-b border-gray-200">
             <div className="flex items-center justify-between h-28 transition-all ease-in-out duration-500 px-6 relative">
               <Link
                 href={userIsSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE}
@@ -257,7 +257,7 @@ export function SidebarComponent(props: Props) {
 
           <div>
             {/* User info */}
-            <div className="border-b mb-3">
+            <div className="border-b border-gray-200 mb-3">
               <div
                 className={cn(
                   'flex justify-between items-center gap-3 h-28 transition-all ease-in-out duration-500 px-6 relative',
@@ -359,13 +359,13 @@ export function SidebarComponent(props: Props) {
                                     <Button
                                       asChild
                                       type="button"
-                                      variant="neutralGhost"
+                                      variant="none"
                                       className={cn(
-                                        'h-10 w-full justify-between transition-all ease-in-out duration-500',
+                                        'h-10 w-full justify-between rounded-lg transition-all ease-in-out duration-500',
                                         collapsed ? 'px-5' : 'px-2',
                                         pathname.includes(`${navChild?.path}`)
-                                          ? 'text-brand-600 bg-brand-25 hover:bg-brand-25'
-                                          : 'text-gray',
+                                          ? 'text-brand-600 bg-brand-25 hover:bg-brand-50 font-semibold'
+                                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-700',
                                       )}
                                     >
                                       <Link
@@ -424,7 +424,7 @@ export function SidebarComponent(props: Props) {
                                           </Badge>
                                         ) : navChild?.counter ? (
                                           <Badge
-                                            variant="neutralLight"
+                                            variant="light"
                                             className={cn(
                                               'transition-all ease-in-out duration-500',
                                               collapsed && 'opacity-0',
@@ -456,7 +456,7 @@ export function SidebarComponent(props: Props) {
           </ScrollArea>
 
           {process.env.NODE_ENV === 'development' && (
-            <div className="border-t p-4">
+            <div className="border-t border-gray-200 p-4">
               <p className="text-xs text-gray-500">
                 Plano: {session.company.plan?.name}
               </p>

@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      borderColor: {
+        DEFAULT: 'var(--gray-500)',
+      },
       colors: {
       "black": "var(--black)",
       "blue-100": "var(--blue-100)",

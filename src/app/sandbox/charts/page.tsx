@@ -30,7 +30,9 @@ const mockRadarChartData = [
   { day: 'Sun', series1: 50, series2: 60, series3: 40 },
 ]
 
-const mockRadialData = [{ name: 'Usuários', value: 40, fill: 'var(--chart-brand)' }]
+const mockRadialData = [
+  { name: 'Usuários', value: 40, fill: 'var(--chart-brand)' },
+]
 
 export default function ChartsSandbox() {
   return (
@@ -62,7 +64,9 @@ export default function ChartsSandbox() {
               centerSubLabel="Usuários ativos"
             />
             <RadialProgressChart
-              data={[{ name: 'Usuários', value: 75, fill: 'var(--chart-success)' }]}
+              data={[
+                { name: 'Usuários', value: 75, fill: 'var(--chart-success)' },
+              ]}
               centerLabel="1,000"
             />
           </div>
