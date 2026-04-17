@@ -8,6 +8,8 @@ import {
   InlineToolbar,
   type ToolbarAction,
 } from '@/components/common/rich-text-toolbar'
+
+export const dynamic = 'force-dynamic'
 import type { InputState } from '@/components/common/form-input'
 
 /* ─────────────────────────────────────────────────────────────

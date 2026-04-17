@@ -19,6 +19,8 @@ import {
   CellAvatarGroup,
   CellActionGroup,
 } from '@/components/ui/table-cells'
+
+export const dynamic = 'force-dynamic'
 import {
   DataTableCard,
   DataTableHeader,

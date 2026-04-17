@@ -3,6 +3,8 @@
 import React, { useState } from 'react'
 import { FileUploader, UploadedFileState } from '@/components/ui/file-uploader'
 
+export const dynamic = 'force-dynamic'
+
 export default function FileUploadSandboxPage() {
   // Dummy file factory
   const createMockFile = (name: string, size: number, type: string) => {

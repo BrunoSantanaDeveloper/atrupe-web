@@ -8,6 +8,8 @@ import {
   MemberSelectIconVariant,
 } from '@/components/common/member-select'
 
+export const dynamic = 'force-dynamic'
+
 /* ─────────────────────────────────────────────────────────────
    Shared data
 ───────────────────────────────────────────────────────────── */

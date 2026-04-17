@@ -8,6 +8,8 @@ import { DateRangePicker } from '@/components/common/date-range-picker'
 import { RadioGroup } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 
+export const dynamic = 'force-dynamic'
+
 export default function FormsSandboxPage() {
   return (
     <div className="flex flex-col flex-wrap justify-start items-start relative gap-16 p-12 bg-gray-50 min-h-screen">

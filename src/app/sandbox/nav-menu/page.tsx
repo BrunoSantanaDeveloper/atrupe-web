@@ -10,6 +10,8 @@ import {
   NavEntry,
 } from '@/components/common/nav-menu'
 
+export const dynamic = 'force-dynamic'
+
 /* ─────────────────────────────────────────────────────────────
    Mini icon helpers (using currentColor param pattern)
 ───────────────────────────────────────────────────────────── */

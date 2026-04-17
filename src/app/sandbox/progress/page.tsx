@@ -2,6 +2,8 @@ import React from 'react'
 import { Progress, ProgressBar } from '@/components/ui/progress'
 import { ProgressCircle } from '@/components/ui/progress-circle'
 
+export const dynamic = 'force-dynamic'
+
 export default function ProgressSandbox() {
   return (
     <div className="p-8 flex flex-col items-center justify-center bg-gray-50 min-h-screen gap-12">

@@ -7,6 +7,8 @@ import {
   InputVariant,
 } from '@/components/common/form-input'
 
+export const dynamic = 'force-dynamic'
+
 /* ─────────────────────────────────────────────────────────────
    Config
 ───────────────────────────────────────────────────────────── */

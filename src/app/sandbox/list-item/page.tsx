@@ -1,6 +1,8 @@
 import React from 'react'
 import { ListItem } from '@/components/ui/list-item'
 
+export const dynamic = 'force-dynamic'
+
 export default function ListItemSandboxPage() {
   const BrandIconLg = (
     <svg

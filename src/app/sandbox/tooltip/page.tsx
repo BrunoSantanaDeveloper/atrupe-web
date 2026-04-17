@@ -7,6 +7,8 @@ import {
 } from '@/components/ui/tooltip'
 import { HelpCircle } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function TooltipSandboxPage() {
   return (
     <div className="flex flex-col min-h-screen bg-[#fcfcfd] p-12">

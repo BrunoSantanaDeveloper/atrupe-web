@@ -10,6 +10,8 @@ import {
   IconUser,
 } from '@tabler/icons-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function TabsSandboxPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 p-12">

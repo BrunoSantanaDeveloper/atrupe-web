@@ -13,6 +13,8 @@ import {
   IconShieldCheck,
 } from '@tabler/icons-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function StatusTagSandboxPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12 pb-32">

@@ -10,6 +10,8 @@ import {
 } from '@/components/ui/pagination'
 import { PaginationDots } from '@/components/ui/pagination-dots'
 
+export const dynamic = 'force-dynamic'
+
 export default function PaginationSandbox() {
   return (
     <div className="p-8 flex flex-col items-center justify-center bg-gray-100 min-h-screen gap-12">

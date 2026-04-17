@@ -1,6 +1,8 @@
 import React from 'react'
 import { Slider } from '@/components/ui/slider'
 
+export const dynamic = 'force-dynamic'
+
 export default function SliderSandbox() {
   return (
     <div className="p-16 flex flex-col items-center bg-gray-50 min-h-screen gap-12 pt-32">

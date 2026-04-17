@@ -1,6 +1,8 @@
 import React from 'react'
 import { Switch } from '@/components/ui/switch'
 
+export const dynamic = 'force-dynamic'
+
 export default function SwitchSandboxPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 p-12">

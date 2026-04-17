@@ -1,6 +1,8 @@
 import React from 'react'
 import { BankCard } from '@/components/ui/bank-card'
 
+export const dynamic = 'force-dynamic'
+
 export default function BankCardsSandboxPage() {
   const intents = [
     'glass',

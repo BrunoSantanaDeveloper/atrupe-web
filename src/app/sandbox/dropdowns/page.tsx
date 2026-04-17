@@ -8,6 +8,8 @@ import {
 } from '@/components/common/account-dropdown-menu'
 import { ChevronDown } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 /* ─────────────────────────────────────────────────────────────
    Shared menu data (matching Figma exactly)
 ───────────────────────────────────────────────────────────── */

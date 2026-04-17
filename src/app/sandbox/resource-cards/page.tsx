@@ -1,6 +1,8 @@
 import React from 'react'
 import { ResourceCard } from '@/components/ui/resource-card'
 
+export const dynamic = 'force-dynamic'
+
 export default function ResourceCardsSandboxPage() {
   // Custom Play Button SVG icon from Figma spec
   const PlayIcon = (

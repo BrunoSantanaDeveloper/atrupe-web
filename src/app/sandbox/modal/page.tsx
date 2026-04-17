@@ -8,6 +8,8 @@ import {
   ModalIntent,
 } from '@/components/common/feedback-modal'
 
+export const dynamic = 'force-dynamic'
+
 export default function ModalSandboxPage() {
   const [modalOpen, setModalOpen] = useState(false)
 

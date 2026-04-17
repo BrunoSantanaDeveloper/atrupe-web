@@ -5,6 +5,8 @@ import {
   RadialProgressChart,
 } from '@/components/common/charts'
 
+export const dynamic = 'force-dynamic'
+
 const mockAreaChartData = [
   { month: 'Jan', users: 200 },
   { month: 'Feb', users: 400 },

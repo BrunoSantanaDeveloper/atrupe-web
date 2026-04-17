@@ -1,6 +1,8 @@
 import React from 'react'
 import { VideoPlayer } from '@/components/ui/video-player'
 
+export const dynamic = 'force-dynamic'
+
 export default function VideoPlayerSandboxPage() {
   const sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const
 
