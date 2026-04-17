@@ -72,7 +72,7 @@ const getInvoiceStatusProps = (statusStr: string) => {
     return { label: 'Não emitida', variant: 'neutralLight' as const }
   }
   if (s === 'DRAFT' || s === 'DIGITACAO') {
-    return { label: 'Em digitação', variant: 'infoLight' as const }
+    return { label: 'Em digitação', variant: 'blueLight' as const }
   }
   return {
     label: statusStr || 'Não definida',
