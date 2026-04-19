@@ -204,6 +204,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                             <Button
                               variant="neutralGhost"
                               size="iconSm"
+                              aria-label="Editar item"
                               className="text-gray-400 hover:text-gray-600"
                               onClick={() => setEditItem(item)}
                             >

@@ -41,6 +41,7 @@ export const ActionButton = forwardRef<HTMLButtonElement, ButtonProps & Props>(
               asChild={!!link}
               size="icon"
               variant={variant}
+              aria-label={tooltip}
               RightIcon={!link ? Icon : undefined}
               {...rest}
             >

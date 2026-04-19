@@ -13,6 +13,7 @@ import {
   IconArrowRight,
   IconCreditCard,
   IconBuildingCommunity,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 import { HandleValidateCpf, HandleValidateCnpj } from '@/lib/validateDocs'
 import { toast } from 'sonner'
@@ -37,6 +38,7 @@ import { Input } from '@/components/ui/input-uncontrolled'
 import { FormInput } from '@/components/common/form/FormInput'
 import { SubscriptionTerms } from './components/SubscriptionTerms'
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import {
   createItemNew,
   getData,
@@ -148,6 +150,17 @@ export default function SubscriptionPage() {
     !!activeSubscription &&
     activeSubscription.status === 'ACTIVE' &&
     activeSubscription.plan?.planType !== 'TRIAL'
+    
+  // Check if we have an INACTIVE pending checkout subscription
+  const isPendingCheckout = 
+    !!activeSubscription && 
+    activeSubscription.status === 'INACTIVE' &&
+    activeSubscription.plan?.planType !== 'TRIAL' && 
+    activeSubscription.payments && 
+    activeSubscription.payments.length > 0;
+    
+  const pendingPaymentUrl = isPendingCheckout ? 
+    (activeSubscription.payments[0]?.invoiceUrl || activeSubscription.payments[0]?.bankSlipUrl) : null;
 
   // Keys of modules already contracted in the active subscription
   const alreadyContractedModuleKeys: string[] = useMemo(() => {
@@ -514,8 +527,27 @@ export default function SubscriptionPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <Form {...form}>
-            {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-6">
+              {/* Checkout pending warning */}
+              {isPendingCheckout && (
+                <Alert variant="warning" className="border-warning-200 bg-warning-50">
+                  <IconAlertTriangle className="h-5 w-5 text-warning-600" />
+                  <AlertTitle className="text-warning-800 font-semibold text-lg">Pagamento pendente</AlertTitle>
+                  <AlertDescription className="space-y-4 mt-2">
+                    <p className="text-warning-800">
+                      Identificamos um checkout recente gerado por você que está aguardando pagamento. Se você gerou um PIX ou Boleto para atualizar o seu plano, você pode acessar a fatura ou copiar o PIX através do link abaixo para finalizar a contratação.
+                    </p>
+                    {pendingPaymentUrl && (
+                      <Button asChild size="sm" variant="default" className="w-[max-content] mt-2">
+                        <a href={pendingPaymentUrl} target="_blank" rel="noreferrer">
+                          Acessar cobrança
+                        </a>
+                      </Button>
+                    )}
+                  </AlertDescription>
+                </Alert>
+              )}
+
               {/* Add Module Mode — info banner */}
               {isAddModuleMode && (
                 <Card className="border-brand-200 bg-brand-50">

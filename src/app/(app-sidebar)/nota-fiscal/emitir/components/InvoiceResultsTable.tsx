@@ -24,7 +24,15 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconFileInvoice, IconSearch, IconReceipt } from '@tabler/icons-react'
+import {
+  IconFileInvoice,
+  IconSearch,
+  IconReceipt,
+  IconFilePlus,
+} from '@tabler/icons-react'
+
+// Next
+import Link from 'next/link'
 
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
@@ -202,102 +210,130 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   }
 
   return (
-    <Card className="h-full flex flex-col">
-      <TableFiltersHeader searchParams={searchParams}>
-        <InvoiceFilter searchParams={searchParams} />
-      </TableFiltersHeader>
+    <>
+      {/* Nota Avulsa CTA */}
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-primary-200 bg-primary-50 px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600">
+            <IconFilePlus size={20} />
+          </div>
+          <div>
+            <p className="font-semibold text-sm text-gray-800">
+              Nota Fiscal Avulsa
+            </p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Emita notas sem depender de uma ordem de serviço
+            </p>
+          </div>
+        </div>
+        <Link
+          href="/nota-fiscal/emitir/avulsa"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-700 transition-colors shrink-0"
+        >
+          <IconFilePlus size={16} />
+          Emitir Nota Avulsa
+        </Link>
+      </div>
 
-      <CardContent className="flex-1 overflow-auto p-0">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50 border-y border-gray-100">
-              <TableHead className="w-[40px] px-4">
-                <Checkbox id="select-all" />
-              </TableHead>
-              <TableHead>Referência</TableHead>
-              <TableHead>Valor</TableHead>
-              <TableHead>Fase atual</TableHead>
-              <TableHead className="w-12"></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {orderGroups.map((group) => (
-              <Fragment key={group.date}>
-                <TableRow className="bg-gray-100">
-                  <TableCell
-                    colSpan={5}
-                    className="text-gray font-medium text-xs py-3"
-                  >
-                    {formatDate(group.date)}
-                  </TableCell>
-                </TableRow>
-                {group.orders.map((order) => {
-                  const clientName =
-                    order.quotation?.client?.name || 'Cliente não informado'
-                  const orderRef = order.quotation?.serie
-                    ? `${order.quotation.serie.code}-${order.quotation.serie.quotation}`
-                    : order.id?.slice(0, 8) || 'N/D'
+      <Card className="h-full flex flex-col">
+        <TableFiltersHeader searchParams={searchParams}>
+          <InvoiceFilter searchParams={searchParams} />
+        </TableFiltersHeader>
 
-                  return (
-                    <TableRow key={order.id} className="hover:bg-gray-50">
-                      <TableCell className="px-4">
-                        <Checkbox id={`check-${order.id}`} />
-                      </TableCell>
-                      <TableCell>
-                        <p className="font-medium text-gray-800">
-                          {clientName}
-                        </p>
-                        <p className="text-gray truncate">{orderRef}</p>
-                      </TableCell>
-                      <TableCell className="font-semibold text-success-600">
-                        {formatCurrency(order.quotation?.totalValue)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={getInvoiceStatusProps(order.status).variant}
-                          status
-                        >
-                          {getInvoiceStatusProps(order.status).label}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <ActionButton
-                            Icon={IconSearch}
-                            tooltip="Detalhes da Ordem"
-                            link={`/nota-fiscal/emitir/${order.id}`}
-                          />
-                          <ActionButton
-                            Icon={IconReceipt}
-                            tooltip="Emitir Nota Fiscal"
-                            onClick={() => setModalOrderId(order.id)}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-              </Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
+        <CardContent className="flex-1 overflow-auto p-0">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50 border-y border-gray-100">
+                <TableHead className="w-[40px] px-4">
+                  <Checkbox id="select-all" />
+                </TableHead>
+                <TableHead>Referência</TableHead>
+                <TableHead>Valor</TableHead>
+                <TableHead>Fase atual</TableHead>
+                <TableHead className="w-12"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {orderGroups.map((group) => (
+                <Fragment key={group.date}>
+                  <TableRow className="bg-gray-100">
+                    <TableCell
+                      colSpan={5}
+                      className="text-gray font-medium text-xs py-3"
+                    >
+                      {formatDate(group.date)}
+                    </TableCell>
+                  </TableRow>
+                  {group.orders.map((order) => {
+                    const clientName =
+                      order.quotation?.client?.name || 'Cliente não informado'
+                    const orderRef = order.quotation?.serie
+                      ? `${order.quotation.serie.code}-${order.quotation.serie.quotation}`
+                      : order.id?.slice(0, 8) || 'N/D'
 
-      <CardFooter className="border-t border-gray-100 p-4 mt-auto">
-        <TablePagination
-          searchParams={searchParams}
-          lastPage={totalPages}
-          activeVariant="success"
+                    return (
+                      <TableRow key={order.id} className="hover:bg-gray-50">
+                        <TableCell className="px-4">
+                          <Checkbox id={`check-${order.id}`} />
+                        </TableCell>
+                        <TableCell>
+                          <p className="font-medium text-gray-800">
+                            {clientName}
+                          </p>
+                          <p className="text-gray truncate">{orderRef}</p>
+                        </TableCell>
+                        <TableCell className="font-semibold text-success-600">
+                          {formatCurrency(order.quotation?.totalValue)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant={
+                              getInvoiceStatusProps(order.status).variant
+                            }
+                            status
+                          >
+                            {getInvoiceStatusProps(order.status).label}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-end gap-1">
+                            <ActionButton
+                              Icon={IconSearch}
+                              tooltip="Detalhes da Ordem"
+                              link={`/nota-fiscal/emitir/${order.id}`}
+                            />
+                            <ActionButton
+                              Icon={IconReceipt}
+                              tooltip="Emitir Nota Fiscal"
+                              onClick={() => setModalOrderId(order.id)}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+
+        <CardFooter className="border-t border-gray-100 p-4 mt-auto">
+          <TablePagination
+            searchParams={searchParams}
+            lastPage={totalPages}
+            activeVariant="success"
+          />
+        </CardFooter>
+
+        <InvoiceTypeSelectModal
+          open={!!modalOrderId}
+          onOpenChange={(open) => {
+            if (!open) setModalOrderId(null)
+          }}
+          orderId={modalOrderId ?? ''}
         />
-      </CardFooter>
-
-      <InvoiceTypeSelectModal
-        open={!!modalOrderId}
-        onOpenChange={(open) => {
-          if (!open) setModalOrderId(null)
-        }}
-        orderId={modalOrderId ?? ''}
-      />
-    </Card>
+      </Card>
+    </>
   )
 }
