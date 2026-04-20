@@ -187,9 +187,6 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
         // Venda rápida só disponível no plano full
         return canManageSalesOrders()
       }
-      if (item === 'quotation') {
-        return canManageBudgetStatus()
-      }
       if (item === 'order') {
         return canManageSalesOrders()
       }
@@ -393,6 +390,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-view-${section.key}`}
                                     className="flex-none mx-auto"
+                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.view` as any))}
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -407,6 +405,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-edit-${section.key}`}
                                     className="flex-none mx-auto"
+                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.edit` as any))}
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -421,6 +420,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-create-${section.key}`}
                                     className="flex-none mx-auto"
+                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.create` as any))}
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -435,6 +435,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-delete-${section.key}`}
                                     className="flex-none mx-auto"
+                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.delete` as any))}
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,

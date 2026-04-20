@@ -70,48 +70,54 @@ export function InvoiceItemEditDialog({
 
         <div className="grid grid-cols-2 gap-4 py-4">
           <div className="space-y-2">
-            <Label>Quantidade</Label>
+            <Label htmlFor="edit-quantity">Quantidade</Label>
             <Input
+              id="edit-quantity"
               type="number"
               value={formData.quantity}
               onChange={(e) => updateField('quantity', Number(e.target.value))}
             />
           </div>
           <div className="space-y-2">
-            <Label>Valor Unitário (R$)</Label>
+            <Label htmlFor="edit-unit-value">Valor Unitário (R$)</Label>
             <Input
+              id="edit-unit-value"
               type="number"
               value={formData.unitValue}
               onChange={(e) => updateField('unitValue', Number(e.target.value))}
             />
           </div>
           <div className="space-y-2">
-            <Label>Desconto (R$)</Label>
+            <Label htmlFor="edit-discount">Desconto (R$)</Label>
             <Input
+              id="edit-discount"
               type="number"
               value={formData.discount}
               onChange={(e) => updateField('discount', Number(e.target.value))}
             />
           </div>
           <div className="space-y-2">
-            <Label>Frete (R$)</Label>
+            <Label htmlFor="edit-freight">Frete (R$)</Label>
             <Input
+              id="edit-freight"
               type="number"
               value={formData.freight}
               onChange={(e) => updateField('freight', Number(e.target.value))}
             />
           </div>
           <div className="space-y-2">
-            <Label>Seguro (R$)</Label>
+            <Label htmlFor="edit-insurance">Seguro (R$)</Label>
             <Input
+              id="edit-insurance"
               type="number"
               value={formData.insurance}
               onChange={(e) => updateField('insurance', Number(e.target.value))}
             />
           </div>
           <div className="space-y-2">
-            <Label>Valor Total (Calc)</Label>
+            <Label htmlFor="edit-total-value">Valor Total (Calc)</Label>
             <Input
+              id="edit-total-value"
               type="number"
               value={formData.totalValue}
               disabled

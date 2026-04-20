@@ -1,10 +1,5 @@
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Button, buttonVariants } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Accordion,
   AccordionItem,
@@ -12,7 +7,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
+
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconUserCog, IconAlertTriangle } from '@tabler/icons-react'
 

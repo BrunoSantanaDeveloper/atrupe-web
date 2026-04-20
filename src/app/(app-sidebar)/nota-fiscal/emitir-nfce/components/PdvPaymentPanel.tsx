@@ -7,12 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
   SelectContent,
@@ -109,9 +104,7 @@ export function PdvPaymentPanel({
               >
                 <span>{pag.label}</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">
-                    {formatBRL(pag.valor)}
-                  </span>
+                  <span className="font-medium">{formatBRL(pag.valor)}</span>
                   <Button
                     variant="ghost"
                     size="iconXs"

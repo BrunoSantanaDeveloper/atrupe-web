@@ -324,7 +324,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
           </Accordion>
 
           {/* Perfil and Sair - same style as accordion items */}
-          <div className="border-b mt-3 pb-2">
+          <div className="border-b border-gray-200 mt-3 pb-2">
             <button
               type="button"
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"
@@ -336,7 +336,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               </span>
             </button>
           </div>
-          <div className="border-b mt-3 pb-2">
+          <div className="border-b border-gray-200 mt-3 pb-2">
             <button
               type="button"
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"

@@ -76,7 +76,12 @@ interface InvoiceTableProps {
   emptyCtaHref?: string
 }
 
-export function InvoiceTable({ items, actionRenderer, emptyCtaLabel, emptyCtaHref }: InvoiceTableProps) {
+export function InvoiceTable({
+  items,
+  actionRenderer,
+  emptyCtaLabel,
+  emptyCtaHref,
+}: InvoiceTableProps) {
   if (!items || items.length === 0) {
     return <InvoiceEmptyState ctaLabel={emptyCtaLabel} ctaHref={emptyCtaHref} />
   }

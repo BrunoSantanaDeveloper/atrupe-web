@@ -74,15 +74,13 @@ export function ProductImageUpload<T extends FieldValues>({
                   multiple={false}
                   maxFileCount={1}
                   maxSize={maxSize}
-                  progresses={progresses}
                   onUpload={async (files: File[]) => {
                     const res = await handleUpload(files)
-                    field.onChange(res)
+                    if (res) field.onChange(res)
                   }}
                   customHelpText={customHelpText}
                   disabled={isUploading}
-                  className="w-full h-full"
-                  progressstyle={cn('!h-72 my-auto', maxHeight)}
+                  className={cn(className)}
                 />
               </FormControl>
               <FormMessage />

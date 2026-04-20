@@ -11,11 +11,13 @@ import {
 interface TablePaginationProps {
   searchParams?: { [key: string]: string }
   lastPage?: number
+  activeVariant?: 'brand' | 'success' | 'dark'
 }
 
 export function TablePagination({
   searchParams,
   lastPage = 1,
+  activeVariant = 'brand',
 }: TablePaginationProps) {
   const currentPage = Number(searchParams?.page) || 1
 
@@ -88,6 +90,7 @@ export function TablePagination({
                   href={buildUrlWithPageParam(page as number)}
                   isActive={currentPage === page}
                   scroll={false}
+                  activeVariant={activeVariant}
                 >
                   {page}
                 </PaginationLink>

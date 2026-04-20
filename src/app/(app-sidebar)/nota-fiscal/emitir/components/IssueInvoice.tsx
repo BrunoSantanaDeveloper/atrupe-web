@@ -22,13 +22,13 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
           <Topbar title="Emissão de Nota Fiscal" />
 
           <div className="grid grid-cols-12 gap-5 flex-1 min-h-0">
-            {/* Left Sidebar - Client Search */}
+            {/* Left Sidebar - Client Search 
             <div className="col-span-12 lg:col-span-4 h-full">
               <ClientSearchSidebar searchParams={searchParams} />
-            </div>
+            </div> */}
 
             {/* Right Content - Results and Filters */}
-            <div className="col-span-12 lg:col-span-8 h-full">
+            <div className="col-span-12 lg:col-span-12 h-full">
               <InvoiceResultsTable searchParams={searchParams} />
             </div>
           </div>

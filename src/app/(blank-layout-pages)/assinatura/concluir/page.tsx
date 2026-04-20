@@ -145,12 +145,7 @@ export default function FinishSubscriptionPage() {
         }
 
         setTimeout(() => {
-          // If nota_fiscal was contracted, redirect to fiscal onboarding
-          if (features.includes('nota_fiscal')) {
-            router.replace('/assinatura/configurar-fiscal')
-          } else {
-            router.replace('/dashboard')
-          }
+          router.replace('/dashboard')
         }, 3000)
       } else {
         setStatus('waiting_payment')
@@ -246,11 +241,7 @@ export default function FinishSubscriptionPage() {
 
           // Redirecionar após 3 segundos
           setTimeout(() => {
-            if (features.includes('nota_fiscal')) {
-              router.replace('/assinatura/configurar-fiscal')
-            } else {
-              router.replace('/dashboard')
-            }
+            router.replace('/dashboard')
           }, 3000)
         } else if (checkResult.status === 'payment_pending') {
           // Pagamento ainda pendente (PIX ou Boleto)

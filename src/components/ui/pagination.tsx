@@ -38,71 +38,83 @@ PaginationItem.displayName = 'PaginationItem'
 
 type PaginationLinkProps = {
   isActive?: boolean
-} & Pick<ButtonProps, 'size'> &
+  activeVariant?: 'brand' | 'success' | 'dark'
+} & Pick<ButtonProps, 'size' | 'variant' | 'rounded'> &
   React.ComponentProps<typeof Link>
 
 const PaginationLink = ({
   className,
   isActive,
+  activeVariant = 'brand',
+  variant,
   size = 'icon',
+  rounded,
   ...props
-}: PaginationLinkProps) => (
-  <Link
-    aria-current={isActive ? 'page' : undefined}
-    className={cn(
-      buttonVariants({
-        variant: isActive ? 'light' : 'neutralLight',
-        size,
-      }),
-      isActive ? 'bg-brand-50' : '',
-      className,
-    )}
-    {...props}
-  />
-)
+}: PaginationLinkProps) => {
+  let defaultVariant: any = variant || 'neutralLight'
+
+  if (isActive && !variant) {
+    if (activeVariant === 'brand') defaultVariant = 'light'
+    if (activeVariant === 'success') defaultVariant = 'successLight'
+    if (activeVariant === 'dark') defaultVariant = 'neutral'
+  }
+
+  return (
+    <Link
+      aria-current={isActive ? 'page' : undefined}
+      className={cn(
+        buttonVariants({
+          variant: defaultVariant,
+          size,
+          rounded,
+        }),
+        isActive && activeVariant === 'brand' && !variant
+          ? 'bg-brand-50 text-brand-700'
+          : '',
+        isActive && activeVariant === 'success' && !variant
+          ? 'bg-success-100 text-success-800'
+          : '',
+        className,
+      )}
+      {...props}
+    />
+  )
+}
 PaginationLink.displayName = 'PaginationLink'
 
 const PaginationPrevious = ({
   className,
+  variant = 'neutralOutline',
+  size = 'default',
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Ir para página anterior"
-    size="default"
-    className={cn(
-      'gap-1 pl-2.5',
-      buttonVariants({
-        variant: 'neutralOutline',
-        size: 'default',
-      }),
-      className,
-    )}
+    size={size}
+    variant={variant}
+    className={cn(size === 'icon' ? '' : 'gap-1 pl-2.5', className)}
     {...props}
   >
     <ArrowLeft className="h-4 w-4" />
-    <span>Anterior</span>
+    {size !== 'icon' && <span>Anterior</span>}
   </PaginationLink>
 )
 PaginationPrevious.displayName = 'PaginationPrevious'
 
 const PaginationNext = ({
   className,
+  variant = 'neutralOutline',
+  size = 'default',
   ...props
 }: React.ComponentProps<typeof PaginationLink>) => (
   <PaginationLink
     aria-label="Ir para próxima página"
-    size="default"
-    className={cn(
-      'gap-1 pr-2.5',
-      buttonVariants({
-        variant: 'neutralOutline',
-        size: 'default',
-      }),
-      className,
-    )}
+    size={size}
+    variant={variant}
+    className={cn(size === 'icon' ? '' : 'gap-1 pr-2.5', className)}
     {...props}
   >
-    <span>Próximo</span>
+    {size !== 'icon' && <span>Próximo</span>}
     <ArrowRight className="h-4 w-4" />
   </PaginationLink>
 )

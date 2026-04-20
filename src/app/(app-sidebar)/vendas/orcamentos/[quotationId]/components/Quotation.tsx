@@ -131,9 +131,10 @@ export function Quotation({ id }: Props) {
             </p>
           </div>
           {data?.orderId && (
-            <Button type="button" asChild RightIcon={IconExternalLink}>
+            <Button type="button" asChild>
               <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
                 Ver ordem de serviço
+                <IconExternalLink size={24} className="ml-auto" />
               </Link>
             </Button>
           )}

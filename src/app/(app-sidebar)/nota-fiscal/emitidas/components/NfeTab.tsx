@@ -161,7 +161,12 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
               <Skeleton className="h-10 w-full" />
             </div>
           ) : (
-            <InvoiceTable items={items} actionRenderer={renderActions} emptyCtaLabel="Emitir NF-e" emptyCtaHref="/nota-fiscal/emitir" />
+            <InvoiceTable
+              items={items}
+              actionRenderer={renderActions}
+              emptyCtaLabel="Emitir NF-e"
+              emptyCtaHref="/nota-fiscal/emitir"
+            />
           )}
         </CardContent>
       </Card>

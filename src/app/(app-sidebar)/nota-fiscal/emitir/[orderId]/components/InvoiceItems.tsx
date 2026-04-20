@@ -18,6 +18,7 @@ import { Badge } from '@/components/ui/badge'
 
 // Icons
 import { IconPencil, IconSettings, IconLayoutGrid } from '@tabler/icons-react'
+import { Checkbox } from '@/components/ui/checkbox'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -77,26 +78,10 @@ export function InvoiceItems({ data, onUpdate }: Props) {
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
                 <CardTitle className="text-gray-700 font-semibold text-base">
-                  Itens ({filteredItems.length})
+                  Itens
                 </CardTitle>
               </div>
-              <div className="flex gap-3">
-                {filteredItems.some((i) => i.needsConfiguration) && (
-                  <Button
-                    variant="success"
-                    size="sm"
-                    LeftIcon={IconSettings}
-                    onClick={() => {
-                      /* Just open first for now or let user handle per row */
-                      const firstIncomplete = filteredItems.find(
-                        (i) => i.needsConfiguration,
-                      )
-                      if (firstIncomplete) setConfigItem(firstIncomplete)
-                    }}
-                  >
-                    Configurar
-                  </Button>
-                )}
+              <div>
                 <AccordionTrigger
                   className={cn(
                     buttonVariants({
@@ -114,25 +99,28 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50 border-y border-gray-100">
-                        <TableHead className="px-6 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[35%]">
+                        <TableHead className="w-[40px] px-4">
+                          <Checkbox id="selectAll" />
+                        </TableHead>
+                        <TableHead className="px-6 py-3 font-medium text-gray-500 text-xs w-[35%]">
                           Referência
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider w-[20%]">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs w-[20%]">
                           CST
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                           Frete
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                           Seguro
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                           Valor unitário
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-center">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-center">
                           Qtd.
                         </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 uppercase text-xs tracking-wider text-right">
+                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                           Valor final
                         </TableHead>
                         <TableHead className="px-6 py-3 w-[50px]"></TableHead>
@@ -144,31 +132,24 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                           key={item.itemNumber}
                           className="group hover:bg-gray-50/50 transition-colors"
                         >
+                          <TableCell className="px-4 align-top py-4">
+                            <Checkbox id={`check-${item.itemNumber}`} />
+                          </TableCell>
                           {/* Referência */}
                           <TableCell className="px-6 py-4 align-top">
                             <div className="space-y-1">
                               <p className="font-medium text-gray-900 line-clamp-2">
                                 {item.itemNumber} - {item.description}
                               </p>
-                              <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 font-mono mt-1">
-                                <span>COD: {item.productCode || 'N/D'}</span>
-                                <span className="text-gray-300">|</span>
-                                <span>NCM: {item.ncm || 'N/D'}</span>
-                                <span className="text-gray-300">|</span>
-                                <span>CFOP: {item.cfop || 'N/D'}</span>
+                              <div className="text-xs text-gray-500 font-mono mt-1 space-y-0.5">
+                                <div>CÓD: {item.productCode || 'N/D'}</div>
+                                <div>NCM: {item.ncm || 'N/D'}</div>
+                                <div>CFOP: {item.cfop || 'N/D'}</div>
                               </div>
                               {item.needsConfiguration && (
-                                <div className="flex items-center gap-2 mt-2">
-                                  <Badge
-                                    variant="error"
-                                    className="text-[10px] h-5 px-1.5"
-                                  >
-                                    Incompleto
-                                  </Badge>
-                                  <p className="text-[11px] text-error-600 font-medium">
-                                    Requer configuração fiscal
-                                  </p>
-                                </div>
+                                <p className="mt-1.5 text-xs text-error-600 font-medium bg-error-50 inline-block px-2 py-0.5 rounded">
+                                  Este item ainda não foi configurado.
+                                </p>
                               )}
                             </div>
                           </TableCell>
@@ -177,7 +158,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                           <TableCell className="px-4 py-4 align-top">
                             {item.needsConfiguration ? (
                               <Button
-                                variant="success"
+                                variant="default"
                                 size="sm"
                                 LeftIcon={IconSettings}
                                 className="font-medium"
@@ -186,47 +167,13 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                                 Configurar
                               </Button>
                             ) : (
-                              <div className="space-y-1.5">
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="font-semibold text-gray-600 w-12 text-right">
-                                    ICMS:
-                                  </span>
-                                  <span className="text-gray-500 font-mono bg-gray-100 px-1 rounded">
-                                    {item.cstIcms}
-                                  </span>
+                              <div className="text-[13px] text-gray-500 space-y-0.5 mt-0.5">
+                                <div>ICMS: {item.cstIcms || '-'}</div>
+                                <div>COFINS: {item.cstCofins || '-'}</div>
+                                <div>PIS: {item.cstPis || '-'}</div>
+                                <div>
+                                  IPI: {item.cstIpi || 'Sem enquadramento'}
                                 </div>
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="font-semibold text-gray-600 w-12 text-right">
-                                    PIS:
-                                  </span>
-                                  <span className="text-gray-500 font-mono bg-gray-100 px-1 rounded">
-                                    {item.cstPis || '-'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="font-semibold text-gray-600 w-12 text-right">
-                                    COFINS:
-                                  </span>
-                                  <span className="text-gray-500 font-mono bg-gray-100 px-1 rounded">
-                                    {item.cstCofins || '-'}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2 text-xs">
-                                  <span className="font-semibold text-gray-600 w-12 text-right">
-                                    IPI:
-                                  </span>
-                                  <span className="text-gray-500 font-mono bg-gray-100 px-1 rounded">
-                                    {item.cstIpi || '-'}
-                                  </span>
-                                </div>
-                                <Button
-                                  variant="link"
-                                  size="sm"
-                                  className="h-auto p-0 text-[10px] text-brand-600 mt-1 hover:text-brand-700"
-                                  onClick={() => setConfigItem(item)}
-                                >
-                                  Editar tributos
-                                </Button>
                               </div>
                             )}
                           </TableCell>
@@ -248,7 +195,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                           <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
                             {item.quantity}
                           </TableCell>
-                          <TableCell className="px-4 py-4 text-right text-success-700 font-bold text-sm align-top tabular-nums">
+                          <TableCell className="px-4 py-4 text-right text-gray-900 font-bold text-sm align-top tabular-nums">
                             {formatCurrency(item.totalValue)}
                           </TableCell>
 
@@ -257,7 +204,8 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                             <Button
                               variant="neutralGhost"
                               size="iconSm"
-                              className="text-gray-400 group-hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-all"
+                              aria-label="Editar item"
+                              className="text-gray-400 hover:text-gray-600"
                               onClick={() => setEditItem(item)}
                             >
                               <IconPencil size={16} />

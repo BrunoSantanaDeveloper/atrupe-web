@@ -4,10 +4,10 @@ import { QuotationCommissionType } from './schema'
 export function defaultValues(quotationData: QuotationType) {
   if (!quotationData) return {}
 
-  // Valor base = soma dos totalValue dos itens (antes dos descontos por item) + frete
+  // Valor base para as condições de pagamento DEVE considerar os descontos DADOS AOS ITENS
   const itemsTotalValue =
     quotationData?.quotationItems?.reduce(
-      (sum, item) => sum + (item?.totalValue || 0),
+      (sum, item) => sum + (item?.finalValue ?? item?.totalValue ?? 0),
       0,
     ) || 0
 

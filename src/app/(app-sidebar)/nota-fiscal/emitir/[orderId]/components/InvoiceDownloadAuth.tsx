@@ -13,6 +13,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { EmptyState } from '@/components/ui/empty-state'
 import { cn } from '@/lib/utils'
 
 // Icons
@@ -81,15 +82,17 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                 Autorização de download (autXML)
               </CardTitle>
             </div>
-            <AccordionTrigger
-              className={cn(
-                buttonVariants({
-                  variant: 'neutralLight',
-                  size: 'icon',
-                }),
-                'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-              )}
-            />
+            <div>
+              <AccordionTrigger
+                className={cn(
+                  buttonVariants({
+                    variant: 'neutralLight',
+                    size: 'icon',
+                  }),
+                  'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                )}
+              />
+            </div>
           </CardHeader>
           <AccordionContent>
             <CardContent className="p-6 space-y-4">
@@ -121,9 +124,11 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
 
               <div className="space-y-2 pt-2">
                 {(!data.autXml || data.autXml.length === 0) && (
-                  <div className="text-sm text-gray-400 italic">
-                    Nenhum autorizado cadastrado.
-                  </div>
+                  <EmptyState
+                    iconType="search"
+                    title="Nenhum autorizado cadastrado"
+                    description="Adicione CNPJ ou CPF para autorizar o download."
+                  />
                 )}
 
                 {data.autXml?.map((doc, idx) => (

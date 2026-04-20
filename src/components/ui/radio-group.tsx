@@ -3,8 +3,25 @@
 import * as React from 'react'
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { Circle } from 'lucide-react'
+import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
+
+const radioItemVariants = cva(
+  'aspect-square rounded-full border border-[#D0D5DD] bg-white text-[#099260] transition-all duration-200 ease-in-out outline-none disabled:cursor-not-allowed disabled:border-[#D0D5DD] disabled:bg-[#F2F4F7] hover:ring-4 hover:ring-[#D2F9E3] focus-visible:ring-4 focus-visible:ring-[#D2F9E3] data-[state=checked]:bg-[#D2F9E3] data-[state=checked]:border-[#099260] disabled:data-[state=checked]:bg-[#F2F4F7] disabled:data-[state=checked]:text-[#D0D5DD] disabled:data-[state=checked]:border-[#D0D5DD]',
+  {
+    variants: {
+      size: {
+        default: 'h-4 w-4',
+        sm: 'h-4 w-4',
+        md: 'h-5 w-5',
+      },
+    },
+    defaultVariants: {
+      size: 'sm',
+    },
+  },
+)
 
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
@@ -20,21 +37,27 @@ const RadioGroup = React.forwardRef<
 })
 RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
 
+export interface RadioGroupItemProps
+  extends React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>,
+    VariantProps<typeof radioItemVariants> {}
+
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
->(({ className, ...props }, ref) => {
+  RadioGroupItemProps
+>(({ className, size, ...props }, ref) => {
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
-      className={cn(
-        'aspect-square h-4 w-4 rounded-full border border-gray-300 text-brand ring-offset-white focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-50 dark:text-gray-50 dark:ring-offset-gray-950 dark:focus-visible:ring-gray-300 transition-all duration-200 ease-in-out',
-        className,
-      )}
+      className={cn(radioItemVariants({ size, className }))}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="flex items-center justify-center h-4 w-4 rounded-full bg-brand-50 border border-brand -ml-px -mt-px transition-opacity duration-200 ease-in-out">
-        <Circle className="h-1.5 w-1.5 fill-current text-current" />
+      <RadioGroupPrimitive.Indicator className="flex items-center justify-center h-full w-full">
+        <Circle
+          className={cn(
+            'fill-current text-current',
+            size === 'md' ? 'h-2 w-2' : 'h-1.5 w-1.5',
+          )}
+        />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )

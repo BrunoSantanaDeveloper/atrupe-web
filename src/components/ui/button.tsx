@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils'
 import { LoaderCircle } from 'lucide-react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200',
   {
     variants: {
       variant: {
-        default: 'bg-brand text-white hover:bg-brand-700 active:bg-brand-600',
+        // ── Legacy variants (backward compatible) ──────────────────
+        default:
+          'bg-brand text-white hover:bg-brand-700 active:bg-brand-600 border border-brand',
         outline:
           'border-2 border-brand-300 bg-white text-brand hover:border-brand-400 hover:bg-brand-100 hover:text-brand-600 active:border-brand-300 active:bg-brand-50 active:text-brand',
         light:
@@ -62,6 +64,32 @@ const buttonVariants = cva(
 
         none: 'hover:opacity-80 active:opacity-95 transition-opacity transition-color font-normal',
         raw: 'font-normal',
+
+        // ── New Figma DS variants ──────────────────────────────────────────
+        primary:
+          'bg-brand-600 text-white border border-brand-600 hover:bg-brand-700 hover:border-brand-700 active:bg-brand-800 active:border-brand-800',
+        primaryOutline:
+          'bg-brand-200 border-2 border-brand-800 text-brand-800 hover:bg-brand-100 hover:border-brand-700 hover:text-brand-700 active:bg-brand-50 active:border-brand-600 active:text-brand-600',
+
+        secondary:
+          'bg-gray-100 border border-gray-100 text-gray-500 hover:bg-gray-300 hover:border-gray-300 hover:text-gray-700 active:bg-gray-200 active:border-gray-200 active:text-gray-600',
+        secondaryOutline:
+          'bg-white border-2 border-gray-300 text-gray-500 hover:bg-gray-100 hover:border-gray-400 hover:text-gray-700 active:bg-gray-50 active:border-gray-300 active:text-gray-600',
+        secondaryGhost:
+          'bg-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-700 active:bg-gray-50 active:text-gray-600',
+
+        destructive:
+          'bg-error-600 border border-error-600 text-white hover:bg-error-700 hover:border-error-700 active:bg-error-800 active:border-error-800',
+        destructiveOutline:
+          'bg-white border-2 border-error-300 text-error-600 hover:bg-error-100 hover:border-error-400 hover:text-error-700 active:bg-error-50 active:border-error-300 active:text-error-600',
+        destructiveGhost:
+          'bg-transparent text-error-600 hover:bg-error-100 hover:text-error-700 active:bg-error-50 active:text-error-600',
+
+        // ── Overlays / Glassmorphism ───────────────────────────────────────
+        glassDark:
+          'bg-black/90 backdrop-blur text-white border border-transparent shadow-sm hover:bg-black/80 hover:border-white/10 active:bg-black',
+        glassLight:
+          'bg-white/90 backdrop-blur text-gray-800 border border-gray-200 shadow-sm hover:bg-white/100 hover:border-gray-300 active:bg-gray-50',
       },
       size: {
         default: 'h-11 px-4 text-sm',

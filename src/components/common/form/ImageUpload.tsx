@@ -62,7 +62,6 @@ export function FormImageUpload<T extends FieldValues>({
                   multiple={false}
                   maxFileCount={1}
                   maxSize={maxSize}
-                  progresses={progresses}
                   onUpload={async (files: File[]) => {
                     const res = await handleUpload(files)
                     if (res) field.onChange(res)

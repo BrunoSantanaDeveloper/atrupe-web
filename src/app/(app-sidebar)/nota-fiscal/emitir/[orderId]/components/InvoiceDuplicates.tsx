@@ -14,6 +14,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { EmptyState } from '@/components/ui/empty-state'
 import { cn } from '@/lib/utils'
 
 // Icons
@@ -104,15 +105,17 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
                 </span>
               </div>
             </div>
-            <AccordionTrigger
-              className={cn(
-                buttonVariants({
-                  variant: 'neutralLight',
-                  size: 'icon',
-                }),
-                'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-              )}
-            />
+            <div>
+              <AccordionTrigger
+                className={cn(
+                  buttonVariants({
+                    variant: 'neutralLight',
+                    size: 'icon',
+                  }),
+                  'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                )}
+              />
+            </div>
           </CardHeader>
           <AccordionContent>
             <CardContent className="p-6 space-y-4">
@@ -150,9 +153,11 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
               {/* List */}
               <div className="space-y-2">
                 {!data.duplicatas || data.duplicatas.length === 0 ? (
-                  <div className="text-center py-4 text-gray-400 text-sm">
-                    Nenhuma duplicata adicionada
-                  </div>
+                  <EmptyState
+                    iconType="search"
+                    title="Nenhuma duplicata adicionada"
+                    description="Insira as duplicatas pelo formulário acima."
+                  />
                 ) : (
                   data.duplicatas.map((dup, idx) => (
                     <div
