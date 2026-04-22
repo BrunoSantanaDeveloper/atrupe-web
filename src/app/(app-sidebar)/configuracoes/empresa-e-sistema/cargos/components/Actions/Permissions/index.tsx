@@ -205,6 +205,8 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     queryFn: () =>
       getItemOld({ route: 'roleRoute', id: rowData?.id as string }),
     enabled: !!rowData?.id && open,
+    staleTime: 0,
+    refetchOnMount: 'always',
   })
 
   const form = useForm<FormType>({
@@ -256,7 +258,8 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     mutationFn: (data: string[]) =>
       updateItem('roleRoute', `${rowData?.id}`, { permissions: data }),
     onSuccess: () => {
-      queryClient.invalidateQueries()
+      queryClient.invalidateQueries({ queryKey: ['role-permissions', rowData?.id] })
+      queryClient.invalidateQueries({ queryKey: ['roles'] })
       toast.success('Permissões salvas!')
       handleOpenChange(false)
     },
@@ -286,7 +289,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
       return
     }
     setOpen('')
-    form.reset()
+    // Reset form with current roleData so it doesn't clear values on reopen
+    // A full blank reset would make the cache data stale vs form state
+    form.reset({})
   }
 
   const handleCheckAllColumnInSection = (
