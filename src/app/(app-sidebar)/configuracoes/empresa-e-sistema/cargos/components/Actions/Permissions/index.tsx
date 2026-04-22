@@ -99,6 +99,17 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
     }
   })
 
+  // Regra de negócio: escrever implica ler.
+  // Se edit/create/delete estiver presente mas view não, auto-adiciona view=true.
+  // Isso corrige permissões salvas antes desta regra existir no frontend,
+  // onde o checkbox de view fica disabled quando os outros estão marcados,
+  // impedindo o usuário de marcá-lo manualmente.
+  Object.values(permissionsObject).forEach((perms) => {
+    if ((perms.edit || perms.create || perms.delete) && !perms.view) {
+      perms.view = true
+    }
+  })
+
   return permissionsObject
 }
 
