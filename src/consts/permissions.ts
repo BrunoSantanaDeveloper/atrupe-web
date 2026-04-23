@@ -19,7 +19,7 @@ export const permissionsData = [
       },
       {
         name: 'Vendas de outros Vendedores',
-        key: 'other_quotation',
+        key: 'other_sellers',
       },
       {
         name: 'Ordens de serviço',
