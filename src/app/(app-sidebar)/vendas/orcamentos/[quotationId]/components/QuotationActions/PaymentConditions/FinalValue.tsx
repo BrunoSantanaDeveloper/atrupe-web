@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   HoverCard,
   HoverCardContent,
@@ -22,7 +22,7 @@ export default function FinalValue({
   quotationData,
   addComissionValue,
 }: Props) {
-  const { watch } = form
+  const { watch, setValue } = form
 
   const deliveryValue = quotationData?.deliveryInfo?.value ?? 0
 
@@ -44,12 +44,18 @@ export default function FinalValue({
 
   const itemsDiscount = itemsValue - itemsValueWithDiscount
 
+  // Valor final = itens com desc. + frete + comissão + acréscimos - desconto geral
   const finalValue =
     itemsValueWithDiscount +
     deliveryValue +
     addComissionValue +
     totalAdditionalFee -
     discountTotal
+
+  // Sincroniza o finalValue calculado com o campo do formulário para ser enviado ao backend
+  useEffect(() => {
+    setValue('finalValue', finalValue)
+  }, [finalValue, setValue])
 
   return (
     <HoverCard>

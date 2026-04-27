@@ -185,7 +185,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                         // form.handleSubmit(onSubmit)()
                       }}
                     >
-                      <TableCell className="w-[10%] font-normal text-gray-600">
+                      <TableCell className="w-[15%] font-normal text-gray-600">
                         {item.code}
                       </TableCell>
                       <TableCell className="w-full text-left text-gray-900">

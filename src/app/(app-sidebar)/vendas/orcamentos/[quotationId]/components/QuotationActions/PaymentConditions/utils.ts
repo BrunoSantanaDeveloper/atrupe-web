@@ -25,6 +25,15 @@ export function defaultValues(quotationData: QuotationType) {
   const totalValue =
     paymentConditionsBaseValue + addComissionValue - discountTotal
 
+  const mainAdditionalFee =
+    quotationData.paymentConditions?.mainAdditionalFee || 0
+  const downPaymentAdditionalFee =
+    quotationData.paymentConditions?.downPayment?.additionalFee || 0
+  const totalAdditionalFee = mainAdditionalFee + downPaymentAdditionalFee
+
+  // finalValue = base (itens+frete) + comissão ADD + acréscimos - desconto geral
+  const finalValue = paymentConditionsBaseValue + addComissionValue + totalAdditionalFee - discountTotal
+
   return {
     type: quotationData.paymentConditions?.type || 'NFE',
     billing: quotationData.paymentConditions?.billing || 'ON_ORDER',
@@ -66,6 +75,7 @@ export function defaultValues(quotationData: QuotationType) {
     },
 
     totalValue,
+    finalValue,
 
     downPayment: {
       dueDate: new Date(

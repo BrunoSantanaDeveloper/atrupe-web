@@ -42,7 +42,7 @@ export const quotationPaymentConditionsSchema = z.object({
       .optional(),
   ),
   description: z.string().trim(),
-  // finalValue: z.number().optional(),
+  finalValue: z.number().optional(),
 
   minInstallmentQty: z.number().optional(),
   maxInstallmentQty: z.number().optional(),
