@@ -45,11 +45,14 @@ export default function ValidationPage() {
       processStarted.current = true
 
       // Enviar dados para o backend e atualizar progresso simultaneamente
+      // Normalizar email antes de finalizar o cadastro
+      const normalizedEmail = signupData?.email?.toLowerCase().trim()
+
       const finishSignupPromise = createItemNew({
         route: '/user/create-password',
         data: {
           name: signupData?.name,
-          email: signupData?.email,
+          email: normalizedEmail,
           company: signupData?.company,
           mobile: signupData?.mobile,
           password: newPasswordData?.password,
@@ -77,7 +80,7 @@ export default function ValidationPage() {
 
         // Iniciar o login em paralelo com o progresso
         const loginPromise = signIn('credentials', {
-          username: signupData?.email,
+          username: normalizedEmail,
           password: newPasswordData?.password,
           redirect: false,
         })

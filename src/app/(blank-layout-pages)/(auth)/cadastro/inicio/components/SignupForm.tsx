@@ -53,11 +53,14 @@ export function SignupForm() {
   } = form
 
   const onSubmit = async (data: SignupType) => {
+    // Normalizar email antes de enviar (evita problemas de case no fluxo inteiro)
+    const normalizedEmail = data.email.toLowerCase().trim()
+
     // Enviar email para verificação
     const res = await createItemNew({
       route: '/user',
       data: {
-        email: data.email,
+        email: normalizedEmail,
         name: data.name,
         companyName: data.company,
         phone: data.mobile,
@@ -69,8 +72,8 @@ export function SignupForm() {
       return
     }
 
-    // Armazenar dados do formulário no store
-    setSignupData(data)
+    // Armazenar dados do formulário no store (com email normalizado)
+    setSignupData({ ...data, email: normalizedEmail })
 
     // Usar o tempo retornado pela API ou 120 como fallback
     const countdownTime = res.data?.canResendIn || 120

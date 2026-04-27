@@ -82,11 +82,11 @@ export function VerifyEmailForm() {
   } = form
 
   const onSubmit = async (data: VerifyEmailType) => {
-    // Verificar o código OTP
+    // Verificar o código OTP (normalizar email para evitar erros de case)
     const res = await createItemNew({
       route: '/user/verify-email',
       data: {
-        email: signupData?.email,
+        email: signupData?.email?.toLowerCase().trim(),
         token: data.otp,
       },
     })
@@ -115,11 +115,11 @@ export function VerifyEmailForm() {
 
     setIsResending(true)
 
-    // Reenviar código de verificação
+    // Reenviar código de verificação (normalizar email para garantir consistência)
     const res = await createItemNew({
       route: '/user/resend-verification',
       data: {
-        email: signupData.email,
+        email: signupData.email.toLowerCase().trim(),
       },
     })
 
