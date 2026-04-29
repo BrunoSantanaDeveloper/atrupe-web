@@ -97,10 +97,10 @@ export function NewItemDialog({
 
     if (res.success) {
       queryClient.invalidateQueries()
-      toast.success(res.message)
+      toast.success(res.message || 'Item salvo com sucesso!')
       handleOpenChange(false)
     } else {
-      toast.error(res.message)
+      toast.error(res.message || 'Ocorreu um erro. Tente novamente.')
     }
   }
 
