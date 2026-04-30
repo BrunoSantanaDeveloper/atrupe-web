@@ -9,7 +9,7 @@ import { test, expect, Page } from '@playwright/test'
  */
 async function openNewClientForm(page: Page) {
   await page.goto('/cadastros/clientes')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 
   const newClientBtn = page.getByRole('button', {
     name: /novo cliente|adicionar cliente|add client/i,
@@ -37,7 +37,7 @@ test.describe('Formulário de Cadastro de Cliente', () => {
 
   test('deve exibir o botão "Novo Cliente" na lista', async ({ page }) => {
     await page.goto('/cadastros/clientes')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
     const btn = page.getByRole('button', {
       name: /novo cliente|adicionar cliente/i,
     })
@@ -184,7 +184,7 @@ test.describe('Formulário de Cadastro de Cliente', () => {
 
   test('lista de clientes deve carregar com dados', async ({ page }) => {
     await page.goto('/cadastros/clientes')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Deve existir pelo menos um elemento de lista, tabela ou mensagem de vazio
     const hasContent =
@@ -199,7 +199,7 @@ test.describe('Formulário de Cadastro de Cliente', () => {
 
   test.skip('filtro por nome deve atualizar a lista', async ({ page }) => {
     await page.goto('/cadastros/clientes')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     const searchInput = page
       .getByPlaceholder(/buscar|pesquisar|search/i)
