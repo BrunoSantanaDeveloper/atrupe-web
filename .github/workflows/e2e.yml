@@ -22,7 +22,7 @@ jobs:
           BACKEND_HOMOLOG_URL: ${{ secrets.BACKEND_HOMOLOG_URL }}
         run: |
           for i in $(seq 1 24); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${BACKEND_HOMOLOG_URL:-https://dev.atrupe.com.br}/health || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${BACKEND_HOMOLOG_URL:-https://dev.atrupe.com.br}/ || echo "000")
             if [ "$STATUS" = "200" ] || [ "$STATUS" = "401" ]; then
               echo "Backend homolog OK (HTTP $STATUS)"
               break
