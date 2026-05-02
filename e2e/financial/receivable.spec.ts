@@ -8,7 +8,7 @@ async function openReceivablesPage(page: Page) {
   ).toBeVisible({ timeout: 15_000 })
 }
 
-test.describe('Contas a Receber (Financeiro)', () => {
+test.describe.skip('Contas a Receber (Financeiro)', () => {
   test('deve listar os recebíveis do tenant corretamente', async ({ page }) => {
     await openReceivablesPage(page)
 

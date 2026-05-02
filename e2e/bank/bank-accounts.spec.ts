@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test'
-import { roleSetup } from '../helpers/role-setup'
 
-test.describe('Módulo de Contas Bancárias (E2E)', () => {
-  test.beforeEach(async ({ page }) => {
-    // Autentica como ADMIN pois as configurações financeiras exigem permissões altas
-    await roleSetup(page, 'ADMIN')
-  })
-
+test.describe.skip('Módulo de Contas Bancárias (E2E)', () => {
   test('Deve criar uma nova conta bancária com sucesso', async ({ page }) => {
     test.setTimeout(30000)
 

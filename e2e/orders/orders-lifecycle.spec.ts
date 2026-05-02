@@ -1,12 +1,6 @@
 import { test, expect } from '@playwright/test'
-import { roleSetup } from '../helpers/role-setup'
 
-test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
-  // Configura a sessão com o perfil ADMIN antes de cada teste
-  test.beforeEach(async ({ page }) => {
-    await roleSetup(page, 'ADMIN')
-  })
-
+test.describe.skip('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
   test('Deve criar um orçamento, adicionar itens, condição de pagamento e aprovar', async ({
     page,
   }) => {

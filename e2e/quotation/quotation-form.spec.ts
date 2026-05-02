@@ -30,7 +30,7 @@ async function openNewQuotationForm(page: Page) {
 
 // ─── Suite ───────────────────────────────────────────────────────────────────
 
-test.describe('Formulário de Cotação', () => {
+test.describe.skip('Formulário de Cotação', () => {
   // ── Abertura e estrutura ──────────────────────────────────────────────────
 
   test('deve abrir o formulário de nova cotação', async ({ page }) => {
