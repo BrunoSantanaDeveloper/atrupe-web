@@ -12,7 +12,7 @@ test.describe('Módulo de Contas Bancárias (E2E)', () => {
 
     // 1. Acessar a listagem de contas bancárias
     await page.goto('/configuracoes/financeiro/contas-bancarias')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // 2. Abrir o modal de Nova Conta
     const newAccountBtn = page

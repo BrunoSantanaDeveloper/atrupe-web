@@ -44,7 +44,7 @@ test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
     await expect(page).toHaveURL(/\/vendas\/orcamentos\/.+/, { timeout: 15000 })
 
     // Aguardar carregamento da página de detalhes
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // 4. Adicionar um Produto ao orçamento
     const addProductBtn = page

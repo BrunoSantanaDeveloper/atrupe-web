@@ -4,11 +4,16 @@ import { test, expect, Page } from '@playwright/test'
 
 async function openNewQuotationForm(page: Page) {
   await page.goto('/venda/orcamento')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
 
   const newQuotationBtn = page.getByRole('button', {
     name: /novo orçamento|nova cotação/i,
   })
+
+  // Em vez de esperar a rede parar (o que gera timeout), espera especificamente o botão aparecer
+  await newQuotationBtn
+    .waitFor({ state: 'visible', timeout: 8000 })
+    .catch(() => {})
 
   if (await newQuotationBtn.isVisible()) {
     await newQuotationBtn.click()

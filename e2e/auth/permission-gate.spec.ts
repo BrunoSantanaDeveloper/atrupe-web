@@ -33,7 +33,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
 
     // Acessa uma página que tem vários gates (ex: cotações)
     await page.goto('/venda/orcamento')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Como admin, deve enxergar botões críticos, como criar novo orçamento
     const newBtn = page.getByRole('button', {
@@ -55,7 +55,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     await mockSessionPermissions(page, ['sale:quotation:view'], false)
 
     await page.goto('/venda/orcamento')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // O botão de criar novo orçamento (se existir) não deve estar visível
     const newBtn = page.getByRole('button', {
@@ -76,7 +76,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     await mockSessionPermissions(page, ['sale:quotation:create'], false)
 
     await page.goto('/venda/orcamento')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // Como tem :create, ele deve ver a tela (sem erro de forbidden) e ver a listagem
     await expect(page.getByText(/não autorizado|forbidden/i)).toHaveCount(0)

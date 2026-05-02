@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test'
 
 async function openReceivablesPage(page: Page) {
   await page.goto('/financeiro/contas-a-receber')
-  await page.waitForLoadState('networkidle')
+  await page.waitForLoadState('domcontentloaded')
   await expect(
     page.getByRole('heading', { name: /contas a receber|recebíveis/i }).first(),
   ).toBeVisible({ timeout: 15_000 })

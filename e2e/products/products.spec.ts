@@ -13,7 +13,7 @@ test.describe('Módulo de Produtos (E2E)', () => {
 
     // 1. Acessar a tela de listagem de produtos
     await page.goto('/configuracoes/produtos')
-    await page.waitForLoadState('networkidle')
+    await page.waitForLoadState('domcontentloaded')
 
     // 2. Abrir modal de criação de produto
     const newProductBtn = page
