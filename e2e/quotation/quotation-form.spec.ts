@@ -3,7 +3,7 @@ import { test, expect, Page } from '@playwright/test'
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 async function openNewQuotationForm(page: Page) {
-  await page.goto('/venda/orcamento')
+  await page.goto('/vendas/orcamentos')
   await page.waitForLoadState('domcontentloaded')
 
   const newQuotationBtn = page.getByRole('button', {
@@ -19,11 +19,13 @@ async function openNewQuotationForm(page: Page) {
     await newQuotationBtn.click()
   } else {
     // Se o botão não estiver visível (por permissão ou fluxo diferente), vai direto pela URL
-    await page.goto('/venda/orcamento/novo')
+    await page.goto('/vendas/orcamentos/novo')
   }
 
   // Aguarda a tela de novo orçamento carregar
-  await expect(page).toHaveURL(/\/venda\/orcamento\/novo/, { timeout: 10_000 })
+  await expect(page).toHaveURL(/\/vendas\/orcamentos\/novo/, {
+    timeout: 10_000,
+  })
 }
 
 // ─── Suite ───────────────────────────────────────────────────────────────────

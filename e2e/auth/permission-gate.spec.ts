@@ -32,7 +32,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     await mockSessionPermissions(page, [], true)
 
     // Acessa uma página que tem vários gates (ex: cotações)
-    await page.goto('/venda/orcamento')
+    await page.goto('/vendas/orcamentos')
     await page.waitForLoadState('domcontentloaded')
 
     // Como admin, deve enxergar botões críticos, como criar novo orçamento
@@ -54,7 +54,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     // Intercepta e simula usuário estrito (só tem VIEW, mas não CREATE)
     await mockSessionPermissions(page, ['sale:quotation:view'], false)
 
-    await page.goto('/venda/orcamento')
+    await page.goto('/vendas/orcamentos')
     await page.waitForLoadState('domcontentloaded')
 
     // O botão de criar novo orçamento (se existir) não deve estar visível
@@ -75,7 +75,7 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     // Nossa regra de negócio front-end (usePermissions) diz que ':create' implica ':view'
     await mockSessionPermissions(page, ['sale:quotation:create'], false)
 
-    await page.goto('/venda/orcamento')
+    await page.goto('/vendas/orcamentos')
     await page.waitForLoadState('domcontentloaded')
 
     // Como tem :create, ele deve ver a tela (sem erro de forbidden) e ver a listagem
