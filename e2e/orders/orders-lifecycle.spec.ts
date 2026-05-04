@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.describe.skip('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
+test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
   test('Deve criar um orçamento, adicionar itens, condição de pagamento e aprovar', async ({
     page,
   }) => {
@@ -19,15 +19,16 @@ test.describe.skip('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
     // 2. Preencher os dados do novo orçamento (Cliente)
     // Clica no combobox de Cliente
     const clientCombobox = page
-      .locator('label:has-text("Cliente")')
-      .locator('..')
-      .locator('button, input')
+      .getByRole('dialog')
+      .locator('button[role="combobox"]')
       .first()
     await clientCombobox.click()
     await page.keyboard.type('a', { delay: 100 }) // Busca genérica
-    await page.waitForTimeout(1500) // Aguarda debounce/API
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('Enter')
+
+    // Aguarda a lista suspensa e clica na primeira opção
+    const firstClientOption = page.getByRole('option').first()
+    await firstClientOption.waitFor({ state: 'visible', timeout: 5000 })
+    await firstClientOption.click()
 
     // Clica no botão para salvar e criar o orçamento
     const submitBtn = page.getByRole('button', { name: /criar orçamento/i })
@@ -48,16 +49,16 @@ test.describe.skip('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
       await addProductBtn.click()
 
       // Interage com o campo de produto
-      const productSelect = page
-        .locator('label:has-text("Produto")')
-        .locator('..')
-        .locator('button, input')
-        .first()
-      await productSelect.click()
+      const productCombobox = page
+        .getByRole('combobox')
+        .filter({ hasText: /Selecione|Produto/i })
+        .last()
+      await productCombobox.click()
       await page.keyboard.type('a', { delay: 100 })
-      await page.waitForTimeout(1500)
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('Enter')
+
+      const firstProductOption = page.getByRole('option').first()
+      await firstProductOption.waitFor({ state: 'visible', timeout: 5000 })
+      await firstProductOption.click()
 
       // Confirma adição do produto (Salvar/Adicionar)
       const saveProductBtn = page
@@ -77,16 +78,15 @@ test.describe.skip('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
 
     // Abre a edição da condição de pagamento (às vezes é um botão de "Editar" ou o próprio Select)
     const paymentSelect = page
-      .locator('label:has-text("Condição de Pagamento")')
-      .locator('..')
-      .locator('button, input')
+      .getByRole('button', { name: /editar.*condição|condição de pagamento/i })
       .first()
-      .or(page.getByRole('button', { name: /editar.*condição/i }))
 
     if (await paymentSelect.isVisible()) {
       await paymentSelect.click()
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('Enter')
+
+      const firstPaymentOption = page.getByRole('option').first()
+      await firstPaymentOption.waitFor({ state: 'visible', timeout: 5000 })
+      await firstPaymentOption.click()
 
       // Caso haja um botão Salvar para a condição
       const savePaymentBtn = page.getByRole('button', {
