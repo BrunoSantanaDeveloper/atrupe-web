@@ -62,6 +62,17 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
   test('should display NF-e standalone form with key sections', async ({
     page,
   }) => {
+    // Bypass the emissor configuration guard
+    await page.route('**/api/fiscal/invoicy/config/default', async (route) => {
+      await route.fulfill({
+        json: {
+          id: 'config-1',
+          isDefault: true,
+          company: { accessKey: 'mock' },
+        },
+      })
+    })
+
     await page.goto('/nota-fiscal/emitir/avulsa/nfe')
 
     await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/avulsa\/nfe/, {
@@ -120,6 +131,17 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
   })
 
   test('should display client search on NF-e form', async ({ page }) => {
+    // Bypass the emissor configuration guard
+    await page.route('**/api/fiscal/invoicy/config/default', async (route) => {
+      await route.fulfill({
+        json: {
+          id: 'config-1',
+          isDefault: true,
+          company: { accessKey: 'mock' },
+        },
+      })
+    })
+
     await page.goto('/nota-fiscal/emitir/avulsa/nfe')
 
     await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/avulsa\/nfe/, {
@@ -167,6 +189,17 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
   test('should fill the form and emit NF-e using API mock', async ({
     page,
   }) => {
+    // Bypass the emissor configuration guard
+    await page.route('**/api/fiscal/invoicy/config/default', async (route) => {
+      await route.fulfill({
+        json: {
+          id: 'config-1',
+          isDefault: true,
+          company: { accessKey: 'mock' },
+        },
+      })
+    })
+
     // 1. Route for form data to not fail
     await page.route('**/api/clients**', async (route) => {
       await route.fulfill({
