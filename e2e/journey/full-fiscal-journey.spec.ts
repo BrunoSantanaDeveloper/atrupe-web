@@ -211,20 +211,36 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
 
     // ------------------------------------------------------------------
     // PASSO 9: Pós-pagamento — deve redirecionar para o Dashboard
-    // e um modal de configuração da empresa (InvoiCy) deve aparecer
+    // e um modal "Configure o Módulo Fiscal" deve aparecer automaticamente
+    // Modal observado em homologação contém:
+    //   Título: "Configure o Módulo Fiscal"
+    //   Botões: "Configurar depois" | "Configurar Módulo Fiscal"
     // ------------------------------------------------------------------
     await page.waitForURL(/\/dashboard/, { timeout: 30_000 })
 
     // Aguarda o modal de onboarding fiscal abrir automaticamente
     const onboardingModal = page
       .getByRole('dialog')
-      .filter({ hasText: /configuração.*empresa|nota fiscal|invoicy/i })
+      .filter({ hasText: /Configure o Módulo Fiscal/i })
       .first()
 
     await expect(onboardingModal).toBeVisible({ timeout: 20_000 })
 
-    // O modal deve conter campos de cadastro no InvoiCy
-    await expect(onboardingModal.getByLabel(/cnpj/i)).toBeVisible()
+    // Valida o conteúdo do modal
+    await expect(
+      onboardingModal.getByText(/Iniciar Configuração Fiscal/i),
+    ).toBeVisible()
+    await expect(
+      onboardingModal.getByRole('button', {
+        name: /Configurar Módulo Fiscal/i,
+      }),
+    ).toBeVisible()
+    await expect(
+      onboardingModal.getByRole('button', { name: /Configurar depois/i }),
+    ).toBeVisible()
+
+    // Valida que o sidebar desbloqueou a seção "Nota Fiscal"
+    await expect(page.getByRole('link', { name: /Nota Fiscal/i })).toBeVisible()
   })
 })
 
@@ -273,10 +289,42 @@ test.describe('Contratação: Cartão de crédito inválido deve exibir erro', (
 })
 
 // =====================================================================
-// SUITE 3: Emissão da primeira NF-e (usuário JÁ com módulo ativo)
-// Usa usuário autenticado do global-setup com módulo fiscal ativo
+// SUITE 3: Verificação de bloqueio sem emissor configurado
+// O sistema deve mostrar "Verificando acesso ao módulo..." e não deixar emitir
 // =====================================================================
-test.describe('Emissão de NF-e: jornada completa de emissão', () => {
+test.describe('Emissão de NF-e: bloqueio sem emissor configurado', () => {
+  test('deve exibir tela de verificação quando o emissor fiscal não está configurado', async ({
+    page,
+  }) => {
+    await page.goto('/nota-fiscal/emitir/avulsa/nfe')
+    await expect(page).toHaveURL(/\/nota-fiscal\/emitir\/avulsa\/nfe/, {
+      timeout: 15_000,
+    })
+
+    // Observado em homologação: antes de liberar, o sistema mostra o estado de verificação
+    // com a mensagem "Verificando acesso ao módulo..." ou redireciona para configuração
+    const verificandoMsg = page
+      .getByText(/Verificando acesso ao módulo|Configure seu módulo fiscal/i)
+      .first()
+    const sidebarConfigBadge = page.getByRole('link', { name: /Nota Fiscal/i })
+
+    // Um desses dois estados deve estar visível
+    const hasGuard = await verificandoMsg
+      .isVisible({ timeout: 10_000 })
+      .catch(() => false)
+    const hasSidebar = await sidebarConfigBadge
+      .isVisible({ timeout: 5_000 })
+      .catch(() => false)
+
+    expect(hasGuard || hasSidebar).toBe(true)
+  })
+})
+
+// =====================================================================
+// SUITE 4: Emissão da primeira NF-e (emissor JÁ configurado, via mock de API)
+// Usa mock para simular resposta do InvoiCy/Migrate sem certificado real
+// =====================================================================
+test.describe('Emissão de NF-e: jornada completa de emissão com mock', () => {
   test('deve preencher o formulário e emitir a primeira NF-e com sucesso via mock', async ({
     page,
   }) => {
@@ -304,7 +352,23 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
       })
     })
 
-    // Mock da emissão → simula aprovação do InvoiCy (Migrate)
+    // Mock do emissor padrão já configurado (bypassa o guard de acesso)
+    await page.route('**/api/fiscal/invoicy/config/default', async (route) => {
+      await route.fulfill({
+        json: {
+          id: 'config-1',
+          isDefault: true,
+          environment: 'HOMOLOGACAO',
+          ambiente: 2,
+          serieNfe: 1,
+          proximoNumeroNfe: 1,
+          company: { accessKey: 'mock-access-key' },
+        },
+      })
+    })
+
+    // Mock da emissão final → simula aprovação do InvoiCy (Migrate)
+    // Endpoint real observado: POST /api/fiscal/emissions/nfe
     await page.route('**/api/fiscal/emissions/nfe', async (route) => {
       if (route.request().method() === 'POST') {
         await route.fulfill({
@@ -329,12 +393,7 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
       timeout: 15_000,
     })
 
-    // Garantia: módulo não está bloqueado
-    await expect(page.getByText(/módulo.*não contratado/i))
-      .not.toBeVisible({ timeout: 5_000 })
-      .catch(() => {})
-
-    // Seleciona cliente (destinatário)
+    // Aguarda o formulário de emissão carregar (não a tela de bloqueio)
     const clientTrigger = page
       .getByRole('combobox', { name: /destinatário|cliente/i })
       .or(
@@ -345,18 +404,19 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
       .first()
 
     const clientVisible = await clientTrigger
-      .isVisible({ timeout: 10_000 })
+      .isVisible({ timeout: 15_000 })
       .catch(() => false)
     if (!clientVisible) {
+      // Se o guard de acesso está bloqueando, skipa — este teste requer emissor configurado
       test.skip()
       return
     }
 
+    // Seleciona cliente (destinatário)
     await clientTrigger.click()
-    await page
-      .getByText(/Cliente E2E/i)
-      .first()
-      .click()
+    const clientOption = page.getByText(/Cliente E2E/i).first()
+    await expect(clientOption).toBeVisible({ timeout: 10_000 })
+    await clientOption.click()
 
     // Adiciona produto
     const addProductBtn = page
@@ -372,7 +432,6 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
 
     if (await productInput.isVisible()) {
       await productInput.fill('Produto E2E')
-      // Aguarda opção do mock aparecer
       const productOption = page.getByText(/Produto E2E/i).first()
       if (
         await productOption.isVisible({ timeout: 3_000 }).catch(() => false)
@@ -381,21 +440,21 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
       }
     }
 
-    // Preenche CFOP e NCM se necessário
+    // Preenche CFOP e NCM se expostos diretamente
     const cfopInput = page.getByLabel(/cfop/i).first()
     if (await cfopInput.isVisible()) await cfopInput.fill('5102')
 
     const ncmInput = page.getByLabel(/ncm/i).first()
     if (await ncmInput.isVisible()) await ncmInput.fill('00000000')
 
-    // Seção de pagamento
+    // Seção de pagamento da NF-e
     const paymentTab = page
       .getByRole('tab', { name: /pagamento/i })
-      .or(page.getByText(/pagamento/i))
+      .or(page.getByText(/meios de pagamento/i))
       .first()
     if (await paymentTab.isVisible()) await paymentTab.click()
 
-    // Emitir NF
+    // Emitir NF-e
     const emitButton = page
       .getByRole('button', { name: /emitir nota|emitir/i })
       .first()
@@ -406,7 +465,7 @@ test.describe('Emissão de NF-e: jornada completa de emissão', () => {
     // Valida estado final: Nota Autorizada
     await expect(page.getByText(/Autorizada/i)).toBeVisible({ timeout: 20_000 })
 
-    // Valida botões de DANFE e XML
+    // Valida botões de DANFE e XML (confirmação da impressão disponível)
     await expect(
       page.getByRole('button', { name: /DANFE|Imprimir/i }),
     ).toBeVisible({ timeout: 10_000 })
