@@ -72,6 +72,9 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
         },
       })
     })
+    await page.route('**/api/fiscal/onboarding/status', async (route) => {
+      await route.fulfill({ json: { status: 'ACTIVE', hasConfig: true } })
+    })
 
     await page.goto('/nota-fiscal/emitir/avulsa/nfe')
 
@@ -141,6 +144,9 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
         },
       })
     })
+    await page.route('**/api/fiscal/onboarding/status', async (route) => {
+      await route.fulfill({ json: { status: 'ACTIVE', hasConfig: true } })
+    })
 
     await page.goto('/nota-fiscal/emitir/avulsa/nfe')
 
@@ -198,6 +204,9 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
           company: { accessKey: 'mock' },
         },
       })
+    })
+    await page.route('**/api/fiscal/onboarding/status', async (route) => {
+      await route.fulfill({ json: { status: 'ACTIVE', hasConfig: true } })
     })
 
     // 1. Route for form data to not fail

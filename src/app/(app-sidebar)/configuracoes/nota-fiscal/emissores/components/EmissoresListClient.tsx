@@ -157,6 +157,7 @@ export function EmissoresListClient() {
       }
       toast.success('Emissor configurado com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
+      queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
     },
     onError: (error) => {
@@ -185,6 +186,7 @@ export function EmissoresListClient() {
       }
       toast.success('Emissor atualizado com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
+      queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
     },
     onError: (error) => {
@@ -206,6 +208,7 @@ export function EmissoresListClient() {
       }
       toast.success('Configuração removida com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
+      queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setDeleteEmissor(null)
     },
     onError: (error) => {
@@ -229,6 +232,7 @@ export function EmissoresListClient() {
       }
       toast.success('Definido como padrão!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
+      queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
     },
     onError: (_error) => toast.error('Erro ao definir padrão'),
   })

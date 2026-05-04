@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { getItem } from '@/actions/_cruds'
 
 interface FiscalOnboardingStatus {
@@ -17,30 +17,18 @@ interface FiscalOnboardingStatus {
 }
 
 export function useFiscalOnboardingStatus() {
-  const [data, setData] = useState<FiscalOnboardingStatus | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const { data: queryData, isLoading } = useQuery({
+    queryKey: ['fiscal-onboarding-status'],
+    queryFn: async () => {
+      const result = await getItem({ route: '/fiscal/onboarding/status' })
+      if (!result.success) throw new Error('Failed to fetch status')
+      return result.data as FiscalOnboardingStatus
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: false, // Don't retry if it fails
+  })
 
-  useEffect(() => {
-    let cancelled = false
-
-    async function fetchStatus() {
-      try {
-        const result = await getItem({ route: '/fiscal/onboarding/status' })
-        if (!cancelled && result.success) {
-          setData(result.data as FiscalOnboardingStatus)
-        }
-      } catch {
-        // Silently fail — fiscal module might not be contracted
-      } finally {
-        if (!cancelled) setIsLoading(false)
-      }
-    }
-
-    fetchStatus()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  const data = queryData || null
 
   const isPending =
     data?.status === 'PENDING' ||
