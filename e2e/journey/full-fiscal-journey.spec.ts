@@ -181,21 +181,19 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
 
     // ------------------------------------------------------------------
     // PASSO 6: Aceitar termos e avançar para pagamento
+    // O checkbox de termos é um componente Radix UI (button[role="checkbox"])
+    // com id="terms" — NÃO é um <input type="checkbox"> padrão
     // ------------------------------------------------------------------
-    const termosCheckbox = page
-      .getByLabel(/termos de contratação/i)
-      .or(
-        page
-          .getByText(/estou de acordo/i)
-          .locator('..')
-          .locator('input'),
-      )
-      .first()
-    if (await termosCheckbox.isVisible()) await termosCheckbox.check()
+    const termosCheckbox = page.locator('button#terms')
+    await expect(termosCheckbox).toBeVisible({ timeout: 10_000 })
+    await termosCheckbox.click()
+    // Verifica que o estado mudou para checked
+    await expect(termosCheckbox).toHaveAttribute('aria-checked', 'true')
 
-    const avancarPagamento = page
-      .getByRole('button', { name: /avançar/i })
-      .first()
+    // O botão Avançar tem type="submit" e form="subscription-form"
+    const avancarPagamento = page.locator(
+      'button[type="submit"][form="subscription-form"]',
+    )
     await expect(avancarPagamento).toBeEnabled({ timeout: 5_000 })
     await avancarPagamento.click()
 
@@ -243,11 +241,17 @@ test.describe('Contratação: Cartão de crédito inválido deve exibir erro', (
     await expect(page).toHaveURL(/\/assinatura/, { timeout: 15_000 })
 
     // Seleciona plano e avança até o formulário de pagamento
-    const termosCheckbox = page.getByLabel(/termos de contratação/i).first()
-    if (await termosCheckbox.isVisible()) await termosCheckbox.check()
+    // O checkbox de termos é um componente Radix UI (button#terms)
+    const termosCheckbox = page.locator('button#terms')
+    await expect(termosCheckbox).toBeVisible({ timeout: 10_000 })
+    await termosCheckbox.click()
+    await expect(termosCheckbox).toHaveAttribute('aria-checked', 'true')
 
-    const avancarBtn = page.getByRole('button', { name: /avançar/i }).first()
-    if (await avancarBtn.isEnabled()) await avancarBtn.click()
+    const avancarBtn = page.locator(
+      'button[type="submit"][form="subscription-form"]',
+    )
+    await expect(avancarBtn).toBeEnabled({ timeout: 5_000 })
+    await avancarBtn.click()
 
     // Preenche com cartão recusado (Visa de erro)
     await fillCreditCardForm(page, {
