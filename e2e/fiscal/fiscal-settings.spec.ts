@@ -5,81 +5,71 @@ test.describe('Fiscal Settings page (/configuracoes/nota-fiscal)', () => {
     await page.goto('/configuracoes/nota-fiscal')
   })
 
-  test('should load the fiscal settings page without errors', async ({ page }) => {
+  test('should load the fiscal settings page without errors', async ({
+    page,
+  }) => {
     await page.goto('/configuracoes/nota-fiscal')
 
-    // Verify the page loaded (no error / 404 state)
     await expect(page).toHaveURL(/\/configuracoes\/nota-fiscal/, {
       timeout: 15_000,
     })
 
-    // The page should not show a "not found" or generic error
-    await expect(page.getByText(/página não encontrada|not found/i)).not.toBeVisible()
+    await expect(
+      page.getByText(/página não encontrada|not found/i),
+    ).not.toBeVisible()
   })
 
-  test('should display "Configurar Emissores" section', async ({ page }) => {
+  test('should display "Dados do Emissor" section', async ({ page }) => {
     await page.goto('/configuracoes/nota-fiscal')
 
-    await expect(
-      page.getByText('Configurar Emissores'),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Dados do Emissor')).toBeVisible({
+      timeout: 15_000,
+    })
   })
 
-  test('should display "NF-e Natureza de Operação e CFOP" section', async ({
+  test('should display "Natureza de Operação e CFOP" section', async ({
     page,
   }) => {
     await page.goto('/configuracoes/nota-fiscal')
 
-    await expect(
-      page.getByText('NF-e Natureza de Operação e CFOP'),
-    ).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByText('Natureza de Operação e CFOP')).toBeVisible({
+      timeout: 15_000,
+    })
   })
 
-  test('should display "NF-e - Lista de Produtos e Serviços" section', async ({
-    page,
-  }) => {
-    await page.goto('/configuracoes/nota-fiscal')
-
-    await expect(
-      page.getByText('NF-e - Lista de Produtos e Serviços'),
-    ).toBeVisible({ timeout: 15_000 })
-  })
-
-  test('should display "NFS-e - Lista de Serviços" section', async ({ page }) => {
-    await page.goto('/configuracoes/nota-fiscal')
-
-    await expect(
-      page.getByText('NFS-e - Lista de Serviços'),
-    ).toBeVisible({ timeout: 15_000 })
-  })
-
-  test('should show all 4 fiscal settings items together', async ({ page }) => {
+  test('should show both fiscal settings items together', async ({ page }) => {
     await page.goto('/configuracoes/nota-fiscal')
 
     // Wait for page to be fully rendered
-    await expect(page.getByText('Configurar Emissores')).toBeVisible({
+    await expect(page.getByText('Dados do Emissor')).toBeVisible({
       timeout: 15_000,
     })
 
-    // Assert all four settings items are visible simultaneously
-    await expect(page.getByText('Configurar Emissores')).toBeVisible()
-    await expect(page.getByText('NF-e Natureza de Operação e CFOP')).toBeVisible()
-    await expect(page.getByText('NF-e - Lista de Produtos e Serviços')).toBeVisible()
-    await expect(page.getByText('NFS-e - Lista de Serviços')).toBeVisible()
+    // Assert both settings items are visible simultaneously
+    await expect(page.getByText('Dados do Emissor')).toBeVisible()
+    await expect(page.getByText('Natureza de Operação e CFOP')).toBeVisible()
+
+    // Removed cards should NOT be present
+    await expect(
+      page.getByText('NF-e - Lista de Produtos e Serviços'),
+    ).not.toBeVisible()
+    await expect(page.getByText('NFS-e - Lista de Serviços')).not.toBeVisible()
   })
 
-  test('clicking "Configurar Emissores" should navigate to emissores page', async ({
+  test('clicking "Dados do Emissor" should navigate to emissores page', async ({
     page,
   }) => {
     await page.goto('/configuracoes/nota-fiscal')
-    await expect(page.getByText('Configurar Emissores')).toBeVisible({
+    await expect(page.getByText('Dados do Emissor')).toBeVisible({
       timeout: 15_000,
     })
 
-    // The settings list renders each item as a card with title + a "Configurar" button/link.
-    // Locate the card that contains "Configurar Emissores" and click its "Configurar" link.
-    const emissoresCard = page.locator('div').filter({ hasText: /^Configurar Emissores/ }).first()
-    const configLink = emissoresCard.getByRole('link', { name: /configurar/i })
+    const emissoresCard = page
+      .locator('div')
+      .filter({ hasText: /^Dados do Emissor/ })
+      .first()
+    const configLink = emissoresCard
+      .getByRole('link', { name: /configurar/i })
       .or(emissoresCard.getByRole('button', { name: /configurar/i }))
     await configLink.first().click()
 
