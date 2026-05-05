@@ -21,7 +21,6 @@ export const newProductsSchema = z.object({
   technicalDescription: z.string().optional().nullable(),
   allowEditValues: z.boolean().default(true),
   allowEditDescription: z.boolean().default(true),
-  isService: z.boolean().default(false),
   imageUrl: z.string().optional().nullable(),
   imageSize: z.string().optional().nullable(),
   items: z.array(
@@ -142,7 +141,6 @@ export const defaultNewProductValues: NewProductsFormType = {
   technicalDescription: null,
   allowEditValues: true,
   allowEditDescription: true,
-  isService: false,
   imageUrl: null,
   imageSize: 'small',
   items: [

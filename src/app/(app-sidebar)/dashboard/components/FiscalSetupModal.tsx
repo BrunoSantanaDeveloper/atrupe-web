@@ -1,10 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback } from 'react'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
-import { getItem } from '@/actions/_cruds'
+import { createItemNew, encodeFileToBase64 } from '@/actions/_cruds'
+import { toast } from 'sonner'
+import { useDropzone } from 'react-dropzone'
+import { useForm } from 'react-hook-form'
 import {
   Dialog,
   DialogContent,
@@ -15,240 +17,265 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
-  IconCheck,
-  IconBuilding,
-  IconCertificate,
-  IconWorld,
-  IconHash,
-  IconArrowsSplit,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
   IconFileInvoice,
   IconChevronRight,
   IconRocket,
-  IconLock,
+  IconLoader2,
+  IconCheck,
+  IconAlertTriangle,
+  IconCloudUpload,
+  IconFileCertificate,
+  IconArrowLeft,
 } from '@tabler/icons-react'
+import { useQueryClient } from '@tanstack/react-query'
 
 const DISMISSAL_KEY = 'fiscal-setup-modal-dismissed'
 
-interface InvoicyConfig {
-  environment?: string
-  nfeSeries?: string
-  nfeNextNumber?: number
-  defaultCfop?: string
-  defaultOperationNature?: string
-  [key: string]: unknown
+const UF_OPTIONS = [
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
+]
+
+interface FiscalFormData {
+  cnpj: string
+  razaoSocial: string
+  nomeFantasia: string
+  ie: string
+  im: string
+  cnae: string
+  uf: string
+  codigoIbge: string
+  cep: string
+  logradouro: string
+  numero: string
+  bairro: string
+  cidade: string
+  complemento: string
+  certificateType: string
+  certificatePassword: string
 }
 
-interface SetupStep {
-  id: string
-  title: string
-  description: string
-  icon: React.ComponentType<{ className?: string }>
-  href: string
-  complete: boolean
-  optional?: boolean
-}
+type FormStatus = 'idle' | 'submitting' | 'success' | 'pending_review' | 'error'
 
 export function FiscalSetupModal() {
-  const router = useRouter()
+  const queryClient = useQueryClient()
   const { hasFeature } = usePlanFeatures()
   const { data: onboardingData, isLoading: isLoadingOnboarding } =
     useFiscalOnboardingStatus()
-  const [config, setConfig] = useState<InvoicyConfig | null>(null)
-  const [isLoadingConfig, setIsLoadingConfig] = useState(true)
-  const [open, setOpen] = useState(false)
-  const [dismissed, setDismissed] = useState(true) // Start true to prevent flash
 
-  const hasOnboarding = !!onboardingData
-  const isOnboardingActive = onboardingData?.status === 'ACTIVE'
+  const [open, setOpen] = useState(false)
+  const [dismissed, setDismissed] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [formStatus, setFormStatus] = useState<FormStatus>('idle')
+  const [resultMessage, setResultMessage] = useState('')
+  const [certificateFile, setCertificateFile] = useState<File | null>(null)
+
+  const isOnboardingNotStarted =
+    !onboardingData || onboardingData?.status === 'NOT_STARTED'
   const isOnboardingPending = [
     'PENDING',
     'PROVISIONING',
     'PENDING_REVIEW',
   ].includes(onboardingData?.status || '')
-  const isOnboardingNotStarted =
-    !onboardingData || onboardingData?.status === 'NOT_STARTED'
-  const shouldShowModal =
-    hasFeature('nota_fiscal') && (isOnboardingNotStarted || isOnboardingActive)
 
-  // Check localStorage on mount
-  useEffect(() => {
-    try {
-      const wasDismissed = localStorage.getItem(DISMISSAL_KEY) === 'true'
-      setDismissed(wasDismissed)
-    } catch {
-      // localStorage not available
+  const form = useForm<FiscalFormData>({
+    defaultValues: {
+      cnpj: '',
+      razaoSocial: '',
+      nomeFantasia: '',
+      ie: '',
+      im: '',
+      cnae: '',
+      uf: '',
+      codigoIbge: '',
+      cep: '',
+      logradouro: '',
+      numero: '',
+      bairro: '',
+      cidade: '',
+      complemento: '',
+      certificateType: 'A1',
+      certificatePassword: '',
+    },
+  })
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      setCertificateFile(acceptedFiles[0])
+      toast.success('Certificado carregado!')
     }
   }, [])
 
-  // Fetch Invoicy config when onboarding is active
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'application/x-pkcs12': ['.pfx', '.p12'] },
+    maxFiles: 1,
+    maxSize: 10 * 1024 * 1024,
+  })
+
   useEffect(() => {
-    if (!hasFeature('nota_fiscal') || !isOnboardingActive) {
-      setIsLoadingConfig(false)
-      return
-    }
-    // Only fetch config when onboarding is active
+    try {
+      setDismissed(localStorage.getItem(DISMISSAL_KEY) === 'true')
+    } catch {}
+  }, [])
 
-    let cancelled = false
-
-    async function fetchConfig() {
-      try {
-        const result = await getItem({ route: '/fiscal/invoicy/config' })
-        if (!cancelled && result.success) {
-          setConfig(result.data as InvoicyConfig)
-        }
-      } catch {
-        // Config might not exist yet
-      } finally {
-        if (!cancelled) setIsLoadingConfig(false)
-      }
-    }
-
-    fetchConfig()
-    return () => {
-      cancelled = true
-    }
-  }, [hasFeature, isOnboardingActive])
-
-  // Build steps with completion status
-  const steps: SetupStep[] = [
-    {
-      id: 'emissor',
-      title: 'Dados do Emissor',
-      description: 'Configure os dados do emitente para suas notas fiscais',
-      icon: IconBuilding,
-      href: '/configuracoes/nota-fiscal/emissores',
-      complete: isOnboardingActive,
-    },
-    {
-      id: 'certificado',
-      title: 'Certificado Digital',
-      description: 'Envie seu certificado digital para emissão de notas',
-      icon: IconCertificate,
-      href: '/configuracoes/nota-fiscal/invoicy',
-      complete: false, // Cannot verify from frontend
-      optional: true,
-    },
-    {
-      id: 'ambiente',
-      title: 'Ambiente de Emissão',
-      description: 'Escolha entre Homologação (testes) ou Produção',
-      icon: IconWorld,
-      href: '/configuracoes/nota-fiscal/invoicy',
-      complete: !!config?.environment,
-    },
-    {
-      id: 'series',
-      title: 'Séries e Numeração',
-      description: 'Configure as séries e próximo número de NF-e',
-      icon: IconHash,
-      href: '/configuracoes/nota-fiscal/invoicy',
-      complete: !!config?.nfeSeries && !!config?.nfeNextNumber,
-    },
-    {
-      id: 'cfop',
-      title: 'CFOP e Natureza de Operação',
-      description: 'Configure o CFOP padrão e a natureza da operação',
-      icon: IconArrowsSplit,
-      href: '/configuracoes/nota-fiscal/cfop',
-      complete: !!config?.defaultCfop && !!config?.defaultOperationNature,
-    },
-  ]
-
-  const requiredSteps = steps.filter((s) => !s.optional)
-  const allRequiredComplete = requiredSteps.every((s) => s.complete)
-  const completedCount = steps.filter((s) => s.complete).length
-
-  // Auto-open when conditions are met
   useEffect(() => {
-    if (isLoadingOnboarding || isLoadingConfig) return
+    if (isLoadingOnboarding) return
     if (!hasFeature('nota_fiscal')) return
-    if (isOnboardingPending) return // Don't show during provisioning — it's processing
-    if (!isOnboardingNotStarted && !isOnboardingActive) return // Don't show if rejected etc.
+    if (isOnboardingPending) return
+    if (!isOnboardingNotStarted) return
     if (dismissed) return
-    if (isOnboardingActive && allRequiredComplete) return // Active + fully configured → no need
-
-    const timer = setTimeout(() => setOpen(true), 500)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setOpen(true), 500)
+    return () => clearTimeout(t)
   }, [
     isLoadingOnboarding,
-    isLoadingConfig,
     hasFeature,
-    isOnboardingActive,
-    isOnboardingPending,
     isOnboardingNotStarted,
+    isOnboardingPending,
     dismissed,
-    allRequiredComplete,
   ])
 
-  // Clear dismissal when all required steps are complete (allows re-show if config changes)
-  useEffect(() => {
-    if (allRequiredComplete && dismissed) {
-      try {
-        localStorage.removeItem(DISMISSAL_KEY)
-        setDismissed(false)
-      } catch {
-        // localStorage not available
+  const fetchCep = async (cep: string) => {
+    const c = cep.replace(/\D/g, '')
+    if (c.length !== 8) return
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${c}/json/`)
+      const data = await res.json()
+      if (!data.erro) {
+        form.setValue('logradouro', data.logradouro || '')
+        form.setValue('bairro', data.bairro || '')
+        form.setValue('cidade', data.localidade || '')
+        form.setValue('uf', data.uf || '')
+        form.setValue('codigoIbge', data.ibge || '')
       }
+    } catch {}
+  }
+
+  const fetchCnpj = async (cnpj: string) => {
+    const c = cnpj.replace(/\D/g, '')
+    if (c.length !== 14) return
+    try {
+      toast.loading('Buscando dados do CNPJ...', { id: 'cnpj-fetch' })
+      const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${c}`)
+      const data = await res.json()
+      if (res.ok) {
+        form.setValue('razaoSocial', data.razao_social || '')
+        form.setValue('nomeFantasia', data.nome_fantasia || '')
+        form.setValue('cnae', data.cnae_fiscal?.toString() || '')
+        if (data.cep) {
+          form.setValue('cep', data.cep.replace(/\D/g, ''))
+          await fetchCep(data.cep)
+        }
+        if (data.numero) form.setValue('numero', data.numero)
+        if (data.complemento) form.setValue('complemento', data.complemento)
+        toast.success('Dados da empresa preenchidos!', { id: 'cnpj-fetch' })
+      } else {
+        toast.dismiss('cnpj-fetch')
+      }
+    } catch {
+      toast.dismiss('cnpj-fetch')
     }
-  }, [allRequiredComplete, dismissed])
+  }
 
   const handleDismiss = () => {
     setOpen(false)
+    setShowForm(false)
     try {
       localStorage.setItem(DISMISSAL_KEY, 'true')
-    } catch {
-      // localStorage not available
-    }
+    } catch {}
     setDismissed(true)
-  }
-
-  const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      handleDismiss()
-    } else {
-      setOpen(true)
-    }
-  }
-
-  const handleStepClick = (href: string) => {
-    setOpen(false)
-    router.push(href)
-  }
-
-  const handleEmitClick = () => {
-    setOpen(false)
-    router.push('/nota-fiscal/emitir')
   }
 
   const handleReopenModal = () => {
     try {
       localStorage.removeItem(DISMISSAL_KEY)
-    } catch {
-      // localStorage not available
-    }
+    } catch {}
     setDismissed(false)
     setOpen(true)
   }
 
-  // Don't render anything if fiscal module is not contracted, or if onboarding is pending/rejected
+  const onSubmit = async (data: FiscalFormData) => {
+    setFormStatus('submitting')
+    try {
+      let certificateBase64: string | undefined
+      if (certificateFile)
+        certificateBase64 = await encodeFileToBase64(certificateFile)
+      const result = await createItemNew({
+        route: '/fiscal/onboarding',
+        data: { ...data, certificate: certificateBase64 },
+      })
+      if (result.success) {
+        const rd = result.data as { status: string; message: string }
+        if (rd.status === 'ACTIVE') {
+          setFormStatus('success')
+          setResultMessage(rd.message)
+          toast.success('Módulo fiscal ativado!')
+          await queryClient.invalidateQueries()
+          setTimeout(() => {
+            setOpen(false)
+            setShowForm(false)
+          }, 3000)
+        } else {
+          setFormStatus('pending_review')
+          setResultMessage(rd.message)
+          toast.info('Dados enviados para análise')
+        }
+      } else {
+        setFormStatus('error')
+        setResultMessage(result.message || 'Erro ao processar dados fiscais')
+        toast.error(result.message || 'Erro ao processar dados fiscais')
+      }
+    } catch {
+      setFormStatus('error')
+      setResultMessage('Erro inesperado')
+      toast.error('Erro inesperado')
+    }
+  }
+
   if (!hasFeature('nota_fiscal')) return null
   if (isOnboardingPending) return null
-  if (!isOnboardingNotStarted && !isOnboardingActive) return null
+  if (!isOnboardingNotStarted) return null
+  if (isLoadingOnboarding) return null
 
-  // Don't render if still loading
-  if (isLoadingOnboarding || isLoadingConfig) return null
-
-  // If active + all required steps are complete, no need for banner or modal
-  if (isOnboardingActive && allRequiredComplete && !open) return null
-
-  const showReminderBanner =
-    dismissed &&
-    (isOnboardingNotStarted || (isOnboardingActive && !allRequiredComplete))
+  const showReminderBanner = dismissed && isOnboardingNotStarted
 
   return (
     <>
-      {/* Reminder banner — shows when modal was dismissed but config is still incomplete */}
       {showReminderBanner && (
         <button
           type="button"
@@ -271,22 +298,26 @@ export function FiscalSetupModal() {
         </button>
       )}
 
-      {/* Modal dialog */}
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-[520px] p-0 gap-0">
-          {isOnboardingNotStarted ? (
-            /* ── NOT_STARTED variant: onboarding CTA ── */
+      <Dialog
+        open={open}
+        onOpenChange={(o) => {
+          if (!o) handleDismiss()
+        }}
+      >
+        <DialogContent
+          className={showForm ? 'sm:max-w-[680px]' : 'sm:max-w-[520px]'}
+        >
+          {/* ── INTRO (NOT_STARTED) ── */}
+          {!showForm && (
             <>
               <DialogHeader className="px-6 pt-6 pb-2">
                 <DialogTitle>Configure o Módulo Fiscal</DialogTitle>
                 <DialogDescription>
-                  Para começar a emitir notas fiscais, primeiro configure seu
-                  emissor fiscal.
+                  Para começar a emitir notas fiscais, configure seu emissor
+                  fiscal.
                 </DialogDescription>
               </DialogHeader>
-
               <DialogBody className="px-6 py-4 space-y-4">
-                {/* Main CTA card */}
                 <div className="rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-start gap-3">
                   <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center">
                     <IconRocket className="h-5 w-5 text-brand-600" />
@@ -301,143 +332,316 @@ export function FiscalSetupModal() {
                     </p>
                   </div>
                 </div>
-
-                {/* Greyed-out preview of upcoming steps */}
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-gray-400 px-1 mb-2">
-                    Próximas etapas (disponíveis após a configuração do emissor)
-                  </p>
-                  {steps.map((step) => (
-                    <div
-                      key={step.id}
-                      className="flex items-center gap-3 p-3 rounded-lg opacity-40"
-                    >
-                      <div className="flex-shrink-0 h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">
-                        <IconLock className="h-4 w-4 text-gray-400" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-500">
-                          {step.title}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {step.description}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
               </DialogBody>
-
               <DialogFooter className="px-6 py-4 border-t border-gray-100 bg-gray-50">
                 <Button variant="ghost" onClick={handleDismiss}>
                   Configurar depois
                 </Button>
-                <Button
-                  onClick={() => {
-                    setOpen(false)
-                    router.push('/assinatura/configurar-fiscal')
-                  }}
-                >
-                  <IconRocket className="h-4 w-4" />
-                  Configurar Módulo Fiscal
+                <Button onClick={() => setShowForm(true)}>
+                  <IconRocket className="h-4 w-4" /> Configurar Módulo Fiscal
                 </Button>
               </DialogFooter>
             </>
-          ) : (
-            /* ── ACTIVE variant: config checklist (existing behavior) ── */
+          )}
+
+          {/* ── FORM ── */}
+          {showForm && (
             <>
               <DialogHeader className="px-6 pt-6 pb-2">
-                <DialogTitle>Configuração do Módulo Fiscal</DialogTitle>
+                <DialogTitle className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForm(false)
+                      setFormStatus('idle')
+                    }}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <IconArrowLeft className="h-5 w-5" />
+                  </button>
+                  Configuração Fiscal
+                </DialogTitle>
                 <DialogDescription>
-                  Complete as etapas abaixo para começar a emitir notas fiscais.
+                  Preencha os dados abaixo para ativar o módulo de emissão de
+                  notas fiscais.
                 </DialogDescription>
               </DialogHeader>
 
-              <DialogBody className="px-6 py-4 space-y-1">
-                {steps.map((step) => (
-                  <div
-                    key={step.id}
-                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+              <DialogBody className="px-6 py-4 max-h-[65vh] overflow-y-auto">
+                {/* Success */}
+                {formStatus === 'success' && (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
+                      <IconCheck className="h-8 w-8 text-green-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold">
+                      Módulo fiscal ativado!
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {resultMessage}
+                    </p>
+                  </div>
+                )}
+
+                {/* Pending review */}
+                {formStatus === 'pending_review' && (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+                    <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
+                      <IconAlertTriangle className="h-8 w-8 text-amber-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold">Dados recebidos!</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {resultMessage}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Você receberá um e-mail quando o módulo estiver pronto.
+                    </p>
+                    <Button onClick={handleDismiss}>Fechar</Button>
+                  </div>
+                )}
+
+                {/* Submitting */}
+                {formStatus === 'submitting' && (
+                  <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
+                    <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
+                    <p className="text-sm text-muted-foreground">
+                      Configurando módulo fiscal...
+                    </p>
+                  </div>
+                )}
+
+                {/* Form fields */}
+                {(formStatus === 'idle' || formStatus === 'error') && (
+                  <form
+                    id="fiscal-onboarding-form"
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-6"
+                    noValidate
                   >
-                    {/* Status icon */}
-                    <div
-                      className={`flex-shrink-0 h-9 w-9 rounded-full flex items-center justify-center ${
-                        step.complete
-                          ? 'bg-success-100 text-success-600'
-                          : step.optional
-                            ? 'bg-gray-100 text-gray-400'
-                            : 'bg-warning-100 text-warning-600'
-                      }`}
-                    >
-                      {step.complete ? (
-                        <IconCheck className="h-5 w-5" />
-                      ) : (
-                        <step.icon className="h-4 w-4" />
+                    {/* Dados da Empresa */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Dados da Empresa
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="m-cnpj">CNPJ *</Label>
+                          <Input
+                            id="m-cnpj"
+                            placeholder="00.000.000/0000-00"
+                            {...form.register('cnpj', {
+                              required: true,
+                              onBlur: (e: React.FocusEvent<HTMLInputElement>) =>
+                                fetchCnpj(e.target.value),
+                            })}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-ie">Inscrição Estadual</Label>
+                          <Input
+                            id="m-ie"
+                            placeholder="IE"
+                            {...form.register('ie')}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1">
+                        <Label htmlFor="m-razao">Razão Social *</Label>
+                        <Input
+                          id="m-razao"
+                          placeholder="Razão Social"
+                          {...form.register('razaoSocial', { required: true })}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="m-fantasia">Nome Fantasia</Label>
+                          <Input
+                            id="m-fantasia"
+                            placeholder="Nome Fantasia"
+                            {...form.register('nomeFantasia')}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-im">Inscrição Municipal</Label>
+                          <Input
+                            id="m-im"
+                            placeholder="IM"
+                            {...form.register('im')}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="m-cnae">CNAE</Label>
+                          <Input
+                            id="m-cnae"
+                            placeholder="CNAE principal"
+                            {...form.register('cnae')}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-uf">UF *</Label>
+                          <Select
+                            value={form.watch('uf')}
+                            onValueChange={(v) => form.setValue('uf', v)}
+                          >
+                            <SelectTrigger id="m-uf">
+                              <SelectValue placeholder="Selecione" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {UF_OPTIONS.map((uf) => (
+                                <SelectItem key={uf} value={uf}>
+                                  {uf}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Endereço */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Endereço
+                      </h3>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="m-cep">CEP</Label>
+                          <Input
+                            id="m-cep"
+                            placeholder="00000-000"
+                            {...form.register('cep')}
+                            onBlur={(e) => fetchCep(e.target.value)}
+                          />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label htmlFor="m-logradouro">Logradouro</Label>
+                          <Input
+                            id="m-logradouro"
+                            placeholder="Rua, Avenida..."
+                            {...form.register('logradouro')}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3">
+                        <div className="space-y-1">
+                          <Label htmlFor="m-numero">Número</Label>
+                          <Input
+                            id="m-numero"
+                            placeholder="Nº"
+                            {...form.register('numero')}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-bairro">Bairro</Label>
+                          <Input
+                            id="m-bairro"
+                            placeholder="Bairro"
+                            {...form.register('bairro')}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-cidade">Cidade</Label>
+                          <Input
+                            id="m-cidade"
+                            placeholder="Cidade"
+                            {...form.register('cidade')}
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label htmlFor="m-ibge">Cód. IBGE</Label>
+                          <Input
+                            id="m-ibge"
+                            placeholder="IBGE"
+                            {...form.register('codigoIbge')}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Certificado */}
+                    <div className="space-y-3">
+                      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        Certificado Digital (opcional)
+                      </h3>
+                      <div
+                        {...getRootProps()}
+                        className={`border-2 border-dashed rounded-lg p-5 text-center cursor-pointer transition-colors ${isDragActive ? 'border-primary bg-primary/5' : certificateFile ? 'border-green-500 bg-green-50' : 'border-muted-foreground/25 hover:border-primary'}`}
+                      >
+                        <input {...getInputProps()} />
+                        {certificateFile ? (
+                          <div className="flex items-center justify-center gap-2">
+                            <IconFileCertificate className="h-5 w-5 text-green-600" />
+                            <span className="text-sm font-medium text-green-700">
+                              {certificateFile.name}
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center gap-1">
+                            <IconCloudUpload className="h-7 w-7 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">
+                              Arraste o .pfx aqui ou clique para selecionar
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      {certificateFile && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <Label>Tipo</Label>
+                            <Select
+                              value={form.watch('certificateType')}
+                              onValueChange={(v) =>
+                                form.setValue('certificateType', v)
+                              }
+                            >
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="A1">A1</SelectItem>
+                                <SelectItem value="A3">A3</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-1">
+                            <Label htmlFor="m-cert-pass">Senha</Label>
+                            <Input
+                              id="m-cert-pass"
+                              type="password"
+                              placeholder="Senha do certificado"
+                              {...form.register('certificatePassword')}
+                            />
+                          </div>
+                        </div>
                       )}
                     </div>
 
-                    {/* Text content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-semibold text-gray-900">
-                          {step.title}
-                        </p>
-                        {step.optional && !step.complete && (
-                          <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500">
-                            Opcional
-                          </span>
-                        )}
+                    {formStatus === 'error' && (
+                      <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                        {resultMessage}
                       </div>
-                      <p className="text-xs text-gray-500">
-                        {step.description}
-                      </p>
-                    </div>
-
-                    {/* Action link */}
-                    {!step.complete && (
-                      <button
-                        type="button"
-                        onClick={() => handleStepClick(step.href)}
-                        className="flex-shrink-0 text-xs font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1 whitespace-nowrap"
-                      >
-                        Configurar
-                        <IconChevronRight className="h-3.5 w-3.5" />
-                      </button>
                     )}
-                  </div>
-                ))}
-
-                {/* Progress bar */}
-                <div className="pt-3">
-                  <div className="flex items-center justify-between text-xs text-gray-500 mb-1.5">
-                    <span>Progresso</span>
-                    <span>
-                      {completedCount} de {steps.length} concluídas
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-brand rounded-full transition-all duration-300"
-                      style={{
-                        width: `${(completedCount / steps.length) * 100}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+                  </form>
+                )}
               </DialogBody>
 
-              <DialogFooter className="px-6 py-4 border-t border-gray-100 bg-gray-50">
-                <Button variant="ghost" onClick={handleDismiss}>
-                  Configurar depois
-                </Button>
-                <Button
-                  disabled={!allRequiredComplete}
-                  onClick={handleEmitClick}
-                >
-                  <IconFileInvoice className="h-4 w-4" />
-                  Começar a emitir notas
-                </Button>
-              </DialogFooter>
+              {(formStatus === 'idle' || formStatus === 'error') && (
+                <DialogFooter className="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                  <Button variant="ghost" onClick={handleDismiss}>
+                    Configurar depois
+                  </Button>
+                  <Button
+                    type="submit"
+                    form="fiscal-onboarding-form"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    Ativar módulo fiscal
+                  </Button>
+                </DialogFooter>
+              )}
             </>
           )}
         </DialogContent>

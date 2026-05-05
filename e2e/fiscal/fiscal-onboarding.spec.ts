@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Fiscal Onboarding (/configuracoes/fiscal)', () => {
+test.describe('Fiscal Onboarding (/assinatura/configurar-fiscal)', () => {
   test('should display onboarding wizard and submit successfully using API mock', async ({
     page,
   }) => {
@@ -33,8 +33,10 @@ test.describe('Fiscal Onboarding (/configuracoes/fiscal)', () => {
     })
 
     // 2. Navigate to the fiscal settings page
-    await page.goto('/configuracoes/fiscal')
-    await expect(page).toHaveURL(/\/configuracoes\/fiscal/, { timeout: 15_000 })
+    await page.goto('/assinatura/configurar-fiscal')
+    await expect(page).toHaveURL(/\/assinatura\/configurar-fiscal/, {
+      timeout: 15_000,
+    })
 
     // 3. Look for the "Ativar Módulo Fiscal" or similar start button
     const startButton = page

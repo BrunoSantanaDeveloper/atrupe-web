@@ -150,6 +150,44 @@ export default function ConfigurarFiscalPage() {
     }
   }
 
+  const fetchCnpj = async (cnpj: string) => {
+    const cleanCnpj = cnpj.replace(/\D/g, '')
+    if (cleanCnpj.length !== 14) return
+
+    try {
+      toast.loading('Buscando dados do CNPJ...', { id: 'cnpj-fetch' })
+      const res = await fetch(
+        `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
+      )
+      const data = await res.json()
+
+      if (res.ok) {
+        form.setValue('razaoSocial', data.razao_social || '')
+        form.setValue('nomeFantasia', data.nome_fantasia || '')
+        form.setValue('cnae', data.cnae_fiscal?.toString() || '')
+
+        if (data.cep) {
+          form.setValue('cep', data.cep.replace(/\D/g, ''))
+          await fetchCep(data.cep)
+        }
+
+        if (data.numero) {
+          form.setValue('numero', data.numero)
+        }
+
+        if (data.complemento) {
+          form.setValue('complemento', data.complemento)
+        }
+
+        toast.success('Dados da empresa preenchidos!', { id: 'cnpj-fetch' })
+      } else {
+        toast.dismiss('cnpj-fetch')
+      }
+    } catch {
+      toast.dismiss('cnpj-fetch')
+    }
+  }
+
   const onSubmit = async (data: FiscalFormData) => {
     setStatus('submitting')
 
@@ -289,6 +327,10 @@ export default function ConfigurarFiscalPage() {
                       id="cnpj"
                       placeholder="00.000.000/0000-00"
                       {...form.register('cnpj', { required: true })}
+                      onBlur={(e) => {
+                        form.register('cnpj').onBlur(e)
+                        fetchCnpj(e.target.value)
+                      }}
                     />
                   </div>
                   <div className="space-y-2">

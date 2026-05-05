@@ -188,7 +188,6 @@ function NewProductModal({
       technicalDescription: data?.technicalDescription ?? '',
       allowEditValues: data.allowEditValues,
       allowEditDescription: data.allowEditDescription,
-      isService: data.isService,
       imageUrl: data.imageUrl || null,
       imageSize: data.imageSize || null,
       items: data.items?.map((item) => ({
@@ -504,7 +503,6 @@ function NewProductModal({
                     name="allowEditDescription"
                     label="Permitir editar descrição"
                   />
-                  <FormSwitch name="isService" label="É um serviço?" />
                 </div>
                 {canShowProductionStages && <ProductionStages />}
               </form>
