@@ -1,25 +1,37 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
+import { useCallback } from 'react'
 
 export function usePlanFeatures() {
   const { data: session } = useSession()
 
-  const hasFeature = (feature: string) => {
-    if (!session?.company?.plan?.features) return false
+  const features = session?.company?.plan?.features
 
-    return session.company.plan.features.includes(feature)
-  }
+  const hasFeature = useCallback(
+    (feature: string) => {
+      if (!features) return false
+
+      return features.includes(feature)
+    },
+    [features],
+  )
 
   const planName = session?.company?.plan?.name
 
-  const hasAnyFeature = (features: string[]) => {
-    return features.some((feature) => hasFeature(feature))
-  }
+  const hasAnyFeature = useCallback(
+    (featureList: string[]) => {
+      return featureList.some((feature) => hasFeature(feature))
+    },
+    [hasFeature],
+  )
 
-  const hasAllFeatures = (features: string[]) => {
-    return features.every((feature) => hasFeature(feature))
-  }
+  const hasAllFeatures = useCallback(
+    (featureList: string[]) => {
+      return featureList.every((feature) => hasFeature(feature))
+    },
+    [hasFeature],
+  )
 
   const canManageSectors = () => hasFeature('sectors_configuration')
 
