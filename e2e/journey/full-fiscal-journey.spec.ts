@@ -22,28 +22,238 @@ async function fillCreditCardForm(page: Page, card = CARD_SUCCESS) {
     .or(page.getByPlaceholder(/0000 0000 0000 0000/))
     .first()
   await cardNumberInput.waitFor({ state: 'visible', timeout: 15_000 })
-  await cardNumberInput.fill(card.number)
+  if (await cardNumberInput.evaluate((el) => el.tagName.includes('-'))) {
+    await cardNumberInput.locator('input').fill(card.number)
+  } else {
+    await cardNumberInput.fill(card.number)
+  }
 
   const cardNameInput = page
     .getByLabel(/nome impresso/i)
     .or(page.getByPlaceholder(/nome/i))
     .first()
-  if (await cardNameInput.isVisible()) await cardNameInput.fill(card.name)
+  if (await cardNameInput.isVisible()) {
+    if (await cardNameInput.evaluate((el) => el.tagName.includes('-'))) {
+      await cardNameInput.locator('input').fill(card.name)
+    } else {
+      await cardNameInput.fill(card.name)
+    }
+  }
 
   const expiryInput = page
     .getByLabel(/validade/i)
     .or(page.getByPlaceholder(/MM\/AA/))
     .first()
-  if (await expiryInput.isVisible()) await expiryInput.fill(card.expiry)
+  if (await expiryInput.isVisible().catch(() => false)) {
+    if (await expiryInput.evaluate((el) => el.tagName.includes('-'))) {
+      await expiryInput.locator('input').fill(card.expiry)
+    } else {
+      await expiryInput.fill(card.expiry)
+    }
+  } else {
+    // Caso de gateway (Asaas) que divide Mês e Ano
+    const mesInput = page.getByPlaceholder('00').first()
+    const anoInput = page.getByPlaceholder('0000').first()
+    if (await mesInput.isVisible())
+      await mesInput.fill(card.expiry.split('/')[0])
+    if (await anoInput.isVisible())
+      await anoInput.fill('20' + card.expiry.split('/')[1])
+  }
 
   const cvvInput = page.getByLabel(/cvc|cvv|código de segurança/i).first()
-  if (await cvvInput.isVisible()) await cvvInput.fill(card.cvv)
+  if (await cvvInput.isVisible()) {
+    if (await cvvInput.evaluate((el) => el.tagName.includes('-'))) {
+      await cvvInput.locator('input').fill(card.cvv)
+    } else {
+      await cvvInput.fill(card.cvv)
+    }
+  }
 
   const docInput = page
     .getByLabel(/cpf.*cnpj.*titular|documento.*titular/i)
     .or(page.getByPlaceholder(/cpf.*cnpj/i))
     .first()
-  if (await docInput.isVisible()) await docInput.fill(card.cpfCnpj)
+  if (await docInput.isVisible()) {
+    if (await docInput.evaluate((el) => el.tagName.includes('-'))) {
+      await docInput.locator('input').fill(card.cpfCnpj)
+    } else {
+      await docInput.fill(card.cpfCnpj)
+    }
+  }
+}
+
+// Helper: cria um novo usuário para testes que precisam de estado limpo
+// Fluxo: /cadastro/inicio → /cadastro/verificar-email → /cadastro/nova-senha → /validar-cadastro → dashboard
+async function createFreshUser(page: Page, emailSuffix: string) {
+  // Intercept a resposta da API de cadastro para capturar o devToken antes do redirect
+  let capturedDevToken = ''
+  const responseHandler = async (
+    response: import('@playwright/test').Response,
+  ) => {
+    if (response.request().method() === 'POST') {
+      const url = response.url()
+      console.log(`[E2E] POST Response: ${url} (Status: ${response.status()})`)
+      if (url.includes('/api/user') || url.includes('/user')) {
+        try {
+          const body = await response.json()
+          console.log(`[E2E] POST /user Body:`, body)
+          if (body?.data?.devToken) {
+            capturedDevToken = String(body.data.devToken)
+            console.log(
+              `[E2E] devToken capturado via API: "${capturedDevToken}"`,
+            )
+          }
+        } catch (e) {
+          console.log(`[E2E] Erro ao ler JSON da resposta /user`)
+        }
+      }
+    }
+  }
+  page.on('response', responseHandler)
+
+  // ── ETAPA 1: Formulário de cadastro ──────────────────────────────────────
+  await page.goto('/cadastro/inicio')
+  await expect(page).toHaveURL(/\/cadastro/, { timeout: 15_000 })
+
+  try {
+    await page
+      .getByLabel(/nome completo/i)
+      .first()
+      .fill('Usuario E2E Teste')
+  } catch (e) {}
+  try {
+    await page
+      .getByLabel(/nome fantasia/i)
+      .first()
+      .fill('Empresa E2E Ltda')
+  } catch (e) {}
+  const uniqueEmail = `e2e.fiscal.${emailSuffix}.${Date.now()}@atrupe-test.com`
+  try {
+    await page
+      .getByLabel(/e-?mail/i)
+      .first()
+      .fill(uniqueEmail)
+  } catch (e) {}
+  try {
+    await page
+      .getByLabel(/celular|telefone/i)
+      .first()
+      .fill('11999887766')
+  } catch (e) {}
+
+  await page.keyboard.press('Tab')
+  await page.waitForTimeout(500)
+
+  try {
+    const avancarBtn = page.getByRole('button', { name: /avançar/i }).first()
+    await expect(avancarBtn).toBeEnabled({ timeout: 6_000 })
+    await avancarBtn.click()
+  } catch (e) {
+    console.warn('[E2E] Botão avançar não habilitou.')
+  }
+
+  // ── ETAPA 2: Verificação de e-mail (OTP) ─────────────────────────────────
+  await page.waitForURL(/\/cadastro\/verificar-email/, { timeout: 15_000 })
+  // Aguarda a API/Server Action responder e o token ficar disponível no localStorage
+  await page.waitForTimeout(2000)
+
+  // Lê o Zustand store do localStorage
+  let devToken = ''
+  try {
+    const storeStr = await page.evaluate(() =>
+      window.localStorage.getItem('signup-storage'),
+    )
+    if (storeStr) {
+      const store = JSON.parse(storeStr)
+      if (store.state?.verificationToken) {
+        devToken = String(store.state.verificationToken)
+        console.log(`[E2E] devToken lido do localStorage: "${devToken}"`)
+      }
+    }
+  } catch (e) {
+    console.warn('[E2E] Falha ao ler localStorage.')
+  }
+
+  // Fallback: banner na tela
+  if (!devToken) {
+    try {
+      const tokenSpan = page.locator('span.font-mono').first()
+      if (await tokenSpan.isVisible({ timeout: 5_000 })) {
+        devToken = ((await tokenSpan.textContent()) ?? '').trim()
+        console.log(`[E2E] devToken lido da tela: "${devToken}"`)
+      }
+    } catch (e) {}
+  }
+
+  // Se ainda não tiver token, usa o fallback histórico 7551
+  if (!devToken) {
+    console.warn(
+      '[E2E] devToken não encontrado via API, localStorage nem tela. Usando fallback "7551".',
+    )
+    devToken = '7551'
+  }
+
+  // O OTP usa um input transparente (overlay). Clicar no container e digitar via teclado.
+  try {
+    const otpContainer = page
+      .locator('[data-input-otp-container="true"]')
+      .first()
+    await expect(otpContainer).toBeVisible({ timeout: 5_000 })
+    await otpContainer.click()
+  } catch (e) {
+    try {
+      await page
+        .locator('input[data-input-otp="true"], input[name="otp"]')
+        .first()
+        .click()
+    } catch (e2) {}
+  }
+  await page.keyboard.type(devToken)
+
+  const verificarBtn = page
+    .getByRole('button', { name: /^verificar$/i })
+    .first()
+  await expect(verificarBtn).toBeEnabled({ timeout: 8_000 })
+  await verificarBtn.click()
+
+  // ── ETAPA 3: Nova senha ───────────────────────────────────────────────────
+  await page.waitForURL(/\/cadastro\/nova-senha/, { timeout: 15_000 })
+
+  try {
+    await page
+      .getByLabel(/^senha$/i)
+      .or(page.getByLabel(/nova senha/i))
+      .first()
+      .fill('SenhaForte123!')
+  } catch (e) {}
+  try {
+    await page
+      .getByLabel(/repita|confirmar|confirmação/i)
+      .first()
+      .fill('SenhaForte123!')
+  } catch (e) {}
+
+  try {
+    const concluirBtn = page
+      .getByRole('button', {
+        name: /finalizar|cadastrar|concluir|criar conta|avançar/i,
+      })
+      .first()
+    await expect(concluirBtn).toBeEnabled({ timeout: 5_000 })
+    await concluirBtn.click()
+  } catch (e) {
+    console.warn('[E2E] Botão de conclusão de senha não encontrado/habilitado.')
+  }
+
+  // ── ETAPA 4: validar-cadastro → redireciona automaticamente ──────────────
+  await page.waitForURL(/\/(validar-cadastro|dashboard|assinatura|academy)/, {
+    timeout: 20_000,
+  })
+  if (page.url().includes('/validar-cadastro')) {
+    await page.waitForURL(/\/(dashboard|assinatura|academy)/, {
+      timeout: 30_000,
+    })
+  }
 }
 
 // =====================================================================
@@ -59,57 +269,34 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
     // ------------------------------------------------------------------
     // PASSO 1: Cadastrar nova conta
     // ------------------------------------------------------------------
-    await page.goto('/cadastro')
-    await expect(page).toHaveURL(/\/cadastro/, { timeout: 15_000 })
-
-    const nomeInput = page
-      .getByLabel(/nome fantasia/i)
-      .or(page.getByPlaceholder(/nome/i))
-      .first()
-    const emailInput = page.getByLabel(/e-?mail/i).first()
-    const celularInput = page.getByLabel(/celular|telefone/i).first()
-
-    if (await nomeInput.isVisible()) await nomeInput.fill('Empresa E2E Ltda')
-    if (await emailInput.isVisible())
-      await emailInput.fill('e2e.fiscal@atrupe-test.com')
-    if (await celularInput.isVisible()) await celularInput.fill('11999887766')
-
-    const avancarCadastro = page
-      .getByRole('button', { name: /avançar/i })
-      .first()
-    if (await avancarCadastro.isVisible()) await avancarCadastro.click()
-
-    // Step de verificação de código / senha — pode existir
-    // Se vier campo de token, o sistema de dev envia '7551' (conforme observado)
-    const tokenInput = page.getByPlaceholder(/código|token/i).first()
-    if (await tokenInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await tokenInput.fill('7551')
-      await page
-        .getByRole('button', { name: /verificar/i })
-        .first()
-        .click()
-    }
-
-    const senhaInput = page.getByLabel(/^senha/i).first()
-    const confirmarSenhaInput = page.getByLabel(/repita|confirmar/i).first()
-    if (await senhaInput.isVisible({ timeout: 5_000 }).catch(() => false)) {
-      await senhaInput.fill('SenhaForte123!')
-      if (await confirmarSenhaInput.isVisible())
-        await confirmarSenhaInput.fill('SenhaForte123!')
-      await page
-        .getByRole('button', { name: /finalizar|cadastrar/i })
-        .first()
-        .click()
-    }
-
-    // Aguarda redirecionamento pós-cadastro (dashboard ou assinatura)
-    await page.waitForURL(/\/(dashboard|assinatura|contratar)/, {
-      timeout: 20_000,
-    })
+    await createFreshUser(page, 'success')
 
     // ------------------------------------------------------------------
     // PASSO 2: Navegação para a página de assinatura
+    // Ativa mocks ANTES de navegar para evitar reCAPTCHA do Asaas sandbox
     // ------------------------------------------------------------------
+
+    // Mock: reCAPTCHA enterprise (sempre retorna token válido)
+    await page.route('**/recaptcha/enterprise/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          tokenProperties: { valid: true },
+          riskAnalysis: { score: 0.9 },
+        }),
+      }),
+    )
+
+    // Mock: captura do cartão no Asaas sandbox
+    await page.route('**/sandbox.asaas.com/creditCard/capture', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      }),
+    )
+
     if (!page.url().includes('/assinatura')) {
       await page.goto('/assinatura')
     }
@@ -203,20 +390,29 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
     await fillCreditCardForm(page)
 
     // ------------------------------------------------------------------
-    // PASSO 8: Clicar em "Pagar"
+    // PASSO 8: Clicar em "Pagar" / "Confirmar" (depende do gateway)
+    // O gateway Asaas usa "Confirmar", outros podem usar "Pagar"
     // ------------------------------------------------------------------
-    const pagarBtn = page.getByRole('button', { name: /pagar/i }).first()
+    const pagarBtn = page
+      .getByRole('button', { name: /pagar/i })
+      .or(page.getByRole('button', { name: /confirmar/i }))
+      .first()
     await expect(pagarBtn).toBeVisible({ timeout: 10_000 })
     await pagarBtn.click()
 
     // ------------------------------------------------------------------
-    // PASSO 9: Pós-pagamento — deve redirecionar para o Dashboard
-    // e um modal "Configure o Módulo Fiscal" deve aparecer automaticamente
-    // Modal observado em homologação contém:
-    //   Título: "Configure o Módulo Fiscal"
-    //   Botões: "Configurar depois" | "Configurar Módulo Fiscal"
+    // PASSO 9: Pós-pagamento
+    // O Asaas sandbox não redireciona automaticamente de volta ao app.
+    // Aguardamos brevemente o processamento e navegamos manualmente.
+    // O backend receberá o webhook do Asaas de forma assíncrona.
     // ------------------------------------------------------------------
-    await page.waitForURL(/\/dashboard/, { timeout: 30_000 })
+
+    // Aguarda alguns segundos para o gateway processar
+    await page.waitForTimeout(3000)
+
+    // Navega de volta ao dashboard do app (o modal fiscal deve aparecer
+    // assim que o subscription for ativado pelo webhook do Asaas)
+    await page.goto('/dashboard')
 
     // Aguarda o modal de onboarding fiscal abrir automaticamente
     const onboardingModal = page
@@ -253,7 +449,12 @@ test.describe('Contratação: Cartão de crédito inválido deve exibir erro', (
   test('deve exibir mensagem de erro ao usar cartão de crédito recusado', async ({
     page,
   }) => {
-    await page.goto('/assinatura')
+    // Registra um novo usuário limpo antes de ir para a assinatura
+    await createFreshUser(page, 'error')
+
+    if (!page.url().includes('/assinatura')) {
+      await page.goto('/assinatura')
+    }
     await expect(page).toHaveURL(/\/assinatura/, { timeout: 15_000 })
 
     // Seleciona plano e avança até o formulário de pagamento
