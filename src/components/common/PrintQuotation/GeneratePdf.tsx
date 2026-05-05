@@ -434,9 +434,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
   // Incluir o frete no total final
   const freightPrice = data.delivery?.freightPrice || 0
-  // Usar o valor final do backend (após desconto das condições de pagamento)
-  const backendFinalTotal = data.total?.finalTotal ?? totals.finalTotal
-  const finalTotalWithFreight = backendFinalTotal + freightPrice
+  // Nota: data.total.finalTotal do backend pode incluir desconto de condição de pagamento,
+  // o que geraria um total incorreto no PDF. Calculamos diretamente a partir do subtotal
+  // e do desconto dos itens, igual ao que o corpo do orçamento exibe.
+  const pdfSubtotal = data.total?.subtotal ?? totals.subtotal
+  const pdfTotalDiscount = data.total?.totalDiscount ?? 0
+  const finalTotalWithFreight = pdfSubtotal - pdfTotalDiscount + freightPrice
 
   // As inconsistências agora são tratadas no componente pai PrintQuotationDialog
   // O PDF sempre usa os valores corretos calculados
