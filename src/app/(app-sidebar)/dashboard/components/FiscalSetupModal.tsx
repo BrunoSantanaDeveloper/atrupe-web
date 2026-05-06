@@ -38,6 +38,7 @@ import {
   IconArrowLeft,
 } from '@tabler/icons-react'
 import { useQueryClient } from '@tanstack/react-query'
+import { maskCnpj, maskCep } from '@/lib/utils'
 
 const DISMISSAL_KEY = 'fiscal-setup-modal-dismissed'
 
@@ -440,9 +441,16 @@ export function FiscalSetupModal() {
                             id="m-cnpj"
                             placeholder="00.000.000/0000-00"
                             {...(() => {
-                              const { onBlur, ...rest } = cnpjRegistration
+                              const { onBlur, onChange, ...rest } =
+                                cnpjRegistration
                               return {
                                 ...rest,
+                                onChange: (
+                                  e: React.ChangeEvent<HTMLInputElement>,
+                                ) => {
+                                  e.target.value = maskCnpj(e.target.value)
+                                  if (onChange) onChange(e)
+                                },
                                 onBlur: (
                                   e: React.FocusEvent<HTMLInputElement>,
                                 ) => {
@@ -529,7 +537,11 @@ export function FiscalSetupModal() {
                           <Input
                             id="m-cep"
                             placeholder="00000-000"
-                            {...form.register('cep')}
+                            {...form.register('cep', {
+                              onChange: (e) => {
+                                e.target.value = maskCep(e.target.value)
+                              },
+                            })}
                             onBlur={(e) => fetchCep(e.target.value)}
                           />
                         </div>

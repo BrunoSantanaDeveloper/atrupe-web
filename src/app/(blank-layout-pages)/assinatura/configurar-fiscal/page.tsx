@@ -33,6 +33,7 @@ import {
 } from '@tabler/icons-react'
 
 import { createItemNew, encodeFileToBase64 } from '@/actions/_cruds'
+import { maskCnpj, maskCep } from '@/lib/utils'
 
 const UF_OPTIONS = [
   'AC',
@@ -326,7 +327,12 @@ export default function ConfigurarFiscalPage() {
                     <Input
                       id="cnpj"
                       placeholder="00.000.000/0000-00"
-                      {...form.register('cnpj', { required: true })}
+                      {...form.register('cnpj', {
+                        required: true,
+                        onChange: (e) => {
+                          e.target.value = maskCnpj(e.target.value)
+                        },
+                      })}
                       onBlur={(e) => {
                         form.register('cnpj').onBlur(e)
                         fetchCnpj(e.target.value)
@@ -413,7 +419,11 @@ export default function ConfigurarFiscalPage() {
                     <Input
                       id="cep"
                       placeholder="00000-000"
-                      {...form.register('cep')}
+                      {...form.register('cep', {
+                        onChange: (e) => {
+                          e.target.value = maskCep(e.target.value)
+                        },
+                      })}
                       onBlur={(e) => fetchCep(e.target.value)}
                     />
                   </div>
