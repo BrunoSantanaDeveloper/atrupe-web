@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
-import { createItemNew, encodeFileToBase64 } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
@@ -235,8 +235,16 @@ export function FiscalSetupModal() {
     setFormStatus('submitting')
     try {
       let certificateBase64: string | undefined
-      if (certificateFile)
-        certificateBase64 = await encodeFileToBase64(certificateFile)
+      if (certificateFile) {
+        // FileReader must run client-side (not in 'use server' context)
+        certificateBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () =>
+            resolve((reader.result as string).split(',')[1] || '')
+          reader.onerror = reject
+          reader.readAsDataURL(certificateFile)
+        })
+      }
       const result = await createItemNew({
         route: '/fiscal/onboarding',
         data: { ...data, certificate: certificateBase64 },
