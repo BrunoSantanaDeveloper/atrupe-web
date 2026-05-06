@@ -5,7 +5,7 @@ import { EmissoresListClient } from './components/EmissoresListClient'
 
 export function metadata() {
   return {
-    title: 'Configurar Emissores',
+    title: 'Emissores de Nota Fiscal',
   }
 }
 
@@ -14,7 +14,7 @@ export default function EmissoresConfigPage() {
     <PermissionGate permissions={['invoice:nfse:view']}>
       <div>
         <Topbar
-          title="Configurar Emissores"
+          title="Emissores de Nota Fiscal"
           previousPage="/configuracoes/nota-fiscal"
         />
         <div className="p-6">
