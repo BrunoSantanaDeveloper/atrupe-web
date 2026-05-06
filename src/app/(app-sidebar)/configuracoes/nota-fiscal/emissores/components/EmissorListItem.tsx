@@ -13,9 +13,11 @@ import {
   IconBuilding,
   IconChevronDown,
   IconChevronRight,
+  IconLock,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
 
 export interface EmissorData {
   id: string
@@ -194,11 +196,27 @@ export function EmissorListItem({ emissor, onEdit }: EmissorListItemProps) {
   )
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-sm">
+    <div
+      className={cn(
+        'bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-sm',
+        !isConfigured && 'opacity-80',
+      )}
+    >
       {/* Header */}
       <div
-        className="p-4 flex items-center justify-between cursor-pointer bg-white"
-        onClick={() => setIsExpanded(!isExpanded)}
+        className={cn(
+          'p-4 flex items-center justify-between bg-white',
+          isConfigured ? 'cursor-pointer' : 'cursor-not-allowed',
+        )}
+        onClick={() => {
+          if (!isConfigured) {
+            toast.warning(
+              'Configure o módulo fiscal no Dashboard para liberar estas opções.',
+            )
+            return
+          }
+          setIsExpanded(!isExpanded)
+        }}
       >
         <div className="flex items-center gap-3">
           <div
@@ -256,7 +274,11 @@ export function EmissorListItem({ emissor, onEdit }: EmissorListItemProps) {
               isExpanded ? 'rotate-180' : '',
             )}
           >
-            <IconChevronDown size={20} className="text-gray-400" />
+            {isConfigured ? (
+              <IconChevronDown size={20} className="text-gray-400" />
+            ) : (
+              <IconLock size={20} className="text-gray-400" />
+            )}
           </div>
         </div>
       </div>
