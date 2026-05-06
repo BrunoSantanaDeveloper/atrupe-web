@@ -366,7 +366,7 @@ export function StandaloneNfeForm() {
             <CustomButton
               icon={IconSend}
               title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-              iconVariant="brandLight"
+              iconVariant="light"
               onClick={handleEmit}
               disabled={isEmitting || !data}
               isLoading={isEmitting}

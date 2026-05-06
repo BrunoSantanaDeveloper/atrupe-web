@@ -87,7 +87,7 @@ export function InvoiceFormHeader({
           <CustomButton
             icon={IconSend}
             title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-            iconVariant="brandLight"
+            iconVariant="light"
             onClick={onEmit}
             disabled={isEmitting}
             isLoading={isEmitting}
