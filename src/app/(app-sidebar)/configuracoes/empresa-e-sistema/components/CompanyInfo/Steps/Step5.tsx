@@ -1,231 +1,152 @@
 'use client'
 
-import { useCallback, useState, useEffect } from 'react'
+import Link from 'next/link'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
 import {
-  IconTrash,
-  IconFileCertificate,
-  IconCirclePlus,
-  IconCircleCheckFilled,
-  IconCloudUpload,
+  IconArrowRight,
+  IconReceipt,
+  IconSettings,
+  IconClock,
 } from '@tabler/icons-react'
 
 // UI
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { FormToggleCard } from '@/components/common/form/FormToggleCard'
 
-import { cn } from '@/lib/utils'
-import { formatToLocaleDateTime } from '@/lib/formatDate'
-
-import { CompanyFormType } from '../schema'
-
-import { useDropzone } from 'react-dropzone'
-import { useFormContext } from 'react-hook-form'
-
-const toggleOptions = [
-  {
-    label: 'Certificado A1',
-    value: 'A1',
-  },
-  {
-    label: 'Certificado A3',
-    value: 'A3',
-  },
-]
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 
 export function Step5() {
-  const [showFields, setShowFields] = useState(false)
+  const { hasFeature } = usePlanFeatures()
+  const hasFiscalModule = hasFeature('nota_fiscal')
+  const { isLoading, isActive, isPending } = useFiscalOnboardingStatus()
 
-  const { watch, setValue } = useFormContext<CompanyFormType>()
-
-  const certificate = watch('fiscal.certificate')
-  const certificateType = watch('fiscal.certificateType')
-
-  // Show fields automatically if certificate data already exists
-  useEffect(() => {
-    if (certificateType) {
-      setShowFields(true)
-    }
-  }, [certificateType])
-
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      if (acceptedFiles.length > 0) {
-        const file = acceptedFiles[0]
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          const base64String = reader.result as string
-          setValue('fiscal.certificate', base64String)
-          setValue('fiscal.certificateName', file.name)
-          setValue('fiscal.certificateLastUpload', '')
-        }
-        reader.readAsDataURL(file)
-      }
-    },
-    [setValue],
-  )
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/x-pkcs12': ['.pfx', '.p12'],
-    },
-    multiple: false,
-  })
-
-  const handleRemoveCertificate = () => {
-    setValue('fiscal.certificateType', '')
-    setValue('fiscal.certificateDescription', '')
-    setValue('fiscal.certificatePassword', '')
-    setValue('fiscal.certificate', '')
-    setValue('fiscal.certificateName', '')
-    setValue('fiscal.certificateLastUpload', '')
-    setShowFields(false)
-  }
-
-  const handleRemoveCertificateFile = () => {
-    setValue('fiscal.certificate', '')
-    setValue('fiscal.certificateName', '')
-    setValue('fiscal.certificateLastUpload', '')
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <FormInput
-          name="fiscal.cnae"
-          label="CNAE"
-          placeholder="Digite aqui"
-          width="sm:col-span-1"
-        />
-        <FormInput
-          type="password"
-          name="fiscal.accessKey"
-          label="Chave de acesso (AccessKey)"
-          placeholder="Digite aqui"
-          autoComplete="new-password"
-          width="sm:col-span-3"
-        />
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12 text-sm text-gray-400">
+        Carregando...
       </div>
+    )
+  }
 
-      <Separator className="bg-gray-300" />
+  // Sem módulo contratado → CTA de contratação
+  if (!hasFiscalModule) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
+        <div className="h-14 w-14 rounded-full bg-brand-50 flex items-center justify-center">
+          <IconReceipt className="h-7 w-7 text-brand-600" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold text-gray-900">
+            Módulo Fiscal não contratado
+          </h3>
+          <p className="text-sm text-gray-500 max-w-xs mx-auto">
+            Para emitir NF-e, NFS-e e NFC-e, ative o módulo fiscal no seu plano.
+          </p>
+        </div>
+        <Button type="button" RightIcon={IconArrowRight} asChild>
+          <Link href="/configuracoes/empresa-e-sistema/assinatura">
+            Ver planos e módulos
+          </Link>
+        </Button>
+      </div>
+    )
+  }
 
-      <div>
-        {!showFields ? (
+  // Módulo contratado mas pendente/não configurado
+  if (!isActive) {
+    return (
+      <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
+        <div className="h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
+          <IconClock className="h-7 w-7 text-amber-500" />
+        </div>
+        <div className="space-y-1">
+          <h3 className="text-base font-semibold text-gray-900">
+            {isPending
+              ? 'Configuração em andamento'
+              : 'Módulo Fiscal não configurado'}
+          </h3>
+          <p className="text-sm text-gray-500 max-w-xs mx-auto">
+            {isPending
+              ? 'Seus dados foram enviados e estão sendo processados. Em breve o módulo será ativado.'
+              : 'Acesse o dashboard para iniciar a configuração do módulo fiscal.'}
+          </p>
+        </div>
+        {!isPending && (
           <Button
             type="button"
-            variant="none"
-            className="flex justify-center items-center h-full w-full gap-3 py-4 rounded-none"
-            onClick={() => {
-              setValue('fiscal.certificateType', 'A1')
-              setShowFields(true)
-            }}
+            variant="neutralOutline"
+            RightIcon={IconArrowRight}
+            asChild
           >
-            <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
-            <p className="text-sm text-gray-600 font-medium">
-              Adicionar Certificado Digital
-            </p>
+            <Link href="/dashboard">Configurar no Dashboard</Link>
           </Button>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-md font-semibold text-gray-700">
-                Certificado Digital
-              </h3>
-              <Button
-                type="button"
-                variant="neutralGhost"
-                size="icon"
-                onClick={handleRemoveCertificate}
-              >
-                <IconTrash className="w-5 h-5 text-neutral-500" />
-              </Button>
-            </div>
-
-            <div className="mb-4">
-              <FormToggleCard
-                name="fiscal.certificateType"
-                options={toggleOptions}
-                groupClassName="flex-col sm:flex-row"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <FormInput
-                name="fiscal.certificateDescription"
-                label="Descrição"
-                placeholder="Digite aqui"
-              />
-              <FormInput
-                name="fiscal.certificatePassword"
-                label="Senha"
-                type="password"
-                placeholder="Digite aqui"
-                autoComplete="new-password"
-              />
-            </div>
-            {certificate ? (
-              <div className="p-4 border rounded-lg flex items-center justify-between border-neutral-200 bg-white">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="relative shrink-0">
-                    <IconFileCertificate className="w-8 h-8 text-neutral-400" />
-                    <IconCircleCheckFilled className="w-4 h-4 text-emerald-500 absolute -bottom-1 -right-1 bg-white rounded-full" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-neutral-900 truncate">
-                      {watch('fiscal.certificateName')}
-                    </p>
-                    <p className="text-xs text-neutral-500 truncate">
-                      {watch('fiscal.certificateLastUpload')
-                        ? `Modificado em ${formatToLocaleDateTime(watch('fiscal.certificateLastUpload')!)} `
-                        : 'Carregado agora'}
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="neutralGhost"
-                  size="icon"
-                  onClick={handleRemoveCertificateFile}
-                  RightIcon={IconTrash}
-                />
-              </div>
-            ) : (
-              <div
-                {...getRootProps()}
-                className={cn(
-                  'border border-dashed border-brand-300 hover:border-brand-200 rounded-lg px-6 py-6 text-center cursor-pointer transition-colors',
-                  isDragActive ? 'bg-brand-50' : 'bg-white',
-                )}
-              >
-                <input {...getInputProps()} />
-                <div className="flex flex-col items-center gap-2">
-                  <FeaturedIcon
-                    variant="neutralBorderedLight"
-                    Icon={IconCloudUpload}
-                    size="default"
-                    rounded
-                  />
-                  <p className="text-sm">
-                    <span className="text-brand-700 font-semibold">
-                      Clique para selecionar o arquivo .pfx ou .p12
-                    </span>
-                    <span className="text-gray">
-                      {' '}
-                      ou arraste e solte o arquivo aqui
-                    </span>
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
         )}
+      </div>
+    )
+  }
+
+  // Módulo ativo → CNAE + IE + IM + link para emissores
+  return (
+    <div className="space-y-6">
+      {/* Dados fiscais cadastrais */}
+      <div>
+        <p className="text-sm font-medium text-gray-700 mb-3">Dados Fiscais</p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <FormInput
+            name="fiscal.cnae"
+            label="CNAE"
+            placeholder="Ex: 4642701"
+            width="sm:col-span-1"
+          />
+          <FormInput
+            name="general.stateRegistration"
+            label="Inscrição Estadual (IE)"
+            placeholder="Opcional"
+            width="sm:col-span-1"
+          />
+          <FormInput
+            name="general.municipalRegistration"
+            label="Inscrição Municipal (IM)"
+            placeholder="Opcional"
+            width="sm:col-span-1"
+          />
+        </div>
+      </div>
+
+      {/* Link para configurações do emissor */}
+      <div className="rounded-lg border border-brand-100 bg-brand-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
+            <IconSettings className="h-4 w-4 text-brand-700" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-brand-900">
+              Configurações do Emissor
+            </p>
+            <p className="text-xs text-brand-700 mt-0.5">
+              Séries, ambiente, certificado digital, CFOP e outras configurações
+              fiscais
+            </p>
+          </div>
+        </div>
+        <Button
+          type="button"
+          variant="neutralOutline"
+          size="sm"
+          RightIcon={IconArrowRight}
+          className="shrink-0"
+          asChild
+        >
+          <Link href="/configuracoes/nota-fiscal/emissores">
+            Gerenciar Emissor
+          </Link>
+        </Button>
       </div>
     </div>
   )
