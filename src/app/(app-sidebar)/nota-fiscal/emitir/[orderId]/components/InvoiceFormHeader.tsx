@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
-import { IconX, IconArrowLeft, IconCircleCheck } from '@tabler/icons-react'
+import { IconX, IconArrowLeft, IconSend } from '@tabler/icons-react'
 
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
@@ -85,9 +85,9 @@ export function InvoiceFormHeader({
             onClick={() => router.push('/nota-fiscal/emitir')}
           />
           <CustomButton
-            icon={IconCircleCheck}
+            icon={IconSend}
             title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-            iconVariant="successLight"
+            iconVariant="brandLight"
             onClick={onEmit}
             disabled={isEmitting}
             isLoading={isEmitting}

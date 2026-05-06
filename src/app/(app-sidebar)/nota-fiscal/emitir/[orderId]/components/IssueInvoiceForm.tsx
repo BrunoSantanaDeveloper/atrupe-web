@@ -218,7 +218,10 @@ export function IssueInvoiceForm({ id }: Props) {
           })),
           transportadora: data.transportadora,
           volumes: data.volumes,
-          pagamento: data.pagamento,
+          pagamento: {
+            forma: data.pagamento?.forma,
+            valor: data.pagamento?.valor,
+          },
           duplicatas: data.duplicatas,
           autXml: data.autXml,
           modalidadeFrete: data.emissao.modalidadeFrete,

@@ -42,7 +42,7 @@ import {
   IconAlertTriangleFilled,
   IconArrowLeft,
   IconX,
-  IconCircleCheck,
+  IconSend,
   IconTrash,
 } from '@tabler/icons-react'
 
@@ -277,7 +277,10 @@ export function StandaloneNfeForm() {
           })),
           transportadora: data.transportadora,
           volumes: data.volumes,
-          pagamento: data.pagamento,
+          pagamento: {
+            forma: data.pagamento?.forma,
+            valor: data.pagamento?.valor,
+          },
           duplicatas: data.duplicatas,
           autXml: data.autXml,
           modalidadeFrete: data.emissao.modalidadeFrete,
@@ -361,9 +364,9 @@ export function StandaloneNfeForm() {
               onClick={() => router.push('/nota-fiscal/emitir/avulsa')}
             />
             <CustomButton
-              icon={IconCircleCheck}
+              icon={IconSend}
               title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-              iconVariant="successLight"
+              iconVariant="brandLight"
               onClick={handleEmit}
               disabled={isEmitting || !data}
               isLoading={isEmitting}
@@ -420,194 +423,200 @@ export function StandaloneNfeForm() {
 
           {/* Data-dependent sections — only rendered when prepare data is available */}
           {data && (
-          <>
-          {/* Emission Config */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <Accordion type="single" collapsible defaultValue="config">
-              <AccordionItem value="config" className="p-0 m-0 border-0">
-                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-                  <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      Configuração de emissão
-                    </CardTitle>
-                  </div>
-                  <AccordionTrigger
-                    className={cn(
-                      buttonVariants({
-                        variant: 'neutralLight',
-                        size: 'icon',
-                      }),
-                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                    )}
-                  />
-                </CardHeader>
-                <AccordionContent>
-                  <CardContent className="p-0">
-                    <div className="flex flex-col">
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Emissor
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.emissor}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            CNPJ
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.emissorCnpj}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Natureza da operação
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.operationNature}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Próximo documento
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.proximoDocumento}
-                          </p>
-                        </div>
+            <>
+              {/* Emission Config */}
+              <Card className="border-none shadow-sm overflow-hidden">
+                <Accordion type="single" collapsible defaultValue="config">
+                  <AccordionItem value="config" className="p-0 m-0 border-0">
+                    <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                      <div className="flex gap-3 items-center">
+                        <FeaturedIcon
+                          variant="neutralOutline"
+                          Icon={IconMessage}
+                        />
+                        <CardTitle className="text-gray-700 font-semibold text-base">
+                          Configuração de emissão
+                        </CardTitle>
                       </div>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Finalidade
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.finalidade} - NF-e normal
-                          </p>
+                      <AccordionTrigger
+                        className={cn(
+                          buttonVariants({
+                            variant: 'neutralLight',
+                            size: 'icon',
+                          }),
+                          'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                        )}
+                      />
+                    </CardHeader>
+                    <AccordionContent>
+                      <CardContent className="p-0">
+                        <div className="flex flex-col">
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Emissor
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.emissor}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                CNPJ
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.emissorCnpj}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Natureza da operação
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.operationNature}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Próximo documento
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.proximoDocumento}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 border-b border-gray-100">
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Finalidade
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.finalidade} - NF-e normal
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Consumidor final
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.consumidorFinal === 1
+                                  ? '1 - Sim'
+                                  : '0 - Não'}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Modalidade de frete
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.modalidadeFrete !== undefined
+                                  ? data.emissao.modalidadeFrete
+                                  : '9 - Sem ocorrência de transporte'}
+                              </p>
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                Ambiente
+                              </p>
+                              <p className="text-sm font-semibold text-gray-900">
+                                {data.emissao.ambiente === 'HOMOLOGACAO'
+                                  ? 'Homologação'
+                                  : 'Produção'}
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Consumidor final
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.consumidorFinal === 1
-                              ? '1 - Sim'
-                              : '0 - Não'}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Modalidade de frete
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.modalidadeFrete !== undefined
-                              ? data.emissao.modalidadeFrete
-                              : '9 - Sem ocorrência de transporte'}
-                          </p>
-                        </div>
-                        <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Ambiente
-                          </p>
-                          <p className="text-sm font-semibold text-gray-900">
-                            {data.emissao.ambiente === 'HOMOLOGACAO'
-                              ? 'Homologação'
-                              : 'Produção'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Card>
+                      </CardContent>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </Card>
 
-          {/* Recipient */}
-          <InvoiceRecipientSection
-            destinatario={data.destinatario}
-            onEditClick={() => setIsRecipientEditOpen(true)}
-          />
-
-          {/* Items + Product Selector */}
-          <div className="space-y-4">
-            <InvoiceItems data={data} onUpdate={setData} />
-
-            {/* Add Product + Remove buttons */}
-            <div className="flex flex-wrap gap-2">
-              <ProductSelector
-                onAddProduct={handleAddProduct}
-                nextItemNumber={data.items.length + 1}
-                defaultCfop={
-                  (data as NfePrepareResponse & { defaultCfop?: string })
-                    .defaultCfop || '5101'
-                }
+              {/* Recipient */}
+              <InvoiceRecipientSection
+                destinatario={data.destinatario}
+                onEditClick={() => setIsRecipientEditOpen(true)}
               />
 
-              {data.items.length > 0 && (
-                <Button
-                  variant="neutralGhost"
-                  LeftIcon={IconTrash}
-                  className="text-error-600 hover:text-error-700 hover:bg-error-50"
-                  onClick={() => {
-                    const lastItem = data.items[data.items.length - 1]
-                    if (lastItem) handleRemoveItem(lastItem.itemNumber)
-                  }}
-                >
-                  Remover último item
-                </Button>
-              )}
-            </div>
-          </div>
+              {/* Items + Product Selector */}
+              <div className="space-y-4">
+                <InvoiceItems data={data} onUpdate={setData} />
 
-          {/* Transport */}
-          <InvoiceTransport data={data} onUpdate={setData} />
-
-          {/* Payment */}
-          <InvoicePayment data={data} onUpdate={setData} />
-
-          {/* Download Auth */}
-          <InvoiceDownloadAuth data={data} onUpdate={setData} />
-
-          {/* Info Complementar */}
-          <Card className="border-none shadow-sm overflow-hidden">
-            <Accordion type="single" collapsible>
-              <AccordionItem value="info" className="p-0 m-0 border-0">
-                <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-                  <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
-                    <CardTitle className="text-gray-700 font-semibold text-base">
-                      Informações complementares
-                    </CardTitle>
-                  </div>
-                  <AccordionTrigger
-                    className={cn(
-                      buttonVariants({
-                        variant: 'neutralLight',
-                        size: 'icon',
-                      }),
-                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                    )}
+                {/* Add Product + Remove buttons */}
+                <div className="flex flex-wrap gap-2">
+                  <ProductSelector
+                    onAddProduct={handleAddProduct}
+                    nextItemNumber={data.items.length + 1}
+                    defaultCfop={
+                      (data as NfePrepareResponse & { defaultCfop?: string })
+                        .defaultCfop || '5101'
+                    }
                   />
-                </CardHeader>
-                <AccordionContent>
-                  <CardContent className="p-6">
-                    <p className="text-sm text-gray-500 italic">
-                      {data.informacoesComplementares ||
-                        'Nenhuma informação adicional'}
-                    </p>
-                  </CardContent>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </Card>
 
-          {/* Totals */}
-          <InvoiceTotalsSection totais={computedTotais ?? data.totais} />
-          </>
+                  {data.items.length > 0 && (
+                    <Button
+                      variant="neutralGhost"
+                      LeftIcon={IconTrash}
+                      className="text-error-600 hover:text-error-700 hover:bg-error-50"
+                      onClick={() => {
+                        const lastItem = data.items[data.items.length - 1]
+                        if (lastItem) handleRemoveItem(lastItem.itemNumber)
+                      }}
+                    >
+                      Remover último item
+                    </Button>
+                  )}
+                </div>
+              </div>
+
+              {/* Transport */}
+              <InvoiceTransport data={data} onUpdate={setData} />
+
+              {/* Payment */}
+              <InvoicePayment data={data} onUpdate={setData} />
+
+              {/* Download Auth */}
+              <InvoiceDownloadAuth data={data} onUpdate={setData} />
+
+              {/* Info Complementar */}
+              <Card className="border-none shadow-sm overflow-hidden">
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="info" className="p-0 m-0 border-0">
+                    <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                      <div className="flex gap-3 items-center">
+                        <FeaturedIcon
+                          variant="neutralOutline"
+                          Icon={IconMessage}
+                        />
+                        <CardTitle className="text-gray-700 font-semibold text-base">
+                          Informações complementares
+                        </CardTitle>
+                      </div>
+                      <AccordionTrigger
+                        className={cn(
+                          buttonVariants({
+                            variant: 'neutralLight',
+                            size: 'icon',
+                          }),
+                          'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                        )}
+                      />
+                    </CardHeader>
+                    <AccordionContent>
+                      <CardContent className="p-6">
+                        <p className="text-sm text-gray-500 italic">
+                          {data.informacoesComplementares ||
+                            'Nenhuma informação adicional'}
+                        </p>
+                      </CardContent>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </Card>
+
+              {/* Totals */}
+              <InvoiceTotalsSection totais={computedTotais ?? data.totais} />
+            </>
           )}
         </div>
       </div>

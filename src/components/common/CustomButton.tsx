@@ -38,7 +38,7 @@ export const CustomButton = forwardRef<HTMLButtonElement, Props>(
         type="button"
         variant="none"
         className={cn(
-          'gap-3 justify-start shadow bg-white px-6 py-4 rounded-lg border h-[70px]',
+          'gap-3 justify-start shadow bg-white px-6 py-4 rounded-lg border border-gray-200 h-[70px]',
           className,
         )}
         disabled={isLoading}

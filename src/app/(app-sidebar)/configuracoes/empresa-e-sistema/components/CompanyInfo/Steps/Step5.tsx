@@ -74,7 +74,7 @@ export function Step5() {
           <p className="text-sm text-gray-500 max-w-xs mx-auto">
             {isPending
               ? 'Seus dados foram enviados e estão sendo processados. Em breve o módulo será ativado.'
-              : 'Acesse o dashboard para iniciar a configuração do módulo fiscal.'}
+              : 'Inicie a configuração do módulo fiscal.'}
           </p>
         </div>
         {!isPending && (
@@ -93,7 +93,7 @@ export function Step5() {
                 } catch {}
               }}
             >
-              Configurar no Dashboard
+              Configurar módulo fiscal
             </Link>
           </Button>
         )}

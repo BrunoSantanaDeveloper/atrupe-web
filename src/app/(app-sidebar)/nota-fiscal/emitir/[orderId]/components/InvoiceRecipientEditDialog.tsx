@@ -223,13 +223,13 @@ export function InvoiceRecipientEditDialog({
                 width="flex-[1_0_300px]"
               />
 
-              {/* Número e Rua */}
+              {/* Rua e Número */}
+              <FormInput name="endereco" label="Rua" width="flex-[1_0_480px]" />
               <FormInput
                 name="numero"
                 label="Número"
                 width="flex-[1_0_120px]"
               />
-              <FormInput name="endereco" label="Rua" width="flex-[1_0_480px]" />
 
               {/* Complemento - linha completa */}
               <FormInput
