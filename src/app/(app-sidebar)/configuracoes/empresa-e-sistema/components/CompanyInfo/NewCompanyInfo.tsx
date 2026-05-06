@@ -148,13 +148,13 @@ export function NewCompany({
       general: {
         name: company?.general?.name ?? '',
         legalName: company?.general?.legalName ?? '',
-        cnpj: company?.general?.cnpj ?? '',
+        cnpj: maskCnpj(company?.general?.cnpj ?? ''),
         municipalRegistration: company?.general?.municipalRegistration ?? '',
         stateRegistration: company?.general?.stateRegistration ?? '',
         email: company?.general?.email ?? '',
         siteUrl: company?.general?.siteUrl ?? '',
-        phone: company?.general?.phone ?? '',
-        mobile: company?.general?.mobile ?? '',
+        phone: MaskPhoneNumber(company?.general?.phone ?? '') || '',
+        mobile: MaskPhoneNumber(company?.general?.mobile ?? '') || '',
       },
       address: {
         number: company?.address?.number ?? '',
