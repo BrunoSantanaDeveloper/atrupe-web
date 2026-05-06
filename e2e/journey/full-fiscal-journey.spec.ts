@@ -417,7 +417,7 @@ test.describe('Contratação: Plano + Módulo Fiscal', () => {
     // Aguarda o modal de onboarding fiscal abrir automaticamente
     const onboardingModal = page
       .getByRole('dialog')
-      .filter({ hasText: /Configure o Módulo Fiscal/i })
+      .filter({ hasText: /Configure o Módulo Fiscal|Configuração Fiscal/i })
       .first()
 
     await expect(onboardingModal).toBeVisible({ timeout: 20_000 })
