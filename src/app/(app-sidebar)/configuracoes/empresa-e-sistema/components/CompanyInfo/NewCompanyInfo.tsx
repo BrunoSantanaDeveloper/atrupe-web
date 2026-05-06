@@ -21,7 +21,7 @@ import { Tabs, TabsList, TabsContent, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
 import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { cn, maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { Step1 } from './Steps/Step1'
 import { Step2 } from './Steps/Step2'
 import { Step3 } from './Steps/Step3'
