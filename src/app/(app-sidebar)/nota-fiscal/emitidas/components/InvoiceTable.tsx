@@ -72,6 +72,7 @@ interface InvoiceTableProps {
   items: (Nfe | Nfce)[]
   onAction?: (action: string, item: Nfe | Nfce) => void
   actionRenderer?: (item: Nfe | Nfce) => React.ReactNode
+  onStatusClick?: (item: Nfe | Nfce) => void
   emptyCtaLabel?: string
   emptyCtaHref?: string
 }
@@ -79,6 +80,7 @@ interface InvoiceTableProps {
 export function InvoiceTable({
   items,
   actionRenderer,
+  onStatusClick,
   emptyCtaLabel,
   emptyCtaHref,
 }: InvoiceTableProps) {
@@ -133,7 +135,22 @@ export function InvoiceTable({
                   })}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+                  <Badge
+                    variant={statusInfo.variant}
+                    className={
+                      onStatusClick && item.status === 'REJECTED'
+                        ? 'cursor-pointer hover:opacity-80 transition-opacity'
+                        : ''
+                    }
+                    onClick={() => onStatusClick && onStatusClick(item)}
+                    title={
+                      item.status === 'REJECTED'
+                        ? 'Clique para ver o motivo da rejeição'
+                        : undefined
+                    }
+                  >
+                    {statusInfo.label}
+                  </Badge>
                 </TableCell>
                 <TableCell className="text-right">
                   {actionRenderer?.(item)}

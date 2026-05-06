@@ -20,6 +20,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
@@ -30,6 +39,7 @@ import {
   IconBan,
   IconHash,
   IconPencil,
+  IconAlertCircle,
 } from '@tabler/icons-react'
 
 // Components
@@ -53,6 +63,15 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
   const [cancelNfeId, setCancelNfeId] = useState<string | null>(null)
   const [inutDialogOpen, setInutDialogOpen] = useState(false)
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null)
+  const [rejectionDialogOpen, setRejectionDialogOpen] = useState(false)
+
+  const handleShowRejection = (motivo: string | undefined | null) => {
+    setRejectionReason(
+      motivo || 'Motivo não disponível. Consulte o XML de retorno.',
+    )
+    setRejectionDialogOpen(true)
+  }
 
   const handleDownloadXml = (xml: string | undefined, filename: string) => {
     if (!xml) {
@@ -107,6 +126,15 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
           >
             <IconFileText className="mr-2 h-4 w-4" />
             Baixar XML
+          </DropdownMenuItem>
+        )}
+        {item.status === 'REJECTED' && (
+          <DropdownMenuItem
+            className="text-warning-700 focus:text-warning-700 focus:bg-warning-50"
+            onClick={() => handleShowRejection(item.motivoRejeicao)}
+          >
+            <IconAlertCircle className="mr-2 h-4 w-4" />
+            Ver motivo da rejeição
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -164,6 +192,11 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
             <InvoiceTable
               items={items}
               actionRenderer={renderActions}
+              onStatusClick={(item) => {
+                if (item.status === 'REJECTED') {
+                  handleShowRejection(item.motivoRejeicao)
+                }
+              }}
               emptyCtaLabel="Emitir NF-e"
               emptyCtaHref="/nota-fiscal/emitir"
             />
@@ -187,6 +220,27 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
         open={inutDialogOpen}
         onOpenChange={setInutDialogOpen}
       />
+
+      {/* Modal de Motivo de Rejeição */}
+      <AlertDialog
+        open={rejectionDialogOpen}
+        onOpenChange={setRejectionDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-error-700">
+              <IconAlertCircle className="h-5 w-5" />
+              Motivo da Rejeição
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-gray-700 whitespace-pre-wrap">
+              {rejectionReason}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Fechar</AlertDialogCancel>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
