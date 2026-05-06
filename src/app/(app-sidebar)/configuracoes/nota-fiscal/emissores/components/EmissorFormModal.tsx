@@ -34,6 +34,8 @@ const emissoresSchema = z.object({
 
   // Identificação
   emitCrt: z.string().optional(),
+  ie: z.string().optional(),
+  im: z.string().optional(),
 
   // Fiscal Configs
   serieNfe: z.coerce.number().optional(),
@@ -108,6 +110,8 @@ export function EmissorFormModal({
           isDefault: emissor.isDefault || false,
           ambiente: emissor.environment || 'HOMOLOGACAO',
           emitCrt: String(emissor.emitCrt || '1'),
+          ie: emissor.ie || '',
+          im: emissor.im || '',
           // Fiscal
           serieNfe: emissor.serieNfe || 1,
           proximoNumeroNfe: emissor.proximoNumeroNfe || 1,
@@ -193,6 +197,19 @@ export function EmissorFormModal({
                     name="emitCrt"
                     label="Código de Regime Tributário"
                     options={crtOptions}
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormInput
+                    name="ie"
+                    label="Inscrição Estadual (IE)"
+                    placeholder="Ex: 123456789"
+                  />
+                  <FormInput
+                    name="im"
+                    label="Inscrição Municipal (IM)"
+                    placeholder="Ex: 12345"
                   />
                 </div>
               </div>

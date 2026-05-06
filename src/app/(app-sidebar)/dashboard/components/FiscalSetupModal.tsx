@@ -134,6 +134,8 @@ export function FiscalSetupModal() {
     },
   })
 
+  const cnpjRegistration = form.register('cnpj', { required: true })
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setCertificateFile(acceptedFiles[0])
@@ -429,11 +431,18 @@ export function FiscalSetupModal() {
                           <Input
                             id="m-cnpj"
                             placeholder="00.000.000/0000-00"
-                            {...form.register('cnpj', {
-                              required: true,
-                              onBlur: (e: React.FocusEvent<HTMLInputElement>) =>
-                                fetchCnpj(e.target.value),
-                            })}
+                            {...(() => {
+                              const { onBlur, ...rest } = cnpjRegistration
+                              return {
+                                ...rest,
+                                onBlur: (
+                                  e: React.FocusEvent<HTMLInputElement>,
+                                ) => {
+                                  onBlur(e)
+                                  fetchCnpj(e.target.value)
+                                },
+                              }
+                            })()}
                           />
                         </div>
                         <div className="space-y-1">

@@ -46,11 +46,13 @@ export interface EmissorData {
     }
   }
 
-  // Configuração Fiscal
+  // Fiscal Configs
   emitCrt?: number | string // Mantendo compatibilidade com DTO
   ibgeCode?: string // Antigo emitCmun
+  ie?: string
+  im?: string
 
-  // Fiscal Configs
+  // Fiscal Series
   serieNfe?: number
   proximoNumeroNfe?: number
   serieNfse?: string
