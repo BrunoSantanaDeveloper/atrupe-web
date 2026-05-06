@@ -84,7 +84,17 @@ export function Step5() {
             RightIcon={IconArrowRight}
             asChild
           >
-            <Link href="/dashboard">Configurar no Dashboard</Link>
+            <Link
+              href="/dashboard"
+              onClick={() => {
+                try {
+                  localStorage.removeItem('fiscal-setup-modal-dismissed')
+                  localStorage.setItem('force_open_fiscal_form', 'true')
+                } catch {}
+              }}
+            >
+              Configurar no Dashboard
+            </Link>
           </Button>
         )}
       </div>

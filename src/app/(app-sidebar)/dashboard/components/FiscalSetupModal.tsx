@@ -153,7 +153,15 @@ export function FiscalSetupModal() {
 
   useEffect(() => {
     try {
-      setDismissed(localStorage.getItem(DISMISSAL_KEY) === 'true')
+      const isDismissed = localStorage.getItem(DISMISSAL_KEY) === 'true'
+      const shouldForceOpen =
+        localStorage.getItem('force_open_fiscal_form') === 'true'
+
+      if (shouldForceOpen) {
+        setDismissed(false)
+      } else {
+        setDismissed(isDismissed)
+      }
     } catch {}
   }, [])
 
@@ -163,7 +171,19 @@ export function FiscalSetupModal() {
     if (isOnboardingPending) return
     if (!isOnboardingNotStarted) return
     if (dismissed) return
-    const t = setTimeout(() => setOpen(true), 500)
+    const t = setTimeout(() => {
+      try {
+        if (localStorage.getItem('force_open_fiscal_form') === 'true') {
+          localStorage.removeItem('force_open_fiscal_form')
+          setOpen(true)
+          setShowForm(true)
+        } else {
+          setOpen(true)
+        }
+      } catch {
+        setOpen(true)
+      }
+    }, 500)
     return () => clearTimeout(t)
   }, [
     isLoadingOnboarding,
