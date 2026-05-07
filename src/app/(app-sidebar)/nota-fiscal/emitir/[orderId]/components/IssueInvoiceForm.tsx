@@ -68,8 +68,6 @@ export function IssueInvoiceForm({ id }: Props) {
   >(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
 
-  const router = useRouter()
-
   // Fetch data on mount - create or get draft
   const fetchData = useCallback(async () => {
     setIsLoading(true)
