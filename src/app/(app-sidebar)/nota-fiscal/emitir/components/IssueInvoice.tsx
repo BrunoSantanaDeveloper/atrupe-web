@@ -2,10 +2,16 @@
 
 // UI
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
+
+// Next
+import Link from 'next/link'
+
+// Icons
+import { IconFilePlus } from '@tabler/icons-react'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-import { ClientSearchSidebar } from './ClientSearchSidebar'
 import { InvoiceResultsTable } from './InvoiceResultsTable'
 import { FiscalModulePendingBanner } from '../../components/FiscalModulePendingBanner'
 import { FiscalModuleGate } from '../../components/FiscalModuleGate'
@@ -19,7 +25,16 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
       <TooltipProvider>
         <div className="space-y-5 h-full flex flex-col">
           <FiscalModulePendingBanner />
-          <Topbar title="Emissão de Nota Fiscal" />
+          <Topbar
+            title="Emissão de Nota Fiscal"
+            primaryCta={
+              <Button asChild LeftIcon={IconFilePlus}>
+                <Link href="/nota-fiscal/emitir/avulsa">
+                  Emitir Nota Avulsa
+                </Link>
+              </Button>
+            }
+          />
 
           <div className="grid grid-cols-12 gap-5 flex-1 min-h-0">
             {/* Left Sidebar - Client Search 

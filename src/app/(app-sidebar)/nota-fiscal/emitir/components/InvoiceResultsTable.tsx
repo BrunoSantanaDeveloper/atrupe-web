@@ -28,14 +28,10 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   IconFileInvoice,
   IconReceipt,
-  IconFilePlus,
   IconFileCheck,
   IconBan,
   IconX,
 } from '@tabler/icons-react'
-
-// Next
-import Link from 'next/link'
 
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
@@ -172,7 +168,14 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedClientId, currentPage, currentSearch, currentNfeStatus, startDate, endDate])
+  }, [
+    selectedClientId,
+    currentPage,
+    currentSearch,
+    currentNfeStatus,
+    startDate,
+    endDate,
+  ])
 
   useEffect(() => {
     fetchOrders()
@@ -275,30 +278,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
   return (
     <>
-      {/* Nota Avulsa CTA */}
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-primary-200 bg-primary-50 px-5 py-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-600">
-            <IconFilePlus size={20} />
-          </div>
-          <div>
-            <p className="font-semibold text-sm text-gray-800">
-              Nota Fiscal Avulsa
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Emita notas sem depender de uma ordem de serviço
-            </p>
-          </div>
-        </div>
-        <Link
-          href="/nota-fiscal/emitir/avulsa"
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-700 transition-colors shrink-0"
-        >
-          <IconFilePlus size={16} />
-          Emitir Nota Avulsa
-        </Link>
-      </div>
-
       <Card className="h-full flex flex-col">
         <TableFiltersHeader searchParams={searchParams}>
           <InvoiceFilter searchParams={searchParams} />
