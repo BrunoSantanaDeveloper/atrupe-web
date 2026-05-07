@@ -14,12 +14,18 @@ interface CommissionSummaryFilters {
   commissionType?: CommissionType
   startDate?: string
   endDate?: string
+  receivedStartDate?: string
+  receivedEndDate?: string
+  sellerId?: string
 }
 
 interface CommissionTableFilters {
   commissionType?: CommissionType
   startDate?: string
   endDate?: string
+  receivedStartDate?: string
+  receivedEndDate?: string
+  sellerId?: string
   groupBy?: CommissionGroupBy
   orderBy?: CommissionOrderBy
   page?: number

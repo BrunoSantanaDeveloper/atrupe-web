@@ -27,7 +27,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 // Icons
 import {
   IconFileInvoice,
-  IconSearch,
   IconReceipt,
   IconFilePlus,
   IconFileCheck,
@@ -354,11 +353,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-1">
-                            <ActionButton
-                              Icon={IconSearch}
-                              tooltip="Detalhes da Ordem"
-                              link={`/nota-fiscal/emitir/${order.id}`}
-                            />
                             {(() => {
                               const authorizedNfe = order.nfes?.find(
                                 (n) => n.status === 'AUTHORIZED',

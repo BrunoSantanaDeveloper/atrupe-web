@@ -27,12 +27,18 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       searchParams?.commissionType,
       searchParams?.startDate,
       searchParams?.endDate,
+      searchParams?.receivedStartDate,
+      searchParams?.receivedEndDate,
+      searchParams?.sellerId,
     ],
     queryFn: () =>
       getCommissionSummary({
         commissionType: searchParams?.commissionType as CommissionType,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
+        receivedStartDate: searchParams?.receivedStartDate as string,
+        receivedEndDate: searchParams?.receivedEndDate as string,
+        sellerId: searchParams?.sellerId as string,
       }),
   })
 

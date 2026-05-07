@@ -262,23 +262,35 @@ export function updatePeriodParams(
   router.push(`?${newParams.toString()}`)
 }
 
+interface DateRangeKeys {
+  startKey?: string
+  endKey?: string
+}
+
 /**
- * Updates date range params and navigates
+ * Updates date range params and navigates.
+ * Optionally accepts custom key names for start/end (e.g. receivedStartDate / receivedEndDate).
  */
 export function updateDateRangeParams(
   range: DateRange | undefined,
   options: UpdateParamsOptions,
+  keys?: DateRangeKeys,
 ) {
   const { router, params, resetPage = true } = options
+  const startKey = keys?.startKey ?? 'startDate'
+  const endKey = keys?.endKey ?? 'endDate'
   const newParams = new URLSearchParams(params.toString())
 
   if (range?.from && range?.to) {
-    newParams.set('startDate', formatDateToISO(range.from))
-    newParams.set('endDate', formatDateToISO(range.to))
-    newParams.set('period', 'custom')
+    newParams.set(startKey, formatDateToISO(range.from))
+    newParams.set(endKey, formatDateToISO(range.to))
+    // Only set 'period' for the default sale date range
+    if (!keys?.startKey) {
+      newParams.set('period', 'custom')
+    }
   } else {
-    newParams.delete('startDate')
-    newParams.delete('endDate')
+    newParams.delete(startKey)
+    newParams.delete(endKey)
   }
 
   if (resetPage) newParams.delete('page')

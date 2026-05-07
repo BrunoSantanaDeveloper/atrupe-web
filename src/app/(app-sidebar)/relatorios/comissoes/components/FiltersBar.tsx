@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 
 // UI
 import { Card, CardHeader } from '@/components/ui/card'
@@ -20,6 +21,12 @@ import {
   type PeriodType,
 } from '@/lib/filter-utils'
 
+// Actions
+import { getSellers } from '@/actions/sales-report'
+
+// Hooks
+import { usePermissions } from '@/hooks/usePermissions'
+
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -30,9 +37,28 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
 
   const periodOptions = generateMonthPeriodOptions()
 
-  const defaultDateRange = getDateRangeFromParams(
+  const { hasPermission } = usePermissions()
+  const canSeeOtherSellers = hasPermission('sale:other_quotation:view')
+
+  const { data: sellers = [] } = useQuery({
+    queryKey: ['sellers'],
+    queryFn: () => getSellers(),
+    enabled: canSeeOtherSellers,
+  })
+
+  const sellerSelectOptions = [
+    { value: 'all', label: 'Todos' },
+    ...sellers.map((s) => ({ value: s.id, label: s.name })),
+  ]
+
+  const defaultSaleDateRange = getDateRangeFromParams(
     searchParams?.startDate as string,
     searchParams?.endDate as string,
+  )
+
+  const defaultReceivedDateRange = getDateRangeFromParams(
+    searchParams?.receivedStartDate as string,
+    searchParams?.receivedEndDate as string,
   )
 
   return (
@@ -53,7 +79,7 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           name="period"
           label="Período"
           placeholder="Selecione o período"
-          className="lg:w-[280px] w-full"
+          className="lg:w-[200px] w-full"
           options={periodOptions}
           value={(searchParams?.period as string) || 'current_month'}
           onChange={(value) =>
@@ -61,12 +87,37 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
           }
         />
         <DateRangePickerBasic
-          label="Período personalizado"
+          label="Data de venda"
           placeholder="Selecione um período"
           className="lg:w-[260px] w-full"
-          value={defaultDateRange}
+          value={defaultSaleDateRange}
           onChange={(range) => updateDateRangeParams(range, updateOptions)}
         />
+        <DateRangePickerBasic
+          label="Data de recebimento"
+          placeholder="Selecione um período"
+          className="lg:w-[260px] w-full"
+          value={defaultReceivedDateRange}
+          onChange={(range) =>
+            updateDateRangeParams(range, updateOptions, {
+              startKey: 'receivedStartDate',
+              endKey: 'receivedEndDate',
+            })
+          }
+        />
+        {canSeeOtherSellers && (
+          <SelectBasic
+            name="sellerId"
+            label="Vendedor"
+            placeholder="Selecione um vendedor"
+            className="lg:w-[200px] w-full"
+            options={sellerSelectOptions}
+            value={(searchParams?.sellerId as string) || 'all'}
+            onChange={(value) =>
+              updateFilterParam('sellerId', value, updateOptions)
+            }
+          />
+        )}
       </CardHeader>
     </Card>
   )
