@@ -237,6 +237,21 @@ export function StandaloneNfeForm() {
       return
     }
 
+    const dest = data.destinatario
+    if (
+      !dest.endereco ||
+      !dest.numero ||
+      !dest.bairro ||
+      !dest.cep ||
+      !dest.cidade ||
+      !dest.estado
+    ) {
+      toast.error(
+        'O destinatário selecionado não possui um endereço completo cadastrado. Edite os dados do destinatário antes de emitir.',
+      )
+      return
+    }
+
     setIsEmitting(true)
 
     try {
