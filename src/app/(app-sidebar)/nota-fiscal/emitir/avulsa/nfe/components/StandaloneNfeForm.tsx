@@ -3,6 +3,9 @@
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useCallback } from 'react'
 
+// Hooks
+import { useAlertDialog } from '@/store/useAlertDialog'
+
 // UI
 import { toast } from 'sonner'
 import {
@@ -44,6 +47,7 @@ import {
   IconX,
   IconSend,
   IconTrash,
+  IconBan,
 } from '@tabler/icons-react'
 
 // Actions
@@ -62,6 +66,7 @@ import type {
 import type { ClientData } from '../../components/ClientSelect'
 
 export function StandaloneNfeForm() {
+  const alertDialog = useAlertDialog()
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -310,7 +315,15 @@ export function StandaloneNfeForm() {
       router.push('/nota-fiscal/emitidas')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao emitir NF-e'
-      toast.error(message)
+      alertDialog.open({
+        title: 'Erro na emissão da NF-e',
+        description: message,
+        Icon: IconBan,
+        iconVariant: 'dangerBorderedLight',
+        confirmLabel: 'Entendi',
+        cancelLabel: '',
+        onConfirm: () => {},
+      })
     } finally {
       setIsEmitting(false)
     }
