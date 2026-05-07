@@ -97,14 +97,22 @@ export function ClientsData({ searchParams, tabs }: Props) {
       onConfirm: async () => {
         try {
           // Deleta em série para não sobrecarregar
+          let hasError = false
           for (const id of ids) {
-            await deleteItemNew({ route: `/client/${id}` })
+            const res = await deleteItemNew({ route: `/client/${id}` })
+            if (!res.success) {
+              hasError = true
+              toast.error(res.message || 'Erro ao excluir cliente(s)')
+              break
+            }
           }
-          toast.success(
-            ids.length > 1
-              ? 'Clientes excluídos com sucesso'
-              : 'Cliente excluído com sucesso',
-          )
+          if (!hasError) {
+            toast.success(
+              ids.length > 1
+                ? 'Clientes excluídos com sucesso'
+                : 'Cliente excluído com sucesso',
+            )
+          }
           queryClient.invalidateQueries({ queryKey: ['client-list'] })
           queryClient.invalidateQueries({ queryKey: ['clients-totals'] })
           setSelectedClients([])

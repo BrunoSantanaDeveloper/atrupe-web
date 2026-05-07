@@ -131,14 +131,22 @@ export function QuotationsData({
       confirmVariant: 'error',
       onConfirm: async () => {
         try {
+          let hasError = false
           for (const id of ids) {
-            await deleteItemNew({ route: `/sale/quotation/${id}` })
+            const res = await deleteItemNew({ route: `/sale/quotation/${id}` })
+            if (!res.success) {
+              hasError = true
+              toast.error(res.message || 'Erro ao excluir orçamento(s)')
+              break
+            }
           }
-          toast.success(
-            ids.length > 1
-              ? 'Orçamentos excluídos com sucesso'
-              : 'Orçamento excluído com sucesso',
-          )
+          if (!hasError) {
+            toast.success(
+              ids.length > 1
+                ? 'Orçamentos excluídos com sucesso'
+                : 'Orçamento excluído com sucesso',
+            )
+          }
           queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
           queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
           setSelectedQuotations([])
