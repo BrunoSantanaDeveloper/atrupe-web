@@ -244,7 +244,7 @@ export function IssueInvoiceForm({ id }: Props) {
         title: 'Erro na emissão da NF-e',
         description: message,
         Icon: IconBan,
-        iconVariant: 'dangerBorderedLight',
+        iconVariant: 'error',
         confirmLabel: 'Entendi',
         cancelLabel: '',
         onConfirm: () => {},

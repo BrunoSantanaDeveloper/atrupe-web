@@ -319,7 +319,7 @@ export function StandaloneNfeForm() {
         title: 'Erro na emissão da NF-e',
         description: message,
         Icon: IconBan,
-        iconVariant: 'dangerBorderedLight',
+        iconVariant: 'error',
         confirmLabel: 'Entendi',
         cancelLabel: '',
         onConfirm: () => {},
