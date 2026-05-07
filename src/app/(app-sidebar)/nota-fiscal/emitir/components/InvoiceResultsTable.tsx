@@ -90,29 +90,32 @@ interface Props extends SearchParamsType {}
 // Helper para traduzir o status real da ordem + NFs para badge visual
 const getInvoiceStatusProps = (order: OrderItem) => {
   // Prioridade 1: se já tem NF autorizada emitida
-  if (order.nfes && order.nfes.length > 0) {
+  const authorizedNfe = order.nfes?.find((n) => n.status === 'AUTHORIZED')
+  if (authorizedNfe) {
     return { label: 'Emitida', variant: 'successLight' as const }
+  }
+
+  // Prioridade 2: se tem rascunho em digitação
+  const draftNfe = order.nfes?.find((n) => n.status === 'DRAFT')
+  if (draftNfe) {
+    return { label: 'Em digitação', variant: 'blueLight' as const }
   }
 
   const s = order.status?.toUpperCase() || ''
 
-  // Prioridade 2: ordem cancelada
+  // Prioridade 3: ordem cancelada
   if (s === 'CANCELED') {
     return { label: 'Cancelada', variant: 'errorLight' as const }
   }
 
-  // Prioridade 3: em produção / entrega
+  // Prioridade 4: em produção / entrega
   if (s === 'IN_PRODUCTION' || s === 'DELIVERY' || s === 'COMPLETED') {
     return { label: 'Em produção', variant: 'warningLight' as const }
   }
 
-  // Prioridade 4: pendente / finalizado sem NF
+  // Prioridade 5: pendente / finalizado sem NF
   if (s === 'FINISHED' || s === 'PENDING') {
     return { label: 'Não emitida', variant: 'neutralLight' as const }
-  }
-
-  if (s === 'DRAFT' || s === 'DIGITACAO') {
-    return { label: 'Em digitação', variant: 'blueLight' as const }
   }
 
   return {

@@ -1,16 +1,21 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
 import { IconX, IconArrowLeft, IconSend } from '@tabler/icons-react'
+
+// Actions
+import { deleteItemNew } from '@/actions/_cruds'
 
 // Types
 import type { NfePrepareResponse } from '@/types/fiscal/nfe-prepare'
@@ -39,11 +44,35 @@ export function InvoiceFormHeader({
   onEmit,
 }: InvoiceFormHeaderProps) {
   const router = useRouter()
+  const [isCanceling, setIsCanceling] = useState(false)
 
   const showActionBar =
     !data.hasExistingNfe ||
     data.existingNfe?.status === 'DRAFT' ||
     data.existingNfe?.status === 'REJECTED'
+
+  const handleCancel = async () => {
+    // Se existe um draft salvo, excluí-lo antes de voltar
+    if (data.draftId) {
+      setIsCanceling(true)
+      try {
+        const result = await deleteItemNew({
+          route: `/fiscal/nfe/draft/${data.draftId}`,
+        })
+        if (!result.success) {
+          toast.error('Não foi possível cancelar o rascunho')
+          return
+        }
+        toast.success('Digitação cancelada')
+      } catch {
+        toast.error('Erro ao cancelar o rascunho')
+        return
+      } finally {
+        setIsCanceling(false)
+      }
+    }
+    router.push('/nota-fiscal/emitir')
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -80,16 +109,18 @@ export function InvoiceFormHeader({
         <div className="flex justify-between items-center">
           <CustomButton
             icon={IconX}
-            title="Cancelar digitação"
+            title={isCanceling ? 'Cancelando...' : 'Cancelar digitação'}
             iconVariant="errorLight"
-            onClick={() => router.push('/nota-fiscal/emitir')}
+            onClick={handleCancel}
+            disabled={isCanceling || isEmitting}
+            isLoading={isCanceling}
           />
           <CustomButton
             icon={IconSend}
             title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
             iconVariant="light"
             onClick={onEmit}
-            disabled={isEmitting}
+            disabled={isEmitting || isCanceling}
             isLoading={isEmitting}
           />
         </div>
