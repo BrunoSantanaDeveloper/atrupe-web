@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useState, useCallback } from 'react'
+import { toast } from 'sonner'
 
 // UI
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
@@ -31,6 +32,7 @@ import {
   IconFilePlus,
   IconFileCheck,
   IconBan,
+  IconX,
 } from '@tabler/icons-react'
 
 // Next
@@ -40,7 +42,7 @@ import Link from 'next/link'
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
 
 // Actions
-import { getData } from '@/actions/_cruds'
+import { getData, deleteItemNew } from '@/actions/_cruds'
 
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -129,6 +131,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const [orderGroups, setOrderGroups] = useState<OrderGroupFromBackend[]>([])
   const [totalPages, setTotalPages] = useState(1)
   const [modalOrderId, setModalOrderId] = useState<string | null>(null)
+  const [cancelingDraftId, setCancelingDraftId] = useState<string | null>(null)
 
   const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
@@ -169,6 +172,29 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
+
+  // Cancela/exclui um rascunho de NF-e diretamente da listagem
+  const handleCancelDraft = useCallback(
+    async (draftId: string) => {
+      setCancelingDraftId(draftId)
+      try {
+        const result = await deleteItemNew({
+          route: `/fiscal/nfe/draft/${draftId}`,
+        })
+        if (!result.success) {
+          toast.error('Não foi possível cancelar o rascunho')
+          return
+        }
+        toast.success('Rascunho cancelado com sucesso')
+        fetchOrders()
+      } catch {
+        toast.error('Erro ao cancelar o rascunho')
+      } finally {
+        setCancelingDraftId(null)
+      }
+    },
+    [fetchOrders],
+  )
 
   // Format date string for display
   const formatDate = (dateStr: string) => {
@@ -333,36 +359,64 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                               tooltip="Detalhes da Ordem"
                               link={`/nota-fiscal/emitir/${order.id}`}
                             />
-                            {order.nfes && order.nfes.length > 0 ? (
-                              // NF já emitida: mostrar link para DANFE (se disponível) ou ícone de verificado
-                              order.nfes[0]?.danfeUrl ? (
+                            {(() => {
+                              const authorizedNfe = order.nfes?.find(
+                                (n) => n.status === 'AUTHORIZED',
+                              )
+                              const draftNfe = order.nfes?.find(
+                                (n) => n.status === 'DRAFT',
+                              )
+                              const isCancelingThis =
+                                cancelingDraftId === draftNfe?.id
+
+                              if (authorizedNfe) {
+                                return authorizedNfe.danfeUrl ? (
+                                  <ActionButton
+                                    Icon={IconFileCheck}
+                                    tooltip="Ver DANFE"
+                                    link={authorizedNfe.danfeUrl}
+                                  />
+                                ) : (
+                                  <ActionButton
+                                    Icon={IconFileCheck}
+                                    tooltip={`NF-e nº ${authorizedNfe.numero} emitida`}
+                                    onClick={() => setModalOrderId(order.id)}
+                                  />
+                                )
+                              }
+
+                              if (draftNfe) {
+                                return (
+                                  <ActionButton
+                                    Icon={IconX}
+                                    tooltip="Cancelar rascunho"
+                                    variant="errorGhost"
+                                    disabled={isCancelingThis}
+                                    onClick={() =>
+                                      handleCancelDraft(draftNfe.id)
+                                    }
+                                  />
+                                )
+                              }
+
+                              if (order.status?.toUpperCase() === 'CANCELED') {
+                                return (
+                                  <ActionButton
+                                    Icon={IconBan}
+                                    tooltip="Ordem cancelada"
+                                    disabled
+                                  />
+                                )
+                              }
+
+                              return (
                                 <ActionButton
-                                  Icon={IconFileCheck}
-                                  tooltip="Ver DANFE"
-                                  link={order.nfes[0].danfeUrl}
-                                />
-                              ) : (
-                                <ActionButton
-                                  Icon={IconFileCheck}
-                                  tooltip={`NF-e nº ${order.nfes[0]?.numero} emitida`}
+                                  Icon={IconReceipt}
+                                  tooltip="Emitir Nota Fiscal"
                                   onClick={() => setModalOrderId(order.id)}
                                 />
                               )
-                            ) : order.status?.toUpperCase() === 'CANCELED' ? (
-                              // Ordem cancelada: ação desabilitada
-                              <ActionButton
-                                Icon={IconBan}
-                                tooltip="Ordem cancelada"
-                                disabled
-                              />
-                            ) : (
-                              // Pendente: emitir NF
-                              <ActionButton
-                                Icon={IconReceipt}
-                                tooltip="Emitir Nota Fiscal"
-                                onClick={() => setModalOrderId(order.id)}
-                              />
-                            )}
+                            })()}
                           </div>
                         </TableCell>
                       </TableRow>
