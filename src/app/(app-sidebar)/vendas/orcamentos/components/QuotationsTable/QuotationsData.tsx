@@ -25,6 +25,8 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
 
@@ -37,20 +39,29 @@ import type {
 } from '@/types/sales/quotation'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, deleteItemNew } from '@/actions/_cruds'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+
+// Store
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Consts
 import { quotationsStatusObj } from '@/consts/quotations'
 
 // Icons
-import { IconPencil, IconPrinter, IconHistory } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconPrinter,
+  IconHistory,
+  IconTrash,
+} from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
 
@@ -71,6 +82,10 @@ export function QuotationsData({
   const [rowData, setRowData] = useState<QuotationType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
   const [openHistoryDialog, setOpenHistoryDialog] = useState(false)
+  const [selectedQuotations, setSelectedQuotations] = useState<string[]>([])
+
+  const { open: openAlertDialog } = useAlertDialog()
+  const queryClient = useQueryClient()
 
   const { canManageBudgetStatus } = usePlanFeatures()
   const showStatusColumn = canManageBudgetStatus()
@@ -90,9 +105,71 @@ export function QuotationsData({
   const quotationArray: ListQuotationsDataType[] = data?.data || []
   const hasData = quotationArray.length
 
+  const openQuotations = quotationArray
+    .flatMap((group) => group.quotations || [])
+    .filter((q) => q.status === 'OPEN')
+  const isAllOpenSelected =
+    openQuotations.length > 0 &&
+    selectedQuotations.length === openQuotations.length
+
+  const handleToggleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedQuotations(openQuotations.map((q) => q.id))
+    } else {
+      setSelectedQuotations([])
+    }
+  }
+
+  const handleDelete = (ids: string[]) => {
+    openAlertDialog({
+      title: ids.length > 1 ? 'Excluir orçamentos' : 'Excluir orçamento',
+      description:
+        'Tem certeza que deseja excluir? Esta ação não poderá ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      iconVariant: 'error',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        try {
+          for (const id of ids) {
+            await deleteItemNew({ route: `/sale/quotation/${id}` })
+          }
+          toast.success(
+            ids.length > 1
+              ? 'Orçamentos excluídos com sucesso'
+              : 'Orçamento excluído com sucesso',
+          )
+          queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+          queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+          setSelectedQuotations([])
+        } catch (error) {
+          toast.error('Erro ao excluir orçamento(s)')
+        }
+      },
+    })
+  }
+
   return (
     <>
       <CardContent>
+        {selectedQuotations.length > 0 && (
+          <div className="flex items-center justify-between bg-error-50 p-3 rounded-md mb-4 border border-error-100">
+            <span className="text-sm text-error-700 font-medium">
+              {selectedQuotations.length}{' '}
+              {selectedQuotations.length === 1
+                ? 'orçamento selecionado'
+                : 'orçamentos selecionados'}
+            </span>
+            <Button
+              variant="error"
+              size="sm"
+              LeftIcon={IconTrash}
+              onClick={() => handleDelete(selectedQuotations)}
+            >
+              Excluir selecionados
+            </Button>
+          </div>
+        )}
         {isLoading ? (
           <TableSkeleton cols={6} />
         ) : hasData ? (
@@ -100,6 +177,14 @@ export function QuotationsData({
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  <TableHead className="w-[4%] pr-0">
+                    <Checkbox
+                      checked={isAllOpenSelected}
+                      onCheckedChange={handleToggleSelectAll}
+                      disabled={openQuotations.length === 0}
+                      aria-label="Selecionar todos os orçamentos em digitação"
+                    />
+                  </TableHead>
                   <TableHead>Referência</TableHead>
                   <PermissionGate permissions={['values:values:view']}>
                     <TableHead>Valor</TableHead>
@@ -116,7 +201,7 @@ export function QuotationsData({
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={showStatusColumn ? 7 : 6}
+                        colSpan={showStatusColumn ? 8 : 7}
                         className="text-gray font-medium text-xs py-3"
                       >
                         {formatToWeekDate(group?.date)}
@@ -128,7 +213,38 @@ export function QuotationsData({
                           const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
 
                           return (
-                            <TableRow key={quotation?.id}>
+                            <TableRow
+                              key={quotation?.id}
+                              data-state={
+                                selectedQuotations.includes(quotation?.id)
+                                  ? 'selected'
+                                  : undefined
+                              }
+                            >
+                              <TableCell className="pr-0">
+                                {quotation?.status === 'OPEN' ? (
+                                  <Checkbox
+                                    checked={selectedQuotations.includes(
+                                      quotation.id,
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setSelectedQuotations([
+                                          ...selectedQuotations,
+                                          quotation.id,
+                                        ])
+                                      } else {
+                                        setSelectedQuotations(
+                                          selectedQuotations.filter(
+                                            (id) => id !== quotation.id,
+                                          ),
+                                        )
+                                      }
+                                    }}
+                                    aria-label={`Selecionar orçamento ${description}`}
+                                  />
+                                ) : null}
+                              </TableCell>
                               <TableCell>
                                 <p className="font-medium">
                                   {quotation?.client?.name ||
@@ -265,6 +381,20 @@ export function QuotationsData({
                                         tooltip="Editar"
                                       />
                                     </PermissionGate>
+                                    {quotation?.status === 'OPEN' && (
+                                      <PermissionGate
+                                        permissions={['sale:quotation:delete']}
+                                      >
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          tooltip="Excluir"
+                                          variant="errorGhost"
+                                          onClick={() =>
+                                            handleDelete([quotation.id])
+                                          }
+                                        />
+                                      </PermissionGate>
+                                    )}
                                   </TooltipProvider>
                                 </div>
                               </TableCell>
