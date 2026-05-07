@@ -29,6 +29,8 @@ import {
   IconSearch,
   IconReceipt,
   IconFilePlus,
+  IconFileCheck,
+  IconBan,
 } from '@tabler/icons-react'
 
 // Next
@@ -43,9 +45,18 @@ import { getData } from '@/actions/_cruds'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Matches backend response structure from order.service.findAll
+interface NfeItem {
+  id: string
+  numero: number
+  serie: number
+  status: string
+  danfeUrl?: string | null
+}
+
 interface OrderItem {
   id: string
   status: string
+  nfes: NfeItem[]
   quotation: {
     id: string
     description?: string
@@ -76,17 +87,36 @@ interface OrderGroupFromBackend {
 
 interface Props extends SearchParamsType {}
 
-// Helper para traduzir o status do pedido para o status visual na tela de Notas Fiscais da UI
-const getInvoiceStatusProps = (statusStr: string) => {
-  const s = statusStr?.toUpperCase() || ''
+// Helper para traduzir o status real da ordem + NFs para badge visual
+const getInvoiceStatusProps = (order: OrderItem) => {
+  // Prioridade 1: se já tem NF autorizada emitida
+  if (order.nfes && order.nfes.length > 0) {
+    return { label: 'Emitida', variant: 'successLight' as const }
+  }
+
+  const s = order.status?.toUpperCase() || ''
+
+  // Prioridade 2: ordem cancelada
+  if (s === 'CANCELED') {
+    return { label: 'Cancelada', variant: 'errorLight' as const }
+  }
+
+  // Prioridade 3: em produção / entrega
+  if (s === 'IN_PRODUCTION' || s === 'DELIVERY' || s === 'COMPLETED') {
+    return { label: 'Em produção', variant: 'warningLight' as const }
+  }
+
+  // Prioridade 4: pendente / finalizado sem NF
   if (s === 'FINISHED' || s === 'PENDING') {
     return { label: 'Não emitida', variant: 'neutralLight' as const }
   }
+
   if (s === 'DRAFT' || s === 'DIGITACAO') {
     return { label: 'Em digitação', variant: 'blueLight' as const }
   }
+
   return {
-    label: statusStr || 'Não definida',
+    label: order.status || 'Não definida',
     variant: 'neutralLight' as const,
   }
 }
@@ -287,12 +317,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </TableCell>
                         <TableCell>
                           <Badge
-                            variant={
-                              getInvoiceStatusProps(order.status).variant
-                            }
+                            variant={getInvoiceStatusProps(order).variant}
                             status
                           >
-                            {getInvoiceStatusProps(order.status).label}
+                            {getInvoiceStatusProps(order).label}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -302,11 +330,36 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                               tooltip="Detalhes da Ordem"
                               link={`/nota-fiscal/emitir/${order.id}`}
                             />
-                            <ActionButton
-                              Icon={IconReceipt}
-                              tooltip="Emitir Nota Fiscal"
-                              onClick={() => setModalOrderId(order.id)}
-                            />
+                            {order.nfes && order.nfes.length > 0 ? (
+                              // NF já emitida: mostrar link para DANFE (se disponível) ou ícone de verificado
+                              order.nfes[0]?.danfeUrl ? (
+                                <ActionButton
+                                  Icon={IconFileCheck}
+                                  tooltip="Ver DANFE"
+                                  link={order.nfes[0].danfeUrl}
+                                />
+                              ) : (
+                                <ActionButton
+                                  Icon={IconFileCheck}
+                                  tooltip={`NF-e nº ${order.nfes[0]?.numero} emitida`}
+                                  onClick={() => setModalOrderId(order.id)}
+                                />
+                              )
+                            ) : order.status?.toUpperCase() === 'CANCELED' ? (
+                              // Ordem cancelada: ação desabilitada
+                              <ActionButton
+                                Icon={IconBan}
+                                tooltip="Ordem cancelada"
+                                disabled
+                              />
+                            ) : (
+                              // Pendente: emitir NF
+                              <ActionButton
+                                Icon={IconReceipt}
+                                tooltip="Emitir Nota Fiscal"
+                                onClick={() => setModalOrderId(order.id)}
+                              />
+                            )}
                           </div>
                         </TableCell>
                       </TableRow>
