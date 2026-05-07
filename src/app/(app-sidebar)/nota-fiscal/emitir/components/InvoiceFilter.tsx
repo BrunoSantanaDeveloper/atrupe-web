@@ -5,9 +5,23 @@ import type { DateRange } from 'react-day-picker'
 
 // Components
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+
+const NFE_STATUS_OPTIONS = [
+  { value: 'NAO_EMITIDA', label: 'Não emitida' },
+  { value: 'EM_DIGITACAO', label: 'Em digitação' },
+  { value: 'EMITIDA', label: 'Emitida' },
+  { value: 'TODAS', label: 'Todas' },
+]
 
 export function InvoiceFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
@@ -36,7 +50,12 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
     }
 
     params.delete('page')
+    router.push(`?${params.toString()}`)
+  }
 
+  const handleNfeStatusChange = (value: string) => {
+    params.set('nfeStatus', value)
+    params.delete('page')
     router.push(`?${params.toString()}`)
   }
 
@@ -48,8 +67,23 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
         }
       : undefined
 
+  const currentNfeStatus = (searchParams?.nfeStatus as string) || 'NAO_EMITIDA'
+
   return (
-    <div className="w-[220px]">
+    <div className="flex items-center gap-3">
+      <Select value={currentNfeStatus} onValueChange={handleNfeStatusChange}>
+        <SelectTrigger className="w-[160px]">
+          <SelectValue placeholder="Fase da NF" />
+        </SelectTrigger>
+        <SelectContent>
+          {NFE_STATUS_OPTIONS.map((opt) => (
+            <SelectItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
       <DateRangePickerBasic
         label="Período"
         placeholder="Selecione um período"

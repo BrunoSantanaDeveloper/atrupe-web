@@ -134,6 +134,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
   const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
+  const currentSearch = searchParams?.search as string | undefined
+  const currentNfeStatus =
+    (searchParams?.nfeStatus as string | undefined) || 'NAO_EMITIDA'
+  const startDate = searchParams?.startDate as string | undefined
+  const endDate = searchParams?.endDate as string | undefined
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true)
@@ -141,11 +146,13 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     try {
       const filters: Record<string, string | undefined> = {
         page: currentPage.toString(),
+        nfeStatus: currentNfeStatus,
       }
 
-      if (selectedClientId) {
-        filters.clientId = selectedClientId
-      }
+      if (selectedClientId) filters.clientId = selectedClientId
+      if (currentSearch) filters.search = currentSearch
+      if (startDate) filters.startDate = startDate
+      if (endDate) filters.endDate = endDate
 
       const result = await getData({
         route: '/sale/order',
@@ -154,7 +161,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       })
 
       if (result.success && result.data) {
-        // Backend returns data already grouped: [{ date, orders }]
         setOrderGroups(result.data as OrderGroupFromBackend[])
         setTotalPages(result.lastPage || 1)
       } else {
@@ -166,7 +172,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     } finally {
       setIsLoading(false)
     }
-  }, [selectedClientId, currentPage])
+  }, [selectedClientId, currentPage, currentSearch, currentNfeStatus, startDate, endDate])
 
   useEffect(() => {
     fetchOrders()
