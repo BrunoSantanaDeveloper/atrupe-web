@@ -20,6 +20,8 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
 
@@ -29,16 +31,20 @@ import type { ListClientsDataType } from '../../types'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, deleteItemNew } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+
+// Store
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Consts
 import { clientStatusObj } from '@/consts/client'
 
 // Icons
-import { IconEye } from '@tabler/icons-react'
+import { IconEye, IconTrash } from '@tabler/icons-react'
 import { NewClientModal, NewClientTriggerButton } from '../NewClient'
 
 interface Props extends SearchParamsType {
@@ -48,6 +54,10 @@ interface Props extends SearchParamsType {
 export function ClientsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedClientId, setSelectedClientId] = useState<string>('')
+  const [selectedClients, setSelectedClients] = useState<string[]>([])
+
+  const { open: openAlertDialog } = useAlertDialog()
+  const queryClient = useQueryClient()
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -62,17 +72,86 @@ export function ClientsData({ searchParams, tabs }: Props) {
   const clients: ListClientsDataType[] = data?.data || []
   const hasData = clients.length
 
+  const prospectClients = clients.filter((c) => c.status === 'PROSPECT')
+  const isAllProspectsSelected =
+    prospectClients.length > 0 &&
+    selectedClients.length === prospectClients.length
+
+  const handleToggleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedClients(prospectClients.map((c) => c.id))
+    } else {
+      setSelectedClients([])
+    }
+  }
+
+  const handleDelete = (ids: string[]) => {
+    openAlertDialog({
+      title: ids.length > 1 ? 'Excluir clientes' : 'Excluir cliente',
+      description:
+        'Tem certeza que deseja excluir? Esta ação não poderá ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      iconVariant: 'error',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        try {
+          // Deleta em série para não sobrecarregar
+          for (const id of ids) {
+            await deleteItemNew({ route: `/client/${id}` })
+          }
+          toast.success(
+            ids.length > 1
+              ? 'Clientes excluídos com sucesso'
+              : 'Cliente excluído com sucesso',
+          )
+          queryClient.invalidateQueries({ queryKey: ['client-list'] })
+          queryClient.invalidateQueries({ queryKey: ['clients-totals'] })
+          setSelectedClients([])
+        } catch (error) {
+          toast.error('Erro ao excluir cliente(s)')
+        }
+      },
+    })
+  }
+
   return (
     <>
       <CardContent>
+        {selectedClients.length > 0 && (
+          <div className="flex items-center justify-between bg-error-50 p-3 rounded-md mb-4 border border-error-100">
+            <span className="text-sm text-error-700 font-medium">
+              {selectedClients.length}{' '}
+              {selectedClients.length === 1
+                ? 'cliente selecionado'
+                : 'clientes selecionados'}
+            </span>
+            <Button
+              variant="error"
+              size="sm"
+              LeftIcon={IconTrash}
+              onClick={() => handleDelete(selectedClients)}
+            >
+              Excluir selecionados
+            </Button>
+          </div>
+        )}
         {isLoading ? (
           <TableSkeleton />
         ) : hasData ? (
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
+                <TableHead className="w-[4%] pr-0">
+                  <Checkbox
+                    checked={isAllProspectsSelected}
+                    onCheckedChange={handleToggleSelectAll}
+                    disabled={prospectClients.length === 0}
+                    aria-label="Selecionar todos os pré-cadastros"
+                  />
+                </TableHead>
                 <TableHead className="w-[2%]"></TableHead>
-                <TableHead className="w-[38%]">Cliente</TableHead>
+                <TableHead className="w-[34%]">Cliente</TableHead>
                 <TableHead className="w-[20%]">Grupo</TableHead>
                 <TableHead className="w-[20%]">Contato</TableHead>
                 <TableHead className="w-[10%]">Status</TableHead>
@@ -81,7 +160,29 @@ export function ClientsData({ searchParams, tabs }: Props) {
             </TableHeader>
             <TableBody>
               {clients.map((client) => (
-                <TableRow key={client.id}>
+                <TableRow
+                  key={client.id}
+                  data-state={
+                    selectedClients.includes(client.id) ? 'selected' : undefined
+                  }
+                >
+                  <TableCell className="pr-0">
+                    {client.status === 'PROSPECT' ? (
+                      <Checkbox
+                        checked={selectedClients.includes(client.id)}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            setSelectedClients([...selectedClients, client.id])
+                          } else {
+                            setSelectedClients(
+                              selectedClients.filter((id) => id !== client.id),
+                            )
+                          }
+                        }}
+                        aria-label={`Selecionar cliente ${client.name}`}
+                      />
+                    ) : null}
+                  </TableCell>
                   <TableCell className="text-sm text-gray ">
                     {client?.type === 'COMPANY' ? 'PJ' : 'PF'}
                   </TableCell>
@@ -123,6 +224,18 @@ export function ClientsData({ searchParams, tabs }: Props) {
                             }}
                           />
                         </PermissionGate>
+                        {client.status === 'PROSPECT' && (
+                          <PermissionGate
+                            permissions={['register:client:delete']}
+                          >
+                            <ActionButton
+                              Icon={IconTrash}
+                              tooltip="Excluir"
+                              variant="errorGhost"
+                              onClick={() => handleDelete([client.id])}
+                            />
+                          </PermissionGate>
+                        )}
                       </TooltipProvider>
                     </div>
                   </TableCell>
