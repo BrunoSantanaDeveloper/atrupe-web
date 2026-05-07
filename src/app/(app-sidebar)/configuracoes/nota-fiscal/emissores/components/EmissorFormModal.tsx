@@ -43,7 +43,7 @@ import { cn } from '@/lib/utils'
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   isDefault: z.boolean().optional(),
-  ambiente: z.string().optional(),
+  environment: z.string().optional(),
 
   // Identificação
   emitCrt: z.string().optional(),
@@ -115,7 +115,7 @@ export function EmissorFormModal({
     defaultValues: {
       name: '',
       isDefault: false,
-      ambiente: 'HOMOLOGACAO',
+      environment: 'HOMOLOGACAO',
       emitCrt: '1',
       serieNfe: 1,
       proximoNumeroNfe: 1,
@@ -139,7 +139,7 @@ export function EmissorFormModal({
         form.reset({
           name: emissor.name || '',
           isDefault: emissor.isDefault || false,
-          ambiente: emissor.environment || 'HOMOLOGACAO',
+          environment: emissor.environment || 'HOMOLOGACAO',
           emitCrt: String(emissor.emitCrt || '1'),
           ie: emissor.ie || '',
           im: emissor.im || '',
@@ -272,7 +272,7 @@ export function EmissorFormModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <FormSelect
-                    name="ambiente"
+                    name="environment"
                     label="Ambiente"
                     options={ambienteOptions}
                   />
