@@ -16,6 +16,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
@@ -30,7 +31,7 @@ import {
   IconReceipt,
   IconFileCheck,
   IconBan,
-  IconX,
+  IconTrash,
 } from '@tabler/icons-react'
 
 // Components (modal)
@@ -338,64 +339,77 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-1">
-                            {(() => {
-                              const authorizedNfe = order.nfes?.find(
-                                (n) => n.status === 'AUTHORIZED',
-                              )
-                              const draftNfe = order.nfes?.find(
-                                (n) => n.status === 'DRAFT',
-                              )
-                              const isCancelingThis =
-                                cancelingDraftId === draftNfe?.id
+                            <TooltipProvider>
+                              {(() => {
+                                const authorizedNfe = order.nfes?.find(
+                                  (n) => n.status === 'AUTHORIZED',
+                                )
+                                const draftNfe = order.nfes?.find(
+                                  (n) => n.status === 'DRAFT',
+                                )
+                                const isCancelingThis =
+                                  cancelingDraftId === draftNfe?.id
 
-                              if (authorizedNfe) {
-                                return authorizedNfe.danfeUrl ? (
+                                if (authorizedNfe) {
+                                  return authorizedNfe.danfeUrl ? (
+                                    <ActionButton
+                                      Icon={IconFileCheck}
+                                      tooltip="Ver DANFE"
+                                      link={authorizedNfe.danfeUrl}
+                                    />
+                                  ) : (
+                                    <ActionButton
+                                      Icon={IconFileCheck}
+                                      tooltip={`NF-e nº ${authorizedNfe.numero} emitida`}
+                                      onClick={() => setModalOrderId(order.id)}
+                                    />
+                                  )
+                                }
+
+                                if (draftNfe) {
+                                  return (
+                                    <>
+                                      <ActionButton
+                                        Icon={IconReceipt}
+                                        tooltip="Continuar emissão"
+                                        onClick={() =>
+                                          setModalOrderId(order.id)
+                                        }
+                                      />
+                                      <ActionButton
+                                        Icon={IconTrash}
+                                        tooltip="Excluir rascunho"
+                                        variant="errorGhost"
+                                        disabled={isCancelingThis}
+                                        onClick={() =>
+                                          handleCancelDraft(draftNfe.id)
+                                        }
+                                      />
+                                    </>
+                                  )
+                                }
+
+                                if (
+                                  order.status?.toUpperCase() === 'CANCELED'
+                                ) {
+                                  return (
+                                    <ActionButton
+                                      Icon={IconBan}
+                                      tooltip="Ordem cancelada"
+                                      disabled
+                                    />
+                                  )
+                                }
+
+                                return (
                                   <ActionButton
-                                    Icon={IconFileCheck}
-                                    tooltip="Ver DANFE"
-                                    link={authorizedNfe.danfeUrl}
-                                  />
-                                ) : (
-                                  <ActionButton
-                                    Icon={IconFileCheck}
-                                    tooltip={`NF-e nº ${authorizedNfe.numero} emitida`}
+                                    Icon={IconReceipt}
+                                    tooltip="Emitir Nota Fiscal"
                                     onClick={() => setModalOrderId(order.id)}
                                   />
                                 )
-                              }
-
-                              if (draftNfe) {
-                                return (
-                                  <ActionButton
-                                    Icon={IconX}
-                                    tooltip="Cancelar rascunho"
-                                    variant="errorGhost"
-                                    disabled={isCancelingThis}
-                                    onClick={() =>
-                                      handleCancelDraft(draftNfe.id)
-                                    }
-                                  />
-                                )
-                              }
-
-                              if (order.status?.toUpperCase() === 'CANCELED') {
-                                return (
-                                  <ActionButton
-                                    Icon={IconBan}
-                                    tooltip="Ordem cancelada"
-                                    disabled
-                                  />
-                                )
-                              }
-
-                              return (
-                                <ActionButton
-                                  Icon={IconReceipt}
-                                  tooltip="Emitir Nota Fiscal"
-                                  onClick={() => setModalOrderId(order.id)}
-                                />
-                              )
-                            })()}
+                              })()}
+                            </TooltipProvider>
                           </div>
                         </TableCell>
                       </TableRow>
