@@ -28,7 +28,9 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader } from '@/components/ui/card'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 
 // Icons
 import { IconFilter } from '@tabler/icons-react'
@@ -99,6 +101,10 @@ export function FiltersBar({ searchParams }: SearchParamsType) {
 
 function FiltersContent({ searchParams }: SearchParamsType) {
   const router = useRouter()
+  const [selectedClient, setSelectedClient] = useState<{
+    value: string
+    label: string
+  } | null>(null)
   const params = new URLSearchParams(
     new URLSearchParams(searchParams).toString(),
   )
@@ -160,6 +166,27 @@ function FiltersContent({ searchParams }: SearchParamsType) {
         onChange={(value) =>
           updateFilterParam('originId', value, updateOptions)
         }
+      />
+      <AsyncSelectBasic
+        route="/client"
+        label="Cliente"
+        placeholder="Todos os clientes"
+        width="lg:w-[260px] w-full"
+        minChars={1}
+        value={selectedClient}
+        onChange={(option) => {
+          setSelectedClient(option)
+          updateFilterParam('clientId', option?.value || 'all', updateOptions)
+        }}
+      />
+      <SelectSerieField
+        noForm
+        name="serieId"
+        label="Série"
+        placeholder="Todas as séries"
+        width="lg:w-[260px] w-full"
+        value={searchParams?.serieId || 'all'}
+        onChange={(value) => updateFilterParam('serieId', value, updateOptions)}
       />
       <SelectBasic
         name="period"

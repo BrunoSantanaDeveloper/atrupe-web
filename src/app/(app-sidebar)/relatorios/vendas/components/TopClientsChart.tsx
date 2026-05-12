@@ -46,11 +46,15 @@ export function TopClientsChart({ searchParams }: TopClientsChartProps) {
       searchParams?.endDate,
       searchParams?.sellerId,
       searchParams?.originId,
+      searchParams?.clientId,
+      searchParams?.serieId,
     ],
     queryFn: () =>
       getTopClients({
         sellerId: searchParams?.sellerId as string,
         originId: searchParams?.originId as string,
+        clientId: searchParams?.clientId as string,
+        serieId: searchParams?.serieId as string,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
       }),

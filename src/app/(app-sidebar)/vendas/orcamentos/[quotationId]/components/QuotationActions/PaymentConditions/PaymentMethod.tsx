@@ -63,6 +63,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
     const newInstallments = Array.from({ length: 1 }, (_, i) => ({
       dueDate: addDays(new Date(dueDate), dayInterval * (i + 1)),
+      paymentConditionId,
       additionalFee,
       amount: totalValue - downPaymentValue,
     }))

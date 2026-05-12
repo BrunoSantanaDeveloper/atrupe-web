@@ -1,6 +1,7 @@
 'use client'
 
-import { Fragment, useEffect, useState, useCallback } from 'react'
+import { Fragment, useEffect, useState, useCallback, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 // UI
@@ -16,7 +17,13 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { Button } from '@/components/ui/button'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
@@ -123,11 +130,15 @@ const getInvoiceStatusProps = (order: OrderItem) => {
 }
 
 export function InvoiceResultsTable({ searchParams }: Props) {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [orderGroups, setOrderGroups] = useState<OrderGroupFromBackend[]>([])
   const [totalPages, setTotalPages] = useState(1)
   const [modalOrderId, setModalOrderId] = useState<string | null>(null)
   const [cancelingDraftId, setCancelingDraftId] = useState<string | null>(null)
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(
+    () => new Set(),
+  )
 
   const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
@@ -181,6 +192,88 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   useEffect(() => {
     fetchOrders()
   }, [fetchOrders])
+
+  useEffect(() => {
+    setSelectedOrderIds(new Set())
+  }, [
+    selectedClientId,
+    currentPage,
+    currentSearch,
+    currentNfeStatus,
+    startDate,
+    endDate,
+  ])
+
+  const visibleOrders = useMemo(
+    () => orderGroups.flatMap((group) => group.orders),
+    [orderGroups],
+  )
+
+  const selectableOrders = useMemo(
+    () =>
+      visibleOrders.filter((order) => {
+        const status = getInvoiceStatusProps(order).label
+        return status === 'NÃ£o emitida'
+      }),
+    [visibleOrders],
+  )
+
+  const selectedOrders = useMemo(
+    () => visibleOrders.filter((order) => selectedOrderIds.has(order.id)),
+    [selectedOrderIds, visibleOrders],
+  )
+
+  const selectedTotal = selectedOrders.reduce(
+    (sum, order) => sum + (order.quotation?.totalValue || 0),
+    0,
+  )
+
+  const isMultiSelectEnabled = Boolean(selectedClientId)
+  const allSelectableSelected =
+    selectableOrders.length > 0 &&
+    selectableOrders.every((order) => selectedOrderIds.has(order.id))
+  const someSelectableSelected = selectableOrders.some((order) =>
+    selectedOrderIds.has(order.id),
+  )
+
+  const toggleOrderSelection = (orderId: string, checked: boolean) => {
+    setSelectedOrderIds((current) => {
+      const next = new Set(current)
+      if (checked) {
+        next.add(orderId)
+      } else {
+        next.delete(orderId)
+      }
+      return next
+    })
+  }
+
+  const toggleAllVisible = (checked: boolean) => {
+    setSelectedOrderIds((current) => {
+      const next = new Set(current)
+      selectableOrders.forEach((order) => {
+        if (checked) {
+          next.add(order.id)
+        } else {
+          next.delete(order.id)
+        }
+      })
+      return next
+    })
+  }
+
+  const handleConsolidate = () => {
+    if (selectedOrders.length < 2) {
+      toast.error('Selecione ao menos duas OSs para consolidar')
+      return
+    }
+
+    router.push(
+      `/nota-fiscal/emitir/consolidado?orders=${selectedOrders
+        .map((order) => order.id)
+        .join(',')}`,
+    )
+  }
 
   // Cancela/exclui um rascunho de NF-e diretamente da listagem
   const handleCancelDraft = useCallback(
@@ -289,7 +382,39 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             <TableHeader>
               <TableRow className="bg-gray-50 border-y border-gray-100">
                 <TableHead className="w-[40px] px-4">
-                  <Checkbox id="select-all" />
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex">
+                          <Checkbox
+                            id="select-all"
+                            disabled={
+                              !isMultiSelectEnabled ||
+                              selectableOrders.length === 0
+                            }
+                            checked={
+                              allSelectableSelected
+                                ? true
+                                : someSelectableSelected
+                                  ? 'indeterminate'
+                                  : false
+                            }
+                            onCheckedChange={(checked) =>
+                              toggleAllVisible(checked === true)
+                            }
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      {!isMultiSelectEnabled && (
+                        <TooltipContent>
+                          <p>
+                            Selecione um cliente para habilitar a seleÃ§Ã£o
+                            mÃºltipla
+                          </p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                 </TableHead>
                 <TableHead>Referência</TableHead>
                 <TableHead>Valor</TableHead>
@@ -318,7 +443,37 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                     return (
                       <TableRow key={order.id} className="hover:bg-gray-50">
                         <TableCell className="px-4">
-                          <Checkbox id={`check-${order.id}`} />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex">
+                                  <Checkbox
+                                    id={`check-${order.id}`}
+                                    disabled={
+                                      !isMultiSelectEnabled ||
+                                      getInvoiceStatusProps(order).label !==
+                                        'NÃ£o emitida'
+                                    }
+                                    checked={selectedOrderIds.has(order.id)}
+                                    onCheckedChange={(checked) =>
+                                      toggleOrderSelection(
+                                        order.id,
+                                        checked === true,
+                                      )
+                                    }
+                                  />
+                                </span>
+                              </TooltipTrigger>
+                              {!isMultiSelectEnabled && (
+                                <TooltipContent>
+                                  <p>
+                                    Selecione um cliente para habilitar a
+                                    seleÃ§Ã£o mÃºltipla
+                                  </p>
+                                </TooltipContent>
+                              )}
+                            </Tooltip>
+                          </TooltipProvider>
                         </TableCell>
                         <TableCell>
                           <p className="font-medium text-gray-800">
@@ -420,6 +575,24 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             </TableBody>
           </Table>
         </CardContent>
+
+        {selectedOrders.length >= 2 && (
+          <div className="sticky bottom-0 z-10 border-t border-success-200 bg-white/95 backdrop-blur px-4 py-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)]">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm font-semibold text-gray-700">
+                {selectedOrders.length} OS(s) selecionadas - Total:{' '}
+                {formatCurrency(selectedTotal)}
+              </p>
+              <Button
+                variant="success"
+                LeftIcon={IconFileInvoice}
+                onClick={handleConsolidate}
+              >
+                Consolidar em uma NF
+              </Button>
+            </div>
+          </div>
+        )}
 
         <CardFooter className="border-t border-gray-100 p-4 mt-auto">
           <TablePagination

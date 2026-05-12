@@ -5,19 +5,55 @@ import { Separator } from '@/components/ui/separator'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
+import { getItem } from '@/actions/_cruds'
 
 import { QuotationPaymentConditionsType } from './schema'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { PaymentConditionsType } from '@/types/settings/paymentCondition'
+import { toast } from 'sonner'
 
 export function Installments() {
   const form = useFormContext<QuotationPaymentConditionsType>()
 
   const { watch, setValue } = form
 
-  const installments = watch('installments')
+  const installments = watch('installments') || []
   const totalValue = watch('totalValue') || 0
   const hasDownPayment = watch('hasDownPayment')
   const downPaymentAmount = watch('downPayment.amount') || 0
+
+  const handleChangePaymentCondition = async (
+    paymentConditionId: string,
+    currentIndex: number,
+  ) => {
+    const res = await getItem({
+      route: `/payment-condition/${paymentConditionId}`,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    const data: PaymentConditionsType = res.data
+    const additionalFee =
+      data?.installments[currentIndex]?.operatorFeeTransfer ||
+      data?.installments[0]?.operatorFeeTransfer ||
+      0
+
+    setValue(`installments.${currentIndex}.additionalFee`, additionalFee)
+    setValue(
+      'mainAdditionalFee',
+      installments.reduce((total, installment, index) => {
+        const installmentAdditionalFee =
+          index === currentIndex
+            ? additionalFee
+            : Number(installment?.additionalFee) || 0
+
+        return total + installmentAdditionalFee
+      }, 0),
+    )
+  }
 
   // Função para recalcular as parcelas quando uma parcela é alterada manualmente
   const handleInstallmentAmountChange = (
@@ -81,10 +117,12 @@ export function Installments() {
           width="flex-[1_0_130px]"
         />
         <PaymentConditionsSelectField
-          name="paymentConditionId"
+          name={`installments.${index}.paymentConditionId`}
           label="Forma de pagamento"
           width="flex-[1_0_200px]"
-          disabled
+          additionalOnChange={(value) =>
+            handleChangePaymentCondition(value, index)
+          }
         />
         <FormBrlInput
           name={`installments.${index}.additionalFee`}

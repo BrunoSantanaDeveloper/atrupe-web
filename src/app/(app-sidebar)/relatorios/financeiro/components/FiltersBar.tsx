@@ -1,11 +1,13 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
 import { Card, CardHeader } from '@/components/ui/card'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
+import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
 
 // Config
 import { periodOptions } from '../config'
@@ -13,6 +15,7 @@ import { periodOptions } from '../config'
 // Utils
 import {
   getDateRangeFromParams,
+  updateFilterParam,
   updatePeriodParams,
   updateDateRangeParams,
   type PeriodType,
@@ -20,20 +23,51 @@ import {
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { FinancialTab } from '../types'
 
-export function FiltersBar({ searchParams }: SearchParamsType) {
+interface FiltersBarProps extends SearchParamsType {
+  tab: FinancialTab
+}
+
+interface Option {
+  value: string
+  label: string
+}
+
+export function FiltersBar({ searchParams, tab }: FiltersBarProps) {
   const router = useRouter()
   const params = useSearchParams()
   const updateOptions = { router, params }
+  const [selectedEntity, setSelectedEntity] = useState<Option | null>(null)
 
   const defaultDateRange = getDateRangeFromParams(
     searchParams?.startDate as string,
     searchParams?.endDate as string,
   )
+  const isReceitas = tab === 'receitas'
+
+  useEffect(() => {
+    setSelectedEntity(null)
+  }, [tab])
 
   return (
     <Card className="hidden lg:block">
       <CardHeader className="flex-row flex-wrap space-y-0 gap-4">
+        <AsyncSelectBasic
+          key={tab}
+          route={isReceitas ? '/client' : '/supplier'}
+          label={isReceitas ? 'Cliente' : 'Fornecedor'}
+          placeholder={
+            isReceitas ? 'Todos os clientes' : 'Todos os fornecedores'
+          }
+          width="lg:w-[260px] w-full"
+          minChars={1}
+          value={selectedEntity}
+          onChange={(option) => {
+            setSelectedEntity(option)
+            updateFilterParam('clientId', option?.value || 'all', updateOptions)
+          }}
+        />
         <SelectBasic
           name="period"
           label="Período"

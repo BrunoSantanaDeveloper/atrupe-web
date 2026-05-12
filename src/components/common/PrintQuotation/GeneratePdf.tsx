@@ -907,16 +907,20 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         </View>
                       )}
 
-                      {/* Valor Un. - valor do item dividido pela quantidade */}
+                      {/* Valor Un. - valor do item dividido pela quantidade comercial */}
                       {!isProduction && printOptions.showUnitValue && (
                         <View style={{ width: columnWidths.unitValue }}>
                           <Text style={styles.textRight}>
                             {formatCurrencyToBrl(
-                              item.totalValue /
-                                calculateTotalQuantity(
-                                  item.product.quantity,
-                                  adaptCompositionForDisplayUtils(composition),
-                                ).value,
+                              calculateDisplayUnitValue(
+                                item.product.quantity || 1,
+                                {
+                                  ...adaptCompositionForDisplayUtils(
+                                    composition,
+                                  ),
+                                  totalValue: item.totalValue,
+                                },
+                              ),
                             )}
                           </Text>
                         </View>

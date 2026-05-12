@@ -65,11 +65,15 @@ export function ApprovedRejectedChart({
       fixedRange.endDate,
       searchParams?.sellerId,
       searchParams?.originId,
+      searchParams?.clientId,
+      searchParams?.serieId,
     ],
     queryFn: () =>
       getApprovedRejected({
         sellerId: searchParams?.sellerId as string,
         originId: searchParams?.originId as string,
+        clientId: searchParams?.clientId as string,
+        serieId: searchParams?.serieId as string,
         startDate: fixedRange.startDate,
         endDate: fixedRange.endDate,
       }),

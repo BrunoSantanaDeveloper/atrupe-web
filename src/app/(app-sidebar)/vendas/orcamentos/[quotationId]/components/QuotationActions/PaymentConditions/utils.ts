@@ -32,7 +32,11 @@ export function defaultValues(quotationData: QuotationType) {
   const totalAdditionalFee = mainAdditionalFee + downPaymentAdditionalFee
 
   // finalValue = base (itens+frete) + comissão ADD + acréscimos - desconto geral
-  const finalValue = paymentConditionsBaseValue + addComissionValue + totalAdditionalFee - discountTotal
+  const finalValue =
+    paymentConditionsBaseValue +
+    addComissionValue +
+    totalAdditionalFee -
+    discountTotal
 
   return {
     type: quotationData.paymentConditions?.type || 'NFE',
@@ -92,6 +96,10 @@ export function defaultValues(quotationData: QuotationType) {
       ? quotationData.paymentConditions?.installments.map((installment) => ({
           id: installment.id,
           dueDate: new Date(installment.dueDate),
+          paymentConditionId:
+            installment.paymentConditionId ||
+            quotationData.paymentConditions?.paymentCondition?.id ||
+            '',
           additionalFee: installment.additionalFee,
           amount: installment.amount,
         }))

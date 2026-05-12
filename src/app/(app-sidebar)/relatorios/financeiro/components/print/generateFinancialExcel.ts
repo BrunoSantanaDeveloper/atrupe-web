@@ -6,7 +6,7 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 const STATUS_LABELS: Record<string, string> = {
   received: 'Recebidas',
-  confirmed: 'Confirmadas',
+  /* confirmed: 'Confirmadas', */
   to_receive: 'A receber',
   overdue: 'Vencidas',
 }

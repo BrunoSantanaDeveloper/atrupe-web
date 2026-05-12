@@ -4,6 +4,8 @@
 export interface SalesReportFilters {
   sellerId: string | null
   originId: string | null
+  clientId: string | null
+  serieId: string | null
   period:
     | 'current_month'
     | 'last_month'

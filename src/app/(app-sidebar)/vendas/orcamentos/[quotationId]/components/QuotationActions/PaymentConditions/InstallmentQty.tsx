@@ -46,6 +46,8 @@ export function InstallmentQty() {
       dueDate:
         installments?.[i]?.dueDate ||
         addDays(new Date(dueDate), dayInterval * (i + 1)),
+      paymentConditionId:
+        installments?.[i]?.paymentConditionId || paymentConditionId,
       additionalFee: additionalFee / qty,
       amount: installmentValue,
     }))

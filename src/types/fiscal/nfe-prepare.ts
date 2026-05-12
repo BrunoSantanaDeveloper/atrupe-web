@@ -116,8 +116,10 @@ export interface NfePrepareDuplicata {
 
 export interface NfePrepareResponse {
   orderId: string
+  orderIds?: string[]
   quotationId: string
   orderCode: string
+  orderCodes?: string[]
   hasExistingNfe: boolean
   existingNfe: NfePrepareExistingNfe | null
   emissao: NfePrepareEmissao

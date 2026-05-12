@@ -53,10 +53,11 @@ import type {
 } from '@/types/fiscal/nfe-prepare'
 
 interface Props {
-  id: string
+  id?: string
+  orderIds?: string[]
 }
 
-export function IssueInvoiceForm({ id }: Props) {
+export function IssueInvoiceForm({ id, orderIds }: Props) {
   const alertDialog = useAlertDialog()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
@@ -67,6 +68,7 @@ export function IssueInvoiceForm({ id }: Props) {
     NfePrepareResponse['items'] | null
   >(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
+  const isConsolidated = Boolean(orderIds?.length)
 
   // Fetch data on mount - create or get draft
   const fetchData = useCallback(async () => {
@@ -74,10 +76,17 @@ export function IssueInvoiceForm({ id }: Props) {
     setError(null)
 
     try {
-      const result = await createItemNew({
-        route: `/fiscal/nfe/draft/${id}`,
-        data: {},
-      })
+      const result = await createItemNew(
+        isConsolidated
+          ? {
+              route: '/fiscal/nfe/draft/consolidated',
+              data: { orderIds },
+            }
+          : {
+              route: `/fiscal/nfe/draft/${id}`,
+              data: {},
+            },
+      )
 
       if (!result.success) {
         throw new Error(result.message || 'Erro ao carregar dados da NF-e')
@@ -102,7 +111,7 @@ export function IssueInvoiceForm({ id }: Props) {
     } finally {
       setIsLoading(false)
     }
-  }, [id])
+  }, [id, isConsolidated, orderIds])
 
   useEffect(() => {
     fetchData()
@@ -184,9 +193,12 @@ export function IssueInvoiceForm({ id }: Props) {
 
     try {
       const result = await createItemNew({
-        route: '/fiscal/nfe/emit-full',
+        route: isConsolidated
+          ? '/fiscal/nfe/emit-consolidated'
+          : '/fiscal/nfe/emit-full',
         data: {
           orderId: data.orderId,
+          orderIds: data.orderIds,
           quotationId: data.quotationId,
           operationNature: data.emissao.operationNature,
           additionalInfo: data.informacoesComplementares,
@@ -284,7 +296,12 @@ export function IssueInvoiceForm({ id }: Props) {
     return (
       <TooltipProvider>
         <div className="space-y-6 pb-10">
-          <Topbar title="Emissão de NF-e" previousPage="/nota-fiscal/emitir" />
+          <Topbar
+            title={
+              isConsolidated ? 'Emissão consolidada de NF-e' : 'Emissão de NF-e'
+            }
+            previousPage="/nota-fiscal/emitir"
+          />
           <div className="space-y-4">
             <Skeleton className="h-16 w-full" />
             <Skeleton className="h-32 w-full" />
@@ -300,7 +317,12 @@ export function IssueInvoiceForm({ id }: Props) {
     return (
       <TooltipProvider>
         <div className="space-y-6 pb-10">
-          <Topbar title="Emissão de NF-e" previousPage="/nota-fiscal/emitir" />
+          <Topbar
+            title={
+              isConsolidated ? 'Emissão consolidada de NF-e' : 'Emissão de NF-e'
+            }
+            previousPage="/nota-fiscal/emitir"
+          />
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6">
               <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />

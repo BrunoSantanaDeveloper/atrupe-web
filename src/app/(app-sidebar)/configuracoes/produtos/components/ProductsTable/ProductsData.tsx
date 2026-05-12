@@ -20,17 +20,8 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from '@/components/ui/tooltip'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
-
-// Icons
-import { IconReceipt } from '@tabler/icons-react'
 
 // Types
 import type { ProductListType } from '@/types/settings/products'
@@ -111,27 +102,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
-                        <PermissionGate
-                          permissions={['invoice_settings:nf:view']}
-                        >
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="neutralGhost"
-                                size="icon"
-                                onClick={() => {
-                                  setOpenDialog('fiscal-data')
-                                  setSelectedProductId(product?.id)
-                                  setSelectedProductName(product?.name)
-                                }}
-                              >
-                                <IconReceipt className="size-5" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Dados Fiscais</TooltipContent>
-                          </Tooltip>
-                        </PermissionGate>
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >

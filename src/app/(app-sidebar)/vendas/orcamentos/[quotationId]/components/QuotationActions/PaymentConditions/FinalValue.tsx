@@ -26,7 +26,14 @@ export default function FinalValue({
 
   const deliveryValue = quotationData?.deliveryInfo?.value ?? 0
 
-  const installmentsAdditionalFee = watch('mainAdditionalFee')
+  const installments = watch('installments') || []
+  const installmentsAdditionalFee =
+    installments.reduce(
+      (total, installment) => total + (Number(installment?.additionalFee) || 0),
+      0,
+    ) ||
+    watch('mainAdditionalFee') ||
+    0
   const downPaymentAdditionalFee = watch('downPayment.additionalFee')
   const discountTotal = watch('discount.discountTotal') || 0
 

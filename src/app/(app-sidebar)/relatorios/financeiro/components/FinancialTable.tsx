@@ -80,12 +80,14 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
       groupBy,
       orderBy,
       page,
+      searchParams?.clientId,
     ],
     queryFn: () =>
       getFinancialTable({
         tab,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
+        clientId: searchParams?.clientId as string,
         status: status as 'received' | 'confirmed' | 'to_receive' | 'overdue',
         groupBy,
         orderBy: orderBy as

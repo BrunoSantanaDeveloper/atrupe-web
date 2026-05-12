@@ -29,6 +29,8 @@ import { FormDateRangePickerInput } from '@/components/common/form/FormDateRange
 import { SelectNatureField } from '@/components/common/form/global-inputs/NatureSelectField'
 import { InUseBankAccountsSelectField } from '@/components/common/form/global-inputs/InUseBankAccountsSelectField'
 import { InUsePaymentConditionsSelectField } from '@/components/common/form/global-inputs/InUsePaymentConditionsSelectField'
+import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
+import { SupplierSelector } from '@/components/common/form/global-inputs/SupplierAsyncSelect'
 
 // Icons
 import {
@@ -70,11 +72,6 @@ const periodTypeOptions = [
   { value: 'emission', label: 'Data de emissão' },
   { value: 'payment', label: 'Data de pagamento' },
   { value: 'cancel', label: 'Data de cancelamento' },
-]
-
-const includeTransfersOptions = [
-  { value: 'yes', label: 'Sim' },
-  { value: 'no', label: 'Não' },
 ]
 
 export function AdvancedReportDialog({ activeTab }: Props) {
@@ -226,13 +223,29 @@ export function AdvancedReportDialog({ activeTab }: Props) {
                 />
               </div>
 
+              {isReceitas ? (
+                <ClientSelector
+                  name="clientId"
+                  label="Cliente"
+                  placeholder="Todos os clientes"
+                  width="w-full"
+                />
+              ) : (
+                <SupplierSelector
+                  name="clientId"
+                  label="Fornecedor"
+                  placeholder="Todos os fornecedores"
+                  width="w-full"
+                />
+              )}
+
               <div className="grid grid-cols-2 gap-4">
-                <FormSelect
+                {/*                 <FormSelect
                   name="includeTransfers"
                   label="Incluir transferências"
                   options={includeTransfersOptions}
                   width="w-full"
-                />
+                /> */}
 
                 <FormSelect
                   name="periodType"

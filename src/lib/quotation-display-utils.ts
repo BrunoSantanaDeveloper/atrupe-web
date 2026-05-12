@@ -498,8 +498,8 @@ export function calculateTotalQuantity(
 }
 
 /**
- * Calcula o valor unitário correto para exibição baseado no totalValue
- * dividido pela quantidade total de unidades de medida
+ * Calcula o valor unitario comercial para exibicao.
+ * As medidas ficam em Qtd. Total; Valor Un. divide o total pelas quantidades.
  */
 export function calculateDisplayUnitValue(
   itemQuantity: number,
@@ -510,83 +510,18 @@ export function calculateDisplayUnitValue(
     originalQuantity?: number | null
   } & MeasurementValues,
 ): number {
-  const totalValue = composition.totalValue || 0
+  const totalValue = composition.totalValue
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
 
-  // Usar unitKind da API
-  const unitKind = composition.unitKind?.toUpperCase() || 'UNITY'
+  const totalCommercialQuantity = compositionQty * (itemQuantity || 1)
 
-  switch (unitKind) {
-    case 'AREA': {
-      if (composition.width && composition.height) {
-        // Para área: calcular valor por m²
-        const areaPerUnit = calculateAreaFromMillimeters(
-          composition.width,
-          composition.height,
-        )
-        const totalArea = areaPerUnit * compositionQty * itemQuantity
-        return totalValue / totalArea
-      }
-      break
-    }
-
-    case 'LENGTH': {
-      if (composition.length) {
-        // Para comprimento: calcular valor por metro
-        const lengthPerUnit = millimetersToMeters(composition.length)
-        const totalLength = lengthPerUnit * compositionQty * itemQuantity
-        return totalValue / totalLength
-      }
-      break
-    }
-
-    case 'CAPACITY': {
-      if (composition.volume) {
-        // Para volume: calcular valor por litro
-        const volumePerUnit = millilitersToLiters(composition.volume)
-        const totalVolume = volumePerUnit * compositionQty * itemQuantity
-        return totalValue / totalVolume
-      }
-      break
-    }
-
-    case 'WEIGHT': {
-      if (composition.weight) {
-        // Para peso: calcular valor por kg
-        const weightPerUnit = milligramsToKilograms(composition.weight)
-        const totalWeight = weightPerUnit * compositionQty * itemQuantity
-        return totalValue / totalWeight
-      }
-      break
-    }
-
-    case 'DISTANCE': {
-      if (composition.distance) {
-        // Para distância: calcular valor por km
-        const distancePerUnit = composition.distance / 1000
-        const totalDistance = distancePerUnit * compositionQty * itemQuantity
-        return totalValue / totalDistance
-      }
-      break
-    }
-
-    case 'DURATION': {
-      if (composition.duration) {
-        // Para duração: calcular valor por hora
-        const hoursPerUnit = composition.duration / 3600
-        const totalHours = hoursPerUnit * compositionQty * itemQuantity
-        return totalValue / totalHours
-      }
-      break
-    }
-
-    case 'UNITY':
-    default: {
-      // Para unidade simples: valor por unidade
-      const totalUnits = compositionQty * itemQuantity
-      return totalValue / totalUnits
-    }
+  if (
+    totalValue !== null &&
+    totalValue !== undefined &&
+    totalCommercialQuantity > 0
+  ) {
+    return totalValue / totalCommercialQuantity
   }
 
   return composition.unitValue || 0

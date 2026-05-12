@@ -53,6 +53,16 @@ export function SalesReportPrintButton() {
     return {
       sellerId: searchParams.get('sellerId') || undefined,
       originId: searchParams.get('originId') || undefined,
+      clientId: searchParams.get('clientId') || undefined,
+      serieId: searchParams.get('serieId') || undefined,
+      groupBy:
+        (searchParams.get('groupBy') as 'none' | 'client' | 'seller') ||
+        undefined,
+      orderBy:
+        (searchParams.get('orderBy') as
+          | 'approvedDate'
+          | 'valueDesc'
+          | 'valueAsc') || undefined,
       startDate,
       endDate,
     }

@@ -35,6 +35,7 @@ export const quotationPaymentConditionsSchema = z.object({
       .object({
         id: z.string().optional(),
         dueDate: z.date().optional(),
+        paymentConditionId: z.string().optional(),
         additionalFee: z.number().optional(),
         amount: z.number().optional(),
       })

@@ -13,6 +13,7 @@ interface FinancialFilters {
   startDate?: string
   endDate?: string
   status?: 'received' | 'confirmed' | 'to_receive' | 'overdue'
+  clientId?: string
   groupBy?: 'none' | 'client'
   orderBy?: 'saleDate' | 'dueDate' | 'receivedDate' | 'valueDesc' | 'valueAsc'
   page?: number

@@ -33,6 +33,7 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
     params.set('status', 'received')
     params.set('orderBy', tab === 'despesas' ? 'dueDate' : 'receivedDate')
     params.set('page', '1')
+    params.delete('clientId')
     router.push(`?${params.toString()}`)
   }
 
@@ -53,7 +54,7 @@ export function FinancialReport({ searchParams }: SearchParamsType) {
       </Tabs>
 
       {/* Filters */}
-      <FiltersBar searchParams={searchParams} />
+      <FiltersBar searchParams={searchParams} tab={activeTab} />
 
       {/* Summary Cards */}
       <SummaryCards searchParams={searchParams} tab={activeTab} />

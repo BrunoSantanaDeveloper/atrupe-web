@@ -40,6 +40,7 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
       'financial-summary',
       searchParams?.startDate,
       searchParams?.endDate,
+      searchParams?.clientId,
       tab,
     ],
     queryFn: () =>
@@ -47,6 +48,7 @@ export function SummaryCards({ searchParams, tab }: SummaryCardsProps) {
         tab,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
+        clientId: searchParams?.clientId as string,
       }),
   })
 

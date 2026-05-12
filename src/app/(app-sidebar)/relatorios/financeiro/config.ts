@@ -11,7 +11,7 @@ export const periodOptions = [
 
 export const statusOptionsReceitas = [
   { value: 'received', label: 'Recebidas' },
-  { value: 'confirmed', label: 'Confirmadas' },
+  /* { value: 'confirmed', label: 'Confirmadas' }, */
   { value: 'to_receive', label: 'A receber' },
   { value: 'overdue', label: 'Vencidas' },
 ]

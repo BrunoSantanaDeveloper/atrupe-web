@@ -62,6 +62,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
       'financial-chart',
       searchParams?.startDate,
       searchParams?.endDate,
+      searchParams?.clientId,
       tab,
     ],
     queryFn: () =>
@@ -69,6 +70,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
         tab,
         startDate: searchParams?.startDate as string,
         endDate: searchParams?.endDate as string,
+        clientId: searchParams?.clientId as string,
       }),
   })
 

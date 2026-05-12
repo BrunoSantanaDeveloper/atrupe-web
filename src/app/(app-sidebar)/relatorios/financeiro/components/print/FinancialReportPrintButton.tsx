@@ -52,6 +52,7 @@ export function FinancialReportPrintButton() {
     return {
       tab: searchParams.get('tab') || 'receitas',
       status: searchParams.get('status') || 'received',
+      clientId: searchParams.get('clientId') || undefined,
       startDate,
       endDate,
     }

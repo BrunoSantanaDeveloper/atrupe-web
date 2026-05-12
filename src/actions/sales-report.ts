@@ -14,6 +14,8 @@ import type {
 interface SalesReportFilters {
   sellerId?: string
   originId?: string
+  clientId?: string
+  serieId?: string
   startDate?: string
   endDate?: string
   groupBy?: 'none' | 'client' | 'seller'

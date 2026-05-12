@@ -14,6 +14,7 @@ import { SalesEvolutionChart } from './SalesEvolutionChart'
 import { ApprovedRejectedChart } from './ApprovedRejectedChart'
 import { QuotationsOriginChart } from './QuotationsOriginChart'
 import { SalesReportPrintButton } from './print/SalesReportPrintButton'
+import { AdvancedReportDialog } from './print/AdvancedReportDialog'
 
 // Lib
 import {
@@ -48,7 +49,8 @@ export function SalesReport({ searchParams }: SearchParamsType) {
     <div className="space-y-5">
       <Topbar
         title="Relatório de vendas"
-        primaryCta={<SalesReportPrintButton />}
+        primaryCta={<AdvancedReportDialog />}
+        secondaryCta={<SalesReportPrintButton />}
       />
       {/* Filters */}
       <FiltersBar searchParams={searchParams} />

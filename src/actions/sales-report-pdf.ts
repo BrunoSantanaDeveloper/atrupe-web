@@ -6,6 +6,10 @@ import type { SalesReportPdfData } from '@/app/(app-sidebar)/relatorios/vendas/p
 interface SalesReportFilters {
   sellerId?: string
   originId?: string
+  clientId?: string
+  serieId?: string
+  groupBy?: 'none' | 'client' | 'seller'
+  orderBy?: 'approvedDate' | 'valueDesc' | 'valueAsc'
   startDate?: string
   endDate?: string
 }

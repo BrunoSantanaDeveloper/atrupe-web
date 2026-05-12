@@ -6,7 +6,14 @@ export const advancedReportSchema = z.object({
   natureId: z.string().optional(),
   bankAccountId: z.string().optional(),
   paymentConditionId: z.string().optional(),
-  clientId: z.string().optional(),
+  clientId: z
+    .object({
+      label: z.string(),
+      value: z.string(),
+    })
+    .transform((value) => value.value)
+    .nullable()
+    .optional(),
   includeTransfers: z.enum(['yes', 'no']).default('yes'),
   periodType: z
     .enum(['emission', 'dueDate', 'payment', 'cancel'])

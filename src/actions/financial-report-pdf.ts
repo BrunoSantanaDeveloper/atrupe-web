@@ -8,6 +8,7 @@ interface FinancialPdfFilters {
   startDate?: string
   endDate?: string
   status?: string
+  clientId?: string
 }
 
 export async function getFinancialPdfData(
