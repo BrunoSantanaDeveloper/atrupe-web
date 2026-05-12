@@ -129,6 +129,16 @@ const getInvoiceStatusProps = (order: OrderItem) => {
   }
 }
 
+const canSelectForConsolidation = (order: OrderItem) => {
+  const hasBlockingNfe = order.nfes?.some((n) =>
+    ['AUTHORIZED', 'DRAFT'].includes(n.status),
+  )
+
+  if (hasBlockingNfe) return false
+
+  return order.status?.toUpperCase() !== 'CANCELED'
+}
+
 export function InvoiceResultsTable({ searchParams }: Props) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
@@ -210,11 +220,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   )
 
   const selectableOrders = useMemo(
-    () =>
-      visibleOrders.filter((order) => {
-        const status = getInvoiceStatusProps(order).label
-        return status === 'NÃ£o emitida'
-      }),
+    () => visibleOrders.filter(canSelectForConsolidation),
     [visibleOrders],
   )
 
@@ -451,8 +457,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     id={`check-${order.id}`}
                                     disabled={
                                       !isMultiSelectEnabled ||
-                                      getInvoiceStatusProps(order).label !==
-                                        'NÃ£o emitida'
+                                      !canSelectForConsolidation(order)
                                     }
                                     checked={selectedOrderIds.has(order.id)}
                                     onCheckedChange={(checked) =>
