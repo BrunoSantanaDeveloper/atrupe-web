@@ -8,7 +8,7 @@ import { test, expect, type Page, type TestInfo } from '@playwright/test'
  *  2. Aplica o filtro "Em digitação" no select de fase da NF
  *  3. Captura screenshot da listagem filtrada
  *  4. Verifica que a badge "Em digitação" aparece (ou que vimos o empty-state)
- *  5. Para o primeiro rascunho da lista, verifica que o botão "Cancelar rascunho"
+ *  5. Para o primeiro rascunho da lista, verifica que o botão "Excluir rascunho"
  *     está disponível e captura screenshot
  *  6. Acessa o formulário de emissão do rascunho e captura screenshot final
  *     verificando o header com a badge "Em digitação" + botão "Emitir NF-e"
@@ -86,10 +86,10 @@ test.describe('NF "Em digitação" — Visual', () => {
     const emDigitacaoBadge = table.getByText(/^em digitação$/i).first()
     await expect(emDigitacaoBadge).toBeVisible({ timeout: 10_000 })
 
-    // 5) O botão de ação para rascunhos é "Cancelar rascunho" (ActionButton expõe
+    // 5) O botão de ação para rascunhos é "Excluir rascunho" (ActionButton expõe
     //    o tooltip como aria-label no <Button>, então getByRole funciona)
     const cancelDraftBtn = page
-      .getByRole('button', { name: /cancelar rascunho/i })
+      .getByRole('button', { name: /excluir rascunho/i })
       .first()
     await expect(cancelDraftBtn).toBeVisible({ timeout: 10_000 })
 
@@ -101,7 +101,7 @@ test.describe('NF "Em digitação" — Visual', () => {
     await draftRow.scrollIntoViewIfNeeded()
     await draftRow.hover()
 
-    await shot(page, testInfo, '03-rascunho-com-acao-cancelar.png')
+    await shot(page, testInfo, '03-rascunho-com-acao-excluir.png')
   })
 
   test('abre o formulário de emissão de um rascunho e captura o header "Em digitação"', async ({
@@ -134,7 +134,7 @@ test.describe('NF "Em digitação" — Visual', () => {
       .first()
     await expect(draftRow).toBeVisible({ timeout: 10_000 })
 
-    // A UI da listagem só expõe "Cancelar rascunho" para drafts. Para acessar o
+    // A UI da listagem expõe "Excluir rascunho" para drafts. Para acessar o
     // formulário de digitação navegamos diretamente para /nota-fiscal/emitir/{orderId}.
     // O orderId está no id="check-<orderId>" do Checkbox da linha (Radix renderiza
     // o Checkbox como <button role="checkbox">).
