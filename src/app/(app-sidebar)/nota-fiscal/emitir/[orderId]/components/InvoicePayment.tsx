@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -70,6 +70,25 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
   const paymentValue = data.pagamento?.valor ?? 0
   const hasDivergence =
     Math.abs(paymentValue - currentTotal) > 0.01 && currentTotal > 0
+
+  // ── Currency input state ──────────────────────────────────────────────────
+  // Mantemos uma string local para exibir o valor formatado no campo de texto.
+  // Quando o valor externo muda (ex: botão Sincronizar), atualizamos o display.
+  const formatBRL = (n: number) =>
+    n.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+
+  const [currencyDisplay, setCurrencyDisplay] = useState(() =>
+    formatBRL(data.pagamento?.valor ?? 0),
+  )
+
+  // Sincroniza display quando o valor numérico é atualizado externamente
+  useEffect(() => {
+    setCurrencyDisplay(formatBRL(data.pagamento?.valor ?? 0))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.pagamento?.valor])
 
   const updatePayment = (field: string, value: string | number) => {
     onUpdate({
@@ -263,15 +282,34 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                       )}
                     </div>
                     <Input
-                      type="number"
-                      value={data.pagamento.valor}
-                      onChange={(e) =>
-                        updatePayment('valor', Number(e.target.value))
-                      }
+                      type="text"
+                      inputMode="decimal"
+                      startAdornment={<>R$</>}
+                      value={currencyDisplay}
+                      onChange={(e) => {
+                        // Permite apenas dígitos, vírgula e ponto
+                        const raw = e.target.value.replace(/[^0-9,.]/g, '')
+                        setCurrencyDisplay(raw)
+                      }}
+                      onBlur={() => {
+                        // Normaliza: troca ponto de milhar, troca vírgula decimal por ponto
+                        const normalized = currencyDisplay
+                          .replace(/\./g, '') // remove pontos de milhar
+                          .replace(',', '.') // troca vírgula decimal por ponto
+                        const num = parseFloat(normalized)
+                        const safe = isNaN(num) ? 0 : Number(num.toFixed(2))
+                        updatePayment('valor', safe)
+                        setCurrencyDisplay(formatBRL(safe))
+                      }}
+                      onFocus={(e) => {
+                        // Mostra apenas os dígitos limpos para facilitar a edição
+                        e.target.select()
+                      }}
                       className={cn(
                         hasDivergence &&
                           'border-warning-400 focus-visible:ring-warning-300',
                       )}
+                      placeholder="0,00"
                     />
                     {hasDivergence && (
                       <p className="text-xs text-warning-600">
@@ -384,7 +422,6 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                               Número
                             </Label>
                             <Input
-                              className="h-8 text-sm"
                               value={dup.numero}
                               onChange={(e) =>
                                 updateDuplicata(index, 'numero', e.target.value)
@@ -397,7 +434,6 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                             </Label>
                             <Input
                               type="date"
-                              className="h-8 text-sm"
                               value={dup.dataVencimento}
                               onChange={(e) =>
                                 updateDuplicata(
@@ -414,16 +450,30 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                             Valor
                           </Label>
                           <Input
-                            type="number"
-                            className="h-8 text-sm font-medium"
-                            value={dup.valor}
-                            onChange={(e) =>
+                            type="text"
+                            inputMode="decimal"
+                            startAdornment={<>R$</>}
+                            value={
+                              dup.valor === 0
+                                ? ''
+                                : String(dup.valor).replace('.', ',')
+                            }
+                            placeholder="0,00"
+                            onChange={(e) => {
+                              const raw = e.target.value.replace(
+                                /[^0-9,.]/g,
+                                '',
+                              )
+                              const normalized = raw
+                                .replace(/\./g, '')
+                                .replace(',', '.')
+                              const num = parseFloat(normalized)
                               updateDuplicata(
                                 index,
                                 'valor',
-                                Number(e.target.value),
+                                isNaN(num) ? 0 : Number(num.toFixed(2)),
                               )
-                            }
+                            }}
                           />
                         </div>
                       </div>

@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -21,6 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 // Icons
 import { IconSettings } from '@tabler/icons-react'
@@ -124,6 +132,8 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
     referencedKey.length > 0 && referencedKey.length !== 44
 
   const [naturezas, setNaturezas] = useState<OperationNature[]>([])
+  const [customModalOpen, setCustomModalOpen] = useState(false)
+  const [customDraft, setCustomDraft] = useState('')
 
   useEffect(() => {
     getData({ route: '/fiscal/naturezas' })
@@ -138,6 +148,8 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
   // Determina se o valor atual está na lista de naturezas cadastradas
   const currentNature = data.emissao.operationNature || ''
   const isInList = naturezas.some((n) => n.description === currentNature)
+  // Quando não está na lista e há naturezas carregadas, é modo custom
+  const isCustomMode = currentNature !== '' && !isInList && naturezas.length > 0
   const selectValue =
     currentNature === '' ? '' : isInList ? currentNature : CUSTOM_VALUE
 
@@ -237,15 +249,21 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                     value={selectValue}
                     onValueChange={(value) => {
                       if (value === CUSTOM_VALUE) {
-                        // mantém o valor atual (texto livre), apenas sinaliza modo custom
-                        updateEmission('operationNature', currentNature)
+                        // Abre modal para digitar texto livre
+                        setCustomDraft(isCustomMode ? currentNature : '')
+                        setCustomModalOpen(true)
                       } else {
                         updateEmission('operationNature', value)
                       }
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione a natureza da operação" />
+                      {/* Quando está em modo custom, exibe o texto digitado */}
+                      {isCustomMode ? (
+                        <span className="text-sm">{currentNature}</span>
+                      ) : (
+                        <SelectValue placeholder="Selecione a natureza da operação" />
+                      )}
                     </SelectTrigger>
                     <SelectContent>
                       {naturezas.map((n) => (
@@ -263,24 +281,63 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                       </SelectItem>
                     </SelectContent>
                   </Select>
-                  {/* Campo de texto livre quando o valor não está na lista */}
-                  {(selectValue === CUSTOM_VALUE ||
-                    (currentNature && !isInList && naturezas.length > 0)) && (
-                    <Input
-                      value={currentNature}
-                      onChange={(event) =>
-                        updateEmission(
-                          'operationNature',
-                          event.target.value,
-                          false,
-                        )
-                      }
-                      onBlur={(event) =>
-                        updateEmission('operationNature', event.target.value)
-                      }
-                      placeholder="Digite a natureza da operação"
-                    />
-                  )}
+
+                  {/* Modal de texto livre para Natureza da Operação */}
+                  <Dialog
+                    open={customModalOpen}
+                    onOpenChange={setCustomModalOpen}
+                  >
+                    <DialogContent className="sm:max-w-[420px]">
+                      <DialogHeader>
+                        <DialogTitle>
+                          Natureza da Operação (texto livre)
+                        </DialogTitle>
+                        <DialogDescription>
+                          Digite a natureza da operação conforme necessário para
+                          esta NF-e.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-2">
+                        <Input
+                          autoFocus
+                          value={customDraft}
+                          onChange={(e) => setCustomDraft(e.target.value)}
+                          placeholder="Ex: Venda de mercadoria"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && customDraft.trim()) {
+                              updateEmission(
+                                'operationNature',
+                                customDraft.trim(),
+                              )
+                              setCustomModalOpen(false)
+                            }
+                          }}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button
+                          variant="neutralOutline"
+                          onClick={() => setCustomModalOpen(false)}
+                        >
+                          Cancelar
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            if (customDraft.trim()) {
+                              updateEmission(
+                                'operationNature',
+                                customDraft.trim(),
+                              )
+                            }
+                            setCustomModalOpen(false)
+                          }}
+                          disabled={!customDraft.trim()}
+                        >
+                          Confirmar
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 </div>
 
                 <div className="space-y-2">

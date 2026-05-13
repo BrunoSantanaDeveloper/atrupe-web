@@ -39,7 +39,6 @@ import { InvoiceItems } from './InvoiceItems'
 import { InvoicePayment } from './InvoicePayment'
 import { Topbar } from '@/components/common/Topbar'
 import { InvoiceTransport } from './InvoiceTransport'
-import { InvoiceDuplicates } from './InvoiceDuplicates'
 import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
 import { InvoiceTotalsSection } from './InvoiceTotalsSection'
 import { InvoiceRecipientEditDialog } from './InvoiceRecipientEditDialog'
@@ -528,8 +527,6 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
               computedTotais?.valorNota ?? data?.totais?.valorNota ?? 0
             }
           />
-
-          <InvoiceDuplicates data={data} onUpdate={setData} />
 
           <InvoiceDownloadAuth data={data} onUpdate={setData} />
 

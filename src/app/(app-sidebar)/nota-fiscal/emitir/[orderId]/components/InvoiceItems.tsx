@@ -35,7 +35,6 @@ import {
 import { cn } from '@/lib/utils'
 
 // Components
-import { InvoiceItemConfigDialog } from './InvoiceItemConfigDialog'
 import { InvoiceItemEditDialog } from './InvoiceItemEditDialog'
 import { ProductSelector } from '@/app/(app-sidebar)/nota-fiscal/components/ProductSelector'
 
@@ -60,8 +59,10 @@ export function InvoiceItems({
   onAddProduct,
   onRemoveItem,
 }: Props) {
-  const [configItem, setConfigItem] = useState<NfePrepareItem | null>(null)
-  const [editItem, setEditItem] = useState<NfePrepareItem | null>(null)
+  const [editItem, setEditItem] = useState<{
+    item: NfePrepareItem
+    initialTab: 'valores' | 'fiscal'
+  } | null>(null)
 
   // Filter out services for NF-e
   const filteredItems = data.items.filter((item) => !item.isService)
@@ -74,6 +75,7 @@ export function InvoiceItems({
       ...data,
       items: newItems,
     })
+    setEditItem(null)
   }
 
   // Format currency
@@ -195,7 +197,9 @@ export function InvoiceItems({
                                   size="sm"
                                   LeftIcon={IconSettings}
                                   className="font-medium"
-                                  onClick={() => setConfigItem(item)}
+                                  onClick={() =>
+                                    setEditItem({ item, initialTab: 'fiscal' })
+                                  }
                                 >
                                   Configurar
                                 </Button>
@@ -240,7 +244,9 @@ export function InvoiceItems({
                                   size="iconSm"
                                   aria-label="Editar item"
                                   className="text-gray-400 hover:text-gray-600"
-                                  onClick={() => setEditItem(item)}
+                                  onClick={() =>
+                                    setEditItem({ item, initialTab: 'valores' })
+                                  }
                                 >
                                   <IconPencil size={16} />
                                 </Button>
@@ -290,24 +296,15 @@ export function InvoiceItems({
         </Accordion>
       </Card>
 
-      {/* Dialogs */}
-      {configItem && (
-        <InvoiceItemConfigDialog
-          open={!!configItem}
-          onOpenChange={(open) => !open && setConfigItem(null)}
-          item={configItem}
-          onSave={handleUpdateItem}
-          productId={configItem.productId}
-        />
-      )}
-
+      {/* Dialog unificado (Valores + Dados Fiscais) */}
       {editItem && (
         <InvoiceItemEditDialog
           open={!!editItem}
           onOpenChange={(open) => !open && setEditItem(null)}
-          item={editItem}
+          item={editItem.item}
           onSave={handleUpdateItem}
-          productId={editItem.productId}
+          productId={editItem.item.productId}
+          initialTab={editItem.initialTab}
         />
       )}
     </>
