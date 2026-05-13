@@ -88,6 +88,8 @@ export function usePlanFeatures() {
   const canManageCancelTransactionReasons = () =>
     hasFeature('transaction_cancel_reasons')
 
+  const hasFiscalModule = () => hasFeature('nota_fiscal')
+
   return {
     planName,
     hasFeature,
@@ -112,5 +114,6 @@ export function usePlanFeatures() {
     canCreatePaymentDifference,
     canBillOnDeliveryAndCheckout,
     canManageCancelTransactionReasons,
+    hasFiscalModule,
   }
 }

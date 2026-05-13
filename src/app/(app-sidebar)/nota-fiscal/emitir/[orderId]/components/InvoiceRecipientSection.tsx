@@ -11,7 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
 // Icons
-import { IconPencil, IconUserCog } from '@tabler/icons-react'
+import { IconPencil, IconUserCog, IconUserSearch } from '@tabler/icons-react'
 
 // Types
 import type { NfePrepareDestinatario } from '@/types/fiscal/nfe-prepare'
@@ -19,11 +19,14 @@ import type { NfePrepareDestinatario } from '@/types/fiscal/nfe-prepare'
 interface InvoiceRecipientSectionProps {
   destinatario: NfePrepareDestinatario
   onEditClick: () => void
+  /** Callback para abrir o seletor de outro cliente */
+  onChangeClientClick?: () => void
 }
 
 export function InvoiceRecipientSection({
   destinatario,
   onEditClick,
+  onChangeClientClick,
 }: InvoiceRecipientSectionProps) {
   const rows = [
     [
@@ -58,13 +61,26 @@ export function InvoiceRecipientSection({
                 Destinatário / Tomador
               </CardTitle>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
+              {/* Botão trocar cliente */}
+              {onChangeClientClick && (
+                <Button
+                  variant="neutralLight"
+                  size="icon"
+                  RightIcon={IconUserSearch}
+                  onClick={onChangeClientClick}
+                  aria-label="Trocar cliente"
+                  title="Trocar cliente"
+                />
+              )}
+              {/* Botão editar dados */}
               <Button
                 variant="neutralLight"
                 size="icon"
                 RightIcon={IconPencil}
                 onClick={onEditClick}
                 aria-label="Editar destinatário"
+                title="Editar dados do destinatário"
               />
               <AccordionTrigger
                 className={cn(

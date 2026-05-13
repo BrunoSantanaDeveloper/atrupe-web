@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import {
@@ -16,10 +16,12 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
+import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
 
 // Form
 import { z } from 'zod'
@@ -27,7 +29,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
 // Icons
-import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { IconPencil, IconCircleCheck, IconUserCheck } from '@tabler/icons-react'
 
 // Types
 import type { NfePrepareDestinatario } from '@/types/fiscal/nfe-prepare'
@@ -36,7 +38,12 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   destinatario: NfePrepareDestinatario
-  onSave: (updatedDestinatario: NfePrepareDestinatario) => void
+  /** clientId do cliente vinculado à NF (necessário para "Atualizar cadastro") */
+  clientId?: string
+  onSave: (
+    updatedDestinatario: NfePrepareDestinatario,
+    options: { updateClient: boolean },
+  ) => void
 }
 
 // Schema de validação
@@ -44,7 +51,7 @@ const recipientSchema = z.object({
   razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
   cnpjCpf: z.string().min(1, 'CNPJ/CPF é obrigatório'),
   inscricaoMunicipal: z.string().optional(),
-  ie: z.string().optional(),
+  stateRegistration: z.string().optional(),
   indicadorIE: z.string().optional(),
   telefone: z.string().optional(),
   email: z.string().optional(),
@@ -60,19 +67,15 @@ const recipientSchema = z.object({
 
 type RecipientFormType = z.infer<typeof recipientSchema>
 
-// Indicador IE options
-const indicadorIEOptions = [
-  { value: '1', label: '1 - Contribuinte ICMS' },
-  { value: '2', label: '2 - Contribuinte isento' },
-  { value: '9', label: '9 - Não Contribuinte' },
-]
-
 export function InvoiceRecipientEditDialog({
   open,
   onOpenChange,
   destinatario,
+  clientId,
   onSave,
 }: Props) {
+  const [updateClient, setUpdateClient] = useState(false)
+
   // Form setup
   const form = useForm<RecipientFormType>({
     resolver: zodResolver(recipientSchema),
@@ -80,7 +83,7 @@ export function InvoiceRecipientEditDialog({
       razaoSocial: destinatario.razaoSocial || '',
       cnpjCpf: destinatario.cnpjCpf || '',
       inscricaoMunicipal: '',
-      ie: destinatario.ie || '',
+      stateRegistration: destinatario.ie || 'ISENTO',
       indicadorIE: '9',
       telefone: destinatario.telefone || '',
       email: destinatario.email || '',
@@ -104,8 +107,9 @@ export function InvoiceRecipientEditDialog({
         razaoSocial: destinatario.razaoSocial || '',
         cnpjCpf: destinatario.cnpjCpf || '',
         inscricaoMunicipal: '',
-        ie: destinatario.ie || '',
-        indicadorIE: '9',
+        stateRegistration: destinatario.ie || 'ISENTO',
+        indicadorIE:
+          destinatario.ie && destinatario.ie !== 'ISENTO' ? '1' : '9',
         telefone: destinatario.telefone || '',
         email: destinatario.email || '',
         cep: destinatario.cep || '',
@@ -117,6 +121,7 @@ export function InvoiceRecipientEditDialog({
         complemento: destinatario.complemento || '',
         pais: destinatario.pais || 'Brasil',
       })
+      setUpdateClient(false)
     }
   }, [open, destinatario, reset])
 
@@ -125,7 +130,7 @@ export function InvoiceRecipientEditDialog({
     const updatedDestinatario: NfePrepareDestinatario = {
       razaoSocial: data.razaoSocial,
       cnpjCpf: data.cnpjCpf,
-      ie: data.ie || '',
+      ie: data.stateRegistration || '',
       email: data.email || '',
       telefone: data.telefone || '',
       cep: data.cep || '',
@@ -138,11 +143,10 @@ export function InvoiceRecipientEditDialog({
       pais: data.pais || 'Brasil',
     }
 
-    onSave(updatedDestinatario)
+    onSave(updatedDestinatario, { updateClient: updateClient && !!clientId })
     onOpenChange(false)
   }
 
-  // Handle modal close
   const handleToggleModal = () => {
     onOpenChange(false)
   }
@@ -182,17 +186,10 @@ export function InvoiceRecipientEditDialog({
                 width="flex-[1_0_300px]"
               />
 
-              {/* Inscrição Estadual e Indicador IE */}
-              <FormInput
-                name="ie"
-                label="Inscrição Estadual"
-                width="flex-[1_0_300px]"
-              />
-              <FormSelect
-                name="indicadorIE"
-                label="Indicador IE"
-                options={indicadorIEOptions}
-                width="flex-[1_0_300px]"
+              {/* Inscrição Estadual + Indicador IE — componente reutilizável */}
+              <RecipientFiscalFields
+                namePrefix=""
+                fieldWidth="flex-[1_0_300px]"
               />
 
               {/* Telefone e E-mail */}
@@ -241,23 +238,45 @@ export function InvoiceRecipientEditDialog({
           </Form>
         </DialogBody>
         <DialogFooter>
-          <div className="space-x-4">
-            <Button
-              type="button"
-              variant="neutralOutline"
-              onClick={handleToggleModal}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              form="edit-recipient"
-              RightIcon={IconCircleCheck}
-              disabled={form.formState?.isSubmitting}
-              isLoading={form.formState?.isSubmitting}
-            >
-              Salvar
-            </Button>
+          <div className="flex items-center justify-between w-full gap-4">
+            {/* Toggle: atualizar cadastro do cliente */}
+            {clientId && (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="update-client-switch"
+                  checked={updateClient}
+                  onCheckedChange={setUpdateClient}
+                />
+                <Label
+                  htmlFor="update-client-switch"
+                  className="text-sm text-gray-600 cursor-pointer flex items-center gap-1.5"
+                >
+                  <IconUserCheck
+                    size={15}
+                    className="text-brand-600 shrink-0"
+                  />
+                  Atualizar cadastro do cliente
+                </Label>
+              </div>
+            )}
+            <div className="flex gap-3 ml-auto">
+              <Button
+                type="button"
+                variant="neutralOutline"
+                onClick={handleToggleModal}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                form="edit-recipient"
+                RightIcon={IconCircleCheck}
+                disabled={form.formState?.isSubmitting}
+                isLoading={form.formState?.isSubmitting}
+              >
+                Salvar
+              </Button>
+            </div>
           </div>
         </DialogFooter>
       </DialogContent>

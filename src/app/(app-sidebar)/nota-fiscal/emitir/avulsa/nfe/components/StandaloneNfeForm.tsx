@@ -218,6 +218,7 @@ export function StandaloneNfeForm() {
   // Handle recipient update
   const handleRecipientSave = (
     updatedDestinatario: NfePrepareResponse['destinatario'],
+    _options?: { updateClient: boolean },
   ) => {
     if (!data) return
 

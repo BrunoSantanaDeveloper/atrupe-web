@@ -12,6 +12,8 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 import { Button } from '@/components/ui/button'
 import { IconRefresh } from '@tabler/icons-react'
 import { toast } from 'sonner'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -21,6 +23,7 @@ interface Props {
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue, watch } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
+  const { hasFiscalModule } = usePlanFeatures()
 
   const { data: categoryData } = useCategoryOptions(
     context === 'supplier' ? 'SUPPLIER' : 'CLIENT',
@@ -260,24 +263,12 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           className="col-span-2"
         />
 
-        {type === 'COMPANY' && (
-          <>
-            <FormInput
-              name="general.stateRegistration"
-              label="Inscrição Estadual (IE)"
-              placeholder="Somente números"
-              maxLength={14}
-            />
-            <FormSelect
-              name="general.indicadorIE"
-              label="Indicador IE"
-              options={[
-                { label: 'Contribuinte ICMS', value: '1' },
-                { label: 'Contribuinte Isento', value: '2' },
-                { label: 'Não Contribuinte', value: '9' },
-              ]}
-            />
-          </>
+        {/* Campos fiscais (IE / Indicador IE) — apenas se módulo Nota Fiscal contratado */}
+        {hasFiscalModule() && (
+          <RecipientFiscalFields
+            namePrefix="general."
+            fieldWidth="flex-[1_0_250px]"
+          />
         )}
 
         {type === 'PERSON' && (

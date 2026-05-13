@@ -113,6 +113,8 @@ export const defaultPersonValues: NewClientFormType = {
     mobile: '',
     notes: '',
     isBranch: false,
+    stateRegistration: 'ISENTO',
+    indicadorIE: 9,
   },
   addresses: [
     {
@@ -169,6 +171,8 @@ export const defaultCompanyValues: NewClientFormType = {
     mobile: '',
     notes: '',
     isBranch: false,
+    stateRegistration: 'ISENTO',
+    indicadorIE: 9,
   },
   addresses: [
     {

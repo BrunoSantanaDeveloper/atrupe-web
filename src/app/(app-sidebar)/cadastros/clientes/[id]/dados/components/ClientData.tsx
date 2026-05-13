@@ -1,3 +1,5 @@
+'use client'
+
 // Components
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 
@@ -9,14 +11,29 @@ import { ClientInfoType } from '@/types/cadastros/client'
 
 import { DetailCardRowItem } from '../../components/DetailCardRowItem'
 import { DetailCard } from '../../components/DetailCard'
-import { IconFileInvoice, IconMapPin, IconUserStar } from '@tabler/icons-react'
+import {
+  IconFileInvoice,
+  IconMapPin,
+  IconUserStar,
+  IconReceiptTax,
+} from '@tabler/icons-react'
 import { Fragment } from 'react'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   data: ClientInfoType
 }
 
+const INDICADOR_IE_LABELS: Record<number, string> = {
+  1: '1 - Contribuinte ICMS',
+  2: '2 - Contribuinte Isento',
+  9: '9 - Não Contribuinte',
+}
+
 export function ClientData({ data }: Props) {
+  const { hasFiscalModule } = usePlanFeatures()
+  const showFiscal = hasFiscalModule()
+
   if (!data) return null
 
   return (
@@ -64,6 +81,26 @@ export function ClientData({ data }: Props) {
           </DetailCardRowItem>
         </DetailCard>
       )}
+
+      {/* Dados Fiscais — apenas se módulo NF contratado */}
+      {showFiscal && data.general && (
+        <DetailCard title="Dados Fiscais" icon={IconReceiptTax}>
+          <DetailCardRowItem showSeparator={false}>
+            <TextSupportingText
+              supporting="Inscrição Estadual (IE)"
+              text={data.general.stateRegistration || 'ISENTO'}
+            />
+            <TextSupportingText
+              supporting="Indicador IE"
+              text={
+                INDICADOR_IE_LABELS[data.general.indicadorIE ?? 9] ??
+                '9 - Não Contribuinte'
+              }
+            />
+          </DetailCardRowItem>
+        </DetailCard>
+      )}
+
       {data.contacts?.length
         ? data.contacts.map((contact) => (
             <Fragment key={contact.id}>

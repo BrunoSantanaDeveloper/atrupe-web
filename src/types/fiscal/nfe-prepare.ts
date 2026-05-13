@@ -135,4 +135,6 @@ export interface NfePrepareResponse {
   // Draft fields
   draftId?: string
   isDraft?: boolean
+  // Client reference (used for "update client" feature in recipient dialog)
+  clientId?: string
 }

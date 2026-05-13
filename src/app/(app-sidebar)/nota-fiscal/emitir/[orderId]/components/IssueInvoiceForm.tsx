@@ -19,6 +19,14 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogBody,
+  DialogDescription,
+} from '@/components/ui/dialog'
 
 import { cn } from '@/lib/utils'
 
@@ -34,6 +42,10 @@ import { InvoiceDuplicates } from './InvoiceDuplicates'
 import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
 import { InvoiceTotalsSection } from './InvoiceTotalsSection'
 import { InvoiceRecipientEditDialog } from './InvoiceRecipientEditDialog'
+import {
+  ClientSelect,
+  clientToNfeRecipient,
+} from '../../avulsa/components/ClientSelect'
 
 // Icons
 import {
@@ -41,6 +53,7 @@ import {
   IconAlertTriangle,
   IconAlertTriangleFilled,
   IconBan,
+  IconUserSearch,
 } from '@tabler/icons-react'
 
 // Actions
@@ -50,7 +63,9 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import type {
   NfePrepareResponse,
   NfePrepareItem,
+  NfePrepareDestinatario,
 } from '@/types/fiscal/nfe-prepare'
+import type { ClientData } from '../../avulsa/components/ClientSelect'
 
 interface Props {
   id?: string
@@ -68,6 +83,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     NfePrepareResponse['items'] | null
   >(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
+  const [isClientChangeOpen, setIsClientChangeOpen] = useState(false)
   const isConsolidated = Boolean(orderIds?.length)
 
   // Fetch data on mount - create or get draft
@@ -305,13 +321,15 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     }
   }
 
-  // Handle recipient update - persist to backend
+  // Handle recipient update — persist to draft + optionally update client cadastro
   const handleRecipientSave = async (
-    updatedDestinatario: NfePrepareResponse['destinatario'],
+    updatedDestinatario: NfePrepareDestinatario,
+    options: { updateClient: boolean },
   ) => {
     if (!data || !data.draftId) return
 
     try {
+      // 1. Persist to draft
       const result = await updateItemNew({
         route: `/fiscal/nfe/draft/${data.draftId}`,
         data: { destinatario: updatedDestinatario },
@@ -321,13 +339,64 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         throw new Error(result.message || 'Erro ao salvar destinatário')
       }
 
+      // 2. Optionally update client cadastro
+      if (options.updateClient && data.clientId) {
+        try {
+          await updateItemNew({
+            route: `/client/${data.clientId}`,
+            data: {
+              general: {
+                stateRegistration: updatedDestinatario.ie,
+              },
+            },
+          })
+          toast.success('Destinatário e cadastro do cliente atualizados')
+        } catch {
+          toast.warning(
+            'Destinatário salvo, mas não foi possível atualizar o cadastro do cliente.',
+          )
+        }
+      } else {
+        toast.success('Destinatário salvo com sucesso')
+      }
+
       setData({ ...data, destinatario: updatedDestinatario })
-      toast.success('Destinatário salvo com sucesso')
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao salvar destinatário'
       toast.error(message)
     }
+  }
+
+  // Handle client change from ClientSelect dialog
+  const handleClientChange = (client: ClientData | null) => {
+    if (!client || !data) return
+
+    const recipient = clientToNfeRecipient(client)
+    const updatedDestinatario: NfePrepareDestinatario = {
+      razaoSocial: recipient.destNome,
+      cnpjCpf: recipient.destCnpjCpf,
+      ie: recipient.destIe,
+      email: recipient.destEmail,
+      telefone: '',
+      cep: recipient.destCep,
+      estado: recipient.destUf,
+      cidade: recipient.destMunicipio,
+      bairro: recipient.destBairro,
+      endereco: recipient.destEndereco,
+      numero: recipient.destNumero,
+      complemento: recipient.destComplemento,
+      pais: 'Brasil',
+    }
+
+    setData({
+      ...data,
+      destinatario: updatedDestinatario,
+      clientId: client.id,
+    })
+
+    setIsClientChangeOpen(false)
+    toast.success(`Cliente alterado para "${client.name}"`)
   }
 
   // Loading state
@@ -417,6 +486,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           <InvoiceRecipientSection
             destinatario={data.destinatario}
             onEditClick={() => setIsRecipientEditOpen(true)}
+            onChangeClientClick={() => setIsClientChangeOpen(true)}
           />
 
           <InvoiceItems data={data} onUpdate={setData} />
@@ -474,8 +544,31 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         open={isRecipientEditOpen}
         onOpenChange={setIsRecipientEditOpen}
         destinatario={data.destinatario}
+        clientId={data.clientId}
         onSave={handleRecipientSave}
       />
+
+      {/* Change Client Dialog */}
+      <Dialog open={isClientChangeOpen} onOpenChange={setIsClientChangeOpen}>
+        <DialogContent className="sm:max-w-[560px]">
+          <DialogHeader>
+            <DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconUserSearch} />
+                <span>Trocar cliente / destinatário</span>
+              </div>
+            </DialogTitle>
+            <DialogDescription hidden></DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <ClientSelect
+              onSelect={handleClientChange}
+              label="Buscar cliente"
+              placeholder="Buscar por nome ou CNPJ/CPF..."
+            />
+          </DialogBody>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   )
 }

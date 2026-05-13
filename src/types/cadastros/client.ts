@@ -33,6 +33,8 @@ export type ClientInfoType = {
     phone: string
     mobile: string
     notes: string
+    stateRegistration?: string
+    indicadorIE?: number
   }
   // addind id to address
   addresses: AddressType[]
