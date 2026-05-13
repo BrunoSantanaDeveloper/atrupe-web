@@ -1,8 +1,8 @@
 import { getData } from '@/actions/_cruds'
 import type {
   AccessSessionDetails,
-  AccessSessionsResponse,
   AccessSummary,
+  AccessSession,
   SessionUser,
   CompanyStatistics,
 } from '@/types/admin/sessions'
@@ -116,7 +116,13 @@ export function useAccessSessions(options: UseAccessSessionsOptions = {}) {
       if (!response.success) {
         throw new Error(response.message || 'Erro ao buscar acessos')
       }
-      return response.data as AccessSessionsResponse
+      return {
+        data: response.data as AccessSession[],
+        total: response.total || 0,
+        page: response.page || options.page || 1,
+        limit: options.limit || 10,
+        lastPage: response.lastPage || 1,
+      }
     },
     staleTime: 1000 * 60,
   })

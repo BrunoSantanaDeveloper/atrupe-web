@@ -506,22 +506,19 @@ export function calculateDisplayUnitValue(
   composition: {
     unitValue?: number | null
     totalValue?: number | null
+    finalValue?: number | null
     quantity?: number | null
     originalQuantity?: number | null
   } & MeasurementValues,
 ): number {
-  const totalValue = composition.totalValue
+  const value = composition.finalValue ?? composition.totalValue
   const compositionQty =
     composition.quantity || composition.originalQuantity || 1
 
   const totalCommercialQuantity = compositionQty * (itemQuantity || 1)
 
-  if (
-    totalValue !== null &&
-    totalValue !== undefined &&
-    totalCommercialQuantity > 0
-  ) {
-    return totalValue / totalCommercialQuantity
+  if (value !== null && value !== undefined && totalCommercialQuantity > 0) {
+    return value / totalCommercialQuantity
   }
 
   return composition.unitValue || 0
