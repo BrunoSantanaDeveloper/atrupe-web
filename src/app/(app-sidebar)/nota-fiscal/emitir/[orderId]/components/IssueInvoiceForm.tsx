@@ -19,6 +19,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Dialog,
   DialogContent,
@@ -399,6 +400,28 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     toast.success(`Cliente alterado para "${client.name}"`)
   }
 
+  // Handle add product
+  const handleAddProduct = (item: NfePrepareItem) => {
+    if (!data) return
+    setData({
+      ...data,
+      items: [...data.items, item],
+    })
+    toast.success(`Produto "${item.description}" adicionado`)
+  }
+
+  // Handle remove item
+  const handleRemoveItem = (itemNumber: number) => {
+    if (!data) return
+    const newItems = data.items
+      .filter((item) => item.itemNumber !== itemNumber)
+      .map((item, idx) => ({
+        ...item,
+        itemNumber: idx + 1,
+      }))
+    setData({ ...data, items: newItems })
+  }
+
   // Loading state
   if (isLoading) {
     return (
@@ -489,11 +512,22 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
             onChangeClientClick={() => setIsClientChangeOpen(true)}
           />
 
-          <InvoiceItems data={data} onUpdate={setData} />
+          <InvoiceItems
+            data={data}
+            onUpdate={setData}
+            onAddProduct={handleAddProduct}
+            onRemoveItem={handleRemoveItem}
+          />
 
           <InvoiceTransport data={data} onUpdate={setData} />
 
-          <InvoicePayment data={data} onUpdate={setData} />
+          <InvoicePayment
+            data={data}
+            onUpdate={setData}
+            computedValorNota={
+              computedTotais?.valorNota ?? data?.totais?.valorNota ?? 0
+            }
+          />
 
           <InvoiceDuplicates data={data} onUpdate={setData} />
 
@@ -522,10 +556,18 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
                 </CardHeader>
                 <AccordionContent>
                   <CardContent className="p-6">
-                    <p className="text-sm text-gray-500 italic">
-                      {data.informacoesComplementares ||
-                        'Nenhuma informação adicional'}
-                    </p>
+                    <Textarea
+                      value={data.informacoesComplementares}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          informacoesComplementares: e.target.value,
+                        })
+                      }
+                      placeholder="Texto que aparecerá no campo de informações adicionais da NF-e (ex.: dados fiscais, condições especiais, etc.)"
+                      rows={4}
+                      className="resize-none text-sm text-gray-700"
+                    />
                   </CardContent>
                 </AccordionContent>
               </AccordionItem>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useState, useEffect } from 'react'
+
 // UI
 import {
   Accordion,
@@ -26,11 +28,21 @@ import { IconSettings } from '@tabler/icons-react'
 // Libs
 import { cn } from '@/lib/utils'
 
+// Actions
+import { getData } from '@/actions/_cruds'
+
 // Types
 import type {
   NfePrepareEmissao,
   NfePrepareResponse,
 } from '@/types/fiscal/nfe-prepare'
+
+interface OperationNature {
+  id: string
+  description: string
+  type: 'ENTRADA' | 'SAIDA'
+  isActive: boolean
+}
 
 interface Props {
   data: NfePrepareResponse
@@ -104,10 +116,30 @@ function ReadOnlyField({
   )
 }
 
+const CUSTOM_VALUE = '__custom__'
+
 export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
   const referencedKey = cleanNfeKey(data.emissao.nfeReferenciada)
   const hasInvalidReferencedKey =
     referencedKey.length > 0 && referencedKey.length !== 44
+
+  const [naturezas, setNaturezas] = useState<OperationNature[]>([])
+
+  useEffect(() => {
+    getData({ route: '/fiscal/naturezas' })
+      .then((res) => {
+        if (res.success && Array.isArray(res.data)) {
+          setNaturezas(res.data.filter((n: OperationNature) => n.isActive))
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  // Determina se o valor atual está na lista de naturezas cadastradas
+  const currentNature = data.emissao.operationNature || ''
+  const isInList = naturezas.some((n) => n.description === currentNature)
+  const selectValue =
+    currentNature === '' ? '' : isInList ? currentNature : CUSTOM_VALUE
 
   const updateEmission = <K extends keyof NfePrepareEmissao>(
     field: K,
@@ -201,20 +233,54 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
 
                 <div className="space-y-2 md:col-span-2">
                   <Label>Natureza da operacao</Label>
-                  <Input
-                    value={data.emissao.operationNature || ''}
-                    onChange={(event) =>
-                      updateEmission(
-                        'operationNature',
-                        event.target.value,
-                        false,
-                      )
-                    }
-                    onBlur={(event) =>
-                      updateEmission('operationNature', event.target.value)
-                    }
-                    placeholder="Venda de mercadoria"
-                  />
+                  <Select
+                    value={selectValue}
+                    onValueChange={(value) => {
+                      if (value === CUSTOM_VALUE) {
+                        // mantém o valor atual (texto livre), apenas sinaliza modo custom
+                        updateEmission('operationNature', currentNature)
+                      } else {
+                        updateEmission('operationNature', value)
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a natureza da operação" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {naturezas.map((n) => (
+                        <SelectItem key={n.id} value={n.description}>
+                          {n.description}
+                        </SelectItem>
+                      ))}
+                      {naturezas.length === 0 && (
+                        <SelectItem value={CUSTOM_VALUE} disabled>
+                          Nenhuma natureza cadastrada
+                        </SelectItem>
+                      )}
+                      <SelectItem value={CUSTOM_VALUE}>
+                        Outro (texto livre)
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {/* Campo de texto livre quando o valor não está na lista */}
+                  {(selectValue === CUSTOM_VALUE ||
+                    (currentNature && !isInList && naturezas.length > 0)) && (
+                    <Input
+                      value={currentNature}
+                      onChange={(event) =>
+                        updateEmission(
+                          'operationNature',
+                          event.target.value,
+                          false,
+                        )
+                      }
+                      onBlur={(event) =>
+                        updateEmission('operationNature', event.target.value)
+                      }
+                      placeholder="Digite a natureza da operação"
+                    />
+                  )}
                 </div>
 
                 <div className="space-y-2">

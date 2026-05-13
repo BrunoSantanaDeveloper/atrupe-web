@@ -17,7 +17,12 @@ import {
 import { Badge } from '@/components/ui/badge'
 
 // Icons
-import { IconPencil, IconSettings, IconLayoutGrid } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconSettings,
+  IconLayoutGrid,
+  IconTrash,
+} from '@tabler/icons-react'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -32,6 +37,7 @@ import { cn } from '@/lib/utils'
 // Components
 import { InvoiceItemConfigDialog } from './InvoiceItemConfigDialog'
 import { InvoiceItemEditDialog } from './InvoiceItemEditDialog'
+import { ProductSelector } from '@/app/(app-sidebar)/nota-fiscal/components/ProductSelector'
 
 // Types
 import type {
@@ -42,9 +48,18 @@ import type {
 interface Props {
   data: NfePrepareResponse
   onUpdate: (data: NfePrepareResponse) => void
+  /** Quando fornecido, exibe o ProductSelector para adicionar itens */
+  onAddProduct?: (item: NfePrepareItem) => void
+  /** Quando fornecido, exibe botão de remover por linha */
+  onRemoveItem?: (itemNumber: number) => void
 }
 
-export function InvoiceItems({ data, onUpdate }: Props) {
+export function InvoiceItems({
+  data,
+  onUpdate,
+  onAddProduct,
+  onRemoveItem,
+}: Props) {
   const [configItem, setConfigItem] = useState<NfePrepareItem | null>(null)
   const [editItem, setEditItem] = useState<NfePrepareItem | null>(null)
 
@@ -69,6 +84,8 @@ export function InvoiceItems({ data, onUpdate }: Props) {
     })
   }
 
+  const showAddRemove = !!onAddProduct || !!onRemoveItem
+
   return (
     <>
       <Card className="border-none shadow-sm overflow-hidden">
@@ -80,6 +97,11 @@ export function InvoiceItems({ data, onUpdate }: Props) {
                 <CardTitle className="text-gray-700 font-semibold text-base">
                   Itens
                 </CardTitle>
+                {filteredItems.length > 0 && (
+                  <Badge variant="neutralLight" className="text-xs">
+                    {filteredItems.length}
+                  </Badge>
+                )}
               </div>
               <div>
                 <AccordionTrigger
@@ -95,127 +117,173 @@ export function InvoiceItems({ data, onUpdate }: Props) {
             </CardHeader>
             <AccordionContent>
               <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50 border-y border-gray-100">
-                        <TableHead className="w-[40px] px-4">
-                          <Checkbox id="selectAll" />
-                        </TableHead>
-                        <TableHead className="px-6 py-3 font-medium text-gray-500 text-xs w-[35%]">
-                          Referência
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs w-[20%]">
-                          CST
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
-                          Frete
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
-                          Seguro
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
-                          Valor unitário
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-center">
-                          Qtd.
-                        </TableHead>
-                        <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
-                          Valor final
-                        </TableHead>
-                        <TableHead className="px-6 py-3 w-[50px]"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {filteredItems.map((item) => (
-                        <TableRow
-                          key={item.itemNumber}
-                          className="group hover:bg-gray-50/50 transition-colors"
-                        >
-                          <TableCell className="px-4 align-top py-4">
-                            <Checkbox id={`check-${item.itemNumber}`} />
-                          </TableCell>
-                          {/* Referência */}
-                          <TableCell className="px-6 py-4 align-top">
-                            <div className="space-y-1">
-                              <p className="font-medium text-gray-900 line-clamp-2">
-                                {item.itemNumber} - {item.description}
-                              </p>
-                              <div className="text-xs text-gray-500 font-mono mt-1 space-y-0.5">
-                                <div>CÓD: {item.productCode || 'N/D'}</div>
-                                <div>NCM: {item.ncm || 'N/D'}</div>
-                                <div>CFOP: {item.cfop || 'N/D'}</div>
-                              </div>
-                              {item.needsConfiguration && (
-                                <p className="mt-1.5 text-xs text-error-600 font-medium bg-error-50 inline-block px-2 py-0.5 rounded">
-                                  Este item ainda não foi configurado.
-                                </p>
-                              )}
-                            </div>
-                          </TableCell>
-
-                          {/* CST / Configurar */}
-                          <TableCell className="px-4 py-4 align-top">
-                            {item.needsConfiguration ? (
-                              <Button
-                                variant="default"
-                                size="sm"
-                                LeftIcon={IconSettings}
-                                className="font-medium"
-                                onClick={() => setConfigItem(item)}
-                              >
-                                Configurar
-                              </Button>
-                            ) : (
-                              <div className="text-[13px] text-gray-500 space-y-0.5 mt-0.5">
-                                <div>ICMS: {item.cstIcms || '-'}</div>
-                                <div>COFINS: {item.cstCofins || '-'}</div>
-                                <div>PIS: {item.cstPis || '-'}</div>
-                                <div>
-                                  IPI: {item.cstIpi || 'Sem enquadramento'}
-                                </div>
-                              </div>
-                            )}
-                          </TableCell>
-
-                          {/* Valores e Quantidade */}
-                          <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
-                            {item.freight > 0
-                              ? formatCurrency(item.freight)
-                              : '-'}
-                          </TableCell>
-                          <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
-                            {item.insurance > 0
-                              ? formatCurrency(item.insurance)
-                              : '-'}
-                          </TableCell>
-                          <TableCell className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
-                            {formatCurrency(item.unitValue)}
-                          </TableCell>
-                          <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
-                            {item.quantity}
-                          </TableCell>
-                          <TableCell className="px-4 py-4 text-right text-gray-900 font-bold text-sm align-top tabular-nums">
-                            {formatCurrency(item.totalValue)}
-                          </TableCell>
-
-                          {/* Ações */}
-                          <TableCell className="px-6 py-4 text-right align-top">
-                            <Button
-                              variant="neutralGhost"
-                              size="iconSm"
-                              aria-label="Editar item"
-                              className="text-gray-400 hover:text-gray-600"
-                              onClick={() => setEditItem(item)}
-                            >
-                              <IconPencil size={16} />
-                            </Button>
-                          </TableCell>
+                {filteredItems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <IconLayoutGrid size={32} className="mb-3 opacity-40" />
+                    <p className="text-sm font-medium">
+                      Nenhum item adicionado
+                    </p>
+                    <p className="text-xs mt-1">
+                      Use o botão abaixo para adicionar produtos à NF
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-gray-50 border-y border-gray-100">
+                          <TableHead className="w-[40px] px-4">
+                            <Checkbox id="selectAll" />
+                          </TableHead>
+                          <TableHead className="px-6 py-3 font-medium text-gray-500 text-xs w-[35%]">
+                            Referência
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs w-[20%]">
+                            CST
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                            Frete
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                            Seguro
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                            Valor unitário
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-center">
+                            Qtd.
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                            Valor final
+                          </TableHead>
+                          <TableHead className="px-6 py-3 w-[80px]"></TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredItems.map((item) => (
+                          <TableRow
+                            key={item.itemNumber}
+                            className="group hover:bg-gray-50/50 transition-colors"
+                          >
+                            <TableCell className="px-4 align-top py-4">
+                              <Checkbox id={`check-${item.itemNumber}`} />
+                            </TableCell>
+                            {/* Referência */}
+                            <TableCell className="px-6 py-4 align-top">
+                              <div className="space-y-1">
+                                <p className="font-medium text-gray-900 line-clamp-2">
+                                  {item.itemNumber} - {item.description}
+                                </p>
+                                <div className="text-xs text-gray-500 font-mono mt-1 space-y-0.5">
+                                  <div>CÓD: {item.productCode || 'N/D'}</div>
+                                  <div>NCM: {item.ncm || 'N/D'}</div>
+                                  <div>CFOP: {item.cfop || 'N/D'}</div>
+                                </div>
+                                {item.needsConfiguration && (
+                                  <p className="mt-1.5 text-xs text-error-600 font-medium bg-error-50 inline-block px-2 py-0.5 rounded">
+                                    Este item ainda não foi configurado.
+                                  </p>
+                                )}
+                              </div>
+                            </TableCell>
+
+                            {/* CST / Configurar */}
+                            <TableCell className="px-4 py-4 align-top">
+                              {item.needsConfiguration ? (
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  LeftIcon={IconSettings}
+                                  className="font-medium"
+                                  onClick={() => setConfigItem(item)}
+                                >
+                                  Configurar
+                                </Button>
+                              ) : (
+                                <div className="text-[13px] text-gray-500 space-y-0.5 mt-0.5">
+                                  <div>ICMS: {item.cstIcms || '-'}</div>
+                                  <div>COFINS: {item.cstCofins || '-'}</div>
+                                  <div>PIS: {item.cstPis || '-'}</div>
+                                  <div>
+                                    IPI: {item.cstIpi || 'Sem enquadramento'}
+                                  </div>
+                                </div>
+                              )}
+                            </TableCell>
+
+                            {/* Valores e Quantidade */}
+                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                              {item.freight > 0
+                                ? formatCurrency(item.freight)
+                                : '-'}
+                            </TableCell>
+                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                              {item.insurance > 0
+                                ? formatCurrency(item.insurance)
+                                : '-'}
+                            </TableCell>
+                            <TableCell className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
+                              {formatCurrency(item.unitValue)}
+                            </TableCell>
+                            <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
+                              {item.quantity}
+                            </TableCell>
+                            <TableCell className="px-4 py-4 text-right text-gray-900 font-bold text-sm align-top tabular-nums">
+                              {formatCurrency(item.totalValue)}
+                            </TableCell>
+
+                            {/* Ações */}
+                            <TableCell className="px-4 py-4 text-right align-top">
+                              <div className="flex items-center justify-end gap-1">
+                                <Button
+                                  variant="neutralGhost"
+                                  size="iconSm"
+                                  aria-label="Editar item"
+                                  className="text-gray-400 hover:text-gray-600"
+                                  onClick={() => setEditItem(item)}
+                                >
+                                  <IconPencil size={16} />
+                                </Button>
+                                {onRemoveItem && (
+                                  <Button
+                                    variant="neutralGhost"
+                                    size="iconSm"
+                                    aria-label="Remover item"
+                                    className="text-gray-300 hover:text-error-500 hover:bg-error-50"
+                                    onClick={() =>
+                                      onRemoveItem(item.itemNumber)
+                                    }
+                                  >
+                                    <IconTrash size={16} />
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+
+                {/* Rodapé: Add/Remove */}
+                {showAddRemove && (
+                  <div className="flex flex-wrap items-center gap-2 p-4 border-t border-gray-100 bg-gray-50/50">
+                    {onAddProduct && (
+                      <ProductSelector
+                        onAddProduct={onAddProduct}
+                        nextItemNumber={data.items.length + 1}
+                        defaultCfop={
+                          (
+                            data as NfePrepareResponse & {
+                              defaultCfop?: string
+                            }
+                          ).defaultCfop || '5101'
+                        }
+                      />
+                    )}
+                  </div>
+                )}
               </CardContent>
             </AccordionContent>
           </AccordionItem>
@@ -229,6 +297,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
           onOpenChange={(open) => !open && setConfigItem(null)}
           item={configItem}
           onSave={handleUpdateItem}
+          productId={configItem.productId}
         />
       )}
 
@@ -238,6 +307,7 @@ export function InvoiceItems({ data, onUpdate }: Props) {
           onOpenChange={(open) => !open && setEditItem(null)}
           item={editItem}
           onSave={handleUpdateItem}
+          productId={editItem.productId}
         />
       )}
     </>

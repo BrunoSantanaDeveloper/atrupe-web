@@ -22,6 +22,7 @@ import {
   IconPlus,
   IconTrash,
   IconTruckDelivery,
+  IconX,
 } from '@tabler/icons-react'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -38,6 +39,9 @@ import type {
   NfePrepareResponse,
   NfePrepareVolume,
 } from '@/types/fiscal/nfe-prepare'
+
+// Components
+import { SupplierSelect, type SupplierData } from './SupplierSelect'
 
 interface Props {
   data: NfePrepareResponse
@@ -57,6 +61,44 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
   }
 
   const updateEmission = (_field: string, _value: number) => {}
+
+  /** Fill transportadora fields from a registered supplier */
+  const handleSupplierSelect = (supplier: SupplierData | null) => {
+    if (!supplier) {
+      // Clear all fields
+      onUpdate({
+        ...data,
+        transportadora: {
+          cnpjCpf: '',
+          razaoSocial: '',
+          ie: '',
+          endereco: '',
+          cidade: '',
+          uf: '',
+        },
+      })
+      return
+    }
+
+    const enderecoCompleto = [supplier.address, supplier.addressNumber]
+      .filter(Boolean)
+      .join(', ')
+
+    onUpdate({
+      ...data,
+      transportadora: {
+        cnpjCpf: supplier.cnpjCpf || '',
+        razaoSocial: supplier.name || '',
+        ie: supplier.ie || '',
+        endereco: enderecoCompleto,
+        cidade: supplier.city || '',
+        uf: supplier.state || '',
+      },
+    })
+  }
+
+  const hasTransportadoraData =
+    data.transportadora.razaoSocial || data.transportadora.cnpjCpf
 
   const addVolume = () => {
     const newVolume: NfePrepareVolume = {
@@ -114,15 +156,34 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                   Transportadora
                 </CardTitle>
               </div>
-              <AccordionTrigger
-                className={cn(
-                  buttonVariants({
-                    variant: 'neutralLight',
-                    size: 'icon',
-                  }),
-                  'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+              <div className="flex items-center gap-2">
+                {/* Supplier search */}
+                <SupplierSelect onSelect={handleSupplierSelect} />
+
+                {/* Clear button — only shown when there's data */}
+                {hasTransportadoraData && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-gray-400 hover:text-error-600 hover:bg-error-50 gap-1"
+                    onClick={() => handleSupplierSelect(null)}
+                    title="Limpar transportadora"
+                  >
+                    <IconX size={14} />
+                    Limpar
+                  </Button>
                 )}
-              />
+
+                <AccordionTrigger
+                  className={cn(
+                    buttonVariants({
+                      variant: 'neutralLight',
+                      size: 'icon',
+                    }),
+                    'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                  )}
+                />
+              </div>
             </CardHeader>
             <AccordionContent>
               <CardContent className="space-y-6 p-6">
@@ -234,152 +295,206 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                     </div>
                   </>
                 )}
+
+                {/* When freight mode is 9 (no transport) but user wants to fill supplier anyway */}
+                {data.emissao.modalidadeFrete === 9 &&
+                  hasTransportadoraData && (
+                    <>
+                      <Separator />
+                      <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+                        Modalidade de frete definida como &ldquo;Sem ocorrência
+                        de transporte&rdquo;. Os dados de transportadora abaixo
+                        serão ignorados na emissão.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 opacity-50 pointer-events-none">
+                        <div className="md:col-span-1 space-y-2">
+                          <Label>CNPJ Transportadora</Label>
+                          <Input value={data.transportadora.cnpjCpf} readOnly />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <Label>Razão Social</Label>
+                          <Input
+                            value={data.transportadora.razaoSocial}
+                            readOnly
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
               </CardContent>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
       </Card>
 
-      {/* Volumes */}
-      <Card className="w-full">
-        <Accordion type="single" collapsible defaultValue="volumes">
-          <AccordionItem value="volumes" className="border-0">
-            <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-              <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Volumes transportados
-                </CardTitle>
-              </div>
-              <div className="flex gap-3">
-                <Button
-                  variant="neutralOutline"
-                  size="sm"
-                  LeftIcon={IconPlus}
-                  onClick={addVolume}
-                >
-                  Adicionar volume
-                </Button>
-                <div>
-                  <AccordionTrigger
-                    className={cn(
-                      buttonVariants({
-                        variant: 'neutralLight',
-                        size: 'icon',
-                      }),
-                      'mr-0 [&>svg]:text-gray [&>svg]:size-5',
-                    )}
-                  />
+      {/* Volumes — only show when transport actually occurs */}
+      {data.emissao.modalidadeFrete === 9 ? (
+        <Card className="w-full">
+          <CardHeader className="flex flex-row items-center gap-3 py-4 bg-white">
+            <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+            <div>
+              <CardTitle className="text-gray-500 font-semibold text-base">
+                Volumes transportados
+              </CardTitle>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Não aplicável — modalidade de frete &ldquo;Sem ocorrência de
+                transporte&rdquo;.
+              </p>
+            </div>
+          </CardHeader>
+        </Card>
+      ) : (
+        <Card className="w-full">
+          <Accordion type="single" collapsible defaultValue="volumes">
+            <AccordionItem value="volumes" className="border-0">
+              <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+                <div className="flex gap-3 items-center">
+                  <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+                  <CardTitle className="text-gray-700 font-semibold text-base">
+                    Volumes transportados
+                  </CardTitle>
                 </div>
-              </div>
-            </CardHeader>
-            <AccordionContent>
-              <CardContent className="space-y-4 p-6">
-                {(!data.volumes || data.volumes.length === 0) && (
-                  <EmptyState
-                    iconType="data"
-                    title="Nenhum volume adicionado"
-                    description="Adicione os volumes transportados para que sejam exibidos na nota fiscal."
-                    action={
-                      <Button variant="default" onClick={addVolume}>
-                        Adicionar o primeiro volume
-                      </Button>
-                    }
-                  />
-                )}
-
-                {data.volumes?.map((vol, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-50 p-4 rounded-lg relative border border-gray-100"
+                <div className="flex gap-3">
+                  <Button
+                    variant="neutralOutline"
+                    size="sm"
+                    LeftIcon={IconPlus}
+                    onClick={addVolume}
                   >
-                    <div className="absolute right-2 top-2">
-                      <Button
-                        variant="ghost"
-                        size="iconSm"
-                        className="text-error-600 hover:text-error-700 hover:bg-error-50"
-                        onClick={() => removeVolume(index)}
-                        aria-label="Remover volume"
-                      >
-                        <IconTrash size={16} />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pr-8">
-                      <div className="space-y-1">
-                        <Label className="text-xs">Quantidade</Label>
-                        <Input
-                          type="number"
-                          className="h-8 text-sm"
-                          value={vol.quantidade}
-                          onChange={(e) =>
-                            updateVolume(
-                              index,
-                              'quantidade',
-                              Number(e.target.value),
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Espécie</Label>
-                        <Input
-                          className="h-8 text-sm"
-                          value={vol.especie}
-                          onChange={(e) =>
-                            updateVolume(index, 'especie', e.target.value)
-                          }
-                          placeholder="CX, VOL, UN"
-                        />
-                      </div>
-                      <div className="space-y-1 md:col-span-2">
-                        <Label className="text-xs">Marca</Label>
-                        <Input
-                          className="h-8 text-sm"
-                          value={vol.marca}
-                          onChange={(e) =>
-                            updateVolume(index, 'marca', e.target.value)
-                          }
-                          placeholder="Marca volumes"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Peso Líquido (kg)</Label>
-                        <Input
-                          type="number"
-                          className="h-8 text-sm"
-                          value={vol.pesoLiquido}
-                          onChange={(e) =>
-                            updateVolume(
-                              index,
-                              'pesoLiquido',
-                              Number(e.target.value),
-                            )
-                          }
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-xs">Peso Bruto (kg)</Label>
-                        <Input
-                          type="number"
-                          className="h-8 text-sm"
-                          value={vol.pesoBruto}
-                          onChange={(e) =>
-                            updateVolume(
-                              index,
-                              'pesoBruto',
-                              Number(e.target.value),
-                            )
-                          }
-                        />
-                      </div>
-                    </div>
+                    Adicionar volume
+                  </Button>
+                  <div>
+                    <AccordionTrigger
+                      className={cn(
+                        buttonVariants({
+                          variant: 'neutralLight',
+                          size: 'icon',
+                        }),
+                        'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                      )}
+                    />
                   </div>
-                ))}
-              </CardContent>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </Card>
+                </div>
+              </CardHeader>
+              <AccordionContent>
+                <CardContent className="space-y-4 p-6">
+                  {(!data.volumes || data.volumes.length === 0) && (
+                    <EmptyState
+                      iconType="data"
+                      title="Nenhum volume adicionado"
+                      description="Adicione os volumes transportados para que sejam exibidos na nota fiscal."
+                      action={
+                        <Button variant="default" onClick={addVolume}>
+                          Adicionar o primeiro volume
+                        </Button>
+                      }
+                    />
+                  )}
+
+                  {data.volumes?.map((vol, index) => (
+                    <div
+                      key={index}
+                      className="bg-gray-50 p-4 rounded-lg relative border border-gray-100"
+                    >
+                      <div className="absolute right-2 top-2">
+                        <Button
+                          variant="ghost"
+                          size="iconSm"
+                          className="text-error-600 hover:text-error-700 hover:bg-error-50"
+                          onClick={() => removeVolume(index)}
+                          aria-label="Remover volume"
+                        >
+                          <IconTrash size={16} />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pr-8">
+                        <div className="space-y-1">
+                          <Label className="text-xs">Quantidade</Label>
+                          <Input
+                            type="number"
+                            className="h-8 text-sm"
+                            value={vol.quantidade}
+                            onChange={(e) =>
+                              updateVolume(
+                                index,
+                                'quantidade',
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Espécie</Label>
+                          <Input
+                            className="h-8 text-sm"
+                            value={vol.especie}
+                            onChange={(e) =>
+                              updateVolume(index, 'especie', e.target.value)
+                            }
+                            placeholder="CX, VOL, UN"
+                          />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                          <Label className="text-xs">Marca</Label>
+                          <Input
+                            className="h-8 text-sm"
+                            value={vol.marca}
+                            onChange={(e) =>
+                              updateVolume(index, 'marca', e.target.value)
+                            }
+                            placeholder="Marca volumes"
+                          />
+                        </div>
+                        <div className="space-y-1 md:col-span-2">
+                          <Label className="text-xs">Numeração</Label>
+                          <Input
+                            className="h-8 text-sm"
+                            value={vol.numeracao}
+                            onChange={(e) =>
+                              updateVolume(index, 'numeracao', e.target.value)
+                            }
+                            placeholder="Ex: 001/010"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Peso Líquido (kg)</Label>
+                          <Input
+                            type="number"
+                            className="h-8 text-sm"
+                            value={vol.pesoLiquido}
+                            onChange={(e) =>
+                              updateVolume(
+                                index,
+                                'pesoLiquido',
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">Peso Bruto (kg)</Label>
+                          <Input
+                            type="number"
+                            className="h-8 text-sm"
+                            value={vol.pesoBruto}
+                            onChange={(e) =>
+                              updateVolume(
+                                index,
+                                'pesoBruto',
+                                Number(e.target.value),
+                              )
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </Card>
+      )}
     </div>
   )
 }

@@ -21,8 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 // Components
-import { FormInput } from '@/components/common/form/FormInput'
-import { FormSelect } from '@/components/common/form/FormSelect'
+import { ProductFiscalTab } from './ProductFiscalTab'
 
 // Icons
 import { IconReceipt, IconCircleCheck } from '@tabler/icons-react'
@@ -34,12 +33,6 @@ import {
   productFiscalDataSchema,
   type ProductFiscalDataFormType,
   defaultFiscalDataValues,
-  icmsOriginOptions,
-  icmsCstOptions,
-  icmsBaseModalityOptions,
-  pisCstOptions,
-  ipiCstOptions,
-  commercialUnitOptions,
 } from './schema'
 
 // Actions
@@ -96,12 +89,10 @@ export function ProductFiscalDataDialog({
         productCode: fiscalData.productCode || '',
         commercialUnit: fiscalData.commercialUnit || 'UN',
         ncm: fiscalData.ncm || '',
-        // cest: fiscalData.cest || '',
         cean: fiscalData.cean || '',
         icmsOrigin: fiscalData.icmsOrigin || '0',
         icmsCst: fiscalData.icmsCst || '102',
         icmsRate: fiscalData.icmsRate || undefined,
-        // icmsReducao: fiscalData.icmsReducao || undefined,
         icmsCreditRate: fiscalData.icmsCreditRate || undefined,
         icmsBaseModality: fiscalData.icmsBaseModality || '3',
         pisCst: fiscalData.pisCst || '07',
@@ -134,7 +125,6 @@ export function ProductFiscalDataDialog({
 
       toast.success('Dados fiscais salvos com sucesso!')
 
-      // Invalidate both the specific item and the list
       await Promise.all([
         queryClient.invalidateQueries({
           queryKey: ['product-fiscal-data', productId],
@@ -163,7 +153,7 @@ export function ProductFiscalDataDialog({
           <DialogTitle>
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
-              <span>Configuração do Item</span>
+              <span>Configuração Fiscal do Produto</span>
             </div>
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -181,168 +171,19 @@ export function ProductFiscalDataDialog({
                 className="space-y-6"
                 noValidate
               >
-                {/* Item */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-700">Item</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <Label>Nome do produto</Label>
-                      <Input
-                        value={productName || ''}
-                        disabled
-                        className="bg-gray-50"
-                      />
-                    </div>
-                    <FormInput
-                      name="productCode"
-                      label="Código"
-                      placeholder="Digite aqui"
-                    />
-                    <FormSelect
-                      name="commercialUnit"
-                      label="Unidade comercial"
-                      options={commercialUnitOptions}
+                {/* Nome do produto (readonly) */}
+                {productName && (
+                  <div className="space-y-2">
+                    <Label>Produto</Label>
+                    <Input
+                      value={productName}
+                      disabled
+                      className="bg-gray-50"
                     />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormInput
-                      name="ncm"
-                      label="NCM"
-                      placeholder="00000000"
-                      maxLength={8}
-                    />
-                    {/* <FormInput
-                      name="cest"
-                      label="CEST"
-                      placeholder="0000000"
-                      maxLength={7}
-                    /> */}
-                    <FormInput
-                      name="cean"
-                      label="CEAN"
-                      placeholder="Digite aqui"
-                    />
-                  </div>
-                </div>
+                )}
 
-                {/* ICMS */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-700">ICMS</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormSelect
-                      name="icmsOrigin"
-                      label="Origem da mercadoria"
-                      options={icmsOriginOptions}
-                    />
-                    <FormSelect
-                      name="icmsCst"
-                      label="CST ICMS"
-                      options={icmsCstOptions}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormInput
-                      name="icmsRate"
-                      label="Alíquota ICMS"
-                      type="number"
-                      placeholder="00.00"
-                    />
-                    {/* <FormInput
-                      name="icmsReducao"
-                      label="Redução Base ICMS"
-                      type="number"
-                      placeholder="00.00"
-                    /> */}
-                    <FormInput
-                      name="icmsCreditRate"
-                      label="Alíquota Crédito ICMS"
-                      type="number"
-                      placeholder="00.00"
-                    />
-                    <FormSelect
-                      name="icmsBaseModality"
-                      label="Origem da mercadoria"
-                      options={icmsBaseModalityOptions}
-                    />
-                  </div>
-                </div>
-
-                {/* PIS COFINS */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-700">PIS COFINS</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormSelect
-                      name="pisCst"
-                      label="CST PIS"
-                      options={pisCstOptions}
-                    />
-                    <FormInput
-                      name="pisRate"
-                      label="Alíquota PIS"
-                      type="number"
-                      placeholder="00.00"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormSelect
-                      name="cofinsCst"
-                      label="CST COFINS"
-                      options={pisCstOptions}
-                    />
-                    <FormInput
-                      name="cofinsRate"
-                      label="Alíquota COFINS"
-                      type="number"
-                      placeholder="00.00"
-                    />
-                  </div>
-                </div>
-
-                {/* CFOP */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-700">CFOP</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormInput
-                      name="cfopInState"
-                      label="CFOP Estadual"
-                      placeholder="5102"
-                    />
-                    <FormInput
-                      name="cfopOutState"
-                      label="CFOP Interestadual"
-                      placeholder="6102"
-                    />
-                    <FormInput
-                      name="cfopExport"
-                      label="CFOP Exportação"
-                      placeholder="7102"
-                    />
-                  </div>
-                </div>
-
-                {/* IPI */}
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-gray-700">IPI</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormInput
-                      name="ipiFramework"
-                      label="Enquadramento"
-                      placeholder="0"
-                    />
-                    <FormSelect
-                      name="ipiCst"
-                      label="CST IPI"
-                      options={ipiCstOptions}
-                      placeholder="Selecione"
-                    />
-                    <FormInput
-                      name="ipiRate"
-                      label="Alíquota IPI"
-                      type="number"
-                      placeholder="00.00"
-                    />
-                  </div>
-                </div>
+                <ProductFiscalTab />
               </form>
             </Form>
           )}

@@ -17,6 +17,8 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Components
 import { LucideIcon } from '@/components/LucideIcon'
@@ -33,6 +35,7 @@ import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitO
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
 import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
+import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,6 +45,11 @@ import {
   NewProductsFormType,
   newProductsSchema,
 } from './schema'
+import {
+  productFiscalDataSchema,
+  type ProductFiscalDataFormType,
+  defaultFiscalDataValues,
+} from './ProductFiscalData/schema'
 
 // Icons
 import {
@@ -49,10 +57,16 @@ import {
   IconCirclePlus,
   IconCircleCheck,
   IconPencil,
+  IconReceiptTax,
 } from '@tabler/icons-react'
 
 // Action
-import { createItemNew, getItemOld, updateItemNew } from '@/actions/_cruds'
+import {
+  createItemNew,
+  getItemOld,
+  updateItemNew,
+  getData,
+} from '@/actions/_cruds'
 
 // Hooks
 import { useSector } from '@/hooks/queries/useSector'
@@ -87,6 +101,16 @@ async function handleGetProduct(productId: string) {
   return product
 }
 
+async function fetchFiscalData(productId: string) {
+  try {
+    const response = await getData({ route: `/fiscal/product/${productId}` })
+    if (response.success && response.data) return response.data
+    return null
+  } catch {
+    return null
+  }
+}
+
 function NewProductModal({
   editMode,
   productId,
@@ -95,15 +119,18 @@ function NewProductModal({
   onSuccess,
 }: Props) {
   const queryClient = useQueryClient()
-  const { canManageProducts, canManageProductionStages } = usePlanFeatures()
+  const { canManageProducts, canManageProductionStages, hasFiscalModule } =
+    usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
 
   const [insertAnother, setInsertAnother] = useState(false)
+  const [activeTab, setActiveTab] = useState('general')
 
   const alertDialog = useAlertDialog()
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
+  const showFiscalTab = hasFiscalModule()
 
   const { data: product, isLoading } = useQuery({
     staleTime: Infinity,
@@ -111,6 +138,47 @@ function NewProductModal({
     queryFn: () => handleGetProduct(productId ?? ''),
     enabled: !!productId,
   })
+
+  // Fiscal data form — independent form instance
+  const fiscalForm = useForm<ProductFiscalDataFormType>({
+    resolver: zodResolver(productFiscalDataSchema),
+    defaultValues: defaultFiscalDataValues,
+  })
+
+  const { data: existingFiscalData } = useQuery({
+    queryKey: ['product-fiscal-data', productId],
+    queryFn: () => fetchFiscalData(productId ?? ''),
+    enabled: !!productId && open && showFiscalTab,
+  })
+
+  // Load fiscal data into fiscal form
+  useEffect(() => {
+    if (existingFiscalData) {
+      fiscalForm.reset({
+        productCode: existingFiscalData.productCode || '',
+        commercialUnit: existingFiscalData.commercialUnit || 'UN',
+        ncm: existingFiscalData.ncm || '',
+        cean: existingFiscalData.cean || '',
+        icmsOrigin: existingFiscalData.icmsOrigin || '0',
+        icmsCst: existingFiscalData.icmsCst || '102',
+        icmsRate: existingFiscalData.icmsRate || undefined,
+        icmsCreditRate: existingFiscalData.icmsCreditRate || undefined,
+        icmsBaseModality: existingFiscalData.icmsBaseModality || '3',
+        pisCst: existingFiscalData.pisCst || '07',
+        pisRate: existingFiscalData.pisRate || undefined,
+        cofinsCst: existingFiscalData.cofinsCst || '07',
+        cofinsRate: existingFiscalData.cofinsRate || undefined,
+        ipiFramework: existingFiscalData.ipiFramework || '0',
+        ipiCst: existingFiscalData.ipiCst || '',
+        ipiRate: existingFiscalData.ipiRate || undefined,
+        cfopInState: existingFiscalData.cfopInState || '5102',
+        cfopOutState: existingFiscalData.cfopOutState || '6102',
+        cfopExport: existingFiscalData.cfopExport || '7102',
+      })
+    } else if (!productId) {
+      fiscalForm.reset(defaultFiscalDataValues)
+    }
+  }, [existingFiscalData, productId, fiscalForm])
 
   const isActive = product?.isActive ?? true
 
@@ -171,12 +239,14 @@ function NewProductModal({
 
   function handleToggleModal() {
     handleCleanForm()
+    setActiveTab('general')
     onOpenChange(false)
   }
 
   function handleCleanForm() {
     reset(defaultNewProductValues)
     items.replace(defaultItemFields)
+    fiscalForm.reset(defaultFiscalDataValues)
   }
 
   const onSubmit = async (data: NewProductsFormType) => {
@@ -238,6 +308,24 @@ function NewProductModal({
         createdProduct = result.data
 
         toast.success('Produto criado com sucesso!')
+      }
+
+      // Save fiscal data if fiscal tab is shown and productId is available
+      const savedId = editMode ? productId : createdProduct?.id
+      if (showFiscalTab && savedId) {
+        const fiscalData = fiscalForm.getValues()
+        try {
+          await createItemNew({
+            route: '/fiscal/product/upsert',
+            data: { ...fiscalData, productId: savedId },
+          })
+          await queryClient.invalidateQueries({
+            queryKey: ['product-fiscal-data', savedId],
+          })
+        } catch {
+          // Non-fatal: product was saved, just fiscal data failed
+          toast.warning('Produto salvo, mas erro ao salvar dados fiscais.')
+        }
       }
 
       if (!insertAnother) {
@@ -326,187 +414,230 @@ function NewProductModal({
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
           </DialogHeader>
-          <DialogBody>
-            <Form {...form}>
-              <form
-                id="new-product"
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-wrap gap-4"
-                noValidate
-              >
-                <SelectSectorField
-                  name="sectorId"
-                  label="Setor"
-                  width="flex-[1_0_190px]"
-                />
-                <SelectProductGroupWithSectorField
-                  name="categoryId"
-                  label="Grupo de produtos"
-                  width="flex-[1_0_190px]"
-                  selectedSectorId={watch('sectorId')}
-                />
+          <DialogBody className="p-0">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="flex flex-col h-full"
+            >
+              <div className="px-6 pt-4 border-b border-gray-100">
+                <TabsList>
+                  <TabsTrigger value="general">
+                    <IconPackage size={14} className="mr-1.5" />
+                    Produto
+                  </TabsTrigger>
+                  {showFiscalTab && (
+                    <TabsTrigger value="fiscal">
+                      <IconReceiptTax size={14} className="mr-1.5" />
+                      Dados Fiscais
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+              </div>
 
-                <FormInput
-                  name="name"
-                  label="Nome do produto"
-                  width="flex-[1_0_400px]"
-                  additionalOnChange={(value) => {
-                    if (items?.fields?.length === 1) {
-                      form.setValue('items.0.name', String(value))
-                    }
-                  }}
-                />
-                <FormInput
-                  name="code"
-                  label="Código"
-                  width="flex-[1_0_250px]"
-                  additionalOnChange={(value) => {
-                    form.setValue('code', String(value).toUpperCase())
-                  }}
-                />
-                {items?.fields?.length === 1 && (
-                  <>
-                    {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
-                    <div className="flex flex-wrap gap-4 w-full h-20">
-                      <UnitOfMeasureField
-                        name="items.0.unitKind"
-                        width="flex-[1_0_225px]"
+              <ScrollArea className="flex-1 max-h-[calc(100vh-280px)]">
+                <TabsContent value="general" className="mt-0 p-6">
+                  <Form {...form}>
+                    <form
+                      id="new-product"
+                      onSubmit={handleSubmit(onSubmit)}
+                      className="flex flex-wrap gap-4"
+                      noValidate
+                    >
+                      <SelectSectorField
+                        name="sectorId"
+                        label="Setor"
+                        width="flex-[1_0_190px]"
                       />
-                      <UnitCostInput
-                        name="items.0.unitCost"
-                        width="flex-[1_0_140px]"
-                        index={0}
+                      <SelectProductGroupWithSectorField
+                        name="categoryId"
+                        label="Grupo de produtos"
+                        width="flex-[1_0_190px]"
+                        selectedSectorId={watch('sectorId')}
                       />
-                    </div>
 
-                    {/* Seção "Padrão de medidas do produto" */}
-                    {watch('items.0.unitKind') &&
-                      watch('items.0.unitKind') !== 'UNITY' && (
-                        <div className="w-full">
-                          <h4 className="text-md font-semibold text-gray-700 mb-2">
-                            Padrão de medidas do produto
-                          </h4>
-                          <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">
-                            <MeasurementInput
-                              control={control}
-                              index={0}
-                              unitKind={watch('items.0.unitKind')}
+                      <FormInput
+                        name="name"
+                        label="Nome do produto"
+                        width="flex-[1_0_400px]"
+                        additionalOnChange={(value) => {
+                          if (items?.fields?.length === 1) {
+                            form.setValue('items.0.name', String(value))
+                          }
+                        }}
+                      />
+                      <FormInput
+                        name="code"
+                        label="Código"
+                        width="flex-[1_0_250px]"
+                        additionalOnChange={(value) => {
+                          form.setValue('code', String(value).toUpperCase())
+                        }}
+                      />
+                      {items?.fields?.length === 1 && (
+                        <>
+                          {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
+                          <div className="flex flex-wrap gap-4 w-full h-20">
+                            <UnitOfMeasureField
+                              name="items.0.unitKind"
+                              width="flex-[1_0_225px]"
                             />
-                            <FormBrlInput
-                              name={`items.0.salePrice`}
-                              label="Valor"
-                              startAdornment={<>R$</>}
+                            <UnitCostInput
+                              name="items.0.unitCost"
                               width="flex-[1_0_140px]"
-                              disabled
+                              index={0}
                             />
                           </div>
-                        </div>
-                      )}
-                  </>
-                )}
-                {items?.fields?.length > 1 &&
-                  items?.fields?.map((item, index) => (
-                    <div
-                      className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
-                      key={`${item.id}-${index}`}
-                    >
-                      {index > 0 && (
-                        <Button
-                          type="button"
-                          size="iconSm"
-                          variant="neutralGhost"
-                          className="absolute top-1 right-1"
-                          onClick={() => handleRemoveCompositionProducts(index)}
-                        >
-                          <LucideIcon icon="Trash2" className="size-5" />
-                        </Button>
-                      )}
-                      <FormInput
-                        name={`items.${index}.name`}
-                        label="Nome da composição"
-                        width="flex-[1_0_100%]"
-                      />
 
-                      {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
-                      <div className="flex flex-wrap gap-4 w-full">
-                        <UnitOfMeasureField
-                          name={`items.${index}.unitKind`}
-                          width="flex-[1_0_200px]"
-                        />
-                        <UnitCostInput
-                          name={`items.${index}.unitCost`}
-                          width="flex-[1_0_140px]"
-                          index={index}
-                        />
-                      </div>
+                          {/* Seção "Padrão de medidas do produto" */}
+                          {watch('items.0.unitKind') &&
+                            watch('items.0.unitKind') !== 'UNITY' && (
+                              <div className="w-full">
+                                <h4 className="text-md font-semibold text-gray-700 mb-2">
+                                  Padrão de medidas do produto
+                                </h4>
+                                <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">
+                                  <MeasurementInput
+                                    control={control}
+                                    index={0}
+                                    unitKind={watch('items.0.unitKind')}
+                                  />
+                                  <FormBrlInput
+                                    name={`items.0.salePrice`}
+                                    label="Valor"
+                                    startAdornment={<>R$</>}
+                                    width="flex-[1_0_140px]"
+                                    disabled
+                                  />
+                                </div>
+                              </div>
+                            )}
+                        </>
+                      )}
+                      {items?.fields?.length > 1 &&
+                        items?.fields?.map((item, index) => (
+                          <div
+                            className="flex flex-wrap gap-4 bg-white p-6 rounded-xl relative justify-start w-full"
+                            key={`${item.id}-${index}`}
+                          >
+                            {index > 0 && (
+                              <Button
+                                type="button"
+                                size="iconSm"
+                                variant="neutralGhost"
+                                className="absolute top-1 right-1"
+                                onClick={() =>
+                                  handleRemoveCompositionProducts(index)
+                                }
+                              >
+                                <LucideIcon icon="Trash2" className="size-5" />
+                              </Button>
+                            )}
+                            <FormInput
+                              name={`items.${index}.name`}
+                              label="Nome da composição"
+                              width="flex-[1_0_100%]"
+                            />
 
-                      {/* Seção "Padrão de medidas do produto" */}
-                      {watch(`items.${index}.unitKind`) &&
-                        watch(`items.${index}.unitKind`) !== 'UNITY' && (
-                          <div className="w-full">
-                            <h4 className="text-sm font-medium text-gray-900 mb-3">
-                              Padrão de medidas do produto
-                            </h4>
-                            <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
-                              <MeasurementInput
-                                control={control}
-                                index={index}
-                                unitKind={watch(`items.${index}.unitKind`)}
+                            {/* Primeira linha: Seletor de unidade comercial e valor unitário */}
+                            <div className="flex flex-wrap gap-4 w-full">
+                              <UnitOfMeasureField
+                                name={`items.${index}.unitKind`}
+                                width="flex-[1_0_200px]"
                               />
-                              <FormBrlInput
-                                name={`items.${index}.salePrice`}
-                                label="Valor"
-                                startAdornment={<>R$</>}
+                              <UnitCostInput
+                                name={`items.${index}.unitCost`}
                                 width="flex-[1_0_140px]"
-                                disabled
+                                index={index}
                               />
                             </div>
+
+                            {/* Seção "Padrão de medidas do produto" */}
+                            {watch(`items.${index}.unitKind`) &&
+                              watch(`items.${index}.unitKind`) !== 'UNITY' && (
+                                <div className="w-full">
+                                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                                    Padrão de medidas do produto
+                                  </h4>
+                                  <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">
+                                    <MeasurementInput
+                                      control={control}
+                                      index={index}
+                                      unitKind={watch(
+                                        `items.${index}.unitKind`,
+                                      )}
+                                    />
+                                    <FormBrlInput
+                                      name={`items.${index}.salePrice`}
+                                      label="Valor"
+                                      startAdornment={<>R$</>}
+                                      width="flex-[1_0_140px]"
+                                      disabled
+                                    />
+                                  </div>
+                                </div>
+                              )}
                           </div>
-                        )}
-                    </div>
-                  ))}
-                {canAddComposition && (
-                  <div className="w-full">
-                    <Button
-                      type="button"
-                      variant="none"
-                      className="flex justify-center items-center mx-auto gap-3 py-8"
-                      onClick={handleAppendProductItems}
-                    >
-                      <FeaturedIcon
-                        variant="light"
-                        Icon={IconCirclePlus}
-                        rounded
+                        ))}
+                      {canAddComposition && (
+                        <div className="w-full">
+                          <Button
+                            type="button"
+                            variant="none"
+                            className="flex justify-center items-center mx-auto gap-3 py-8"
+                            onClick={handleAppendProductItems}
+                          >
+                            <FeaturedIcon
+                              variant="light"
+                              Icon={IconCirclePlus}
+                              rounded
+                            />
+                            <p className="text-sm text-gray-600 font-medium">
+                              Adicionar composição
+                            </p>
+                          </Button>
+                        </div>
+                      )}
+                      <FormImageUploadBigSmall
+                        control={control}
+                        imageName="imageUrl"
+                        sizeName="imageSize"
                       />
-                      <p className="text-sm text-gray-600 font-medium">
-                        Adicionar composição
-                      </p>
-                    </Button>
-                  </div>
+                      <FormTextarea
+                        name="technicalDescription"
+                        label="Descritivo técnico"
+                        placeholder="Digite aqui."
+                      />
+                      <div className="flex gap-6">
+                        <FormSwitch
+                          name="allowEditValues"
+                          label="Permitir editar valor"
+                        />
+                        <FormSwitch
+                          name="allowEditDescription"
+                          label="Permitir editar descrição"
+                        />
+                      </div>
+                      {canShowProductionStages && <ProductionStages />}
+                    </form>
+                  </Form>
+                </TabsContent>
+
+                {showFiscalTab && (
+                  <TabsContent value="fiscal" className="mt-0 p-6">
+                    <Form {...fiscalForm}>
+                      <form
+                        id="new-product-fiscal"
+                        onSubmit={fiscalForm.handleSubmit(() => {})}
+                        noValidate
+                      >
+                        <ProductFiscalTab />
+                      </form>
+                    </Form>
+                  </TabsContent>
                 )}
-                <FormImageUploadBigSmall
-                  control={control}
-                  imageName="imageUrl"
-                  sizeName="imageSize"
-                />
-                <FormTextarea
-                  name="technicalDescription"
-                  label="Descritivo técnico"
-                  placeholder="Digite aqui."
-                />
-                <div className="flex gap-6">
-                  <FormSwitch
-                    name="allowEditValues"
-                    label="Permitir editar valor"
-                  />
-                  <FormSwitch
-                    name="allowEditDescription"
-                    label="Permitir editar descrição"
-                  />
-                </div>
-                {canShowProductionStages && <ProductionStages />}
-              </form>
-            </Form>
+              </ScrollArea>
+            </Tabs>
           </DialogBody>
           <DialogFooter className="sm:justify-between">
             <div className="flex items-center space-x-2">

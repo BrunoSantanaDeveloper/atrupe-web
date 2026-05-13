@@ -7,6 +7,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 import {
   Select,
@@ -24,6 +25,8 @@ import {
   IconTrash,
   IconReceipt,
   IconCalculator,
+  IconRefresh,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -44,10 +47,29 @@ import type {
 interface Props {
   data: NfePrepareResponse
   onUpdate: (data: NfePrepareResponse) => void
+  /** Valor total da nota calculado em tempo real a partir dos itens editados */
+  computedValorNota?: number
 }
 
-export function InvoicePayment({ data, onUpdate }: Props) {
+/** Formata valor monetário para exibição */
+function formatCurrency(value: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value)
+}
+
+export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
   const [installmentCount, setInstallmentCount] = useState(1)
+
+  // O valor da NF vigente: usa o computado (com edições de itens) quando disponível
+  const currentTotal =
+    computedValorNota !== undefined ? computedValorNota : data.totais.valorNota
+
+  // Detecta divergência entre o valor de pagamento declarado e o total real da NF
+  const paymentValue = data.pagamento?.valor ?? 0
+  const hasDivergence =
+    Math.abs(paymentValue - currentTotal) > 0.01 && currentTotal > 0
 
   const updatePayment = (field: string, value: string | number) => {
     onUpdate({
@@ -57,6 +79,11 @@ export function InvoicePayment({ data, onUpdate }: Props) {
         [field]: value,
       },
     })
+  }
+
+  /** Sincroniza o valor do pagamento com o total atual da NF */
+  const syncPaymentValue = () => {
+    updatePayment('valor', Number(currentTotal.toFixed(2)))
   }
 
   const addDuplicata = () => {
@@ -97,13 +124,18 @@ export function InvoicePayment({ data, onUpdate }: Props) {
     })
   }
 
+  /**
+   * Gera parcelas usando o total ATUAL da NF (computedValorNota),
+   * garantindo que edições nos itens sejam refletidas.
+   */
   const generateInstallments = () => {
-    if (installmentCount < 1) return
+    if (installmentCount < 1 || currentTotal <= 0) return
 
-    const totalValue = data.totais.valorNota
-    const installmentValue = Number((totalValue / installmentCount).toFixed(2))
+    const installmentValue = Number(
+      (currentTotal / installmentCount).toFixed(2),
+    )
     const remainder = Number(
-      (totalValue - installmentValue * installmentCount).toFixed(2),
+      (currentTotal - installmentValue * installmentCount).toFixed(2),
     )
 
     const newDups: NfePrepareDuplicata[] = []
@@ -111,7 +143,7 @@ export function InvoicePayment({ data, onUpdate }: Props) {
 
     for (let i = 0; i < installmentCount; i++) {
       const dueDate = new Date(today)
-      dueDate.setDate(dueDate.getDate() + 30 * (i + 1)) // +30 days per installment
+      dueDate.setDate(dueDate.getDate() + 30 * (i + 1))
 
       newDups.push({
         numero: (i + 1).toString().padStart(3, '0'),
@@ -123,8 +155,13 @@ export function InvoicePayment({ data, onUpdate }: Props) {
       })
     }
 
+    // Sincroniza também o valor do pagamento ao gerar as parcelas
     onUpdate({
       ...data,
+      pagamento: {
+        ...data.pagamento,
+        valor: Number(currentTotal.toFixed(2)),
+      },
       duplicatas: newDups,
     })
   }
@@ -141,6 +178,15 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                 <CardTitle className="text-gray-700 font-semibold text-base">
                   Pagamento
                 </CardTitle>
+                {hasDivergence && (
+                  <Badge
+                    variant="warning"
+                    className="text-xs flex items-center gap-1"
+                  >
+                    <IconAlertTriangle size={12} />
+                    Valor diverge do total da NF
+                  </Badge>
+                )}
               </div>
               <AccordionTrigger
                 className={cn(
@@ -173,12 +219,27 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                         <SelectItem value="04">
                           04 - Cartão de Débito
                         </SelectItem>
+                        <SelectItem value="05">05 - Crédito Loja</SelectItem>
+                        <SelectItem value="10">
+                          10 - Vale Alimentação
+                        </SelectItem>
+                        <SelectItem value="11">11 - Vale Refeição</SelectItem>
+                        <SelectItem value="12">12 - Vale Presente</SelectItem>
+                        <SelectItem value="13">
+                          13 - Vale Combustível
+                        </SelectItem>
+                        <SelectItem value="14">
+                          14 - Duplicata Mercantil
+                        </SelectItem>
                         <SelectItem value="15">15 - Boleto Bancário</SelectItem>
                         <SelectItem value="16">
                           16 - Depósito Bancário
                         </SelectItem>
                         <SelectItem value="17">
                           17 - Pagamento Instantâneo (PIX)
+                        </SelectItem>
+                        <SelectItem value="18">
+                          18 - Transferência Bancária
                         </SelectItem>
                         <SelectItem value="90">90 - Sem pagamento</SelectItem>
                         <SelectItem value="99">99 - Outros</SelectItem>
@@ -187,14 +248,37 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Valor do Pagamento</Label>
+                    <div className="flex items-center justify-between">
+                      <Label>Valor do Pagamento</Label>
+                      {hasDivergence && (
+                        <button
+                          type="button"
+                          onClick={syncPaymentValue}
+                          className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 transition-colors"
+                          title={`Sincronizar com total da NF (${formatCurrency(currentTotal)})`}
+                        >
+                          <IconRefresh size={12} />
+                          Sincronizar ({formatCurrency(currentTotal)})
+                        </button>
+                      )}
+                    </div>
                     <Input
                       type="number"
                       value={data.pagamento.valor}
                       onChange={(e) =>
                         updatePayment('valor', Number(e.target.value))
                       }
+                      className={cn(
+                        hasDivergence &&
+                          'border-warning-400 focus-visible:ring-warning-300',
+                      )}
                     />
+                    {hasDivergence && (
+                      <p className="text-xs text-warning-600">
+                        Total da NF:{' '}
+                        <strong>{formatCurrency(currentTotal)}</strong>
+                      </p>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -262,7 +346,11 @@ export function InvoicePayment({ data, onUpdate }: Props) {
                     </div>
                   </div>
                   <div className="text-xs text-gray-500 pb-2">
-                    Divide o valor total da nota em parcelas mensais (30 dias).
+                    Divide{' '}
+                    <strong className="text-gray-700">
+                      {formatCurrency(currentTotal)}
+                    </strong>{' '}
+                    em parcelas mensais (30 dias).
                   </div>
                 </div>
 
