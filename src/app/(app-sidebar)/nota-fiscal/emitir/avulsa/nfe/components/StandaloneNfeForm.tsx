@@ -30,6 +30,7 @@ import { InvoicePayment } from '../../../[orderId]/components/InvoicePayment'
 import { InvoiceTransport } from '../../../[orderId]/components/InvoiceTransport'
 import { InvoiceTotalsSection } from '../../../[orderId]/components/InvoiceTotalsSection'
 import { InvoiceDownloadAuth } from '../../../[orderId]/components/InvoiceDownloadAuth'
+import { InvoiceEmissionConfigSection } from '../../../components/InvoiceEmissionConfigSection'
 
 // Standalone-specific components
 import {
@@ -228,6 +229,15 @@ export function StandaloneNfeForm() {
   const handleEmit = async () => {
     if (!data) return
 
+    const referencedKey = (data.emissao.nfeReferenciada || '').replace(
+      /\D/g,
+      '',
+    )
+    if (referencedKey.length > 0 && referencedKey.length !== 44) {
+      toast.error('A NF-e referenciada deve conter uma chave com 44 digitos.')
+      return
+    }
+
     if (data.items.length === 0) {
       toast.error('Adicione pelo menos um item antes de emitir a NF-e.')
       return
@@ -264,6 +274,12 @@ export function StandaloneNfeForm() {
         route: '/fiscal/nfe/emit-full',
         data: {
           operationNature: data.emissao.operationNature,
+          tipo: data.emissao.tipo,
+          finalidade: data.emissao.finalidade,
+          consumidorFinal: data.emissao.consumidorFinal,
+          presencaConsumidor: data.emissao.presencaConsumidor,
+          dataSaida: data.emissao.dataSaida,
+          nfeReferenciada: referencedKey || null,
           additionalInfo: data.informacoesComplementares,
           destCnpjCpf: data.destinatario.cnpjCpf,
           destNome: data.destinatario.razaoSocial,
@@ -453,7 +469,9 @@ export function StandaloneNfeForm() {
           {data && (
             <>
               {/* Emission Config */}
-              <Card className="border-none shadow-sm overflow-hidden">
+              <InvoiceEmissionConfigSection data={data} onUpdate={setData} />
+
+              <Card className="hidden">
                 <Accordion type="single" collapsible defaultValue="config">
                   <AccordionItem value="config" className="p-0 m-0 border-0">
                     <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">

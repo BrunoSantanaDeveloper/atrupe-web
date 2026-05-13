@@ -24,7 +24,7 @@ import { cn } from '@/lib/utils'
 
 // Components
 import { InvoiceFormHeader } from './InvoiceFormHeader'
-import { InvoiceConfigSection } from './InvoiceConfigSection'
+import { InvoiceEmissionConfigSection } from '../../components/InvoiceEmissionConfigSection'
 import { InvoiceRecipientSection } from './InvoiceRecipientSection'
 import { InvoiceItems } from './InvoiceItems'
 import { InvoicePayment } from './InvoicePayment'
@@ -170,6 +170,15 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
   const handleEmit = async () => {
     if (!data) return
 
+    const referencedKey = (data.emissao.nfeReferenciada || '').replace(
+      /\D/g,
+      '',
+    )
+    if (referencedKey.length > 0 && referencedKey.length !== 44) {
+      toast.error('A NF-e referenciada deve conter uma chave com 44 digitos.')
+      return
+    }
+
     const invalidItems = data.items.filter((item) => item.needsConfiguration)
     if (invalidItems.length > 0) {
       const itemNames = invalidItems.map((i) => i.description).join(', ')
@@ -201,6 +210,12 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           orderIds: data.orderIds,
           quotationId: data.quotationId,
           operationNature: data.emissao.operationNature,
+          tipo: data.emissao.tipo,
+          finalidade: data.emissao.finalidade,
+          consumidorFinal: data.emissao.consumidorFinal,
+          presencaConsumidor: data.emissao.presencaConsumidor,
+          dataSaida: data.emissao.dataSaida,
+          nfeReferenciada: referencedKey || null,
           additionalInfo: data.informacoesComplementares,
           destCnpjCpf: data.destinatario.cnpjCpf,
           destNome: data.destinatario.razaoSocial,
@@ -263,6 +278,30 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       })
     } finally {
       setIsEmitting(false)
+    }
+  }
+
+  const handleEmissionUpdate = async (
+    updatedData: NfePrepareResponse,
+    options?: { persist?: boolean },
+  ) => {
+    setData(updatedData)
+
+    if (!updatedData.draftId || options?.persist === false) return
+
+    try {
+      const result = await updateItemNew({
+        route: `/fiscal/nfe/draft/${updatedData.draftId}`,
+        data: { emissao: updatedData.emissao },
+      })
+
+      if (!result.success) {
+        throw new Error(result.message || 'Erro ao salvar configuracao')
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : 'Erro ao salvar configuracao'
+      toast.error(message)
     }
   }
 
@@ -370,7 +409,10 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
 
         {/* Form Sections */}
         <div className="space-y-6">
-          <InvoiceConfigSection data={data} />
+          <InvoiceEmissionConfigSection
+            data={data}
+            onUpdate={handleEmissionUpdate}
+          />
 
           <InvoiceRecipientSection
             destinatario={data.destinatario}

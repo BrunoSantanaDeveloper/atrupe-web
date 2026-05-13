@@ -21,7 +21,6 @@ import {
   IconBox,
   IconPlus,
   IconTrash,
-  IconPackage,
   IconTruckDelivery,
 } from '@tabler/icons-react'
 
@@ -57,15 +56,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
     })
   }
 
-  const updateEmission = (field: string, value: number) => {
-    onUpdate({
-      ...data,
-      emissao: {
-        ...data.emissao,
-        [field]: value,
-      },
-    })
-  }
+  const updateEmission = (_field: string, _value: number) => {}
 
   const addVolume = () => {
     const newVolume: NfePrepareVolume = {
@@ -139,6 +130,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                   <div className="space-y-2">
                     <Label>Modalidade do frete</Label>
                     <Select
+                      disabled
                       value={String(data.emissao.modalidadeFrete)}
                       onValueChange={(val) =>
                         updateEmission('modalidadeFrete', Number(val))
@@ -169,6 +161,9 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <p className="text-xs text-gray-500">
+                      Ajuste este campo em Configuracao de emissao.
+                    </p>
                   </div>
                 </div>
 

@@ -1,0 +1,347 @@
+'use client'
+
+// UI
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { buttonVariants } from '@/components/ui/button'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+
+// Icons
+import { IconSettings } from '@tabler/icons-react'
+
+// Libs
+import { cn } from '@/lib/utils'
+
+// Types
+import type {
+  NfePrepareEmissao,
+  NfePrepareResponse,
+} from '@/types/fiscal/nfe-prepare'
+
+interface Props {
+  data: NfePrepareResponse
+  onUpdate: (data: NfePrepareResponse, options?: { persist?: boolean }) => void
+}
+
+const finalityOptions = [
+  { value: '1', label: '1 - NF-e normal' },
+  { value: '2', label: '2 - NF-e complementar' },
+  { value: '3', label: '3 - NF-e de ajuste' },
+  { value: '4', label: '4 - Devolucao/Retorno' },
+]
+
+const consumerPresenceOptions = [
+  { value: '0', label: '0 - Nao se aplica' },
+  { value: '1', label: '1 - Operacao presencial' },
+  { value: '2', label: '2 - Operacao nao presencial, pela Internet' },
+  { value: '3', label: '3 - Operacao nao presencial, Teleatendimento' },
+  { value: '4', label: '4 - NFC-e com entrega a domicilio' },
+  { value: '9', label: '9 - Operacao nao presencial, outros' },
+]
+
+const freightOptions = [
+  { value: '0', label: '0 - Frete por conta do remetente (CIF)' },
+  { value: '1', label: '1 - Frete por conta do destinatario (FOB)' },
+  { value: '2', label: '2 - Frete por conta de terceiros' },
+  { value: '3', label: '3 - Transporte proprio pelo remetente' },
+  { value: '4', label: '4 - Transporte proprio pelo destinatario' },
+  { value: '9', label: '9 - Sem ocorrencia de transporte' },
+]
+
+function getDestinoLabel(destino: number) {
+  if (destino === 1) return '1 - Operacao interna'
+  if (destino === 2) return '2 - Operacao interestadual'
+  return String(destino || '')
+}
+
+function toDateTimeLocal(value?: string) {
+  if (!value) return ''
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const timezoneOffset = date.getTimezoneOffset() * 60000
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+}
+
+function fromDateTimeLocal(value: string) {
+  if (!value) return new Date().toISOString()
+  return new Date(value).toISOString()
+}
+
+function cleanNfeKey(value?: string | null) {
+  return (value || '').replace(/\D/g, '')
+}
+
+function ReadOnlyField({
+  label,
+  value,
+}: {
+  label: string
+  value: string | number
+}) {
+  return (
+    <div className="space-y-1">
+      <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+        {label}
+      </p>
+      <p className="text-sm font-semibold text-gray-900">{value || '-'}</p>
+    </div>
+  )
+}
+
+export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
+  const referencedKey = cleanNfeKey(data.emissao.nfeReferenciada)
+  const hasInvalidReferencedKey =
+    referencedKey.length > 0 && referencedKey.length !== 44
+
+  const updateEmission = <K extends keyof NfePrepareEmissao>(
+    field: K,
+    value: NfePrepareEmissao[K],
+    persist = true,
+  ) => {
+    onUpdate(
+      {
+        ...data,
+        emissao: {
+          ...data.emissao,
+          [field]: value,
+        },
+      },
+      { persist },
+    )
+  }
+
+  return (
+    <Card className="border-none shadow-sm overflow-hidden">
+      <Accordion type="single" collapsible defaultValue="config">
+        <AccordionItem value="config" className="p-0 m-0 border-0">
+          <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
+            <div className="flex gap-3 items-center">
+              <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
+              <CardTitle className="text-gray-700 font-semibold text-base">
+                Configuracao de emissao
+              </CardTitle>
+            </div>
+            <AccordionTrigger
+              className={cn(
+                buttonVariants({
+                  variant: 'neutralLight',
+                  size: 'icon',
+                }),
+                'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+              )}
+            />
+          </CardHeader>
+          <AccordionContent>
+            <CardContent className="p-0">
+              <div className="grid grid-cols-1 gap-6 border-b border-gray-100 p-6 sm:grid-cols-2 lg:grid-cols-4">
+                <ReadOnlyField label="Emissor" value={data.emissao.emissor} />
+                <ReadOnlyField label="CNPJ" value={data.emissao.emissorCnpj} />
+                <ReadOnlyField
+                  label="Proximo documento"
+                  value={data.emissao.proximoDocumento}
+                />
+                <ReadOnlyField
+                  label="Ambiente"
+                  value={
+                    data.emissao.ambiente === 'HOMOLOGACAO'
+                      ? 'Homologacao'
+                      : 'Producao'
+                  }
+                />
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 p-6 md:grid-cols-2 xl:grid-cols-4">
+                <div className="space-y-2">
+                  <Label>Data de saida/entrada</Label>
+                  <Input
+                    type="datetime-local"
+                    value={toDateTimeLocal(data.emissao.dataSaida)}
+                    onChange={(event) =>
+                      updateEmission(
+                        'dataSaida',
+                        fromDateTimeLocal(event.target.value),
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tipo</Label>
+                  <Select
+                    value={String(data.emissao.tipo)}
+                    onValueChange={(value) =>
+                      updateEmission('tipo', Number(value) as 0 | 1)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1 - Saida</SelectItem>
+                      <SelectItem value="0">0 - Entrada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Natureza da operacao</Label>
+                  <Input
+                    value={data.emissao.operationNature || ''}
+                    onChange={(event) =>
+                      updateEmission(
+                        'operationNature',
+                        event.target.value,
+                        false,
+                      )
+                    }
+                    onBlur={(event) =>
+                      updateEmission('operationNature', event.target.value)
+                    }
+                    placeholder="Venda de mercadoria"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Finalidade da emissao</Label>
+                  <Select
+                    value={String(data.emissao.finalidade)}
+                    onValueChange={(value) =>
+                      updateEmission('finalidade', Number(value))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {finalityOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Consumidor final</Label>
+                  <Select
+                    value={String(data.emissao.consumidorFinal)}
+                    onValueChange={(value) =>
+                      updateEmission('consumidorFinal', Number(value))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">0 - Nao</SelectItem>
+                      <SelectItem value="1">1 - Sim</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Presenca do consumidor</Label>
+                  <Select
+                    value={String(data.emissao.presencaConsumidor)}
+                    onValueChange={(value) =>
+                      updateEmission('presencaConsumidor', Number(value))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {consumerPresenceOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Modalidade de frete</Label>
+                  <Select
+                    value={String(data.emissao.modalidadeFrete)}
+                    onValueChange={(value) =>
+                      updateEmission('modalidadeFrete', Number(value))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {freightOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2 md:col-span-2 xl:col-span-3">
+                  <Label>NF-e referenciada</Label>
+                  <Input
+                    value={data.emissao.nfeReferenciada || ''}
+                    onChange={(event) =>
+                      updateEmission(
+                        'nfeReferenciada',
+                        cleanNfeKey(event.target.value),
+                        false,
+                      )
+                    }
+                    onBlur={(event) =>
+                      updateEmission(
+                        'nfeReferenciada',
+                        cleanNfeKey(event.target.value) || null,
+                      )
+                    }
+                    maxLength={44}
+                    placeholder="Chave de acesso com 44 digitos"
+                    className={cn(
+                      hasInvalidReferencedKey &&
+                        'border-error focus-visible:border-error focus-visible:ring-error',
+                    )}
+                  />
+                  {hasInvalidReferencedKey && (
+                    <p className="text-xs text-error-600">
+                      Informe uma chave de acesso com 44 digitos.
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-1 self-end">
+                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+                    Destino operacao
+                  </p>
+                  <p className="min-h-11 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700">
+                    {getDestinoLabel(data.emissao.destinoOperacao)}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </Card>
+  )
+}

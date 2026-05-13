@@ -5,7 +5,7 @@ export interface NfePrepareEmissao {
   emissorCnpj: string
   proximoDocumento: string
   serie: number
-  tipo: number
+  tipo: 0 | 1
   finalidade: number
   operationNature: string
   consumidorFinal: number
