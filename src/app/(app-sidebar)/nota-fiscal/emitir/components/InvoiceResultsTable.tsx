@@ -149,6 +149,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(
     () => new Set(),
   )
+  const [pendingClientSelectionId, setPendingClientSelectionId] = useState<
+    string | null
+  >(null)
 
   const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
@@ -204,8 +207,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   }, [fetchOrders])
 
   useEffect(() => {
+    if (pendingClientSelectionId) return
+
     setSelectedOrderIds(new Set())
   }, [
+    pendingClientSelectionId,
     selectedClientId,
     currentPage,
     currentSearch,
@@ -213,6 +219,12 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     startDate,
     endDate,
   ])
+
+  useEffect(() => {
+    if (selectedClientId && pendingClientSelectionId) {
+      setPendingClientSelectionId(null)
+    }
+  }, [pendingClientSelectionId, selectedClientId])
 
   const visibleOrders = useMemo(
     () => orderGroups.flatMap((group) => group.orders),
@@ -234,7 +246,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     0,
   )
 
-  const isMultiSelectEnabled = Boolean(selectedClientId)
+  const isClientScoped = Boolean(selectedClientId)
   const allSelectableSelected =
     selectableOrders.length > 0 &&
     selectableOrders.every((order) => selectedOrderIds.has(order.id))
@@ -242,13 +254,39 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     selectedOrderIds.has(order.id),
   )
 
-  const toggleOrderSelection = (orderId: string, checked: boolean) => {
+  const applyClientFilterFromOrder = (order: OrderItem) => {
+    const clientId = order.quotation?.client?.id
+
+    if (!clientId) {
+      toast.error('Esta OS não possui cliente vinculado')
+      return
+    }
+
+    const params = new URLSearchParams(searchParams as Record<string, string>)
+    params.set('clientId', clientId)
+    params.set('nfeStatus', 'NAO_EMITIDA')
+    params.delete('page')
+    params.delete('search')
+    params.delete('startDate')
+    params.delete('endDate')
+
+    setPendingClientSelectionId(order.id)
+    setSelectedOrderIds(new Set([order.id]))
+    router.push(`?${params.toString()}`)
+  }
+
+  const toggleOrderSelection = (order: OrderItem, checked: boolean) => {
+    if (checked && !selectedClientId) {
+      applyClientFilterFromOrder(order)
+      return
+    }
+
     setSelectedOrderIds((current) => {
       const next = new Set(current)
       if (checked) {
-        next.add(orderId)
+        next.add(order.id)
       } else {
-        next.delete(orderId)
+        next.delete(order.id)
       }
       return next
     })
@@ -395,8 +433,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           <Checkbox
                             id="select-all"
                             disabled={
-                              !isMultiSelectEnabled ||
-                              selectableOrders.length === 0
+                              !isClientScoped || selectableOrders.length === 0
                             }
                             checked={
                               allSelectableSelected
@@ -411,7 +448,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           />
                         </span>
                       </TooltipTrigger>
-                      {!isMultiSelectEnabled && (
+                      {false && !isClientScoped && (
                         <TooltipContent>
                           <p>
                             Selecione um cliente para habilitar a seleÃ§Ã£o
@@ -455,21 +492,18 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 <span className="inline-flex">
                                   <Checkbox
                                     id={`check-${order.id}`}
-                                    disabled={
-                                      !isMultiSelectEnabled ||
-                                      !canSelectForConsolidation(order)
-                                    }
+                                    disabled={!canSelectForConsolidation(order)}
                                     checked={selectedOrderIds.has(order.id)}
                                     onCheckedChange={(checked) =>
                                       toggleOrderSelection(
-                                        order.id,
+                                        order,
                                         checked === true,
                                       )
                                     }
                                   />
                                 </span>
                               </TooltipTrigger>
-                              {!isMultiSelectEnabled && (
+                              {false && !isClientScoped && (
                                 <TooltipContent>
                                   <p>
                                     Selecione um cliente para habilitar a
