@@ -321,43 +321,56 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     }
   }
 
-  // Handle recipient update — persist to draft + optionally update client cadastro
+  // Handle recipient update
+  // - updateClient: false → apenas atualiza estado local, SEM chamada de API
+  // - updateClient: true  → persiste no draft + atualiza cadastro do cliente
   const handleRecipientSave = async (
     updatedDestinatario: NfePrepareDestinatario,
     options: { updateClient: boolean },
   ) => {
-    if (!data || !data.draftId) return
+    if (!data) return
 
+    if (!options.updateClient) {
+      // ── "Alterar somente para NF" — apenas estado local ──────────────────
+      setData({ ...data, destinatario: updatedDestinatario })
+      toast.success('Destinatário alterado para esta NF')
+      return
+    }
+
+    // ── "Salvar no Cliente" — persiste no draft + atualiza cadastro ────────
     try {
-      // 1. Persist to draft
-      const result = await updateItemNew({
-        route: `/fiscal/nfe/draft/${data.draftId}`,
-        data: { destinatario: updatedDestinatario },
-      })
-
-      if (!result.success) {
-        throw new Error(result.message || 'Erro ao salvar destinatário')
-      }
-
-      // 2. Optionally update client cadastro
-      if (options.updateClient && data.clientId) {
-        try {
-          await updateItemNew({
-            route: `/client/${data.clientId}`,
-            data: {
-              general: {
-                stateRegistration: updatedDestinatario.ie,
-              },
-            },
-          })
-          toast.success('Destinatário e cadastro do cliente atualizados')
-        } catch {
-          toast.warning(
-            'Destinatário salvo, mas não foi possível atualizar o cadastro do cliente.',
+      // 1. Persiste no draft (se existir)
+      if (data.draftId) {
+        const result = await updateItemNew({
+          route: `/fiscal/nfe/draft/${data.draftId}`,
+          data: { destinatario: updatedDestinatario },
+        })
+        if (!result.success) {
+          throw new Error(
+            result.message || 'Erro ao salvar destinatário no draft',
           )
         }
+      }
+
+      // 2. Atualiza cadastro do cliente
+      if (data.clientId) {
+        await updateItemNew({
+          route: `/client/${data.clientId}`,
+          data: {
+            general: {
+              name: updatedDestinatario.razaoSocial,
+              email: updatedDestinatario.email,
+              phone: updatedDestinatario.telefone,
+              stateRegistration: updatedDestinatario.ie,
+            },
+          },
+        })
+        toast.success('Destinatário e cadastro do cliente atualizados')
       } else {
-        toast.success('Destinatário salvo com sucesso')
+        // Sem clientId vinculado — avisa mas mantém o dado na NF
+        toast.warning(
+          'Dados salvos na NF, mas não foi possível identificar o cliente para atualizar o cadastro.',
+        )
       }
 
       setData({ ...data, destinatario: updatedDestinatario })

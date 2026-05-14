@@ -28,6 +28,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogDescription,
+  DialogBody,
 } from '@/components/ui/dialog'
 
 // Icons
@@ -296,23 +297,25 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                           esta NF-e.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="py-2">
-                        <Input
-                          autoFocus
-                          value={customDraft}
-                          onChange={(e) => setCustomDraft(e.target.value)}
-                          placeholder="Ex: Venda de mercadoria"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && customDraft.trim()) {
-                              updateEmission(
-                                'operationNature',
-                                customDraft.trim(),
-                              )
-                              setCustomModalOpen(false)
-                            }
-                          }}
-                        />
-                      </div>
+                      <DialogBody>
+                        <div className="py-2">
+                          <Input
+                            autoFocus
+                            value={customDraft}
+                            onChange={(e) => setCustomDraft(e.target.value)}
+                            placeholder="Ex: Venda de mercadoria"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && customDraft.trim()) {
+                                updateEmission(
+                                  'operationNature',
+                                  customDraft.trim(),
+                                )
+                                setCustomModalOpen(false)
+                              }
+                            }}
+                          />
+                        </div>
+                      </DialogBody>
                       <DialogFooter>
                         <Button
                           variant="neutralOutline"

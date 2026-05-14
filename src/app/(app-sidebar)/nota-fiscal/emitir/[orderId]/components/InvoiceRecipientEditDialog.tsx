@@ -118,7 +118,7 @@ export function InvoiceRecipientEditDialog({
   open,
   onOpenChange,
   destinatario,
-  clientId,
+  clientId: _clientId,
   onSave,
 }: Props) {
   const { searchByDocument } = useDocumentSearch()
@@ -386,18 +386,16 @@ export function InvoiceRecipientEditDialog({
               Alterar somente para NF
             </Button>
 
-            {/* Salvar no Cliente — persiste no cadastro */}
-            {clientId && (
-              <Button
-                type="button"
-                RightIcon={IconUserCheck}
-                onClick={handleSaveWithClient}
-                disabled={form.formState.isSubmitting || isSearchingDocument}
-                isLoading={form.formState.isSubmitting}
-              >
-                Salvar no Cliente
-              </Button>
-            )}
+            {/* Salvar no Cliente — persiste no cadastro do cliente */}
+            <Button
+              type="button"
+              RightIcon={IconUserCheck}
+              onClick={handleSaveWithClient}
+              disabled={form.formState.isSubmitting || isSearchingDocument}
+              isLoading={form.formState.isSubmitting}
+            >
+              Salvar no Cliente
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

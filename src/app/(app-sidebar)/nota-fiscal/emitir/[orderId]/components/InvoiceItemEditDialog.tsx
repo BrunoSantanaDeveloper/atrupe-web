@@ -19,7 +19,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Form } from '@/components/ui/form'
-import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Icons
 import {
@@ -310,85 +309,83 @@ export function InvoiceItemEditDialog({
           </Tabs>
         </div>
 
-        <ScrollArea className="flex-1">
-          <DialogBody>
-            <Tabs
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v as 'valores' | 'fiscal')}
-            >
-              {/* Aba Valores */}
-              <TabsContent value="valores" className="mt-0">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Quantidade — campo numérico simples (sem R$) */}
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-quantity">Quantidade</Label>
-                    <Input
-                      id="edit-quantity"
-                      type="number"
-                      min={0.001}
-                      step="any"
-                      value={formData.quantity}
-                      onChange={(e) =>
-                        updateField('quantity', Number(e.target.value))
-                      }
-                    />
-                  </div>
-
-                  <CurrencyInput
-                    id="edit-unit-value"
-                    label="Valor Unitário"
-                    value={formData.unitValue}
-                    onChange={(v) => updateField('unitValue', v)}
-                  />
-
-                  <CurrencyInput
-                    id="edit-discount"
-                    label="Desconto"
-                    value={formData.discount}
-                    onChange={(v) => updateField('discount', v)}
-                  />
-
-                  <CurrencyInput
-                    id="edit-freight"
-                    label="Frete"
-                    value={formData.freight}
-                    onChange={(v) => updateField('freight', v)}
-                  />
-
-                  <CurrencyInput
-                    id="edit-insurance"
-                    label="Seguro"
-                    value={formData.insurance}
-                    onChange={(v) => updateField('insurance', v)}
-                  />
-
-                  <CurrencyInput
-                    id="edit-total-value"
-                    label="Valor Total (calculado)"
-                    value={formData.totalValue}
-                    onChange={() => {}}
-                    disabled
+        <DialogBody className="flex-1 p-6 pb-2">
+          <Tabs
+            value={activeTab}
+            onValueChange={(v) => setActiveTab(v as 'valores' | 'fiscal')}
+          >
+            {/* Aba Valores */}
+            <TabsContent value="valores" className="mt-0">
+              <div className="grid grid-cols-2 gap-4 pb-4">
+                {/* Quantidade — campo numérico simples (sem R$) */}
+                <div className="space-y-2">
+                  <Label htmlFor="edit-quantity">Quantidade</Label>
+                  <Input
+                    id="edit-quantity"
+                    type="number"
+                    min={0.001}
+                    step="any"
+                    value={formData.quantity}
+                    onChange={(e) =>
+                      updateField('quantity', Number(e.target.value))
+                    }
                   />
                 </div>
-              </TabsContent>
 
-              {/* Aba Dados Fiscais */}
-              <TabsContent value="fiscal" className="mt-0">
-                <Form {...fiscalForm}>
-                  <form
-                    id="edit-item-fiscal"
-                    onSubmit={(e) => e.preventDefault()}
-                    noValidate
-                  >
-                    <ProductFiscalTab />
-                  </form>
-                </Form>
-              </TabsContent>
-            </Tabs>
-          </DialogBody>
-        </ScrollArea>
+                <CurrencyInput
+                  id="edit-unit-value"
+                  label="Valor Unitário"
+                  value={formData.unitValue}
+                  onChange={(v) => updateField('unitValue', v)}
+                />
 
-        <DialogFooter className="flex-col sm:flex-row gap-2">
+                <CurrencyInput
+                  id="edit-discount"
+                  label="Desconto"
+                  value={formData.discount}
+                  onChange={(v) => updateField('discount', v)}
+                />
+
+                <CurrencyInput
+                  id="edit-freight"
+                  label="Frete"
+                  value={formData.freight}
+                  onChange={(v) => updateField('freight', v)}
+                />
+
+                <CurrencyInput
+                  id="edit-insurance"
+                  label="Seguro"
+                  value={formData.insurance}
+                  onChange={(v) => updateField('insurance', v)}
+                />
+
+                <CurrencyInput
+                  id="edit-total-value"
+                  label="Valor Total (calculado)"
+                  value={formData.totalValue}
+                  onChange={() => {}}
+                  disabled
+                />
+              </div>
+            </TabsContent>
+
+            {/* Aba Dados Fiscais */}
+            <TabsContent value="fiscal" className="mt-0 pb-4">
+              <Form {...fiscalForm}>
+                <form
+                  id="edit-item-fiscal"
+                  onSubmit={(e) => e.preventDefault()}
+                  noValidate
+                >
+                  <ProductFiscalTab />
+                </form>
+              </Form>
+            </TabsContent>
+          </Tabs>
+        </DialogBody>
+
+        <DialogFooter className="flex-col sm:flex-row gap-2 pt-4">
           <Button
             type="button"
             variant="neutralOutline"
