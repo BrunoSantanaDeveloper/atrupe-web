@@ -148,10 +148,9 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
   // Determina se o valor atual está na lista de naturezas cadastradas
   const currentNature = data.emissao.operationNature || ''
   const isInList = naturezas.some((n) => n.description === currentNature)
-  // Quando não está na lista e há naturezas carregadas, é modo custom
-  const isCustomMode = currentNature !== '' && !isInList && naturezas.length > 0
-  const selectValue =
-    currentNature === '' ? '' : isInList ? currentNature : CUSTOM_VALUE
+  // Quando não está na lista e não é vazio, é modo custom
+  const isCustomMode = currentNature !== '' && !isInList
+  const selectValue = currentNature
 
   const updateEmission = <K extends keyof NfePrepareEmissao>(
     field: K,
@@ -258,12 +257,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                     }}
                   >
                     <SelectTrigger>
-                      {/* Quando está em modo custom, exibe o texto digitado */}
-                      {isCustomMode ? (
-                        <span className="text-sm">{currentNature}</span>
-                      ) : (
-                        <SelectValue placeholder="Selecione a natureza da operação" />
-                      )}
+                      <SelectValue placeholder="Selecione a natureza da operação" />
                     </SelectTrigger>
                     <SelectContent>
                       {naturezas.map((n) => (
@@ -271,13 +265,18 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                           {n.description}
                         </SelectItem>
                       ))}
-                      {naturezas.length === 0 && (
-                        <SelectItem value={CUSTOM_VALUE} disabled>
+                      {isCustomMode && (
+                        <SelectItem value={currentNature}>
+                          {currentNature} (Personalizado)
+                        </SelectItem>
+                      )}
+                      {naturezas.length === 0 && !isCustomMode && (
+                        <SelectItem value="__empty__" disabled>
                           Nenhuma natureza cadastrada
                         </SelectItem>
                       )}
                       <SelectItem value={CUSTOM_VALUE}>
-                        Outro (texto livre)
+                        + Inserir texto livre
                       </SelectItem>
                     </SelectContent>
                   </Select>
