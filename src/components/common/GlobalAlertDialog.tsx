@@ -51,9 +51,11 @@ export function GlobalAlertDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>
-            {cancelLabel}
-          </AlertDialogCancel>
+          {cancelLabel && (
+            <AlertDialogCancel onClick={onCancel}>
+              {cancelLabel}
+            </AlertDialogCancel>
+          )}
           {confirmLabel && (
             <AlertDialogAction
               onClick={onConfirm}
