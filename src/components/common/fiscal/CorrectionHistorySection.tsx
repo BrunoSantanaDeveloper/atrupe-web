@@ -9,7 +9,7 @@ import { FileEdit, Calendar, Hash } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useQuery } from '@tanstack/react-query'
-import { api } from '@/services/api'
+import { getItem } from '@/actions/_cruds'
 import { NfeCorrectionEvent } from '@/types/fiscal/nfe'
 
 interface CorrectionHistorySectionProps {
@@ -25,8 +25,11 @@ export function CorrectionHistorySection({
   const { data: corrections = [], isLoading } = useQuery<NfeCorrectionEvent[]>({
     queryKey: ['nfe-corrections', nfeId],
     queryFn: async () => {
-      const response = await api.get(`/fiscal/nfe/${nfeId}/corrections`)
-      return response.data
+      const result = await getItem({
+        route: `/fiscal/nfe/${nfeId}/corrections`,
+      })
+      if (!result.success) throw new Error(result.message)
+      return result.data || []
     },
     enabled: !!nfeId && ['AUTHORIZED', 'CORRECTION_SENT'].includes(status),
   })

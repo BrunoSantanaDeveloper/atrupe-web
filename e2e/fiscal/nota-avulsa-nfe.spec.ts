@@ -368,7 +368,7 @@ test.describe('Nota Avulsa - NF-e (/nota-fiscal/emitir/avulsa/nfe)', () => {
       )
       .first()
 
-    const clientTrigger = clientCombobox.or(clientButton)
+    const clientTrigger = clientCombobox
 
     const isVisible = await clientTrigger.isVisible().catch(() => false)
 
