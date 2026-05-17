@@ -48,6 +48,7 @@ import {
   IconX,
   IconSend,
   IconBan,
+  IconFilePlus,
 } from '@tabler/icons-react'
 
 // Actions
@@ -77,7 +78,9 @@ export function StandaloneNfeForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const devolutionOf = searchParams.get('devolutionOf')
+  const complementaryOf = searchParams.get('complementaryOf')
   const isDevolution = !!devolutionOf
+  const isComplementary = !!complementaryOf
 
   // Fetch emitter defaults on mount
   const fetchData = useCallback(
@@ -89,6 +92,8 @@ export function StandaloneNfeForm() {
         let route: string
         if (devolutionOf) {
           route = `/fiscal/nfe/${devolutionOf}/prepare-devolution`
+        } else if (complementaryOf) {
+          route = `/fiscal/nfe/${complementaryOf}/prepare-complementary`
         } else if (clientId) {
           route = `/fiscal/nfe/prepare-standalone?clientId=${clientId}`
         } else {
@@ -118,7 +123,7 @@ export function StandaloneNfeForm() {
         setIsLoading(false)
       }
     },
-    [devolutionOf],
+    [devolutionOf, complementaryOf],
   )
 
   useEffect(() => {
@@ -402,14 +407,21 @@ export function StandaloneNfeForm() {
                 <h1 className="text-xl font-semibold text-gray-900">
                   {isDevolution
                     ? 'NF-e de Devolução'
-                    : 'Nota Fiscal Avulsa - NF-e'}
+                    : isComplementary
+                      ? 'NF-e Complementar'
+                      : 'Nota Fiscal Avulsa - NF-e'}
                 </h1>
                 {isDevolution && (
                   <Badge variant="warningLight" className="ml-2">
                     Devolução
                   </Badge>
                 )}
-                {!isDevolution && (
+                {isComplementary && (
+                  <Badge variant="blueLight" className="ml-2">
+                    Complementar
+                  </Badge>
+                )}
+                {!isDevolution && !isComplementary && (
                   <Badge variant="blueLight" className="ml-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
                     Em digitação
@@ -446,6 +458,21 @@ export function StandaloneNfeForm() {
               Devolução referente à NF-e nº {data.originalNfeNumero}
               {data.originalNfeChave &&
                 ` — chave: ${data.originalNfeChave.slice(0, 8)}...`}
+            </p>
+          </div>
+        )}
+
+        {isComplementary && data?.originalNfeNumero && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
+            <p className="text-blue-800 text-sm font-medium flex items-center gap-2">
+              <IconFilePlus size={16} />
+              Complementar à NF-e nº {data.originalNfeNumero}
+              {data.originalNfeChave &&
+                ` — chave: ${data.originalNfeChave.slice(0, 8)}...`}
+            </p>
+            <p className="text-blue-600 text-xs mt-1">
+              Adicione apenas os itens com a diferença de valor ou quantidade em
+              relação à NF original.
             </p>
           </div>
         )}

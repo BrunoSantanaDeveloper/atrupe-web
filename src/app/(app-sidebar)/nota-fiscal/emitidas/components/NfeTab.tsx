@@ -42,6 +42,7 @@ import {
   IconPencil,
   IconAlertCircle,
   IconArrowLeft,
+  IconFilePlus,
 } from '@tabler/icons-react'
 
 // Components
@@ -161,6 +162,16 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
             >
               <IconArrowLeft className="mr-2 h-4 w-4" />
               Devolver NF-e
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/nota-fiscal/emitir/avulsa/nfe?complementaryOf=${item.id}`,
+                )
+              }
+            >
+              <IconFilePlus className="mr-2 h-4 w-4" />
+              Emitir NF Complementar
             </DropdownMenuItem>
           </>
         )}

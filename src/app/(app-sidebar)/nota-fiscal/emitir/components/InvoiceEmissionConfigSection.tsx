@@ -379,6 +379,13 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                       Entrada&quot;.
                     </p>
                   )}
+                  {data.emissao.finalidade === 2 &&
+                    !data.emissao.nfeReferenciada && (
+                      <p className="text-xs text-warning-600 flex items-center gap-1 mt-1">
+                        <IconAlertTriangle size={13} />
+                        NF-e complementar requer a chave da NF-e original.
+                      </p>
+                    )}
                 </div>
 
                 <div className="space-y-2">
