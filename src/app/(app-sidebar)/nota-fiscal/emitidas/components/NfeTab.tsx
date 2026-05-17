@@ -44,7 +44,7 @@ import {
 
 // Components
 import { InvoiceTable } from './InvoiceTable'
-import { CorrectionLetterDialog } from './CorrectionLetterDialog'
+import { CorrectionLetterDialog } from '@/components/common/fiscal/CorrectionLetterDialog'
 import { CancelNfeDialog } from './CancelNfeDialog'
 import { InutilizarDialog } from './InutilizarDialog'
 

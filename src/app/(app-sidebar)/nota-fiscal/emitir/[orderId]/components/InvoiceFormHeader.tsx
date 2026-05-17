@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
-import { IconX, IconArrowLeft, IconSend } from '@tabler/icons-react'
+import { IconX, IconArrowLeft, IconSend, IconPencil } from '@tabler/icons-react'
 
 // Actions
 import { deleteItemNew } from '@/actions/_cruds'
@@ -24,16 +24,19 @@ interface InvoiceFormHeaderProps {
   data: NfePrepareResponse
   isEmitting: boolean
   onEmit: () => void
+  onCorrectionLetter?: () => void
 }
 
 function getStatusBadgeVariant(status?: string) {
   if (status === 'AUTHORIZED') return 'success' as const
+  if (status === 'CORRECTION_SENT') return 'successLight' as const
   if (status === 'REJECTED') return 'error' as const
   return 'blueLight' as const
 }
 
 function getStatusBadgeLabel(status?: string) {
   if (status === 'AUTHORIZED') return 'NF-e Autorizada'
+  if (status === 'CORRECTION_SENT') return 'CC-e Enviada'
   if (status === 'REJECTED') return 'NF-e Rejeitada'
   return 'Em digitação'
 }
@@ -42,6 +45,7 @@ export function InvoiceFormHeader({
   data,
   isEmitting,
   onEmit,
+  onCorrectionLetter,
 }: InvoiceFormHeaderProps) {
   const router = useRouter()
   const [isCanceling, setIsCanceling] = useState(false)
@@ -105,7 +109,7 @@ export function InvoiceFormHeader({
         </div>
       </div>
 
-      {showActionBar && (
+      {showActionBar ? (
         <div className="flex justify-between items-center">
           <CustomButton
             icon={IconX}
@@ -124,7 +128,17 @@ export function InvoiceFormHeader({
             isLoading={isEmitting}
           />
         </div>
-      )}
+      ) : data.existingNfe?.status === 'AUTHORIZED' ||
+        data.existingNfe?.status === 'CORRECTION_SENT' ? (
+        <div className="flex justify-end items-center">
+          <CustomButton
+            icon={IconPencil}
+            title="Carta de Correção"
+            iconVariant="neutralOutline"
+            onClick={onCorrectionLetter}
+          />
+        </div>
+      ) : null}
     </div>
   )
 }

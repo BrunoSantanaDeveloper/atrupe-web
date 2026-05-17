@@ -42,6 +42,7 @@ import { InvoiceTransport } from './InvoiceTransport'
 import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
 import { InvoiceTotalsSection } from './InvoiceTotalsSection'
 import { InvoiceRecipientEditDialog } from './InvoiceRecipientEditDialog'
+import { CorrectionLetterDialog } from '@/components/common/fiscal/CorrectionLetterDialog'
 import {
   ClientSelect,
   clientToNfeRecipient,
@@ -84,6 +85,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
   >(null)
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
   const [isClientChangeOpen, setIsClientChangeOpen] = useState(false)
+  const [correctionDialogOpen, setCorrectionDialogOpen] = useState(false)
   const isConsolidated = Boolean(orderIds?.length)
 
   // Fetch data on mount - create or get draft
@@ -498,6 +500,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           data={data}
           isEmitting={isEmitting}
           onEmit={handleEmit}
+          onCorrectionLetter={() => setCorrectionDialogOpen(true)}
         />
 
         {/* Alert Area */}
@@ -621,6 +624,14 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           </DialogBody>
         </DialogContent>
       </Dialog>
+
+      {/* Correction Letter Dialog */}
+      <CorrectionLetterDialog
+        open={correctionDialogOpen}
+        onOpenChange={setCorrectionDialogOpen}
+        nfeId={data?.existingNfe?.id || null}
+        onSuccess={fetchData}
+      />
     </TooltipProvider>
   )
 }
