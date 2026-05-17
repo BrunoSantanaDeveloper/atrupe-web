@@ -43,6 +43,7 @@ import { InvoiceDownloadAuth } from './InvoiceDownloadAuth'
 import { InvoiceTotalsSection } from './InvoiceTotalsSection'
 import { InvoiceRecipientEditDialog } from './InvoiceRecipientEditDialog'
 import { CorrectionLetterDialog } from '@/components/common/fiscal/CorrectionLetterDialog'
+import { CorrectionHistorySection } from '@/components/common/fiscal/CorrectionHistorySection'
 import {
   ClientSelect,
   clientToNfeRecipient,
@@ -502,6 +503,14 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           onEmit={handleEmit}
           onCorrectionLetter={() => setCorrectionDialogOpen(true)}
         />
+
+        {/* Correction History */}
+        {data.existingNfe && (
+          <CorrectionHistorySection
+            nfeId={data.existingNfe.id}
+            status={data.existingNfe.status}
+          />
+        )}
 
         {/* Alert Area */}
         {data.emissao.ambiente === 'HOMOLOGACAO' && (

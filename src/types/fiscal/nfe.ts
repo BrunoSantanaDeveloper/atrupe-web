@@ -11,6 +11,16 @@ export type NfeStatus =
   | 'ERROR'
   | 'CORRECTION_SENT'
 
+export interface NfeCorrectionEvent {
+  id: string
+  nfeId: string
+  sequenciaEvento: number
+  correcao: string
+  protocolo?: string
+  dataEvento?: string
+  createdAt: string
+}
+
 export interface Nfe {
   id: string
   companyId: string
@@ -42,6 +52,13 @@ export interface Nfe {
   // Motivos
   motivoRejeicao?: string
   motivoCancelamento?: string
+
+  // Histórico de Correções
+  cartaCorrecao?: string
+  dataCorrecao?: string
+  protocoloCorrecao?: string
+  sequenciaCorrecao?: number
+  correctionEvents?: NfeCorrectionEvent[]
 
   // Relations (simplified)
   quotation?: {
