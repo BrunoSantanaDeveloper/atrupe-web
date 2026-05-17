@@ -32,7 +32,11 @@ import {
 } from '@/components/ui/dialog'
 
 // Icons
-import { IconSettings } from '@tabler/icons-react'
+import {
+  IconSettings,
+  IconAlertTriangle,
+  IconInfoCircle,
+} from '@tabler/icons-react'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -361,6 +365,20 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
+                  {data.emissao.finalidade === 4 &&
+                    !data.emissao.nfeReferenciada && (
+                      <p className="text-xs text-warning-600 flex items-center gap-1 mt-1">
+                        <IconAlertTriangle size={13} />
+                        NF-e de devolução requer a chave da NF-e original.
+                      </p>
+                    )}
+                  {data.emissao.finalidade === 4 && data.emissao.tipo !== 0 && (
+                    <p className="text-xs text-blue-600 flex items-center gap-1 mt-1">
+                      <IconInfoCircle size={13} />
+                      Para devolução de venda, o tipo deve ser &quot;0 -
+                      Entrada&quot;.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">

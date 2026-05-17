@@ -137,4 +137,8 @@ export interface NfePrepareResponse {
   isDraft?: boolean
   // Client reference (used for "update client" feature in recipient dialog)
   clientId?: string
+  // Devolution reference
+  originalNfeId?: string
+  originalNfeNumero?: number
+  originalNfeChave?: string
 }

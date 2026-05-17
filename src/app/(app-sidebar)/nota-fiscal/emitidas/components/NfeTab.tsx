@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 // UI
@@ -40,6 +41,7 @@ import {
   IconHash,
   IconPencil,
   IconAlertCircle,
+  IconArrowLeft,
 } from '@tabler/icons-react'
 
 // Components
@@ -58,6 +60,7 @@ interface NfeTabProps {
 }
 
 export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
+  const router = useRouter()
   const [correctionDialogOpen, setCorrectionDialogOpen] = useState(false)
   const [correctionNfeId, setCorrectionNfeId] = useState<string | null>(null)
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
@@ -139,15 +142,27 @@ export function NfeTab({ items, isLoading, onRefetch }: NfeTabProps) {
         )}
         <DropdownMenuSeparator />
         {item.status === 'AUTHORIZED' && (
-          <DropdownMenuItem
-            onClick={() => {
-              setCorrectionNfeId(item.id)
-              setCorrectionDialogOpen(true)
-            }}
-          >
-            <IconPencil className="mr-2 h-4 w-4" />
-            Carta de Correção
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem
+              onClick={() => {
+                setCorrectionNfeId(item.id)
+                setCorrectionDialogOpen(true)
+              }}
+            >
+              <IconPencil className="mr-2 h-4 w-4" />
+              Carta de Correção
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() =>
+                router.push(
+                  `/nota-fiscal/emitir/avulsa/nfe?devolutionOf=${item.id}`,
+                )
+              }
+            >
+              <IconArrowLeft className="mr-2 h-4 w-4" />
+              Devolver NF-e
+            </DropdownMenuItem>
+          </>
         )}
         <DropdownMenuItem
           className="text-error-600 focus:text-error-600 focus:bg-error-50"

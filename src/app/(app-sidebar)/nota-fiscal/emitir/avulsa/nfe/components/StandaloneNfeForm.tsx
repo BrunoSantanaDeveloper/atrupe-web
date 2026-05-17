@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect, useCallback } from 'react'
 
 // Hooks
@@ -75,40 +75,51 @@ export function StandaloneNfeForm() {
   const [isRecipientEditOpen, setIsRecipientEditOpen] = useState(false)
 
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const devolutionOf = searchParams.get('devolutionOf')
+  const isDevolution = !!devolutionOf
 
   // Fetch emitter defaults on mount
-  const fetchData = useCallback(async (clientId?: string) => {
-    setIsLoading(true)
-    setError(null)
+  const fetchData = useCallback(
+    async (clientId?: string) => {
+      setIsLoading(true)
+      setError(null)
 
-    try {
-      const route = clientId
-        ? `/fiscal/nfe/prepare-standalone?clientId=${clientId}`
-        : '/fiscal/nfe/prepare-standalone'
+      try {
+        let route: string
+        if (devolutionOf) {
+          route = `/fiscal/nfe/${devolutionOf}/prepare-devolution`
+        } else if (clientId) {
+          route = `/fiscal/nfe/prepare-standalone?clientId=${clientId}`
+        } else {
+          route = '/fiscal/nfe/prepare-standalone'
+        }
 
-      const result = await getItem({ route })
+        const result = await getItem({ route })
 
-      if (!result.success) {
-        throw new Error(result.message || 'Erro ao carregar dados da NF-e')
+        if (!result.success) {
+          throw new Error(result.message || 'Erro ao carregar dados da NF-e')
+        }
+
+        const preparedData: NfePrepareResponse = {
+          ...result.data,
+          volumes: result.data.volumes || [],
+          duplicatas: result.data.duplicatas || [],
+          autXml: result.data.autXml || [],
+        }
+
+        setData(preparedData)
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Erro ao carregar dados'
+        setError(message)
+        toast.error(message)
+      } finally {
+        setIsLoading(false)
       }
-
-      const preparedData: NfePrepareResponse = {
-        ...result.data,
-        volumes: result.data.volumes || [],
-        duplicatas: result.data.duplicatas || [],
-        autXml: result.data.autXml || [],
-      }
-
-      setData(preparedData)
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Erro ao carregar dados'
-      setError(message)
-      toast.error(message)
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+    },
+    [devolutionOf],
+  )
 
   useEffect(() => {
     fetchData()
@@ -389,12 +400,21 @@ export function StandaloneNfeForm() {
               </Button>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold text-gray-900">
-                  Nota Fiscal Avulsa - NF-e
+                  {isDevolution
+                    ? 'NF-e de Devolução'
+                    : 'Nota Fiscal Avulsa - NF-e'}
                 </h1>
-                <Badge variant="blueLight" className="ml-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
-                  Em digitação
-                </Badge>
+                {isDevolution && (
+                  <Badge variant="warningLight" className="ml-2">
+                    Devolução
+                  </Badge>
+                )}
+                {!isDevolution && (
+                  <Badge variant="blueLight" className="ml-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
+                    Em digitação
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -419,6 +439,17 @@ export function StandaloneNfeForm() {
         </div>
 
         {/* Alert Area */}
+        {isDevolution && data?.originalNfeNumero && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
+            <p className="text-blue-800 text-sm font-medium flex items-center gap-2">
+              <IconArrowLeft size={16} />
+              Devolução referente à NF-e nº {data.originalNfeNumero}
+              {data.originalNfeChave &&
+                ` — chave: ${data.originalNfeChave.slice(0, 8)}...`}
+            </p>
+          </div>
+        )}
+
         {data?.emissao.ambiente === 'HOMOLOGACAO' && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
