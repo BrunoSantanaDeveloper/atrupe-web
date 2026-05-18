@@ -49,6 +49,7 @@ import {
   IconSend,
   IconBan,
   IconFilePlus,
+  IconEdit,
 } from '@tabler/icons-react'
 
 // Actions
@@ -79,8 +80,10 @@ export function StandaloneNfeForm() {
   const searchParams = useSearchParams()
   const devolutionOf = searchParams.get('devolutionOf')
   const complementaryOf = searchParams.get('complementaryOf')
+  const reissueOf = searchParams.get('reissueOf')
   const isDevolution = !!devolutionOf
   const isComplementary = !!complementaryOf
+  const isReissue = !!reissueOf
 
   // Fetch emitter defaults on mount
   const fetchData = useCallback(
@@ -94,6 +97,8 @@ export function StandaloneNfeForm() {
           route = `/fiscal/nfe/${devolutionOf}/prepare-devolution`
         } else if (complementaryOf) {
           route = `/fiscal/nfe/${complementaryOf}/prepare-complementary`
+        } else if (reissueOf) {
+          route = `/fiscal/nfe/${reissueOf}/prepare-reissue`
         } else if (clientId) {
           route = `/fiscal/nfe/prepare-standalone?clientId=${clientId}`
         } else {
@@ -123,7 +128,7 @@ export function StandaloneNfeForm() {
         setIsLoading(false)
       }
     },
-    [devolutionOf, complementaryOf],
+    [devolutionOf, complementaryOf, reissueOf],
   )
 
   useEffect(() => {
@@ -474,6 +479,23 @@ export function StandaloneNfeForm() {
               Adicione apenas os itens com a diferença de valor ou quantidade em
               relação à NF original.
             </p>
+          </div>
+        )}
+
+        {isReissue && data?.originalNfeNumero && (
+          <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
+            <p className="text-warning-800 text-sm font-medium flex items-center gap-2">
+              <IconEdit size={16} />
+              Corrigindo NF-e Rejeitada nº {data.originalNfeNumero}
+            </p>
+            {data.motivoRejeicao && (
+              <p className="text-warning-700 text-xs mt-2 p-2 bg-white/60 border border-warning-200 rounded">
+                <strong className="block text-[10px] uppercase mb-0.5">
+                  Motivo da Rejeição SEFAZ:
+                </strong>
+                {data.motivoRejeicao}
+              </p>
+            )}
           </div>
         )}
 

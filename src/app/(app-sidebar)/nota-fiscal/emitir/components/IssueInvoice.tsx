@@ -13,8 +13,10 @@ import { IconFilePlus } from '@tabler/icons-react'
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { InvoiceResultsTable } from './InvoiceResultsTable'
+import { NfeAvulsaSection } from './NfeAvulsaSection'
 import { FiscalModulePendingBanner } from '../../components/FiscalModulePendingBanner'
 import { FiscalModuleGate } from '../../components/FiscalModuleGate'
+import { ExportXmlButton } from '@/components/common/fiscal/ExportXmlButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -28,11 +30,14 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
           <Topbar
             title="Emissão de Nota Fiscal"
             primaryCta={
-              <Button asChild LeftIcon={IconFilePlus}>
-                <Link href="/nota-fiscal/emitir/avulsa">
-                  Emitir Nota Avulsa
-                </Link>
-              </Button>
+              <div className="flex items-center gap-3">
+                <ExportXmlButton />
+                <Button asChild LeftIcon={IconFilePlus}>
+                  <Link href="/nota-fiscal/emitir/avulsa">
+                    Emitir Nota Avulsa
+                  </Link>
+                </Button>
+              </div>
             }
           />
 
@@ -47,6 +52,8 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
               <InvoiceResultsTable searchParams={searchParams} />
             </div>
           </div>
+
+          <NfeAvulsaSection searchParams={searchParams} />
         </div>
       </TooltipProvider>
     </FiscalModuleGate>

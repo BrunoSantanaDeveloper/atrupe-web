@@ -141,4 +141,5 @@ export interface NfePrepareResponse {
   originalNfeId?: string
   originalNfeNumero?: number
   originalNfeChave?: string
+  motivoRejeicao?: string | null
 }

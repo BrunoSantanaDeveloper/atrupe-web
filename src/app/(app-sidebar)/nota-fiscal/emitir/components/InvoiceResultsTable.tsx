@@ -36,13 +36,13 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   IconFileInvoice,
   IconReceipt,
-  IconFileCheck,
   IconBan,
   IconTrash,
 } from '@tabler/icons-react'
 
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
+import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
 
 // Actions
 import { getData, deleteItemNew } from '@/actions/_cruds'
@@ -56,6 +56,10 @@ interface NfeItem {
   serie: number
   status: string
   danfeUrl?: string | null
+  xmlAutorizado?: string | null
+  chaveAcesso?: string | null
+  dataEmissao?: string | null
+  motivoRejeicao?: string | null
 }
 
 interface OrderItem {
@@ -104,6 +108,16 @@ const getInvoiceStatusProps = (order: OrderItem) => {
   const draftNfe = order.nfes?.find((n) => n.status === 'DRAFT')
   if (draftNfe) {
     return { label: 'Em digitação', variant: 'blueLight' as const }
+  }
+
+  // Prioridade 2.5: se tem NF-e rejeitada
+  const rejectedNfe = order.nfes?.find((n) => n.status === 'REJECTED')
+  if (rejectedNfe) {
+    return {
+      label: 'Rejeitada',
+      variant: 'errorLight' as const,
+      tooltip: rejectedNfe.motivoRejeicao || 'Rejeitada pela SEFAZ',
+    }
   }
 
   const s = order.status?.toUpperCase() || ''
@@ -483,6 +497,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                       ? `${order.quotation.serie.code}-${order.quotation.serie.quotation}`
                       : order.id?.slice(0, 8) || 'N/D'
 
+                    const statusProps = getInvoiceStatusProps(order)
+
                     return (
                       <TableRow key={order.id} className="hover:bg-gray-50">
                         <TableCell className="px-4">
@@ -507,7 +523,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 <TooltipContent>
                                   <p>
                                     Selecione um cliente para habilitar a
-                                    seleÃ§Ã£o mÃºltipla
+                                    seleção múltipla
                                   </p>
                                 </TooltipContent>
                               )}
@@ -519,6 +535,32 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             {clientName}
                           </p>
                           <p className="text-gray truncate">{orderRef}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            {statusProps.tooltip ? (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger>
+                                    <Badge variant={statusProps.variant} status>
+                                      {statusProps.label}
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    side="top"
+                                    className="max-w-xs text-center"
+                                  >
+                                    <p>{statusProps.tooltip}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <Badge variant={statusProps.variant} status>
+                                {statusProps.label}
+                              </Badge>
+                            )}
+                            <span className="text-xs text-gray-500 font-mono hidden md:inline">
+                              OS #{order.id.slice(0, 8)}
+                            </span>
+                          </div>
                         </TableCell>
                         <TableCell className="font-semibold text-success-600">
                           {formatCurrency(order.quotation?.totalValue)}
@@ -545,17 +587,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   cancelingDraftId === draftNfe?.id
 
                                 if (authorizedNfe) {
-                                  return authorizedNfe.danfeUrl ? (
-                                    <ActionButton
-                                      Icon={IconFileCheck}
-                                      tooltip="Ver DANFE"
-                                      link={authorizedNfe.danfeUrl}
-                                    />
-                                  ) : (
-                                    <ActionButton
-                                      Icon={IconFileCheck}
-                                      tooltip={`NF-e nº ${authorizedNfe.numero} emitida`}
-                                      onClick={() => setModalOrderId(order.id)}
+                                  return (
+                                    <NfeActionsDropdown
+                                      nfe={authorizedNfe}
+                                      onRefetch={fetchOrders}
                                     />
                                   )
                                 }

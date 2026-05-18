@@ -158,10 +158,6 @@ export const permissionsData = [
         key: 'emitir',
       },
       {
-        name: 'Notas emitidas',
-        key: 'emitidas',
-      },
-      {
         name: 'Cancelar nota',
         key: 'cancelar',
       },
