@@ -49,69 +49,62 @@ import { getData, deleteItemNew } from '@/actions/_cruds'
 
 import type { SearchParamsType } from '@/types/coreTypes'
 
-// Matches backend response structure from order.service.findAll
-interface NfeItem {
+// Unified Interfaces
+interface UnifiedInvoiceItem {
+  type: 'ORDER' | 'NFE_AVULSA' | 'NFSE_AVULSA'
   id: string
-  numero: number
-  serie: number
+  createdAt: string
   status: string
-  danfeUrl?: string | null
-  xmlAutorizado?: string | null
-  chaveAcesso?: string | null
-  dataEmissao?: string | null
-  motivoRejeicao?: string | null
+  clientName: string
+  reference: string
+  totalValue: number
+  nfes: any[]
+  nfse?: any
+  originalData: any
 }
 
-interface OrderItem {
-  id: string
-  status: string
-  nfes: NfeItem[]
-  quotation: {
-    id: string
-    description?: string
-    totalValue?: number
-    client?: {
-      id: string
-      name?: string
-      email?: string
-    }
-    serie?: {
-      id: string
-      name?: string
-      code?: string
-      quotation?: number
-    }
-    seller?: {
-      id: string
-      name?: string
-    }
-  }
-}
-
-// Backend returns data already grouped by date
 interface OrderGroupFromBackend {
   date: string
-  orders: OrderItem[]
+  items: UnifiedInvoiceItem[]
 }
 
 interface Props extends SearchParamsType {}
 
-// Helper para traduzir o status real da ordem + NFs para badge visual
-const getInvoiceStatusProps = (order: OrderItem) => {
-  // Prioridade 1: se já tem NF autorizada emitida
-  const authorizedNfe = order.nfes?.find((n) => n.status === 'AUTHORIZED')
-  if (authorizedNfe) {
+// Helper para traduzir o status real do item unificado
+const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
+  if (item.type === 'NFE_AVULSA') {
+    if (item.status === 'AUTHORIZED')
+      return { label: 'Emitida', variant: 'successLight' as const }
+    if (item.status === 'DRAFT')
+      return { label: 'Em digitação', variant: 'blueLight' as const }
+    if (item.status === 'REJECTED')
+      return { label: 'Rejeitada', variant: 'errorLight' as const }
+    if (item.status === 'CANCELLED')
+      return { label: 'Cancelada', variant: 'errorLight' as const }
+    return { label: item.status, variant: 'neutralLight' as const }
+  }
+
+  if (item.type === 'NFSE_AVULSA') {
+    if (item.status === 'AUTHORIZED')
+      return { label: 'Emitida', variant: 'successLight' as const }
+    if (item.status === 'DRAFT')
+      return { label: 'Em digitação', variant: 'blueLight' as const }
+    if (item.status === 'REJECTED')
+      return { label: 'Rejeitada', variant: 'errorLight' as const }
+    if (item.status === 'CANCELLED')
+      return { label: 'Cancelada', variant: 'errorLight' as const }
+    return { label: item.status, variant: 'neutralLight' as const }
+  }
+
+  // Type ORDER
+  const authorizedNfe = item.nfes?.find((n) => n.status === 'AUTHORIZED')
+  if (authorizedNfe)
     return { label: 'Emitida', variant: 'successLight' as const }
-  }
 
-  // Prioridade 2: se tem rascunho em digitação
-  const draftNfe = order.nfes?.find((n) => n.status === 'DRAFT')
-  if (draftNfe) {
-    return { label: 'Em digitação', variant: 'blueLight' as const }
-  }
+  const draftNfe = item.nfes?.find((n) => n.status === 'DRAFT')
+  if (draftNfe) return { label: 'Em digitação', variant: 'blueLight' as const }
 
-  // Prioridade 2.5: se tem NF-e rejeitada
-  const rejectedNfe = order.nfes?.find((n) => n.status === 'REJECTED')
+  const rejectedNfe = item.nfes?.find((n) => n.status === 'REJECTED')
   if (rejectedNfe) {
     return {
       label: 'Rejeitada',
@@ -120,37 +113,30 @@ const getInvoiceStatusProps = (order: OrderItem) => {
     }
   }
 
-  const s = order.status?.toUpperCase() || ''
+  const s = item.status?.toUpperCase() || ''
 
-  // Prioridade 3: ordem cancelada
-  if (s === 'CANCELED') {
+  if (s === 'CANCELED')
     return { label: 'Cancelada', variant: 'errorLight' as const }
-  }
-
-  // Prioridade 4: em produção / entrega
   if (s === 'IN_PRODUCTION' || s === 'DELIVERY' || s === 'COMPLETED') {
     return { label: 'Em produção', variant: 'warningLight' as const }
   }
-
-  // Prioridade 5: pendente / finalizado sem NF
   if (s === 'FINISHED' || s === 'PENDING') {
     return { label: 'Não emitida', variant: 'neutralLight' as const }
   }
 
   return {
-    label: order.status || 'Não definida',
+    label: item.status || 'Não definida',
     variant: 'neutralLight' as const,
   }
 }
 
-const canSelectForConsolidation = (order: OrderItem) => {
-  const hasBlockingNfe = order.nfes?.some((n) =>
+const canSelectForConsolidation = (item: UnifiedInvoiceItem) => {
+  if (item.type !== 'ORDER') return false
+  const hasBlockingNfe = item.nfes?.some((n) =>
     ['AUTHORIZED', 'DRAFT'].includes(n.status),
   )
-
   if (hasBlockingNfe) return false
-
-  return order.status?.toUpperCase() !== 'CANCELED'
+  return item.status?.toUpperCase() !== 'CANCELED'
 }
 
 export function InvoiceResultsTable({ searchParams }: Props) {
@@ -171,7 +157,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
   const currentSearch = searchParams?.search as string | undefined
   const currentNfeStatus =
-    (searchParams?.nfeStatus as string | undefined) || 'NAO_EMITIDA'
+    (searchParams?.nfeStatus as string | undefined) || 'TODOS'
+  const recordType = searchParams?.recordType as string | undefined
   const startDate = searchParams?.startDate as string | undefined
   const endDate = searchParams?.endDate as string | undefined
 
@@ -181,16 +168,17 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     try {
       const filters: Record<string, string | undefined> = {
         page: currentPage.toString(),
-        nfeStatus: currentNfeStatus,
+        status: currentNfeStatus,
       }
 
+      if (recordType) filters.recordType = recordType
       if (selectedClientId) filters.clientId = selectedClientId
       if (currentSearch) filters.search = currentSearch
       if (startDate) filters.startDate = startDate
       if (endDate) filters.endDate = endDate
 
       const result = await getData({
-        route: '/sale/order',
+        route: '/fiscal/nfe/unified',
         filters,
         perPage: '20',
       })
@@ -202,7 +190,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         setOrderGroups([])
       }
     } catch (error) {
-      console.error('Erro ao buscar ordens:', error)
+      console.error('Erro ao buscar notas/pedidos:', error)
       setOrderGroups([])
     } finally {
       setIsLoading(false)
@@ -212,6 +200,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     currentPage,
     currentSearch,
     currentNfeStatus,
+    recordType,
     startDate,
     endDate,
   ])
@@ -241,7 +230,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   }, [pendingClientSelectionId, selectedClientId])
 
   const visibleOrders = useMemo(
-    () => orderGroups.flatMap((group) => group.orders),
+    () => orderGroups.flatMap((group) => group.items),
     [orderGroups],
   )
 
@@ -256,7 +245,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   )
 
   const selectedTotal = selectedOrders.reduce(
-    (sum, order) => sum + (order.quotation?.totalValue || 0),
+    (sum, order) => sum + (order.totalValue || 0),
     0,
   )
 
@@ -268,8 +257,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     selectedOrderIds.has(order.id),
   )
 
-  const applyClientFilterFromOrder = (order: OrderItem) => {
-    const clientId = order.quotation?.client?.id
+  const applyClientFilterFromOrder = (order: UnifiedInvoiceItem) => {
+    const clientId = order.originalData?.quotation?.client?.id
 
     if (!clientId) {
       toast.error('Esta OS não possui cliente vinculado')
@@ -289,7 +278,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     router.push(`?${params.toString()}`)
   }
 
-  const toggleOrderSelection = (order: OrderItem, checked: boolean) => {
+  const toggleOrderSelection = (
+    order: UnifiedInvoiceItem,
+    checked: boolean,
+  ) => {
     if (checked && !selectedClientId) {
       applyClientFilterFromOrder(order)
       return
@@ -414,12 +406,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             />
             <div className="space-y-1">
               <p className="font-semibold text-lg text-gray-900">
-                Nenhuma ordem encontrada
+                Nenhum registro encontrado
               </p>
               <p className="text-sm text-gray-500">
-                {selectedClientId
-                  ? 'Este cliente não possui ordens'
-                  : 'Selecione um cliente para ver suas ordens'}
+                Tente ajustar os filtros ou selecionar outro cliente
               </p>
             </div>
           </div>
@@ -465,17 +455,18 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                       {false && !isClientScoped && (
                         <TooltipContent>
                           <p>
-                            Selecione um cliente para habilitar a seleÃ§Ã£o
-                            mÃºltipla
+                            Selecione um cliente para habilitar a seleção
+                            múltipla
                           </p>
                         </TooltipContent>
                       )}
                     </Tooltip>
                   </TooltipProvider>
                 </TableHead>
-                <TableHead>Referência</TableHead>
+                <TableHead>Tipo / Referência</TableHead>
+                <TableHead>Cliente</TableHead>
                 <TableHead>Valor</TableHead>
-                <TableHead>Fase atual</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
             </TableHeader>
@@ -484,35 +475,29 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                 <Fragment key={group.date}>
                   <TableRow className="bg-gray-100">
                     <TableCell
-                      colSpan={5}
+                      colSpan={6}
                       className="text-gray font-medium text-xs py-3"
                     >
                       {formatDate(group.date)}
                     </TableCell>
                   </TableRow>
-                  {group.orders.map((order) => {
-                    const clientName =
-                      order.quotation?.client?.name || 'Cliente não informado'
-                    const orderRef = order.quotation?.serie
-                      ? `${order.quotation.serie.code}-${order.quotation.serie.quotation}`
-                      : order.id?.slice(0, 8) || 'N/D'
-
-                    const statusProps = getInvoiceStatusProps(order)
+                  {group.items.map((item) => {
+                    const statusProps = getInvoiceStatusProps(item)
 
                     return (
-                      <TableRow key={order.id} className="hover:bg-gray-50">
+                      <TableRow key={item.id} className="hover:bg-gray-50">
                         <TableCell className="px-4">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <span className="inline-flex">
                                   <Checkbox
-                                    id={`check-${order.id}`}
-                                    disabled={!canSelectForConsolidation(order)}
-                                    checked={selectedOrderIds.has(order.id)}
+                                    id={`check-${item.id}`}
+                                    disabled={!canSelectForConsolidation(item)}
+                                    checked={selectedOrderIds.has(item.id)}
                                     onCheckedChange={(checked) =>
                                       toggleOrderSelection(
-                                        order,
+                                        item,
                                         checked === true,
                                       )
                                     }
@@ -531,11 +516,38 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           </TooltipProvider>
                         </TableCell>
                         <TableCell>
-                          <p className="font-medium text-gray-800">
-                            {clientName}
+                          <div className="flex flex-col gap-1">
+                            {item.type === 'ORDER' ? (
+                              <Badge variant="blueLight" className="w-fit">
+                                Pedido de Venda
+                              </Badge>
+                            ) : item.type === 'NFE_AVULSA' ? (
+                              <Badge variant="purpleLight" className="w-fit">
+                                NF-e Avulsa
+                              </Badge>
+                            ) : (
+                              <Badge variant="orangeLight" className="w-fit">
+                                NFS-e Avulsa
+                              </Badge>
+                            )}
+                            <p className="font-medium text-gray-800">
+                              {item.reference}
+                            </p>
+                            <span className="text-xs text-gray-500 font-mono hidden md:inline">
+                              ID: {item.id.slice(0, 8)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm font-medium text-gray-700">
+                            {item.clientName}
                           </p>
-                          <p className="text-gray truncate">{orderRef}</p>
-                          <div className="flex items-center gap-2 mt-1">
+                        </TableCell>
+                        <TableCell className="font-semibold text-success-600">
+                          {formatCurrency(item.totalValue)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
                             {statusProps.tooltip ? (
                               <TooltipProvider>
                                 <Tooltip>
@@ -557,30 +569,54 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 {statusProps.label}
                               </Badge>
                             )}
-                            <span className="text-xs text-gray-500 font-mono hidden md:inline">
-                              OS #{order.id.slice(0, 8)}
-                            </span>
                           </div>
-                        </TableCell>
-                        <TableCell className="font-semibold text-success-600">
-                          {formatCurrency(order.quotation?.totalValue)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={getInvoiceStatusProps(order).variant}
-                            status
-                          >
-                            {getInvoiceStatusProps(order).label}
-                          </Badge>
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-1">
                             <TooltipProvider>
                               {(() => {
-                                const authorizedNfe = order.nfes?.find(
+                                if (item.type === 'NFSE_AVULSA') {
+                                  return (
+                                    <ActionButton
+                                      Icon={IconReceipt}
+                                      tooltip="Ver nota de serviço"
+                                      onClick={() =>
+                                        router.push(
+                                          `/nota-fiscal/emitir-nfse/avulsa/${item.id}`,
+                                        )
+                                      }
+                                    />
+                                  )
+                                }
+
+                                if (item.type === 'NFE_AVULSA') {
+                                  const n = item.nfes?.[0]
+                                  if (n?.status === 'AUTHORIZED') {
+                                    return (
+                                      <NfeActionsDropdown
+                                        nfe={n}
+                                        onRefetch={fetchOrders}
+                                      />
+                                    )
+                                  }
+                                  return (
+                                    <ActionButton
+                                      Icon={IconReceipt}
+                                      tooltip="Continuar emissão"
+                                      onClick={() =>
+                                        router.push(
+                                          `/nota-fiscal/emitir/avulsa/nfe/${item.id}`,
+                                        )
+                                      }
+                                    />
+                                  )
+                                }
+
+                                // Type ORDER
+                                const authorizedNfe = item.nfes?.find(
                                   (n) => n.status === 'AUTHORIZED',
                                 )
-                                const draftNfe = order.nfes?.find(
+                                const draftNfe = item.nfes?.find(
                                   (n) => n.status === 'DRAFT',
                                 )
                                 const isCancelingThis =
@@ -601,9 +637,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                       <ActionButton
                                         Icon={IconReceipt}
                                         tooltip="Continuar emissão"
-                                        onClick={() =>
-                                          setModalOrderId(order.id)
-                                        }
+                                        onClick={() => setModalOrderId(item.id)}
                                       />
                                       <ActionButton
                                         Icon={IconTrash}
@@ -618,9 +652,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   )
                                 }
 
-                                if (
-                                  order.status?.toUpperCase() === 'CANCELED'
-                                ) {
+                                if (item.status?.toUpperCase() === 'CANCELED') {
                                   return (
                                     <ActionButton
                                       Icon={IconBan}
@@ -634,7 +666,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   <ActionButton
                                     Icon={IconReceipt}
                                     tooltip="Emitir Nota Fiscal"
-                                    onClick={() => setModalOrderId(order.id)}
+                                    onClick={() => setModalOrderId(item.id)}
                                   />
                                 )
                               })()}

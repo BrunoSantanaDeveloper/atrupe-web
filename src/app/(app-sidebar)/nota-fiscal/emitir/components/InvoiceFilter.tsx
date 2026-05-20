@@ -101,15 +101,57 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
         }
       : undefined
 
-  const currentNfeStatus = (searchParams?.nfeStatus as string) || 'NAO_EMITIDA'
+  const recordType = searchParams?.recordType as string | undefined
+
+  const handleRecordTypeChange = (value: string) => {
+    params.set('recordType', value)
+    params.delete('page')
+    router.push(`?${params.toString()}`)
+  }
 
   return (
-    <div className="flex flex-wrap items-end gap-3">
-      <div className="flex flex-col gap-2">
-        <Label>Fase</Label>
-        <Select value={currentNfeStatus} onValueChange={handleNfeStatusChange}>
-          <SelectTrigger className="w-[160px] h-11">
-            <SelectValue placeholder="Fase da NF" />
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end p-4 border-b border-gray-100">
+      <div className="w-full sm:w-1/4">
+        <Label className="mb-1 block text-sm font-medium text-gray-700">
+          Tipo de Registro
+        </Label>
+        <Select
+          value={recordType || 'TODOS'}
+          onValueChange={handleRecordTypeChange}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Tipo..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TODOS">Todos</SelectItem>
+            <SelectItem value="PEDIDOS">Pedidos de Venda</SelectItem>
+            <SelectItem value="NOTAS_AVULSAS">Notas Avulsas</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="w-full sm:w-[35%]">
+        <Label className="mb-1 block text-sm font-medium text-gray-700">
+          Cliente (Razão Social ou Nome Fantasia)
+        </Label>
+        <AsyncSelectBasic
+          route="/client"
+          placeholder="Buscar cliente..."
+          value={selectedClient}
+          onChange={handleClientChange}
+        />
+      </div>
+
+      <div className="w-full sm:w-1/4">
+        <Label className="mb-1 block text-sm font-medium text-gray-700">
+          Status da NF
+        </Label>
+        <Select
+          value={(searchParams?.nfeStatus as string | undefined) || 'TODOS'}
+          onValueChange={handleNfeStatusChange}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Status da NF..." />
           </SelectTrigger>
           <SelectContent>
             {NFE_STATUS_OPTIONS.map((opt) => (
@@ -121,21 +163,15 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
         </Select>
       </div>
 
-      <AsyncSelectBasic
-        route="/client"
-        label="Cliente"
-        placeholder="Buscar cliente..."
-        value={selectedClient}
-        onChange={handleClientChange}
-        width="w-[200px]"
-      />
-
-      <DateRangePickerBasic
-        label="Período"
-        placeholder="Selecione um período"
-        value={defaultDateRange}
-        onChange={handleDateRangeChange}
-      />
+      <div className="w-full sm:w-[35%]">
+        <Label className="mb-1 block text-sm font-medium text-gray-700">
+          Período
+        </Label>
+        <DateRangePickerBasic
+          value={defaultDateRange}
+          onChange={handleDateRangeChange}
+        />
+      </div>
     </div>
   )
 }
