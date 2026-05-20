@@ -184,7 +184,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       })
 
       if (result.success && result.data) {
-        setOrderGroups(result.data as OrderGroupFromBackend[])
+        // Defensive check to ensure data is an array before setting it to state
+        // This prevents "TypeError: n.map is not a function" crashes on render
+        const rawData = result.data as unknown as Record<string, unknown>;
+        const dataArray = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
+        setOrderGroups(dataArray as OrderGroupFromBackend[])
         setTotalPages(result.lastPage || 1)
       } else {
         setOrderGroups([])

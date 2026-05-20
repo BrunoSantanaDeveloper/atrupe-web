@@ -1235,23 +1235,27 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           </View>
 
           {/* Totais - apenas para não-produção */}
-          {!isProduction && printOptions.showTotalValue && (
+          {!isProduction && (printOptions.showTotalValue || freightPrice > 0) && (
             <View style={styles.totalsSection}>
-              <View style={styles.totalRow}>
-                <Text>Subtotal itens</Text>
-                <Text>
-                  {formatCurrencyToBrl(data.total?.subtotal ?? totals.subtotal)}
-                </Text>
-              </View>
+              {printOptions.showTotalValue && (
+                <View style={styles.totalRow}>
+                  <Text>Subtotal itens</Text>
+                  <Text>
+                    {formatCurrencyToBrl(data.total?.subtotal ?? totals.subtotal)}
+                  </Text>
+                </View>
+              )}
 
-              <View style={styles.totalRow}>
-                <Text>Desconto</Text>
-                <Text>
-                  {formatCurrencyToBrl(data.total?.totalDiscount ?? 0)}
-                </Text>
-              </View>
+              {printOptions.showTotalValue && (
+                <View style={styles.totalRow}>
+                  <Text>Desconto</Text>
+                  <Text>
+                    {formatCurrencyToBrl(data.total?.totalDiscount ?? 0)}
+                  </Text>
+                </View>
+              )}
 
-              {(data.total?.commissionTotal ?? 0) > 0 && (
+              {printOptions.showTotalValue && (data.total?.commissionTotal ?? 0) > 0 && (
                 <View style={styles.totalRow}>
                   <Text>Comissão</Text>
                   <Text>
@@ -1269,12 +1273,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </View>
               )}
 
-              <View style={styles.totalRowFinal}>
-                <Text style={styles.textBold}>Total</Text>
-                <Text style={styles.textBold}>
-                  {formatCurrencyToBrl(finalTotalWithFreight)}
-                </Text>
-              </View>
+              {printOptions.showTotalValue && (
+                <View style={styles.totalRowFinal}>
+                  <Text style={styles.textBold}>Total</Text>
+                  <Text style={styles.textBold}>
+                    {formatCurrencyToBrl(finalTotalWithFreight)}
+                  </Text>
+                </View>
+              )}
               <View style={styles.totalDivider} />
             </View>
           )}
