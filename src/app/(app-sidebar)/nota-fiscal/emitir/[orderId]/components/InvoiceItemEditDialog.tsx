@@ -40,7 +40,7 @@ import {
 import { ProductFiscalTab } from '@/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/ProductFiscalTab'
 
 // Actions
-import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { createItemNew, getItem, updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'
@@ -238,13 +238,42 @@ export function InvoiceItemEditDialog({
 
     setIsSavingToProduct(true)
     try {
+      // Busca o produto para obter id, name e unitKind dos itens existentes
+      // (necessário pois o DTO exige esses campos ao atualizar itens)
+      const productResult = await getItem({ route: `/product/${productId}` })
+      if (!productResult.success) {
+        throw new Error('Não foi possível carregar o produto para atualizar')
+      }
+
+      const existingItems: Array<{
+        id: string
+        name: string
+        unitKind: string
+      }> = productResult.data?.items ?? []
+
+      // Monta payload preservando id/name/unitKind dos itens existentes
+      const itemsPayload = existingItems.map((existingItem) => ({
+        id: existingItem.id,
+        name: existingItem.name,
+        unitKind: existingItem.unitKind,
+        unitCost: formData.unitValue,
+        salePrice: formData.unitValue,
+      }))
+
+      // Se o produto não tem itens ainda, cria um novo com os dados disponíveis
+      if (itemsPayload.length === 0) {
+        itemsPayload.push({
+          id: undefined as unknown as string,
+          name: formData.description,
+          unitKind: 'UNITY',
+          unitCost: formData.unitValue,
+          salePrice: formData.unitValue,
+        })
+      }
+
       const valueResult = await updateItemNew({
         route: `/product/${productId}`,
-        data: {
-          items: [
-            { unitCost: formData.unitValue, salePrice: formData.unitValue },
-          ],
-        },
+        data: { items: itemsPayload },
       })
       if (!valueResult.success) {
         throw new Error(
@@ -274,7 +303,7 @@ export function InvoiceItemEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[640px] flex flex-col max-h-[90vh]">
+      <DialogContent className="sm:max-w-[740px] flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
