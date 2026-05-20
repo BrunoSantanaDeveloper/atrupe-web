@@ -20,6 +20,7 @@ import {
   NewQuotationModal,
   NewQuotationTriggerButton,
 } from '../../orcamentos/components/NewQuotation'
+import { NewClientModal } from '../../orcamentos/components/NewClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
@@ -151,6 +152,7 @@ export function Orders({ searchParams }: SearchParamsType) {
               />
             )}
           </Card>
+          <NewClientModal />
           <NewQuotationModal
             open={openDialog === 'new'}
             onOpenChange={(open) => {
