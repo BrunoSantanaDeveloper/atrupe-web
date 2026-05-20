@@ -160,7 +160,7 @@ export function IssueNfseForm({ id }: Props) {
       }
 
       toast.success('NFS-e emitida com sucesso!')
-      router.push('/nota-fiscal/emitidas')
+      router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao emitir NFS-e'

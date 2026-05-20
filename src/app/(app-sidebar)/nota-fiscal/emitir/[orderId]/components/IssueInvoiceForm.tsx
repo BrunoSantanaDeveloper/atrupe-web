@@ -283,7 +283,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       }
 
       toast.success('NF-e emitida com sucesso!')
-      router.push('/nota-fiscal/emitidas')
+      router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao emitir NF-e'
       alertDialog.open({

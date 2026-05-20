@@ -245,7 +245,7 @@ export function FileUploader(props: FileUploaderProps) {
                   bgClass,
                   borderClass,
                   isDisabled &&
-                  'opacity-60 cursor-not-allowed pointer-events-none',
+                    'opacity-60 cursor-not-allowed pointer-events-none',
                 )}
                 {...rest}
               >
@@ -377,7 +377,7 @@ export function UploadedFilesCard({
         <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 gap-4 overflow-hidden">
           <div className="flex flex-col justify-center items-center flex-grow-0 flex-shrink-0 h-[86px] w-[86px] relative overflow-hidden gap-2.5 p-2.5 rounded bg-white border border-[#d0d5dd]">
             {uploadedFileUrl.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i) ||
-              uploadedFileUrl.startsWith('blob:') ? (
+            uploadedFileUrl.startsWith('blob:') ? (
               <div
                 className="w-full h-full bg-cover bg-center rounded"
                 style={{ backgroundImage: `url(${uploadedFileUrl})` }}

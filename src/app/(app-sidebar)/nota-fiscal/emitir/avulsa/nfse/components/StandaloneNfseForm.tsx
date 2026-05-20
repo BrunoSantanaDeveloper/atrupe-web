@@ -185,7 +185,7 @@ export function StandaloneNfseForm() {
       }
 
       toast.success('NFS-e avulsa emitida com sucesso!')
-      router.push('/nota-fiscal/emitidas')
+      router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao emitir NFS-e'

@@ -269,7 +269,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     mutationFn: (data: string[]) =>
       updateItem('roleRoute', `${rowData?.id}`, { permissions: data }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['role-permissions', rowData?.id] })
+      queryClient.invalidateQueries({
+        queryKey: ['role-permissions', rowData?.id],
+      })
       queryClient.invalidateQueries({ queryKey: ['roles'] })
       toast.success('Permissões salvas!')
       handleOpenChange(false)
@@ -406,7 +408,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-view-${section.key}`}
                                     className="flex-none mx-auto"
-                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.view` as any))}
+                                    checked={
+                                      filteredItems.length > 0 &&
+                                      filteredItems.every((item) =>
+                                        form.watch(
+                                          `${section.key}:${item.key}.view` as any,
+                                        ),
+                                      )
+                                    }
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -421,7 +430,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-edit-${section.key}`}
                                     className="flex-none mx-auto"
-                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.edit` as any))}
+                                    checked={
+                                      filteredItems.length > 0 &&
+                                      filteredItems.every((item) =>
+                                        form.watch(
+                                          `${section.key}:${item.key}.edit` as any,
+                                        ),
+                                      )
+                                    }
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -436,7 +452,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-create-${section.key}`}
                                     className="flex-none mx-auto"
-                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.create` as any))}
+                                    checked={
+                                      filteredItems.length > 0 &&
+                                      filteredItems.every((item) =>
+                                        form.watch(
+                                          `${section.key}:${item.key}.create` as any,
+                                        ),
+                                      )
+                                    }
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,
@@ -451,7 +474,14 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                   <CheckboxBasic
                                     name={`check-delete-${section.key}`}
                                     className="flex-none mx-auto"
-                                    checked={filteredItems.length > 0 && filteredItems.every((item) => form.watch(`${section.key}:${item.key}.delete` as any))}
+                                    checked={
+                                      filteredItems.length > 0 &&
+                                      filteredItems.every((item) =>
+                                        form.watch(
+                                          `${section.key}:${item.key}.delete` as any,
+                                        ),
+                                      )
+                                    }
                                     onCheckedChange={(checked) =>
                                       handleCheckAllColumnInSection(
                                         section.key,

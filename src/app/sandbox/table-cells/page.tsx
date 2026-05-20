@@ -19,8 +19,6 @@ import {
   CellAvatarGroup,
   CellActionGroup,
 } from '@/components/ui/table-cells'
-
-export const dynamic = 'force-dynamic'
 import {
   DataTableCard,
   DataTableHeader,
@@ -40,6 +38,8 @@ import {
 } from '@/components/ui/pagination'
 import { EmptyState } from '@/components/ui/empty-state'
 import { IconSearch, IconCreditCard, IconFileText } from '@tabler/icons-react'
+
+export const dynamic = 'force-dynamic'
 
 export default function TableCellsSandboxPage() {
   const mockAvatarGroup = [

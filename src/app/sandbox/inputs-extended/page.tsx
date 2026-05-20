@@ -8,9 +8,9 @@ import {
   InlineToolbar,
   type ToolbarAction,
 } from '@/components/common/rich-text-toolbar'
+import type { InputState } from '@/components/common/form-input'
 
 export const dynamic = 'force-dynamic'
-import type { InputState } from '@/components/common/form-input'
 
 /* ─────────────────────────────────────────────────────────────
    Helpers

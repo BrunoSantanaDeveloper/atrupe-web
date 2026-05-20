@@ -276,7 +276,9 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
         title="Despesas fixas"
         primaryCta={
           <>
-            <PermissionGate permissions={['financial_settings:fixed_expenses:create']}>
+            <PermissionGate
+              permissions={['financial_settings:fixed_expenses:create']}
+            >
               <NewFixedExpenseTriggerButton
                 onOpenChange={setIsNewExpenseOpen}
               />

@@ -16,7 +16,7 @@ export default function EmitirNfcePage() {
           <Topbar
             title="Emitir NFC-e"
             supportText="Ponto de venda — Nota Fiscal de Consumidor Eletrônica"
-            previousPage="/nota-fiscal/emitidas"
+            previousPage="/nota-fiscal/emitir?tab=gestao"
           />
           <NfcePdvClient />
         </div>
