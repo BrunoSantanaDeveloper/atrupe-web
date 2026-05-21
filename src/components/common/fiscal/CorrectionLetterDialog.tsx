@@ -95,30 +95,32 @@ export function CorrectionLetterDialog({
             dados cadastrais ou alíquota. Mínimo 15 caracteres.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-3 py-4">
-          <Label htmlFor="correctionText">Texto da Correção *</Label>
-          <Textarea
-            id="correctionText"
-            value={correctionText}
-            onChange={(e) => setCorrectionText(e.target.value)}
-            placeholder="Descreva a correção a ser feita na nota fiscal..."
-            rows={5}
-            maxLength={1000}
-          />
-          <p className="text-xs text-gray-500 text-right">
-            {correctionText.length}/1000 caracteres
-            {correctionText.length > 0 && correctionText.length < 15 && (
-              <span className="text-warning-500 ml-2">
-                Mínimo 15 caracteres
-              </span>
+        <DialogContent>
+          <div className="space-y-3 py-4">
+            <Label htmlFor="correctionText">Texto da Correção *</Label>
+            <Textarea
+              id="correctionText"
+              value={correctionText}
+              onChange={(e) => setCorrectionText(e.target.value)}
+              placeholder="Descreva a correção a ser feita na nota fiscal..."
+              rows={5}
+              maxLength={1000}
+            />
+            <p className="text-xs text-gray-500 text-right">
+              {correctionText.length}/1000 caracteres
+              {correctionText.length > 0 && correctionText.length < 15 && (
+                <span className="text-warning-500 ml-2">
+                  Mínimo 15 caracteres
+                </span>
+              )}
+            </p>
+            {errorMsg && (
+              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+                {errorMsg}
+              </div>
             )}
-          </p>
-          {errorMsg && (
-            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
-              {errorMsg}
-            </div>
-          )}
-        </div>
+          </div>
+        </DialogContent>
         <DialogFooter>
           <Button
             variant="outline"
