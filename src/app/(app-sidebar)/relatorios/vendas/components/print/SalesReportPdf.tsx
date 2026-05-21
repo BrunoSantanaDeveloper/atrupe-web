@@ -135,16 +135,26 @@ const styles = StyleSheet.create({
 
 interface Props {
   data: SalesReportPdfData
+  groupBy?: 'none' | 'client' | 'seller'
 }
 
-export function SalesReportPdf({ data }: Props) {
+export function SalesReportPdf({ data, groupBy = 'client' }: Props) {
   const renderRecord = (record: SalesReportPdfRecord) => (
     <View key={record.id} style={styles.tableRow} wrap={false}>
       <View style={styles.colServices}>
-        <Text style={styles.cellText}>{record.clientName}</Text>
-        <Text style={styles.cellSubText}>
-          {record.serviceCode} - {record.description}
-        </Text>
+        {groupBy === 'client' ? (
+          <>
+            <Text style={styles.cellText}>{record.description}</Text>
+            <Text style={styles.cellSubText}>Código: {record.serviceCode}</Text>
+          </>
+        ) : (
+          <>
+            <Text style={styles.cellText}>{record.clientName}</Text>
+            <Text style={styles.cellSubText}>
+              {record.serviceCode} - {record.description}
+            </Text>
+          </>
+        )}
       </View>
       <View style={styles.colSeller}>
         <Text style={styles.cellText}>{record.approvedDate || ''}</Text>
@@ -163,28 +173,39 @@ export function SalesReportPdf({ data }: Props) {
     </View>
   )
 
-  const renderGroup = (group: SalesReportPdfGroup) => (
-    <View key={group.clientId} wrap={false}>
-      {/* Group Header */}
-      <View style={styles.groupHeader}>
-        <View style={styles.colServices}>
-          <Text style={styles.groupName}>{group.clientName}</Text>
+  const renderGroup = (group: SalesReportPdfGroup) => {
+    const totalSuffix =
+      groupBy === 'client'
+        ? ' (Total do Cliente)'
+        : groupBy === 'seller'
+          ? ' (Total do Vendedor)'
+          : ''
+    return (
+      <View key={group.clientId} wrap={false}>
+        {/* Group Header */}
+        <View style={styles.groupHeader}>
+          <View style={styles.colServices}>
+            <Text style={styles.groupName}>
+              {group.clientName}
+              {totalSuffix}
+            </Text>
+          </View>
+          <View style={styles.colSeller} />
+          <View style={styles.colPhase} />
+          <View style={styles.colValue}>
+            <Text style={styles.groupValue}>
+              {formatCurrencyToBrl(group.total)}
+            </Text>
+          </View>
+          <View style={styles.colPercent}>
+            <Text style={styles.groupPercent}>{group.percentage}%</Text>
+          </View>
         </View>
-        <View style={styles.colSeller} />
-        <View style={styles.colPhase} />
-        <View style={styles.colValue}>
-          <Text style={styles.groupValue}>
-            {formatCurrencyToBrl(group.total)}
-          </Text>
-        </View>
-        <View style={styles.colPercent}>
-          <Text style={styles.groupPercent}>{group.percentage}%</Text>
-        </View>
+        {/* Group Records */}
+        {group.records.map(renderRecord)}
       </View>
-      {/* Group Records */}
-      {group.records.map(renderRecord)}
-    </View>
-  )
+    )
+  }
 
   return (
     <Document>

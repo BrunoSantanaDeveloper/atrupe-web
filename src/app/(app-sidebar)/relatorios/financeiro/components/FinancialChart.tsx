@@ -204,6 +204,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
               content={
                 <ChartTooltipContent
                   formatter={(value, name, item) => {
+                    if (value === null || value === undefined) return null
                     const countKey = `${String(name)}Count`
                     const count = item.payload?.[countKey] ?? 0
                     const color = item.color || `var(--color-${String(name)})`
@@ -233,12 +234,21 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             />
             <Area
               type="monotone"
-              dataKey="received"
-              stroke="var(--color-received)"
-              fill="url(#colorReceived)"
+              dataKey="overdue"
+              stroke="var(--color-overdue)"
+              fill="url(#colorOverdue)"
               strokeWidth={2}
-              dot={{ stroke: 'var(--color-received)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 4, strokeWidth: 2, opacity: 0.5 }}
+              dot={{ stroke: 'var(--color-overdue)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
+            />
+            <Area
+              type="monotone"
+              dataKey="toReceive"
+              stroke="var(--color-toReceive)"
+              fill="url(#colorToReceive)"
+              strokeWidth={2}
+              dot={{ stroke: 'var(--color-toReceive)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
             />
             {showConfirmed && (
               <Area
@@ -253,21 +263,12 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
             )}
             <Area
               type="monotone"
-              dataKey="toReceive"
-              stroke="var(--color-toReceive)"
-              fill="url(#colorToReceive)"
+              dataKey="received"
+              stroke="var(--color-received)"
+              fill="url(#colorReceived)"
               strokeWidth={2}
-              dot={{ stroke: 'var(--color-toReceive)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
-            />
-            <Area
-              type="monotone"
-              dataKey="overdue"
-              stroke="var(--color-overdue)"
-              fill="url(#colorOverdue)"
-              strokeWidth={2}
-              dot={{ stroke: 'var(--color-overdue)', strokeWidth: 2, r: 4 }}
-              activeDot={{ r: 6, strokeWidth: 2, opacity: 0.5 }}
+              dot={{ stroke: 'var(--color-received)', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 4, strokeWidth: 2, opacity: 0.5 }}
             />
           </AreaChart>
         </ChartContainer>

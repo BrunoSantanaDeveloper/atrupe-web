@@ -38,7 +38,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { IconShieldLock, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldPath } from 'react-hook-form'
 import { schema, type FormType } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { permissionsData } from '@/consts/permissions'
@@ -119,9 +119,6 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const {
     hasFeature,
     hasFinancialModule,
-    canManageClients,
-    canManageSuppliers,
-    canManageProducts,
     canManageDeliverySchedule,
     canManageSectors,
     canManageRejectionReasons,
@@ -145,10 +142,10 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
     // Verifica permissões de cadastros
     if (section === 'register') {
       if (item === 'client') {
-        return canManageClients()
+        return true
       }
       if (item === 'supplier') {
-        return canManageSuppliers()
+        return true
       }
       if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
     }
@@ -160,7 +157,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
 
     // Verifica permissões de produtos
     if (section === 'product_settings') {
-      return canManageProducts()
+      return true
     }
 
     // Verifica permissões de produção
@@ -412,7 +409,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                       filteredItems.length > 0 &&
                                       filteredItems.every((item) =>
                                         form.watch(
-                                          `${section.key}:${item.key}.view` as any,
+                                          `${section.key}:${item.key}.view` as FieldPath<FormType>,
                                         ),
                                       )
                                     }
@@ -434,7 +431,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                       filteredItems.length > 0 &&
                                       filteredItems.every((item) =>
                                         form.watch(
-                                          `${section.key}:${item.key}.edit` as any,
+                                          `${section.key}:${item.key}.edit` as FieldPath<FormType>,
                                         ),
                                       )
                                     }
@@ -456,7 +453,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                       filteredItems.length > 0 &&
                                       filteredItems.every((item) =>
                                         form.watch(
-                                          `${section.key}:${item.key}.create` as any,
+                                          `${section.key}:${item.key}.create` as FieldPath<FormType>,
                                         ),
                                       )
                                     }
@@ -478,7 +475,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                       filteredItems.length > 0 &&
                                       filteredItems.every((item) =>
                                         form.watch(
-                                          `${section.key}:${item.key}.delete` as any,
+                                          `${section.key}:${item.key}.delete` as FieldPath<FormType>,
                                         ),
                                       )
                                     }

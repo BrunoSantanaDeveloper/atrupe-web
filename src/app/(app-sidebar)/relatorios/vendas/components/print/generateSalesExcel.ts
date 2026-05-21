@@ -4,26 +4,54 @@ import * as XLSX from 'xlsx'
 import type { SalesReportPdfData } from '../../pdf-types'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
-export function generateSalesExcel(data: SalesReportPdfData) {
+export function generateSalesExcel(
+  data: SalesReportPdfData,
+  groupBy?: 'none' | 'client' | 'seller',
+) {
   const rows: (string | number)[][] = []
 
   // Header row
   rows.push(['Serviços', 'Código', 'Aprovado', 'Fase atual', 'Valor', '%'])
 
+  const totalSuffix =
+    groupBy === 'client'
+      ? ' (Total do Cliente)'
+      : groupBy === 'seller'
+        ? ' (Total do Vendedor)'
+        : ''
+
   data.groups.forEach((group) => {
-    // Group header row (bold via styling later)
-    rows.push([group.clientName, '', '', '', group.total, group.percentage])
+    // Group header row
+    rows.push([
+      `${group.clientName}${totalSuffix}`,
+      '',
+      '',
+      '',
+      group.total,
+      group.percentage,
+    ])
 
     // Group records
     group.records.forEach((record) => {
-      rows.push([
-        record.clientName,
-        `${record.serviceCode} - ${record.description}`,
-        record.approvedDate || '',
-        record.phase,
-        record.value,
-        record.percentage,
-      ])
+      if (groupBy === 'client') {
+        rows.push([
+          record.description,
+          record.serviceCode,
+          record.approvedDate || '',
+          record.phase,
+          record.value,
+          record.percentage,
+        ])
+      } else {
+        rows.push([
+          record.clientName,
+          `${record.serviceCode} - ${record.description}`,
+          record.approvedDate || '',
+          record.phase,
+          record.value,
+          record.percentage,
+        ])
+      }
     })
   })
 

@@ -81,8 +81,12 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
       })
 
       if (result.success && result.data) {
-        const rawData = result.data as unknown as Record<string, unknown>;
-        const dataArray = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
+        const rawData = result.data as unknown as Record<string, unknown>
+        const dataArray = Array.isArray(rawData)
+          ? rawData
+          : Array.isArray(rawData?.data)
+            ? rawData.data
+            : []
         setNfes(dataArray as NfeAvulsaItem[])
         setTotalPages(result.lastPage || 1)
       } else {

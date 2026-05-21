@@ -17,7 +17,7 @@ export interface FinancialChartDataPoint {
   received: number
   confirmed: number
   toReceive: number
-  overdue: number
+  overdue: number | null
 }
 
 export interface FinancialRecord {

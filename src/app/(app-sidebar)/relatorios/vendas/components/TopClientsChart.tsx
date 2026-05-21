@@ -36,6 +36,19 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+const currencyFormatter = (value: unknown) => (
+  <div className="flex flex-1 justify-between items-center gap-2 leading-none">
+    <span className="text-gray-500">Valor</span>
+    <span className="font-mono font-medium tabular-nums text-gray-950">
+      {new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+      }).format(Number(value))}
+    </span>
+  </div>
+)
+
 interface TopClientsChartProps extends SearchParamsType {}
 
 export function TopClientsChart({ searchParams }: TopClientsChartProps) {
@@ -104,7 +117,10 @@ export function TopClientsChart({ searchParams }: TopClientsChartProps) {
                 width={80}
                 tick={{ fontSize: 12 }}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent formatter={currencyFormatter} />}
+              />
               <Bar
                 dataKey="value"
                 fill="var(--color-value)"

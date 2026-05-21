@@ -50,6 +50,18 @@ import { getData, deleteItemNew } from '@/actions/_cruds'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Unified Interfaces
+interface NfeItem {
+  id: string
+  numero: number
+  serie: number
+  status: string
+  chaveAcesso?: string | null
+  danfeUrl?: string | null
+  xmlAutorizado?: string | null
+  dataEmissao?: string | null
+  motivoRejeicao?: string
+}
+
 interface UnifiedInvoiceItem {
   type: 'ORDER' | 'NFE_AVULSA' | 'NFSE_AVULSA'
   id: string
@@ -58,9 +70,15 @@ interface UnifiedInvoiceItem {
   clientName: string
   reference: string
   totalValue: number
-  nfes: any[]
-  nfse?: any
-  originalData: any
+  nfes: NfeItem[]
+  nfse?: unknown
+  originalData: {
+    quotation?: {
+      client?: {
+        id?: string
+      }
+    }
+  }
 }
 
 interface OrderGroupFromBackend {
@@ -186,8 +204,12 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       if (result.success && result.data) {
         // Defensive check to ensure data is an array before setting it to state
         // This prevents "TypeError: n.map is not a function" crashes on render
-        const rawData = result.data as unknown as Record<string, unknown>;
-        const dataArray = Array.isArray(rawData) ? rawData : (Array.isArray(rawData?.data) ? rawData.data : []);
+        const rawData = result.data as unknown as Record<string, unknown>
+        const dataArray = Array.isArray(rawData)
+          ? rawData
+          : Array.isArray(rawData?.data)
+            ? rawData.data
+            : []
         setOrderGroups(dataArray as OrderGroupFromBackend[])
         setTotalPages(result.lastPage || 1)
       } else {

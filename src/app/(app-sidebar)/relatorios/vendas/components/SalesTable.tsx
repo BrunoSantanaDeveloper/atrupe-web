@@ -142,10 +142,18 @@ export function SalesTable({ searchParams }: SalesTableProps) {
     return (
       <TableRow key={record.id}>
         <TableCell>
-          <p className="font-medium">
-            {record.clientName || 'Cliente não informado'}
-          </p>
-          <p className="text-gray truncate">{record.serviceDescription}</p>
+          {groupBy === 'client' ? (
+            <p className="font-medium">
+              {record.serviceDescription || 'Serviço não informado'}
+            </p>
+          ) : (
+            <>
+              <p className="font-medium">
+                {record.clientName || 'Cliente não informado'}
+              </p>
+              <p className="text-gray truncate">{record.serviceDescription}</p>
+            </>
+          )}
         </TableCell>
         <TableCell className="text-gray-600">
           {record.approvedDate || '-'}
@@ -269,27 +277,43 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                       return (
                         <Fragment key={groupId}>
                           {/* Group Header Row */}
-                          <TableRow className="bg-gray-100">
+                          <TableRow className="bg-gray-100 border-b border-gray-200">
                             <TableCell
                               colSpan={2}
                               className="text-gray font-medium text-xs py-3"
                             >
                               <div className="flex items-center gap-2">
-                                <span className="text-primary-700">
+                                <span className="text-primary-700 font-semibold">
                                   {groupName}
+                                </span>
+                                <span className="text-xs text-gray-500 font-normal">
+                                  (
+                                  {groupBy === 'client'
+                                    ? 'Total do Cliente'
+                                    : 'Total do Vendedor'}
+                                  )
                                 </span>
                                 <Badge
                                   variant="neutralLight"
-                                  className="text-xs"
+                                  className="text-xs font-normal"
                                 >
-                                  {group.count}
+                                  {group.count}{' '}
+                                  {group.count === 1 ? 'venda' : 'vendas'}
                                 </Badge>
                               </div>
                             </TableCell>
-                            <TableCell className="text-success-700 font-medium text-xs py-3">
+                            <TableCell className="text-success-700 font-semibold text-xs py-3">
                               {formatCurrencyToBrl(group.total)}
                             </TableCell>
-                            <TableCell colSpan={2}></TableCell>
+                            <TableCell></TableCell>
+                            <TableCell className="text-right text-gray-600 font-semibold text-xs py-3">
+                              {totalFiltered > 0
+                                ? ((group.total / totalFiltered) * 100).toFixed(
+                                    1,
+                                  )
+                                : '0.0'}
+                              %
+                            </TableCell>
                           </TableRow>
 
                           {/* Group Records */}

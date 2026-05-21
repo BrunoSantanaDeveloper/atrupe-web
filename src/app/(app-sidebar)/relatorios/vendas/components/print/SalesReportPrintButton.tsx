@@ -71,13 +71,16 @@ export function SalesReportPrintButton() {
   const handleGeneratePDF = async () => {
     setIsLoading(true)
     try {
-      const pdfData = await getSalesReportPdfData(getFilters())
+      const filters = getFilters()
+      const pdfData = await getSalesReportPdfData(filters)
 
       if (!pdfData) {
         throw new Error('Erro ao buscar dados do PDF')
       }
 
-      const blob = await pdf(<SalesReportPdf data={pdfData} />).toBlob()
+      const blob = await pdf(
+        <SalesReportPdf data={pdfData} groupBy={filters.groupBy} />,
+      ).toBlob()
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
     } catch (error) {
@@ -91,13 +94,14 @@ export function SalesReportPrintButton() {
   const handleGenerateExcel = async () => {
     setIsLoading(true)
     try {
-      const data = await getSalesReportPdfData(getFilters())
+      const filters = getFilters()
+      const data = await getSalesReportPdfData(filters)
 
       if (!data) {
         throw new Error('Erro ao buscar dados')
       }
 
-      generateSalesExcel(data)
+      generateSalesExcel(data, filters.groupBy)
     } catch (error) {
       console.error('Erro ao gerar Excel:', error)
       toast.error('Erro ao gerar Excel')
