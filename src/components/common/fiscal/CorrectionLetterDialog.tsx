@@ -121,6 +121,7 @@ export function CorrectionLetterDialog({
             )}
           </div>
         </DialogContent>
+
         <DialogFooter>
           <Button
             variant="outline"
