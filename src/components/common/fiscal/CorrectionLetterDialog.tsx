@@ -34,6 +34,7 @@ export function CorrectionLetterDialog({
 }: CorrectionLetterDialogProps) {
   const [correctionText, setCorrectionText] = useState('')
   const [isSending, setIsSending] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
 
   const handleSend = async () => {
     if (!nfeId) return
@@ -47,6 +48,7 @@ export function CorrectionLetterDialog({
     }
 
     setIsSending(true)
+    setErrorMsg('')
     try {
       const result = await createItemNew({
         route: `/fiscal/nfe/${nfeId}/correction-letter`,
@@ -58,9 +60,20 @@ export function CorrectionLetterDialog({
       toast.success('Carta de correção enviada com sucesso!')
       onOpenChange(false)
       setCorrectionText('')
+      setErrorMsg('')
       onSuccess()
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao enviar'
+      let message =
+        err instanceof Error ? err.message : 'Erro ao enviar carta de correção.'
+
+      // Tentativa de limpar problemas de encoding do backend
+      message = message
+        .replace(/correÃ§Ã£o/g, 'correção')
+        .replace(/NÃ£o/g, 'Não')
+        .replace(/possÃvel/g, 'possível')
+        .replace(/operaÃ§Ã£o/g, 'operação')
+
+      setErrorMsg(message)
       toast.error(message)
     } finally {
       setIsSending(false)
@@ -100,6 +113,11 @@ export function CorrectionLetterDialog({
               </span>
             )}
           </p>
+          {errorMsg && (
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+              {errorMsg}
+            </div>
+          )}
         </div>
         <DialogFooter>
           <Button

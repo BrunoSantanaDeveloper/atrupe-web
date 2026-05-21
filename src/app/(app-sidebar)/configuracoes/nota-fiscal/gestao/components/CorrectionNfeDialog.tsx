@@ -25,6 +25,7 @@ import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { useState } from 'react'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
@@ -62,6 +63,7 @@ export function CorrectionNfeDialog({
       correction: '',
     },
   })
+  const [errorMsg, setErrorMsg] = useState('')
 
   const handleClose = () => {
     form.reset()
@@ -71,6 +73,7 @@ export function CorrectionNfeDialog({
   async function onSubmit(data: CorrectionFormType) {
     if (!nfe) return
 
+    setErrorMsg('')
     try {
       const result = await createItemNew({
         route: `/fiscal/nfe/${nfe.id}/correction-letter`,
@@ -87,10 +90,19 @@ export function CorrectionNfeDialog({
       onSuccess()
       handleClose()
     } catch (error) {
-      const message =
+      let message =
         error instanceof Error
           ? error.message
           : 'Erro ao criar carta de correção'
+
+      // Tentativa de limpar problemas de encoding do backend
+      message = message
+        .replace(/correÃ§Ã£o/g, 'correção')
+        .replace(/NÃ£o/g, 'Não')
+        .replace(/possÃvel/g, 'possível')
+        .replace(/operaÃ§Ã£o/g, 'operação')
+
+      setErrorMsg(message)
       toast.error(message)
     }
   }
@@ -137,6 +149,11 @@ export function CorrectionNfeDialog({
                 placeholder="Descreva a correção a ser feita (mínimo 15 caracteres)"
                 rows={4}
               />
+              {errorMsg && (
+                <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+                  {errorMsg}
+                </div>
+              )}
             </form>
           </Form>
         </DialogBody>
