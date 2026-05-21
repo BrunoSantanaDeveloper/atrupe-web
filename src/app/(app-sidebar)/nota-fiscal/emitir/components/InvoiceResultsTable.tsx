@@ -167,11 +167,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(
     () => new Set(),
   )
-  const [pendingClientSelectionId, setPendingClientSelectionId] = useState<
-    string | null
-  >(null)
 
-  const selectedClientId = searchParams?.clientId as string
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
   const currentSearch = searchParams?.search as string | undefined
   const currentNfeStatus =
@@ -190,7 +186,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       }
 
       if (recordType) filters.recordType = recordType
-      if (selectedClientId) filters.clientId = selectedClientId
       if (currentSearch) filters.search = currentSearch
       if (startDate) filters.startDate = startDate
       if (endDate) filters.endDate = endDate
@@ -222,7 +217,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       setIsLoading(false)
     }
   }, [
-    selectedClientId,
     currentPage,
     currentSearch,
     currentNfeStatus,
@@ -236,24 +230,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   }, [fetchOrders])
 
   useEffect(() => {
-    if (pendingClientSelectionId) return
-
     setSelectedOrderIds(new Set())
-  }, [
-    pendingClientSelectionId,
-    selectedClientId,
-    currentPage,
-    currentSearch,
-    currentNfeStatus,
-    startDate,
-    endDate,
-  ])
-
-  useEffect(() => {
-    if (selectedClientId && pendingClientSelectionId) {
-      setPendingClientSelectionId(null)
-    }
-  }, [pendingClientSelectionId, selectedClientId])
+  }, [currentPage, currentSearch, currentNfeStatus, startDate, endDate])
 
   const visibleOrders = useMemo(
     () => orderGroups.flatMap((group) => group.items),
@@ -275,7 +253,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     0,
   )
 
-  const isClientScoped = Boolean(selectedClientId)
   const allSelectableSelected =
     selectableOrders.length > 0 &&
     selectableOrders.every((order) => selectedOrderIds.has(order.id))
@@ -283,39 +260,29 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     selectedOrderIds.has(order.id),
   )
 
-  const applyClientFilterFromOrder = (order: UnifiedInvoiceItem) => {
-    const clientId = order.originalData?.quotation?.client?.id
-
-    if (!clientId) {
-      toast.error('Esta OS não possui cliente vinculado')
-      return
-    }
-
-    const params = new URLSearchParams(searchParams as Record<string, string>)
-    params.set('clientId', clientId)
-    params.set('nfeStatus', 'NAO_EMITIDA')
-    params.delete('page')
-    params.delete('search')
-    params.delete('startDate')
-    params.delete('endDate')
-
-    setPendingClientSelectionId(order.id)
-    setSelectedOrderIds(new Set([order.id]))
-    router.push(`?${params.toString()}`)
-  }
-
   const toggleOrderSelection = (
     order: UnifiedInvoiceItem,
     checked: boolean,
   ) => {
-    if (checked && !selectedClientId) {
-      applyClientFilterFromOrder(order)
-      return
-    }
-
     setSelectedOrderIds((current) => {
       const next = new Set(current)
       if (checked) {
+        if (next.size > 0) {
+          const firstSelectedId = Array.from(next)[0]
+          const firstSelectedOrder = visibleOrders.find(
+            (o) => o.id === firstSelectedId,
+          )
+          if (
+            firstSelectedOrder &&
+            firstSelectedOrder.originalData?.quotation?.client?.id !==
+              order.originalData?.quotation?.client?.id
+          ) {
+            toast.error(
+              'Você só pode selecionar OSs do mesmo cliente para consolidar',
+            )
+            return current
+          }
+        }
         next.add(order.id)
       } else {
         next.delete(order.id)
@@ -325,6 +292,20 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   }
 
   const toggleAllVisible = (checked: boolean) => {
+    if (checked) {
+      const clientIds = new Set(
+        selectableOrders
+          .map((o) => o.originalData?.quotation?.client?.id)
+          .filter(Boolean),
+      )
+      if (clientIds.size > 1) {
+        toast.error(
+          'Os itens visíveis pertencem a clientes diferentes. Filtre por um único cliente na busca antes de selecionar todos.',
+        )
+        return
+      }
+    }
+
     setSelectedOrderIds((current) => {
       const next = new Set(current)
       selectableOrders.forEach((order) => {
@@ -462,9 +443,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         <span className="inline-flex">
                           <Checkbox
                             id="select-all"
-                            disabled={
-                              !isClientScoped || selectableOrders.length === 0
-                            }
+                            disabled={selectableOrders.length === 0}
                             checked={
                               allSelectableSelected
                                 ? true
@@ -478,14 +457,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                           />
                         </span>
                       </TooltipTrigger>
-                      {false && !isClientScoped && (
-                        <TooltipContent>
-                          <p>
-                            Selecione um cliente para habilitar a seleção
-                            múltipla
-                          </p>
-                        </TooltipContent>
-                      )}
                     </Tooltip>
                   </TooltipProvider>
                 </TableHead>
@@ -530,14 +501,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   />
                                 </span>
                               </TooltipTrigger>
-                              {false && !isClientScoped && (
-                                <TooltipContent>
-                                  <p>
-                                    Selecione um cliente para habilitar a
-                                    seleção múltipla
-                                  </p>
-                                </TooltipContent>
-                              )}
                             </Tooltip>
                           </TooltipProvider>
                         </TableCell>

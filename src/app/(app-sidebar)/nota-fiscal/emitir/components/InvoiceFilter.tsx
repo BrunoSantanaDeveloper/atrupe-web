@@ -2,7 +2,6 @@
 
 import { useRouter } from 'next/navigation'
 import type { DateRange } from 'react-day-picker'
-import { useState, useEffect } from 'react'
 
 // Components
 import { DateRangePickerBasic } from '@/components/common/form/DateRangePickerBasic'
@@ -14,40 +13,19 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
-import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
-
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import { getData } from '@/actions/_cruds'
 
 const NFE_STATUS_OPTIONS = [
   { value: 'NAO_EMITIDA', label: 'Não emitida' },
   { value: 'EM_DIGITACAO', label: 'Em digitação' },
   { value: 'EMITIDA', label: 'Emitida' },
-  { value: 'TODAS', label: 'Todas' },
+  { value: 'TODOS', label: 'Todos' },
 ]
 
 export function InvoiceFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
   const params = new URLSearchParams(searchParams as Record<string, string>)
-
-  // Estado para armazenar a opção inicial selecionada para o cliente
-  const [selectedClient, setSelectedClient] = useState<{
-    value: string
-    label: string
-  } | null>(null)
-
-  // Carregar o nome do cliente selecionado caso haja um clientId na URL
-  useEffect(() => {
-    const clientId = searchParams?.clientId as string
-    if (clientId) {
-      getData({ route: `/client/${clientId}` }).then((res) => {
-        if (res?.data) {
-          setSelectedClient({ value: res.data.id, label: res.data.name })
-        }
-      })
-    }
-  }, [searchParams?.clientId])
 
   const formatDateToISO = (date: Date): string => {
     const year = date.getFullYear()
@@ -76,19 +54,6 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
 
   const handleNfeStatusChange = (value: string) => {
     params.set('nfeStatus', value)
-    params.delete('page')
-    router.push(`?${params.toString()}`)
-  }
-
-  const handleClientChange = (
-    option: { value: string; label: string } | null,
-  ) => {
-    setSelectedClient(option)
-    if (option?.value) {
-      params.set('clientId', option.value)
-    } else {
-      params.delete('clientId')
-    }
     params.delete('page')
     router.push(`?${params.toString()}`)
   }
@@ -128,18 +93,6 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
             <SelectItem value="NOTAS_AVULSAS">Notas Avulsas</SelectItem>
           </SelectContent>
         </Select>
-      </div>
-
-      <div className="w-full sm:w-[35%]">
-        <Label className="mb-1 block text-sm font-medium text-gray-700">
-          Cliente (Razão Social ou Nome Fantasia)
-        </Label>
-        <AsyncSelectBasic
-          route="/client"
-          placeholder="Buscar cliente..."
-          value={selectedClient}
-          onChange={handleClientChange}
-        />
       </div>
 
       <div className="w-full sm:w-1/4">
