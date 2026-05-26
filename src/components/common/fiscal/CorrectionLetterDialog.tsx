@@ -87,57 +87,54 @@ export function CorrectionLetterDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
+      <DialogHeader>
+        <DialogTitle>Carta de Correção (CC-e)</DialogTitle>
+        <DialogDescription>
+          Informe o texto da correção. A carta de correção não corrige valor,
+          dados cadastrais ou alíquota. Mínimo 15 caracteres.
+        </DialogDescription>
+      </DialogHeader>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Carta de Correção (CC-e)</DialogTitle>
-          <DialogDescription>
-            Informe o texto da correção. A carta de correção não corrige valor,
-            dados cadastrais ou alíquota. Mínimo 15 caracteres.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogContent>
-          <div className="space-y-3 py-4">
-            <Label htmlFor="correctionText">Texto da Correção *</Label>
-            <Textarea
-              id="correctionText"
-              value={correctionText}
-              onChange={(e) => setCorrectionText(e.target.value)}
-              placeholder="Descreva a correção a ser feita na nota fiscal..."
-              rows={5}
-              maxLength={1000}
-            />
-            <p className="text-xs text-gray-500 text-right">
-              {correctionText.length}/1000 caracteres
-              {correctionText.length > 0 && correctionText.length < 15 && (
-                <span className="text-warning-500 ml-2">
-                  Mínimo 15 caracteres
-                </span>
-              )}
-            </p>
-            {errorMsg && (
-              <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
-                {errorMsg}
-              </div>
+        <div className="space-y-3 py-4">
+          <Label htmlFor="correctionText">Texto da Correção *</Label>
+          <Textarea
+            id="correctionText"
+            value={correctionText}
+            onChange={(e) => setCorrectionText(e.target.value)}
+            placeholder="Descreva a correção a ser feita na nota fiscal..."
+            rows={5}
+            maxLength={1000}
+          />
+          <p className="text-xs text-gray-500 text-right">
+            {correctionText.length}/1000 caracteres
+            {correctionText.length > 0 && correctionText.length < 15 && (
+              <span className="text-warning-500 ml-2">
+                Mínimo 15 caracteres
+              </span>
             )}
-          </div>
-        </DialogContent>
-
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => handleClose(false)}
-            disabled={isSending}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSend}
-            disabled={isSending || correctionText.length < 15}
-          >
-            {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
-          </Button>
-        </DialogFooter>
+          </p>
+          {errorMsg && (
+            <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">
+              {errorMsg}
+            </div>
+          )}
+        </div>
       </DialogContent>
+      <DialogFooter>
+        <Button
+          variant="outline"
+          onClick={() => handleClose(false)}
+          disabled={isSending}
+        >
+          Cancelar
+        </Button>
+        <Button
+          onClick={handleSend}
+          disabled={isSending || correctionText.length < 15}
+        >
+          {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
+        </Button>
+      </DialogFooter>
     </Dialog>
   )
 }

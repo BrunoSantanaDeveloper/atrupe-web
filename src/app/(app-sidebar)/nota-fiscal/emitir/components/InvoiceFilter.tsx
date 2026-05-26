@@ -116,10 +116,7 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
         </Select>
       </div>
 
-      <div className="w-full sm:w-[35%]">
-        <Label className="mb-1 block text-sm font-medium text-gray-700">
-          Período
-        </Label>
+      <div className="w-[300px] sm:w-[40%]">
         <DateRangePickerBasic
           value={defaultDateRange}
           onChange={handleDateRangeChange}

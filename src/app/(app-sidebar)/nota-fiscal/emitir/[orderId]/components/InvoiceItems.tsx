@@ -79,7 +79,8 @@ export function InvoiceItems({
   }
 
   // Format currency
-  const formatCurrency = (value: number) => {
+  const formatCurrency = (value?: number) => {
+    if (value === undefined || value === null) return 'R$ 0,00'
     return value.toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -148,6 +149,9 @@ export function InvoiceItems({
                           </TableHead>
                           <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                             Seguro
+                          </TableHead>
+                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                            Desconto
                           </TableHead>
                           <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                             Valor unitário
@@ -226,11 +230,19 @@ export function InvoiceItems({
                                 ? formatCurrency(item.insurance)
                                 : '-'}
                             </TableCell>
+                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums text-error-600">
+                              {item.discount > 0
+                                ? `- ${formatCurrency(item.discount)}`
+                                : '-'}
+                            </TableCell>
                             <TableCell className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
                               {formatCurrency(item.unitValue)}
                             </TableCell>
-                            <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium">
-                              {item.quantity}
+                            <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium whitespace-nowrap">
+                              {item.quantity}{' '}
+                              <span className="text-xs text-gray-500">
+                                {item.unit || item.uCom || 'UN'}
+                              </span>
                             </TableCell>
                             <TableCell className="px-4 py-4 text-right text-gray-900 font-bold text-sm align-top tabular-nums">
                               {formatCurrency(item.totalValue)}

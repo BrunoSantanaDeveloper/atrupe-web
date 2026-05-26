@@ -522,6 +522,33 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             <p className="font-medium text-gray-800">
                               {item.reference}
                             </p>
+                            {(() => {
+                              if (item.type === 'ORDER') {
+                                const authorizedNfe = item.nfes?.find(
+                                  (n) => n.status === 'AUTHORIZED',
+                                )
+                                const draftNfe = item.nfes?.find(
+                                  (n) => n.status === 'DRAFT',
+                                )
+                                if (authorizedNfe) {
+                                  return (
+                                    <span className="text-xs text-success-700 font-medium">
+                                      NF-e nº {authorizedNfe.numero} (Série{' '}
+                                      {authorizedNfe.serie})
+                                    </span>
+                                  )
+                                }
+                                if (draftNfe) {
+                                  return (
+                                    <span className="text-xs text-blue-700 font-medium">
+                                      Rascunho NF-e nº {draftNfe.numero} (Série{' '}
+                                      {draftNfe.serie})
+                                    </span>
+                                  )
+                                }
+                              }
+                              return null
+                            })()}
                             <span className="text-xs text-gray-500 font-mono hidden md:inline">
                               ID: {item.id.slice(0, 8)}
                             </span>
