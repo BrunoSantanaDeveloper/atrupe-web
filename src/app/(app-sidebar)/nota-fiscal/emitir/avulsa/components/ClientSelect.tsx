@@ -35,6 +35,7 @@ import { getData } from '@/actions/_cruds'
 
 // Utils
 import { cn } from '@/lib/utils'
+import { getBacenCodeByName } from '@/consts/country-codes'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -52,6 +53,8 @@ export interface ClientData {
   state?: string
   cep?: string
   ie?: string // Inscrição Estadual
+  country?: string
+  idEstrangeiro?: string
 }
 
 export interface ClientSelectProps {
@@ -81,6 +84,7 @@ interface RawClient {
     state?: string
     zipcode?: string
     type?: string
+    country?: string
   }>
 }
 
@@ -102,6 +106,7 @@ function mapRawToClientData(raw: RawClient): ClientData {
     state: primaryAddress?.state,
     cep: primaryAddress?.zipcode,
     ie: raw.ie,
+    country: primaryAddress?.country,
   }
 }
 
@@ -120,19 +125,16 @@ export function clientToNfeRecipient(client: ClientData) {
     destCep: client.cep || '',
     destEmail: client.email || '',
     destIe: client.ie || '',
+    destPais: getBacenCodeByName(client.country || 'Brasil'),
+    destIdEstrangeiro: client.idEstrangeiro || '',
   }
 }
 
 export function clientToNfseTomador(client: ClientData) {
+  const cleanCnpjCpf = client.cnpjCpf?.replace(/\D/g, '') || ''
   return {
-    cnpj:
-      client.cnpjCpf?.replace(/\D/g, '').length === 14
-        ? client.cnpjCpf.replace(/\D/g, '')
-        : undefined,
-    cpf:
-      client.cnpjCpf?.replace(/\D/g, '').length === 11
-        ? client.cnpjCpf.replace(/\D/g, '')
-        : undefined,
+    cnpj: cleanCnpjCpf.length === 14 ? cleanCnpjCpf : undefined,
+    cpf: cleanCnpjCpf.length === 11 ? cleanCnpjCpf : undefined,
     razaoSocial: client.name || '',
     endereco: client.address || '',
     numero: client.addressNumber || '',
@@ -142,6 +144,8 @@ export function clientToNfseTomador(client: ClientData) {
     uf: client.state || '',
     cep: client.cep || '',
     email: client.email || '',
+    codigoPais: getBacenCodeByName(client.country || 'Brasil'),
+    idEstrangeiro: client.idEstrangeiro || '',
   }
 }
 

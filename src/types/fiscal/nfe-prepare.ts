@@ -31,6 +31,7 @@ export interface NfePrepareDestinatario {
   numero: string
   complemento: string
   pais: string
+  idEstrangeiro?: string
 }
 
 export interface NfePrepareItem {

@@ -48,6 +48,10 @@ import {
   ClientSelect,
   clientToNfeRecipient,
 } from '../../avulsa/components/ClientSelect'
+import {
+  getCountryNameByBacen,
+  getBacenCodeByName,
+} from '@/consts/country-codes'
 
 // Icons
 import {
@@ -116,6 +120,12 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         volumes: result.data.volumes || [],
         duplicatas: result.data.duplicatas || [],
         autXml: result.data.autXml || [],
+      }
+
+      if (preparedData.destinatario) {
+        preparedData.destinatario.pais = getCountryNameByBacen(
+          preparedData.destinatario.pais,
+        )
       }
 
       setData(preparedData)
@@ -236,7 +246,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           dataSaida: data.emissao.dataSaida,
           nfeReferenciada: referencedKey || null,
           additionalInfo: data.informacoesComplementares,
-          destCnpjCpf: data.destinatario.cnpjCpf,
+          destCnpjCpf: data.destinatario.cnpjCpf || null,
           destNome: data.destinatario.razaoSocial,
           destIe: data.destinatario.ie,
           destEmail: data.destinatario.email,
@@ -247,7 +257,8 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           destCep: data.destinatario.cep,
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
-          destPais: data.destinatario.pais,
+          destPais: getBacenCodeByName(data.destinatario.pais),
+          destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
           items: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -389,6 +400,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     if (!client || !data) return
 
     const recipient = clientToNfeRecipient(client)
+    const countryFriendlyName = client.country || 'Brasil'
     const updatedDestinatario: NfePrepareDestinatario = {
       razaoSocial: recipient.destNome,
       cnpjCpf: recipient.destCnpjCpf,
@@ -402,7 +414,8 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       endereco: recipient.destEndereco,
       numero: recipient.destNumero,
       complemento: recipient.destComplemento,
-      pais: 'Brasil',
+      pais: countryFriendlyName,
+      idEstrangeiro: recipient.destIdEstrangeiro,
     }
 
     setData({

@@ -28,19 +28,32 @@ export function InvoiceRecipientSection({
   onEditClick,
   onChangeClientClick,
 }: InvoiceRecipientSectionProps) {
+  const isForeign = destinatario.pais && destinatario.pais !== 'Brasil'
+
   const rows = [
     [
       { label: 'Razão Social', value: destinatario.razaoSocial },
-      { label: 'CNPJ/CPF', value: destinatario.cnpjCpf },
-      { label: 'I.E.', value: destinatario.ie || 'N/D' },
+      isForeign
+        ? {
+            label: 'ID Estrangeiro',
+            value: destinatario.idEstrangeiro || 'N/D',
+          }
+        : { label: 'CNPJ/CPF', value: destinatario.cnpjCpf },
+      isForeign
+        ? { label: 'País', value: destinatario.pais }
+        : { label: 'I.E.', value: destinatario.ie || 'N/D' },
     ],
     [
       {
         label: 'Rua',
         value: `${destinatario.endereco}, ${destinatario.numero}`,
       },
-      { label: 'Bairro', value: destinatario.bairro },
-      { label: 'CEP', value: destinatario.cep },
+      ...(!isForeign
+        ? [
+            { label: 'Bairro', value: destinatario.bairro },
+            { label: 'CEP', value: destinatario.cep },
+          ]
+        : []),
     ],
     [
       { label: 'Cidade', value: destinatario.cidade },

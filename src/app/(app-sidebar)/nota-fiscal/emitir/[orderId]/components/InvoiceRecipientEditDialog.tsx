@@ -22,6 +22,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
+import { COUNTRIES } from '@/consts/country-codes'
 
 // Form
 import { z } from 'zod'
@@ -39,6 +40,11 @@ import { useDocumentSearch } from '@/hooks/useDocumentSearch'
 
 // Types
 import type { NfePrepareDestinatario } from '@/types/fiscal/nfe-prepare'
+
+const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
+  value: c.namePt,
+  label: c.namePt,
+}))
 
 // ─── Brazil states ──────────────────────────────────────────────────────────
 const BRAZIL_STATES = [
@@ -85,23 +91,50 @@ interface Props {
 }
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
-const recipientSchema = z.object({
-  razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
-  cnpjCpf: z.string().min(1, 'CNPJ/CPF é obrigatório'),
-  inscricaoMunicipal: z.string().optional(),
-  stateRegistration: z.string().optional(),
-  indicadorIE: z.string().optional(),
-  telefone: z.string().optional(),
-  email: z.string().optional(),
-  cep: z.string().optional(),
-  estado: z.string().optional(),
-  cidade: z.string().optional(),
-  bairro: z.string().optional(),
-  numero: z.string().optional(),
-  endereco: z.string().optional(),
-  complemento: z.string().optional(),
-  pais: z.string().optional(),
-})
+const recipientSchema = z
+  .object({
+    razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
+    cnpjCpf: z.string().optional(),
+    idEstrangeiro: z.string().optional(),
+    inscricaoMunicipal: z.string().optional(),
+    stateRegistration: z.string().optional(),
+    indicadorIE: z.string().optional(),
+    telefone: z.string().optional(),
+    email: z.string().optional(),
+    cep: z.string().optional(),
+    estado: z.string().optional(),
+    cidade: z.string().optional(),
+    bairro: z.string().optional(),
+    numero: z.string().optional(),
+    endereco: z.string().optional(),
+    complemento: z.string().optional(),
+    pais: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const isForeign = data.pais && data.pais !== 'Brasil'
+    if (!isForeign) {
+      if (!data.cnpjCpf || data.cnpjCpf.trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['cnpjCpf'],
+          message: 'CNPJ/CPF é obrigatório',
+        })
+      }
+    } else {
+      if (
+        !data.idEstrangeiro ||
+        data.idEstrangeiro.trim().length < 5 ||
+        data.idEstrangeiro.trim().length > 20
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['idEstrangeiro'],
+          message:
+            'Identificação estrangeiro é obrigatória (5 a 20 caracteres)',
+        })
+      }
+    }
+  })
 
 type RecipientFormType = z.infer<typeof recipientSchema>
 
@@ -128,6 +161,7 @@ export function InvoiceRecipientEditDialog({
     (): RecipientFormType => ({
       razaoSocial: destinatario.razaoSocial || '',
       cnpjCpf: destinatario.cnpjCpf || '',
+      idEstrangeiro: destinatario.idEstrangeiro || '',
       inscricaoMunicipal: '',
       stateRegistration: destinatario.ie || 'ISENTO',
       indicadorIE: destinatario.ie && destinatario.ie !== 'ISENTO' ? '1' : '9',
@@ -151,6 +185,9 @@ export function InvoiceRecipientEditDialog({
   })
 
   const { handleSubmit, reset, setValue, watch } = form
+
+  const paisValue = watch('pais')
+  const isForeign = paisValue && paisValue !== 'Brasil'
 
   // Reset form when dialog opens
   useEffect(() => {
@@ -207,7 +244,8 @@ export function InvoiceRecipientEditDialog({
     data: RecipientFormType,
   ): NfePrepareDestinatario => ({
     razaoSocial: data.razaoSocial,
-    cnpjCpf: data.cnpjCpf,
+    cnpjCpf: data.cnpjCpf || '',
+    idEstrangeiro: data.idEstrangeiro || '',
     ie: data.stateRegistration || '',
     email: data.email || '',
     telefone: data.telefone || '',
@@ -253,25 +291,58 @@ export function InvoiceRecipientEditDialog({
               className="flex flex-wrap gap-4"
               noValidate
             >
-              {/* CNPJ/CPF com máscara + auto-preenchimento */}
-              <FormInput
-                name="cnpjCpf"
-                label="CNPJ / CPF"
-                placeholder="00.000.000/0000-00"
-                width="flex-[1_0_280px]"
-                disabled={isSearchingDocument}
-                formatValue={(v) => {
-                  if (!v) return ''
-                  return maskDocument(String(v))
+              {/* País */}
+              <FormSelect
+                name="pais"
+                label="País"
+                options={COUNTRY_OPTIONS}
+                width="flex-[1_0_100%]"
+                additionalOnChange={(val) => {
+                  if (val && val !== 'Brasil') {
+                    setValue('cep', '')
+                    setValue('estado', 'EX')
+                    setValue('cidade', 'EXTERIOR')
+                    setValue('bairro', '')
+                    setValue('indicadorIE', '9')
+                    setValue('stateRegistration', 'ISENTO')
+                    setValue('cnpjCpf', '')
+                  } else {
+                    setValue('estado', '')
+                    setValue('cidade', '')
+                    setValue('cep', '')
+                    setValue('idEstrangeiro', '')
+                  }
                 }}
-                additionalOnChange={(v) => {
-                  if (!v) return
-                  // Apply mask while typing
-                  const masked = maskDocument(String(v))
-                  setValue('cnpjCpf', masked)
-                }}
-                maxLength={18}
               />
+
+              {/* CNPJ/CPF com máscara + auto-preenchimento ou Identificação Estrangeiro */}
+              {!isForeign ? (
+                <FormInput
+                  name="cnpjCpf"
+                  label="CNPJ / CPF"
+                  placeholder="00.000.000/0000-00"
+                  width="flex-[1_0_280px]"
+                  disabled={isSearchingDocument}
+                  formatValue={(v) => {
+                    if (!v) return ''
+                    return maskDocument(String(v))
+                  }}
+                  additionalOnChange={(v) => {
+                    if (!v) return
+                    const masked = maskDocument(String(v))
+                    setValue('cnpjCpf', masked)
+                  }}
+                  maxLength={18}
+                />
+              ) : (
+                <FormInput
+                  name="idEstrangeiro"
+                  label="Identificação Estrangeiro"
+                  placeholder="Passaporte ou ID (5 a 20 caracteres)"
+                  width="flex-[1_0_280px]"
+                  maxLength={20}
+                />
+              )}
 
               {/* Razão Social — linha quase inteira */}
               <FormInput
@@ -282,17 +353,21 @@ export function InvoiceRecipientEditDialog({
               />
 
               {/* Inscrição Municipal */}
-              <FormInput
-                name="inscricaoMunicipal"
-                label="Inscrição Municipal"
-                width="flex-[1_0_240px]"
-              />
+              {!isForeign && (
+                <FormInput
+                  name="inscricaoMunicipal"
+                  label="Inscrição Municipal"
+                  width="flex-[1_0_240px]"
+                />
+              )}
 
               {/* Inscrição Estadual + Indicador IE — componente reutilizável */}
-              <RecipientFiscalFields
-                namePrefix=""
-                fieldWidth="flex-[1_0_300px]"
-              />
+              {!isForeign && (
+                <RecipientFiscalFields
+                  namePrefix=""
+                  fieldWidth="flex-[1_0_300px]"
+                />
+              )}
 
               {/* Telefone com máscara */}
               <FormInput
@@ -311,39 +386,61 @@ export function InvoiceRecipientEditDialog({
               <FormInput name="email" label="E-mail" width="flex-[2_0_280px]" />
 
               {/* CEP com auto-preenchimento */}
-              <FormInputZipCode
-                name="cep"
-                label="CEP"
-                width="flex-[1_0_180px]"
-                addressFields={{
-                  street: 'endereco',
-                  neighborhood: 'bairro',
-                  city: 'cidade',
-                  state: 'estado',
-                }}
-              />
+              {!isForeign && (
+                <FormInputZipCode
+                  name="cep"
+                  label="CEP"
+                  width="flex-[1_0_180px]"
+                  addressFields={{
+                    street: 'endereco',
+                    neighborhood: 'bairro',
+                    city: 'cidade',
+                    state: 'estado',
+                  }}
+                />
+              )}
 
               {/* Estado — Select com UFs brasileiras */}
-              <FormSelect
-                name="estado"
-                label="Estado (UF)"
-                options={BRAZIL_STATES}
-                width="flex-[1_0_140px]"
-              />
+              {!isForeign ? (
+                <FormSelect
+                  name="estado"
+                  label="Estado (UF)"
+                  options={BRAZIL_STATES}
+                  width="flex-[1_0_140px]"
+                />
+              ) : (
+                <FormInput
+                  name="estado"
+                  label="Estado (UF)"
+                  width="flex-[1_0_140px]"
+                  disabled
+                />
+              )}
 
               {/* Cidade */}
-              <FormInput
-                name="cidade"
-                label="Cidade"
-                width="flex-[2_0_220px]"
-              />
+              {!isForeign ? (
+                <FormInput
+                  name="cidade"
+                  label="Cidade"
+                  width="flex-[2_0_220px]"
+                />
+              ) : (
+                <FormInput
+                  name="cidade"
+                  label="Cidade"
+                  width="flex-[2_0_220px]"
+                  disabled
+                />
+              )}
 
               {/* Bairro */}
-              <FormInput
-                name="bairro"
-                label="Bairro"
-                width="flex-[2_0_220px]"
-              />
+              {!isForeign && (
+                <FormInput
+                  name="bairro"
+                  label="Bairro"
+                  width="flex-[2_0_220px]"
+                />
+              )}
 
               {/* Rua */}
               <FormInput name="endereco" label="Rua" width="flex-[3_0_320px]" />

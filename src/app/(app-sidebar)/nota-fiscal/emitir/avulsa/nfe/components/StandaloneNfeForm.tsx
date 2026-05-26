@@ -38,6 +38,10 @@ import {
   ClientSelect,
   clientToNfeRecipient,
 } from '../../components/ClientSelect'
+import {
+  getCountryNameByBacen,
+  getBacenCodeByName,
+} from '@/consts/country-codes'
 
 // Icons
 import {
@@ -120,22 +124,36 @@ export function StandaloneNfeForm() {
 
         setData(preparedData)
 
-        if (preparedData.destinatario && preparedData.destinatario.cnpjCpf) {
-          setSelectedClient({
-            id: preparedData.clientId || '',
-            name: preparedData.destinatario.razaoSocial,
-            cnpjCpf: preparedData.destinatario.cnpjCpf,
-            email: preparedData.destinatario.email,
-            phone: preparedData.destinatario.telefone,
-            address: preparedData.destinatario.endereco,
-            addressNumber: preparedData.destinatario.numero,
-            complement: preparedData.destinatario.complemento,
-            neighborhood: preparedData.destinatario.bairro,
-            city: preparedData.destinatario.cidade,
-            state: preparedData.destinatario.estado,
-            cep: preparedData.destinatario.cep,
-            ie: preparedData.destinatario.ie,
-          })
+        if (preparedData.destinatario) {
+          const countryFriendlyName = getCountryNameByBacen(
+            preparedData.destinatario.pais,
+          )
+          preparedData.destinatario.pais = countryFriendlyName
+
+          if (
+            preparedData.destinatario.cnpjCpf ||
+            preparedData.destinatario.idEstrangeiro
+          ) {
+            setSelectedClient({
+              id: preparedData.clientId || '',
+              name: preparedData.destinatario.razaoSocial,
+              cnpjCpf: preparedData.destinatario.cnpjCpf,
+              email: preparedData.destinatario.email,
+              phone: preparedData.destinatario.telefone,
+              address: preparedData.destinatario.endereco,
+              addressNumber: preparedData.destinatario.numero,
+              complement: preparedData.destinatario.complemento,
+              neighborhood: preparedData.destinatario.bairro,
+              city: preparedData.destinatario.cidade,
+              state: preparedData.destinatario.estado,
+              cep: preparedData.destinatario.cep,
+              ie: preparedData.destinatario.ie,
+              country: countryFriendlyName,
+              idEstrangeiro: preparedData.destinatario.idEstrangeiro,
+            })
+          } else {
+            setSelectedClient(null)
+          }
         } else {
           setSelectedClient(null)
         }
@@ -169,6 +187,7 @@ export function StandaloneNfeForm() {
       // Use clientToNfeRecipient to map client data directly into destinatario
       if (data) {
         const recipient = clientToNfeRecipient(client)
+        const countryFriendlyName = client.country || 'Brasil'
         const updatedDestinatario: NfePrepareDestinatario = {
           razaoSocial: recipient.destNome,
           cnpjCpf: recipient.destCnpjCpf,
@@ -182,7 +201,8 @@ export function StandaloneNfeForm() {
           endereco: recipient.destEndereco,
           numero: recipient.destNumero,
           complemento: recipient.destComplemento,
-          pais: 'Brasil',
+          pais: countryFriendlyName,
+          idEstrangeiro: recipient.destIdEstrangeiro,
         }
 
         setData({
@@ -294,13 +314,14 @@ export function StandaloneNfeForm() {
     }
 
     const dest = data.destinatario
+    const isForeign =
+      dest.pais && dest.pais !== 'Brasil' && dest.pais !== '1058'
     if (
       !dest.endereco ||
       !dest.numero ||
-      !dest.bairro ||
-      !dest.cep ||
-      !dest.cidade ||
-      !dest.estado
+      (!isForeign &&
+        (!dest.bairro || !dest.cep || !dest.cidade || !dest.estado)) ||
+      (isForeign && (!dest.cidade || !dest.estado))
     ) {
       toast.error(
         'O destinatário selecionado não possui um endereço completo cadastrado. Edite os dados do destinatário antes de emitir.',
@@ -322,7 +343,7 @@ export function StandaloneNfeForm() {
           dataSaida: data.emissao.dataSaida,
           nfeReferenciada: referencedKey || null,
           additionalInfo: data.informacoesComplementares,
-          destCnpjCpf: data.destinatario.cnpjCpf,
+          destCnpjCpf: data.destinatario.cnpjCpf || null,
           destNome: data.destinatario.razaoSocial,
           destIe: data.destinatario.ie,
           destEmail: data.destinatario.email,
@@ -333,7 +354,8 @@ export function StandaloneNfeForm() {
           destCep: data.destinatario.cep,
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
-          destPais: data.destinatario.pais,
+          destPais: getBacenCodeByName(data.destinatario.pais),
+          destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
           items: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
