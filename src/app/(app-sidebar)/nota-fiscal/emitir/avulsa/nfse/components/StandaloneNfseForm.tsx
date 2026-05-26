@@ -267,7 +267,7 @@ export function StandaloneNfseForm() {
                 variant="ghost"
                 size="iconSm"
                 className="text-gray-500 hover:text-gray-700"
-                onClick={() => router.push('/nota-fiscal/emitir/avulsa')}
+                onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
                 <IconArrowLeft size={20} />
@@ -294,7 +294,7 @@ export function StandaloneNfseForm() {
               icon={IconX}
               title="Cancelar digitação"
               iconVariant="errorLight"
-              onClick={() => router.push('/nota-fiscal/emitir/avulsa')}
+              onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <CustomButton
               icon={IconCircleCheck}

@@ -5,7 +5,6 @@ import {
   IconCoins,
   IconGraph,
   IconUsers,
-  IconShare2,
   IconUpload,
   IconBoxSeam,
   IconBuilding,
@@ -31,7 +30,6 @@ import {
   IconCalendarDollar,
   IconBuildingCommunity,
   IconDeviceDesktopDollar,
-  IconFilePlus,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -175,23 +173,9 @@ export const defaultMainNavigation: MainNavigationType[] = [
   {
     icon: IconFileSymlink,
     title: 'Nota Fiscal',
-    path: '/nota-fiscal',
-    children: [
-      {
-        icon: IconShare2,
-        title: 'Emitir Nota',
-        path: '/nota-fiscal/emitir',
-        permission: 'nota_fiscal:emitir:view',
-        requiredModule: 'nota_fiscal',
-      },
-      {
-        icon: IconFilePlus,
-        title: 'Nota Avulsa',
-        path: '/nota-fiscal/emitir/avulsa',
-        permission: 'nota_fiscal:emitir:create',
-        requiredModule: 'nota_fiscal',
-      },
-    ],
+    path: '/nota-fiscal/emitir',
+    permission: 'nota_fiscal:emitir:view',
+    requiredModule: 'nota_fiscal',
   },
   {
     icon: IconAddressBook,
