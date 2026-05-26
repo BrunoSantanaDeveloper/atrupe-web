@@ -119,6 +119,26 @@ export function StandaloneNfeForm() {
         }
 
         setData(preparedData)
+
+        if (preparedData.destinatario && preparedData.destinatario.cnpjCpf) {
+          setSelectedClient({
+            id: preparedData.clientId || '',
+            name: preparedData.destinatario.razaoSocial,
+            cnpjCpf: preparedData.destinatario.cnpjCpf,
+            email: preparedData.destinatario.email,
+            phone: preparedData.destinatario.telefone,
+            address: preparedData.destinatario.endereco,
+            addressNumber: preparedData.destinatario.numero,
+            complement: preparedData.destinatario.complemento,
+            neighborhood: preparedData.destinatario.bairro,
+            city: preparedData.destinatario.cidade,
+            state: preparedData.destinatario.estado,
+            cep: preparedData.destinatario.cep,
+            ie: preparedData.destinatario.ie,
+          })
+        } else {
+          setSelectedClient(null)
+        }
       } catch (err) {
         const message =
           err instanceof Error ? err.message : 'Erro ao carregar dados'

@@ -11,6 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogBody,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -87,15 +88,15 @@ export function CorrectionLetterDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogHeader>
-        <DialogTitle>Carta de Correção (CC-e)</DialogTitle>
-        <DialogDescription>
-          Informe o texto da correção. A carta de correção não corrige valor,
-          dados cadastrais ou alíquota. Mínimo 15 caracteres.
-        </DialogDescription>
-      </DialogHeader>
       <DialogContent className="sm:max-w-[500px]">
-        <div className="space-y-3 py-4">
+        <DialogHeader>
+          <DialogTitle>Carta de Correção (CC-e)</DialogTitle>
+          <DialogDescription>
+            Informe o texto da correção. A carta de correção não corrige valor,
+            dados cadastrais ou alíquota. Mínimo 15 caracteres.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody className="space-y-3">
           <Label htmlFor="correctionText">Texto da Correção *</Label>
           <Textarea
             id="correctionText"
@@ -118,23 +119,23 @@ export function CorrectionLetterDialog({
               {errorMsg}
             </div>
           )}
-        </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => handleClose(false)}
+            disabled={isSending}
+          >
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSend}
+            disabled={isSending || correctionText.length < 15}
+          >
+            {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
-      <DialogFooter>
-        <Button
-          variant="outline"
-          onClick={() => handleClose(false)}
-          disabled={isSending}
-        >
-          Cancelar
-        </Button>
-        <Button
-          onClick={handleSend}
-          disabled={isSending || correctionText.length < 15}
-        >
-          {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
-        </Button>
-      </DialogFooter>
     </Dialog>
   )
 }
