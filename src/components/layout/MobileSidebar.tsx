@@ -36,6 +36,7 @@ import { IconX, IconUser, IconMenu2, IconLogout } from '@tabler/icons-react'
 import { useSession } from 'next-auth/react'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
@@ -77,6 +78,8 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
     canManageRejectionReasons,
     canManageDeliverySchedule,
   } = usePlanFeatures()
+  const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
+    useFiscalOnboardingStatus()
 
   if (!session) return null
 
@@ -149,9 +152,14 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   const filteredNavigation = mainNavigation
     .map((item) => ({
       ...item,
+      hasOriginalChildren: !!item.children,
       children: item.children?.filter((child) => checkItemAccess(child)),
     }))
-    .filter((item) => checkItemAccess(item) && (item.children?.length ?? 0) > 0)
+    .filter(
+      (item) =>
+        checkItemAccess(item) &&
+        (item.hasOriginalChildren ? (item.children?.length ?? 0) > 0 : true),
+    )
 
   const handleLogOut = () => {
     setOpen(false)
@@ -245,6 +253,59 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
             }
           >
             {filteredNavigation.map((item, index) => {
+              const hasChildren = item.hasOriginalChildren
+
+              if (!hasChildren) {
+                return (
+                  <div key={index} className="border-b border-gray-200 py-3">
+                    <Link
+                      href={`${item?.path}${item?.query || ''}` || '#'}
+                      onClick={handleLinkClick}
+                      className={cn(
+                        'flex items-center justify-between w-full text-left font-medium transition-all hover:no-underline',
+                        pathname.includes(`${item?.path}`)
+                          ? 'text-brand-600 font-semibold'
+                          : 'text-gray-600 hover:text-gray-700',
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IconComponent
+                          icon={item?.icon}
+                          className={cn(
+                            'size-5',
+                            pathname.includes(`${item?.path}`)
+                              ? 'text-brand'
+                              : 'text-gray-600',
+                          )}
+                        />
+                        <span
+                          className={cn(
+                            'text-sm font-semibold text-gray-700',
+                            pathname.includes(`${item?.path}`) &&
+                              'text-brand-600',
+                          )}
+                        >
+                          {item?.title}
+                        </span>
+                      </div>
+                      {item?.requiredModule === 'nota_fiscal' &&
+                      (isFiscalPending || isFiscalNeedsSetup) ? (
+                        <Badge
+                          variant={
+                            isFiscalPending ? 'warningLight' : 'neutralLight'
+                          }
+                          className="text-[10px] px-1.5 py-0.5"
+                        >
+                          {isFiscalPending ? 'Pendente' : 'Configurar'}
+                        </Badge>
+                      ) : item?.counter ? (
+                        <Badge variant="neutralLight">+{item?.counter}</Badge>
+                      ) : null}
+                    </Link>
+                  </div>
+                )
+              }
+
               const hasPermittedChildren = item.children?.some((child) =>
                 checkItemAccess(child),
               )

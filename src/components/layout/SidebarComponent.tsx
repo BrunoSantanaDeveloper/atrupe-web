@@ -181,9 +181,14 @@ export function SidebarComponent(props: Props) {
   const filteredNavigation = mainNavigation
     .map((item) => ({
       ...item,
+      hasOriginalChildren: !!item.children,
       children: item.children?.filter((child) => checkItemAccess(child)),
     }))
-    .filter((item) => checkItemAccess(item) && (item.children?.length ?? 0) > 0)
+    .filter(
+      (item) =>
+        checkItemAccess(item) &&
+        (item.hasOriginalChildren ? (item.children?.length ?? 0) > 0 : true),
+    )
 
   const handleCollapse = () => {
     setCollapsed((prev) => !prev)
@@ -306,6 +311,90 @@ export function SidebarComponent(props: Props) {
                 }
               >
                 {filteredNavigation.map((item, index) => {
+                  const hasChildren = item.hasOriginalChildren
+
+                  if (!hasChildren) {
+                    return (
+                      <div
+                        key={index}
+                        className="border-b border-gray-200 mt-3 pb-2"
+                      >
+                        <Tooltip delayDuration={300}>
+                          <TooltipTrigger asChild>
+                            <Link
+                              href={`${item?.path}${item?.query || ''}` || '#'}
+                              className={cn(
+                                'flex flex-1 mr-2 items-center justify-between pt-2 pb-3 font-medium transition-all hover:no-underline rounded-lg',
+                                pathname.includes(`${item?.path}`)
+                                  ? 'text-brand-600 font-semibold'
+                                  : 'text-gray-600 hover:text-gray-700',
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  'flex items-center transition-all ease-in-out duration-500 min-w-52',
+                                  collapsed ? 'gap-10 px-5' : 'gap-4 px-2',
+                                )}
+                              >
+                                <IconComponent
+                                  icon={item?.icon}
+                                  className={cn(
+                                    pathname.includes(`${item?.path}`)
+                                      ? 'text-brand'
+                                      : 'text-gray-600',
+                                  )}
+                                />
+                                <span
+                                  className={cn(
+                                    'text-gray-700 text-sm font-semibold transition-all ease-in-out duration-500',
+                                    pathname.includes(`${item?.path}`) &&
+                                      'text-brand',
+                                    collapsed && 'opacity-0',
+                                  )}
+                                >
+                                  {item?.title}
+                                </span>
+                              </div>
+                              {item?.requiredModule === 'nota_fiscal' &&
+                              (isFiscalPending || isFiscalNeedsSetup) ? (
+                                <Badge
+                                  variant={
+                                    isFiscalPending
+                                      ? 'warningLight'
+                                      : 'neutralLight'
+                                  }
+                                  className={cn(
+                                    'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
+                                    collapsed && 'opacity-0',
+                                  )}
+                                >
+                                  {isFiscalPending ? 'Pendente' : 'Configurar'}
+                                </Badge>
+                              ) : item?.counter ? (
+                                <Badge
+                                  variant="light"
+                                  className={cn(
+                                    'transition-all ease-in-out duration-500 mr-2',
+                                    collapsed && 'opacity-0',
+                                  )}
+                                >
+                                  +{item?.counter}
+                                </Badge>
+                              ) : null}
+                            </Link>
+                          </TooltipTrigger>
+                          <TooltipContent
+                            side="right"
+                            hidden={!collapsed}
+                            className="-ml-40"
+                          >
+                            <p>{item?.title}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    )
+                  }
+
                   // Verifica se há pelo menos um item filho com permissão
                   const hasPermittedChildren = item.children?.some((child) =>
                     checkItemAccess(child),
