@@ -26,7 +26,7 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { hasFiscalModule } = usePlanFeatures()
 
   const primaryCountry = watch('addresses.0.country')
-  const isForeign = primaryCountry && primaryCountry !== 'Brasil'
+  const isForeign = !!(primaryCountry && primaryCountry !== 'Brasil')
 
   const { data: categoryData } = useCategoryOptions(
     context === 'supplier' ? 'SUPPLIER' : 'CLIENT',

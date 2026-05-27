@@ -40,7 +40,7 @@ export function AddressTab() {
     <div className="space-y-6">
       {fields.map((field, index) => {
         const country = watch(`addresses.${index}.country`)
-        const isForeign = country && country !== 'Brasil'
+        const isForeign = !!(country && country !== 'Brasil')
 
         return (
           <div key={field.id} className="relative space-y-4">
