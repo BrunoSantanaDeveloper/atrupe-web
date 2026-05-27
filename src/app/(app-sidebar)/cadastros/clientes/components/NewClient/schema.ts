@@ -30,6 +30,7 @@ export const newClientSchema = z
         street: z.string(),
         number: z.string(),
         complement: z.string().optional(),
+        country: z.string().optional(),
       }),
     ),
     responsibilities: z.array(
@@ -126,6 +127,7 @@ export const defaultPersonValues: NewClientFormType = {
       street: '',
       number: '',
       complement: '',
+      country: 'Brasil',
     },
   ],
   responsibilities: [
@@ -184,6 +186,7 @@ export const defaultCompanyValues: NewClientFormType = {
       street: '',
       number: '',
       complement: '',
+      country: 'Brasil',
     },
   ],
   responsibilities: [

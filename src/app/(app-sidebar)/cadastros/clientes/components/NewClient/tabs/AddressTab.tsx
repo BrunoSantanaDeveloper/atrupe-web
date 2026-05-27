@@ -1,14 +1,21 @@
 import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormSelect } from '@/components/common/form/FormSelect'
 import { Button } from '@/components/ui/button'
+import { COUNTRIES } from '@/consts/country-codes'
 import { IconCirclePlus, IconTrash } from '@tabler/icons-react'
 import { NewClientFormType } from '../schema'
 import { useCheckZipcode } from '@/hooks/queries/useCheckZipcode'
 import { useEffect } from 'react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
+const COUNTRY_OPTIONS = COUNTRIES.map((c) => ({
+  value: c.namePt,
+  label: c.namePt,
+}))
+
 export function AddressTab() {
-  const { control } = useFormContext<NewClientFormType>()
+  const { control, setValue, watch } = useFormContext<NewClientFormType>()
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -25,75 +32,108 @@ export function AddressTab() {
       street: '',
       number: '',
       complement: '',
+      country: 'Brasil',
     })
   }
 
   return (
     <div className="space-y-6">
-      {fields.map((field, index) => (
-        <div key={field.id} className="relative space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-md text-gray-700 font-medium">
-              Endereço {index + 1}
-            </h3>
-            {index > 0 && (
-              <Button
-                type="button"
-                size="iconSm"
-                variant="neutralGhost"
-                className="absolute top-1 right-1"
-                onClick={() => remove(index)}
-              >
-                <IconTrash className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
+      {fields.map((field, index) => {
+        const country = watch(`addresses.${index}.country`)
+        const isForeign = country && country !== 'Brasil'
 
-          <div className="grid grid-cols-3 gap-4">
-            <FormInput<NewClientFormType>
-              name={`addresses.${index}.type`}
-              label="Tipo"
-              placeholder="Principal"
-              disabled={index === 0}
-            />
-            <ZipcodeField index={index} />
-            <div className="mt-auto">
-              <FormInput<NewClientFormType>
-                name={`addresses.${index}.state`}
-                label="Estado"
+        return (
+          <div key={field.id} className="relative space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-md text-gray-700 font-medium">
+                Endereço {index + 1}
+              </h3>
+              {index > 0 && (
+                <Button
+                  type="button"
+                  size="iconSm"
+                  variant="neutralGhost"
+                  className="absolute top-1 right-1"
+                  onClick={() => remove(index)}
+                >
+                  <IconTrash className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+
+            {/* País */}
+            <div className="max-w-xs">
+              <FormSelect<NewClientFormType>
+                name={`addresses.${index}.country`}
+                label="País"
+                options={COUNTRY_OPTIONS}
+                additionalOnChange={(val) => {
+                  if (val && val !== 'Brasil') {
+                    setValue(`addresses.${index}.zipcode`, '')
+                    setValue(`addresses.${index}.state`, 'EX')
+                    setValue(`addresses.${index}.city`, 'EXTERIOR')
+                    setValue(`addresses.${index}.neighborhood`, '')
+                  } else {
+                    setValue(`addresses.${index}.state`, '')
+                    setValue(`addresses.${index}.city`, '')
+                    setValue(`addresses.${index}.zipcode`, '')
+                  }
+                }}
               />
             </div>
-            <div className="col-span-full flex gap-4 items-baseline">
+
+            <div className="grid grid-cols-3 gap-4">
               <FormInput<NewClientFormType>
-                name={`addresses.${index}.city`}
-                label="Cidade"
+                name={`addresses.${index}.type`}
+                label="Tipo"
+                placeholder="Principal"
+                disabled={index === 0}
               />
+              {!isForeign ? <ZipcodeField index={index} /> : <div></div>}
+              <div className="mt-auto">
+                <FormInput<NewClientFormType>
+                  name={`addresses.${index}.state`}
+                  label="Estado"
+                  disabled={isForeign}
+                />
+              </div>
+              <div className="col-span-full flex gap-4 items-baseline">
+                <FormInput<NewClientFormType>
+                  name={`addresses.${index}.city`}
+                  label="Cidade"
+                  disabled={isForeign}
+                />
+                {!isForeign ? (
+                  <FormInput<NewClientFormType>
+                    name={`addresses.${index}.neighborhood`}
+                    label="Bairro"
+                  />
+                ) : (
+                  <div></div>
+                )}
+              </div>
               <FormInput<NewClientFormType>
-                name={`addresses.${index}.neighborhood`}
-                label="Bairro"
+                name={`addresses.${index}.number`}
+                inputMode="numeric"
+                label="Número"
               />
+              <div className="col-span-2">
+                <FormInput<NewClientFormType>
+                  name={`addresses.${index}.street`}
+                  label="Rua"
+                />
+              </div>
+              <div className="col-span-3">
+                <FormInput<NewClientFormType>
+                  name={`addresses.${index}.complement`}
+                  label="Complemento"
+                />
+              </div>
             </div>
-            <FormInput<NewClientFormType>
-              name={`addresses.${index}.number`}
-              inputMode="numeric"
-              label="Número"
-            />
-            <div className="col-span-2">
-              <FormInput<NewClientFormType>
-                name={`addresses.${index}.street`}
-                label="Rua"
-              />
-            </div>
-            <div className="col-span-3">
-              <FormInput<NewClientFormType>
-                name={`addresses.${index}.complement`}
-                label="Complemento"
-              />
-            </div>
+            <div className="my-6 border border-b-gray-300"></div>
           </div>
-          <div className="my-6 border border-b-gray-300"></div>
-        </div>
-      ))}
+        )
+      })}
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddAddress}>
           <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />

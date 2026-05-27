@@ -85,8 +85,9 @@ export function StandaloneNfeForm() {
   const devolutionOf = searchParams.get('devolutionOf')
   const complementaryOf = searchParams.get('complementaryOf')
   const reissueOf = searchParams.get('reissueOf')
-  const isDevolution = !!devolutionOf
-  const isComplementary = !!complementaryOf
+  const defaultFinality = searchParams.get('defaultFinality')
+  const isDevolution = !!devolutionOf || defaultFinality === '4'
+  const isComplementary = !!complementaryOf || defaultFinality === '2'
   const isReissue = !!reissueOf
 
   // Fetch emitter defaults on mount
@@ -117,6 +118,13 @@ export function StandaloneNfeForm() {
 
         const preparedData: NfePrepareResponse = {
           ...result.data,
+          emissao: {
+            ...result.data.emissao,
+            finalidade: defaultFinality
+              ? Number(defaultFinality)
+              : result.data.emissao.finalidade,
+            ...(defaultFinality === '4' ? { tipo: 0 } : {}),
+          },
           volumes: result.data.volumes || [],
           duplicatas: result.data.duplicatas || [],
           autXml: result.data.autXml || [],
@@ -166,7 +174,7 @@ export function StandaloneNfeForm() {
         setIsLoading(false)
       }
     },
-    [devolutionOf, complementaryOf, reissueOf],
+    [devolutionOf, complementaryOf, reissueOf, defaultFinality],
   )
 
   useEffect(() => {

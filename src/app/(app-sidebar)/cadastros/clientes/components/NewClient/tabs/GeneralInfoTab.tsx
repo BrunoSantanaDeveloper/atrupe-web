@@ -25,6 +25,9 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { searchByDocument } = useDocumentSearch()
   const { hasFiscalModule } = usePlanFeatures()
 
+  const primaryCountry = watch('addresses.0.country')
+  const isForeign = primaryCountry && primaryCountry !== 'Brasil'
+
   const { data: categoryData } = useCategoryOptions(
     context === 'supplier' ? 'SUPPLIER' : 'CLIENT',
   )
@@ -216,16 +219,24 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           <>
             <FormInput
               name="general.cpf"
-              label="CPF"
-              placeholder="Digite aqui"
-              additionalOnChange={(value) => {
-                const maskedValue = maskCpf(String(value)) || ''
-                setValue('general.cpf', maskedValue)
-              }}
-              onBlur={(e) => {
-                handleDocumentChange(e.target.value, 'CPF')
-              }}
-              maxLength={14}
+              label={isForeign ? 'Identificação Estrangeiro' : 'CPF'}
+              placeholder={isForeign ? 'Passaporte ou ID' : 'Digite aqui'}
+              additionalOnChange={
+                !isForeign
+                  ? (value) => {
+                      const maskedValue = maskCpf(String(value)) || ''
+                      setValue('general.cpf', maskedValue)
+                    }
+                  : undefined
+              }
+              onBlur={
+                !isForeign
+                  ? (e) => {
+                      handleDocumentChange(e.target.value, 'CPF')
+                    }
+                  : undefined
+              }
+              maxLength={isForeign ? 20 : 14}
             />
           </>
         )}
@@ -233,16 +244,24 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           <>
             <FormInput
               name="general.cnpj"
-              label="CNPJ"
-              placeholder="Digite aqui"
-              additionalOnChange={(value) => {
-                const maskedValue = maskCnpj(String(value)) || ''
-                setValue('general.cnpj', maskedValue)
-              }}
-              onBlur={(e) => {
-                handleDocumentChange(e.target.value, 'CNPJ')
-              }}
-              maxLength={18}
+              label={isForeign ? 'Identificação Estrangeiro' : 'CNPJ'}
+              placeholder={isForeign ? 'ID Estrangeiro' : 'Digite aqui'}
+              additionalOnChange={
+                !isForeign
+                  ? (value) => {
+                      const maskedValue = maskCnpj(String(value)) || ''
+                      setValue('general.cnpj', maskedValue)
+                    }
+                  : undefined
+              }
+              onBlur={
+                !isForeign
+                  ? (e) => {
+                      handleDocumentChange(e.target.value, 'CNPJ')
+                    }
+                  : undefined
+              }
+              maxLength={isForeign ? 20 : 18}
             />
           </>
         )}

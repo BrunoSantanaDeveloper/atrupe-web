@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 
 // UI
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -10,18 +10,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
   DialogDescription,
   DialogBody,
+  DialogFooter,
 } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 
 // Next
@@ -47,23 +39,11 @@ import { FiscalModulePendingBanner } from '../../components/FiscalModulePendingB
 import { FiscalModuleGate } from '../../components/FiscalModuleGate'
 import { ExportXmlButton } from '@/components/common/fiscal/ExportXmlButton'
 
-// Actions
-import { getData } from '@/actions/_cruds'
-
 // Libs
 import { cn } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-
-interface NfeListType {
-  id: string
-  numero: number
-  serie: number
-  destinatario?: {
-    nome?: string
-  }
-}
 
 export function IssueInvoice({ searchParams }: SearchParamsType) {
   const [modalOpen, setModalOpen] = useState(false)
@@ -71,53 +51,12 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
   const [selectedSpecialType, setSelectedSpecialType] = useState<
     'normal' | 'devolution' | 'complementary'
   >('normal')
-  const [selectedNfeId, setSelectedNfeId] = useState<string>('')
-  const [nfeList, setNfeList] = useState<NfeListType[]>([])
-  const [isLoadingNfes, setIsLoadingNfes] = useState(false)
 
   const handleOpenModal = () => {
     setModalOpen(true)
     setStep(1)
     setSelectedSpecialType('normal')
-    setSelectedNfeId('')
   }
-
-  useEffect(() => {
-    if (
-      selectedSpecialType === 'devolution' ||
-      selectedSpecialType === 'complementary'
-    ) {
-      setIsLoadingNfes(true)
-      getData({
-        route: '/fiscal/nfe',
-        filters: { status: 'AUTHORIZED', limit: '100' },
-      })
-        .then((res) => {
-          if (res.success && res.data) {
-            const rawData = res.data
-            let dataArray: NfeListType[] = []
-            if (Array.isArray(rawData)) {
-              dataArray = rawData as NfeListType[]
-            } else if (
-              rawData &&
-              typeof rawData === 'object' &&
-              'data' in rawData &&
-              Array.isArray((rawData as Record<string, unknown>).data)
-            ) {
-              dataArray = (rawData as Record<string, unknown>)
-                .data as NfeListType[]
-            }
-            setNfeList(dataArray)
-          }
-        })
-        .catch((err) => {
-          console.error(err)
-        })
-        .finally(() => {
-          setIsLoadingNfes(false)
-        })
-    }
-  }, [selectedSpecialType])
 
   const specialTypes: {
     key: 'normal' | 'devolution' | 'complementary'
@@ -242,9 +181,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                         type="button"
                         onClick={() => {
                           setSelectedSpecialType(type.key)
-                          if (type.key === 'normal') {
-                            setStep(2)
-                          }
+                          setStep(2)
                         }}
                         className={cn(
                           'w-full flex items-center gap-4 rounded-lg border p-4 text-left transition-all',
@@ -271,48 +208,11 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                             {type.description}
                           </p>
                         </div>
-                        {type.key === 'normal' && (
-                          <IconChevronRight
-                            size={18}
-                            className="text-gray-400 shrink-0"
-                          />
-                        )}
+                        <IconChevronRight
+                          size={18}
+                          className="text-gray-400 shrink-0"
+                        />
                       </button>
-
-                      {isSelected && type.key !== 'normal' && (
-                        <div className="pl-14 pr-2 pb-2">
-                          <Label className="text-xs text-gray-500 mb-1.5 block">
-                            Selecione a NF-e de origem *
-                          </Label>
-                          <Select
-                            value={selectedNfeId}
-                            onValueChange={setSelectedNfeId}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder="Selecione a nota fiscal original..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {isLoadingNfes ? (
-                                <SelectItem value="loading" disabled>
-                                  Carregando notas...
-                                </SelectItem>
-                              ) : nfeList.length === 0 ? (
-                                <SelectItem value="empty" disabled>
-                                  Nenhuma nota autorizada encontrada
-                                </SelectItem>
-                              ) : (
-                                nfeList.map((nfe) => (
-                                  <SelectItem key={nfe.id} value={nfe.id}>
-                                    NF-e {nfe.numero}/{nfe.serie} -{' '}
-                                    {nfe.destinatario?.nome ||
-                                      'Cliente não informado'}
-                                  </SelectItem>
-                                ))
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
                     </div>
                   )
                 })}
@@ -325,9 +225,9 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                   const href =
                     type.key === 'nfe'
                       ? selectedSpecialType === 'devolution'
-                        ? `/nota-fiscal/emitir/avulsa/nfe?devolutionOf=${selectedNfeId}`
+                        ? '/nota-fiscal/emitir/avulsa/nfe?defaultFinality=4'
                         : selectedSpecialType === 'complementary'
-                          ? `/nota-fiscal/emitir/avulsa/nfe?complementaryOf=${selectedNfeId}`
+                          ? '/nota-fiscal/emitir/avulsa/nfe?defaultFinality=2'
                           : '/nota-fiscal/emitir/avulsa/nfe'
                       : type.href
 
@@ -409,11 +309,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
           </DialogBody>
 
           <DialogFooter
-            className={cn(
-              step === 2 || selectedSpecialType !== 'normal'
-                ? 'sm:justify-between'
-                : 'justify-end',
-            )}
+            className={cn(step === 2 ? 'sm:justify-between' : 'justify-end')}
           >
             {step === 2 && (
               <Button
@@ -423,18 +319,6 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
               >
                 Voltar
               </Button>
-            )}
-            {step === 1 && selectedSpecialType !== 'normal' && (
-              <>
-                <div></div>
-                <Button
-                  RightIcon={IconChevronRight}
-                  onClick={() => setStep(2)}
-                  disabled={!selectedNfeId}
-                >
-                  Avançar
-                </Button>
-              </>
             )}
           </DialogFooter>
         </DialogContent>
