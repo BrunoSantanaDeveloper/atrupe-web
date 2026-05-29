@@ -126,6 +126,46 @@ export default function SubscriptionPage() {
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
 
+  const [couponCode, setCouponCode] = useState('')
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
+  const [couponError, setCouponError] = useState<string | null>(null)
+
+  const handleApplyCoupon = async (code: string) => {
+    if (!code) return
+    setIsValidatingCoupon(true)
+    setCouponError(null)
+    try {
+      const response = await createItemNew({
+        route: '/coupons/validate',
+        data: {
+          code: code.trim().toUpperCase(),
+          planId: selectedPlanId || undefined,
+          isModuleAddition: isAddModuleMode,
+        },
+      })
+
+      if (response.success && response.data?.coupon) {
+        setAppliedCoupon(response.data.coupon)
+        toast.success('Cupom aplicado com sucesso!')
+      } else {
+        setAppliedCoupon(null)
+        setCouponError(response.message || 'Cupom inválido ou expirado.')
+      }
+    } catch (err: any) {
+      setAppliedCoupon(null)
+      setCouponError(err.message || 'Erro ao validar cupom.')
+    } finally {
+      setIsValidatingCoupon(false)
+    }
+  }
+
+  useEffect(() => {
+    setAppliedCoupon(null)
+    setCouponCode('')
+    setCouponError(null)
+  }, [selectedPlanId, isAddModuleMode])
+
   const { data: session, update: updateSession } = useSession()
   const router = useRouter()
 
@@ -313,6 +353,20 @@ export default function SubscriptionPage() {
     ? modulesTotal
     : (selectedPlan?.basePrice || 0) + modulesTotal + additionalUsersTotal
 
+  const couponDiscount = useMemo(() => {
+    if (!appliedCoupon) return 0
+    if (appliedCoupon.minPlanValue && totalPrice < appliedCoupon.minPlanValue) return 0
+
+    if (appliedCoupon.discountType === 'PERCENT') {
+      return Math.round(totalPrice * (appliedCoupon.discountValue / 100))
+    } else if (appliedCoupon.discountType === 'VALUE') {
+      return Math.min(appliedCoupon.discountValue, totalPrice)
+    }
+    return 0
+  }, [appliedCoupon, totalPrice])
+
+  const finalPrice = Math.max(0, totalPrice - couponDiscount)
+
   // Handler for add-module mode (adds modules to existing subscription)
   const onSubmitAddModule = async () => {
     if (selectedModules.length === 0) {
@@ -330,8 +384,12 @@ export default function SubscriptionPage() {
 
       // Add each selected module sequentially
       for (const moduleKey of selectedModules) {
+        const route = appliedCoupon
+          ? `/subscriptions/${subId}/modules/${moduleKey}?couponCode=${appliedCoupon.code}`
+          : `/subscriptions/${subId}/modules/${moduleKey}`
+
         const res = await updateItemNew({
-          route: `/subscriptions/${subId}/modules/${moduleKey}`,
+          route,
           data: {},
         })
 
@@ -408,6 +466,7 @@ export default function SubscriptionPage() {
       additionalUsers,
       additionalFeatures: selectedModules,
       billingType: customerData.billingType,
+      couponCode: appliedCoupon?.code || undefined,
       customer: {
         name: customerName,
         document: customerDocument,
@@ -903,6 +962,82 @@ export default function SubscriptionPage() {
                     )}
 
                     <Separator />
+
+                    {/* Seção de Cupom de Desconto */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex flex-col gap-1.5">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Cupom de desconto
+                        </span>
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="Ex: BEMVINDO20"
+                            className="h-9 text-sm uppercase"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            disabled={isValidatingCoupon || !!appliedCoupon}
+                          />
+                          {appliedCoupon ? (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              className="h-9 px-3 text-xs"
+                              onClick={() => {
+                                setAppliedCoupon(null)
+                                setCouponCode('')
+                              }}
+                            >
+                              Remover
+                            </Button>
+                          ) : (
+                            <Button
+                              type="button"
+                              className="h-9 px-4 text-xs font-semibold"
+                              onClick={() => handleApplyCoupon(couponCode)}
+                              disabled={!couponCode || isValidatingCoupon}
+                              isLoading={isValidatingCoupon}
+                            >
+                              Aplicar
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {couponError && (
+                        <p className="text-xs font-semibold text-red-500">
+                          {couponError}
+                        </p>
+                      )}
+
+                      {appliedCoupon && (
+                        <div className="flex items-center gap-1.5 text-xs text-green-600 font-semibold bg-green-50 border border-green-200/50 rounded-lg p-2.5">
+                          <IconCheck size={14} className="stroke-[3px]" />
+                          <span>
+                            Cupom <strong>{appliedCoupon.code}</strong> aplicado: -
+                            {appliedCoupon.discountType === 'PERCENT'
+                              ? `${appliedCoupon.discountValue}%`
+                              : formatCurrencyToBrl(appliedCoupon.discountValue)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <Separator />
+
+                    {couponDiscount > 0 && (
+                      <>
+                        <div className="flex items-center justify-between gap-2 text-green-600">
+                          <span className="text-sm font-medium">
+                            Desconto ({appliedCoupon?.code})
+                          </span>
+                          <span className="text-sm font-semibold">
+                            -{formatCurrencyToBrl(couponDiscount)}
+                          </span>
+                        </div>
+                        <Separator />
+                      </>
+                    )}
+
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm text-gray-700 font-semibold">
                         {isAddModuleMode ? 'Acréscimo mensal' : 'Total'}
@@ -911,7 +1046,7 @@ export default function SubscriptionPage() {
                         <IconCoin className="text-blue" />
                         <div className="flex items-baseline gap-1">
                           <span className="text-gray-700 font-bold text-lg">
-                            {formatCurrencyToBrl(totalPrice)}
+                            {formatCurrencyToBrl(finalPrice)}
                           </span>
                           <span className="text-sm text-gray">/mês</span>
                         </div>

@@ -30,6 +30,7 @@ import {
   IconCalendarDollar,
   IconBuildingCommunity,
   IconDeviceDesktopDollar,
+  IconTicket,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -402,6 +403,23 @@ export const adminMainNavigation: MainNavigationType[] = [
         title: 'Academy',
         path: '/admin/academy',
         permission: 'academy:academy:view',
+      },
+    ],
+  },
+  {
+    icon: IconSettings,
+    title: 'Sistema',
+    path: '/admin/sistema',
+    children: [
+      {
+        icon: IconSettings,
+        title: 'Integrações',
+        path: '/admin/sistema/integracoes',
+      },
+      {
+        icon: IconTicket,
+        title: 'Cupons de desconto',
+        path: '/admin/sistema/cupons',
       },
     ],
   },
