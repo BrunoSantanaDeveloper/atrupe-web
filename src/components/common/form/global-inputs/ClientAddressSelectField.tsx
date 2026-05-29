@@ -23,7 +23,7 @@ export function ClientAddressSelectField({
   const options = [
     ...(addresses?.map((address) => ({
       value: address.id,
-      label: `${address.street}, ${address.number} - ${address.neighborhood}, ${address.city}/${address.state}`,
+      label: `${address.type || 'Principal'} — ${address.street}, ${address.number} - ${address.neighborhood}, ${address.city}/${address.state}`,
     })) || []),
     {
       value: 'custom',

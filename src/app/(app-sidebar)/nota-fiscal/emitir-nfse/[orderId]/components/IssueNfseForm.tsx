@@ -49,6 +49,7 @@ interface OrderData {
   id: string
   quotation: {
     client: {
+      id?: string
       name: string
       corporateName?: string
       cnpj?: string
@@ -75,6 +76,17 @@ interface OrderData {
   }
 }
 
+interface NfseAddress {
+  id?: string
+  street?: string
+  number?: string
+  complement?: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  zipcode?: string
+}
+
 interface Props {
   id: string
 }
@@ -84,6 +96,9 @@ export function IssueNfseForm({ id }: Props) {
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [orderData, setOrderData] = useState<OrderData | null>(null)
+  const [selectedAddress, setSelectedAddress] = useState<NfseAddress | null>(
+    null,
+  )
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -152,6 +167,7 @@ export function IssueNfseForm({ id }: Props) {
           discriminacao,
           aliquotaIss: aliquotaIss || undefined,
           issRetido,
+          addressId: selectedAddress?.id || undefined,
         },
       })
 
@@ -299,8 +315,14 @@ export function IssueNfseForm({ id }: Props) {
         )}
 
         <NfseTomadorSection
-          client={client}
+          client={
+            client && selectedAddress
+              ? { ...client, address: [selectedAddress] }
+              : client
+          }
           servicesTotal={formatCurrency(getServicesTotal())}
+          clientId={client?.id}
+          onAddressChange={setSelectedAddress}
         />
 
         <NfseServicosSection

@@ -1,7 +1,14 @@
 'use client'
 
-// React
 import { useEffect, useState, useCallback } from 'react'
+
+// TanStack Query
+import { useQueryClient } from '@tanstack/react-query'
+import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
+
+// Actions
+import { createItemNew, updateItemNew } from '@/actions/_cruds'
+import { toast } from 'sonner'
 
 // UI
 import {
@@ -30,7 +37,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
 // Icons
-import { IconPencil, IconUserCheck, IconFileText } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconUserCheck,
+  IconFileText,
+  IconPlus,
+} from '@tabler/icons-react'
 
 // Masks / utils
 import { maskCnpj, maskCpf, MaskPhoneNumber } from '@/lib/utils'
@@ -109,6 +121,7 @@ const recipientSchema = z
     endereco: z.string().optional(),
     complemento: z.string().optional(),
     pais: z.string().optional(),
+    type: z.string().optional(),
   })
   .superRefine((data, ctx) => {
     const isForeign = data.pais && data.pais !== 'Brasil'
@@ -175,6 +188,7 @@ export function InvoiceRecipientEditDialog({
       endereco: destinatario.endereco || '',
       complemento: destinatario.complemento || '',
       pais: destinatario.pais || 'Brasil',
+      type: '',
     }),
     [destinatario],
   )
@@ -185,6 +199,32 @@ export function InvoiceRecipientEditDialog({
   })
 
   const { handleSubmit, reset, setValue, watch } = form
+
+  const queryClient = useQueryClient()
+  const { data: addresses } = useClientAddresses({ clientId: _clientId || '' })
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null,
+  )
+  const [isSavingNewAddress, setIsSavingNewAddress] = useState(false)
+  const [isSavingWithClient, setIsSavingWithClient] = useState(false)
+
+  useEffect(() => {
+    if (open && addresses && destinatario) {
+      const matchingAddr = addresses.find(
+        (a) =>
+          a.zipcode === destinatario.cep &&
+          a.street === destinatario.endereco &&
+          a.number === destinatario.numero,
+      )
+      if (matchingAddr) {
+        setSelectedAddressId(matchingAddr.id)
+        setValue('type', matchingAddr.type || '')
+      } else {
+        setSelectedAddressId(null)
+        setValue('type', '')
+      }
+    }
+  }, [open, addresses, destinatario, setValue])
 
   const paisValue = watch('pais')
   const isForeign = paisValue && paisValue !== 'Brasil'
@@ -265,10 +305,142 @@ export function InvoiceRecipientEditDialog({
     onOpenChange(false)
   })
 
-  /** Salva e também atualiza o cadastro do cliente */
-  const handleSaveWithClient = handleSubmit((data) => {
-    onSave(buildDestinatario(data), { updateClient: true })
-    onOpenChange(false)
+  /** Salva e também atualiza o cadastro do cliente (ou cria novo) */
+  const handleSaveWithClient = handleSubmit(async (data) => {
+    setIsSavingWithClient(true)
+    try {
+      if (_clientId) {
+        if (selectedAddressId) {
+          // 1. Atualizar o endereço selecionado do cliente
+          const resAddress = await updateItemNew({
+            route: `/address/${selectedAddressId}`,
+            data: {
+              type: data.type || 'Principal',
+              zipcode: data.cep,
+              state: data.estado,
+              city: data.cidade,
+              neighborhood: data.bairro,
+              street: data.endereco,
+              number: data.numero,
+              complement: data.complemento,
+            },
+          })
+          if (!resAddress.success) {
+            throw new Error(resAddress.message || 'Erro ao atualizar endereço')
+          }
+        } else {
+          // Criar novo endereço já que nenhum estava selecionado
+          const resAddress = await createItemNew({
+            route: `/address/client/${_clientId}`,
+            data: {
+              type: data.type || 'Principal',
+              zipcode: data.cep,
+              state: data.estado,
+              city: data.cidade,
+              neighborhood: data.bairro,
+              street: data.endereco,
+              number: data.numero,
+              complement: data.complemento,
+            },
+          })
+          if (!resAddress.success) {
+            throw new Error(resAddress.message || 'Erro ao criar endereço')
+          }
+        }
+
+        // 2. Atualizar o cadastro principal do cliente (Razão social, e-mail, etc.)
+        const resClient = await updateItemNew({
+          route: `/client/${_clientId}`,
+          data: {
+            general: {
+              name: data.razaoSocial,
+              email: data.email,
+              phone: data.telefone,
+              stateRegistration: data.stateRegistration,
+            },
+          },
+        })
+        if (!resClient.success) {
+          throw new Error(
+            resClient.message || 'Erro ao atualizar dados gerais do cliente',
+          )
+        }
+
+        await queryClient.invalidateQueries({
+          queryKey: ['client-addresses', _clientId],
+        })
+        toast.success('Cadastro do cliente atualizado com sucesso!')
+      }
+
+      onSave(buildDestinatario(data), { updateClient: false })
+      onOpenChange(false)
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : 'Erro ao atualizar cadastro'
+      toast.error(errorMsg)
+    } finally {
+      setIsSavingWithClient(false)
+    }
+  })
+
+  /** Salva e cria um novo endereço no cadastro do cliente */
+  const handleCreateNewAddress = handleSubmit(async (data) => {
+    if (!_clientId) {
+      toast.error('Nenhum cliente selecionado')
+      return
+    }
+
+    setIsSavingNewAddress(true)
+    try {
+      const resAddress = await createItemNew({
+        route: `/address/client/${_clientId}`,
+        data: {
+          type: data.type || 'Novo Endereço',
+          zipcode: data.cep,
+          state: data.estado,
+          city: data.cidade,
+          neighborhood: data.bairro,
+          street: data.endereco,
+          number: data.numero,
+          complement: data.complemento,
+        },
+      })
+      if (!resAddress.success) {
+        throw new Error(resAddress.message || 'Erro ao cadastrar novo endereço')
+      }
+
+      // Atualizar o cadastro principal do cliente também (Razão social, e-mail, etc.)
+      const resClient = await updateItemNew({
+        route: `/client/${_clientId}`,
+        data: {
+          general: {
+            name: data.razaoSocial,
+            email: data.email,
+            phone: data.telefone,
+            stateRegistration: data.stateRegistration,
+          },
+        },
+      })
+      if (!resClient.success) {
+        throw new Error(
+          resClient.message || 'Erro ao atualizar dados gerais do cliente',
+        )
+      }
+
+      await queryClient.invalidateQueries({
+        queryKey: ['client-addresses', _clientId],
+      })
+      toast.success('Novo endereço cadastrado no cliente!')
+
+      onSave(buildDestinatario(data), { updateClient: false })
+      onOpenChange(false)
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : 'Erro ao cadastrar novo endereço'
+      toast.error(errorMsg)
+    } finally {
+      setIsSavingNewAddress(false)
+    }
   })
 
   return (
@@ -291,6 +463,60 @@ export function InvoiceRecipientEditDialog({
               className="flex flex-wrap gap-4"
               noValidate
             >
+              {/* Seletor de endereço cadastrado */}
+              {_clientId && addresses && addresses.length > 0 && (
+                <div className="flex-[1_0_100%] flex flex-col gap-1.5 mb-2">
+                  <label className="text-sm font-medium text-gray-700">
+                    Selecionar endereço cadastrado
+                  </label>
+                  <select
+                    value={selectedAddressId || ''}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    onChange={(e) => {
+                      const selectedId = e.target.value
+                      if (!selectedId) {
+                        setSelectedAddressId(null)
+                        setValue('type', '')
+                        return
+                      }
+
+                      const addr = addresses.find((a) => a.id === selectedId)
+                      if (addr) {
+                        setValue('cep', addr.zipcode || '')
+                        setValue('estado', addr.state || '')
+                        setValue('cidade', addr.city || '')
+                        setValue('bairro', addr.neighborhood || '')
+                        setValue('endereco', addr.street || '')
+                        setValue('numero', addr.number || '')
+                        setValue('complemento', addr.complement || '')
+                        setValue('type', addr.type || '')
+                        setSelectedAddressId(addr.id)
+                      }
+                    }}
+                  >
+                    <option value="">
+                      -- Usar endereço personalizado / Digitar endereço --
+                    </option>
+                    {addresses.map((addr) => (
+                      <option key={addr.id} value={addr.id}>
+                        {addr.type || 'Principal'} — {addr.street},{' '}
+                        {addr.number} - {addr.city}/{addr.state}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Título do endereço */}
+              {_clientId && (
+                <FormInput
+                  name="type"
+                  label="Título do endereço"
+                  placeholder="Ex: Sede, Fábrica, Filial SP"
+                  width="flex-[1_0_100%]"
+                />
+              )}
+
               {/* País */}
               <FormSelect
                 name="pais"
@@ -483,13 +709,33 @@ export function InvoiceRecipientEditDialog({
               Alterar somente para NF
             </Button>
 
+            {/* Salvar como novo endereço no cliente */}
+            {_clientId && (
+              <Button
+                type="button"
+                variant="neutralOutline"
+                RightIcon={IconPlus}
+                onClick={handleCreateNewAddress}
+                disabled={
+                  isSavingNewAddress ||
+                  isSavingWithClient ||
+                  isSearchingDocument
+                }
+                isLoading={isSavingNewAddress}
+              >
+                Salvar como novo endereço
+              </Button>
+            )}
+
             {/* Salvar no Cliente — persiste no cadastro do cliente */}
             <Button
               type="button"
               RightIcon={IconUserCheck}
               onClick={handleSaveWithClient}
-              disabled={form.formState.isSubmitting || isSearchingDocument}
-              isLoading={form.formState.isSubmitting}
+              disabled={
+                isSavingWithClient || isSavingNewAddress || isSearchingDocument
+              }
+              isLoading={isSavingWithClient}
             >
               Salvar no Cliente
             </Button>

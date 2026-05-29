@@ -108,6 +108,14 @@ export function QuotationDelivery({ quotationData }: Props) {
                   />
                 </PermissionGate>
               </DetailCardRowItem>
+              {data?.clientAddress && (
+                <DetailCardRowItem className="pb-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+                  <TextSupportingText
+                    supporting="Endereço de Entrega Selecionado"
+                    text={`${data.clientAddress.type || 'Principal'} — ${data.clientAddress.street || ''}, ${data.clientAddress.number || 'S/N'}${data.clientAddress.complement ? ` - ${data.clientAddress.complement}` : ''}, ${data.clientAddress.neighborhood || ''} - ${data.clientAddress.city || ''}/${data.clientAddress.state || ''} (CEP: ${data.clientAddress.zipcode || ''})`}
+                  />
+                </DetailCardRowItem>
+              )}
               <DetailCardRowItem
                 showSeparator={false}
                 className="pb-4 grid-cols-1 md:grid-cols-1 lg:grid-cols-1 whitespace-pre-line"

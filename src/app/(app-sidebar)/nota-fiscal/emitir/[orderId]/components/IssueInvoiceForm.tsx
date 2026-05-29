@@ -428,6 +428,36 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
     toast.success(`Cliente alterado para "${client.name}"`)
   }
 
+  // Handle address selection change
+  const handleAddressChange = (address: {
+    id: string
+    zipcode?: string
+    state?: string
+    city?: string
+    neighborhood?: string
+    street?: string
+    number?: string
+    complement?: string
+    type?: string
+  }) => {
+    if (!data) return
+    setData({
+      ...data,
+      selectedAddressId: address.id,
+      destinatario: {
+        ...data.destinatario,
+        cep: address.zipcode || '',
+        estado: address.state || '',
+        cidade: address.city || '',
+        bairro: address.neighborhood || '',
+        endereco: address.street || '',
+        numero: address.number || '',
+        complemento: address.complement || '',
+      },
+    })
+    toast.success(`Endereço alterado para "${address.type || 'Principal'}"`)
+  }
+
   // Handle add product
   const handleAddProduct = (item: NfePrepareItem) => {
     if (!data) return
@@ -547,6 +577,8 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
             destinatario={data.destinatario}
             onEditClick={() => setIsRecipientEditOpen(true)}
             onChangeClientClick={() => setIsClientChangeOpen(true)}
+            clientId={data.clientId}
+            onAddressChange={handleAddressChange}
           />
 
           <InvoiceItems

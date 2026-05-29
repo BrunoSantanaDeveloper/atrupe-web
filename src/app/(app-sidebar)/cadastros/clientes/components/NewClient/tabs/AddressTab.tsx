@@ -85,9 +85,8 @@ export function AddressTab() {
             <div className="grid grid-cols-3 gap-4">
               <FormInput<NewClientFormType>
                 name={`addresses.${index}.type`}
-                label="Tipo"
-                placeholder="Principal"
-                disabled={index === 0}
+                label="Título do endereço"
+                placeholder="Ex: Sede, Fábrica, Filial SP"
               />
               {!isForeign ? <ZipcodeField index={index} /> : <div></div>}
               <div className="mt-auto">

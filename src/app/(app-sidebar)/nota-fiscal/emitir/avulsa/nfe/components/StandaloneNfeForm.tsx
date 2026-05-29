@@ -216,6 +216,7 @@ export function StandaloneNfeForm() {
         setData({
           ...data,
           destinatario: updatedDestinatario,
+          clientId: client.id,
         })
       }
     },
@@ -292,6 +293,35 @@ export function StandaloneNfeForm() {
 
     setData({ ...data, destinatario: updatedDestinatario })
     toast.success('Destinatário atualizado')
+  }
+
+  // Handle address selection change
+  const handleAddressChange = (address: {
+    id: string
+    zipcode?: string
+    state?: string
+    city?: string
+    neighborhood?: string
+    street?: string
+    number?: string
+    complement?: string
+    type?: string
+  }) => {
+    if (!data) return
+    setData({
+      ...data,
+      destinatario: {
+        ...data.destinatario,
+        cep: address.zipcode || '',
+        estado: address.state || '',
+        cidade: address.city || '',
+        bairro: address.neighborhood || '',
+        endereco: address.street || '',
+        numero: address.number || '',
+        complemento: address.complement || '',
+      },
+    })
+    toast.success(`Endereço alterado para "${address.type || 'Principal'}"`)
   }
 
   // Handle emit
@@ -605,6 +635,8 @@ export function StandaloneNfeForm() {
               <InvoiceRecipientSection
                 destinatario={data.destinatario}
                 onEditClick={() => setIsRecipientEditOpen(true)}
+                clientId={data.clientId}
+                onAddressChange={handleAddressChange}
               />
 
               {/* Items */}
@@ -687,6 +719,7 @@ export function StandaloneNfeForm() {
           open={isRecipientEditOpen}
           onOpenChange={setIsRecipientEditOpen}
           destinatario={data.destinatario}
+          clientId={data.clientId}
           onSave={handleRecipientSave}
         />
       )}

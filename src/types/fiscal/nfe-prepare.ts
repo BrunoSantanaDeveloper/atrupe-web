@@ -138,6 +138,18 @@ export interface NfePrepareResponse {
   isDraft?: boolean
   // Client reference (used for "update client" feature in recipient dialog)
   clientId?: string
+  selectedAddressId?: string | null
+  clientAddresses?: Array<{
+    id: string
+    label: string
+    street?: string
+    number?: string
+    neighborhood?: string
+    city?: string
+    state?: string
+    zipcode?: string
+    complement?: string
+  }>
   // Devolution reference
   originalNfeId?: string
   originalNfeNumero?: number

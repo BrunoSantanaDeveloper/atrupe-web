@@ -48,6 +48,18 @@ interface PrepareStandaloneData {
   ambiente?: string
 }
 
+interface StandaloneNfseAddress {
+  id?: string
+  street?: string
+  number?: string
+  complement?: string
+  neighborhood?: string
+  city?: string
+  state?: string
+  zipcode?: string
+  type?: string
+}
+
 // Map ClientData (from ClientSelect) to the shape NfseTomadorSection expects
 function tomadorToClientData(
   tomador: ReturnType<typeof clientToNfseTomador>,
@@ -88,6 +100,8 @@ export function StandaloneNfseForm() {
 
   // Client / tomador
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null)
+  const [selectedAddress, setSelectedAddress] =
+    useState<StandaloneNfseAddress | null>(null)
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -133,6 +147,7 @@ export function StandaloneNfseForm() {
 
   const handleClientSelect = (client: ClientData | null) => {
     setSelectedClient(client)
+    setSelectedAddress(null)
   }
 
   const handleEmit = async () => {
@@ -157,6 +172,15 @@ export function StandaloneNfseForm() {
 
     try {
       const tomador = clientToNfseTomador(selectedClient)
+      if (selectedAddress) {
+        tomador.endereco = selectedAddress.street || ''
+        tomador.numero = selectedAddress.number || 'S/N'
+        tomador.complemento = selectedAddress.complement || ''
+        tomador.bairro = selectedAddress.neighborhood || ''
+        tomador.cep = selectedAddress.zipcode || ''
+        tomador.municipio = selectedAddress.city || ''
+        tomador.uf = selectedAddress.state || ''
+      }
 
       const payload = {
         // Tomador
@@ -333,8 +357,14 @@ export function StandaloneNfseForm() {
         {/* Tomador section — shown after client selected */}
         {tomadorDisplayClient && (
           <NfseTomadorSection
-            client={tomadorDisplayClient}
+            client={
+              selectedAddress
+                ? { ...tomadorDisplayClient, address: [selectedAddress] }
+                : tomadorDisplayClient
+            }
             servicesTotal={formatCurrency(valorServicos)}
+            clientId={selectedClient?.id}
+            onAddressChange={setSelectedAddress}
           />
         )}
 
