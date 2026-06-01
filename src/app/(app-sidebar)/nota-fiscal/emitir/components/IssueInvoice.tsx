@@ -45,6 +45,16 @@ import { cn } from '@/lib/utils'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
+interface AvulsaType {
+  key: string
+  icon: React.ComponentType<{ size?: number; className?: string }>
+  title: string
+  description: string
+  href: string
+  disabled: boolean
+  badge?: string
+}
+
 export function IssueInvoice({ searchParams }: SearchParamsType) {
   const [modalOpen, setModalOpen] = useState(false)
   const [step, setStep] = useState(1)
@@ -84,7 +94,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
     },
   ]
 
-  const avulsaTypes = [
+  const avulsaTypes: AvulsaType[] = [
     {
       key: 'nfe',
       icon: IconBuildingStore,
@@ -107,9 +117,8 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
       icon: IconFileInvoice,
       title: 'NFC-e (Consumidor)',
       description: 'Nota Fiscal de Consumidor Eletrônica para venda ao varejo',
-      href: '#',
-      disabled: true,
-      badge: 'Breve',
+      href: '/nota-fiscal/emitir/avulsa/nfce',
+      disabled: false,
     },
   ]
 
@@ -117,7 +126,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
     if (selectedSpecialType !== 'normal') {
       return key !== 'nfe'
     }
-    return key === 'nfce'
+    return false
   }
 
   return (

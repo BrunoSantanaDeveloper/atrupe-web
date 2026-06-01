@@ -50,9 +50,8 @@ const avulsaTypes: AvulsaTypeOption[] = [
     icon: IconFileInvoice,
     title: 'NFC-e (Consumidor)',
     description: 'Nota Fiscal de Consumidor',
-    href: '#',
-    disabled: true,
-    badge: 'Em breve',
+    href: '/nota-fiscal/emitir/avulsa/nfce',
+    disabled: false,
   },
 ]
 

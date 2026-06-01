@@ -38,11 +38,25 @@ import {
   IconReceipt,
   IconBan,
   IconTrash,
+  IconDotsVertical,
+  IconFileCheck,
+  IconDownload,
+  IconRefresh,
+  IconQrcode,
 } from '@tabler/icons-react'
 
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
 import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/CancelNfeDialog'
 
 // Actions
 import { getData, deleteItemNew } from '@/actions/_cruds'
@@ -63,7 +77,7 @@ interface NfeItem {
 }
 
 interface UnifiedInvoiceItem {
-  type: 'ORDER' | 'NFE_AVULSA' | 'NFSE_AVULSA'
+  type: 'ORDER' | 'NFE_AVULSA' | 'NFSE_AVULSA' | 'NFCE_AVULSA'
   id: string
   createdAt: string
   status: string
@@ -72,6 +86,19 @@ interface UnifiedInvoiceItem {
   totalValue: number
   nfes: NfeItem[]
   nfse?: unknown
+  nfce?: {
+    id: string
+    numero: number
+    serie: number
+    status: string
+    chaveAcesso?: string | null
+    danfeUrl?: string | null
+    xmlAutorizado?: string | null
+    qrCodeUrl?: string | null
+    urlConsulta?: string | null
+    dataEmissao?: string | null
+    motivoRejeicao?: string | null
+  }
   originalData: {
     quotation?: {
       client?: {
@@ -111,6 +138,25 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
       return { label: 'Rejeitada', variant: 'errorLight' as const }
     if (item.status === 'CANCELLED')
       return { label: 'Cancelada', variant: 'errorLight' as const }
+    return { label: item.status, variant: 'neutralLight' as const }
+  }
+
+  if (item.type === 'NFCE_AVULSA') {
+    if (item.status === 'AUTHORIZED')
+      return { label: 'Emitida', variant: 'successLight' as const }
+    if (item.status === 'PROCESSING')
+      return { label: 'Em processamento', variant: 'blueLight' as const }
+    if (item.status === 'PENDING')
+      return { label: 'Pendente', variant: 'warningLight' as const }
+    if (item.status === 'REJECTED')
+      return { label: 'Rejeitada', variant: 'errorLight' as const }
+    if (item.status === 'CANCELLED')
+      return { label: 'Cancelada', variant: 'errorLight' as const }
+    if (item.status === 'CONTINGENCY')
+      return {
+        label: 'Contingência Off-line',
+        variant: 'warningLight' as const,
+      }
     return { label: item.status, variant: 'neutralLight' as const }
   }
 
@@ -167,6 +213,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(
     () => new Set(),
   )
+  const [cancelNfce, setCancelNfce] = useState<{
+    id: string
+    numero: number
+    serie: number
+  } | null>(null)
 
   const currentPage = parseInt((searchParams?.page as string) || '1', 10)
   const currentSearch = searchParams?.search as string | undefined
@@ -514,9 +565,13 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                               <Badge variant="purpleLight" className="w-fit">
                                 NF-e Avulsa
                               </Badge>
-                            ) : (
+                            ) : item.type === 'NFSE_AVULSA' ? (
                               <Badge variant="orangeLight" className="w-fit">
                                 NFS-e Avulsa
+                              </Badge>
+                            ) : (
+                              <Badge variant="successLight" className="w-fit">
+                                NFC-e Avulsa
                               </Badge>
                             )}
                             <p className="font-medium text-gray-800">
@@ -602,6 +657,160 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         )
                                       }
                                     />
+                                  )
+                                }
+
+                                if (item.type === 'NFCE_AVULSA') {
+                                  const nfce = item.nfce
+                                  const isAuthorized =
+                                    nfce?.status === 'AUTHORIZED'
+                                  const isContingency =
+                                    nfce?.status === 'CONTINGENCY'
+
+                                  const handleDownloadXml = () => {
+                                    if (!nfce?.xmlAutorizado) {
+                                      toast.error(
+                                        'XML não disponível para download',
+                                      )
+                                      return
+                                    }
+                                    const blob = new Blob(
+                                      [nfce.xmlAutorizado],
+                                      { type: 'application/xml' },
+                                    )
+                                    const url = window.URL.createObjectURL(blob)
+                                    const a = document.createElement('a')
+                                    a.href = url
+                                    a.download = `NFCe_${nfce.chaveAcesso || nfce.numero}.xml`
+                                    document.body.appendChild(a)
+                                    a.click()
+                                    window.URL.revokeObjectURL(url)
+                                    document.body.removeChild(a)
+                                  }
+
+                                  const handleConsultarStatus = async () => {
+                                    toast.loading(
+                                      'Consultando status SEFAZ...',
+                                      { id: 'consult-nfce' },
+                                    )
+                                    try {
+                                      const result = await getData({
+                                        route: `/fiscal/nfce/${nfce?.id}/status`,
+                                      })
+                                      if (result.success) {
+                                        toast.success(
+                                          'Consulta realizada com sucesso',
+                                          { id: 'consult-nfce' },
+                                        )
+                                        fetchOrders()
+                                      } else {
+                                        toast.error(
+                                          result.message ||
+                                            'Erro ao consultar status',
+                                          { id: 'consult-nfce' },
+                                        )
+                                      }
+                                    } catch {
+                                      toast.error('Erro ao consultar status', {
+                                        id: 'consult-nfce',
+                                      })
+                                    }
+                                  }
+
+                                  return (
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="iconSm"
+                                          aria-label="Ações da NFC-e"
+                                        >
+                                          <IconDotsVertical
+                                            size={18}
+                                            className="text-gray-500"
+                                          />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent
+                                        align="end"
+                                        className="w-56"
+                                      >
+                                        <DropdownMenuLabel>
+                                          NFC-e nº {nfce?.numero}/{nfce?.serie}
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+
+                                        {nfce?.danfeUrl && (
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              window.open(
+                                                nfce.danfeUrl!,
+                                                '_blank',
+                                              )
+                                            }
+                                          >
+                                            <IconFileCheck className="mr-2 h-4 w-4" />
+                                            <span>Ver DANFE</span>
+                                          </DropdownMenuItem>
+                                        )}
+
+                                        {nfce?.qrCodeUrl && (
+                                          <DropdownMenuItem
+                                            onClick={() =>
+                                              window.open(
+                                                nfce.qrCodeUrl!,
+                                                '_blank',
+                                              )
+                                            }
+                                          >
+                                            <IconQrcode className="mr-2 h-4 w-4" />
+                                            <span>Visualizar QR Code</span>
+                                          </DropdownMenuItem>
+                                        )}
+
+                                        {nfce?.xmlAutorizado && (
+                                          <DropdownMenuItem
+                                            onClick={handleDownloadXml}
+                                          >
+                                            <IconDownload className="mr-2 h-4 w-4" />
+                                            <span>Baixar XML</span>
+                                          </DropdownMenuItem>
+                                        )}
+
+                                        {(isAuthorized ||
+                                          isContingency ||
+                                          nfce?.status === 'REJECTED') && (
+                                          <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                              onClick={handleConsultarStatus}
+                                            >
+                                              <IconRefresh className="mr-2 h-4 w-4" />
+                                              <span>Consultar SEFAZ</span>
+                                            </DropdownMenuItem>
+                                          </>
+                                        )}
+
+                                        {isAuthorized && (
+                                          <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                              className="text-error-600 focus:bg-error-50 focus:text-error-600"
+                                              onClick={() =>
+                                                setCancelNfce({
+                                                  id: nfce.id,
+                                                  numero: nfce.numero,
+                                                  serie: nfce.serie,
+                                                })
+                                              }
+                                            >
+                                              <IconBan className="mr-2 h-4 w-4" />
+                                              <span>Cancelar NFC-e</span>
+                                            </DropdownMenuItem>
+                                          </>
+                                        )}
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
                                   )
                                 }
 
@@ -730,6 +939,24 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             if (!open) setModalOrderId(null)
           }}
           orderId={modalOrderId ?? ''}
+        />
+
+        <CancelNfeDialog
+          open={!!cancelNfce}
+          onOpenChange={(open) => {
+            if (!open) setCancelNfce(null)
+          }}
+          nfe={
+            cancelNfce
+              ? {
+                  id: cancelNfce.id,
+                  number: cancelNfce.numero,
+                  series: String(cancelNfce.serie),
+                }
+              : null
+          }
+          isNfce={true}
+          onSuccess={fetchOrders}
         />
       </Card>
     </>
