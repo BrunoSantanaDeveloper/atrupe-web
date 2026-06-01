@@ -352,15 +352,11 @@ export function StandaloneNfceForm() {
               </CardHeader>
 
               <CardContent className="space-y-4 p-6 pt-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="client-select">
-                    Selecionar Cliente Cadastrado
-                  </Label>
-                  <ClientSelect
-                    selectedClient={selectedClient}
-                    onSelect={handleClientSelect}
-                  />
-                </div>
+                <ClientSelect
+                  selectedClient={selectedClient}
+                  onSelect={handleClientSelect}
+                  label="Selecionar Cliente Cadastrado"
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
