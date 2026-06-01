@@ -92,6 +92,7 @@ export const getData = async ({
       data: res.data.data || res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -148,6 +149,7 @@ export const getItem = async ({
       data: res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -177,6 +179,7 @@ export const createItem = async ({
 
     return res.data
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const rawData = error.response?.data
     const extractedMsg =
       rawData?.message ||
@@ -215,6 +218,7 @@ export const createItemNew = async ({
       data: res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -268,6 +272,7 @@ export const updateItemNew = async ({
       data: res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -310,6 +315,7 @@ export const deleteItemNew = async ({
       data: res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -339,6 +345,7 @@ export const deleteWithBody = async ({
       data: res.data,
     }
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
 
     return {
@@ -364,6 +371,7 @@ export const uploadFile = async (route: string, data: FormData) => {
 
     return response.data
   } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const caughtError =
       error.response?.data?.data?.message ||
       error.response?.data?.message ||

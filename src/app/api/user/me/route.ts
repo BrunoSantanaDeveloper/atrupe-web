@@ -14,18 +14,41 @@ export async function GET() {
   } catch (error: unknown) {
     console.error('Erro ao buscar dados do usuário:', error)
 
-    // Se for erro 401, retorna unauthorized
+    // Se for erro de redirecionamento do Next.js (do interceptor), propaga para o Next.js tratar
     if (
       error &&
       typeof error === 'object' &&
-      'response' in error &&
-      (error as { response?: { status?: number } }).response?.status === 401
+      'digest' in error &&
+      typeof (error as { digest: string }).digest === 'string' &&
+      (error as { digest: string }).digest.startsWith('NEXT_REDIRECT')
     ) {
+      throw error
+    }
+
+    const responseStatus = (error as { response?: { status?: number } })
+      .response?.status
+    const errorMessage = (error as Error)?.message || 'Erro desconhecido'
+    const errorCode = (error as { code?: string })?.code || 'UNKNOWN'
+    const errorConfig = (
+      error as { config?: { baseURL?: string; url?: string } }
+    )?.config
+    const requestedUrl = errorConfig
+      ? `${errorConfig.baseURL || ''}${errorConfig.url || ''}`
+      : null
+
+    // Se for erro 401, retorna unauthorized
+    if (responseStatus === 401) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
 
     return NextResponse.json(
-      { error: 'Erro interno do servidor' },
+      {
+        error: 'Erro interno do servidor',
+        message: errorMessage,
+        code: errorCode,
+        url: requestedUrl,
+        apiUrl: process.env.API_URL || 'não definida',
+      },
       { status: 500 },
     )
   }
