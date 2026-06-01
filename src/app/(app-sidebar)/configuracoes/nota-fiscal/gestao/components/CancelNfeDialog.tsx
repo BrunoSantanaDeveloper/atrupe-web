@@ -48,9 +48,16 @@ interface Props {
   onOpenChange: (open: boolean) => void
   nfe: NfeItem | null
   onSuccess: () => void
+  isNfce?: boolean
 }
 
-export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
+export function CancelNfeDialog({
+  open,
+  onOpenChange,
+  nfe,
+  onSuccess,
+  isNfce = false,
+}: Props) {
   const form = useForm<CancelFormType>({
     resolver: zodResolver(cancelSchema),
     defaultValues: {
@@ -67,23 +74,30 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
     if (!nfe) return
 
     try {
+      const route = isNfce
+        ? `/fiscal/nfce/${nfe.id}/cancel`
+        : `/fiscal/nfe/${nfe.id}/cancel`
       const result = await createItemNew({
-        route: `/fiscal/nfe/${nfe.id}/cancel`,
+        route,
         data: {
           justificativa: data.reason,
         },
       })
 
       if (!result.success) {
-        throw new Error(result.message || 'Erro ao cancelar NF-e')
+        throw new Error(
+          result.message || `Erro ao cancelar ${isNfce ? 'NFC-e' : 'NF-e'}`,
+        )
       }
 
-      toast.success('NF-e cancelada com sucesso!')
+      toast.success(`${isNfce ? 'NFC-e' : 'NF-e'} cancelada com sucesso!`)
       onSuccess()
       handleClose()
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : 'Erro ao cancelar NF-e'
+        error instanceof Error
+          ? error.message
+          : `Erro ao cancelar ${isNfce ? 'NFC-e' : 'NF-e'}`
       toast.error(message)
     }
   }
@@ -98,9 +112,9 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
               <div>
-                <span>Cancelar NF-e</span>
+                <span>Cancelar {isNfce ? 'NFC-e' : 'NF-e'}</span>
                 <p className="text-sm font-normal text-gray-500">
-                  NF-e {nfe.number}/{nfe.series}
+                  {isNfce ? 'NFC-e' : 'NF-e'} {nfe.number}/{nfe.series}
                 </p>
               </div>
             </div>
@@ -111,9 +125,9 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
         <DialogBody>
           <div className="rounded-lg bg-yellow-50 p-4 mb-4">
             <p className="text-sm text-yellow-800">
-              <strong>Atenção:</strong> O cancelamento de NF-e só pode ser
-              realizado em até 24 horas após a autorização. Esta ação é
-              irreversível.
+              <strong>Atenção:</strong> O cancelamento de{' '}
+              {isNfce ? 'NFC-e' : 'NF-e'} só pode ser realizado dentro do prazo
+              regulamentar após a autorização. Esta ação é irreversível.
             </p>
           </div>
 
@@ -146,7 +160,7 @@ export function CancelNfeDialog({ open, onOpenChange, nfe, onSuccess }: Props) {
             disabled={form.formState?.isSubmitting}
             isLoading={form.formState?.isSubmitting}
           >
-            Cancelar NF-e
+            Cancelar {isNfce ? 'NFC-e' : 'NF-e'}
           </Button>
         </DialogFooter>
       </DialogContent>
