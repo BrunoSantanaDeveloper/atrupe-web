@@ -1,6 +1,8 @@
 'use client'
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconCalculator } from '@tabler/icons-react'
 
 interface NfceTotalsSectionProps {
@@ -26,19 +28,17 @@ export function NfceTotalsSection({
   }
 
   return (
-    <Card className="border-gray-200 shadow-sm sticky top-6">
-      <CardHeader className="flex flex-row items-center space-x-2.5 pb-4">
-        <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
-          <IconCalculator size={20} />
-        </div>
+    <Card className="border-none shadow-sm overflow-hidden sticky top-6">
+      <CardHeader className="flex flex-row items-center space-x-2.5 pb-4 bg-white border-b border-gray-100">
+        <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
         <div>
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-gray-700 font-semibold text-base">
             Resumo dos Totais
           </CardTitle>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3.5">
+      <CardContent className="space-y-3.5 pt-4">
         <div className="flex justify-between items-center text-sm text-gray-500">
           <span>Subtotal Itens</span>
           <span className="font-medium text-gray-900">
@@ -53,7 +53,7 @@ export function NfceTotalsSection({
           </span>
         </div>
 
-        <div className="h-px bg-gray-150 my-2" />
+        <Separator className="my-2" />
 
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-gray-900">
@@ -64,7 +64,7 @@ export function NfceTotalsSection({
           </span>
         </div>
 
-        <div className="h-px bg-gray-150 my-2" />
+        <Separator className="my-2" />
 
         <div className="flex justify-between items-center text-sm text-gray-500">
           <span>Valor Recebido</span>

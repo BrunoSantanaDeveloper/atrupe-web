@@ -5,6 +5,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select'
 import { IconPlus, IconTrash, IconCash } from '@tabler/icons-react'
 
 export interface Pagamento {
@@ -88,35 +96,36 @@ export function NfcePaymentSection({
   }
 
   return (
-    <Card className="border-gray-200 shadow-sm">
-      <CardHeader className="flex flex-row items-center space-x-2.5 pb-4">
-        <div className="p-2 bg-green-50 rounded-lg text-green-600">
-          <IconCash size={20} />
-        </div>
+    <Card className="border-none shadow-sm overflow-hidden">
+      <CardHeader className="flex flex-row items-center space-x-2.5 pb-4 bg-white border-b border-gray-100">
+        <FeaturedIcon variant="successOutline" Icon={IconCash} />
         <div className="flex-1">
-          <CardTitle className="text-lg font-semibold text-gray-900">
+          <CardTitle className="text-gray-700 font-semibold text-base">
             Forma de Pagamento
           </CardTitle>
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-4">
         {/* Payment Form Input */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
           <div className="space-y-1.5">
             <Label htmlFor="payment-method">Meio de Pagamento</Label>
-            <select
-              id="payment-method"
-              className="flex h-10 w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm ring-offset-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-950 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              value={selectedMethod}
-              onChange={(e) => setSelectedMethod(e.target.value)}
-            >
-              {PAYMENT_METHODS.map((method) => (
-                <option key={method.value} value={method.value}>
-                  {method.label}
-                </option>
-              ))}
-            </select>
+            <Select value={selectedMethod} onValueChange={setSelectedMethod}>
+              <SelectTrigger
+                id="payment-method"
+                className="h-10 border-gray-200"
+              >
+                <SelectValue placeholder="Selecione..." />
+              </SelectTrigger>
+              <SelectContent>
+                {PAYMENT_METHODS.map((method) => (
+                  <SelectItem key={method.value} value={method.value}>
+                    {method.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-1.5">

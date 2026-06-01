@@ -13,6 +13,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from '@/components/ui/table'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
@@ -29,6 +38,7 @@ import {
   IconFileInvoice,
   IconUser,
   IconTrash,
+  IconMessage,
 } from '@tabler/icons-react'
 
 // Actions
@@ -270,14 +280,15 @@ export function StandaloneNfceForm() {
     <TooltipProvider>
       <div className="space-y-6 pb-10 max-w-7xl mx-auto px-4 md:px-6">
         {/* Header Action Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 border-b border-gray-150">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 border-b border-gray-200">
           <div className="flex items-center space-x-3.5">
             <Button
-              variant="neutralOutline"
-              size="icon"
+              variant="ghost"
+              size="iconSm"
+              className="text-gray-500 hover:text-gray-700"
               onClick={() => router.push('/nota-fiscal/emitir')}
             >
-              <IconArrowLeft size={18} />
+              <IconArrowLeft size={20} />
             </Button>
             <div>
               <div className="flex items-center space-x-2">
@@ -285,7 +296,7 @@ export function StandaloneNfceForm() {
                   Emitir NFC-e Avulsa
                 </h1>
                 <Badge
-                  variant={isHomologacao ? 'warning' : 'success'}
+                  variant={isHomologacao ? 'warningLight' : 'successLight'}
                   className="ml-2"
                 >
                   {isHomologacao ? 'Homologação' : 'Produção'}
@@ -300,8 +311,7 @@ export function StandaloneNfceForm() {
 
           <div className="flex items-center gap-3">
             <Button
-              variant="neutralOutline"
-              className="text-gray-600 border-gray-200"
+              variant="secondaryOutline"
               onClick={() => router.push('/nota-fiscal/emitir')}
             >
               Cancelar
@@ -331,19 +341,17 @@ export function StandaloneNfceForm() {
           {/* Form Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* 1. Consumer Identification Card */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader className="flex flex-row items-center space-x-2.5 pb-4">
-                <div className="p-2 bg-brand-50 rounded-lg text-brand-600">
-                  <IconUser size={20} />
-                </div>
+            <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
+                <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
                 <div className="flex-1">
-                  <CardTitle className="text-lg font-semibold text-gray-900">
+                  <CardTitle className="text-gray-700 font-semibold text-base">
                     Consumidor (Opcional)
                   </CardTitle>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-6 pt-4">
                 <div className="space-y-1.5">
                   <Label htmlFor="client-select">
                     Selecionar Cliente Cadastrado
@@ -381,13 +389,14 @@ export function StandaloneNfceForm() {
             </Card>
 
             {/* 2. Products Section */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader className="flex flex-row items-center justify-between pb-4">
+            <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                 <div className="flex items-center space-x-2.5">
-                  <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                    <IconFileInvoice size={20} />
-                  </div>
-                  <CardTitle className="text-lg font-semibold text-gray-900">
+                  <FeaturedIcon
+                    variant="neutralOutline"
+                    Icon={IconFileInvoice}
+                  />
+                  <CardTitle className="text-gray-700 font-semibold text-base">
                     Itens da Nota
                   </CardTitle>
                 </div>
@@ -407,89 +416,82 @@ export function StandaloneNfceForm() {
                     </p>
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500">
-                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-y border-gray-150">
-                        <tr>
-                          <th className="px-4 py-3">Item</th>
-                          <th className="px-4 py-3">Código</th>
-                          <th className="px-4 py-3">Descrição</th>
-                          <th className="px-4 py-3">Qtd.</th>
-                          <th className="px-4 py-3">Valor Unit.</th>
-                          <th className="px-4 py-3">Desc. (R$)</th>
-                          <th className="px-4 py-3">Total</th>
-                          <th className="px-4 py-3">Ações</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-150">
-                        {items.map((item) => (
-                          <tr
-                            key={item.itemNumber}
-                            className="bg-white hover:bg-gray-50"
-                          >
-                            <td className="px-4 py-3 font-medium text-gray-900">
-                              {item.itemNumber}
-                            </td>
-                            <td className="px-4 py-3">{item.productCode}</td>
-                            <td className="px-4 py-3 font-medium text-gray-800">
-                              {item.description}
-                            </td>
-                            <td className="px-4 py-3 w-24">
-                              <Input
-                                type="number"
-                                min="1"
-                                className="h-8 py-1"
-                                value={item.quantity}
-                                onChange={(e) =>
-                                  handleQuantityChange(
-                                    item.itemNumber,
-                                    parseInt(e.target.value) || 1,
-                                  )
-                                }
-                              />
-                            </td>
-                            <td className="px-4 py-3">
-                              {item.unitValue.toLocaleString('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL',
-                              })}
-                            </td>
-                            <td className="px-4 py-3 w-28">
-                              <Input
-                                type="number"
-                                min="0"
-                                className="h-8 py-1"
-                                value={item.discount}
-                                onChange={(e) =>
-                                  handleDiscountChange(
-                                    item.itemNumber,
-                                    parseFloat(e.target.value) || 0,
-                                  )
-                                }
-                              />
-                            </td>
-                            <td className="px-4 py-3 font-semibold text-gray-900">
-                              {item.totalValue.toLocaleString('pt-BR', {
-                                style: 'currency',
-                                currency: 'BRL',
-                              })}
-                            </td>
-                            <td className="px-4 py-3">
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  handleRemoveItem(item.itemNumber)
-                                }
-                                className="text-red-500 hover:text-red-700 transition"
-                              >
-                                <IconTrash size={16} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">Item</TableHead>
+                        <TableHead>Código</TableHead>
+                        <TableHead>Descrição</TableHead>
+                        <TableHead className="w-28">Qtd.</TableHead>
+                        <TableHead>Valor Unit.</TableHead>
+                        <TableHead className="w-32">Desc. (R$)</TableHead>
+                        <TableHead>Total</TableHead>
+                        <TableHead className="w-16 text-right">Ações</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {items.map((item) => (
+                        <TableRow key={item.itemNumber}>
+                          <TableCell className="font-medium text-gray-900">
+                            {item.itemNumber}
+                          </TableCell>
+                          <TableCell>{item.productCode}</TableCell>
+                          <TableCell className="font-medium text-gray-800">
+                            {item.description}
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              min="1"
+                              className="h-8 py-1"
+                              value={item.quantity}
+                              onChange={(e) =>
+                                handleQuantityChange(
+                                  item.itemNumber,
+                                  parseInt(e.target.value) || 1,
+                                )
+                              }
+                            />
+                          </TableCell>
+                          <TableCell>
+                            {item.unitValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL',
+                            })}
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="number"
+                              min="0"
+                              className="h-8 py-1"
+                              value={item.discount}
+                              onChange={(e) =>
+                                handleDiscountChange(
+                                  item.itemNumber,
+                                  parseFloat(e.target.value) || 0,
+                                )
+                              }
+                            />
+                          </TableCell>
+                          <TableCell className="font-semibold text-gray-900">
+                            {item.totalValue.toLocaleString('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL',
+                            })}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveItem(item.itemNumber)}
+                              className="text-red-500 hover:text-red-700 transition"
+                            >
+                              <IconTrash size={16} />
+                            </button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
@@ -504,13 +506,16 @@ export function StandaloneNfceForm() {
             />
 
             {/* 4. Complementary Info Section */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-base font-semibold text-gray-900">
-                  Informações Complementares
-                </CardTitle>
+            <Card className="border-none shadow-sm overflow-hidden">
+              <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
+                <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
+                <div className="flex-1">
+                  <CardTitle className="text-gray-700 font-semibold text-base">
+                    Informações Complementares
+                  </CardTitle>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-1.5">
                   <Textarea
                     placeholder="Informações de interesse do contribuinte ou fisco..."
