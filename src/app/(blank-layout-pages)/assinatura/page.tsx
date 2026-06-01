@@ -121,13 +121,42 @@ type FormType = z.infer<typeof schema>
 const ADDITIONAL_USER_PRICE = 1500
 
 export default function SubscriptionPage() {
+  const { data: session, update: updateSession } = useSession()
+  const router = useRouter()
+
+  const trialEndsAt = session?.company?.plan?.trialEndsAt
+  const isExpired = trialEndsAt ? new Date(trialEndsAt) < new Date() : false
+
+  // Fetch active subscription to detect if user already has a paid plan
+  const { data: activeSubRes, isLoading: isLoadingActiveSub } = useQuery({
+    queryKey: ['active-subscription-check'],
+    queryFn: async () => {
+      const response = await getItem({ route: '/subscriptions/active' })
+      if (!response.success) return null
+      return response.data
+    },
+    refetchOnWindowFocus: false,
+  })
+
+  // Determine if we're in "add module" mode (user has active non-TRIAL subscription)
+  const activeSubscription = activeSubRes
+  const isAddModuleMode =
+    !!activeSubscription &&
+    activeSubscription.status === 'ACTIVE' &&
+    activeSubscription.plan?.planType !== 'TRIAL'
+
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [selectedPlanId, setSelectedPlanId] = useState<string>('')
   const [selectedModules, setSelectedModules] = useState<string[]>([])
   const [additionalUsers, setAdditionalUsers] = useState(0)
 
   const [couponCode, setCouponCode] = useState('')
-  const [appliedCoupon, setAppliedCoupon] = useState<any>(null)
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string
+    discountType: 'PERCENT' | 'VALUE'
+    discountValue: number
+    minPlanValue: number | null
+  } | null>(null)
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
   const [couponError, setCouponError] = useState<string | null>(null)
 
@@ -152,9 +181,11 @@ export default function SubscriptionPage() {
         setAppliedCoupon(null)
         setCouponError(response.message || 'Cupom inválido ou expirado.')
       }
-    } catch (err: any) {
+    } catch (err) {
       setAppliedCoupon(null)
-      setCouponError(err.message || 'Erro ao validar cupom.')
+      const errorMsg =
+        err instanceof Error ? err.message : 'Erro ao validar cupom.'
+      setCouponError(errorMsg)
     } finally {
       setIsValidatingCoupon(false)
     }
@@ -165,31 +196,6 @@ export default function SubscriptionPage() {
     setCouponCode('')
     setCouponError(null)
   }, [selectedPlanId, isAddModuleMode])
-
-  const { data: session, update: updateSession } = useSession()
-  const router = useRouter()
-
-  const trialEndsAt = session?.company?.plan?.trialEndsAt
-
-  const isExpired = trialEndsAt ? new Date(trialEndsAt) < new Date() : false
-
-  // Fetch active subscription to detect if user already has a paid plan
-  const { data: activeSubRes, isLoading: isLoadingActiveSub } = useQuery({
-    queryKey: ['active-subscription-check'],
-    queryFn: async () => {
-      const response = await getItem({ route: '/subscriptions/active' })
-      if (!response.success) return null
-      return response.data
-    },
-    refetchOnWindowFocus: false,
-  })
-
-  // Determine if we're in "add module" mode (user has active non-TRIAL subscription)
-  const activeSubscription = activeSubRes
-  const isAddModuleMode =
-    !!activeSubscription &&
-    activeSubscription.status === 'ACTIVE' &&
-    activeSubscription.plan?.planType !== 'TRIAL'
 
   // Check if we have an INACTIVE pending checkout subscription
   const isPendingCheckout =
@@ -207,10 +213,14 @@ export default function SubscriptionPage() {
   // Keys of modules already contracted in the active subscription
   const alreadyContractedModuleKeys: string[] = useMemo(() => {
     if (!isAddModuleMode || !activeSubscription?.subscriptionFeatures) return []
-    return activeSubscription.subscriptionFeatures
-      .filter((sf: any) => sf.isActive !== false)
-      .map((sf: any) => sf.feature?.key)
-      .filter(Boolean)
+    interface SubFeature {
+      isActive?: boolean
+      feature?: { key?: string }
+    }
+    return (activeSubscription.subscriptionFeatures as SubFeature[])
+      .filter((sf) => sf.isActive !== false)
+      .map((sf) => sf.feature?.key)
+      .filter(Boolean) as string[]
   }, [isAddModuleMode, activeSubscription])
 
   // Verificar se há assinatura paga pendente de ativação
@@ -312,6 +322,7 @@ export default function SubscriptionPage() {
       email: '',
       razaoSocial: '',
       cnpj: '',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
   })
 
@@ -355,7 +366,8 @@ export default function SubscriptionPage() {
 
   const couponDiscount = useMemo(() => {
     if (!appliedCoupon) return 0
-    if (appliedCoupon.minPlanValue && totalPrice < appliedCoupon.minPlanValue) return 0
+    if (appliedCoupon.minPlanValue && totalPrice < appliedCoupon.minPlanValue)
+      return 0
 
     if (appliedCoupon.discountType === 'PERCENT') {
       return Math.round(totalPrice * (appliedCoupon.discountValue / 100))
@@ -767,6 +779,7 @@ export default function SubscriptionPage() {
                     <CardContent className="p-6">
                       <form
                         id="subscription-form"
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         onSubmit={handleSubmit(onSubmit as any)}
                         noValidate
                         className="flex flex-wrap gap-5"
@@ -974,7 +987,9 @@ export default function SubscriptionPage() {
                             placeholder="Ex: BEMVINDO20"
                             className="h-9 text-sm uppercase"
                             value={couponCode}
-                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            onChange={(e) =>
+                              setCouponCode(e.target.value.toUpperCase())
+                            }
                             disabled={isValidatingCoupon || !!appliedCoupon}
                           />
                           {appliedCoupon ? (
@@ -1013,10 +1028,13 @@ export default function SubscriptionPage() {
                         <div className="flex items-center gap-1.5 text-xs text-green-600 font-semibold bg-green-50 border border-green-200/50 rounded-lg p-2.5">
                           <IconCheck size={14} className="stroke-[3px]" />
                           <span>
-                            Cupom <strong>{appliedCoupon.code}</strong> aplicado: -
+                            Cupom <strong>{appliedCoupon.code}</strong>{' '}
+                            aplicado: -
                             {appliedCoupon.discountType === 'PERCENT'
                               ? `${appliedCoupon.discountValue}%`
-                              : formatCurrencyToBrl(appliedCoupon.discountValue)}
+                              : formatCurrencyToBrl(
+                                  appliedCoupon.discountValue,
+                                )}
                           </span>
                         </div>
                       )}

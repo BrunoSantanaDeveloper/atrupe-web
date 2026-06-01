@@ -31,12 +31,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Actions
-import {
-  getData,
-  createItemNew,
-  updateItemNew,
-  deleteItemNew,
-} from '@/actions/_cruds'
+import { getData, createItemNew, updateItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 interface Coupon {
@@ -81,15 +76,20 @@ export default function AdminCouponsPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isUsagesOpen, setIsUsagesOpen] = useState(false)
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null)
-  const [selectedCouponForUsages, setSelectedCouponForUsages] = useState<Coupon | null>(null)
+  const [selectedCouponForUsages, setSelectedCouponForUsages] =
+    useState<Coupon | null>(null)
   const [search, setSearch] = useState('')
 
   // Form states
   const [code, setCode] = useState('')
   const [description, setDescription] = useState('')
-  const [discountType, setDiscountType] = useState<'PERCENT' | 'VALUE'>('PERCENT')
+  const [discountType, setDiscountType] = useState<'PERCENT' | 'VALUE'>(
+    'PERCENT',
+  )
   const [discountValue, setDiscountValue] = useState<number>(0)
-  const [durationType, setDurationType] = useState<'ONCE' | 'RECURRING' | 'MONTHS'>('ONCE')
+  const [durationType, setDurationType] = useState<
+    'ONCE' | 'RECURRING' | 'MONTHS'
+  >('ONCE')
   const [durationMonths, setDurationMonths] = useState<number>(1)
   const [maxUses, setMaxUses] = useState<string>('')
   const [maxUsesPerCompany, setMaxUsesPerCompany] = useState<number>(1)
@@ -102,7 +102,7 @@ export default function AdminCouponsPage() {
   const [isSaving, setIsSaving] = useState(false)
 
   // Fetch Coupons
-  const { data: couponsRes, isLoading: isLoadingCoupons, refetch: refetchCoupons } = useQuery({
+  const { data: couponsRes, isLoading: isLoadingCoupons } = useQuery({
     queryKey: ['admin-coupons-list', search],
     queryFn: () => getData({ route: `/coupons?search=${search}` }),
   })
@@ -116,10 +116,12 @@ export default function AdminCouponsPage() {
   // Fetch Usages
   const { data: usagesRes, isLoading: isLoadingUsages } = useQuery({
     queryKey: ['admin-coupon-usages', selectedCouponForUsages?.id],
-    queryFn: () =>
-      selectedCouponForUsages
-        ? getData({ route: `/coupons/${selectedCouponForUsages.id}/usages` })
-        : Promise.resolve({ data: [] }),
+    queryFn: () => {
+      if (!selectedCouponForUsages) {
+        throw new Error('Nenhum cupom selecionado')
+      }
+      return getData({ route: `/coupons/${selectedCouponForUsages.id}/usages` })
+    },
     enabled: !!selectedCouponForUsages,
   })
 
@@ -153,13 +155,17 @@ export default function AdminCouponsPage() {
     setDiscountType(coupon.discountType)
     // Convert cents back to real decimal for value discounts
     setDiscountValue(
-      coupon.discountType === 'VALUE' ? coupon.discountValue / 100 : coupon.discountValue,
+      coupon.discountType === 'VALUE'
+        ? coupon.discountValue / 100
+        : coupon.discountValue,
     )
     setDurationType(coupon.durationType)
     setDurationMonths(coupon.durationMonths || 1)
     setMaxUses(coupon.maxUses?.toString() || '')
     setMaxUsesPerCompany(coupon.maxUsesPerCompany)
-    setMinPlanValue(coupon.minPlanValue ? (coupon.minPlanValue / 100).toString() : '')
+    setMinPlanValue(
+      coupon.minPlanValue ? (coupon.minPlanValue / 100).toString() : '',
+    )
     setValidFrom(coupon.validFrom ? coupon.validFrom.split('T')[0] : '')
     setValidUntil(coupon.validUntil ? coupon.validUntil.split('T')[0] : '')
     setAppliesToPlans(coupon.appliesToPlans || [])
@@ -183,8 +189,11 @@ export default function AdminCouponsPage() {
     setIsSaving(true)
 
     // Convert values to cents for internal consistency
-    const finalDiscountValue = discountType === 'VALUE' ? discountValue * 100 : discountValue
-    const finalMinPlanValue = minPlanValue ? parseFloat(minPlanValue) * 100 : null
+    const finalDiscountValue =
+      discountType === 'VALUE' ? discountValue * 100 : discountValue
+    const finalMinPlanValue = minPlanValue
+      ? parseFloat(minPlanValue) * 100
+      : null
 
     const data = {
       code: code.trim().toUpperCase(),
@@ -194,7 +203,7 @@ export default function AdminCouponsPage() {
       durationType,
       durationMonths: durationType === 'MONTHS' ? durationMonths : null,
       maxUses: maxUses ? parseInt(maxUses) : null,
-      maxUsesPerCompany: maxUsesPerCompany,
+      maxUsesPerCompany,
       minPlanValue: finalMinPlanValue,
       validFrom: validFrom ? new Date(validFrom).toISOString() : undefined,
       validUntil: validUntil ? new Date(validUntil).toISOString() : null,
@@ -228,8 +237,10 @@ export default function AdminCouponsPage() {
       } else {
         toast.error(res.message || 'Erro ao salvar cupom.')
       }
-    } catch (err: any) {
-      toast.error(err.message || 'Erro ao conectar ao servidor.')
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : 'Erro ao conectar ao servidor.'
+      toast.error(errorMsg)
     } finally {
       setIsSaving(false)
     }
@@ -251,14 +262,18 @@ export default function AdminCouponsPage() {
       } else {
         toast.error(res.message || 'Erro ao desativar cupom.')
       }
-    } catch (err: any) {
-      toast.error(err.message)
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err.message : 'Erro ao desativar cupom.'
+      toast.error(errorMsg)
     }
   }
 
   const handlePlanToggle = (planId: string) => {
     setAppliesToPlans((prev) =>
-      prev.includes(planId) ? prev.filter((id) => id !== planId) : [...prev, planId],
+      prev.includes(planId)
+        ? prev.filter((id) => id !== planId)
+        : [...prev, planId],
     )
   }
 
@@ -303,8 +318,12 @@ export default function AdminCouponsPage() {
           ) : coupons.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
               <IconTicket size={48} className="text-gray-300 mb-2" />
-              <p className="font-semibold text-gray-700">Nenhum cupom cadastrado</p>
-              <p className="text-sm">Clique em "Criar Cupom" para começar.</p>
+              <p className="font-semibold text-gray-700">
+                Nenhum cupom cadastrado
+              </p>
+              <p className="text-sm">
+                Clique em &quot;Criar Cupom&quot; para começar.
+              </p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse text-sm">
@@ -322,7 +341,8 @@ export default function AdminCouponsPage() {
               <tbody className="divide-y divide-gray-100">
                 {coupons.map((coupon) => {
                   const isExpired =
-                    coupon.validUntil && new Date(coupon.validUntil) < new Date()
+                    coupon.validUntil &&
+                    new Date(coupon.validUntil) < new Date()
 
                   return (
                     <tr
@@ -341,7 +361,9 @@ export default function AdminCouponsPage() {
                       </td>
                       <td className="p-4">
                         {coupon.discountType === 'PERCENT' ? (
-                          <span className="font-bold text-gray-800">{coupon.discountValue}%</span>
+                          <span className="font-bold text-gray-800">
+                            {coupon.discountValue}%
+                          </span>
                         ) : (
                           <span className="font-bold text-gray-800">
                             {formatCurrencyToBrl(coupon.discountValue)}
@@ -389,9 +411,16 @@ export default function AdminCouponsPage() {
                               ? new Date(coupon.validFrom).toLocaleDateString()
                               : 'Sem início'}
                             {coupon.validUntil ? (
-                              <span className={isExpired ? 'text-red-500 font-medium' : ''}>
+                              <span
+                                className={
+                                  isExpired ? 'text-red-500 font-medium' : ''
+                                }
+                              >
                                 {' '}
-                                até {new Date(coupon.validUntil).toLocaleDateString()}
+                                até{' '}
+                                {new Date(
+                                  coupon.validUntil,
+                                ).toLocaleDateString()}
                               </span>
                             ) : (
                               ' (Sem expiração)'
@@ -491,7 +520,10 @@ export default function AdminCouponsPage() {
                       checked={isActive}
                       onChange={(e) => setIsActive(e.target.checked)}
                     />
-                    <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+                    <label
+                      htmlFor="isActive"
+                      className="text-sm font-medium text-gray-700"
+                    >
                       Cupom Ativo para novos usos
                     </label>
                   </div>
@@ -519,7 +551,9 @@ export default function AdminCouponsPage() {
                   <select
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={discountType}
-                    onChange={(e) => setDiscountType(e.target.value as 'PERCENT' | 'VALUE')}
+                    onChange={(e) =>
+                      setDiscountType(e.target.value as 'PERCENT' | 'VALUE')
+                    }
                   >
                     <option value="PERCENT">Porcentagem (%)</option>
                     <option value="VALUE">Valor Fixo (R$)</option>
@@ -528,7 +562,9 @@ export default function AdminCouponsPage() {
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-gray-600 uppercase">
-                    {discountType === 'PERCENT' ? 'Desconto (%) *' : 'Desconto (R$) *'}
+                    {discountType === 'PERCENT'
+                      ? 'Desconto (%) *'
+                      : 'Desconto (R$) *'}
                   </label>
                   <input
                     type="number"
@@ -537,7 +573,9 @@ export default function AdminCouponsPage() {
                     step={discountType === 'PERCENT' ? '1' : '0.01'}
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={discountValue || ''}
-                    onChange={(e) => setDiscountValue(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      setDiscountValue(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </div>
               </div>
@@ -551,7 +589,9 @@ export default function AdminCouponsPage() {
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={durationType}
                     onChange={(e) =>
-                      setDurationType(e.target.value as 'ONCE' | 'RECURRING' | 'MONTHS')
+                      setDurationType(
+                        e.target.value as 'ONCE' | 'RECURRING' | 'MONTHS',
+                      )
                     }
                   >
                     <option value="ONCE">Somente na 1ª fatura</option>
@@ -571,7 +611,9 @@ export default function AdminCouponsPage() {
                       min="1"
                       className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                       value={durationMonths}
-                      onChange={(e) => setDurationMonths(parseInt(e.target.value) || 1)}
+                      onChange={(e) =>
+                        setDurationMonths(parseInt(e.target.value) || 1)
+                      }
                     />
                   </div>
                 )}
@@ -601,7 +643,9 @@ export default function AdminCouponsPage() {
                     min="1"
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={maxUsesPerCompany}
-                    onChange={(e) => setMaxUsesPerCompany(parseInt(e.target.value) || 1)}
+                    onChange={(e) =>
+                      setMaxUsesPerCompany(parseInt(e.target.value) || 1)
+                    }
                   />
                 </div>
 
@@ -690,7 +734,10 @@ export default function AdminCouponsPage() {
                   checked={appliesToModules}
                   onChange={(e) => setAppliesToModules(e.target.checked)}
                 />
-                <label htmlFor="appliesToModules" className="text-xs font-semibold text-gray-600 uppercase">
+                <label
+                  htmlFor="appliesToModules"
+                  className="text-xs font-semibold text-gray-600 uppercase"
+                >
                   Pode ser aplicado na contratação de módulos adicionais
                 </label>
               </div>
@@ -727,7 +774,8 @@ export default function AdminCouponsPage() {
             <DialogTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
               <IconEye size={22} className="text-[#FF4201]" />
               <span>
-                Histórico de Usos do Cupom: <strong>{selectedCouponForUsages?.code}</strong>
+                Histórico de Usos do Cupom:{' '}
+                <strong>{selectedCouponForUsages?.code}</strong>
               </span>
             </DialogTitle>
           </DialogHeader>
@@ -742,8 +790,12 @@ export default function AdminCouponsPage() {
             ) : usages.length === 0 ? (
               <div className="text-center p-8 text-gray-500">
                 <IconTicket size={40} className="text-gray-300 mb-2 mx-auto" />
-                <p className="font-semibold text-gray-600">Nenhum uso registrado</p>
-                <p className="text-xs text-gray-400">Este cupom ainda não foi utilizado por nenhuma empresa.</p>
+                <p className="font-semibold text-gray-600">
+                  Nenhum uso registrado
+                </p>
+                <p className="text-xs text-gray-400">
+                  Este cupom ainda não foi utilizado por nenhuma empresa.
+                </p>
               </div>
             ) : (
               <table className="w-full text-left border-collapse text-xs">
@@ -758,7 +810,10 @@ export default function AdminCouponsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {usages.map((usage) => (
-                    <tr key={usage.id} className="hover:bg-gray-50/50 text-gray-700">
+                    <tr
+                      key={usage.id}
+                      className="hover:bg-gray-50/50 text-gray-700"
+                    >
                       <td className="p-3">
                         {new Date(usage.createdAt).toLocaleString()}
                       </td>
@@ -782,7 +837,11 @@ export default function AdminCouponsPage() {
           </DialogBody>
 
           <DialogFooter className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
-            <Button type="button" variant="neutralOutline" onClick={() => setIsUsagesOpen(false)}>
+            <Button
+              type="button"
+              variant="neutralOutline"
+              onClick={() => setIsUsagesOpen(false)}
+            >
               Fechar
             </Button>
           </DialogFooter>

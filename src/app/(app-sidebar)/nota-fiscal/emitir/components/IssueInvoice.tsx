@@ -47,7 +47,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 interface AvulsaType {
   key: string
-  icon: React.ComponentType<{ size?: number; className?: string }>
+  icon: typeof IconFilePlus
   title: string
   description: string
   href: string
