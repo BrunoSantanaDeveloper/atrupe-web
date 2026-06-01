@@ -29,8 +29,12 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
   const fetchUserMe = useCallback(async () => {
     try {
       const response = await fetch('/api/user/me')
+      if (response.redirected) {
+        window.location.href = response.url || '/logout'
+        return null
+      }
       if (!response.ok) return null
-      return response.json()
+      return await response.json()
     } catch {
       return null
     }
