@@ -17,7 +17,7 @@ interface Props {
  * Componente que monitora a atividade do usuário e renova a sessão apenas se estiver ativo
  */
 function SessionActivityHandler({ children }: PropsWithChildren) {
-  const { data: session, update } = useSession()
+  const { data: session, status, update } = useSession()
   const lastActivityRef = useRef<number>(Date.now())
 
   // Atualiza o timestamp de última atividade
@@ -27,10 +27,11 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
 
   // Busca dados do usuário via rota API interna (proxy)
   const fetchUserMe = useCallback(async () => {
+    if (status !== 'authenticated') return null
+
     try {
       const response = await fetch('/api/user/me')
       if (response.redirected) {
-        window.location.href = response.url || '/logout'
         return null
       }
       if (!response.ok) return null
@@ -38,7 +39,7 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     } catch {
       return null
     }
-  }, [])
+  }, [status])
 
   // Busca dados atualizados do /user/me e atualiza a sessão
   const refreshUserData = useCallback(async () => {
@@ -136,14 +137,19 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
 
   // Atualiza dados do usuário no mount inicial (refresh da página)
   useEffect(() => {
-    refreshUserData()
+    if (status === 'authenticated') {
+      refreshUserData()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [status])
 
   useEffect(() => {
     // Atualiza dados do usuário quando a janela ganha foco (volta para a aba)
     const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible') {
+      if (
+        document.visibilityState === 'visible' &&
+        status === 'authenticated'
+      ) {
         const timeSinceLastActivity = Date.now() - lastActivityRef.current
 
         // Se o usuário esteve ativo nos últimos 10 minutos, renova a sessão e dados
@@ -159,10 +165,12 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [update, refreshUserData])
+  }, [update, refreshUserData, status])
 
   // Periodic session refresh to detect blockLevel changes (every 5 minutes)
   useEffect(() => {
+    if (status !== 'authenticated') return
+
     const BLOCK_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
     const interval = setInterval(async () => {
@@ -171,7 +179,7 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     }, BLOCK_CHECK_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [update])
+  }, [update, status])
 
   return <>{children}</>
 }
