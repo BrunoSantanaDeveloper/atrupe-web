@@ -29,7 +29,7 @@ export function NfceTotalsSection({
 
   return (
     <Card className="border-none shadow-sm overflow-hidden sticky top-6">
-      <CardHeader className="flex flex-row items-center space-x-2.5 pb-4 bg-white border-b border-gray-100">
+      <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
         <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
         <div>
           <CardTitle className="text-gray-700 font-semibold text-base">

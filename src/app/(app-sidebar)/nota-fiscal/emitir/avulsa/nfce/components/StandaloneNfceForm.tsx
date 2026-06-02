@@ -34,11 +34,13 @@ import { NfceTotalsSection } from './NfceTotalsSection'
 import {
   IconArrowLeft,
   IconCircleCheck,
+  IconAlertTriangle,
   IconAlertTriangleFilled,
   IconFileInvoice,
   IconUser,
   IconTrash,
   IconMessage,
+  IconX,
 } from '@tabler/icons-react'
 
 // Actions
@@ -90,6 +92,7 @@ export function StandaloneNfceForm() {
 
       if (!result.success || !result.data) {
         setPrepareData(null)
+        setError(result.message || 'Erro ao carregar configurações fiscais')
       } else {
         const data = result.data as PrepareNfceData
         setPrepareData(data)
@@ -99,6 +102,7 @@ export function StandaloneNfceForm() {
       }
     } catch {
       setPrepareData(null)
+      setError('Erro ao carregar configurações fiscais')
     } finally {
       setIsLoading(false)
     }
@@ -257,7 +261,7 @@ export function StandaloneNfceForm() {
   if (isLoading) {
     return (
       <TooltipProvider>
-        <div className="space-y-6 pb-10 max-w-6xl mx-auto p-4">
+        <div className="space-y-6 pb-10">
           <div className="space-y-4">
             <Skeleton className="h-16 w-full animate-pulse" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -278,44 +282,45 @@ export function StandaloneNfceForm() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-6 pb-10 max-w-7xl mx-auto px-4 md:px-6">
-        {/* Header Action Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-4 border-b border-gray-200">
-          <div className="flex items-center space-x-3.5">
-            <Button
-              variant="ghost"
-              size="iconSm"
-              className="text-gray-500 hover:text-gray-700"
-              onClick={() => router.push('/nota-fiscal/emitir')}
-            >
-              <IconArrowLeft size={20} />
-            </Button>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h1 className="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-                  Emitir NFC-e Avulsa
-                </h1>
-                <Badge
-                  variant={isHomologacao ? 'warningLight' : 'successLight'}
-                  className="ml-2"
-                >
-                  {isHomologacao ? 'Homologação' : 'Produção'}
-                </Badge>
+      <div className="space-y-6 pb-10">
+        {/* Header */}
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="iconSm"
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => router.push('/nota-fiscal/emitir')}
+                aria-label="Voltar para emissão avulsa"
+              >
+                <IconArrowLeft size={20} />
+              </Button>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="text-xl font-semibold text-gray-900">
+                    Nota Fiscal Avulsa - NFC-e
+                  </h1>
+                  <Badge variant="blueLight" className="ml-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
+                    Em digitação
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Série: {prepareData?.serie || 1} | Próximo número:{' '}
+                  {prepareData?.numero || 1}
+                </p>
               </div>
-              <p className="text-xs text-gray-500 mt-0.5">
-                Série: {prepareData?.serie || 1} | Próximo Número:{' '}
-                {prepareData?.numero || 1}
-              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <Button
-              variant="secondaryOutline"
+          <div className="flex justify-between items-center">
+            <CustomButton
+              icon={IconX}
+              title="Cancelar digitação"
+              iconVariant="errorLight"
               onClick={() => router.push('/nota-fiscal/emitir')}
-            >
-              Cancelar
-            </Button>
+            />
             <CustomButton
               icon={IconCircleCheck}
               title={isEmitting ? 'Emitindo...' : 'Emitir NFC-e'}
@@ -327,14 +332,36 @@ export function StandaloneNfceForm() {
           </div>
         </div>
 
-        {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 flex items-start space-x-3">
-            <IconAlertTriangleFilled className="shrink-0 mt-0.5" size={20} />
-            <div>
-              <p className="font-semibold">Erro ao processar requisição</p>
-              <p className="text-sm">{error}</p>
-            </div>
+        {/* Homologação banner */}
+        {isHomologacao && (
+          <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
+            <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
+              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              Atenção! O emissor está em ambiente de homologação, a nota emitida
+              não terá valor fiscal.
+            </p>
           </div>
+        )}
+
+        {error && (
+          <Card className="border-error-200 bg-error-50">
+            <CardContent className="flex items-center gap-4 py-6 px-6">
+              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <div>
+                <p className="font-semibold text-error-700">
+                  Erro ao carregar configurações fiscais
+                </p>
+                <p className="text-sm text-error-600">{error}</p>
+              </div>
+              <Button
+                variant="neutralOutline"
+                onClick={fetchDefaults}
+                className="ml-auto"
+              >
+                Tentar novamente
+              </Button>
+            </CardContent>
+          </Card>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

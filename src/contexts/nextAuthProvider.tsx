@@ -19,6 +19,8 @@ interface Props {
 function SessionActivityHandler({ children }: PropsWithChildren) {
   const { data: session, status, update } = useSession()
   const lastActivityRef = useRef<number>(Date.now())
+  const initialRefreshDoneRef = useRef(false)
+  const refreshInFlightRef = useRef(false)
 
   // Atualiza o timestamp de última atividade
   const updateActivity = useCallback(() => {
@@ -43,6 +45,10 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
 
   // Busca dados atualizados do /user/me e atualiza a sessão
   const refreshUserData = useCallback(async () => {
+    if (refreshInFlightRef.current) return
+
+    refreshInFlightRef.current = true
+
     try {
       const userData = await fetchUserMe()
       if (!userData) return
@@ -56,8 +62,8 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
       const newPermissions = userData.policies || []
       const currentPermissions = session?.user?.permissions || []
       const permissionsChanged =
-        JSON.stringify(newPermissions.sort()) !==
-        JSON.stringify(currentPermissions.sort())
+        JSON.stringify([...newPermissions].sort()) !==
+        JSON.stringify([...currentPermissions].sort())
 
       if (permissionsChanged) {
         updatePayload.user = {
@@ -65,41 +71,47 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
           permissions: newPermissions,
         }
       }
-      if (userData.name !== session?.user?.name) {
-        updatePayload.user = { ...updatePayload.user, name: userData.name }
+      const userName = userData.name || ''
+      if (userName !== session?.user?.name) {
+        updatePayload.user = { ...updatePayload.user, name: userName }
       }
-      if (userData.avatar !== session?.user?.avatar) {
+      const userAvatar = userData.avatar || ''
+      if (userAvatar !== session?.user?.avatar) {
         updatePayload.user = {
           ...updatePayload.user,
-          avatar: userData.avatar,
+          avatar: userAvatar,
         }
       }
 
       // Verificar mudanças na empresa
       const company = userData.employee?.company
       if (company) {
-        if (company.name !== session?.company?.name) {
+        const companyName = company.name || ''
+        if (companyName !== session?.company?.name) {
           updatePayload.company = {
             ...updatePayload.company,
-            name: company.name,
+            name: companyName,
           }
         }
-        if (company.legalName !== session?.company?.legalName) {
+        const companyLegalName = company.legalName || ''
+        if (companyLegalName !== session?.company?.legalName) {
           updatePayload.company = {
             ...updatePayload.company,
-            legalName: company.legalName,
+            legalName: companyLegalName,
           }
         }
-        if (company.logoUrl !== session?.company?.logo) {
+        const companyLogo = company.logoUrl || ''
+        if (companyLogo !== session?.company?.logo) {
           updatePayload.company = {
             ...updatePayload.company,
-            logo: company.logoUrl,
+            logo: companyLogo,
           }
         }
-        if (company.favIconUrl !== session?.company?.favicon) {
+        const companyFavicon = company.favIconUrl || ''
+        if (companyFavicon !== session?.company?.favicon) {
           updatePayload.company = {
             ...updatePayload.company,
-            favicon: company.favIconUrl,
+            favicon: companyFavicon,
           }
         }
       }
@@ -110,6 +122,8 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
       }
     } catch (error) {
       console.error('Erro ao atualizar dados do usuário:', error)
+    } finally {
+      refreshInFlightRef.current = false
     }
   }, [fetchUserMe, session, update])
 
@@ -137,7 +151,13 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
 
   // Atualiza dados do usuário no mount inicial (refresh da página)
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (status === 'unauthenticated') {
+      initialRefreshDoneRef.current = false
+      return
+    }
+
+    if (status === 'authenticated' && !initialRefreshDoneRef.current) {
+      initialRefreshDoneRef.current = true
       refreshUserData()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
