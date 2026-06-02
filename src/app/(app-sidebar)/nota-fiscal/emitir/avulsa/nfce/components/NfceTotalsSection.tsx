@@ -38,7 +38,7 @@ export function NfceTotalsSection({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-3.5 pt-4">
+      <CardContent>
         <div className="flex justify-between items-center text-sm text-gray-500">
           <span>Subtotal Itens</span>
           <span className="font-medium text-gray-900">
