@@ -106,115 +106,117 @@ export function NfcePaymentSection({
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4 pt-4">
-        {/* Payment Form Input */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          <div className="space-y-1.5">
-            <Label htmlFor="payment-method">Meio de Pagamento</Label>
-            <Select value={selectedMethod} onValueChange={setSelectedMethod}>
-              <SelectTrigger
-                id="payment-method"
-                className="h-10 border-gray-200"
-              >
-                <SelectValue placeholder="Selecione..." />
-              </SelectTrigger>
-              <SelectContent>
-                {PAYMENT_METHODS.map((method) => (
-                  <SelectItem key={method.value} value={method.value}>
-                    {method.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="payment-value">Valor a Pagar (R$)</Label>
-            <Input
-              id="payment-value"
-              type="text"
-              placeholder={
-                restante > 0 ? restante.toFixed(2).replace('.', ',') : '0,00'
-              }
-              value={paymentValue}
-              onChange={(e) => setPaymentValue(e.target.value)}
-            />
-          </div>
-
-          <Button
-            type="button"
-            variant="neutralOutline"
-            LeftIcon={IconPlus}
-            onClick={handleAddPayment}
-            className="w-full h-10"
-          >
-            Adicionar Pagamento
-          </Button>
-        </div>
-
-        {/* Payments list */}
-        {pagamentos.length > 0 && (
-          <div className="mt-4 border rounded-lg divide-y bg-gray-50/50">
-            {pagamentos.map((pag, idx) => {
-              const label =
-                PAYMENT_METHODS.find((m) => m.value === pag.tipo)?.label ||
-                'Outro'
-              return (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-3 text-sm"
+      <CardContent className="p-0">
+        <div className="flex justify-between items-center text-sm text-gray-500">
+          {/* Payment Form Input */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="space-y-1.5">
+              <Label htmlFor="payment-method">Meio de Pagamento</Label>
+              <Select value={selectedMethod} onValueChange={setSelectedMethod}>
+                <SelectTrigger
+                  id="payment-method"
+                  className="h-10 border-gray-200"
                 >
-                  <span className="font-medium text-gray-700">{label}</span>
-                  <div className="flex items-center space-x-3">
-                    <span className="font-semibold text-gray-900">
-                      {formatCurrency(pag.valor)}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemovePayment(idx)}
-                      className="text-red-500 hover:text-red-700 transition"
-                    >
-                      <IconTrash size={16} />
-                    </button>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+                  <SelectValue placeholder="Selecione..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAYMENT_METHODS.map((method) => (
+                    <SelectItem key={method.value} value={method.value}>
+                      {method.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Payment Summary Info */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-center">
-          <div className="p-3 bg-gray-50 rounded-lg">
-            <div className="text-xs text-gray-500 font-medium uppercase">
-              Total da Nota
+            <div className="space-y-1.5">
+              <Label htmlFor="payment-value">Valor a Pagar (R$)</Label>
+              <Input
+                id="payment-value"
+                type="text"
+                placeholder={
+                  restante > 0 ? restante.toFixed(2).replace('.', ',') : '0,00'
+                }
+                value={paymentValue}
+                onChange={(e) => setPaymentValue(e.target.value)}
+              />
             </div>
-            <div className="text-base font-semibold text-gray-900 mt-1">
-              {formatCurrency(totalNota)}
-            </div>
+
+            <Button
+              type="button"
+              variant="neutralOutline"
+              LeftIcon={IconPlus}
+              onClick={handleAddPayment}
+              className="w-full h-10"
+            >
+              Adicionar Pagamento
+            </Button>
           </div>
-          <div className="p-3 bg-green-50/40 rounded-lg">
-            <div className="text-xs text-green-700 font-medium uppercase">
-              Total Pago
+
+          {/* Payments list */}
+          {pagamentos.length > 0 && (
+            <div className="mt-4 border rounded-lg divide-y bg-gray-50/50">
+              {pagamentos.map((pag, idx) => {
+                const label =
+                  PAYMENT_METHODS.find((m) => m.value === pag.tipo)?.label ||
+                  'Outro'
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-3 text-sm"
+                  >
+                    <span className="font-medium text-gray-700">{label}</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="font-semibold text-gray-900">
+                        {formatCurrency(pag.valor)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePayment(idx)}
+                        className="text-red-500 hover:text-red-700 transition"
+                      >
+                        <IconTrash size={16} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
-            <div className="text-base font-bold text-green-700 mt-1">
-              {formatCurrency(totalPago)}
+          )}
+
+          {/* Payment Summary Info */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2 text-center">
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="text-xs text-gray-500 font-medium uppercase">
+                Total da Nota
+              </div>
+              <div className="text-base font-semibold text-gray-900 mt-1">
+                {formatCurrency(totalNota)}
+              </div>
             </div>
-          </div>
-          <div className="p-3 bg-blue-50/40 rounded-lg">
-            <div className="text-xs text-blue-700 font-medium uppercase">
-              Restante
+            <div className="p-3 bg-green-50/40 rounded-lg">
+              <div className="text-xs text-green-700 font-medium uppercase">
+                Total Pago
+              </div>
+              <div className="text-base font-bold text-green-700 mt-1">
+                {formatCurrency(totalPago)}
+              </div>
             </div>
-            <div className="text-base font-bold text-blue-700 mt-1">
-              {formatCurrency(restante)}
+            <div className="p-3 bg-blue-50/40 rounded-lg">
+              <div className="text-xs text-blue-700 font-medium uppercase">
+                Restante
+              </div>
+              <div className="text-base font-bold text-blue-700 mt-1">
+                {formatCurrency(restante)}
+              </div>
             </div>
-          </div>
-          <div className="p-3 bg-amber-50/40 rounded-lg">
-            <div className="text-xs text-amber-700 font-medium uppercase">
-              Troco
-            </div>
-            <div className="text-base font-bold text-amber-700 mt-1">
-              {formatCurrency(valorTroco)}
+            <div className="p-3 bg-amber-50/40 rounded-lg">
+              <div className="text-xs text-amber-700 font-medium uppercase">
+                Troco
+              </div>
+              <div className="text-base font-bold text-amber-700 mt-1">
+                {formatCurrency(valorTroco)}
+              </div>
             </div>
           </div>
         </div>
