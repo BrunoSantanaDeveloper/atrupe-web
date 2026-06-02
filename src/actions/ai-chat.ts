@@ -5,6 +5,12 @@ import type { AiChatResponse, AiConversation, AiMessage } from '@/types/ai-chat'
 
 const BASE_ROUTE = '/ai'
 
+export async function getAiAccessStatus(): Promise<{ enabled: boolean }> {
+  const api = await apiInstance()
+  const res = await api.get(`${BASE_ROUTE}/access-status`)
+  return res.data
+}
+
 export async function sendAiChatMessage(data: {
   message: string
   conversationId?: string

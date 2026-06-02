@@ -1,12 +1,20 @@
 'use client'
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  FormEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { usePathname } from 'next/navigation'
 import { Bot, MessageSquare, Plus, Send, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import {
   deleteAiConversation,
+  getAiAccessStatus,
   getAiConversations,
   getAiMessages,
   sendAiChatMessage,
@@ -28,6 +36,7 @@ type LocalMessage = AiMessage & { pending?: boolean }
 
 export function AiChatWidget() {
   const pathname = usePathname()
+  const [accessEnabled, setAccessEnabled] = useState(false)
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingMessages, setLoadingMessages] = useState(false)
@@ -42,23 +51,38 @@ export function AiChatWidget() {
     [conversationId, conversations],
   )
 
-  useEffect(() => {
-    if (!open) return
-    loadConversations()
-  }, [open])
+  const loadAccessStatus = useCallback(async () => {
+    try {
+      const status = await getAiAccessStatus()
+      setAccessEnabled(status.enabled)
+      if (!status.enabled) setOpen(false)
+    } catch {
+      setAccessEnabled(false)
+    }
+  }, [])
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
-
-  async function loadConversations() {
+  const loadConversations = useCallback(async () => {
     try {
       const data = await getAiConversations()
       setConversations(data)
     } catch {
+      await loadAccessStatus()
       toast.error('Nao foi possivel carregar as conversas.')
     }
-  }
+  }, [loadAccessStatus])
+
+  useEffect(() => {
+    loadAccessStatus()
+  }, [loadAccessStatus])
+
+  useEffect(() => {
+    if (!open) return
+    loadConversations()
+  }, [loadConversations, open])
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [messages, loading])
 
   async function selectConversation(id: string) {
     setConversationId(id)
@@ -67,6 +91,7 @@ export function AiChatWidget() {
       const data = await getAiMessages(id)
       setMessages(data)
     } catch {
+      await loadAccessStatus()
       toast.error('Nao foi possivel carregar esta conversa.')
     } finally {
       setLoadingMessages(false)
@@ -85,6 +110,7 @@ export function AiChatWidget() {
       if (conversationId === id) startNewConversation()
       setConversations((current) => current.filter((item) => item.id !== id))
     } catch {
+      await loadAccessStatus()
       toast.error('Nao foi possivel excluir a conversa.')
     }
   }
@@ -134,6 +160,7 @@ export function AiChatWidget() {
       setMessages((current) =>
         current.filter((item) => item.id !== userMessage.id),
       )
+      await loadAccessStatus()
       toast.error(
         actionError.response?.data?.message ||
           'Nao foi possivel enviar a mensagem para a IA.',
@@ -142,6 +169,8 @@ export function AiChatWidget() {
       setLoading(false)
     }
   }
+
+  if (!accessEnabled) return null
 
   return (
     <>
