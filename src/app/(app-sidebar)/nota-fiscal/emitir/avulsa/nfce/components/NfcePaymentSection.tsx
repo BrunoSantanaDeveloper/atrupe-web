@@ -106,8 +106,8 @@ export function NfcePaymentSection({
         </div>
       </CardHeader>
 
-      <CardContent className="p-0">
-        <div className="flex justify-between items-center text-sm text-gray-500">
+      <CardContent className="p-6 pt-4">
+        <div className="space-y-4">
           {/* Payment Form Input */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
             <div className="space-y-1.5">
