@@ -43,6 +43,7 @@ import {
   IconDownload,
   IconRefresh,
   IconQrcode,
+  IconPrinter,
 } from '@tabler/icons-react'
 
 // Components (modal)
@@ -753,6 +754,23 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             <span>Ver DANFE</span>
                                           </DropdownMenuItem>
                                         )}
+
+                                        {(isAuthorized || isContingency) &&
+                                          nfce?.id && (
+                                            <DropdownMenuItem
+                                              onClick={() =>
+                                                window.open(
+                                                  `/api/fiscal/nfce/${nfce.id}/thermal`,
+                                                  '_blank',
+                                                )
+                                              }
+                                            >
+                                              <IconPrinter className="mr-2 h-4 w-4" />
+                                              <span>
+                                                Imprimir DANFE térmico
+                                              </span>
+                                            </DropdownMenuItem>
+                                          )}
 
                                         {nfce?.qrCodeUrl && (
                                           <DropdownMenuItem
