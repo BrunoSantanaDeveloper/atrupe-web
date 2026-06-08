@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -12,8 +11,7 @@ import { cn } from '@/lib/utils'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconUserCog, IconAlertTriangle } from '@tabler/icons-react'
 
-// Hooks
-import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
+// Types
 
 interface AddressItem {
   id?: string
@@ -41,38 +39,12 @@ interface ClientData {
 interface NfseTomadorSectionProps {
   client?: ClientData
   servicesTotal: string
-  clientId?: string
-  onAddressChange?: (address: AddressItem) => void
 }
 
 export function NfseTomadorSection({
   client,
   servicesTotal,
-  clientId,
-  onAddressChange,
 }: NfseTomadorSectionProps) {
-  const { data: addresses } = useClientAddresses({ clientId: clientId || '' })
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null,
-  )
-
-  useEffect(() => {
-    const firstAddr = client?.address?.[0]
-    if (addresses && firstAddr) {
-      const matchingAddr = addresses.find(
-        (a) =>
-          a.zipcode === firstAddr.zipcode &&
-          a.street === firstAddr.street &&
-          a.number === firstAddr.number,
-      )
-      if (matchingAddr) {
-        setSelectedAddressId(matchingAddr.id)
-      } else {
-        setSelectedAddressId(null)
-      }
-    }
-  }, [addresses, client])
-
   return (
     <Card className="border-none shadow-sm overflow-hidden">
       <Accordion type="single" collapsible defaultValue="tomador">
@@ -133,42 +105,6 @@ export function NfseTomadorSection({
 
               {client?.address?.[0] && (
                 <div className="mt-4 pt-4 border-t border-gray-100 space-y-4">
-                  {clientId && addresses && addresses.length > 0 && (
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50/50 p-3 rounded-lg border border-gray-100">
-                      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                        📍 Endereço Selecionado:
-                      </span>
-                      <select
-                        value={selectedAddressId || ''}
-                        className="flex h-9 w-full max-w-xl rounded-md border border-input bg-white px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        onChange={(e) => {
-                          const selectedId = e.target.value
-                          if (!selectedId) {
-                            setSelectedAddressId(null)
-                            return
-                          }
-
-                          const addr = addresses.find(
-                            (a) => a.id === selectedId,
-                          )
-                          if (addr && onAddressChange) {
-                            onAddressChange(addr)
-                          }
-                        }}
-                      >
-                        <option value="">
-                          -- Usar endereço principal / personalizado --
-                        </option>
-                        {addresses.map((addr) => (
-                          <option key={addr.id} value={addr.id}>
-                            {addr.type || 'Principal'} — {addr.street},{' '}
-                            {addr.number} - {addr.city}/{addr.state}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
-
                   <div>
                     <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-3">
                       Endereço

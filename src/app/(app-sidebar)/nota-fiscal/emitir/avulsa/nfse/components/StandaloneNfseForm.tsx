@@ -22,6 +22,8 @@ import {
 import { NfseTomadorSection } from '../../../../emitir-nfse/[orderId]/components/NfseTomadorSection'
 import { NfseDadosFiscaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseDadosFiscaisSection'
 import { NfseTotaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseTotaisSection'
+import { InvoiceDeliveryAddressSection } from '../../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
+import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 // Icons
 import {
@@ -48,8 +50,9 @@ interface PrepareStandaloneData {
   ambiente?: string
 }
 
-interface StandaloneNfseAddress {
-  id?: string
+interface ClientAddressItem {
+  id: string
+  label?: string
   street?: string
   number?: string
   complement?: string
@@ -100,8 +103,10 @@ export function StandaloneNfseForm() {
 
   // Client / tomador
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null)
-  const [selectedAddress, setSelectedAddress] =
-    useState<StandaloneNfseAddress | null>(null)
+  const [entrega, setEntrega] = useState<NfePrepareEntrega | null>(null)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    null,
+  )
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -147,7 +152,76 @@ export function StandaloneNfseForm() {
 
   const handleClientSelect = (client: ClientData | null) => {
     setSelectedClient(client)
-    setSelectedAddress(null)
+    setSelectedAddressId(null)
+    setEntrega(null)
+  }
+
+  const handleEntregaToggle = (enabled: boolean) => {
+    if (enabled) {
+      const defaultEntrega = selectedClient?.address
+        ? {
+            cnpjCpf: selectedClient.cnpjCpf || '',
+            endereco: selectedClient.address || '',
+            numero: selectedClient.addressNumber || 'S/N',
+            complemento: selectedClient.complement || '',
+            bairro: selectedClient.neighborhood || '',
+            cidade: selectedClient.city || '',
+            estado: selectedClient.state || '',
+            cep: selectedClient.cep || '',
+          }
+        : {
+            cnpjCpf: selectedClient?.cnpjCpf || '',
+            endereco: '',
+            numero: 'S/N',
+            complemento: '',
+            bairro: '',
+            cidade: '',
+            estado: '',
+            cep: '',
+          }
+      setEntrega(defaultEntrega)
+      setSelectedAddressId(null)
+      toast.success('Local de prestação habilitado')
+    } else {
+      setEntrega(null)
+      setSelectedAddressId(null)
+      toast.info('Local de prestação desabilitado')
+    }
+  }
+
+  const handleEntregaAddressSelect = (address: ClientAddressItem | null) => {
+    if (!address) {
+      setSelectedAddressId(null)
+      setEntrega({
+        cnpjCpf: selectedClient?.cnpjCpf || '',
+        endereco: '',
+        numero: 'S/N',
+        complemento: '',
+        bairro: '',
+        cidade: '',
+        estado: '',
+        cep: '',
+      })
+      return
+    }
+    setSelectedAddressId(address.id)
+    setEntrega({
+      cnpjCpf: selectedClient?.cnpjCpf || '',
+      endereco: address.street || '',
+      numero: address.number || 'S/N',
+      complemento: address.complement || '',
+      bairro: address.neighborhood || '',
+      cidade: address.city || '',
+      estado: address.state || '',
+      cep: address.zipcode || '',
+    })
+    toast.success(
+      `Local de prestação alterado para "${address.label || 'Principal'}"`,
+    )
+  }
+
+  const handleEntregaChange = (updatedEntrega: NfePrepareEntrega) => {
+    setEntrega(updatedEntrega)
   }
 
   const handleEmit = async () => {
@@ -172,15 +246,6 @@ export function StandaloneNfseForm() {
 
     try {
       const tomador = clientToNfseTomador(selectedClient)
-      if (selectedAddress) {
-        tomador.endereco = selectedAddress.street || ''
-        tomador.numero = selectedAddress.number || 'S/N'
-        tomador.complemento = selectedAddress.complement || ''
-        tomador.bairro = selectedAddress.neighborhood || ''
-        tomador.cep = selectedAddress.zipcode || ''
-        tomador.municipio = selectedAddress.city || ''
-        tomador.uf = selectedAddress.state || ''
-      }
 
       const payload = {
         // Tomador
@@ -197,6 +262,18 @@ export function StandaloneNfseForm() {
         codigoMunicipio: prepareData?.codigoMunicipio,
         rpsSerie: prepareData?.rpsSerie,
         rpsNumero: prepareData?.rpsNumero,
+        addressId: selectedAddressId || undefined,
+        ...(entrega
+          ? {
+              entregaEndereco: entrega.endereco,
+              entregaNumero: entrega.numero,
+              entregaComplemento: entrega.complemento || null,
+              entregaBairro: entrega.bairro,
+              entregaCep: entrega.cep,
+              entregaMunicipio: entrega.cidade,
+              entregaUf: entrega.estado,
+            }
+          : {}),
       }
 
       const result = await createItemNew({
@@ -357,14 +434,19 @@ export function StandaloneNfseForm() {
         {/* Tomador section — shown after client selected */}
         {tomadorDisplayClient && (
           <NfseTomadorSection
-            client={
-              selectedAddress
-                ? { ...tomadorDisplayClient, address: [selectedAddress] }
-                : tomadorDisplayClient
-            }
+            client={tomadorDisplayClient}
             servicesTotal={formatCurrency(valorServicos)}
-            clientId={selectedClient?.id}
-            onAddressChange={setSelectedAddress}
+          />
+        )}
+
+        {selectedClient && (
+          <InvoiceDeliveryAddressSection
+            entrega={entrega}
+            clientId={selectedClient.id}
+            selectedAddressId={selectedAddressId}
+            onEntregaToggle={handleEntregaToggle}
+            onAddressSelect={handleEntregaAddressSelect}
+            onEntregaChange={handleEntregaChange}
           />
         )}
 

@@ -1,5 +1,3 @@
-import { useState, useEffect } from 'react'
-
 // UI
 import {
   Accordion,
@@ -15,62 +13,22 @@ import { cn } from '@/lib/utils'
 // Icons
 import { IconPencil, IconUserCog, IconUserSearch } from '@tabler/icons-react'
 
-// Hooks
-import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
-
 // Types
 import type { NfePrepareDestinatario } from '@/types/fiscal/nfe-prepare'
-
-interface ClientAddressItem {
-  id: string
-  label?: string
-  street?: string
-  number?: string
-  complement?: string
-  neighborhood?: string
-  city?: string
-  state?: string
-  zipcode?: string
-}
 
 interface InvoiceRecipientSectionProps {
   destinatario: NfePrepareDestinatario
   onEditClick: () => void
   /** Callback para abrir o seletor de outro cliente */
   onChangeClientClick?: () => void
-  clientId?: string
-  onAddressChange?: (address: ClientAddressItem) => void
 }
 
 export function InvoiceRecipientSection({
   destinatario,
   onEditClick,
   onChangeClientClick,
-  clientId,
-  onAddressChange,
 }: InvoiceRecipientSectionProps) {
   const isForeign = destinatario.pais && destinatario.pais !== 'Brasil'
-
-  const { data: addresses } = useClientAddresses({ clientId: clientId || '' })
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
-    null,
-  )
-
-  useEffect(() => {
-    if (addresses && destinatario) {
-      const matchingAddr = addresses.find(
-        (a) =>
-          a.zipcode === destinatario.cep &&
-          a.street === destinatario.endereco &&
-          a.number === destinatario.numero,
-      )
-      if (matchingAddr) {
-        setSelectedAddressId(matchingAddr.id)
-      } else {
-        setSelectedAddressId(null)
-      }
-    }
-  }, [addresses, destinatario])
 
   const rows = [
     [
@@ -150,39 +108,6 @@ export function InvoiceRecipientSection({
           </CardHeader>
           <AccordionContent>
             <CardContent className="p-0">
-              {clientId && addresses && addresses.length > 0 && (
-                <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50/50">
-                  <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
-                    📍 Endereço Selecionado:
-                  </span>
-                  <select
-                    value={selectedAddressId || ''}
-                    className="flex h-9 w-full max-w-xl rounded-md border border-input bg-white px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    onChange={(e) => {
-                      const selectedId = e.target.value
-                      if (!selectedId) {
-                        setSelectedAddressId(null)
-                        return
-                      }
-
-                      const addr = addresses.find((a) => a.id === selectedId)
-                      if (addr && onAddressChange) {
-                        onAddressChange(addr)
-                      }
-                    }}
-                  >
-                    <option value="">
-                      -- Usar endereço personalizado / Digitado --
-                    </option>
-                    {addresses.map((addr) => (
-                      <option key={addr.id} value={addr.id}>
-                        {addr.type || 'Principal'} — {addr.street},{' '}
-                        {addr.number} - {addr.city}/{addr.state}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
               <div className="flex flex-col">
                 {rows.map((row, rowIdx) => (
                   <div

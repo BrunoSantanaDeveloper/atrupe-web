@@ -115,6 +115,17 @@ export interface NfePrepareDuplicata {
   valor: number
 }
 
+export interface NfePrepareEntrega {
+  cnpjCpf?: string
+  endereco: string
+  numero: string
+  complemento?: string
+  bairro: string
+  cidade: string
+  estado: string
+  cep: string
+}
+
 export interface NfePrepareResponse {
   orderId: string
   orderIds?: string[]
@@ -155,4 +166,5 @@ export interface NfePrepareResponse {
   originalNfeNumero?: number
   originalNfeChave?: string
   motivoRejeicao?: string | null
+  entrega?: NfePrepareEntrega | null
 }

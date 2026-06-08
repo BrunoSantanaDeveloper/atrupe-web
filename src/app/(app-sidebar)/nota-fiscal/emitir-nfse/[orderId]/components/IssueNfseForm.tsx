@@ -19,6 +19,8 @@ import { NfseTomadorSection } from './NfseTomadorSection'
 import { NfseServicosSection } from './NfseServicosSection'
 import { NfseDadosFiscaisSection } from './NfseDadosFiscaisSection'
 import { NfseTotaisSection } from './NfseTotaisSection'
+import { InvoiceDeliveryAddressSection } from '../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
+import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 // Icons
 import {
@@ -58,6 +60,7 @@ interface OrderData {
       phone?: string
       mobile?: string
       address?: Array<{
+        id?: string
         street?: string
         number?: string
         complement?: string
@@ -68,6 +71,18 @@ interface OrderData {
       }>
     }
     quotationItems: QuotationItem[]
+    deliveryInfo?: {
+      clientAddress?: {
+        id: string
+        street?: string
+        number?: string
+        complement?: string
+        neighborhood?: string
+        city?: string
+        state?: string
+        zipcode?: string
+      }
+    }
   }
   company?: {
     invoicyConfig?: {
@@ -76,8 +91,9 @@ interface OrderData {
   }
 }
 
-interface NfseAddress {
-  id?: string
+interface ClientAddressItem {
+  id: string
+  label?: string
   street?: string
   number?: string
   complement?: string
@@ -85,6 +101,7 @@ interface NfseAddress {
   city?: string
   state?: string
   zipcode?: string
+  type?: string
 }
 
 interface Props {
@@ -96,7 +113,8 @@ export function IssueNfseForm({ id }: Props) {
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [orderData, setOrderData] = useState<OrderData | null>(null)
-  const [selectedAddress, setSelectedAddress] = useState<NfseAddress | null>(
+  const [entrega, setEntrega] = useState<NfePrepareEntrega | null>(null)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   )
 
@@ -121,7 +139,26 @@ export function IssueNfseForm({ id }: Props) {
         throw new Error(result.message || 'Erro ao carregar dados da ordem')
       }
 
-      setOrderData(result.data)
+      setOrderData(result.data as OrderData)
+
+      const deliveryAddr = (result.data as OrderData).quotation?.deliveryInfo
+        ?.clientAddress
+      if (deliveryAddr) {
+        setEntrega({
+          cnpjCpf:
+            result.data.quotation.client?.cnpj ||
+            result.data.quotation.client?.cpf ||
+            '',
+          endereco: deliveryAddr.street || '',
+          numero: deliveryAddr.number || 'S/N',
+          complemento: deliveryAddr.complement || '',
+          bairro: deliveryAddr.neighborhood || '',
+          cidade: deliveryAddr.city || '',
+          estado: deliveryAddr.state || '',
+          cep: deliveryAddr.zipcode || '',
+        })
+        setSelectedAddressId(deliveryAddr.id)
+      }
 
       const items = result.data.quotation?.quotationItems || []
       if (items.length > 0) {
@@ -167,7 +204,18 @@ export function IssueNfseForm({ id }: Props) {
           discriminacao,
           aliquotaIss: aliquotaIss || undefined,
           issRetido,
-          addressId: selectedAddress?.id || undefined,
+          addressId: selectedAddressId || undefined,
+          ...(entrega
+            ? {
+                entregaEndereco: entrega.endereco,
+                entregaNumero: entrega.numero,
+                entregaComplemento: entrega.complemento || null,
+                entregaBairro: entrega.bairro,
+                entregaCep: entrega.cep,
+                entregaMunicipio: entrega.cidade,
+                entregaUf: entrega.estado,
+              }
+            : {}),
         },
       })
 
@@ -255,6 +303,75 @@ export function IssueNfseForm({ id }: Props) {
   const isHomologacao =
     orderData.company?.invoicyConfig?.ambiente === 'HOMOLOGACAO'
 
+  // Handlers for Delivery Address (Local de Prestação)
+  const handleEntregaToggle = (enabled: boolean) => {
+    if (enabled) {
+      const defaultEntrega = client?.address?.[0]
+        ? {
+            cnpjCpf: client.cnpj || client.cpf || '',
+            endereco: client.address[0].street || '',
+            numero: client.address[0].number || 'S/N',
+            complemento: client.address[0].complement || '',
+            bairro: client.address[0].neighborhood || '',
+            cidade: client.address[0].city || '',
+            estado: client.address[0].state || '',
+            cep: client.address[0].zipcode || '',
+          }
+        : {
+            cnpjCpf: client?.cnpj || client?.cpf || '',
+            endereco: '',
+            numero: 'S/N',
+            complemento: '',
+            bairro: '',
+            cidade: '',
+            estado: '',
+            cep: '',
+          }
+      setEntrega(defaultEntrega)
+      setSelectedAddressId(client?.address?.[0]?.id || null)
+      toast.success('Local de prestação habilitado')
+    } else {
+      setEntrega(null)
+      setSelectedAddressId(null)
+      toast.info('Local de prestação desabilitado')
+    }
+  }
+
+  const handleEntregaAddressSelect = (address: ClientAddressItem | null) => {
+    if (!address) {
+      setSelectedAddressId(null)
+      setEntrega({
+        cnpjCpf: client?.cnpj || client?.cpf || '',
+        endereco: '',
+        numero: 'S/N',
+        complemento: '',
+        bairro: '',
+        cidade: '',
+        estado: '',
+        cep: '',
+      })
+      return
+    }
+    setSelectedAddressId(address.id)
+    setEntrega({
+      cnpjCpf: client?.cnpj || client?.cpf || '',
+      endereco: address.street || '',
+      numero: address.number || 'S/N',
+      complemento: address.complement || '',
+      bairro: address.neighborhood || '',
+      cidade: address.city || '',
+      estado: address.state || '',
+      cep: address.zipcode || '',
+    })
+    toast.success(
+      `Local de prestação alterado para "${address.label || 'Principal'}"`,
+    )
+  }
+
+  const handleEntregaChange = (updatedEntrega: NfePrepareEntrega) => {
+    setEntrega(updatedEntrega)
+  }
+
   return (
     <TooltipProvider>
       <div className="space-y-6 pb-10">
@@ -315,14 +432,17 @@ export function IssueNfseForm({ id }: Props) {
         )}
 
         <NfseTomadorSection
-          client={
-            client && selectedAddress
-              ? { ...client, address: [selectedAddress] }
-              : client
-          }
+          client={client}
           servicesTotal={formatCurrency(getServicesTotal())}
+        />
+
+        <InvoiceDeliveryAddressSection
+          entrega={entrega}
           clientId={client?.id}
-          onAddressChange={setSelectedAddress}
+          selectedAddressId={selectedAddressId}
+          onEntregaToggle={handleEntregaToggle}
+          onAddressSelect={handleEntregaAddressSelect}
+          onEntregaChange={handleEntregaChange}
         />
 
         <NfseServicosSection

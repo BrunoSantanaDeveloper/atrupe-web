@@ -32,6 +32,7 @@ import { InvoiceTransport } from '../../../[orderId]/components/InvoiceTransport
 import { InvoiceTotalsSection } from '../../../[orderId]/components/InvoiceTotalsSection'
 import { InvoiceDownloadAuth } from '../../../[orderId]/components/InvoiceDownloadAuth'
 import { InvoiceEmissionConfigSection } from '../../../components/InvoiceEmissionConfigSection'
+import { InvoiceDeliveryAddressSection } from '../../../[orderId]/components/InvoiceDeliveryAddressSection'
 
 // Standalone-specific components
 import {
@@ -68,8 +69,13 @@ import type {
   NfePrepareResponse,
   NfePrepareItem,
   NfePrepareDestinatario,
+  NfePrepareEntrega,
 } from '@/types/fiscal/nfe-prepare'
 import type { ClientData } from '../../components/ClientSelect'
+
+type ClientAddressItem = NonNullable<
+  NfePrepareResponse['clientAddresses']
+>[number]
 
 export function StandaloneNfeForm() {
   const alertDialog = useAlertDialog()
@@ -295,33 +301,91 @@ export function StandaloneNfeForm() {
     toast.success('Destinatário atualizado')
   }
 
-  // Handle address selection change
-  const handleAddressChange = (address: {
-    id: string
-    zipcode?: string
-    state?: string
-    city?: string
-    neighborhood?: string
-    street?: string
-    number?: string
-    complement?: string
-    type?: string
-  }) => {
+  // Handlers for Delivery Address (Local de Entrega)
+  const handleEntregaToggle = (enabled: boolean) => {
+    if (!data) return
+    if (enabled) {
+      const defaultEntrega = data.clientAddresses?.[0]
+        ? {
+            cnpjCpf: data.destinatario.cnpjCpf,
+            endereco: data.clientAddresses[0].street || '',
+            numero: data.clientAddresses[0].number || 'S/N',
+            complemento: data.clientAddresses[0].complement || '',
+            bairro: data.clientAddresses[0].neighborhood || '',
+            cidade: data.clientAddresses[0].city || '',
+            estado: data.clientAddresses[0].state || '',
+            cep: data.clientAddresses[0].zipcode || '',
+          }
+        : {
+            cnpjCpf: data.destinatario.cnpjCpf,
+            endereco: '',
+            numero: 'S/N',
+            complemento: '',
+            bairro: '',
+            cidade: '',
+            estado: '',
+            cep: '',
+          }
+      setData({
+        ...data,
+        entrega: defaultEntrega,
+        selectedAddressId: data.clientAddresses?.[0]?.id || null,
+      })
+      toast.success('Local de entrega habilitado')
+    } else {
+      setData({
+        ...data,
+        entrega: null,
+        selectedAddressId: null,
+      })
+      toast.info('Local de entrega desabilitado')
+    }
+  }
+
+  const handleEntregaAddressSelect = (address: ClientAddressItem | null) => {
+    if (!data) return
+    if (!address) {
+      setData({
+        ...data,
+        selectedAddressId: null,
+        entrega: {
+          cnpjCpf: data.destinatario.cnpjCpf,
+          endereco: '',
+          numero: 'S/N',
+          complemento: '',
+          bairro: '',
+          cidade: '',
+          estado: '',
+          cep: '',
+        },
+      })
+      return
+    }
+    setData({
+      ...data,
+      selectedAddressId: address.id,
+      entrega: {
+        cnpjCpf: data.destinatario.cnpjCpf,
+        endereco: address.street || '',
+        numero: address.number || 'S/N',
+        complemento: address.complement || '',
+        bairro: address.neighborhood || '',
+        cidade: address.city || '',
+        estado: address.state || '',
+        cep: address.zipcode || '',
+      },
+    })
+    toast.success(
+      `Local de entrega alterado para "${address.label || 'Principal'}"`,
+    )
+  }
+
+  const handleEntregaChange = (updatedEntrega: NfePrepareEntrega) => {
     if (!data) return
     setData({
       ...data,
-      destinatario: {
-        ...data.destinatario,
-        cep: address.zipcode || '',
-        estado: address.state || '',
-        cidade: address.city || '',
-        bairro: address.neighborhood || '',
-        endereco: address.street || '',
-        numero: address.number || '',
-        complemento: address.complement || '',
-      },
+      entrega: updatedEntrega,
     })
-    toast.success(`Endereço alterado para "${address.type || 'Principal'}"`)
   }
 
   // Handle emit
@@ -394,6 +458,18 @@ export function StandaloneNfeForm() {
           destUf: data.destinatario.estado,
           destPais: getBacenCodeByName(data.destinatario.pais),
           destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
+          ...(data.entrega
+            ? {
+                entregaCnpjCpf: data.entrega.cnpjCpf || null,
+                entregaEndereco: data.entrega.endereco,
+                entregaNumero: data.entrega.numero,
+                entregaComplemento: data.entrega.complemento || null,
+                entregaBairro: data.entrega.bairro,
+                entregaCep: data.entrega.cep,
+                entregaMunicipio: data.entrega.cidade,
+                entregaUf: data.entrega.estado,
+              }
+            : {}),
           items: data.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -635,8 +711,15 @@ export function StandaloneNfeForm() {
               <InvoiceRecipientSection
                 destinatario={data.destinatario}
                 onEditClick={() => setIsRecipientEditOpen(true)}
+              />
+
+              <InvoiceDeliveryAddressSection
+                entrega={data.entrega || null}
                 clientId={data.clientId}
-                onAddressChange={handleAddressChange}
+                selectedAddressId={data.selectedAddressId}
+                onEntregaToggle={handleEntregaToggle}
+                onAddressSelect={handleEntregaAddressSelect}
+                onEntregaChange={handleEntregaChange}
               />
 
               {/* Items */}
