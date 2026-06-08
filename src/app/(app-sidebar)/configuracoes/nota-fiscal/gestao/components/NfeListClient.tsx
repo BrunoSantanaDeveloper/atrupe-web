@@ -33,6 +33,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { CancelNfeDialog } from './CancelNfeDialog'
 import { CorrectionNfeDialog } from './CorrectionNfeDialog'
+import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
 // Icons
 import {
@@ -62,6 +63,7 @@ interface NfeItem {
   totalNfe: number
   danfeUrl?: string
   xmlKey?: string
+  rejectionReason?: string | null
   createdAt: string
   order?: {
     id: string
@@ -81,6 +83,7 @@ interface NfeBackendItem {
   valorTotal: number
   danfeUrl?: string
   chaveAcesso?: string
+  motivoRejeicao?: string | null
   createdAt: string
   order?: {
     id: string
@@ -154,6 +157,7 @@ async function fetchNfeList(status?: string) {
     totalNfe: nfe.valorTotal,
     danfeUrl: nfe.danfeUrl,
     xmlKey: nfe.chaveAcesso,
+    rejectionReason: nfe.motivoRejeicao,
     createdAt: nfe.createdAt,
     order: nfe.order,
   }))
@@ -255,6 +259,8 @@ export function NfeListClient() {
                 nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
               const canCorrect =
                 nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
+              const isRejected =
+                nfe.status === 'REJECTED' || nfe.status === 'REJEITADA'
 
               return (
                 <TableRow key={nfe.id}>
@@ -269,7 +275,15 @@ export function NfeListClient() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={status.variant}>{status.label}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={status.variant}>{status.label}</Badge>
+                      {isRejected && (
+                        <RejectionReasonAction
+                          reason={nfe.rejectionReason}
+                          reissueHref={`/nota-fiscal/emitir/avulsa/nfe?reissueOf=${nfe.id}`}
+                        />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{nfe.recipientName}</div>

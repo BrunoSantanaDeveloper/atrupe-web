@@ -2,10 +2,30 @@ export type ProductListType = {
   id: string
   name: string
   code: string
-  sectorName: string
+  isActive?: boolean
+  sectorId?: string | null
+  sectorName: string | null
+  categoryId?: string | null
+  category?: {
+    id: string
+    name: string
+    kind: string
+  } | null
   unitOfMeasureCode: string
   unitCost: number
   salePrice: number
+  fiscalData?: {
+    ncm?: string | null
+    cest?: string | null
+    cfopInState?: string | null
+    cfopOutState?: string | null
+    icmsCst?: string | null
+    pisCst?: string | null
+    cofinsCst?: string | null
+    codigoServico?: string | null
+    aliquotaIss?: number | null
+    discriminacao?: string | null
+  } | null
   items?: {
     unitCost: number
     salePrice: number

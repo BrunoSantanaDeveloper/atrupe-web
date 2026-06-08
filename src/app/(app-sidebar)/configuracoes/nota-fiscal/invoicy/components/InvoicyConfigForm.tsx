@@ -13,6 +13,8 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { FormSwitch } from '@/components/common/form/FormSwitch'
+import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 
 // Icons
 import { IconDeviceFloppy, IconSettings } from '@tabler/icons-react'
@@ -61,8 +63,14 @@ export function InvoicyConfigForm() {
       nfeNextNumber: 1,
       defaultCfop: '5102',
       defaultOperationNature: 'Venda de mercadoria',
+      sendDanfeXmlAutomatically: false,
+      sendDanfeAutomatically: true,
+      sendXmlAutomatically: true,
+      sendFiscalEmailCopyTo: '',
     },
   })
+
+  const sendAutomatically = form.watch('sendDanfeXmlAutomatically')
 
   // Load existing config into form
   useEffect(() => {
@@ -83,6 +91,11 @@ export function InvoicyConfigForm() {
         defaultOperationNature:
           configData.defaultOperationNature || 'Venda de mercadoria',
         taxInfoText: configData.taxInfoText || '',
+        sendDanfeXmlAutomatically:
+          configData.sendDanfeXmlAutomatically || false,
+        sendDanfeAutomatically: configData.sendDanfeAutomatically !== false,
+        sendXmlAutomatically: configData.sendXmlAutomatically !== false,
+        sendFiscalEmailCopyTo: configData.sendFiscalEmailCopyTo || '',
       })
     }
   }, [configData, form])
@@ -256,6 +269,41 @@ export function InvoicyConfigForm() {
               label="Informações Fiscais Complementares"
               placeholder="Texto que será incluído nas notas fiscais"
               rows={4}
+            />
+          </div>
+
+          <div className="rounded-lg bg-white p-6 space-y-4">
+            <div>
+              <h3 className="font-semibold text-base">Envio ao Cliente</h3>
+              <p className="text-sm text-gray-500">
+                Configure o envio automatico dos documentos fiscais quando a
+                NF-e for autorizada.
+              </p>
+            </div>
+
+            <FormSwitch
+              name="sendDanfeXmlAutomatically"
+              label="Enviar DANFE/XML automaticamente ao cliente"
+            />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormCheckbox
+                name="sendDanfeAutomatically"
+                label="Enviar DANFE"
+                disabled={!sendAutomatically}
+              />
+              <FormCheckbox
+                name="sendXmlAutomatically"
+                label="Enviar XML"
+                disabled={!sendAutomatically}
+              />
+            </div>
+
+            <FormInput
+              name="sendFiscalEmailCopyTo"
+              label="E-mail para cópia"
+              type="email"
+              placeholder="financeiro@empresa.com"
             />
           </div>
 

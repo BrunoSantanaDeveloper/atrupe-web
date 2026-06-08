@@ -14,6 +14,7 @@ import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 import { SyncAsaasDialog } from '../SyncAsaasDialog'
+import { ResetPasswordDialog } from '../ResetPasswordDialog'
 
 // UI
 import {
@@ -51,6 +52,7 @@ import {
   IconSettings,
   IconBuildingStore,
   IconRefresh,
+  IconKey,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -65,6 +67,7 @@ export interface AccountItem {
   companyName: string
   code: string
   document: string
+  userId: string
   userName: string
   userDocument: string
   phone: string
@@ -97,6 +100,8 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false)
+  const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] =
+    useState(false)
 
   const filters = { ...searchParams }
   const currentStatus = searchParams.status
@@ -238,6 +243,15 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       }}
                                     />
                                     <ActionButton
+                                      Icon={IconKey}
+                                      tooltip="Redefinir senha"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsResetPasswordDialogOpen(true)
+                                      }}
+                                      disabled={!item.userId}
+                                    />
+                                    <ActionButton
                                       Icon={IconHistory}
                                       tooltip="Histórico"
                                       onClick={() => {
@@ -320,6 +334,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <SyncAsaasDialog
         open={isSyncDialogOpen}
         setOpen={setIsSyncDialogOpen}
+        rowData={rowData}
+      />
+
+      <ResetPasswordDialog
+        open={isResetPasswordDialogOpen}
+        setOpen={setIsResetPasswordDialogOpen}
         rowData={rowData}
       />
     </>

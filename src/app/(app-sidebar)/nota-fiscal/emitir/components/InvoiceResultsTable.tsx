@@ -19,7 +19,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
   Tooltip,
-  TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
@@ -31,6 +30,7 @@ import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { InvoiceFilter } from './InvoiceFilter'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
 // Icons
 import {
@@ -74,7 +74,13 @@ interface NfeItem {
   danfeUrl?: string | null
   xmlAutorizado?: string | null
   dataEmissao?: string | null
-  motivoRejeicao?: string
+  motivoRejeicao?: string | null
+}
+
+interface FiscalRecordWithRejection {
+  id?: string
+  status?: string
+  motivoRejeicao?: string | null
 }
 
 interface UnifiedInvoiceItem {
@@ -86,7 +92,7 @@ interface UnifiedInvoiceItem {
   reference: string
   totalValue: number
   nfes: NfeItem[]
-  nfse?: unknown
+  nfse?: FiscalRecordWithRejection
   nfce?: {
     id: string
     numero: number
@@ -101,6 +107,7 @@ interface UnifiedInvoiceItem {
     motivoRejeicao?: string | null
   }
   originalData: {
+    motivoRejeicao?: string | null
     quotation?: {
       client?: {
         id?: string
@@ -174,7 +181,6 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
     return {
       label: 'Rejeitada',
       variant: 'errorLight' as const,
-      tooltip: rejectedNfe.motivoRejeicao || 'Rejeitada pela SEFAZ',
     }
   }
 
@@ -202,6 +208,46 @@ const canSelectForConsolidation = (item: UnifiedInvoiceItem) => {
   )
   if (hasBlockingNfe) return false
   return item.status?.toUpperCase() !== 'CANCELED'
+}
+
+const findRejectedNfe = (item: UnifiedInvoiceItem) =>
+  item.nfes?.find((n) => n.status === 'REJECTED')
+
+const getRejectionReason = (item: UnifiedInvoiceItem) => {
+  if (item.type === 'ORDER') {
+    return findRejectedNfe(item)?.motivoRejeicao
+  }
+
+  if (item.type === 'NFE_AVULSA') {
+    return (
+      findRejectedNfe(item)?.motivoRejeicao ||
+      item.nfes?.[0]?.motivoRejeicao ||
+      item.originalData?.motivoRejeicao
+    )
+  }
+
+  if (item.type === 'NFSE_AVULSA') {
+    return item.nfse?.motivoRejeicao || item.originalData?.motivoRejeicao
+  }
+
+  if (item.type === 'NFCE_AVULSA') {
+    return item.nfce?.motivoRejeicao || item.originalData?.motivoRejeicao
+  }
+
+  return item.originalData?.motivoRejeicao
+}
+
+const getReissueHref = (item: UnifiedInvoiceItem) => {
+  const rejectedNfe =
+    item.type === 'NFE_AVULSA' ? item.nfes?.[0] : findRejectedNfe(item)
+
+  if (!rejectedNfe || rejectedNfe.status !== 'REJECTED') return undefined
+  return `/nota-fiscal/emitir/avulsa/nfe?reissueOf=${rejectedNfe.id}`
+}
+
+const isRejectedInvoice = (item: UnifiedInvoiceItem) => {
+  if (item.type === 'ORDER') return Boolean(findRejectedNfe(item))
+  return item.status === 'REJECTED'
 }
 
 export function InvoiceResultsTable({ searchParams }: Props) {
@@ -532,6 +578,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                   </TableRow>
                   {group.items.map((item) => {
                     const statusProps = getInvoiceStatusProps(item)
+                    const rejected = isRejectedInvoice(item)
+                    const rejectionReason = getRejectionReason(item)
+                    const reissueHref = getReissueHref(item)
 
                     return (
                       <TableRow key={item.id} className="hover:bg-gray-50">
@@ -620,26 +669,14 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {statusProps.tooltip ? (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger>
-                                    <Badge variant={statusProps.variant} status>
-                                      {statusProps.label}
-                                    </Badge>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    side="top"
-                                    className="max-w-xs text-center"
-                                  >
-                                    <p>{statusProps.tooltip}</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ) : (
-                              <Badge variant={statusProps.variant} status>
-                                {statusProps.label}
-                              </Badge>
+                            <Badge variant={statusProps.variant} status>
+                              {statusProps.label}
+                            </Badge>
+                            {rejected && (
+                              <RejectionReasonAction
+                                reason={rejectionReason}
+                                reissueHref={reissueHref}
+                              />
                             )}
                           </div>
                         </TableCell>
@@ -834,7 +871,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                 if (item.type === 'NFE_AVULSA') {
                                   const n = item.nfes?.[0]
-                                  if (n?.status === 'AUTHORIZED') {
+                                  if (
+                                    n?.status === 'AUTHORIZED' ||
+                                    n?.status === 'REJECTED'
+                                  ) {
                                     return (
                                       <NfeActionsDropdown
                                         nfe={n}

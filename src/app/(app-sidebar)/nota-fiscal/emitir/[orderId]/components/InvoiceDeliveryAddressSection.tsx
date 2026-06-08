@@ -15,7 +15,7 @@ import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import { IconMapPin, IconEdit } from '@tabler/icons-react'
 import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
-interface ClientAddressItem {
+export interface ClientAddressItem {
   id: string
   label?: string
   street?: string

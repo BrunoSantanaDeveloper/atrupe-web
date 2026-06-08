@@ -64,6 +64,17 @@ interface Props extends SearchParamsType {
   rowData?: RoleType
 }
 
+function isExportablePermission(section: string, item: string) {
+  return permissionsData.some(
+    (permissionSection) =>
+      permissionSection.key === section &&
+      permissionSection.items.some(
+        (permissionItem) =>
+          permissionItem.key === item && permissionItem.exportable,
+      ),
+  )
+}
+
 function convertPermissionsArrayToObject(permissions: string[] = []) {
   const permissionsObject: Record<
     string,
@@ -72,6 +83,7 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
       edit?: boolean
       create?: boolean
       delete?: boolean
+      export?: boolean
     }
   > = {}
 
@@ -95,6 +107,11 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
         break
       case 'delete':
         permissionsObject[fieldKey].delete = true
+        break
+      case 'export':
+        if (isExportablePermission(section, item)) {
+          permissionsObject[fieldKey].export = true
+        }
         break
     }
   })
@@ -241,7 +258,13 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
         string,
         Record<
           string,
-          { view?: boolean; edit?: boolean; create?: boolean; delete?: boolean }
+          {
+            view?: boolean
+            edit?: boolean
+            create?: boolean
+            delete?: boolean
+            export?: boolean
+          }
         >
       >
 
@@ -288,6 +311,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
       if (actions.edit) permissions.push(`${section}:${item}:edit`)
       if (actions.create) permissions.push(`${section}:${item}:create`)
       if (actions.delete) permissions.push(`${section}:${item}:delete`)
+      if (actions.export && isExportablePermission(section, item)) {
+        permissions.push(`${section}:${item}:export`)
+      }
     })
 
     await mutation.mutateAsync(permissions)
@@ -306,8 +332,8 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
 
   const handleCheckAllColumnInSection = (
     sectionKey: string,
-    items: { key: string; name: string }[],
-    column: 'view' | 'edit' | 'create' | 'delete',
+    items: { key: string; name: string; exportable?: boolean }[],
+    column: 'view' | 'edit' | 'create' | 'delete' | 'export',
     checked: boolean,
   ) => {
     items.forEach((item) => {
@@ -348,6 +374,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
           form.setValue(`${baseKey}.create`, true)
           form.setValue(`${baseKey}.delete`, true)
           break
+        case 'export':
+          form.setValue(`${baseKey}.export`, true)
+          break
       }
     })
   }
@@ -381,6 +410,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                         <TableHead className="w-28">Edita</TableHead>
                         <TableHead className="w-28">Cria</TableHead>
                         <TableHead className="w-28">Exclui</TableHead>
+                        <TableHead className="w-28">Exporta</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody
@@ -389,6 +419,9 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                       {permissionsData.map((section) => {
                         const filteredItems = section.items.filter((item) =>
                           _shouldShowPermission(section.key, item.key),
+                        )
+                        const exportableItems = filteredItems.filter(
+                          (item) => item.exportable,
                         )
 
                         // Se não houver itens na seção após o filtro, não exibe a seção
@@ -489,6 +522,29 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                     }
                                   />
                                 </TableCell>
+                                <TableCell className="text-center">
+                                  {exportableItems.length > 0 ? (
+                                    <CheckboxBasic
+                                      name={`check-export-${section.key}`}
+                                      className="flex-none mx-auto"
+                                      checked={exportableItems.every((item) =>
+                                        form.watch(
+                                          `${section.key}:${item.key}.export` as FieldPath<FormType>,
+                                        ),
+                                      )}
+                                      onCheckedChange={(checked) =>
+                                        handleCheckAllColumnInSection(
+                                          section.key,
+                                          exportableItems,
+                                          'export',
+                                          checked as boolean,
+                                        )
+                                      }
+                                    />
+                                  ) : (
+                                    <span className="text-gray-300">-</span>
+                                  )}
+                                </TableCell>
                               </TableRow>
                             )}
                             {filteredItems.map((item) => {
@@ -548,6 +604,16 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
                                         }
                                       }}
                                     />
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    {item.exportable ? (
+                                      <FormCheckbox<FormType>
+                                        name={`${baseKey}.export`}
+                                        label=""
+                                      />
+                                    ) : (
+                                      <span className="text-gray-300">-</span>
+                                    )}
                                   </TableCell>
                                 </TableRow>
                               )

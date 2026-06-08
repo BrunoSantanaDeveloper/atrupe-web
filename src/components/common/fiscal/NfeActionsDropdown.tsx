@@ -32,6 +32,7 @@ import {
   IconBan,
   IconRefresh,
   IconLoader2,
+  IconMail,
 } from '@tabler/icons-react'
 
 // Dialogs
@@ -39,7 +40,7 @@ import { CorrectionLetterDialog } from './CorrectionLetterDialog'
 import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/CancelNfeDialog'
 
 // Actions
-import { getItem } from '@/actions/_cruds'
+import { createItemNew, getItem } from '@/actions/_cruds'
 
 interface NfeActionsDropdownProps {
   nfe: {
@@ -63,6 +64,7 @@ export function NfeActionsDropdown({
   const [isCcEDialogOpen, setIsCcEDialogOpen] = useState(false)
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const [isConsulting, setIsConsulting] = useState(false)
+  const [isSendingEmail, setIsSendingEmail] = useState(false)
 
   const horasDesdeEmissao = nfe.dataEmissao
     ? (Date.now() - new Date(nfe.dataEmissao).getTime()) / (1000 * 60 * 60)
@@ -119,6 +121,27 @@ export function NfeActionsDropdown({
     }
   }
 
+  const handleSendEmail = async () => {
+    setIsSendingEmail(true)
+    try {
+      const result = await createItemNew({
+        route: `/fiscal/nfe/${nfe.id}/send-email`,
+      })
+
+      if (!result.success) {
+        toast.error(result.message || 'Erro ao enviar DANFE/XML por e-mail')
+        return
+      }
+
+      toast.success('DANFE/XML enviados por e-mail')
+      onRefetch()
+    } catch {
+      toast.error('Erro ao enviar DANFE/XML por e-mail')
+    } finally {
+      setIsSendingEmail(false)
+    }
+  }
+
   const showCce =
     nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
   const isAuthorized = nfe.status === 'AUTHORIZED'
@@ -152,6 +175,23 @@ export function NfeActionsDropdown({
           )}
 
           {(showCce || isAuthorized) && <DropdownMenuSeparator />}
+
+          {isAuthorized && (
+            <DropdownMenuItem
+              disabled={isSendingEmail}
+              onClick={(e) => {
+                e.preventDefault()
+                handleSendEmail()
+              }}
+            >
+              {isSendingEmail ? (
+                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <IconMail className="mr-2 h-4 w-4" />
+              )}
+              <span>Enviar DANFE/XML por e-mail</span>
+            </DropdownMenuItem>
+          )}
 
           {showCce && (
             <DropdownMenuItem onClick={() => setIsCcEDialogOpen(true)}>

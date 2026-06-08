@@ -24,6 +24,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
 import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
+import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -41,6 +42,7 @@ interface NfeAvulsaItem {
   danfeUrl?: string | null
   chaveAcesso?: string | null
   xmlAutorizado?: string | null
+  motivoRejeicao?: string | null
   destinatario?: {
     nome?: string
   }
@@ -127,7 +129,7 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
     })
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (nfe: NfeAvulsaItem) => {
     const map: Record<
       string,
       {
@@ -148,11 +150,20 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
       REJECTED: { label: 'Rejeitada', variant: 'errorLight' },
       CORRECTION_SENT: { label: 'CC-e', variant: 'purpleLight' },
     }
+    const status = nfe.status
     const config = map[status] || { label: status, variant: 'neutralLight' }
     return (
-      <Badge variant={config.variant} status>
-        {config.label}
-      </Badge>
+      <div className="flex items-center gap-2">
+        <Badge variant={config.variant} status>
+          {config.label}
+        </Badge>
+        {status === 'REJECTED' && (
+          <RejectionReasonAction
+            reason={nfe.motivoRejeicao}
+            reissueHref={`/nota-fiscal/emitir/avulsa/nfe?reissueOf=${nfe.id}`}
+          />
+        )}
+      </div>
     )
   }
 
@@ -208,7 +219,7 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
                 <TableCell className="text-gray-500 text-sm">
                   {nfe.dataEmissao ? formatDate(nfe.dataEmissao) : '-'}
                 </TableCell>
-                <TableCell>{getStatusBadge(nfe.status)}</TableCell>
+                <TableCell>{getStatusBadge(nfe)}</TableCell>
                 <TableCell>
                   <NfeActionsDropdown nfe={nfe} onRefetch={fetchNfes} />
                 </TableCell>

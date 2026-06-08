@@ -20,12 +20,15 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ExportDataButton } from '@/components/common/ExportDataButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { ExportColumn } from '@/lib/export-excel'
+import type { ListClientsDataType } from '../types'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData, getDataOld } from '@/actions/_cruds'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -37,6 +40,67 @@ import {
   SearchClientModal,
   SearchClientTriggerButton,
 } from './SearchClient/SearchClientModal'
+import { clientStatusObj } from '@/consts/client'
+
+const CLIENT_EXPORT_COLUMNS: ExportColumn<ListClientsDataType>[] = [
+  {
+    header: 'Nome',
+    key: 'name',
+  },
+  {
+    header: 'Razao social',
+    key: 'corporateName',
+  },
+  {
+    header: 'Tipo',
+    getValue: (client) => (client.type === 'COMPANY' ? 'PJ' : 'PF'),
+  },
+  {
+    header: 'CPF',
+    key: 'cpf',
+  },
+  {
+    header: 'CNPJ',
+    key: 'cnpj',
+  },
+  {
+    header: 'Inscricao estadual',
+    key: 'stateRegistration',
+  },
+  {
+    header: 'Email',
+    key: 'email',
+  },
+  {
+    header: 'Telefone',
+    key: 'phoneNumber',
+  },
+  {
+    header: 'Celular',
+    key: 'mobilePhone',
+  },
+  {
+    header: 'Grupo',
+    getValue: (client) => client.categoryRelation?.name,
+  },
+  {
+    header: 'Status',
+    getValue: (client) => clientStatusObj[client.status]?.text || client.status,
+  },
+  {
+    header: 'Criado em',
+    key: 'createdAt',
+    type: 'date',
+  },
+  {
+    header: 'Observacoes',
+    key: 'notes',
+  },
+  {
+    header: 'Observacoes financeiras',
+    key: 'financialNotes',
+  },
+]
 
 export function Clients({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
@@ -87,6 +151,19 @@ export function Clients({ searchParams }: SearchParamsType) {
   const statusLabel =
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
+  const getExportClients = async () => {
+    const exportStatus =
+      tabs.find((tab) => tab.tab === searchParams.status)?.value || ''
+    const filters = { ...searchParams, status: exportStatus }
+    const result = await getData({ route: '/client/export', filters })
+
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+
+    return (result.data || []) as ListClientsDataType[]
+  }
+
   return (
     <div className="space-y-5">
       <Topbar
@@ -96,6 +173,15 @@ export function Clients({ searchParams }: SearchParamsType) {
         paramName="status"
         primaryCta={
           <TooltipProvider>
+            <PermissionGate permissions={['register:client:export']}>
+              <ExportDataButton
+                columns={CLIENT_EXPORT_COLUMNS}
+                fileName="clientes"
+                getData={getExportClients}
+                sheetName="Clientes"
+                emptyMessage="Nenhum cliente disponivel para exportacao"
+              />
+            </PermissionGate>
             <PermissionGate permissions={['register:client:edit']}>
               <ActionButton
                 tooltip="Grupos de clientes"

@@ -31,6 +31,7 @@ import {
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
+import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
 // Icons
 import { IconExternalLink, IconX, IconRefresh } from '@tabler/icons-react'
@@ -55,6 +56,7 @@ interface NfseItem {
   recipientDocument: string
   totalNfse: number
   pdfUrl?: string
+  rejectionReason?: string | null
   createdAt: string
   order?: {
     id: string
@@ -74,6 +76,7 @@ interface NfseBackendItem {
   status: string
   valorServicos: number
   pdfUrl?: string
+  motivoRejeicao?: string | null
   createdAt: string
   order?: {
     id: string
@@ -145,6 +148,7 @@ async function fetchNfseList(status?: string) {
       '',
     totalNfse: nfse.valorServicos,
     pdfUrl: nfse.pdfUrl,
+    rejectionReason: nfse.motivoRejeicao,
     createdAt: nfse.createdAt,
     order: nfse.order,
   }))
@@ -232,6 +236,8 @@ export function NfseListClient() {
               }
               const canCancel =
                 nfse.status === 'AUTHORIZED' || nfse.status === 'AUTORIZADA'
+              const isRejected =
+                nfse.status === 'REJECTED' || nfse.status === 'REJEITADA'
 
               return (
                 <TableRow key={nfse.id}>
@@ -251,7 +257,12 @@ export function NfseListClient() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={status.variant}>{status.label}</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={status.variant}>{status.label}</Badge>
+                      {isRejected && (
+                        <RejectionReasonAction reason={nfse.rejectionReason} />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{nfse.recipientName}</div>

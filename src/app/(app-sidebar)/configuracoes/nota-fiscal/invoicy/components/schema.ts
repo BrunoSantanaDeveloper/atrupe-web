@@ -21,6 +21,14 @@ export const invoicyConfigSchema = z.object({
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
   taxInfoText: z.string().optional(),
+  sendDanfeXmlAutomatically: z.boolean().optional().default(false),
+  sendDanfeAutomatically: z.boolean().optional().default(true),
+  sendXmlAutomatically: z.boolean().optional().default(true),
+  sendFiscalEmailCopyTo: z
+    .string()
+    .email('E-mail invalido')
+    .optional()
+    .or(z.literal('')),
 })
 
 export type InvoicyConfigFormType = z.infer<typeof invoicyConfigSchema>

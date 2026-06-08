@@ -32,7 +32,10 @@ import { InvoiceTransport } from '../../../[orderId]/components/InvoiceTransport
 import { InvoiceTotalsSection } from '../../../[orderId]/components/InvoiceTotalsSection'
 import { InvoiceDownloadAuth } from '../../../[orderId]/components/InvoiceDownloadAuth'
 import { InvoiceEmissionConfigSection } from '../../../components/InvoiceEmissionConfigSection'
-import { InvoiceDeliveryAddressSection } from '../../../[orderId]/components/InvoiceDeliveryAddressSection'
+import {
+  InvoiceDeliveryAddressSection,
+  type ClientAddressItem,
+} from '../../../[orderId]/components/InvoiceDeliveryAddressSection'
 
 // Standalone-specific components
 import {
@@ -72,10 +75,6 @@ import type {
   NfePrepareEntrega,
 } from '@/types/fiscal/nfe-prepare'
 import type { ClientData } from '../../components/ClientSelect'
-
-type ClientAddressItem = NonNullable<
-  NfePrepareResponse['clientAddresses']
->[number]
 
 export function StandaloneNfeForm() {
   const alertDialog = useAlertDialog()

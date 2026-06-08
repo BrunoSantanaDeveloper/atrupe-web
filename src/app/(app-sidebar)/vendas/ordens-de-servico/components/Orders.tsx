@@ -23,12 +23,15 @@ import {
 import { NewClientModal } from '../../orcamentos/components/NewClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { ExportDataButton } from '@/components/common/ExportDataButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { ExportColumn } from '@/lib/export-excel'
+import type { OrderType } from '@/types/sales/order'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData, getDataOld } from '@/actions/_cruds'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -37,11 +40,150 @@ import { useQuery } from '@tanstack/react-query'
 import { IconNewsOff } from '@tabler/icons-react'
 
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
+import { ordersStatusObj } from '@/consts/orders'
+
+type OrderExportType = OrderType & {
+  groupDate?: string
+}
+
+function getOrderReference(order: OrderExportType) {
+  const quotation = order.quotation
+  const serie = quotation?.serie?.quotation || ''
+  const code = quotation?.serie?.code || ''
+  const reference = [serie, code].filter(Boolean).join('-')
+
+  return [reference, quotation?.description].filter(Boolean).join(' - ')
+}
+
+function getOrderFinalValue(order: OrderExportType) {
+  const quotation = order.quotation
+  const itemsValue = quotation?.totalValue || 0
+  const deliveryValue = quotation?.deliveryInfo?.value ?? 0
+  const payment = quotation?.quotationPayment
+  const commissionValue =
+    payment?.commission?.type === 'ADD'
+      ? (payment?.commission?.totalCommission ?? 0)
+      : 0
+  const installmentsAdditionalFee =
+    payment?.quotationInstallment?.reduce(
+      (acc, installment) => acc + (installment?.additionalFee ?? 0),
+      0,
+    ) ?? 0
+  const downPaymentAdditionalFee = payment?.downPaymentAdditionalFee ?? 0
+  const discountTotal = payment?.discountTotal ?? 0
+
+  return (
+    itemsValue +
+    deliveryValue +
+    commissionValue +
+    installmentsAdditionalFee +
+    downPaymentAdditionalFee -
+    discountTotal
+  )
+}
+
+function getMainNfe(order: OrderExportType) {
+  return order.nfes?.[0]
+}
+
+const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
+  {
+    header: 'Referencia',
+    getValue: getOrderReference,
+  },
+  {
+    header: 'Cliente',
+    getValue: (order) => order.quotation?.client?.name,
+  },
+  {
+    header: 'Email do cliente',
+    getValue: (order) => order.quotation?.client?.email,
+  },
+  {
+    header: 'Vendedor',
+    getValue: (order) => order.quotation?.seller?.name,
+  },
+  {
+    header: 'Status',
+    getValue: (order) => ordersStatusObj[order.status]?.text || order.status,
+  },
+  {
+    header: 'Fase atual',
+    getValue: (order) => order.quotation?.tag?.text,
+  },
+  {
+    header: 'Venda rapida',
+    type: 'boolean',
+    getValue: (order) => order.quotation?.quickSale,
+  },
+  {
+    header: 'Criado em',
+    key: 'groupDate',
+    type: 'date',
+  },
+  {
+    header: 'Aprovado em',
+    getValue: (order) => order.quotation?.approvedAt,
+    type: 'date',
+  },
+  {
+    header: 'NF-e status',
+    getValue: (order) => getMainNfe(order)?.status,
+  },
+  {
+    header: 'NF-e numero',
+    getValue: (order) => getMainNfe(order)?.numero,
+  },
+  {
+    header: 'NF-e serie',
+    getValue: (order) => getMainNfe(order)?.serie,
+  },
+  {
+    header: 'NF-e emissao',
+    getValue: (order) => getMainNfe(order)?.dataEmissao,
+    type: 'date',
+  },
+]
+
+const ORDER_VALUE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
+  {
+    header: 'Valor itens',
+    type: 'currency',
+    getValue: (order) => (order.quotation?.totalValue || 0) / 100,
+  },
+  {
+    header: 'Valor entrega',
+    type: 'currency',
+    getValue: (order) => (order.quotation?.deliveryInfo?.value ?? 0) / 100,
+  },
+  {
+    header: 'Desconto',
+    type: 'currency',
+    getValue: (order) =>
+      (order.quotation?.quotationPayment?.discountTotal ?? 0) / 100,
+  },
+  {
+    header: 'Comissao adicionada',
+    type: 'currency',
+    getValue: (order) =>
+      order.quotation?.quotationPayment?.commission?.type === 'ADD'
+        ? (order.quotation?.quotationPayment?.commission?.totalCommission ??
+            0) / 100
+        : 0,
+  },
+  {
+    header: 'Valor final',
+    type: 'currency',
+    getValue: (order) => getOrderFinalValue(order) / 100,
+  },
+]
 
 export function Orders({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState<string>('')
 
   const { canManageDeliverySchedule } = usePlanFeatures()
+  const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -100,6 +242,22 @@ export function Orders({ searchParams }: SearchParamsType) {
       )
 
   const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
+  const canViewValues = hasAllPermissions(['values:values:view'])
+  const exportColumns = canViewValues
+    ? [...ORDER_BASE_EXPORT_COLUMNS, ...ORDER_VALUE_EXPORT_COLUMNS]
+    : ORDER_BASE_EXPORT_COLUMNS
+
+  const getExportOrders = async () => {
+    const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
+    const filters = { ...searchParams, status: exportStatus }
+    const result = await getData({ route: '/sale/order/export', filters })
+
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+
+    return (result.data || []) as OrderExportType[]
+  }
 
   return (
     <PermissionGate permissions={['sale:order:view']}>
@@ -112,6 +270,15 @@ export function Orders({ searchParams }: SearchParamsType) {
           primaryCta={
             <TooltipProvider>
               <div className="flex gap-3">
+                <PermissionGate permissions={['sale:order:export']}>
+                  <ExportDataButton
+                    columns={exportColumns}
+                    fileName="ordens-de-servico"
+                    getData={getExportOrders}
+                    sheetName="Ordens"
+                    emptyMessage="Nenhuma ordem de servico disponivel para exportacao"
+                  />
+                </PermissionGate>
                 <NewQuotationTriggerButton
                   onOpenChange={(open) => setOpenDialog(open ? 'new' : '')}
                 />

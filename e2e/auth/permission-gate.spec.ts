@@ -81,4 +81,30 @@ test.describe('PermissionGate (Guard Front-end)', () => {
     // Como tem :create, ele deve ver a tela (sem erro de forbidden) e ver a listagem
     await expect(page.getByText(/não autorizado|forbidden/i)).toHaveCount(0)
   })
+
+  test('deve esconder Exportar quando usuario possui view mas nao export', async ({
+    page,
+  }) => {
+    await mockSessionPermissions(page, ['sale:quotation:view'], false)
+
+    await page.goto('/vendas/orcamentos')
+    await page.waitForLoadState('domcontentloaded')
+
+    await expect(page.getByRole('button', { name: /exportar/i })).toHaveCount(0)
+  })
+
+  test('deve exibir Exportar quando usuario possui permissao export explicita', async ({
+    page,
+  }) => {
+    await mockSessionPermissions(
+      page,
+      ['sale:quotation:view', 'sale:quotation:export'],
+      false,
+    )
+
+    await page.goto('/vendas/orcamentos')
+    await page.waitForLoadState('domcontentloaded')
+
+    await expect(page.getByRole('button', { name: /exportar/i })).toBeVisible()
+  })
 })

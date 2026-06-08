@@ -11,6 +11,10 @@ export type ListClientsDataType = {
   type: 'COMPANY' | 'PERSON'
   status: 'PROSPECT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
   name: string
+  corporateName?: string
+  cpf?: string
+  cnpj?: string
+  stateRegistration?: string
   email: string
   phoneNumber: string
   mobilePhone: string

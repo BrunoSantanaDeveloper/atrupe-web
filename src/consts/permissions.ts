@@ -38,6 +38,7 @@ export const permissionsData = [
       {
         name: 'Orçamentos',
         key: 'quotation',
+        exportable: true,
       },
       {
         name: 'Vendas de outros Vendedores',
@@ -46,6 +47,7 @@ export const permissionsData = [
       {
         name: 'Ordens de serviço',
         key: 'order',
+        exportable: true,
       },
     ],
   },
@@ -56,6 +58,7 @@ export const permissionsData = [
       {
         name: 'Fluxo financeiro',
         key: 'flow',
+        exportable: true,
       },
       {
         name: 'Lançamento de despesas fixas',
@@ -100,6 +103,7 @@ export const permissionsData = [
       {
         name: 'Cadastro de clientes',
         key: 'client',
+        exportable: true,
       },
       {
         name: 'Cadastro de fornecedores',
@@ -140,6 +144,7 @@ export const permissionsData = [
       {
         name: 'Produtos',
         key: 'products',
+        exportable: true,
       },
     ],
   },

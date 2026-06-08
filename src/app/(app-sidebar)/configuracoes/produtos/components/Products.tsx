@@ -21,18 +21,110 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ActionButton } from '@/components/common/ActionButton'
+import { ExportDataButton } from '@/components/common/ExportDataButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { ExportColumn } from '@/lib/export-excel'
+import type { ProductListType } from '@/types/settings/products'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData, getDataOld } from '@/actions/_cruds'
+
+// Libs
+import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconPackageOff, IconFolders } from '@tabler/icons-react'
+
+function getProductUnitKind(product: ProductListType) {
+  return product.items?.[0]?.unitKind || 'UNITY'
+}
+
+function getVisualCurrencyValue(product: ProductListType, value: number) {
+  return convertRawToUnitCost(getProductUnitKind(product), value || 0) / 100
+}
+
+const PRODUCT_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
+  {
+    header: 'Produto',
+    key: 'name',
+  },
+  {
+    header: 'Codigo',
+    key: 'code',
+  },
+  {
+    header: 'Status',
+    getValue: (product) => (product.isActive ? 'Ativo' : 'Inativo'),
+  },
+  {
+    header: 'Grupo',
+    getValue: (product) => product.category?.name,
+  },
+  {
+    header: 'Setor',
+    key: 'sectorName',
+  },
+  {
+    header: 'Unidade',
+    getValue: (product) => getProductUnitKind(product),
+  },
+  {
+    header: 'Preco de venda',
+    type: 'currency',
+    getValue: (product) => getVisualCurrencyValue(product, product.unitCost),
+  },
+  {
+    header: 'Valor total',
+    type: 'currency',
+    getValue: (product) => getVisualCurrencyValue(product, product.salePrice),
+  },
+  {
+    header: 'NCM',
+    getValue: (product) => product.fiscalData?.ncm,
+  },
+  {
+    header: 'CEST',
+    getValue: (product) => product.fiscalData?.cest,
+  },
+  {
+    header: 'CFOP interno',
+    getValue: (product) => product.fiscalData?.cfopInState,
+  },
+  {
+    header: 'CFOP externo',
+    getValue: (product) => product.fiscalData?.cfopOutState,
+  },
+  {
+    header: 'ICMS CST',
+    getValue: (product) => product.fiscalData?.icmsCst,
+  },
+  {
+    header: 'PIS CST',
+    getValue: (product) => product.fiscalData?.pisCst,
+  },
+  {
+    header: 'COFINS CST',
+    getValue: (product) => product.fiscalData?.cofinsCst,
+  },
+  {
+    header: 'Codigo servico',
+    getValue: (product) => product.fiscalData?.codigoServico,
+  },
+  {
+    header: 'Aliquota ISS',
+    type: 'percent',
+    getValue: (product) => product.fiscalData?.aliquotaIss,
+  },
+  {
+    header: 'Discriminacao',
+    getValue: (product) => product.fiscalData?.discriminacao,
+  },
+]
 
 export function Products({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState<string>('')
@@ -72,6 +164,19 @@ export function Products({ searchParams }: SearchParamsType) {
   const statusLabel =
     tabs?.find((tab) => tab.tab === searchParams.status)?.label || ''
 
+  const getExportProducts = async () => {
+    const exportStatus =
+      tabs.find((tab) => tab.tab === searchParams.status)?.value || ''
+    const filters = { ...searchParams, status: exportStatus }
+    const result = await getData({ route: '/product/export', filters })
+
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+
+    return (result.data || []) as ProductListType[]
+  }
+
   return (
     <PermissionGate permissions={['product_settings:products:view']}>
       <div className="space-y-5">
@@ -82,6 +187,17 @@ export function Products({ searchParams }: SearchParamsType) {
           paramName="status"
           primaryCta={
             <TooltipProvider>
+              <PermissionGate
+                permissions={['product_settings:products:export']}
+              >
+                <ExportDataButton
+                  columns={PRODUCT_EXPORT_COLUMNS}
+                  fileName="produtos"
+                  getData={getExportProducts}
+                  sheetName="Produtos"
+                  emptyMessage="Nenhum produto disponivel para exportacao"
+                />
+              </PermissionGate>
               <ActionButton
                 tooltip="Grupos de produtos"
                 size="iconMd"

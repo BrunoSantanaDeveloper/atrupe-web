@@ -35,7 +35,10 @@ import { cn } from '@/lib/utils'
 import { InvoiceFormHeader } from './InvoiceFormHeader'
 import { InvoiceEmissionConfigSection } from '../../components/InvoiceEmissionConfigSection'
 import { InvoiceRecipientSection } from './InvoiceRecipientSection'
-import { InvoiceDeliveryAddressSection } from './InvoiceDeliveryAddressSection'
+import {
+  InvoiceDeliveryAddressSection,
+  type ClientAddressItem,
+} from './InvoiceDeliveryAddressSection'
 import { InvoiceItems } from './InvoiceItems'
 import { InvoicePayment } from './InvoicePayment'
 import { Topbar } from '@/components/common/Topbar'
@@ -74,10 +77,6 @@ import type {
   NfePrepareEntrega,
 } from '@/types/fiscal/nfe-prepare'
 import type { ClientData } from '../../avulsa/components/ClientSelect'
-
-type ClientAddressItem = NonNullable<
-  NfePrepareResponse['clientAddresses']
->[number]
 
 interface Props {
   id?: string

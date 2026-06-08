@@ -6,6 +6,7 @@ export const schema = z.record(
     edit: z.boolean().optional(),
     create: z.boolean().optional(),
     delete: z.boolean().optional(),
+    export: z.boolean().optional(),
   }),
 )
 
