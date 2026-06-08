@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -37,10 +37,10 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 // Actions
-import { createItemNew } from '@/actions/_cruds'
+import { createItemNew, getDataOld } from '@/actions/_cruds'
 
 // Hooks
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 const emitNfeSchema = z.object({
   operationNature: z.string().optional(),
@@ -58,6 +58,16 @@ type EmissionResult = {
   statusMessage?: string
 } | null
 
+async function fetchInvoicyConfig() {
+  try {
+    return await getDataOld({
+      route: '/fiscal/invoicy/config',
+    })
+  } catch {
+    return null
+  }
+}
+
 interface Props {
   open: boolean
   setOpen: (value: boolean) => void
@@ -70,6 +80,12 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
 
   const queryClient = useQueryClient()
 
+  const { data: configData } = useQuery({
+    queryKey: ['invoicy-config'],
+    queryFn: fetchInvoicyConfig,
+    enabled: open,
+  })
+
   const form = useForm<EmitNfeFormType>({
     resolver: zodResolver(emitNfeSchema),
     defaultValues: {
@@ -78,11 +94,25 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
     },
   })
 
+  const defaultAdditionalInfo = configData?.taxInfoText || ''
+
+  useEffect(() => {
+    if (!open || !defaultAdditionalInfo) return
+
+    const currentAdditionalInfo = form.getValues('additionalInfo')
+    if (!currentAdditionalInfo) {
+      form.setValue('additionalInfo', defaultAdditionalInfo)
+    }
+  }, [defaultAdditionalInfo, form, open])
+
   const handleOpenChange = (openDialog: boolean) => {
     setOpen(openDialog)
     if (!openDialog) {
       setEmissionResult(null)
-      form.reset()
+      form.reset({
+        operationNature: 'Venda de mercadoria',
+        additionalInfo: defaultAdditionalInfo,
+      })
     }
   }
 

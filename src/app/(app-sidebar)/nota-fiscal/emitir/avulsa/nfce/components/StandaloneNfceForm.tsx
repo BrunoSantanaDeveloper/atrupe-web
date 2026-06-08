@@ -55,6 +55,7 @@ interface PrepareNfceData {
   ambiente: string
   emitCrt: number
   naturezaOperacao: string
+  informacoesComplementares: string
   prazoCancelamentoMinutos: number
 }
 
@@ -99,6 +100,7 @@ export function StandaloneNfceForm() {
         if (data.naturezaOperacao) {
           setNaturezaOperacao(data.naturezaOperacao)
         }
+        setInformacoesComplementares(data.informacoesComplementares || '')
       }
     } catch {
       setPrepareData(null)

@@ -1,98 +1,120 @@
 'use client'
 
-// UI
+import { useQuery } from '@tanstack/react-query'
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts'
+
 import {
   ChartConfig,
-  ChartTooltip,
   ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { Skeleton } from '@/components/ui/skeleton'
 
-// Lib
-import { getRandomValue } from '@/lib/utils'
+import { getDashboardSalesEvolution } from '@/actions/dashboard'
 
-// Third-party
-import { Bar, Line, XAxis, ComposedChart, CartesianGrid, YAxis } from 'recharts'
+import { formatCurrencyToBrl } from '@/lib/utils'
 
-const generateChartData = (month: string) => ({
-  month,
-  sales: getRandomValue([45000, 224000]),
-  average: getRandomValue([1000, 4000]),
-})
+type DashboardFilters = {
+  startDate?: string
+  endDate?: string
+}
 
-const months = [
-  'Novembro 2023',
-  'Dezembro 2023',
-  'Janeiro 2024',
-  'Fevereiro 2024',
-  'Março 2024',
-  'Abril 2024',
-  'Maio 2024',
-  'Junho 2024',
-  'Julho 2024',
-  'Agosto 2024',
-  'Setembro 2024',
-  'Outubro 2024',
-]
-
-const chartData = months.map(generateChartData)
+interface SalesEvolutionChartProps {
+  filters: DashboardFilters
+}
 
 const chartConfig = {
-  sales: {
-    label: 'Vendas',
+  approved: {
+    label: 'Aprovadas',
     color: 'var(--chart-brand)',
-  },
-  average: {
-    label: 'Ticket médio',
-    color: 'var(--chart-blue)',
   },
 } satisfies ChartConfig
 
-export function SalesEvolutionChart() {
+export function SalesEvolutionChart({ filters }: SalesEvolutionChartProps) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['dashboard-sales-evolution', filters],
+    queryFn: () => getDashboardSalesEvolution(filters),
+  })
+
+  const chartData = data?.data || []
+
+  if (isLoading) {
+    return <Skeleton className="h-[260px] w-full" />
+  }
+
+  if (!chartData.length) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-sm text-gray">
+        Nenhuma venda aprovada no periodo.
+      </div>
+    )
+  }
+
   return (
     <ChartContainer
       config={chartConfig}
-      className="min-h-[200px] max-h-[256px] w-full"
+      className="min-h-[220px] max-h-[260px] w-full"
     >
-      <ComposedChart
+      <LineChart
         accessibilityLayer
         data={chartData}
-        margin={{
-          left: 12,
-          right: 12,
-        }}
+        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
       >
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
         <XAxis
-          dataKey="month"
+          dataKey="day"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
         />
-        <YAxis yAxisId="sales" hide />
-        <YAxis yAxisId="average" hide />
+        <YAxis
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(value) => formatCurrencyToBrl(value)}
+          width={90}
+        />
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent />}
-          isAnimationActive={false}
-        />
-        <Bar
-          yAxisId="sales"
-          dataKey="sales"
-          fill="var(--color-sales)"
-          radius={2}
-          barSize={40}
+          content={
+            <ChartTooltipContent
+              formatter={(value, name, item) => (
+                <div className="flex w-full items-center gap-2">
+                  <div
+                    className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <div className="flex flex-1 items-center justify-between gap-8">
+                    <span className="text-gray">
+                      {item.payload?.count || 0}{' '}
+                      {chartConfig[name as keyof typeof chartConfig]?.label}
+                    </span>
+                    <span className="font-medium tabular-nums">
+                      {formatCurrencyToBrl(value as number)}
+                    </span>
+                  </div>
+                </div>
+              )}
+            />
+          }
         />
         <Line
-          yAxisId="average"
-          dataKey="average"
-          type="linear"
-          stroke="var(--color-average)"
+          dataKey="approved"
+          type="monotone"
+          stroke="var(--color-approved)"
           strokeWidth={2}
-          dot={true}
+          dot={{
+            stroke: 'var(--color-approved)',
+            strokeWidth: 2,
+            r: 4,
+          }}
+          activeDot={{
+            r: 4,
+            strokeWidth: 2,
+            opacity: 0.5,
+          }}
         />
-      </ComposedChart>
+      </LineChart>
     </ChartContainer>
   )
 }

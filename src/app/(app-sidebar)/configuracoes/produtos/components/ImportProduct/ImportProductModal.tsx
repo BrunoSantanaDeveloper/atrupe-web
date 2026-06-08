@@ -32,6 +32,7 @@ import {
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { downloadExcelCsvTemplate } from '@/lib/csv-template'
 import {
   uploadImportFile,
   validateImport,
@@ -89,7 +90,10 @@ export function ImportProductModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const csvFile = acceptedFiles[0]
-      if (csvFile.type === 'text/csv' || csvFile.name.endsWith('.csv')) {
+      if (
+        csvFile.type === 'text/csv' ||
+        csvFile.name.toLowerCase().endsWith('.csv')
+      ) {
         setFile(csvFile)
         setErrors([])
         setImportId(null)
@@ -121,17 +125,10 @@ export function ImportProductModal() {
     // Grupos já existem no seed: Lonas, Adesivos, Revenda Gráfica Rápida, Estruturas, PVC
     const csvContent = `codigo,nome,descricao,setor,grupo,unidadeMedida,largura,altura,duracao,valorUnitario,permitirEdicao\nBANER2,Banner Lona 280g,Banner em lona econômica 280g com acabamento simples,Impressão,Lonas,M2,1.00,1.00,,40.00,SIM\nCARTV2,Cartão Visita Premium,Cartão laminação fosca,Gráfica Rápida,Revenda Gráfica Rápida,UN,0.09,0.05,,150.00,SIM\nADFOS2,Adesivo Perfurado Veicular,Adesivo perfurado para aplicação em vidros,Impressão,Adesivos,M2,1.00,1.00,,80.00,SIM\nPNACM2,Painel ACM Luminoso,Painel em ACM com caixa de luz LED,Serralheria,Estruturas,M2,1.00,1.00,,350.00,SIM\nLONA2,Lona Blackout,Lona blackout para projeção traseira,Impressão,Lonas,M2,1.00,1.00,,60.00,SIM\nLTP30,Letra Caixa PVC 30mm,Letra caixa em PVC expandido 30mm com LED,CNC,PVC,M2,1.00,1.00,,200.00,SIM`
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-produtos-atrupe.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadExcelCsvTemplate(
+      csvContent,
+      'modelo-importacao-produtos-atrupe.csv',
+    )
   }
 
   const handleImport = async () => {

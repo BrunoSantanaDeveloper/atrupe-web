@@ -32,6 +32,7 @@ import {
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { downloadExcelCsvTemplate } from '@/lib/csv-template'
 import {
   uploadImportFile,
   validateImport,
@@ -119,7 +120,10 @@ export function ImportOrderModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const csvFile = acceptedFiles[0]
-      if (csvFile.type === 'text/csv' || csvFile.name.endsWith('.csv')) {
+      if (
+        csvFile.type === 'text/csv' ||
+        csvFile.name.toLowerCase().endsWith('.csv')
+      ) {
         setFile(csvFile)
         setErrors([])
         setImportId(null)
@@ -148,22 +152,12 @@ export function ImportOrderModal() {
     // Criar um CSV de exemplo para NOVAS ordens de serviço
     // Usa dados de referência que JÁ EXISTEM no seed: Cliente Exemplo (012.345.678-90), produtos (BANER, ADBRL, CARTV, PNACM), série V1, condições de pagamento
     const csvContent = `NumeroVenda,Serie,StatusOrdem,DataVenda,DataValidade,DataEntrega,ClienteCpfCnpj,ClienteNome,VendedorEmail,ResponsavelNome,ResponsavelEmail,ItemID,ProdutoCodigo,ProdutoNome,Quantidade,ValorUnitario,ValorTotal,Desconto,ObservacaoItem,CondicaoPagamento,QtdParcelas,Parcela1Valor,Parcela1Vencimento,Parcela2Valor,Parcela2Vencimento,Parcela3Valor,Parcela3Vencimento,EntradaValor,EntradaVencimento,TipoEntrega,FreteCusto,FreteValor,FreteFornecedorCpfCnpj,ComissaoValor,ComissaoFornecedorCpfCnpj,ComissaoRepasse
-1,V1,IN_PRODUCTION,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,BANER,Banner,6,100.00,600.00,0,Banner 3x2m acabamento bastão,Boleto,2,350.00,2024-02-15,350.00,2024-03-15,,,,,CARRIER,80.00,100.00,,,,,
-1,V1,IN_PRODUCTION,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,2,ADBRL,Adesivo Brilho Impresso,4,100.00,400.00,0,Adesivo vinil 1x1m,,,,,,,,,,,,,,,,,
-2,V1,FINISHED,2024-01-10,2024-01-25,2024-01-20,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,CARTV,Milheiro Cartão Visita,2,200.00,400.00,0,Cartão visita 4x4 couché 300g,Pix,1,400.00,2024-01-10,,,,,,,PICKUP,,,,,,,
-3,V1,IN_PRODUCTION,2024-01-17,2024-02-17,2024-02-25,012.345.678-90,Cliente Exemplo,vendedor@empresa.com,,,1,PNACM,Painel ACM,2,400.00,800.00,50,Painel 2x1m,Cartão de Crédito,2,375.00,2024-02-17,375.00,2024-03-17,,,,,CARRIER,120.00,150.00,,,,,`
+1,V1,IN_PRODUCTION,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,,,,1,BANER,Banner,6,100.00,600.00,0,Banner 3x2m acabamento bastão,Boleto,2,350.00,2024-02-15,350.00,2024-03-15,,,,,CARRIER,80.00,100.00,,,,
+1,V1,IN_PRODUCTION,2024-01-15,2024-02-15,2024-02-20,012.345.678-90,Cliente Exemplo,,,,2,ADBRL,Adesivo Brilho Impresso,4,100.00,400.00,0,Adesivo vinil 1x1m,,,,,,,,,,,,,,,,,
+2,V1,FINISHED,2024-01-10,2024-01-25,2024-01-20,012.345.678-90,Cliente Exemplo,,,,1,CARTV,Milheiro Cartão Visita,2,200.00,400.00,0,Cartão visita 4x4 couché 300g,Pix,1,400.00,2024-01-10,,,,,,,PICKUP,,,,,,
+3,V1,IN_PRODUCTION,2024-01-17,2024-02-17,2024-02-25,012.345.678-90,Cliente Exemplo,,,,1,PNACM,Painel ACM,2,400.00,800.00,50,Painel 2x1m,Cartão de Crédito,2,375.00,2024-02-17,375.00,2024-03-17,,,,,CARRIER,120.00,150.00,,,,`
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-ordens-atrupe.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadExcelCsvTemplate(csvContent, 'modelo-importacao-ordens-atrupe.csv')
   }
 
   const handleImport = async () => {

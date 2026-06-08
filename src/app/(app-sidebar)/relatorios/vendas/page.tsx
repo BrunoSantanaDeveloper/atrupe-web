@@ -14,6 +14,7 @@ export function metadata() {
 export default function SalesReportPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate
+      requireAll
       permissions={['reports:sales:view', 'values:values:view']}
       fallback={
         <div className="p-4 text-center">

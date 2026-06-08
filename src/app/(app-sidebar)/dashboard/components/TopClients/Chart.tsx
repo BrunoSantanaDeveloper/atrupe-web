@@ -1,51 +1,37 @@
 'use client'
 
-// UI
+import { useQuery } from '@tanstack/react-query'
+import { Bar, BarChart, XAxis, YAxis } from 'recharts'
+
 import {
   ChartConfig,
-  ChartTooltip,
   ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { Skeleton } from '@/components/ui/skeleton'
 
-// Lib
-import { getRandomValue } from '@/lib/utils'
+import { getDashboardTopClients } from '@/actions/dashboard'
 
-// Third-party
-import { Bar, XAxis, CartesianGrid, BarChart, YAxis } from 'recharts'
+type DashboardFilters = {
+  startDate?: string
+  endDate?: string
+}
 
-const generateChartData = (client: string) => ({
-  client,
-  sales: getRandomValue([20000, 250000]),
-})
-
-const clients = [
-  'Aurora',
-  'Gráfica CKz',
-  'Alfa e Ômega',
-  'Plus Digital',
-  'OG Comunicação Visual',
-  'Silk Premium',
-  'Gráfica Renascer',
-  'Tecnograf',
-  'Marka Gráfica Rápida',
-  'Ligeirinho',
-]
-
-const chartData = clients
-  .map(generateChartData)
-  .sort((a, b) => b.sales - a.sales)
+interface TopClientsChartProps {
+  filters: DashboardFilters
+}
 
 const chartConfig = {
-  sales: {
-    label: 'Vendas',
+  value: {
+    label: 'Valor',
     color: 'var(--chart-brand)',
   },
 } satisfies ChartConfig
 
 const currencyFormatter = (value: unknown) => (
   <div className="flex flex-1 justify-between items-center gap-2 leading-none">
-    <span className="text-gray-500">Vendas</span>
+    <span className="text-gray-500">Valor</span>
     <span className="font-mono font-medium tabular-nums text-gray-950">
       {new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -56,42 +42,53 @@ const currencyFormatter = (value: unknown) => (
   </div>
 )
 
-export function TopClientsChart() {
+export function TopClientsChart({ filters }: TopClientsChartProps) {
+  const { data = [], isLoading } = useQuery({
+    queryKey: ['dashboard-top-clients', filters],
+    queryFn: () => getDashboardTopClients(filters),
+  })
+
+  if (isLoading) {
+    return <Skeleton className="h-[260px] w-full" />
+  }
+
+  if (!data.length) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-sm text-gray">
+        Nenhum cliente com venda aprovada no periodo.
+      </div>
+    )
+  }
+
   return (
     <ChartContainer
       config={chartConfig}
-      className="min-h-[200px] max-h-[300px] w-full"
+      className="min-h-[220px] max-h-[260px] w-full"
     >
       <BarChart
         accessibilityLayer
-        data={chartData}
+        data={data}
         layout="vertical"
-        margin={{
-          left: -20,
-          right: 12,
-        }}
+        margin={{ left: 0, right: 20, top: 0, bottom: 0 }}
       >
-        <CartesianGrid vertical={false} horizontal={false} />
-        <XAxis type="number" dataKey="sales" hide />
+        <XAxis type="number" hide />
         <YAxis
-          dataKey="client"
           type="category"
+          dataKey="name"
           tickLine={false}
-          tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value.slice(0, 15)}
-          width={150}
+          width={110}
+          tick={{ fontSize: 12 }}
         />
         <ChartTooltip
           cursor={false}
           content={<ChartTooltipContent formatter={currencyFormatter} />}
-          isAnimationActive={false}
         />
         <Bar
-          dataKey="sales"
-          fill="var(--color-sales)"
-          radius={2}
-          barSize={20}
+          dataKey="value"
+          fill="var(--color-value)"
+          radius={[0, 4, 4, 0]}
+          barSize={18}
         />
       </BarChart>
     </ChartContainer>

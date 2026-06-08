@@ -31,6 +31,7 @@ import {
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { downloadExcelCsvTemplate } from '@/lib/csv-template'
 import {
   uploadImportFile,
   validateImport,
@@ -81,7 +82,10 @@ export function ImportClientModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const csvFile = acceptedFiles[0]
-      if (csvFile.type === 'text/csv' || csvFile.name.endsWith('.csv')) {
+      if (
+        csvFile.type === 'text/csv' ||
+        csvFile.name.toLowerCase().endsWith('.csv')
+      ) {
         setFile(csvFile)
         setErrors([])
         setImportId(null)
@@ -115,17 +119,10 @@ EMPRESA,Estúdio Foto Premium,contato@fotopremium.com.br,(11) 4567-8901,(11) 976
 PESSOA,Dr. Roberto Costa,dr.roberto@clinica.com.br,(11) 3333-4444,(11) 99888-7766,234.567.890-12,,23.456.789-0,,Saúde,15/03/1975,NAO,Cartões de visita e receituários,01310-100,Rua Augusta,2100,Conj 45,Consolação,São Paulo,SP,,,,
 EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543-2109,,67.890.123/0001-45,,Central Modas Comércio Ltda,Comércio,,NAO,Sacolas e materiais promocionais,05432-100,Av República,300,,Centro,São Paulo,SP,Roberto Silva,roberto@centralmodas.com.br,(11) 5678-9013,(11) 96543-2108`
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-clientes-atrupe.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadExcelCsvTemplate(
+      csvContent,
+      'modelo-importacao-clientes-atrupe.csv',
+    )
   }
 
   const handleImport = async () => {

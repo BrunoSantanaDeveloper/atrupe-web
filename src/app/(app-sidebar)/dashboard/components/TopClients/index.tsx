@@ -1,21 +1,26 @@
-// UI
-import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
-import { PeriodFilter } from '../PeriodFilter'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
-// Components
 import { TopClientsChart } from './Chart'
 
-export function DashboardTopClients() {
+type DashboardFilters = {
+  startDate?: string
+  endDate?: string
+}
+
+interface DashboardTopClientsProps {
+  filters: DashboardFilters
+}
+
+export function DashboardTopClients({ filters }: DashboardTopClientsProps) {
   return (
     <Card className="flex-[1_1_540px]">
       <CardHeader className="flex-row gap-4 justify-between">
         <CardTitle className="text-gray-700 font-semibold text-base">
           Melhores clientes
         </CardTitle>
-        <PeriodFilter />
       </CardHeader>
       <CardContent className="p-6">
-        <TopClientsChart />
+        <TopClientsChart filters={filters} />
       </CardContent>
     </Card>
   )

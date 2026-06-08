@@ -16,7 +16,8 @@ export default function FinancialReportPage({
 }: SearchParamsType) {
   return (
     <PermissionGate
-      permissions={['financial:flow:view', 'values:values:view']}
+      requireAll
+      permissions={['reports:financial:view', 'values:values:view']}
       fallback={
         <div className="p-4 text-center">
           <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>

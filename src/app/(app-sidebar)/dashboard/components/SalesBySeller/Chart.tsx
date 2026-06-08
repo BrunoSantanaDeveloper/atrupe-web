@@ -1,109 +1,94 @@
 'use client'
 
-// UI
+import { useQuery } from '@tanstack/react-query'
+import { Bar, BarChart, XAxis, YAxis } from 'recharts'
+
 import {
   ChartConfig,
-  ChartTooltip,
   ChartContainer,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
+import { Skeleton } from '@/components/ui/skeleton'
 
-// Lib
-import { getRandomValue } from '@/lib/utils'
+import { getDashboardSalesBySeller } from '@/actions/dashboard'
 
-// Third-party
-import { Bar, XAxis, BarChart, CartesianGrid } from 'recharts'
+type DashboardFilters = {
+  startDate?: string
+  endDate?: string
+}
 
-const range: [number, number] = [10450.05, 3700.8]
-
-const generateChartData = (month: string) => ({
-  month,
-  angelica: getRandomValue(range),
-  maicol: getRandomValue(range),
-  marcos: getRandomValue(range),
-  fernando: getRandomValue(range),
-})
-
-const months = [
-  'Maio 2024',
-  'Junho 2024',
-  'Julho 2024',
-  'Agosto 2024',
-  'Setembro 2024',
-  'Outubro 2024',
-]
-
-const chartData = months.map(generateChartData)
+interface SalesBySellerChartProps {
+  filters: DashboardFilters
+}
 
 const chartConfig = {
-  angelica: {
-    label: 'Angélica',
-    color: 'var(--chart-rose)',
-  },
-  maicol: {
-    label: 'Maicol',
-    color: 'var(--chart-orange)',
-  },
-  marcos: {
-    label: 'Marcos',
+  value: {
+    label: 'Vendas',
     color: 'var(--chart-success)',
-  },
-  fernando: {
-    label: 'Fernando',
-    color: 'var(--chart-indigo)',
   },
 } satisfies ChartConfig
 
-export function SalesBySellerChart() {
+const currencyFormatter = (value: unknown) => (
+  <div className="flex flex-1 justify-between items-center gap-2 leading-none">
+    <span className="text-gray-500">Vendas</span>
+    <span className="font-mono font-medium tabular-nums text-gray-950">
+      {new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+        minimumFractionDigits: 2,
+      }).format(Number(value))}
+    </span>
+  </div>
+)
+
+export function SalesBySellerChart({ filters }: SalesBySellerChartProps) {
+  const { data = [], isLoading } = useQuery({
+    queryKey: ['dashboard-sales-by-seller', filters],
+    queryFn: () => getDashboardSalesBySeller(filters),
+  })
+
+  if (isLoading) {
+    return <Skeleton className="h-[260px] w-full" />
+  }
+
+  if (!data.length) {
+    return (
+      <div className="flex h-[260px] items-center justify-center text-sm text-gray">
+        Nenhuma venda por vendedor no periodo.
+      </div>
+    )
+  }
+
   return (
     <ChartContainer
       config={chartConfig}
-      className="min-h-[200px] max-h-[300px] w-full"
+      className="min-h-[220px] max-h-[260px] w-full"
     >
       <BarChart
         accessibilityLayer
-        data={chartData}
-        margin={{
-          left: 12,
-          right: 12,
-        }}
+        data={data}
+        layout="vertical"
+        margin={{ left: 0, right: 20, top: 0, bottom: 0 }}
       >
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="month"
+        <XAxis type="number" hide />
+        <YAxis
+          type="category"
+          dataKey="name"
           tickLine={false}
-          tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
+          width={110}
+          tick={{ fontSize: 12 }}
         />
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent />}
-          isAnimationActive={false}
+          content={<ChartTooltipContent formatter={currencyFormatter} />}
         />
         <Bar
-          dataKey="angelica"
-          fill="var(--color-angelica)"
-          radius={2}
-          barSize={10}
-        />
-        <Bar
-          dataKey="maicol"
-          fill="var(--color-maicol)"
-          radius={2}
-          barSize={10}
-        />
-        <Bar
-          dataKey="marcos"
-          fill="var(--color-marcos)"
-          radius={2}
-          barSize={10}
-        />
-        <Bar
-          dataKey="fernando"
-          fill="var(--color-fernando)"
-          radius={2}
-          barSize={10}
+          dataKey="value"
+          fill="var(--color-value)"
+          radius={[0, 4, 4, 0]}
+          barSize={18}
         />
       </BarChart>
     </ChartContainer>

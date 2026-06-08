@@ -31,6 +31,7 @@ import {
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
+import { downloadExcelCsvTemplate } from '@/lib/csv-template'
 import {
   uploadImportFile,
   validateImport,
@@ -87,7 +88,10 @@ export function ImportSupplierModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const csvFile = acceptedFiles[0]
-      if (csvFile.type === 'text/csv' || csvFile.name.endsWith('.csv')) {
+      if (
+        csvFile.type === 'text/csv' ||
+        csvFile.name.toLowerCase().endsWith('.csv')
+      ) {
         setFile(csvFile)
         setErrors([])
         setImportId(null)
@@ -121,17 +125,10 @@ EMPRESA,Equipamentos Gráficos SP,comercial@equipgraficos.com.br,(11) 4444-5555,
 EMPRESA,Gráfica Terceirizada ABC,atendimento@graficaabc.com.br,(11) 5555-6666,(11) 97777-6666,,34.567.890/0001-12,,Gráfica ABC Serviços Terceirizados Ltda,Serviços Terceirizados,NAO,Impressão offset e acabamento gráfico,06789-000,Rua dos Gráficos,300,Bloco B,Parque Gráfico,Barueri,SP,Jorge Santos,jorge@graficaabc.com.br,(11) 5555-6667,(11) 97777-6665
 PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 96666-5555,456.789.012-34,,45.678.901-2,,Logística e Transporte,NAO,Transportador autônomo - entregas urgentes,01234-000,Rua das Entregas,150,,Vila Carrão,São Paulo,SP,,,,`
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'modelo-importacao-fornecedores-atrupe.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadExcelCsvTemplate(
+      csvContent,
+      'modelo-importacao-fornecedores-atrupe.csv',
+    )
   }
 
   const handleImport = async () => {

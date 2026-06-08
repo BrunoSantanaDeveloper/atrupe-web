@@ -10,6 +10,28 @@ export const permissionsData = [
     ],
   },
   {
+    section: 'Dashboard',
+    key: 'dashboard',
+    items: [
+      {
+        name: 'Resumo financeiro',
+        key: 'financial',
+      },
+      {
+        name: 'Resumo de vendas',
+        key: 'sales',
+      },
+      {
+        name: 'Orcamentos',
+        key: 'quotations',
+      },
+      {
+        name: 'Evolucao e rankings',
+        key: 'rankings',
+      },
+    ],
+  },
+  {
     section: 'Vendas',
     key: 'sale',
     items: [
@@ -42,6 +64,32 @@ export const permissionsData = [
       {
         name: 'Lançamento de folha de pagamento',
         key: 'payroll',
+      },
+    ],
+  },
+  {
+    section: 'Relatorios',
+    key: 'reports',
+    items: [
+      {
+        name: 'Resultado por setor',
+        key: 'sector_result',
+      },
+      {
+        name: 'Relatorio de vendas',
+        key: 'sales',
+      },
+      {
+        name: 'Relatorio financeiro',
+        key: 'financial',
+      },
+      {
+        name: 'DFC',
+        key: 'dfc',
+      },
+      {
+        name: 'Comissoes',
+        key: 'commission',
       },
     ],
   },
