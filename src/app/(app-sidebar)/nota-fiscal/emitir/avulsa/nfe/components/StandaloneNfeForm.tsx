@@ -716,6 +716,7 @@ export function StandaloneNfeForm() {
                 entrega={data.entrega || null}
                 clientId={data.clientId}
                 selectedAddressId={data.selectedAddressId}
+                pais={data.destinatario.pais}
                 onEntregaToggle={handleEntregaToggle}
                 onAddressSelect={handleEntregaAddressSelect}
                 onEntregaChange={handleEntregaChange}

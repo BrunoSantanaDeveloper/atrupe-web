@@ -101,10 +101,27 @@ export function InvoicyConfigForm() {
   }, [configData, form])
 
   async function onSubmit(data: InvoicyConfigFormType) {
+    const payload = {
+      name: configData?.name || 'Emissor padrão',
+      isDefault: configData?.isDefault ?? true,
+      environment: data.environment,
+      nfeSeries: data.nfeSeries,
+      nfeNextNumber: data.nfeNextNumber,
+      nfceSeries: data.nfceSeries,
+      nfceNextNumber: data.nfceNextNumber,
+      nfseSeries: data.nfseSeries,
+      nfseNextNumber: data.nfseNextNumber,
+      codigoServico: data.codigoServico,
+      aliquotaIss: data.aliquotaIss,
+      defaultCfop: data.defaultCfop,
+      defaultOperationNature: data.defaultOperationNature,
+      taxInfoText: data.taxInfoText,
+    }
+
     try {
       const result = await createItemNew({
         route: '/fiscal/invoicy/config/upsert',
-        data,
+        data: payload,
       })
 
       if (!result.success) {

@@ -10,6 +10,16 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import { IconMapPin, IconEdit } from '@tabler/icons-react'
@@ -32,15 +42,47 @@ interface InvoiceDeliveryAddressSectionProps {
   entrega: NfePrepareEntrega | null
   clientId?: string
   selectedAddressId?: string | null
+  pais?: string
   onEntregaToggle: (enabled: boolean) => void
   onAddressSelect: (address: ClientAddressItem | null) => void
   onEntregaChange: (updatedEntrega: NfePrepareEntrega) => void
 }
 
+const BRAZIL_STATES = [
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
+]
+
 export function InvoiceDeliveryAddressSection({
   entrega,
   clientId,
   selectedAddressId,
+  pais,
   onEntregaToggle,
   onAddressSelect,
   onEntregaChange,
@@ -48,6 +90,9 @@ export function InvoiceDeliveryAddressSection({
   const isEnabled = entrega !== null
   const { data: addresses } = useClientAddresses({ clientId: clientId || '' })
   const [isEditing, setIsEditing] = useState(false)
+
+  const isBrazil =
+    !pais || pais === 'Brasil' || pais === 'BRASIL' || pais === '1058'
 
   // Local state for manual edits when enabled
   const [localCep, setLocalCep] = useState(entrega?.cep || '')
@@ -72,6 +117,39 @@ export function InvoiceDeliveryAddressSection({
     }
   }, [entrega])
 
+  const handleCepBlur = async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, '')
+    if (cleanCep.length !== 8) return
+
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`)
+      const data = await res.json()
+      if (!data.erro) {
+        const updatedEndereco = data.logradouro || ''
+        const updatedBairro = data.bairro || ''
+        const updatedCidade = data.localidade || ''
+        const updatedEstado = data.uf || ''
+
+        setLocalEndereco(updatedEndereco)
+        setLocalBairro(updatedBairro)
+        setLocalCidade(updatedCidade)
+        setLocalEstado(updatedEstado)
+
+        if (entrega) {
+          onEntregaChange({
+            ...entrega,
+            endereco: updatedEndereco,
+            bairro: updatedBairro,
+            cidade: updatedCidade,
+            estado: updatedEstado,
+          })
+        }
+      }
+    } catch {
+      // Ignore CEP lookup errors
+    }
+  }
+
   const handleFieldChange = (field: keyof NfePrepareEntrega, value: string) => {
     if (!entrega) return
     const updated = {
@@ -93,11 +171,10 @@ export function InvoiceDeliveryAddressSection({
                   Local de Entrega
                 </CardTitle>
                 <label className="inline-flex items-center gap-2 cursor-pointer text-sm text-gray-500 hover:text-gray-700 select-none">
-                  <input
-                    type="checkbox"
+                  <Checkbox
+                    id="delivery-different-address"
                     checked={isEnabled}
-                    onChange={(e) => onEntregaToggle(e.target.checked)}
-                    className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                    onCheckedChange={(checked) => onEntregaToggle(!!checked)}
                   />
                   <span>Entrega em endereço diferente do destinatário</span>
                 </label>
@@ -128,12 +205,10 @@ export function InvoiceDeliveryAddressSection({
                       <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
                         📍 Escolher Endereço Cadastrado:
                       </span>
-                      <select
-                        value={selectedAddressId || ''}
-                        className="flex h-9 w-full max-w-xl rounded-md border border-input bg-white px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                        onChange={(e) => {
-                          const selectedId = e.target.value
-                          if (!selectedId) {
+                      <Select
+                        value={selectedAddressId || 'custom'}
+                        onValueChange={(selectedId) => {
+                          if (selectedId === 'custom') {
                             onAddressSelect(null)
                             return
                           }
@@ -146,16 +221,24 @@ export function InvoiceDeliveryAddressSection({
                           }
                         }}
                       >
-                        <option value="">
-                          -- Digitar endereço personalizado --
-                        </option>
-                        {addresses.map((addr) => (
-                          <option key={addr.id} value={addr.id}>
-                            {addr.type || 'Sem Título'} — {addr.street},{' '}
-                            {addr.number} - {addr.city}/{addr.state}
-                          </option>
-                        ))}
-                      </select>
+                        <SelectTrigger
+                          id="select-delivery-address"
+                          className="w-full max-w-xl bg-white h-11"
+                        >
+                          <SelectValue placeholder="-- Digitar endereço personalizado --" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="custom">
+                            -- Digitar endereço personalizado --
+                          </SelectItem>
+                          {addresses.map((addr) => (
+                            <SelectItem key={addr.id} value={addr.id}>
+                              {addr.type || 'Sem Título'} — {addr.street},{' '}
+                              {addr.number} - {addr.city}/{addr.state}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <Button
                         type="button"
                         variant={isEditing ? 'neutralLight' : 'neutralOutline'}
@@ -171,103 +254,122 @@ export function InvoiceDeliveryAddressSection({
 
                   {isEditing ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-                      <div className="space-y-1">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
-                          CEP
-                        </label>
-                        <input
+                      <div className="space-y-2">
+                        <Label htmlFor="delivery-cep">CEP</Label>
+                        <Input
+                          id="delivery-cep"
                           type="text"
                           value={localCep}
                           onChange={(e) => {
                             setLocalCep(e.target.value)
                             handleFieldChange('cep', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
+                          onBlur={(e) => {
+                            if (isBrazil) {
+                              handleCepBlur(e.target.value)
+                            }
+                          }}
                         />
                       </div>
-                      <div className="space-y-1 md:col-span-2">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="delivery-endereco">
                           Endereço / Logradouro
-                        </label>
-                        <input
+                        </Label>
+                        <Input
+                          id="delivery-endereco"
                           type="text"
                           value={localEndereco}
                           onChange={(e) => {
                             setLocalEndereco(e.target.value)
                             handleFieldChange('endereco', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
-                          Número
-                        </label>
-                        <input
+                      <div className="space-y-2">
+                        <Label htmlFor="delivery-numero">Número</Label>
+                        <Input
+                          id="delivery-numero"
                           type="text"
                           value={localNumero}
                           onChange={(e) => {
                             setLocalNumero(e.target.value)
                             handleFieldChange('numero', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
+                      <div className="space-y-2">
+                        <Label htmlFor="delivery-complemento">
                           Complemento
-                        </label>
-                        <input
+                        </Label>
+                        <Input
+                          id="delivery-complemento"
                           type="text"
                           value={localComplemento}
                           onChange={(e) => {
                             setLocalComplemento(e.target.value)
                             handleFieldChange('complemento', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
-                          Bairro
-                        </label>
-                        <input
+                      <div className="space-y-2">
+                        <Label htmlFor="delivery-bairro">Bairro</Label>
+                        <Input
+                          id="delivery-bairro"
                           type="text"
                           value={localBairro}
                           onChange={(e) => {
                             setLocalBairro(e.target.value)
                             handleFieldChange('bairro', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
                         />
                       </div>
-                      <div className="space-y-1 md:col-span-2">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
-                          Cidade
-                        </label>
-                        <input
+                      <div className="space-y-2 md:col-span-2">
+                        <Label htmlFor="delivery-cidade">Cidade</Label>
+                        <Input
+                          id="delivery-cidade"
                           type="text"
                           value={localCidade}
                           onChange={(e) => {
                             setLocalCidade(e.target.value)
                             handleFieldChange('cidade', e.target.value)
                           }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs text-gray-500 font-medium uppercase">
-                          Estado (UF)
-                        </label>
-                        <input
-                          type="text"
-                          value={localEstado}
-                          onChange={(e) => {
-                            setLocalEstado(e.target.value)
-                            handleFieldChange('estado', e.target.value)
-                          }}
-                          className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2"
-                        />
+                      <div className="space-y-2">
+                        <Label htmlFor="delivery-estado">Estado (UF)</Label>
+                        {isBrazil ? (
+                          <Select
+                            value={localEstado}
+                            onValueChange={(value) => {
+                              setLocalEstado(value)
+                              handleFieldChange('estado', value)
+                            }}
+                          >
+                            <SelectTrigger
+                              id="delivery-estado"
+                              className="bg-white h-11"
+                            >
+                              <SelectValue placeholder="Selecione o estado" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {BRAZIL_STATES.map((uf) => (
+                                <SelectItem key={uf} value={uf}>
+                                  {uf}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Input
+                            id="delivery-estado"
+                            type="text"
+                            value={localEstado}
+                            onChange={(e) => {
+                              setLocalEstado(e.target.value)
+                              handleFieldChange('estado', e.target.value)
+                            }}
+                          />
+                        )}
                       </div>
                     </div>
                   ) : (

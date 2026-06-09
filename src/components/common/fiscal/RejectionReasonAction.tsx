@@ -5,11 +5,16 @@ import { IconAlertTriangle, IconEdit } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 interface RejectionReasonActionProps {
   reason?: string | null
@@ -23,8 +28,8 @@ export function RejectionReasonAction({
   const rejectionReason = reason?.trim() || 'Motivo nao informado pela SEFAZ.'
 
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button
           type="button"
           variant="errorGhost"
@@ -35,33 +40,40 @@ export function RejectionReasonAction({
         >
           Motivo
         </Button>
-      </PopoverTrigger>
-      <PopoverContent align="start" className="w-80 p-0">
-        <div className="border-b border-gray-100 px-4 py-3">
-          <p className="text-sm font-semibold text-gray-900">
-            Motivo da rejeicao
-          </p>
-        </div>
-        <ScrollArea className="max-h-48">
-          <p className="whitespace-pre-wrap px-4 py-3 text-sm leading-5 text-gray-700">
-            {rejectionReason}
-          </p>
-        </ScrollArea>
-        {reissueHref && (
-          <div className="border-t border-gray-100 px-4 py-3">
+      </DialogTrigger>
+      <DialogContent className="max-h-[85vh] max-w-2xl gap-0 overflow-hidden p-0">
+        <DialogHeader>
+          <DialogTitle>Motivo da rejeicao</DialogTitle>
+          <DialogDescription>
+            Retorno recebido da autorizadora fiscal.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody className="max-h-[60vh] pr-6">
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <p className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-700">
+              {rejectionReason}
+            </p>
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="neutralOutline" size="sm">
+              Fechar
+            </Button>
+          </DialogClose>
+          {reissueHref && (
             <Button
               asChild
               variant="warningLight"
               size="sm"
-              className="w-full"
               LeftIcon={IconEdit}
               leftIconSize={16}
             >
               <Link href={reissueHref}>Corrigir e reemitir</Link>
             </Button>
-          </div>
-        )}
-      </PopoverContent>
-    </Popover>
+          )}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
