@@ -7,6 +7,36 @@ import { defaultRoutes } from './routes'
 
 const defaultRoute = defaultRoutes()
 
+const extractApiErrorMessage = (payload: any) => {
+  const userMessage = payload?.userMessage
+  const message =
+    userMessage?.message ||
+    payload?.message ||
+    payload?.data?.message ||
+    payload?.data?.error ||
+    userMessage
+
+  return Array.isArray(message)
+    ? message[0]
+    : typeof message === 'string'
+      ? message
+      : 'Erro desconhecido.'
+}
+
+const getEmbeddedError = (payload: any) => {
+  const statusCode = Number(
+    payload?.statusCode || payload?.userMessage?.statusCode,
+  )
+
+  if (!Number.isFinite(statusCode) || statusCode < 400) return null
+
+  return {
+    status: statusCode,
+    code: statusCode,
+    message: extractApiErrorMessage(payload),
+  }
+}
+
 // LISTAR ❌ Não usar mais (TODO: Excluir este depois de refatorar onde é usado)
 export const getDataOld = async ({
   route,
@@ -94,11 +124,25 @@ export const getData = async ({
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
     const userMessage = error?.response?.data?.userMessage
+    const responseData = error?.response?.data
+    const responseMessage =
+      userMessage?.message ||
+      userMessage ||
+      responseData?.message ||
+      responseData?.data?.message ||
+      responseData?.data?.error ||
+      error?.message
 
     return {
       success: false,
-      code: userMessage?.statusCode || 'unknown',
-      message: userMessage?.message || userMessage || 'Erro desconhecido.',
+      code:
+        userMessage?.statusCode ||
+        responseData?.statusCode ||
+        error?.response?.status ||
+        'unknown',
+      message: Array.isArray(responseMessage)
+        ? responseMessage[0]
+        : responseMessage || 'Erro desconhecido.',
     }
   }
 }
@@ -211,6 +255,14 @@ export const createItemNew = async ({
 
   try {
     const res = await api.post(route, data, { headers })
+    const embeddedError = getEmbeddedError(res.data)
+
+    if (embeddedError) {
+      return {
+        success: false,
+        ...embeddedError,
+      }
+    }
 
     return {
       success: true,

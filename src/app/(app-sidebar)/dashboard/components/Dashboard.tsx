@@ -7,7 +7,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePermissions } from '@/hooks/usePermissions'
 
 import { DashboardQuotations } from './Quotations'
-import { FiscalSetupModal } from './FiscalSetupModal'
+import { FiscalOnboardingBanner } from './FiscalOnboardingBanner'
 import { FinancialOverview } from './FinancialOverview'
 import { SalesOverview } from './SalesOverview'
 import { DashboardPeriod, DashboardPeriodFilter } from './DashboardPeriodFilter'
@@ -65,7 +65,7 @@ export function Dashboard() {
 
   return (
     <div className="space-y-4 mt-1 w-full">
-      <FiscalSetupModal />
+      <FiscalOnboardingBanner />
 
       <div className="flex items-center justify-end">
         <DashboardPeriodFilter value={period} onChange={setPeriod} />

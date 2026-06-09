@@ -59,6 +59,8 @@ const emissoresSchema = z.object({
   aliquotaIss: z.coerce.number().optional(),
   serieNfce: z.coerce.number().optional(),
   proximoNumeroNfce: z.coerce.number().optional(),
+  cscId: z.string().optional(),
+  cscToken: z.string().optional(),
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
 })
@@ -123,6 +125,8 @@ export function EmissorFormModal({
       proximoRpsNfse: 1,
       serieNfce: 1,
       proximoNumeroNfce: 1,
+      cscId: '',
+      cscToken: '',
     },
   })
 
@@ -151,6 +155,8 @@ export function EmissorFormModal({
           aliquotaIss: emissor.aliquotaIss,
           serieNfce: emissor.serieNfce || 1,
           proximoNumeroNfce: emissor.proximoNumeroNfce || 1,
+          cscId: emissor.cscId || '',
+          cscToken: '',
           defaultCfop: emissor.defaultCfop || '',
           defaultOperationNature: emissor.defaultOperationNature || '',
         })
@@ -216,7 +222,11 @@ export function EmissorFormModal({
   const handleSubmit = async (data: EmissorFormValues) => {
     setIsSubmitting(true)
     try {
-      await onSave(data)
+      await onSave({
+        ...data,
+        cscId: data.cscId || undefined,
+        cscToken: data.cscToken || undefined,
+      })
       onOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar emissor')
@@ -468,6 +478,23 @@ export function EmissorFormModal({
                               label="Próximo Número"
                               type="number"
                               placeholder="1"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormInput
+                              name="cscId"
+                              label="ID do CSC"
+                              placeholder="Ex: 000001"
+                            />
+                            <FormInput
+                              name="cscToken"
+                              label="Token CSC"
+                              type="password"
+                              placeholder={
+                                emissor?.cscConfigured
+                                  ? 'Token cadastrado'
+                                  : 'Informe o token CSC'
+                              }
                             />
                           </div>
                         </div>

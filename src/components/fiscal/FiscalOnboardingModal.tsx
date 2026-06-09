@@ -32,6 +32,7 @@ import {
 } from '@tabler/icons-react'
 
 import { createItemNew, encodeFileToBase64 } from '@/actions/_cruds'
+import { maskCep, maskCnpj } from '@/lib/utils'
 
 const UF_OPTIONS = [
   'AC',
@@ -132,6 +133,40 @@ export function FiscalOnboardingModal({
     if (file) {
       setCertificateFile(file)
       toast.success('Certificado carregado com sucesso!')
+    }
+  }
+
+  const fetchCnpj = async (cnpj: string) => {
+    const cleanCnpj = cnpj.replace(/\D/g, '')
+    if (cleanCnpj.length !== 14) return
+
+    try {
+      toast.loading('Buscando dados do CNPJ...', { id: 'cnpj-fetch' })
+      const res = await fetch(
+        `https://brasilapi.com.br/api/cnpj/v1/${cleanCnpj}`,
+      )
+      const data = await res.json()
+
+      if (res.ok) {
+        form.setValue('razaoSocial', data.razao_social || '')
+        form.setValue('nomeFantasia', data.nome_fantasia || '')
+        form.setValue('cnae', data.cnae_fiscal?.toString() || '')
+
+        if (data.cep) {
+          const cep = data.cep.replace(/\D/g, '')
+          form.setValue('cep', maskCep(cep))
+          await fetchCep(cep)
+        }
+
+        if (data.numero) form.setValue('numero', data.numero)
+        if (data.complemento) form.setValue('complemento', data.complemento)
+
+        toast.success('Dados da empresa preenchidos!', { id: 'cnpj-fetch' })
+      } else {
+        toast.dismiss('cnpj-fetch')
+      }
+    } catch {
+      toast.dismiss('cnpj-fetch')
     }
   }
 
@@ -307,7 +342,13 @@ export function FiscalOnboardingModal({
                     <Input
                       id="modal-cnpj"
                       placeholder="00.000.000/0000-00"
-                      {...form.register('cnpj', { required: true })}
+                      {...form.register('cnpj', {
+                        required: true,
+                        onChange: (event) => {
+                          event.target.value = maskCnpj(event.target.value)
+                        },
+                      })}
+                      onBlur={(event) => fetchCnpj(event.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
@@ -392,7 +433,11 @@ export function FiscalOnboardingModal({
                     <Input
                       id="modal-cep"
                       placeholder="00000-000"
-                      {...form.register('cep')}
+                      {...form.register('cep', {
+                        onChange: (event) => {
+                          event.target.value = maskCep(event.target.value)
+                        },
+                      })}
                       onBlur={(e) => fetchCep(e.target.value)}
                     />
                   </div>

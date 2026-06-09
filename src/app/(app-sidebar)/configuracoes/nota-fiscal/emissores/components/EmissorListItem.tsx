@@ -63,6 +63,8 @@ export interface EmissorData {
   aliquotaIss?: number
   serieNfce?: number
   proximoNumeroNfce?: number
+  cscId?: string
+  cscConfigured?: boolean
   defaultCfop?: string
   defaultOperationNature?: string
 }

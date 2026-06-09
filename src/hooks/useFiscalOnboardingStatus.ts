@@ -26,6 +26,7 @@ export function useFiscalOnboardingStatus() {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
     retry: false, // Don't retry if it fails
+    refetchOnWindowFocus: false,
   })
 
   const data = queryData || null

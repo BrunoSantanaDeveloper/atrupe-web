@@ -10,6 +10,8 @@ export const invoicyConfigSchema = z.object({
   // NFC-e
   nfceSeries: z.string().optional(),
   nfceNextNumber: z.coerce.number().min(1).optional(),
+  cscId: z.string().optional(),
+  cscToken: z.string().optional(),
   // NFS-e
   nfseSeries: z.string().optional(),
   nfseNextNumber: z.coerce.number().min(1).optional(),

@@ -129,7 +129,14 @@ export function NfeActionsDropdown({
       })
 
       if (!result.success) {
-        toast.error(result.message || 'Erro ao enviar DANFE/XML por e-mail')
+        const endpointUnavailable =
+          result.status === 404 || result.message?.includes('Cannot POST')
+
+        toast.error(
+          endpointUnavailable
+            ? 'Envio por e-mail indisponivel neste backend. Atualize/reinicie a API e tente novamente.'
+            : result.message || 'Erro ao enviar DANFE/XML por e-mail',
+        )
         return
       }
 

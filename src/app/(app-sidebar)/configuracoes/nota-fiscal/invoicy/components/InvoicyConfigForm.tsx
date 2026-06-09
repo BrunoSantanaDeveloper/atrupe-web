@@ -81,6 +81,8 @@ export function InvoicyConfigForm() {
         nfeNextNumber: configData.nfeNextNumber || 1,
         nfceSeries: configData.nfceSeries || '',
         nfceNextNumber: configData.nfceNextNumber || undefined,
+        cscId: configData.cscId || '',
+        cscToken: '',
         nfseSeries: configData.nfseSeries || '',
         nfseNextNumber: configData.nfseNextNumber || undefined,
         emitIm: configData.emitIm || '',
@@ -109,6 +111,8 @@ export function InvoicyConfigForm() {
       nfeNextNumber: data.nfeNextNumber,
       nfceSeries: data.nfceSeries,
       nfceNextNumber: data.nfceNextNumber,
+      cscId: data.cscId || undefined,
+      cscToken: data.cscToken || undefined,
       nfseSeries: data.nfseSeries,
       nfseNextNumber: data.nfseNextNumber,
       codigoServico: data.codigoServico,
@@ -209,6 +213,21 @@ export function InvoicyConfigForm() {
                 label="Próximo Número NFC-e"
                 type="number"
                 placeholder="1"
+              />
+              <FormInput
+                name="cscId"
+                label="ID do CSC"
+                placeholder="Ex: 000001"
+              />
+              <FormInput
+                name="cscToken"
+                label="Token CSC"
+                type="password"
+                placeholder={
+                  configData?.cscConfigured
+                    ? 'Token cadastrado'
+                    : 'Informe o token CSC'
+                }
               />
             </div>
           </div>

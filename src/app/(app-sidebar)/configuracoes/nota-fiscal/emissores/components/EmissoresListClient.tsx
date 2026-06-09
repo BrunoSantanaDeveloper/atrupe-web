@@ -137,6 +137,8 @@ export function EmissoresListClient() {
         aliquotaIss: config?.aliquotaIss,
         serieNfce: config?.serieNfce,
         proximoNumeroNfce: config?.proximoNumeroNfce,
+        cscId: config?.cscId,
+        cscConfigured: config?.cscConfigured,
         defaultCfop: config?.defaultCfop,
         defaultOperationNature: config?.defaultOperationNature,
       }

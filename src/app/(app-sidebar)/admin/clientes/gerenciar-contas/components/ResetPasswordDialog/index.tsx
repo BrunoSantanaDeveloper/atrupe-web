@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // UI
 import {
   Dialog,
@@ -34,7 +37,7 @@ import { createItemNew } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconKey, IconMailForward } from '@tabler/icons-react'
+import { IconCopy, IconKey, IconMailForward } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -47,6 +50,8 @@ const formSchema = z.object({
 })
 
 export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
+  const [generatedPassword, setGeneratedPassword] = useState('')
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,11 +59,13 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
     },
   })
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+  const handleSendResetEmail = form.handleSubmit(async (data) => {
     if (!rowData?.userId) {
       toast.error('Usuario da conta nao encontrado')
       return
     }
+
+    setGeneratedPassword('')
 
     const res = await createItemNew({
       route: `/user/${rowData.userId}/admin-password-reset`,
@@ -72,11 +79,46 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
 
     toast.success('Email de redefinicao enviado')
     handleOpenChange(false)
+  })
+
+  const handleGeneratePassword = form.handleSubmit(async (data) => {
+    if (!rowData?.userId) {
+      toast.error('Usuario da conta nao encontrado')
+      return
+    }
+
+    const res = await createItemNew({
+      route: `/user/${rowData.userId}/admin-generate-password`,
+      data,
+    })
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    const temporaryPassword = String(res.data?.temporaryPassword || '')
+
+    if (!temporaryPassword) {
+      toast.error('Senha temporaria nao retornada')
+      return
+    }
+
+    setGeneratedPassword(temporaryPassword)
+    toast.success('Senha temporaria gerada')
+  })
+
+  const handleCopyPassword = async () => {
+    if (!generatedPassword) return
+
+    await navigator.clipboard.writeText(generatedPassword)
+    toast.success('Senha copiada')
   }
 
   const handleOpenChange = (value: boolean) => {
     if (!value) {
       form.reset()
+      setGeneratedPassword('')
     }
     setOpen(value)
   }
@@ -97,14 +139,15 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
             </div>
           </DialogTitle>
           <DialogDescription className="text-center">
-            Enviar link de redefinicao para {rowData?.email || 'o usuario'}.
+            Envie link por email ou gere uma senha temporaria para{' '}
+            {rowData?.email || 'o usuario'}.
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
             <form
               id="reset-password"
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={handleSendResetEmail}
               className="space-y-5"
             >
               <FormField
@@ -119,12 +162,36 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
                       {...field}
                     />
                     <p className="text-sm text-gray-600">
-                      Obrigatorio para enviar o reset
+                      Obrigatorio para enviar link ou gerar senha
                     </p>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {generatedPassword ? (
+                <div className="rounded-md border border-gray-200 bg-gray-50 p-4 space-y-3">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700">
+                      Senha temporaria gerada
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Copie agora. Ela nao ficara visivel depois que fechar.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Input value={generatedPassword} readOnly />
+                    <Button
+                      type="button"
+                      variant="neutralOutline"
+                      onClick={handleCopyPassword}
+                      RightIcon={IconCopy}
+                    >
+                      Copiar
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
             </form>
           </Form>
         </DialogBody>
@@ -137,12 +204,20 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
             Voltar
           </Button>
           <Button
+            type="button"
+            disabled={form.formState.isSubmitting}
+            onClick={handleGeneratePassword}
+            RightIcon={IconKey}
+          >
+            Gerar senha
+          </Button>
+          <Button
             type="submit"
             form="reset-password"
             disabled={form.formState.isSubmitting}
             RightIcon={IconMailForward}
           >
-            Enviar
+            Enviar link
           </Button>
         </DialogFooter>
       </DialogContent>
