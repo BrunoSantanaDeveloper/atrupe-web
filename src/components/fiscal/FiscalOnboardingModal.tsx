@@ -232,10 +232,14 @@ export function FiscalOnboardingModal({
         setResultMessage(result.message || 'Erro ao processar dados fiscais')
         toast.error(result.message || 'Erro ao processar dados fiscais')
       }
-    } catch {
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Erro inesperado ao processar dados fiscais'
       setStatus('error')
-      setResultMessage('Erro inesperado ao processar dados fiscais')
-      toast.error('Erro inesperado')
+      setResultMessage(message)
+      toast.error(message)
     }
   }
 

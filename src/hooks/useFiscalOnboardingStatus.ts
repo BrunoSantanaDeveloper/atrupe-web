@@ -38,6 +38,11 @@ export function useFiscalOnboardingStatus() {
 
   const isActive = data?.status === 'ACTIVE' && data?.hasConfig
   const needsSetup = data?.status === 'NOT_STARTED'
+  const pendingMessage =
+    data?.errorMessage?.includes('partner Atrupe') ||
+    data?.errorMessage?.includes('Migrate/Invoicy')
+      ? data.errorMessage
+      : 'Seus dados foram recebidos e a configuracao esta sendo processada. Voce sera notificado quando o modulo estiver disponivel.'
 
   return {
     data,
@@ -45,5 +50,6 @@ export function useFiscalOnboardingStatus() {
     isPending,
     isActive,
     needsSetup,
+    pendingMessage,
   }
 }

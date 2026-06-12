@@ -12,7 +12,7 @@ import {
 
 export function FiscalOnboardingBanner() {
   const { hasFeature } = usePlanFeatures()
-  const { isPending, isActive, needsSetup, isLoading } =
+  const { isPending, isActive, needsSetup, isLoading, pendingMessage } =
     useFiscalOnboardingStatus()
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -32,10 +32,7 @@ export function FiscalOnboardingBanner() {
           <p className="text-sm font-semibold text-warning-800">
             Módulo Nota Fiscal em configuração
           </p>
-          <p className="text-sm text-warning-600">
-            Seus dados foram recebidos e a configuração está sendo processada.
-            Você será notificado quando o módulo estiver disponível.
-          </p>
+          <p className="text-sm text-warning-600">{pendingMessage}</p>
         </div>
       </div>
     )

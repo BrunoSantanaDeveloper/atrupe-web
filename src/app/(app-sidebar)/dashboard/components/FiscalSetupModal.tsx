@@ -291,10 +291,11 @@ export function FiscalSetupModal() {
         setResultMessage(result.message || 'Erro ao processar dados fiscais')
         toast.error(result.message || 'Erro ao processar dados fiscais')
       }
-    } catch {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro inesperado'
       setFormStatus('error')
-      setResultMessage('Erro inesperado')
-      toast.error('Erro inesperado')
+      setResultMessage(message)
+      toast.error(message)
     }
   }
 

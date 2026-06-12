@@ -21,7 +21,7 @@ interface FiscalModuleGateProps {
 export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   const router = useRouter()
   const { hasFeature } = usePlanFeatures()
-  const { isActive, needsSetup, isPending, isLoading } =
+  const { needsSetup, isPending, isLoading, pendingMessage } =
     useFiscalOnboardingStatus()
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -91,8 +91,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
           Módulo em ativação
         </h2>
         <p className="text-sm text-gray text-center max-w-md mb-6">
-          Seus dados foram recebidos e a configuração está sendo processada.
-          Você será notificado quando o módulo estiver disponível.
+          {pendingMessage}
         </p>
         <Button variant="ghost" onClick={() => router.push('/dashboard')}>
           Voltar ao Dashboard
@@ -101,6 +100,6 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     )
   }
 
-  // Module is active — render children
+  // Module is active - render children
   return <>{children}</>
 }

@@ -10,7 +10,8 @@ import {
 } from '@tabler/icons-react'
 
 export function FiscalModulePendingBanner() {
-  const { isPending, needsSetup, isLoading } = useFiscalOnboardingStatus()
+  const { isPending, needsSetup, isLoading, pendingMessage } =
+    useFiscalOnboardingStatus()
   const [modalOpen, setModalOpen] = useState(false)
 
   if (isLoading) return null
@@ -48,10 +49,7 @@ export function FiscalModulePendingBanner() {
           <p className="text-sm font-semibold text-warning-800">
             Módulo fiscal em configuração
           </p>
-          <p className="text-xs text-warning-600">
-            A ativação está sendo processada. Você será notificado quando
-            estiver pronto para uso.
-          </p>
+          <p className="text-xs text-warning-600">{pendingMessage}</p>
         </div>
       </div>
     )

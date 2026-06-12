@@ -265,7 +265,7 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
           {isAdvance && (
             <View style={styles.advanceTextContainer}>
               <Text style={styles.advanceParagraph}>
-                Recibi(emos) de {data.employeeName} o valor de{' '}
+                Pagamento efetuado para {data.employeeName} o valor de{' '}
                 {formatCurrencyToBrl(data.netSalary)} (
                 {numberToWords(data.netSalary, true)}) na data de{' '}
                 {new Date(
