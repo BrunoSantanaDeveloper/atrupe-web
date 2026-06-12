@@ -187,7 +187,7 @@ export function ReceiptPdf({ data }: Props) {
           {/* Texto do recibo */}
           <View style={styles.receiptTextContainer}>
             <Text style={styles.receiptParagraph}>
-              Recibi(emos) de {data.clientName} o valor de{' '}
+              Pagamento efetuado para {data.clientName} o valor de{' '}
               {formatCurrencyToBrl(data.totalValue)} (
               {numberToWords(data.totalValue, true)}) na data de {data.day} de{' '}
               {data.month} de {data.year} correspondente aos itens descritos
