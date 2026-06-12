@@ -271,16 +271,19 @@ export const createItemNew = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const userMessage = error?.response?.data?.userMessage
+    const payload = error?.response?.data
+    const userMessage = payload?.userMessage
+    const status = error?.response?.status
+    const code =
+      userMessage?.statusCode ||
+      payload?.statusCode ||
+      (typeof status === 'number' ? status : 'unknown')
 
     return {
       success: false,
-      status: error?.response?.status,
-      code: userMessage?.statusCode || 'unknown',
-      message:
-        userMessage?.message ||
-        error?.response?.data?.message ||
-        'Erro desconhecido.',
+      status,
+      code,
+      message: extractApiErrorMessage(payload) || 'Erro desconhecido.',
     }
   }
 }
