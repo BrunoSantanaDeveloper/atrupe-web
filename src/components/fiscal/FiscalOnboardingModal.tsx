@@ -31,7 +31,8 @@ import {
   IconAlertTriangle,
 } from '@tabler/icons-react'
 
-import { createItemNew, encodeFileToBase64 } from '@/actions/_cruds'
+import { createItemNew } from '@/actions/_cruds'
+import { encodeFileToBase64 } from '@/lib/file-to-base64'
 import { maskCep, maskCnpj } from '@/lib/utils'
 
 const UF_OPTIONS = [

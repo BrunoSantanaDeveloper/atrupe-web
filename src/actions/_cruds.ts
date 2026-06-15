@@ -437,16 +437,6 @@ export const uploadFile = async (route: string, data: FormData) => {
   }
 }
 
-// Helper to encode file as Base64
-export const encodeFileToBase64 = async (file: Blob) => {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result?.toString().split(',')[1] || '')
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  })
-}
-
 // export const uploadFile = async (
 //   route: string,
 //   data: FormData,
