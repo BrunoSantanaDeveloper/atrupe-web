@@ -43,6 +43,7 @@ interface InvoiceDeliveryAddressSectionProps {
   clientId?: string
   selectedAddressId?: string | null
   pais?: string
+  addresses?: ClientAddressItem[]
   onEntregaToggle: (enabled: boolean) => void
   onAddressSelect: (address: ClientAddressItem | null) => void
   onEntregaChange: (updatedEntrega: NfePrepareEntrega) => void
@@ -83,12 +84,16 @@ export function InvoiceDeliveryAddressSection({
   clientId,
   selectedAddressId,
   pais,
+  addresses,
   onEntregaToggle,
   onAddressSelect,
   onEntregaChange,
 }: InvoiceDeliveryAddressSectionProps) {
   const isEnabled = entrega !== null
-  const { data: addresses } = useClientAddresses({ clientId: clientId || '' })
+  const { data: addressesFromHook } = useClientAddresses({
+    clientId: addresses ? '' : clientId || '',
+  })
+  const addressesList = addresses || addressesFromHook || []
   const [isEditing, setIsEditing] = useState(false)
 
   const isBrazil =
@@ -200,7 +205,7 @@ export function InvoiceDeliveryAddressSection({
               ) : (
                 <div className="flex flex-col">
                   {/* Select address from registered */}
-                  {clientId && addresses && addresses.length > 0 && (
+                  {addressesList.length > 0 && (
                     <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50/50">
                       <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
                         📍 Escolher Endereço Cadastrado:
@@ -212,7 +217,7 @@ export function InvoiceDeliveryAddressSection({
                             onAddressSelect(null)
                             return
                           }
-                          const addr = addresses.find(
+                          const addr = addressesList.find(
                             (a) => a.id === selectedId,
                           )
                           if (addr) {
@@ -231,7 +236,7 @@ export function InvoiceDeliveryAddressSection({
                           <SelectItem value="custom">
                             -- Digitar endereço personalizado --
                           </SelectItem>
-                          {addresses.map((addr) => (
+                          {addressesList.map((addr) => (
                             <SelectItem key={addr.id} value={addr.id}>
                               {addr.type || 'Sem Título'} — {addr.street},{' '}
                               {addr.number} - {addr.city}/{addr.state}

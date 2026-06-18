@@ -345,7 +345,25 @@ export function InvoiceItemEditDialog({
           >
             {/* Aba Valores */}
             <TabsContent value="valores" className="mt-0">
-              <div className="grid grid-cols-2 gap-4 pb-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4">
+                {/* Descrição do Item */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="edit-description">
+                    Descrição / Nome do Item
+                  </Label>
+                  <Input
+                    id="edit-description"
+                    type="text"
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+
                 {/* Quantidade — campo numérico simples (sem R$) */}
                 <div className="space-y-2">
                   <Label htmlFor="edit-quantity">Quantidade</Label>

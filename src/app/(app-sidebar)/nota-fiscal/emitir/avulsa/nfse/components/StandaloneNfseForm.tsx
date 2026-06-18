@@ -23,6 +23,7 @@ import { NfseTomadorSection } from '../../../../emitir-nfse/[orderId]/components
 import { NfseDadosFiscaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseDadosFiscaisSection'
 import { NfseTotaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
+import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 // Icons
@@ -116,6 +117,10 @@ export function StandaloneNfseForm() {
   const [valorServicos, setValorServicos] = useState<number>(0)
 
   const router = useRouter()
+
+  const { data: addresses } = useClientAddresses({
+    clientId: selectedClient?.id || '',
+  })
 
   const fetchDefaults = useCallback(async () => {
     setIsLoading(true)
@@ -444,6 +449,7 @@ export function StandaloneNfseForm() {
             entrega={entrega}
             clientId={selectedClient.id}
             selectedAddressId={selectedAddressId}
+            addresses={addresses}
             onEntregaToggle={handleEntregaToggle}
             onAddressSelect={handleEntregaAddressSelect}
             onEntregaChange={handleEntregaChange}

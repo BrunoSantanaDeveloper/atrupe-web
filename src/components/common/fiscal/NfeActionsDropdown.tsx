@@ -151,7 +151,8 @@ export function NfeActionsDropdown({
 
   const showCce =
     nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
-  const isAuthorized = nfe.status === 'AUTHORIZED'
+  const isAuthorized =
+    nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
 
   return (
     <>

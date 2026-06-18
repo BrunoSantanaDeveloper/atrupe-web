@@ -91,6 +91,7 @@ interface UnifiedInvoiceItem {
   clientName: string
   reference: string
   totalValue: number
+  finalidade?: number
   nfes: NfeItem[]
   nfse?: FiscalRecordWithRejection
   nfce?: {
@@ -128,6 +129,8 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
   if (item.type === 'NFE_AVULSA') {
     if (item.status === 'AUTHORIZED')
       return { label: 'Emitida', variant: 'successLight' as const }
+    if (item.status === 'CORRECTION_SENT')
+      return { label: 'Corrigida', variant: 'successLight' as const }
     if (item.status === 'DRAFT')
       return { label: 'Em digitação', variant: 'blueLight' as const }
     if (item.status === 'REJECTED')
@@ -169,7 +172,9 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
   }
 
   // Type ORDER
-  const authorizedNfe = item.nfes?.find((n) => n.status === 'AUTHORIZED')
+  const authorizedNfe = item.nfes?.find(
+    (n) => n.status === 'AUTHORIZED' || n.status === 'CORRECTION_SENT',
+  )
   if (authorizedNfe)
     return { label: 'Emitida', variant: 'successLight' as const }
 
@@ -204,7 +209,7 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
 const canSelectForConsolidation = (item: UnifiedInvoiceItem) => {
   if (item.type !== 'ORDER') return false
   const hasBlockingNfe = item.nfes?.some((n) =>
-    ['AUTHORIZED', 'DRAFT'].includes(n.status),
+    ['AUTHORIZED', 'DRAFT', 'CORRECTION_SENT'].includes(n.status),
   )
   if (hasBlockingNfe) return false
   return item.status?.toUpperCase() !== 'CANCELED'
@@ -613,7 +618,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                               </Badge>
                             ) : item.type === 'NFE_AVULSA' ? (
                               <Badge variant="purpleLight" className="w-fit">
-                                NF-e Avulsa
+                                {item.finalidade === 2
+                                  ? 'NF-e Complementar'
+                                  : item.finalidade === 4
+                                    ? 'NF-e de Devolução'
+                                    : 'NF-e Avulsa'}
                               </Badge>
                             ) : item.type === 'NFSE_AVULSA' ? (
                               <Badge variant="orangeLight" className="w-fit">
@@ -630,7 +639,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             {(() => {
                               if (item.type === 'ORDER') {
                                 const authorizedNfe = item.nfes?.find(
-                                  (n) => n.status === 'AUTHORIZED',
+                                  (n) =>
+                                    n.status === 'AUTHORIZED' ||
+                                    n.status === 'CORRECTION_SENT',
                                 )
                                 const draftNfe = item.nfes?.find(
                                   (n) => n.status === 'DRAFT',
@@ -873,6 +884,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   const n = item.nfes?.[0]
                                   if (
                                     n?.status === 'AUTHORIZED' ||
+                                    n?.status === 'CORRECTION_SENT' ||
                                     n?.status === 'REJECTED'
                                   ) {
                                     return (
@@ -897,7 +909,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                 // Type ORDER
                                 const authorizedNfe = item.nfes?.find(
-                                  (n) => n.status === 'AUTHORIZED',
+                                  (n) =>
+                                    n.status === 'AUTHORIZED' ||
+                                    n.status === 'CORRECTION_SENT',
                                 )
                                 const draftNfe = item.nfes?.find(
                                   (n) => n.status === 'DRAFT',
