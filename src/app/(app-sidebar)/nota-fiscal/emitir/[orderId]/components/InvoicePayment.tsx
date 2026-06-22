@@ -86,7 +86,12 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
 
   // Sincroniza display quando o valor numérico é atualizado externamente
   useEffect(() => {
-    setCurrencyDisplay(formatBRL(data.pagamento?.valor ?? 0))
+    const parentVal = data.pagamento?.valor ?? 0
+    const parsedDisplay =
+      parseFloat(currencyDisplay.replace(/\./g, '').replace(',', '.')) || 0
+    if (Math.abs(parentVal - parsedDisplay) > 0.009) {
+      setCurrencyDisplay(formatBRL(parentVal))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.pagamento?.valor])
 
@@ -287,22 +292,35 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                       startAdornment={<>R$</>}
                       value={currencyDisplay}
                       onChange={(e) => {
-                        // Permite apenas dígitos, vírgula e ponto
-                        const raw = e.target.value.replace(/[^0-9,.]/g, '')
-                        setCurrencyDisplay(raw)
+                        const raw = e.target.value.replace(/\D/g, '')
+                        if (raw === '') {
+                          setCurrencyDisplay('')
+                          updatePayment('valor', 0)
+                          return
+                        }
+                        const num = Number(raw) / 100
+                        const formatted = num.toLocaleString('pt-BR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                        setCurrencyDisplay(formatted)
+                        updatePayment('valor', Number(num.toFixed(2)))
                       }}
                       onBlur={() => {
-                        // Normaliza: troca ponto de milhar, troca vírgula decimal por ponto
-                        const normalized = currencyDisplay
-                          .replace(/\./g, '') // remove pontos de milhar
-                          .replace(',', '.') // troca vírgula decimal por ponto
-                        const num = parseFloat(normalized)
-                        const safe = isNaN(num) ? 0 : Number(num.toFixed(2))
-                        updatePayment('valor', safe)
-                        setCurrencyDisplay(formatBRL(safe))
+                        if (currencyDisplay === '') {
+                          setCurrencyDisplay(formatBRL(0))
+                          updatePayment('valor', 0)
+                        } else {
+                          const normalized = currencyDisplay
+                            .replace(/\./g, '')
+                            .replace(',', '.')
+                          const num = parseFloat(normalized)
+                          const safe = isNaN(num) ? 0 : Number(num.toFixed(2))
+                          updatePayment('valor', safe)
+                          setCurrencyDisplay(formatBRL(safe))
+                        }
                       }}
                       onFocus={(e) => {
-                        // Mostra apenas os dígitos limpos para facilitar a edição
                         e.target.select()
                       }}
                       className={cn(
@@ -456,23 +474,27 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                             value={
                               dup.valor === 0
                                 ? ''
-                                : String(dup.valor).replace('.', ',')
+                                : dup.valor.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
                             }
                             placeholder="0,00"
                             onChange={(e) => {
-                              const raw = e.target.value.replace(
-                                /[^0-9,.]/g,
-                                '',
-                              )
-                              const normalized = raw
-                                .replace(/\./g, '')
-                                .replace(',', '.')
-                              const num = parseFloat(normalized)
+                              const raw = e.target.value.replace(/\D/g, '')
+                              if (raw === '') {
+                                updateDuplicata(index, 'valor', 0)
+                                return
+                              }
+                              const num = Number(raw) / 100
                               updateDuplicata(
                                 index,
                                 'valor',
-                                isNaN(num) ? 0 : Number(num.toFixed(2)),
+                                Number(num.toFixed(2)),
                               )
+                            }}
+                            onFocus={(e) => {
+                              e.target.select()
                             }}
                           />
                         </div>

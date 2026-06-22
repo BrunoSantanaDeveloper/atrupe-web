@@ -54,7 +54,7 @@ export function NfcePaymentSection({
   const [paymentValue, setPaymentValue] = useState('')
 
   const handleAddPayment = () => {
-    const val = parseFloat(paymentValue.replace(',', '.'))
+    const val = parseFloat(paymentValue.replace(/\./g, '').replace(',', '.'))
     if (isNaN(val) || val <= 0) {
       return
     }
@@ -134,11 +134,28 @@ export function NfcePaymentSection({
               <Input
                 id="payment-value"
                 type="text"
+                inputMode="decimal"
                 placeholder={
                   restante > 0 ? restante.toFixed(2).replace('.', ',') : '0,00'
                 }
                 value={paymentValue}
-                onChange={(e) => setPaymentValue(e.target.value)}
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, '')
+                  if (raw === '') {
+                    setPaymentValue('')
+                    return
+                  }
+                  const num = Number(raw) / 100
+                  setPaymentValue(
+                    num.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }),
+                  )
+                }}
+                onFocus={(e) => {
+                  e.target.select()
+                }}
               />
             </div>
 
