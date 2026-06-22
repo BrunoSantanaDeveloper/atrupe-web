@@ -73,8 +73,8 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
-  const { canManageSalesOrders, hasFeature } = usePlanFeatures()
-  const showCurrentPhase = canManageSalesOrders()
+  const { hasFeature } = usePlanFeatures()
+  const showCurrentPhase = hasFeature('service_order_current_phase')
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
   const filters = { ...searchParams, status }

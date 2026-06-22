@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 // Icons
@@ -177,12 +178,12 @@ export function CorrectionLetterDialog({
         <DialogBody className="space-y-4">
           <div className="space-y-1">
             <Label htmlFor="sequence">Sequência do Evento</Label>
-            <input
+            <Input
               id="sequence"
               type="number"
               value={nextSequence}
               disabled
-              className="w-full h-10 px-3 rounded-md border border-gray-200 bg-gray-50 text-gray-500 text-sm focus:outline-none"
+              className="bg-gray-50 text-gray-500"
             />
           </div>
 

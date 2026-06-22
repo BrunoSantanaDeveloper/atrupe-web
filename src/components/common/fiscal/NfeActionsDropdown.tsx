@@ -65,6 +65,7 @@ export function NfeActionsDropdown({
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const [isConsulting, setIsConsulting] = useState(false)
   const [isSendingEmail, setIsSendingEmail] = useState(false)
+  const [isOpeningDanfe, setIsOpeningDanfe] = useState(false)
 
   const horasDesdeEmissao = nfe.dataEmissao
     ? (Date.now() - new Date(nfe.dataEmissao).getTime()) / (1000 * 60 * 60)
@@ -115,9 +116,48 @@ export function NfeActionsDropdown({
     }
   }
 
-  const handleVerDanfe = () => {
-    if (nfe.danfeUrl) {
-      window.open(nfe.danfeUrl, '_blank')
+  const handleVerDanfe = async () => {
+    const previewWindow = window.open('', '_blank')
+    if (!previewWindow) {
+      toast.error('Permita a abertura de pop-ups para visualizar a DANFE')
+      return
+    }
+
+    setIsOpeningDanfe(true)
+    try {
+      const result = await getItem({
+        route: `/fiscal/nfe/${nfe.id}/danfe`,
+      })
+      if (!result.success) {
+        throw new Error(result.message || 'DANFE nao disponivel')
+      }
+
+      if (result.data?.pdfBase64) {
+        const binary = window.atob(result.data.pdfBase64)
+        const bytes = new Uint8Array(binary.length)
+        for (let index = 0; index < binary.length; index += 1) {
+          bytes[index] = binary.charCodeAt(index)
+        }
+        const url = window.URL.createObjectURL(
+          new Blob([bytes], { type: 'application/pdf' }),
+        )
+        previewWindow.location.href = url
+        window.setTimeout(() => window.URL.revokeObjectURL(url), 60_000)
+        return
+      }
+
+      const fallbackUrl = result.data?.url || nfe.danfeUrl
+      if (!fallbackUrl) throw new Error('DANFE nao disponivel')
+      previewWindow.location.href = fallbackUrl
+    } catch (error) {
+      previewWindow.close()
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Nao foi possivel abrir a DANFE',
+      )
+    } finally {
+      setIsOpeningDanfe(false)
     }
   }
 
@@ -168,9 +208,19 @@ export function NfeActionsDropdown({
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {nfe.danfeUrl && (
-            <DropdownMenuItem onClick={handleVerDanfe}>
-              <IconFileCheck className="mr-2 h-4 w-4" />
+          {isAuthorized && (
+            <DropdownMenuItem
+              disabled={isOpeningDanfe}
+              onClick={(event) => {
+                event.preventDefault()
+                handleVerDanfe()
+              }}
+            >
+              {isOpeningDanfe ? (
+                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <IconFileCheck className="mr-2 h-4 w-4" />
+              )}
               <span>Ver DANFE</span>
             </DropdownMenuItem>
           )}

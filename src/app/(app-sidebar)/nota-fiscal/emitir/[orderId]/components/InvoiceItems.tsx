@@ -291,13 +291,10 @@ export function InvoiceItems({
                       <ProductSelector
                         onAddProduct={onAddProduct}
                         nextItemNumber={data.items.length + 1}
-                        defaultCfop={
-                          (
-                            data as NfePrepareResponse & {
-                              defaultCfop?: string
-                            }
-                          ).defaultCfop || '5101'
-                        }
+                        defaultCfop={data.defaultCfop || '5101'}
+                        preferDefaultCfop={[2, 4].includes(
+                          data.emissao.finalidade,
+                        )}
                       />
                     )}
                   </div>

@@ -52,6 +52,7 @@ interface ProductSelectorProps {
   onAddProduct: (item: NfePrepareItem) => void
   nextItemNumber: number
   defaultCfop?: string
+  preferDefaultCfop?: boolean
 }
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
@@ -69,6 +70,7 @@ export function ProductSelector({
   onAddProduct,
   nextItemNumber,
   defaultCfop = '5101',
+  preferDefaultCfop = false,
 }: ProductSelectorProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -139,7 +141,9 @@ export function ProductSelector({
       productCode: product.code || '',
       description: product.name,
       ncm: fiscal?.ncm || '49119900',
-      cfop: fiscal?.cfopInState || defaultCfop,
+      cfop: preferDefaultCfop
+        ? defaultCfop
+        : fiscal?.cfopInState || defaultCfop,
       cstIcms: fiscal?.icmsCst || '',
       cstIpi: '',
       cstPis: fiscal?.pisCst || '',

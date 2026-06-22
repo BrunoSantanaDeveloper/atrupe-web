@@ -167,4 +167,5 @@ export interface NfePrepareResponse {
   originalNfeChave?: string
   motivoRejeicao?: string | null
   entrega?: NfePrepareEntrega | null
+  defaultCfop?: string
 }
