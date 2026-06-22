@@ -212,9 +212,6 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
         // Venda rápida só disponível no plano full
         return canManageSalesOrders()
       }
-      if (item === 'order') {
-        return canManageSalesOrders()
-      }
     }
 
     // Fiscal section only shown if company has contracted the module
