@@ -4,6 +4,33 @@ import NextAuth, { type User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { UAParser } from 'ua-parser-js'
 
+interface LoginResponse {
+  id: string
+  name: string
+  email: string
+  avatar: string
+  role: string
+  employeeId: string
+  isAdmin: boolean
+  isSystemAdmin: boolean
+  access_token: string
+  sessionId: string
+  permissions: string[]
+  company: {
+    id: string
+    name: string
+    legalName: string
+    logo: string
+    favicon: string
+    subscription: string
+    subscriptionActive: boolean
+    trialEndsAt: string
+    blockLevel: string
+    features: string[]
+    limits: Record<string, number>
+  } | null
+}
+
 declare module 'next-auth' {
   interface Session {
     user: User & {
@@ -69,14 +96,14 @@ export const {
         })
 
         const doLogin = () =>
-          api.post('/auth/login', {
+          api.post<LoginResponse>('/auth/login', {
             username: credentials.username,
             password: credentials.password,
           })
 
-        const buildUser = (authData: Record<string, unknown>) => {
+        const buildUser = (authData: LoginResponse) => {
           const token = `Bearer ${authData.access_token}`
-          const company = authData.company || {}
+          const company = authData.company ?? {}
           return {
             id: authData.id,
             name: authData.name,
@@ -86,20 +113,20 @@ export const {
             employeeId: authData.employeeId,
             isAdmin: authData.isAdmin,
             isSystemAdmin: authData.isSystemAdmin,
-            companyId: company.id || null,
-            companyLogo: company.logo || null,
-            companyFavicon: company.favicon || null,
-            companyName: company.name || null,
-            companyLegalName: company.legalName || null,
+            companyId: company.id ?? null,
+            companyLogo: company.logo ?? null,
+            companyFavicon: company.favicon ?? null,
+            companyName: company.name ?? null,
+            companyLegalName: company.legalName ?? null,
             accessToken: token,
             sessionId: authData.sessionId,
-            subscription: company.subscription || 'FULL',
+            subscription: company.subscription ?? 'FULL',
             subscriptionActive: company.subscriptionActive,
-            trialEndsAt: company.trialEndsAt || null,
-            blockLevel: company.blockLevel || 'NONE',
-            permissions: authData.permissions || [],
-            features: company.features || [],
-            limits: company.limits || {},
+            trialEndsAt: company.trialEndsAt ?? null,
+            blockLevel: company.blockLevel ?? 'NONE',
+            permissions: authData.permissions ?? [],
+            features: company.features ?? [],
+            limits: company.limits ?? {},
           }
         }
 
