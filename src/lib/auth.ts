@@ -83,10 +83,11 @@ export const {
         const headers = request.headers
         const parser = new UAParser(headers.get('user-agent') || '')
 
-        // Instância axios sem interceptores para não chamar redirect() durante o login
+        // Instância axios sem interceptores para não chamar redirect() durante o login.
+        // Sem timeout explícito: o backend pode demorar 20-30s em logins que
+        // disparam sync com Asaas (empresas em TRIAL ou bloqueadas).
         const api = axios.create({
           baseURL: process.env.API_URL,
-          timeout: 10000,
           headers: {
             'Content-Type': 'application/json',
             'x-user-ip':
@@ -94,12 +95,6 @@ export const {
             'x-device-info': JSON.stringify(parser.getResult()),
           },
         })
-
-        const doLogin = () =>
-          api.post<LoginResponse>('/auth/login', {
-            username: credentials.username,
-            password: credentials.password,
-          })
 
         const buildUser = (authData: LoginResponse) => {
           const token = `Bearer ${authData.access_token}`
@@ -131,33 +126,53 @@ export const {
         }
 
         try {
-          const res = await doLogin()
+          const res = await api.post<LoginResponse>('/auth/login', {
+            username: credentials.username,
+            password: credentials.password,
+          })
           return buildUser(res.data)
         } catch (firstError: unknown) {
           const axiosError = firstError as {
             response?: { status?: number }
+            code?: string
             message?: string
           }
           const status = axiosError?.response?.status
+          const code = axiosError?.code
 
-          // Credenciais inválidas: não retenta
+          // Credenciais inválidas: retorna null imediatamente
           if (status === 401 || status === 403) {
             return null
           }
 
-          // Erro transiente (rede, timeout, 5xx): tenta uma vez mais após 600ms
-          console.error('[auth] Login falhou, tentando novamente...', {
-            status,
-            message: axiosError?.message,
-          })
+          // Timeout: o backend ainda está processando (ex: sync Asaas demorado).
+          // Não retenta pois a segunda tentativa também ficaria aguardando.
+          if (code === 'ECONNABORTED') {
+            console.error('[auth] Login timeout — backend demorou demais:', {
+              message: axiosError?.message,
+            })
+            return null
+          }
 
-          await new Promise((resolve) => setTimeout(resolve, 600))
+          // Erro de conectividade (ECONNREFUSED, rede): tenta uma vez mais após 800ms
+          console.error(
+            '[auth] Erro de conectividade no login, retentando...',
+            {
+              code,
+              status,
+              message: axiosError?.message,
+            },
+          )
+
+          await new Promise((resolve) => setTimeout(resolve, 800))
 
           try {
-            const res = await doLogin()
+            const res = await api.post<LoginResponse>('/auth/login', {
+              username: credentials.username,
+              password: credentials.password,
+            })
             return buildUser(res.data)
           } catch {
-            // Ambas as tentativas falharam — retorna null para evitar erro "Configuration"
             return null
           }
         }
