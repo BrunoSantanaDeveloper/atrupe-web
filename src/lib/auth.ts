@@ -59,6 +59,7 @@ export const {
         // Instância axios sem interceptores para não chamar redirect() durante o login
         const api = axios.create({
           baseURL: process.env.API_URL,
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json',
             'x-user-ip':
@@ -67,18 +68,15 @@ export const {
           },
         })
 
-        try {
-          const res = await api.post('/auth/login', {
+        const doLogin = () =>
+          api.post('/auth/login', {
             username: credentials.username,
             password: credentials.password,
           })
 
-          const authData = res.data
+        const buildUser = (authData: Record<string, unknown>) => {
           const token = `Bearer ${authData.access_token}`
-
-          // Para admin do sistema, company é null
           const company = authData.company || {}
-
           return {
             id: authData.id,
             name: authData.name,
@@ -103,15 +101,38 @@ export const {
             features: company.features || [],
             limits: company.limits || {},
           }
+        }
 
-          // eslint-disable-next-line
-        } catch (e: any) {
-          const message =
-            e?.response?.data?.message ||
-            e?.response?.data?.error ||
-            e?.message ||
-            'Erro de autenticação'
-          throw new Error(message)
+        try {
+          const res = await doLogin()
+          return buildUser(res.data)
+        } catch (firstError: unknown) {
+          const axiosError = firstError as {
+            response?: { status?: number }
+            message?: string
+          }
+          const status = axiosError?.response?.status
+
+          // Credenciais inválidas: não retenta
+          if (status === 401 || status === 403) {
+            return null
+          }
+
+          // Erro transiente (rede, timeout, 5xx): tenta uma vez mais após 600ms
+          console.error('[auth] Login falhou, tentando novamente...', {
+            status,
+            message: axiosError?.message,
+          })
+
+          await new Promise((resolve) => setTimeout(resolve, 600))
+
+          try {
+            const res = await doLogin()
+            return buildUser(res.data)
+          } catch {
+            // Ambas as tentativas falharam — retorna null para evitar erro "Configuration"
+            return null
+          }
         }
       },
     }),
