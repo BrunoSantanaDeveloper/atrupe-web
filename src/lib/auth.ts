@@ -145,6 +145,12 @@ export const {
             return null
           }
 
+          // Rate limit (429): retentar dentro da janela só piora. Retorna null.
+          if (status === 429) {
+            console.error('[auth] Login bloqueado por rate limit (429)')
+            return null
+          }
+
           // Timeout: o backend ainda está processando (ex: sync Asaas demorado).
           // Não retenta pois a segunda tentativa também ficaria aguardando.
           if (code === 'ECONNABORTED') {
