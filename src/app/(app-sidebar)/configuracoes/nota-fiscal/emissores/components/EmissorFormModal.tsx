@@ -43,7 +43,6 @@ import { cn } from '@/lib/utils'
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   isDefault: z.boolean().optional(),
-  environment: z.string().optional(),
 
   // Identificação
   emitCrt: z.string().optional(),
@@ -59,23 +58,30 @@ const emissoresSchema = z.object({
   aliquotaIss: z.coerce.number().optional(),
   serieNfce: z.coerce.number().optional(),
   proximoNumeroNfce: z.coerce.number().optional(),
-  cscId: z.string().optional(),
-  cscToken: z.string().optional(),
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
 })
 
 export type EmissorFormValues = z.infer<typeof emissoresSchema>
 
+/**
+ * Garante que o PATCH comum nunca altere ambiente ou credenciais sensíveis.
+ * Ambiente muda apenas via `activate`; CSC via `/environments/:env/csc`;
+ * numeração ambiental via `/environments/:env/numbering`.
+ */
+const sanitizeEmissorPayload = (data: EmissorFormValues) => {
+  const safe: Record<string, unknown> = { ...data }
+  delete safe.environment
+  delete safe.ambiente
+  delete safe.cscId
+  delete safe.cscToken
+  return safe as EmissorFormValues
+}
+
 const crtOptions = [
   { value: '1', label: '1 - Simples Nacional' },
   { value: '2', label: '2 - Simples Nacional - Excesso de sublimite' },
   { value: '3', label: '3 - Regime Normal' },
-]
-
-const ambienteOptions = [
-  { value: 'PRODUCAO', label: 'Produção' },
-  { value: 'HOMOLOGACAO', label: 'Homologação' },
 ]
 
 const certTypeOptions = [
@@ -117,7 +123,6 @@ export function EmissorFormModal({
     defaultValues: {
       name: '',
       isDefault: false,
-      environment: 'HOMOLOGACAO',
       emitCrt: '1',
       serieNfe: 1,
       proximoNumeroNfe: 1,
@@ -125,8 +130,6 @@ export function EmissorFormModal({
       proximoRpsNfse: 1,
       serieNfce: 1,
       proximoNumeroNfce: 1,
-      cscId: '',
-      cscToken: '',
     },
   })
 
@@ -143,7 +146,6 @@ export function EmissorFormModal({
         form.reset({
           name: emissor.name || '',
           isDefault: emissor.isDefault || false,
-          environment: emissor.environment || 'HOMOLOGACAO',
           emitCrt: String(emissor.emitCrt || '1'),
           ie: emissor.ie || '',
           im: emissor.im || '',
@@ -155,8 +157,6 @@ export function EmissorFormModal({
           aliquotaIss: emissor.aliquotaIss,
           serieNfce: emissor.serieNfce || 1,
           proximoNumeroNfce: emissor.proximoNumeroNfce || 1,
-          cscId: emissor.cscId || '',
-          cscToken: '',
           defaultCfop: emissor.defaultCfop || '',
           defaultOperationNature: emissor.defaultOperationNature || '',
         })
@@ -222,11 +222,7 @@ export function EmissorFormModal({
   const handleSubmit = async (data: EmissorFormValues) => {
     setIsSubmitting(true)
     try {
-      await onSave({
-        ...data,
-        cscId: data.cscId || undefined,
-        cscToken: data.cscToken || undefined,
-      })
+      await onSave(sanitizeEmissorPayload(data))
       onOpenChange(false)
     } catch (error) {
       toast.error('Erro ao salvar emissor')
@@ -281,11 +277,21 @@ export function EmissorFormModal({
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormSelect
-                    name="environment"
-                    label="Ambiente"
-                    options={ambienteOptions}
-                  />
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-700">
+                      Ambiente ativo
+                    </label>
+                    <div className="flex h-9 items-center rounded-md border border-gray-200 bg-gray-50 px-3 text-sm text-gray-600">
+                      {emissor?.activeEnvironment === 'PRODUCAO'
+                        ? 'Produção'
+                        : emissor?.activeEnvironment === 'HOMOLOGACAO'
+                          ? 'Homologação'
+                          : 'Não ativado'}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      O ambiente muda apenas pelo assistente de ativação.
+                    </p>
+                  </div>
                   <FormSelect
                     name="emitCrt"
                     label="Código de Regime Tributário"
@@ -480,22 +486,19 @@ export function EmissorFormModal({
                               placeholder="1"
                             />
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormInput
-                              name="cscId"
-                              label="ID do CSC"
-                              placeholder="Ex: 000001"
-                            />
-                            <FormInput
-                              name="cscToken"
-                              label="Token CSC"
-                              type="password"
-                              placeholder={
-                                emissor?.cscConfigured
-                                  ? 'Token cadastrado'
-                                  : 'Informe o token CSC'
-                              }
-                            />
+                          <div className="rounded-md border border-dashed border-gray-200 bg-white p-3">
+                            <p className="text-xs text-gray-600">
+                              CSC:{' '}
+                              <span className="font-medium">
+                                {emissor?.cscConfigured
+                                  ? 'Configurado'
+                                  : 'Não configurado'}
+                              </span>
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              O ID e o token do CSC são configurados por
+                              ambiente no assistente de ativação.
+                            </p>
                           </div>
                         </div>
                       )}

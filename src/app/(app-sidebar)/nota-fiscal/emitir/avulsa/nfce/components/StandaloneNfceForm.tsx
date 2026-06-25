@@ -59,7 +59,8 @@ interface PrepareNfceData {
   prazoCancelamentoMinutos: number
 }
 
-export function StandaloneNfceForm() {
+export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
+  const linkedOrderId = orderId?.trim() || undefined
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -236,6 +237,7 @@ export function StandaloneNfceForm() {
           valor: pag.valor,
         })),
         valorTroco: valorTroco || undefined,
+        orderId: linkedOrderId,
       }
 
       const result = await createItemNew({
@@ -248,7 +250,11 @@ export function StandaloneNfceForm() {
       }
 
       toast.success('NFC-e avulsa emitida com sucesso!')
-      router.push('/nota-fiscal/emitir?tab=gestao')
+      router.push(
+        linkedOrderId
+          ? `/nota-fiscal/emitir?tab=gestao&highlight=${result.data?.id}`
+          : '/nota-fiscal/emitir?tab=gestao',
+      )
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao emitir NFC-e'
@@ -342,6 +348,16 @@ export function StandaloneNfceForm() {
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>
+          </div>
+        )}
+
+        {/* Banner de vínculo com Ordem de Serviço */}
+        {linkedOrderId && (
+          <div className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            Esta NFC-e será vinculada à Ordem de Serviço{' '}
+            <span className="font-mono font-semibold">
+              {linkedOrderId.slice(0, 8)}
+            </span>
           </div>
         )}
 

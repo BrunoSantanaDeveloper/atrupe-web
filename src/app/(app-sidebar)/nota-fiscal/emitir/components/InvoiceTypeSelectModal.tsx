@@ -56,8 +56,6 @@ const invoiceTypes: InvoiceTypeOption[] = [
     icon: IconFileInvoice,
     title: 'NFC-e (Consumidor)',
     description: 'Nota Fiscal de Consumidor',
-    disabled: true,
-    badge: 'Em breve',
   },
 ]
 
@@ -73,6 +71,9 @@ export function InvoiceTypeSelectModal({ open, onOpenChange, orderId }: Props) {
       router.push(`/nota-fiscal/emitir/${orderId}`)
     } else if (type.key === 'nfse') {
       router.push(`/nota-fiscal/emitir-nfse/${orderId}`)
+    } else if (type.key === 'nfce') {
+      const query = orderId ? `?orderId=${encodeURIComponent(orderId)}` : ''
+      router.push(`/nota-fiscal/emitir/avulsa/nfce${query}`)
     }
   }
 

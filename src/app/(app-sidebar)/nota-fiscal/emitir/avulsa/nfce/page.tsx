@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description: 'Emissão de Nota Fiscal de Consumidor Eletrônica Avulsa',
 }
 
-export default function NotaAvulsaNfcePage() {
+export default function NotaAvulsaNfcePage({
+  searchParams,
+}: {
+  searchParams: { orderId?: string }
+}) {
   return (
     <FiscalModuleGate>
       <PermissionGate
@@ -21,7 +25,7 @@ export default function NotaAvulsaNfcePage() {
           </div>
         }
       >
-        <StandaloneNfceForm />
+        <StandaloneNfceForm orderId={searchParams.orderId} />
       </PermissionGate>
     </FiscalModuleGate>
   )

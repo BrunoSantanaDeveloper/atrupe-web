@@ -20,6 +20,8 @@ import {
 // Components
 import { EmissorData, EmissorListItem } from './EmissorListItem'
 import { EmissorFormModal, type EmissorFormValues } from './EmissorFormModal'
+import { ActivationWizardModal } from './ActivationWizardModal'
+import type { FiscalEnv } from '../lib/fiscal-readiness'
 
 // Icons
 import { IconBuilding, IconLoader2 } from '@tabler/icons-react'
@@ -67,6 +69,9 @@ export function EmissoresListClient() {
   )
   const [editType, setEditType] = useState<EditType>('GLOBAL')
   const [deleteEmissor, setDeleteEmissor] = useState<EmissorData | null>(null)
+  const [wizardOpen, setWizardOpen] = useState(false)
+  const [wizardEmissor, setWizardEmissor] = useState<EmissorData | null>(null)
+  const [wizardEnv, setWizardEnv] = useState<FiscalEnv>('PRODUCAO')
 
   // 1. Buscar Empresas
   const { data: companiesResponse, isLoading: isLoadingCompanies } = useQuery({
@@ -97,6 +102,11 @@ export function EmissoresListClient() {
         isDefault: config?.isDefault || false,
         environment: config?.environment, // Se undefined, será tratado como não configurado
 
+        // Estado por ambiente (Plano 2/4)
+        activeEnvironment: config?.activeEnvironment ?? null,
+        environmentSwitchLocked: config?.environmentSwitchLocked ?? null,
+        environments: config?.environments,
+
         // Dados da empresa vindo da API ou fallback para dados da empresa
         company: {
           id: company.id,
@@ -106,10 +116,7 @@ export function EmissoresListClient() {
           stateRegistration: company.general.stateRegistration || undefined,
           municipalRegistration:
             company.general.municipalRegistration || undefined,
-          accessKey:
-            config?.company?.accessKey ||
-            company.fiscal?.accessKey ||
-            undefined,
+          providerConfigured: config?.company?.providerConfigured ?? false,
           partnerKey: config?.company?.partnerKey || undefined,
 
           address: {
@@ -240,17 +247,26 @@ export function EmissoresListClient() {
   })
 
   const testConnectionMutation = useMutation({
-    mutationFn: async (id: string) => {
+    mutationFn: async ({
+      id,
+      environment,
+    }: {
+      id: string
+      environment: FiscalEnv
+    }) => {
       return createItemNew({
-        route: `/fiscal/emissores/${id}/test-connection`,
+        route: `/fiscal/emissores/${id}/environments/${environment}/test-connection`,
         data: {},
       })
     },
     onSuccess: (result) => {
-      if (result.data?.success) toast.success('Conexão OK!')
-      else toast.error('Falha na conexão.')
+      if (result.success && result.data?.success) {
+        toast.success('Autenticação validada!')
+      } else {
+        toast.error(result.message || 'Falha na autenticação.')
+      }
     },
-    onError: (_error) => toast.error('Erro ao testar conexão'),
+    onError: (_error) => toast.error('Erro ao testar autenticação'),
   })
 
   const handleEdit = (emissor: EmissorData, type: EditType = 'GLOBAL') => {
@@ -281,10 +297,30 @@ export function EmissoresListClient() {
   }
 
   // (Wrappers para mutations passadas pro componente)
-  const handleSetDefault = (e: EmissorData) =>
-    setDefaultMutation.mutateAsync(e.id)
-  const handleTestConnection = (e: EmissorData) =>
-    testConnectionMutation.mutateAsync(e.id)
+  const handleSetDefault = (e: EmissorData) => {
+    if (!e.id) return Promise.resolve()
+    return setDefaultMutation.mutateAsync(e.id)
+  }
+  const handleTestConnection = (e: EmissorData) => {
+    if (!e.id) {
+      toast.warning('Configure o emissor antes de testar autenticação.')
+      return Promise.resolve()
+    }
+    return testConnectionMutation.mutateAsync({
+      id: e.id,
+      environment: (e.activeEnvironment ?? 'HOMOLOGACAO') as FiscalEnv,
+    })
+  }
+
+  const handleActivate = (e: EmissorData, environment: FiscalEnv) => {
+    if (!e.id) {
+      handleEdit(e, 'GLOBAL')
+      return
+    }
+    setWizardEmissor(e)
+    setWizardEnv(environment)
+    setWizardOpen(true)
+  }
 
   if (isLoading) {
     return (
@@ -330,6 +366,7 @@ export function EmissoresListClient() {
               onDelete={handleDelete}
               onSetDefault={handleSetDefault}
               onTestConnection={handleTestConnection}
+              onActivate={handleActivate}
             />
           ))}
         </div>
@@ -341,6 +378,13 @@ export function EmissoresListClient() {
         emissor={selectedEmissor}
         editType={editType}
         onSave={handleSave}
+      />
+
+      <ActivationWizardModal
+        open={wizardOpen}
+        onOpenChange={setWizardOpen}
+        emissor={wizardEmissor}
+        environment={wizardEnv}
       />
 
       <AlertDialog

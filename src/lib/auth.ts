@@ -1,10 +1,8 @@
 // Third-party Imports
+import axios from 'axios'
 import NextAuth, { type User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { UAParser } from 'ua-parser-js'
-
-// Lib Imports
-import apiInstance from '@/lib/api'
 
 declare module 'next-auth' {
   interface Session {
@@ -55,18 +53,19 @@ export const {
         password: { label: 'Senha', type: 'password' },
       },
       authorize: async (credentials, request) => {
-        const api = await apiInstance()
-
         const headers = request.headers
-
         const parser = new UAParser(headers.get('user-agent') || '')
 
-        api.defaults.headers['x-user-ip'] =
-          headers.get('x-real-ip') || headers.get('x-forwarded-for')
-
-        api.defaults.headers['x-device-info'] = JSON.stringify(
-          parser.getResult(),
-        )
+        // Instância axios sem interceptores para não chamar redirect() durante o login
+        const api = axios.create({
+          baseURL: process.env.API_URL,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-user-ip':
+              headers.get('x-real-ip') || headers.get('x-forwarded-for') || '',
+            'x-device-info': JSON.stringify(parser.getResult()),
+          },
+        })
 
         try {
           const res = await api.post('/auth/login', {
@@ -75,49 +74,44 @@ export const {
           })
 
           const authData = res.data
+          const token = `Bearer ${authData.access_token}`
 
-          if (res.status === 401) {
-            throw new Error(JSON.stringify(authData))
+          // Para admin do sistema, company é null
+          const company = authData.company || {}
+
+          return {
+            id: authData.id,
+            name: authData.name,
+            email: authData.email,
+            avatar: authData.avatar,
+            role: authData.role,
+            employeeId: authData.employeeId,
+            isAdmin: authData.isAdmin,
+            isSystemAdmin: authData.isSystemAdmin,
+            companyId: company.id || null,
+            companyLogo: company.logo || null,
+            companyFavicon: company.favicon || null,
+            companyName: company.name || null,
+            companyLegalName: company.legalName || null,
+            accessToken: token,
+            sessionId: authData.sessionId,
+            subscription: company.subscription || 'FULL',
+            subscriptionActive: company.subscriptionActive,
+            trialEndsAt: company.trialEndsAt || null,
+            blockLevel: company.blockLevel || 'NONE',
+            permissions: authData.permissions || [],
+            features: company.features || [],
+            limits: company.limits || {},
           }
-
-          if (res.status === 201) {
-            const token = `Bearer ${authData.access_token}`
-            api.defaults.headers.Authorization = token
-
-            // Para admin do sistema, company é null
-            const company = authData.company || {}
-
-            return {
-              id: authData.id,
-              name: authData.name,
-              email: authData.email,
-              avatar: authData.avatar,
-              role: authData.role,
-              employeeId: authData.employeeId,
-              isAdmin: authData.isAdmin,
-              isSystemAdmin: authData.isSystemAdmin,
-              companyId: company.id || null,
-              companyLogo: company.logo || null,
-              companyFavicon: company.favicon || null,
-              companyName: company.name || null,
-              companyLegalName: company.legalName || null,
-              accessToken: token,
-              sessionId: authData.sessionId,
-              subscription: company.subscription || 'FULL',
-              subscriptionActive: company.subscriptionActive,
-              trialEndsAt: company.trialEndsAt || null,
-              blockLevel: company.blockLevel || 'NONE',
-              permissions: authData.permissions || [],
-              features: company.features || [],
-              limits: company.limits || {},
-            }
-          }
-
-          return null
 
           // eslint-disable-next-line
         } catch (e: any) {
-          throw new Error(e.message)
+          const message =
+            e?.response?.data?.message ||
+            e?.response?.data?.error ||
+            e?.message ||
+            'Erro de autenticação'
+          throw new Error(message)
         }
       },
     }),

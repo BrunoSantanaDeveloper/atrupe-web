@@ -60,7 +60,7 @@ import {
 import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/gestao/components/CancelNfeDialog'
 
 // Actions
-import { getData, deleteItemNew } from '@/actions/_cruds'
+import { getData, deleteItemNew, createItemNew } from '@/actions/_cruds'
 
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -166,6 +166,11 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
     if (item.status === 'CONTINGENCY')
       return {
         label: 'Contingência Off-line',
+        variant: 'warningLight' as const,
+      }
+    if (item.status === 'UNKNOWN')
+      return {
+        label: 'Resultado desconhecido',
         variant: 'warningLight' as const,
       }
     return { label: item.status, variant: 'neutralLight' as const }
@@ -715,6 +720,38 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     nfce?.status === 'AUTHORIZED'
                                   const isContingency =
                                     nfce?.status === 'CONTINGENCY'
+                                  const canReprocess =
+                                    nfce?.status === 'UNKNOWN' ||
+                                    nfce?.status === 'PROCESSING'
+
+                                  const handleReprocess = async () => {
+                                    if (!nfce?.id) return
+                                    toast.loading('Reprocessando NFC-e...', {
+                                      id: 'reprocess-nfce',
+                                    })
+                                    try {
+                                      const result = await createItemNew({
+                                        route: `/fiscal/nfce/${nfce.id}/reprocess`,
+                                        data: {},
+                                      })
+                                      if (result.success) {
+                                        toast.success('NFC-e reprocessada', {
+                                          id: 'reprocess-nfce',
+                                        })
+                                      } else {
+                                        toast.error(
+                                          result.message ||
+                                            'Erro ao reprocessar',
+                                          { id: 'reprocess-nfce' },
+                                        )
+                                      }
+                                      fetchOrders()
+                                    } catch {
+                                      toast.error('Erro ao reprocessar NFC-e', {
+                                        id: 'reprocess-nfce',
+                                      })
+                                    }
+                                  }
 
                                   const handleDownloadXml = () => {
                                     if (!nfce?.xmlAutorizado) {
@@ -845,7 +882,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                         {(isAuthorized ||
                                           isContingency ||
-                                          nfce?.status === 'REJECTED') && (
+                                          nfce?.status === 'REJECTED' ||
+                                          nfce?.status === 'UNKNOWN') && (
                                           <>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
@@ -853,6 +891,18 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             >
                                               <IconRefresh className="mr-2 h-4 w-4" />
                                               <span>Consultar SEFAZ</span>
+                                            </DropdownMenuItem>
+                                          </>
+                                        )}
+
+                                        {canReprocess && (
+                                          <>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                              onClick={handleReprocess}
+                                            >
+                                              <IconRefresh className="mr-2 h-4 w-4" />
+                                              <span>Reprocessar NFC-e</span>
                                             </DropdownMenuItem>
                                           </>
                                         )}
