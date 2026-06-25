@@ -103,7 +103,7 @@ export const {
 
         const buildUser = (authData: LoginResponse) => {
           const token = `Bearer ${authData.access_token}`
-          const company = authData.company ?? {}
+          const company = authData.company
           return {
             id: authData.id,
             name: authData.name,
@@ -113,20 +113,20 @@ export const {
             employeeId: authData.employeeId,
             isAdmin: authData.isAdmin,
             isSystemAdmin: authData.isSystemAdmin,
-            companyId: company.id ?? null,
-            companyLogo: company.logo ?? null,
-            companyFavicon: company.favicon ?? null,
-            companyName: company.name ?? null,
-            companyLegalName: company.legalName ?? null,
+            companyId: company?.id ?? null,
+            companyLogo: company?.logo ?? null,
+            companyFavicon: company?.favicon ?? null,
+            companyName: company?.name ?? null,
+            companyLegalName: company?.legalName ?? null,
             accessToken: token,
             sessionId: authData.sessionId,
-            subscription: company.subscription ?? 'FULL',
-            subscriptionActive: company.subscriptionActive,
-            trialEndsAt: company.trialEndsAt ?? null,
-            blockLevel: company.blockLevel ?? 'NONE',
+            subscription: company?.subscription ?? 'FULL',
+            subscriptionActive: company?.subscriptionActive ?? false,
+            trialEndsAt: company?.trialEndsAt ?? null,
+            blockLevel: company?.blockLevel ?? 'NONE',
             permissions: authData.permissions ?? [],
-            features: company.features ?? [],
-            limits: company.limits ?? {},
+            features: company?.features ?? [],
+            limits: company?.limits ?? {},
           }
         }
 
