@@ -91,7 +91,9 @@ export const {
           headers: {
             'Content-Type': 'application/json',
             'x-user-ip':
-              headers.get('x-real-ip') || headers.get('x-forwarded-for') || '',
+              headers.get('x-real-ip') ||
+              (headers.get('x-forwarded-for') ?? '').split(',')[0].trim() ||
+              '',
             'x-device-info': JSON.stringify(parser.getResult()),
           },
         })

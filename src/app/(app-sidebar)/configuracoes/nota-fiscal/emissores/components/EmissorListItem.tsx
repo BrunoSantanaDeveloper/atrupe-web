@@ -294,6 +294,36 @@ export function EmissorListItem({
             >
               <IconPencil size={16} />
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-current"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Mais opções"
+                >
+                  <IconDotsVertical size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onActivate(
+                      emissor,
+                      docState.activeEnv === 'PRODUCAO'
+                        ? 'HOMOLOGACAO'
+                        : 'PRODUCAO',
+                    )
+                  }}
+                >
+                  {docState.activeEnv === 'PRODUCAO'
+                    ? 'Mudar para homologação'
+                    : 'Mudar para produção'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </>
         ) : (
           <Button
