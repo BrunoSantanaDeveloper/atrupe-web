@@ -77,6 +77,7 @@ export type PayrollPdfType = {
     }
   }
   employeeName: string
+  employeeSignatureUrl?: string | null
   reference: string
   items: {
     id: string

@@ -227,7 +227,6 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
           valorUnitario: item.unitValue,
           valorDesconto: item.discount || undefined,
           cean: item.ean || undefined,
-          icmsOrigem: item.cstIcms ? '0' : undefined, // fallback logic
           icmsCst: item.cstIcms || undefined,
           pisCst: item.cstPis || undefined,
           cofinsCst: item.cstCofins || undefined,

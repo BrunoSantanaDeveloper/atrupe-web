@@ -10,6 +10,19 @@ import { PayrollPdf } from './PayrollPdf'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogClose,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 
 // Actions
 import { updateItemNew, getItem } from '@/actions/_cruds'
@@ -33,6 +46,8 @@ interface Props {
 
 export function PayrollActions({ data }: Props) {
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
+  const [showPrintOptions, setShowPrintOptions] = useState(false)
+  const [showSignature, setShowSignature] = useState(true)
   const { open: openAlertDialog } = useAlertDialog()
   const queryClient = useQueryClient()
   const { data: session } = useSession()
@@ -71,10 +86,13 @@ export function PayrollActions({ data }: Props) {
     })
   }
 
-  const handleGeneratePDF = async (payrollData: PayrollDetailType) => {
+  const handleGeneratePDF = async (
+    payrollData: PayrollDetailType,
+    withSignature: boolean,
+  ) => {
     setIsLoadingPDF(true)
+    setShowPrintOptions(false)
     try {
-      // Buscar dados do PDF da API
       const result = await getItem({
         route: `/financial/payroll/${payrollData.id}/pdf-data`,
       })
@@ -85,7 +103,9 @@ export function PayrollActions({ data }: Props) {
 
       const pdfData: PayrollPdfType = result.data
 
-      const blob = await pdf(<PayrollPdf data={pdfData} />).toBlob()
+      const blob = await pdf(
+        <PayrollPdf data={pdfData} showSignature={withSignature} />,
+      ).toBlob()
 
       const url = URL.createObjectURL(blob)
 
@@ -100,13 +120,56 @@ export function PayrollActions({ data }: Props) {
 
   return (
     <>
+      <Dialog
+        open={showPrintOptions}
+        onOpenChange={isLoadingPDF ? undefined : setShowPrintOptions}
+      >
+        <DialogContent className="sm:max-w-[360px]">
+          <DialogHeader>
+            <DialogTitle>Opções de impressão</DialogTitle>
+            <DialogDescription className="sr-only">
+              Imprimir folha de pagamento
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="payroll-show-signature"
+                checked={showSignature}
+                onCheckedChange={(v) => setShowSignature(!!v)}
+              />
+              <Label htmlFor="payroll-show-signature">Exibir assinatura</Label>
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                disabled={isLoadingPDF}
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              RightIcon={IconCircleCheck}
+              isLoading={isLoadingPDF}
+              onClick={() => handleGeneratePDF(data, showSignature)}
+            >
+              Imprimir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="flex justify-between flex-wrap gap-4">
         <PermissionGate permissions={['financial:payroll:view']}>
           <CustomButton
             icon={IconPrinter}
             title="Imprimir"
             isLoading={isLoadingPDF}
-            onClick={() => handleGeneratePDF(data)}
+            onClick={() => setShowPrintOptions(true)}
           />
         </PermissionGate>
         {data.status === 'OPEN' ? (

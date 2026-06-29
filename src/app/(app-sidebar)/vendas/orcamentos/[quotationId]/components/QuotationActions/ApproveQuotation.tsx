@@ -17,12 +17,15 @@ import {
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -41,10 +44,13 @@ interface Props {
 
 export function ApproveQuotation({ data }: Props) {
   const [open, setOpen] = useState(false)
+  const [approvedAt, setApprovedAt] = useState('')
 
   const queryClient = useQueryClient()
-
   const router = useRouter()
+  const { data: session } = useSession()
+
+  const isAdmin = session?.user?.isAdmin
 
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
@@ -57,12 +63,18 @@ export function ApproveQuotation({ data }: Props) {
       )
       return
     }
+    setApprovedAt('')
     setOpen(true)
   }
 
   const handleApprove = async () => {
+    const body =
+      isAdmin && approvedAt
+        ? { approvedAt: new Date(approvedAt).toISOString() }
+        : undefined
     const res = await createItemNew({
       route: `/sale/quotation/${data.id}/approve`,
+      data: body,
     })
     if (!res.success) {
       toast.error(res.message)
@@ -114,6 +126,23 @@ export function ApproveQuotation({ data }: Props) {
             Você será redirecionado para a nova ordem de serviço, e poderá
             acessá-la novamente no menu &quot;Ordens de Serviço&quot;.
           </AlertDialogDescription>
+          {isAdmin && (
+            <div className="flex flex-col gap-1.5 pt-2">
+              <Label
+                htmlFor="approvedAt"
+                className="text-sm text-muted-foreground"
+              >
+                Data de aprovação (retroativa)
+              </Label>
+              <Input
+                id="approvedAt"
+                type="date"
+                value={approvedAt}
+                onChange={(e) => setApprovedAt(e.target.value)}
+                className="w-full"
+              />
+            </div>
+          )}
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Voltar</AlertDialogCancel>

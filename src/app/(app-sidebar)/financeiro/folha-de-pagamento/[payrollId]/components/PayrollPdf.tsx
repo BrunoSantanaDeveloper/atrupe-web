@@ -1,7 +1,14 @@
 'use client'
 
 // Component
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer'
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image,
+} from '@react-pdf/renderer'
 
 // Types
 import { PayrollPdfType } from '@/types/financial/payroll'
@@ -235,9 +242,14 @@ const styles = StyleSheet.create({
 interface Props {
   data: PayrollPdfType
   type?: 'payroll' | 'advance'
+  showSignature?: boolean
 }
 
-export function PayrollPdf({ data, type = 'payroll' }: Props) {
+export function PayrollPdf({
+  data,
+  type = 'payroll',
+  showSignature = true,
+}: Props) {
   const isAdvance = type === 'advance'
   return (
     <Document>
@@ -394,16 +406,29 @@ export function PayrollPdf({ data, type = 'payroll' }: Props) {
               </View>
 
               {/* Assinaturas */}
-              <View style={styles.signatures}>
-                <View style={styles.signatureLine}>
-                  <Text>{data.employeeName}</Text>
+              {showSignature && (
+                <View style={styles.signatures}>
+                  <View style={styles.signatureLine}>
+                    {data.employeeSignatureUrl && (
+                      <Image
+                        src={data.employeeSignatureUrl}
+                        style={{
+                          width: 120,
+                          height: 40,
+                          objectFit: 'contain',
+                          marginBottom: 4,
+                        }}
+                      />
+                    )}
+                    <Text>{data.employeeName}</Text>
+                  </View>
+                  <View style={{ width: '33%' }} />
+                  <View style={styles.signatureLine}>
+                    <Text>{data.company?.name}</Text>
+                    <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                  </View>
                 </View>
-                <View style={{ width: '33%' }} />
-                <View style={styles.signatureLine}>
-                  <Text>{data.company?.name}</Text>
-                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-                </View>
-              </View>
+              )}
             </>
           )}
 

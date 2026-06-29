@@ -20,7 +20,11 @@ import { NfseServicosSection } from './NfseServicosSection'
 import { NfseDadosFiscaisSection } from './NfseDadosFiscaisSection'
 import { NfseTotaisSection } from './NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
-import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
+import { InvoiceRecipientEditDialog } from '../../../emitir/[orderId]/components/InvoiceRecipientEditDialog'
+import type {
+  NfePrepareEntrega,
+  NfePrepareDestinatario,
+} from '@/types/fiscal/nfe-prepare'
 
 // Icons
 import {
@@ -29,7 +33,11 @@ import {
   IconCircleCheck,
   IconAlertTriangle,
   IconAlertTriangleFilled,
+  IconBan,
 } from '@tabler/icons-react'
+
+// Hooks
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
@@ -105,18 +113,27 @@ interface ClientAddressItem {
 }
 
 interface Props {
-  id: string
+  id?: string
+  orderIds?: string[]
 }
 
-export function IssueNfseForm({ id }: Props) {
+export function IssueNfseForm({ id, orderIds }: Props) {
+  const isConsolidated = Boolean(orderIds && orderIds.length > 0)
+  const primaryId = isConsolidated ? orderIds![0] : (id ?? '')
+
+  const alertDialog = useAlertDialog()
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [orderData, setOrderData] = useState<OrderData | null>(null)
+  const [allOrdersData, setAllOrdersData] = useState<OrderData[]>([])
   const [entrega, setEntrega] = useState<NfePrepareEntrega | null>(null)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   )
+  const [isTomadorEditOpen, setIsTomadorEditOpen] = useState(false)
+  const [tomadorOverride, setTomadorOverride] =
+    useState<NfePrepareDestinatario | null>(null)
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -131,41 +148,81 @@ export function IssueNfseForm({ id }: Props) {
     setError(null)
 
     try {
-      const result = await getItem({
-        route: `/sale/order/${id}`,
-      })
+      if (isConsolidated) {
+        const results = await Promise.all(
+          orderIds!.map((oid) => getItem({ route: `/sale/order/${oid}` })),
+        )
 
-      if (!result.success || !result.data) {
-        throw new Error(result.message || 'Erro ao carregar dados da ordem')
-      }
+        const failed = results.find((r) => !r.success || !r.data)
+        if (failed) {
+          throw new Error(failed.message || 'Erro ao carregar dados das ordens')
+        }
 
-      setOrderData(result.data as OrderData)
+        const orders = results.map((r) => r.data as OrderData)
 
-      const deliveryAddr = (result.data as OrderData).quotation?.deliveryInfo
-        ?.clientAddress
-      if (deliveryAddr) {
-        setEntrega({
-          cnpjCpf:
-            result.data.quotation.client?.cnpj ||
-            result.data.quotation.client?.cpf ||
-            '',
-          endereco: deliveryAddr.street || '',
-          numero: deliveryAddr.number || 'S/N',
-          complemento: deliveryAddr.complement || '',
-          bairro: deliveryAddr.neighborhood || '',
-          cidade: deliveryAddr.city || '',
-          estado: deliveryAddr.state || '',
-          cep: deliveryAddr.zipcode || '',
+        const clientIds = [
+          ...new Set(
+            orders.map((o) => o.quotation?.client?.id).filter(Boolean),
+          ),
+        ]
+        if (clientIds.length > 1) {
+          throw new Error(
+            'Todas as ordens devem pertencer ao mesmo cliente para consolidar a NFS-e',
+          )
+        }
+
+        setAllOrdersData(orders)
+        setOrderData(orders[0])
+
+        const allServiceItems = orders.flatMap((o) =>
+          (o.quotation?.quotationItems || []).filter(
+            (item: QuotationItem) => item.product?.isService,
+          ),
+        )
+        if (allServiceItems.length > 0) {
+          setDiscriminacao(
+            allServiceItems
+              .map((item: QuotationItem) => item.description)
+              .join('; '),
+          )
+        }
+      } else {
+        const result = await getItem({
+          route: `/sale/order/${primaryId}`,
         })
-        setSelectedAddressId(deliveryAddr.id)
-      }
 
-      const items = result.data.quotation?.quotationItems || []
-      if (items.length > 0) {
-        const descriptions = items
-          .map((item: QuotationItem) => item.description)
-          .join('; ')
-        setDiscriminacao(descriptions)
+        if (!result.success || !result.data) {
+          throw new Error(result.message || 'Erro ao carregar dados da ordem')
+        }
+
+        setOrderData(result.data as OrderData)
+
+        const deliveryAddr = (result.data as OrderData).quotation?.deliveryInfo
+          ?.clientAddress
+        if (deliveryAddr) {
+          setEntrega({
+            cnpjCpf:
+              result.data.quotation.client?.cnpj ||
+              result.data.quotation.client?.cpf ||
+              '',
+            endereco: deliveryAddr.street || '',
+            numero: deliveryAddr.number || 'S/N',
+            complemento: deliveryAddr.complement || '',
+            bairro: deliveryAddr.neighborhood || '',
+            cidade: deliveryAddr.city || '',
+            estado: deliveryAddr.state || '',
+            cep: deliveryAddr.zipcode || '',
+          })
+          setSelectedAddressId(deliveryAddr.id)
+        }
+
+        const items = result.data.quotation?.quotationItems || []
+        if (items.length > 0) {
+          const descriptions = items
+            .map((item: QuotationItem) => item.description)
+            .join('; ')
+          setDiscriminacao(descriptions)
+        }
       }
     } catch (err) {
       const message =
@@ -175,11 +232,39 @@ export function IssueNfseForm({ id }: Props) {
     } finally {
       setIsLoading(false)
     }
-  }, [id])
+  }, [primaryId, isConsolidated, orderIds])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  const clientToDestinatario = (
+    c: OrderData['quotation']['client'],
+  ): NfePrepareDestinatario => ({
+    razaoSocial: c.corporateName || c.name || '',
+    cnpjCpf: c.cnpj || c.cpf || '',
+    idEstrangeiro: '',
+    ie: '',
+    email: c.email || '',
+    telefone: c.phone || c.mobile || '',
+    cep: c.address?.[0]?.zipcode || '',
+    estado: c.address?.[0]?.state || '',
+    cidade: c.address?.[0]?.city || '',
+    bairro: c.address?.[0]?.neighborhood || '',
+    endereco: c.address?.[0]?.street || '',
+    numero: c.address?.[0]?.number || '',
+    complemento: c.address?.[0]?.complement || '',
+    pais: 'Brasil',
+  })
+
+  const handleTomadorSave = (
+    updated: NfePrepareDestinatario,
+    _options: { updateClient: boolean },
+  ) => {
+    setTomadorOverride(updated)
+    setIsTomadorEditOpen(false)
+    toast.success('Dados do tomador atualizados para esta NFS-e')
+  }
 
   const handleEmit = async () => {
     if (!orderData) return
@@ -197,14 +282,31 @@ export function IssueNfseForm({ id }: Props) {
 
     try {
       const result = await createItemNew({
-        route: '/fiscal/nfse/emit',
+        route: isConsolidated
+          ? '/fiscal/nfse/emit-consolidated'
+          : '/fiscal/nfse/emit',
         data: {
-          orderId: id,
+          ...(isConsolidated ? { orderIds } : { orderId: primaryId }),
           codigoServico,
           discriminacao,
           aliquotaIss: aliquotaIss || undefined,
           issRetido,
           addressId: selectedAddressId || undefined,
+          ...(tomadorOverride
+            ? {
+                tomadorRazaoSocial: tomadorOverride.razaoSocial,
+                tomadorCnpjCpf: tomadorOverride.cnpjCpf || null,
+                tomadorEmail: tomadorOverride.email || null,
+                tomadorTelefone: tomadorOverride.telefone || null,
+                tomadorEndereco: tomadorOverride.endereco || null,
+                tomadorNumero: tomadorOverride.numero || null,
+                tomadorComplemento: tomadorOverride.complemento || null,
+                tomadorBairro: tomadorOverride.bairro || null,
+                tomadorCep: tomadorOverride.cep || null,
+                tomadorMunicipio: tomadorOverride.cidade || null,
+                tomadorUf: tomadorOverride.estado || null,
+              }
+            : {}),
           ...(entrega
             ? {
                 entregaEndereco: entrega.endereco,
@@ -228,13 +330,33 @@ export function IssueNfseForm({ id }: Props) {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Erro ao emitir NFS-e'
-      toast.error(message)
+      alertDialog.open({
+        title: 'Erro na emissão da NFS-e',
+        description: message,
+        Icon: IconBan,
+        iconVariant: 'error',
+        confirmLabel: 'Entendi',
+        cancelLabel: '',
+        onConfirm: () => {},
+      })
     } finally {
       setIsEmitting(false)
     }
   }
 
   const getServicesTotal = () => {
+    if (isConsolidated && allOrdersData.length > 0) {
+      return (
+        allOrdersData.reduce((total, o) => {
+          return (
+            total +
+            (o.quotation?.quotationItems || [])
+              .filter((item) => item.product?.isService)
+              .reduce((acc, item) => acc + (item.finalValue || 0), 0)
+          )
+        }, 0) / 100
+      )
+    }
     if (!orderData?.quotation?.quotationItems) return 0
     return (
       orderData.quotation.quotationItems
@@ -296,10 +418,15 @@ export function IssueNfseForm({ id }: Props) {
   }
 
   const client = orderData.quotation?.client
-  const serviceItems =
-    orderData.quotation?.quotationItems?.filter(
-      (item) => item.product?.isService,
-    ) || []
+  const serviceItems = isConsolidated
+    ? allOrdersData.flatMap((o) =>
+        (o.quotation?.quotationItems || []).filter(
+          (item) => item.product?.isService,
+        ),
+      )
+    : orderData.quotation?.quotationItems?.filter(
+        (item) => item.product?.isService,
+      ) || []
   const isHomologacao =
     orderData.company?.invoicyConfig?.ambiente === 'HOMOLOGACAO'
 
@@ -390,12 +517,17 @@ export function IssueNfseForm({ id }: Props) {
               </Button>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-semibold text-gray-900">
-                  Emissão de NFS-e
+                  {isConsolidated ? 'NFS-e Consolidada' : 'Emissão de NFS-e'}
                 </h1>
                 <span className="text-xl text-gray-400">
                   {client?.corporateName || client?.name}
                 </span>
-                <Badge variant="blueLight" className="ml-2">
+                {isConsolidated && (
+                  <Badge variant="warningLight" className="ml-1">
+                    {orderIds!.length} ordens
+                  </Badge>
+                )}
+                <Badge variant="blueLight" className="ml-1">
                   <div className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
                   Em digitação
                 </Badge>
@@ -412,7 +544,13 @@ export function IssueNfseForm({ id }: Props) {
             />
             <CustomButton
               icon={IconCircleCheck}
-              title={isEmitting ? 'Emitindo...' : 'Emitir NFS-e'}
+              title={
+                isEmitting
+                  ? 'Emitindo...'
+                  : isConsolidated
+                    ? 'Emitir NFS-e Consolidada'
+                    : 'Emitir NFS-e'
+              }
               iconVariant="successLight"
               onClick={handleEmit}
               disabled={isEmitting}
@@ -434,12 +572,15 @@ export function IssueNfseForm({ id }: Props) {
         <NfseTomadorSection
           client={client}
           servicesTotal={formatCurrency(getServicesTotal())}
+          onEditClick={() => setIsTomadorEditOpen(true)}
         />
 
         <InvoiceDeliveryAddressSection
           entrega={entrega}
           clientId={client?.id}
           selectedAddressId={selectedAddressId}
+          pais="Brasil"
+          sectionTitle="Local de Prestação"
           onEntregaToggle={handleEntregaToggle}
           onAddressSelect={handleEntregaAddressSelect}
           onEntregaChange={handleEntregaChange}
@@ -468,6 +609,16 @@ export function IssueNfseForm({ id }: Props) {
           formatCurrency={formatCurrency}
         />
       </div>
+
+      <InvoiceRecipientEditDialog
+        open={isTomadorEditOpen}
+        onOpenChange={setIsTomadorEditOpen}
+        destinatario={
+          tomadorOverride ?? (client ? clientToDestinatario(client) : null!)
+        }
+        clientId={client?.id}
+        onSave={handleTomadorSave}
+      />
     </TooltipProvider>
   )
 }

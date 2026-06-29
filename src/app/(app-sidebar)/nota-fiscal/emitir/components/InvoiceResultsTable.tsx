@@ -440,6 +440,19 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     )
   }
 
+  const handleConsolidateNfse = () => {
+    if (selectedOrders.length < 2) {
+      toast.error('Selecione ao menos duas OSs para consolidar')
+      return
+    }
+
+    router.push(
+      `/nota-fiscal/emitir-nfse/consolidado?orders=${selectedOrders
+        .map((order) => order.id)
+        .join(',')}`,
+    )
+  }
+
   // Cancela/exclui um rascunho de NF-e diretamente da listagem
   const handleCancelDraft = useCallback(
     async (draftId: string) => {
@@ -1036,13 +1049,22 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                 {selectedOrders.length} OS(s) selecionadas - Total:{' '}
                 {formatCurrency(selectedTotal)}
               </p>
-              <Button
-                variant="success"
-                LeftIcon={IconFileInvoice}
-                onClick={handleConsolidate}
-              >
-                Consolidar em uma NF
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="neutralOutline"
+                  LeftIcon={IconFileInvoice}
+                  onClick={handleConsolidateNfse}
+                >
+                  Consolidar em NFS-e
+                </Button>
+                <Button
+                  variant="success"
+                  LeftIcon={IconFileInvoice}
+                  onClick={handleConsolidate}
+                >
+                  Consolidar em NF-e
+                </Button>
+              </div>
             </div>
           </div>
         )}

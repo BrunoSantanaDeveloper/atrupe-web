@@ -1,4 +1,4 @@
-import { buttonVariants } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Accordion,
@@ -9,7 +9,7 @@ import {
 import { cn } from '@/lib/utils'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconUserCog, IconAlertTriangle } from '@tabler/icons-react'
+import { IconUserCog, IconAlertTriangle, IconPencil } from '@tabler/icons-react'
 
 // Types
 
@@ -39,11 +39,13 @@ interface ClientData {
 interface NfseTomadorSectionProps {
   client?: ClientData
   servicesTotal: string
+  onEditClick?: () => void
 }
 
 export function NfseTomadorSection({
   client,
   servicesTotal,
+  onEditClick,
 }: NfseTomadorSectionProps) {
   return (
     <Card className="border-none shadow-sm overflow-hidden">
@@ -56,15 +58,27 @@ export function NfseTomadorSection({
                 Tomador do Serviço
               </CardTitle>
             </div>
-            <AccordionTrigger
-              className={cn(
-                buttonVariants({
-                  variant: 'neutralLight',
-                  size: 'icon',
-                }),
-                'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+            <div className="flex gap-2">
+              {onEditClick && (
+                <Button
+                  variant="neutralLight"
+                  size="icon"
+                  RightIcon={IconPencil}
+                  onClick={onEditClick}
+                  aria-label="Editar tomador"
+                  title="Editar dados do tomador"
+                />
               )}
-            />
+              <AccordionTrigger
+                className={cn(
+                  buttonVariants({
+                    variant: 'neutralLight',
+                    size: 'icon',
+                  }),
+                  'mr-0 [&>svg]:text-gray [&>svg]:size-5',
+                )}
+              />
+            </div>
           </CardHeader>
           <AccordionContent>
             <CardContent className="p-6">

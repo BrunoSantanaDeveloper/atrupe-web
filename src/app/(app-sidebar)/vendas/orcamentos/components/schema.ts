@@ -18,6 +18,7 @@ export const quotationSchema = z.object({
   seriesId: z.string().min(1, { message: 'Selecione uma série' }),
   sellerId: z.string().min(1, { message: 'Selecione um vendedor' }),
   quickSale: z.boolean().default(false),
+  createdAt: z.date().optional(),
 })
 
 export type QuotationFormType = z.infer<typeof quotationSchema>

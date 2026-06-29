@@ -171,9 +171,10 @@ const styles = StyleSheet.create({
 
 interface Props {
   data: ReceiptPdfType
+  showSignature?: boolean
 }
 
-export function ReceiptPdf({ data }: Props) {
+export function ReceiptPdf({ data, showSignature = true }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -228,31 +229,34 @@ export function ReceiptPdf({ data }: Props) {
             </Text>
           </View>
 
-          {/* Seção de acordo */}
-          <View style={styles.clarityTextContainer}>
-            <Text style={styles.clarityParagraph}>
-              e para clareza, firmo(amos) o presente.
-            </Text>
-          </View>
+          {/* Seção de acordo e assinaturas */}
+          {showSignature && (
+            <>
+              <View style={styles.clarityTextContainer}>
+                <Text style={styles.clarityParagraph}>
+                  e para clareza, firmo(amos) o presente.
+                </Text>
+              </View>
 
-          <View style={styles.infoDate}>
-            <View />
-            <View>
-              <Text>De acordo, ____/____/______</Text>
-            </View>
-          </View>
+              <View style={styles.infoDate}>
+                <View />
+                <View>
+                  <Text>De acordo, ____/____/______</Text>
+                </View>
+              </View>
 
-          {/* Assinaturas */}
-          <View style={styles.signatures}>
-            <View style={styles.signatureLine}>
-              <Text>{data.clientName}</Text>
-            </View>
-            <View style={{ width: '33%' }} />
-            <View style={styles.signatureLine}>
-              <Text>{data.company?.name}</Text>
-              <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-            </View>
-          </View>
+              <View style={styles.signatures}>
+                <View style={styles.signatureLine}>
+                  <Text>{data.clientName}</Text>
+                </View>
+                <View style={{ width: '33%' }} />
+                <View style={styles.signatureLine}>
+                  <Text>{data.company?.name}</Text>
+                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                </View>
+              </View>
+            </>
+          )}
         </View>
 
         {/* Número da Página */}

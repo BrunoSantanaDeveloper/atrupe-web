@@ -44,6 +44,7 @@ interface InvoiceDeliveryAddressSectionProps {
   selectedAddressId?: string | null
   pais?: string
   addresses?: ClientAddressItem[]
+  sectionTitle?: string
   onEntregaToggle: (enabled: boolean) => void
   onAddressSelect: (address: ClientAddressItem | null) => void
   onEntregaChange: (updatedEntrega: NfePrepareEntrega) => void
@@ -85,6 +86,7 @@ export function InvoiceDeliveryAddressSection({
   selectedAddressId,
   pais,
   addresses,
+  sectionTitle = 'Local de Entrega',
   onEntregaToggle,
   onAddressSelect,
   onEntregaChange,
@@ -173,7 +175,7 @@ export function InvoiceDeliveryAddressSection({
               <FeaturedIcon variant="neutralOutline" Icon={IconMapPin} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                 <CardTitle className="text-gray-700 font-semibold text-base">
-                  Local de Entrega
+                  {sectionTitle}
                 </CardTitle>
                 <label className="inline-flex items-center gap-2 cursor-pointer text-sm text-gray-500 hover:text-gray-700 select-none">
                   <Checkbox

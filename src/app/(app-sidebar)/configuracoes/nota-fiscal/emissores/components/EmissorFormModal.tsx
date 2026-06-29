@@ -298,19 +298,6 @@ export function EmissorFormModal({
                     options={crtOptions}
                   />
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormInput
-                    name="ie"
-                    label="Inscrição Estadual (IE)"
-                    placeholder="Ex: 123456789"
-                  />
-                  <FormInput
-                    name="im"
-                    label="Inscrição Municipal (IM)"
-                    placeholder="Ex: 12345"
-                  />
-                </div>
               </div>
 
               {/* Certificado Digital */}

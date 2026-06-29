@@ -41,6 +41,7 @@ import {
 import {
   ClientSelect,
   clientToNfeRecipient,
+  getConsumidorFinalFromClient,
 } from '../../components/ClientSelect'
 import {
   getCountryNameByBacen,
@@ -222,6 +223,10 @@ export function StandaloneNfeForm() {
           ...data,
           destinatario: updatedDestinatario,
           clientId: client.id,
+          emissao: {
+            ...data.emissao,
+            consumidorFinal: getConsumidorFinalFromClient(client),
+          },
         })
       }
     },

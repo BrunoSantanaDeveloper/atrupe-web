@@ -51,6 +51,7 @@ import { CorrectionHistorySection } from '@/components/common/fiscal/CorrectionH
 import {
   ClientSelect,
   clientToNfeRecipient,
+  getConsumidorFinalFromClient,
 } from '../../avulsa/components/ClientSelect'
 import {
   getCountryNameByBacen,
@@ -439,6 +440,10 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
       ...data,
       destinatario: updatedDestinatario,
       clientId: client.id,
+      emissao: {
+        ...data.emissao,
+        consumidorFinal: getConsumidorFinalFromClient(client),
+      },
     })
 
     setIsClientChangeOpen(false)

@@ -64,6 +64,7 @@ export type PrintOptionsType = {
   showTotalValue: boolean
   showPaymentDelivery: boolean
   showItemsDetails: boolean
+  showSignature: boolean
 }
 
 interface Props {
@@ -111,6 +112,7 @@ export function PrintQuotationDialog({
       showTotalValue: hasValuesPermission,
       showPaymentDelivery: true,
       showItemsDetails: canShowQuotationItemDetails(),
+      showSignature: true,
     },
   })
 
@@ -316,6 +318,10 @@ export function PrintQuotationDialog({
                       label="Exibir detalhamento dos itens de venda"
                     />
                   )}
+                  <FormCheckbox<PrintOptionsType>
+                    name="showSignature"
+                    label="Exibir assinatura"
+                  />
                 </div>
               </form>
             </Form>

@@ -178,6 +178,8 @@ export function FiscalSetupModal() {
           setOpen(true)
           setShowForm(true)
         } else {
+          localStorage.setItem(DISMISSAL_KEY, 'true')
+          setDismissed(true)
           setOpen(true)
         }
       } catch {

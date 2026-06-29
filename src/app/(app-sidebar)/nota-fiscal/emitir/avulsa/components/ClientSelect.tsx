@@ -53,6 +53,7 @@ export interface ClientData {
   state?: string
   cep?: string
   ie?: string // Inscrição Estadual
+  indicadorIE?: number
   country?: string
   idEstrangeiro?: string
 }
@@ -75,6 +76,7 @@ interface RawClient {
   phone?: string
   mobile?: string
   ie?: string
+  indicadorIE?: number
   addresses?: Array<{
     street?: string
     number?: string
@@ -106,8 +108,17 @@ function mapRawToClientData(raw: RawClient): ClientData {
     state: primaryAddress?.state,
     cep: primaryAddress?.zipcode,
     ie: raw.ie,
+    indicadorIE: raw.indicadorIE,
     country: primaryAddress?.country,
   }
+}
+
+/** Retorna 1 (consumidor final) se o cliente é pessoa física (CPF) ou isento de IE; 0 caso contrário. */
+export function getConsumidorFinalFromClient(client: ClientData): number {
+  const digits = client.cnpjCpf?.replace(/\D/g, '') ?? ''
+  if (digits.length === 11) return 1 // CPF → sempre consumidor final
+  if (client.indicadorIE === 9) return 1 // CNPJ isento → consumidor final
+  return 0
 }
 
 // ─── Exported mapping functions ───────────────────────────────────────────────
