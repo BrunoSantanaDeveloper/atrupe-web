@@ -120,9 +120,7 @@ export function ExportDataButton<T>({
           RightIcon={IconDownload}
           isLoading={isLoading}
           disabled={disabled}
-        >
-          {label}
-        </Button>
+        ></Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-32">
         {formats.map((format) => {

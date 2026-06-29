@@ -325,27 +325,51 @@ export function EmissorListItem({
               </DropdownMenuContent>
             </DropdownMenu>
           </>
-        ) : (
+        ) : switchLocked ? (
           <Button
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-current disabled:opacity-50"
-            disabled={switchLocked}
-            title={
-              switchLocked
-                ? 'Ativação de ambiente temporariamente bloqueada'
-                : undefined
-            }
-            onClick={(e) => {
-              e.stopPropagation()
-              if (!hasEmissor || switchLocked) return
-              onActivate(emissor, 'PRODUCAO')
-            }}
+            disabled
+            title="Ativação de ambiente temporariamente bloqueada"
           >
             <span className="flex items-center gap-2">
-              Configurar produção <IconChevronRight size={14} />
+              Configurar <IconChevronRight size={14} />
             </span>
           </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-current"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="flex items-center gap-2">
+                  Configurar <IconChevronRight size={14} />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onActivate(emissor, 'PRODUCAO')
+                }}
+              >
+                Ativar produção
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onActivate(emissor, 'HOMOLOGACAO')
+                }}
+              >
+                Testar em homologação
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </div>
