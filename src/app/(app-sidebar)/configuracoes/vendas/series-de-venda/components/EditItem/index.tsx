@@ -16,11 +16,13 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
+import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 
 // Icons
 import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
@@ -29,16 +31,18 @@ import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { schema, type FormType } from './schema'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Types
 import type { SaleSeriesType } from '@/types/settings/saleSeries'
+import type { SellerProfileType } from '@/types/settings/sellerProfile'
 
 // Actions
-import { updateItemNew } from '@/actions/_cruds'
+import { getDataOld, updateItemNew } from '@/actions/_cruds'
 import { DisableSerieAlertDialog } from './DisableSerie'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useState, useEffect } from 'react'
 
 export const billingOptions = [
   {
@@ -75,9 +79,27 @@ interface Props {
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const [selectedProfileIds, setSelectedProfileIds] = useState<string[]>([])
 
   const { canBillOnDeliveryAndCheckout, canManageDeliverySchedule } =
     usePlanFeatures()
+
+  const { data: profilesData, isLoading: isLoadingProfiles } = useQuery({
+    staleTime: 60000,
+    queryKey: ['seller-profile-list-series'],
+    queryFn: () => getDataOld({ route: 'sellerProfileRoute', perPage: '100' }),
+    enabled: open,
+  })
+
+  const profiles: SellerProfileType[] = (profilesData?.profiles ?? [])
+    .map((p: { profile: SellerProfileType }) => p.profile)
+    .filter((p: SellerProfileType) => p.isActive)
+
+  useEffect(() => {
+    if (open) {
+      setSelectedProfileIds(rowData?.allowedProfiles?.map((p) => p.id) ?? [])
+    }
+  }, [open, rowData])
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -102,7 +124,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
     const res = await updateItemNew({
       route: `/sale/series/${rowData?.id}`,
-      data,
+      data: { ...data, allowedProfileIds: selectedProfileIds },
     })
 
     if (!res.success) {
@@ -116,6 +138,12 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const handleOpenChange = (openDialog: boolean) => {
     setOpen?.(openDialog ? 'edit' : '')
     reset({})
+  }
+
+  const toggleProfile = (id: string) => {
+    setSelectedProfileIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    )
   }
 
   const filteredBillingOptions = !canBillOnDeliveryAndCheckout()
@@ -226,6 +254,40 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                     />
                   </>
                 )}
+                <Separator className="bg-gray-300" />
+                <div className="w-full space-y-3">
+                  <p className="text-md font-semibold text-gray-700">
+                    Restrição por perfil de vendedor
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Selecione os perfis que podem usar esta série. Se nenhum for
+                    selecionado, todos os vendedores terão acesso.
+                  </p>
+                  {isLoadingProfiles ? (
+                    <div className="flex gap-4 flex-wrap">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} className="h-5 w-32" />
+                      ))}
+                    </div>
+                  ) : profiles.length === 0 ? (
+                    <p className="text-sm text-gray-400">
+                      Nenhum perfil de vendedor cadastrado.
+                    </p>
+                  ) : (
+                    <div className="flex flex-wrap gap-x-6 gap-y-3">
+                      {profiles.map((profile) => (
+                        <CheckboxBasic
+                          key={profile.id}
+                          name={`profile-${profile.id}`}
+                          label={profile.name}
+                          checked={selectedProfileIds.includes(profile.id)}
+                          onCheckedChange={() => toggleProfile(profile.id)}
+                          className="flex-[0_0_auto]"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </form>
             </Form>
           </DialogBody>

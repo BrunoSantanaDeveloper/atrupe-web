@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 // Components
 import { EditItemDialog } from './EditItem'
+import { NewSerieDialog } from './NewSerie'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
@@ -14,17 +15,24 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 // Icons
-import { IconEraser, IconSettings } from '@tabler/icons-react'
+import {
+  IconEraser,
+  IconSettings,
+  IconPlus,
+  IconPower,
+} from '@tabler/icons-react'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, updateItemNew } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 // Types
 import { SaleSeriesType } from '@/types/settings/saleSeries'
@@ -33,6 +41,9 @@ import { WipeTrainingDataAlertDialog } from './WipeTrainingData'
 export function Main() {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<SaleSeriesType>()
+  const [togglingId, setTogglingId] = useState<string>()
+
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -43,10 +54,39 @@ export function Main() {
   const series: SaleSeriesType[] = data?.data || []
   const hasData = !!series
 
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) =>
+      updateItemNew({ route: `/sale/series/${id}`, data: { isActive } }),
+    onSuccess: () => {
+      queryClient.invalidateQueries()
+      toast.success('Status alterado.')
+      setTogglingId(undefined)
+    },
+    onError: () => {
+      toast.error('Ocorreu um erro.')
+      setTogglingId(undefined)
+    },
+  })
+
   return (
     <PermissionGate permissions={['sales_settings:series:view']}>
       <div className="space-y-5">
-        <Topbar title="Série de vendas" previousPage="/configuracoes/vendas" />
+        <Topbar
+          title="Série de vendas"
+          previousPage="/configuracoes/vendas"
+          primaryCta={
+            <PermissionGate permissions={['sales_settings:series:edit']}>
+              <Button
+                variant="default"
+                size="sm"
+                LeftIcon={IconPlus}
+                onClick={() => setOpenDialog('new')}
+              >
+                Nova série
+              </Button>
+            </PermissionGate>
+          }
+        />
         <div className="space-y-4">
           {isLoading ? (
             Array.from({ length: 3 }).map((_, index) => (
@@ -83,6 +123,11 @@ export function Main() {
                       {item?.isDefault && (
                         <Badge variant="blueLight">Padrão</Badge>
                       )}
+                      {item?.allowedProfiles?.length > 0 && (
+                        <Badge variant="neutralLight">
+                          {`${item.allowedProfiles.length} perfil${item.allowedProfiles.length > 1 ? 'is' : ''} restrito${item.allowedProfiles.length > 1 ? 's' : ''}`}
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex gap-3">
                       <TooltipProvider>
@@ -97,21 +142,39 @@ export function Main() {
                             }}
                           />
                         )}
-                        <TooltipProvider>
-                          <PermissionGate
-                            permissions={['sales_settings:series:edit']}
-                          >
-                            <ActionButton
-                              variant="neutralLight"
-                              Icon={IconSettings}
-                              tooltip="Configurar"
-                              onClick={() => {
-                                setOpenDialog('edit')
-                                setRowData(item)
-                              }}
-                            />
-                          </PermissionGate>
-                        </TooltipProvider>
+                        <PermissionGate
+                          permissions={['sales_settings:series:edit']}
+                        >
+                          <ActionButton
+                            variant={
+                              item?.isActive ? 'errorLight' : 'successLight'
+                            }
+                            Icon={IconPower}
+                            tooltip={
+                              item?.isActive ? 'Inativar série' : 'Ativar série'
+                            }
+                            isLoading={
+                              toggleActiveMutation.isPending &&
+                              togglingId === item.id
+                            }
+                            onClick={() => {
+                              setTogglingId(item.id)
+                              toggleActiveMutation.mutate({
+                                id: item.id,
+                                isActive: !item.isActive,
+                              })
+                            }}
+                          />
+                          <ActionButton
+                            variant="neutralLight"
+                            Icon={IconSettings}
+                            tooltip="Configurar"
+                            onClick={() => {
+                              setOpenDialog('edit')
+                              setRowData(item)
+                            }}
+                          />
+                        </PermissionGate>
                       </TooltipProvider>
                     </div>
                   </div>
@@ -149,6 +212,14 @@ export function Main() {
                       supporting="Status de produção"
                       text={item?.productionStatus?.label || '-'}
                     />
+                    {item?.allowedProfiles?.length > 0 && (
+                      <TextSupportingText
+                        supporting="Perfis com acesso"
+                        text={item.allowedProfiles
+                          .map((p) => p.name)
+                          .join(', ')}
+                      />
+                    )}
                   </DetailCardRowItem>
                 </CardContent>
               </Card>
@@ -166,6 +237,7 @@ export function Main() {
           setOpen={setOpenDialog}
           rowData={rowData}
         />
+        <NewSerieDialog open={openDialog === 'new'} setOpen={setOpenDialog} />
         <WipeTrainingDataAlertDialog
           open={openDialog === 'wipe'}
           setOpen={setOpenDialog}

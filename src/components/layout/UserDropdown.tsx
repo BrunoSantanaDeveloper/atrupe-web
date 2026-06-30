@@ -67,7 +67,6 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                 onClick={() =>
                   router.push('/configuracoes/empresa-e-sistema/assinatura')
                 }
-                className="hidden"
               >
                 <CreditCard size={16} className="mr-2" />
                 <span>Assinatura</span>

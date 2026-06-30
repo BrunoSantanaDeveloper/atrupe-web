@@ -26,6 +26,7 @@ export type SaleSeriesType = {
   companyId: string
   isTraining: boolean
   isDefault: boolean
+  allowedProfiles: { id: string; name: string }[]
 }
 
 export type ListSaleSeriessType = {
