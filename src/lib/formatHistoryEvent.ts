@@ -524,6 +524,43 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
         )
       }
       break
+
+    case 'EDITED': {
+      if (item.changes) {
+        const { before, after } = item.changes as {
+          before: Record<string, string | null>
+          after: Record<string, string | null>
+        }
+
+        const fieldLabels: Record<string, string> = {
+          clientId: 'Cliente',
+          sellerId: 'Vendedor',
+          contactId: 'Responsável',
+          deliveryClientAddressId: 'Endereço de entrega',
+        }
+        const nameFields: Record<string, string> = {
+          clientId: 'clientName',
+          sellerId: 'sellerName',
+          contactId: 'contactName',
+        }
+
+        Object.keys(after).forEach((field) => {
+          if (field.endsWith('Name')) return
+          const label = fieldLabels[field] ?? formatKey(field)
+          const nameField = nameFields[field]
+          const beforeVal = nameField
+            ? (before[nameField] ?? before[field] ?? '(vazio)')
+            : (before[field] ?? '(vazio)')
+          const afterVal = nameField
+            ? (after[nameField] ?? after[field] ?? '(vazio)')
+            : (after[field] ?? '(vazio)')
+          if (beforeVal !== afterVal) {
+            details.push(`${label}: ${beforeVal} 🡢 ${afterVal}`)
+          }
+        })
+      }
+      break
+    }
   }
 
   return {
