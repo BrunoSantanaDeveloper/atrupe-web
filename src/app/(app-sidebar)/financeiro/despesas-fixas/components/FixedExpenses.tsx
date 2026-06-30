@@ -105,6 +105,18 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     })
   }
 
+  // Ordenar por dia de vencimento efetivo (crescente)
+  allExpenseItems.sort((a, b) => {
+    const getDueDay = (item: FixedExpenseItemType) => {
+      const installmentDueDate = item.payables?.[0]?.installments?.[0]?.dueDate
+      if (installmentDueDate) return new Date(installmentDueDate).getDate()
+      return item.dueDay
+    }
+    const diff = getDueDay(a) - getDueDay(b)
+    if (diff !== 0) return diff
+    return a.supplierName.localeCompare(b.supplierName, 'pt-BR')
+  })
+
   const hasData = allExpenseItems.length
 
   // Permitir marcar o checkbox apenas as despesas não lançadas
