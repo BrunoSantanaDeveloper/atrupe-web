@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -14,19 +14,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from '@/components/ui/table'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
 import { ClientSelect, ClientData } from '../../components/ClientSelect'
-import { ProductSelector } from '../../nfe/components/ProductSelector'
+import { InvoiceItems } from '../../../[orderId]/components/InvoiceItems'
 import { NfcePaymentSection, Pagamento } from './NfcePaymentSection'
 import { NfceTotalsSection } from './NfceTotalsSection'
 
@@ -36,9 +28,7 @@ import {
   IconCircleCheck,
   IconAlertTriangle,
   IconAlertTriangleFilled,
-  IconFileInvoice,
   IconUser,
-  IconTrash,
   IconMessage,
   IconX,
 } from '@tabler/icons-react'
@@ -47,7 +37,10 @@ import {
 import { getItem, createItemNew } from '@/actions/_cruds'
 
 // Types
-import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'
+import type {
+  NfePrepareItem,
+  NfePrepareResponse,
+} from '@/types/fiscal/nfe-prepare'
 
 interface PrepareNfceData {
   numero: number
@@ -127,7 +120,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
   }
 
   const handleAddProduct = (newItem: NfePrepareItem) => {
-    // Check if product already exists to increase quantity instead of adding duplicate line
+    // Aumenta quantidade se o produto já existe em vez de adicionar linha duplicada
     const existingIndex = items.findIndex(
       (i) => i.productId === newItem.productId,
     )
@@ -148,38 +141,31 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
   const handleRemoveItem = (itemNumber: number) => {
     const newItems = items
       .filter((item) => item.itemNumber !== itemNumber)
-      .map((item, idx) => ({
-        ...item,
-        itemNumber: idx + 1,
-      }))
+      .map((item, idx) => ({ ...item, itemNumber: idx + 1 }))
     setItems(newItems)
   }
 
-  const handleQuantityChange = (itemNumber: number, qty: number) => {
-    if (qty <= 0) return
-    const newItems = items.map((item) => {
-      if (item.itemNumber === itemNumber) {
-        const quantity = qty
-        const totalValue = quantity * item.unitValue - item.discount
-        return { ...item, quantity, totalValue }
-      }
-      return item
-    })
-    setItems(newItems)
-  }
-
-  const handleDiscountChange = (itemNumber: number, disc: number) => {
-    if (disc < 0) return
-    const newItems = items.map((item) => {
-      if (item.itemNumber === itemNumber) {
-        const discount = disc
-        const totalValue = item.quantity * item.unitValue - discount
-        return { ...item, discount, totalValue }
-      }
-      return item
-    })
-    setItems(newItems)
-  }
+  // Adapter: expõe items como NfePrepareResponse para reutilizar InvoiceItems
+  const nfceData = useMemo(
+    (): NfePrepareResponse => ({
+      items,
+      defaultCfop: '5102',
+      emissao: { finalidade: 1 } as NfePrepareResponse['emissao'],
+      orderId: '',
+      quotationId: '',
+      orderCode: '',
+      hasExistingNfe: false,
+      existingNfe: null,
+      destinatario: {} as NfePrepareResponse['destinatario'],
+      transportadora: {} as NfePrepareResponse['transportadora'],
+      volumes: [],
+      pagamento: {} as NfePrepareResponse['pagamento'],
+      duplicatas: [],
+      informacoesComplementares: '',
+      totais: {} as NfePrepareResponse['totais'],
+    }),
+    [items],
+  )
 
   // Compute Totals
   const subtotal = items.reduce(
@@ -429,112 +415,12 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             </Card>
 
             {/* 2. Products Section */}
-            <Card className="border-none shadow-sm overflow-hidden">
-              <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
-                <div className="flex items-center space-x-2.5">
-                  <FeaturedIcon
-                    variant="neutralOutline"
-                    Icon={IconFileInvoice}
-                  />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Itens da Nota
-                  </CardTitle>
-                </div>
-                <ProductSelector
-                  onAddProduct={handleAddProduct}
-                  nextItemNumber={items.length + 1}
-                  defaultCfop="5102"
-                />
-              </CardHeader>
-
-              <CardContent className="p-0">
-                {items.length === 0 ? (
-                  <div className="py-12 text-center text-gray-400 space-y-2">
-                    <p className="text-sm">Nenhum produto adicionado ainda.</p>
-                    <p className="text-xs">
-                      Utilize o botão &quot;Adicionar Produto&quot; acima.
-                    </p>
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-16">Item</TableHead>
-                        <TableHead>Código</TableHead>
-                        <TableHead>Descrição</TableHead>
-                        <TableHead className="w-28">Qtd.</TableHead>
-                        <TableHead>Valor Unit.</TableHead>
-                        <TableHead className="w-32">Desc. (R$)</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead className="w-16 text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {items.map((item) => (
-                        <TableRow key={item.itemNumber}>
-                          <TableCell className="font-medium text-gray-900">
-                            {item.itemNumber}
-                          </TableCell>
-                          <TableCell>{item.productCode}</TableCell>
-                          <TableCell className="font-medium text-gray-800">
-                            {item.description}
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              min="1"
-                              className="h-8 py-1"
-                              value={item.quantity}
-                              onChange={(e) =>
-                                handleQuantityChange(
-                                  item.itemNumber,
-                                  parseInt(e.target.value) || 1,
-                                )
-                              }
-                            />
-                          </TableCell>
-                          <TableCell>
-                            {item.unitValue.toLocaleString('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                            })}
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              min="0"
-                              className="h-8 py-1"
-                              value={item.discount}
-                              onChange={(e) =>
-                                handleDiscountChange(
-                                  item.itemNumber,
-                                  parseFloat(e.target.value) || 0,
-                                )
-                              }
-                            />
-                          </TableCell>
-                          <TableCell className="font-semibold text-gray-900">
-                            {item.totalValue.toLocaleString('pt-BR', {
-                              style: 'currency',
-                              currency: 'BRL',
-                            })}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveItem(item.itemNumber)}
-                              className="text-red-500 hover:text-red-700 transition"
-                            >
-                              <IconTrash size={16} />
-                            </button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            <InvoiceItems
+              data={nfceData}
+              onUpdate={(updated) => setItems(updated.items)}
+              onAddProduct={handleAddProduct}
+              onRemoveItem={handleRemoveItem}
+            />
 
             {/* 3. Payment Section */}
             <NfcePaymentSection

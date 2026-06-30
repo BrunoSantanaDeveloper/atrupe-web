@@ -15,6 +15,22 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { InUsePaymentConditionsSelectField } from '@/components/common/form/global-inputs/InUsePaymentConditionsSelectField'
 import { InUseBankAccountsSelectField } from '@/components/common/form/global-inputs/InUseBankAccountsSelectField'
 
+// Utils
+import {
+  calculatePeriodDates,
+  formatDateToISO,
+  parseDateFromISO,
+  type PeriodType,
+} from '@/lib/filter-utils'
+
+const PERIOD_OPTIONS = [
+  { value: 'current_month', label: 'Mês atual' },
+  { value: 'last_month', label: 'Mês passado' },
+  { value: 'next_7_days', label: 'Próximos 7 dias' },
+  { value: 'next_30_days', label: 'Próximos 30 dias' },
+  { value: 'custom', label: 'Personalizado' },
+]
+
 export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
 
@@ -23,32 +39,18 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
 
   const { canCreateBankAccount, canProvision } = usePlanFeatures()
 
-  const hasUrlParams = searchParams?.startDate && searchParams?.endDate
+  const currentPeriod = (searchParams?.period as string) || ''
+  const isCustomPeriod =
+    currentPeriod === 'custom' ||
+    (!currentPeriod && (searchParams?.startDate || searchParams?.endDate))
 
-  const formatDateToISO = (date: Date): string => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
-  const parseDateFromISO = (dateString: string): Date => {
-    const [year, month, day] = dateString.split('-').map(Number)
-    return new Date(year, month - 1, day, 12, 0, 0, 0)
-  }
-
-  const getDefaultDateRange = (): DateRange | undefined => {
-    if (hasUrlParams) {
-      return {
-        from: parseDateFromISO(searchParams.startDate!),
-        to: parseDateFromISO(searchParams.endDate!),
-      }
-    }
-
-    return undefined
-  }
-
-  const defaultDateRange = getDefaultDateRange()
+  const defaultDateRange: DateRange | undefined =
+    searchParams?.startDate && searchParams?.endDate
+      ? {
+          from: parseDateFromISO(searchParams.startDate as string),
+          to: parseDateFromISO(searchParams.endDate as string),
+        }
+      : undefined
 
   const handleFilter = (key: string, value: string) => {
     if (!value || value === 'all') {
@@ -62,7 +64,27 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
     router.push(`?${params.toString()}`)
   }
 
+  const handlePeriodChange = (period: string) => {
+    params.set('period', period)
+    params.delete('page')
+
+    if (period === 'custom') {
+      router.push(`?${params.toString()}`)
+      return
+    }
+
+    const dates = calculatePeriodDates(period as PeriodType)
+    if (dates) {
+      params.set('startDate', formatDateToISO(dates.startDate))
+      params.set('endDate', formatDateToISO(dates.endDate))
+    }
+
+    router.push(`?${params.toString()}`)
+  }
+
   const handleDateRangeChange = (range: DateRange | undefined) => {
+    params.set('period', 'custom')
+
     if (range?.from && range?.to) {
       params.set('startDate', formatDateToISO(range.from))
       params.set('endDate', formatDateToISO(range.to))
@@ -79,13 +101,24 @@ export function FinancialFlowFilter({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate permissions={['financial:flow:edit']}>
       <>
-        <DateRangePickerBasic
+        <SelectBasic
+          name="period"
           label="Período"
           placeholder="Selecione o período"
-          className="w-full sm:w-[220px]"
-          value={defaultDateRange}
-          onChange={handleDateRangeChange}
+          className="w-full sm:w-[200px]"
+          options={PERIOD_OPTIONS}
+          value={currentPeriod || ''}
+          onChange={handlePeriodChange}
         />
+        {isCustomPeriod && (
+          <DateRangePickerBasic
+            label="Período personalizado"
+            placeholder="Selecione o período"
+            className="w-full sm:w-[220px]"
+            value={defaultDateRange}
+            onChange={handleDateRangeChange}
+          />
+        )}
         {canCreateBankAccount() && (
           <InUseBankAccountsSelectField
             noForm

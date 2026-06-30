@@ -116,7 +116,7 @@ interface DocState {
 
 export function deriveDocState(emissor: EmissorData): DocState {
   if (!emissor.id || !emissor.environments?.length) {
-    return { label: 'Não configurado', tone: 'neutral', activeEnv: null }
+    return { label: 'Pendente', tone: 'warning', activeEnv: null }
   }
 
   const active = emissor.activeEnvironment ?? null
@@ -397,18 +397,116 @@ export function EmissorListItem({
           <div className="font-semibold">{type}</div>
         </div>
       </div>
-      <Button
-        variant="ghost"
-        size="sm"
-        className="h-8 px-2 hover:bg-white/50 text-current"
-        onClick={(e) => {
-          e.stopPropagation()
-          onEdit(emissor, editType)
-        }}
-        title="Editar"
-      >
-        <IconPencil size={18} />
-      </Button>
+
+      <div className="flex items-center gap-1">
+        {docState.tone === 'error' && (
+          <PendenciesPopover label="Ver pendências" />
+        )}
+
+        {isReady ? (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-current"
+              onClick={(e) => {
+                e.stopPropagation()
+                onTestConnection(emissor)
+              }}
+              title="Testar autenticação"
+            >
+              <IconPlugConnected size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-current"
+              onClick={(e) => {
+                e.stopPropagation()
+                onEdit(emissor, editType)
+              }}
+              title="Editar"
+            >
+              <IconPencil size={16} />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-current"
+                  onClick={(e) => e.stopPropagation()}
+                  title="Mais opções"
+                >
+                  <IconDotsVertical size={16} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onActivate(
+                      emissor,
+                      docState.activeEnv === 'PRODUCAO'
+                        ? 'HOMOLOGACAO'
+                        : 'PRODUCAO',
+                    )
+                  }}
+                >
+                  {docState.activeEnv === 'PRODUCAO'
+                    ? 'Mudar para homologação'
+                    : 'Mudar para produção'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        ) : switchLocked ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-current disabled:opacity-50"
+            disabled
+            title="Ativação de ambiente temporariamente bloqueada"
+          >
+            <span className="flex items-center gap-2">
+              Configurar <IconChevronRight size={14} />
+            </span>
+          </Button>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-current"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <span className="flex items-center gap-2">
+                  Configurar <IconChevronRight size={14} />
+                </span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onActivate(emissor, 'PRODUCAO')
+                }}
+              >
+                Ativar produção
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onActivate(emissor, 'HOMOLOGACAO')
+                }}
+              >
+                Testar em homologação
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
     </div>
   )
 

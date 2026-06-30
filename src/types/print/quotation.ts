@@ -162,6 +162,8 @@ type DeliveryType = {
   modality?: string | null
   daysAfterApproval: number
   estimatedDate: string
+  deliveryTime?: string | null
+  deliveryDisplayMode?: 'DAYS' | 'DATE'
   clientAddress: AddressWithTypeType
   freightCost: number
   freightPrice: number

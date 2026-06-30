@@ -276,28 +276,11 @@ export function EmissorFormModal({
                   placeholder="Ex: Matriz, Filial SP"
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">
-                      Ambiente ativo
-                    </label>
-                    <div className="flex h-9 items-center rounded-md border border-gray-200 bg-gray-50 px-3 text-sm text-gray-600">
-                      {emissor?.activeEnvironment === 'PRODUCAO'
-                        ? 'Produção'
-                        : emissor?.activeEnvironment === 'HOMOLOGACAO'
-                          ? 'Homologação'
-                          : 'Não ativado'}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      O ambiente muda apenas pelo assistente de ativação.
-                    </p>
-                  </div>
-                  <FormSelect
-                    name="emitCrt"
-                    label="Código de Regime Tributário"
-                    options={crtOptions}
-                  />
-                </div>
+                <FormSelect
+                  name="emitCrt"
+                  label="Código de Regime Tributário"
+                  options={crtOptions}
+                />
               </div>
 
               {/* Certificado Digital */}

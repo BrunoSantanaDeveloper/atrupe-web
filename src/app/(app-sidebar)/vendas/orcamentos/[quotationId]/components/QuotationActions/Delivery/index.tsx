@@ -22,6 +22,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormRadio } from '@/components/common/form/FormRadio'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
@@ -112,6 +113,8 @@ export function DeliveryDialog({ quotationData }: Props) {
               }
             : {},
         notes: deliveryInfo?.notes || '',
+        deliveryDisplayMode: deliveryInfo?.deliveryDisplayMode ?? 'DAYS',
+        deliveryTime: deliveryInfo?.deliveryTime ?? '',
       })
     }
   }, [reset, deliveryInfo, open])
@@ -135,7 +138,10 @@ export function DeliveryDialog({ quotationData }: Props) {
       data.supplierId = null
     }
 
-    delete data.estimatedDate
+    // Only send estimatedDate when the client chose to display by date
+    if (data.deliveryDisplayMode !== 'DATE') {
+      delete data.estimatedDate
+    }
 
     if (
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
@@ -245,6 +251,21 @@ export function DeliveryDialog({ quotationData }: Props) {
                   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
                   setValue('daysAfterApproval', diffDays)
                 }}
+              />
+              <FormRadio<FormType>
+                name="deliveryDisplayMode"
+                label="Exibir prazo no PDF como"
+                className="w-full"
+                items={[
+                  { value: 'DAYS', label: 'Quantidade de dias' },
+                  { value: 'DATE', label: 'Data exata' },
+                ]}
+              />
+              <FormInput
+                name="deliveryTime"
+                label="Horário de entrega"
+                type="time"
+                width="flex-[1_0_160px]"
               />
               {showSupplierField && (
                 <SupplierSelector

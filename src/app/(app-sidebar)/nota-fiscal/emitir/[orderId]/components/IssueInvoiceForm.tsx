@@ -663,6 +663,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
             clientId={data.clientId}
             selectedAddressId={data.selectedAddressId}
             pais={data.destinatario.pais}
+            destinatarioAddress={data.destinatario}
             onEntregaToggle={handleEntregaToggle}
             onAddressSelect={handleEntregaAddressSelect}
             onEntregaChange={handleEntregaChange}

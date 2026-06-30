@@ -38,6 +38,16 @@ export interface ClientAddressItem {
   type?: string
 }
 
+interface DestinatarioAddress {
+  endereco?: string
+  numero?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  cep?: string
+}
+
 interface InvoiceDeliveryAddressSectionProps {
   entrega: NfePrepareEntrega | null
   clientId?: string
@@ -45,6 +55,7 @@ interface InvoiceDeliveryAddressSectionProps {
   pais?: string
   addresses?: ClientAddressItem[]
   sectionTitle?: string
+  destinatarioAddress?: DestinatarioAddress
   onEntregaToggle: (enabled: boolean) => void
   onAddressSelect: (address: ClientAddressItem | null) => void
   onEntregaChange: (updatedEntrega: NfePrepareEntrega) => void
@@ -87,6 +98,7 @@ export function InvoiceDeliveryAddressSection({
   pais,
   addresses,
   sectionTitle = 'Local de Entrega',
+  destinatarioAddress,
   onEntregaToggle,
   onAddressSelect,
   onEntregaChange,
@@ -200,9 +212,66 @@ export function InvoiceDeliveryAddressSection({
           <AccordionContent>
             <CardContent className="p-0">
               {!isEnabled ? (
-                <div className="p-6 text-center text-sm text-gray-500 bg-gray-50/50">
-                  Entrega será realizada no mesmo endereço cadastrado do
-                  destinatário.
+                <div className="p-6 bg-gray-50/50">
+                  {destinatarioAddress?.endereco ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Rua
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.endereco}
+                          {destinatarioAddress.numero
+                            ? `, ${destinatarioAddress.numero}`
+                            : ''}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Complemento
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.complemento || '—'}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Bairro
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.bairro || '—'}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          CEP
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.cep || '—'}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Cidade
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.cidade || '—'}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                          Estado
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {destinatarioAddress.estado || '—'}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-center text-sm text-gray-400">
+                      Endereço do destinatário não informado.
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col">

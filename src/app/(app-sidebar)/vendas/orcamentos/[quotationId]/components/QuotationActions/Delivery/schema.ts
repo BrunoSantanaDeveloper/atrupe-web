@@ -5,6 +5,8 @@ export const schema = z.object({
   deliveryType: z.string().nullable(),
   daysAfterApproval: z.coerce.number(),
   estimatedDate: z.coerce.date().optional().nullable(),
+  deliveryDisplayMode: z.enum(['DAYS', 'DATE']).default('DAYS'),
+  deliveryTime: z.string().optional(),
   modality: z.string(),
   cost: z.number(),
   value: z.number(),

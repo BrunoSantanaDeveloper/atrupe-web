@@ -61,6 +61,8 @@ export type DeliveryInfoType = {
   cost: number
   value: number
   notes: string
+  deliveryTime?: string
+  deliveryDisplayMode?: 'DAYS' | 'DATE'
   supplier: {
     id: string
     name: string

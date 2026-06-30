@@ -1310,14 +1310,37 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     <Text>{data.delivery.modality}</Text>
                   )}
                 <Text>{data.delivery?.supplier?.name}</Text>
-                {data.delivery?.estimatedDate && isProduction ? (
-                  <Text>
-                    Data estimada:{' '}
-                    {formatToLocaleDate(data.delivery?.estimatedDate)}
-                  </Text>
-                ) : (
-                  <Text>Até {data.delivery?.daysAfterApproval} dias</Text>
-                )}
+                {(() => {
+                  const showDate =
+                    data.delivery?.deliveryDisplayMode === 'DATE' &&
+                    data.delivery?.estimatedDate
+                  const showDays = !showDate && data.delivery?.daysAfterApproval
+
+                  if (showDate) {
+                    const timePart = data.delivery?.deliveryTime
+                      ? ` às ${data.delivery.deliveryTime}`
+                      : ''
+                    return (
+                      <Text>
+                        Entrega em:{' '}
+                        {formatToLocaleDate(data.delivery.estimatedDate)}
+                        {timePart}
+                      </Text>
+                    )
+                  }
+                  if (showDays) {
+                    const timePart = data.delivery?.deliveryTime
+                      ? ` às ${data.delivery.deliveryTime}`
+                      : ''
+                    return (
+                      <Text>
+                        Até {data.delivery.daysAfterApproval} dias
+                        {timePart}
+                      </Text>
+                    )
+                  }
+                  return null
+                })()}
                 <Text>
                   {[
                     data.delivery?.clientAddress?.street,

@@ -579,6 +579,15 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           selectedAddressId={selectedAddressId}
           pais="Brasil"
           sectionTitle="Local de Prestação"
+          destinatarioAddress={{
+            endereco: client?.address?.[0]?.street,
+            numero: client?.address?.[0]?.number,
+            complemento: client?.address?.[0]?.complement,
+            bairro: client?.address?.[0]?.neighborhood,
+            cidade: client?.address?.[0]?.city,
+            estado: client?.address?.[0]?.state,
+            cep: client?.address?.[0]?.zipcode,
+          }}
           onEntregaToggle={handleEntregaToggle}
           onAddressSelect={handleEntregaAddressSelect}
           onEntregaChange={handleEntregaChange}

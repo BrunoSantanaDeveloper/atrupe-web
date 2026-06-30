@@ -23,6 +23,7 @@ import {
   IconAlertTriangle,
   IconCircleCheckFilled,
   IconCircleXFilled,
+  IconInfoCircle,
   IconLoader2,
   IconPlugConnected,
 } from '@tabler/icons-react'
@@ -258,6 +259,33 @@ export function ActivationWizardModal({
           {/* 3. CSC */}
           {step === 2 && (
             <div className="space-y-4">
+              <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50 p-3 text-blue-800 text-sm">
+                <IconInfoCircle className="h-4 w-4 shrink-0 mt-0.5 text-blue-500" />
+                <div className="space-y-1">
+                  <p className="font-medium">Como obter o CSC da NFC-e</p>
+                  <ol className="list-decimal pl-4 space-y-0.5 text-blue-700">
+                    <li>Acesse o portal da SEFAZ do seu estado.</li>
+                    <li>Autentique-se com o certificado digital da empresa.</li>
+                    <li>
+                      Navegue até <strong>NFC-e → Cadastro de CSC</strong> (ou
+                      equivalente no portal do seu estado).
+                    </li>
+                    <li>
+                      Gere ou consulte o <strong>ID do CSC</strong> e o{' '}
+                      <strong>Token CSC</strong> para o ambiente de{' '}
+                      {isProducao ? 'produção' : 'homologação'}.
+                    </li>
+                  </ol>
+                  {!isProducao && (
+                    <p className="text-blue-600 mt-1">
+                      Em homologação, alguns estados disponibilizam um CSC de
+                      teste fixo — consulte a documentação da SEFAZ do seu
+                      estado.
+                    </p>
+                  )}
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <Label>ID do CSC</Label>
                 <Input
