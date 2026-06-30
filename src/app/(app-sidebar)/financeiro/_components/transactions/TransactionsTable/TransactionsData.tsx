@@ -33,6 +33,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { CardFooter, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -225,7 +226,17 @@ export function TransactionsData({ type, searchParams }: Props) {
                                     item?.supplier?.name ||
                                     item?.employee?.name}
                                 </p>
-                                <p className="text-gray">{description}</p>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {item?.invoiceType &&
+                                    item.invoiceType !== 'OTHER' && (
+                                      <Badge size="sm" variant="blueLight">
+                                        {item.invoiceType === 'NFE'
+                                          ? 'NF-e'
+                                          : 'NFS-e'}
+                                      </Badge>
+                                    )}
+                                  <p className="text-gray">{description}</p>
+                                </div>
                               </TableCell>
                               <TableCell className="text-gray-600">
                                 {`${currentInstallment?.installmentNumber} / ${item?.installmentsQuantity}`}

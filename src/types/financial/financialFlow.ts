@@ -53,6 +53,7 @@ export type TransactionListType = {
   status: 'PENDING' | 'PROVISIONED' | 'PAID' | 'OVERDUE' | 'CANCELED'
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
   quotationId?: string
+  invoiceType?: 'NFE' | 'NFSE' | 'OTHER' | null
 }
 
 export type TransactionDetailsType = {
@@ -84,6 +85,7 @@ export type TransactionDetailsType = {
   installments: InstallmentType[]
   expenseSource?: 'SUPPLIER' | 'EMPLOYEE' | 'CLIENT' | 'OTHER'
   quotationId?: string
+  invoiceType?: 'NFE' | 'NFSE' | 'OTHER' | null
 }
 
 export type TransactionDataType = {

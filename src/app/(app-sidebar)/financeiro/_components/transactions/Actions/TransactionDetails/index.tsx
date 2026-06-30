@@ -145,7 +145,18 @@ export function TransactionDetailsDialog({
               supporting="Descrição"
               text={rowData?.description}
             />
-            <TextSupportingText supporting="Tipo de NF" text={''} />
+            <TextSupportingText
+              supporting="Tipo de NF"
+              text={
+                data?.invoiceType === 'NFE'
+                  ? 'NF-e (Produto)'
+                  : data?.invoiceType === 'NFSE'
+                    ? 'NFS-e (Serviço)'
+                    : data?.invoiceType === 'OTHER'
+                      ? 'A definir'
+                      : '-'
+              }
+            />
           </DetailCardRowItem>
           <DetailCardRowItem
             className="lg:grid-cols-3 px-0"

@@ -205,12 +205,20 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                                     item?.supplier?.name ||
                                     item?.employee?.name}
                                 </p>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap items-center">
                                   {item?.status === 'CANCELED' && (
                                     <Badge size="sm" variant="errorLight">
                                       Cancelado
                                     </Badge>
                                   )}
+                                  {item?.invoiceType &&
+                                    item.invoiceType !== 'OTHER' && (
+                                      <Badge size="sm" variant="blueLight">
+                                        {item.invoiceType === 'NFE'
+                                          ? 'NF-e'
+                                          : 'NFS-e'}
+                                      </Badge>
+                                    )}
                                   <p className="text-gray truncate">
                                     {item?.description}
                                   </p>
