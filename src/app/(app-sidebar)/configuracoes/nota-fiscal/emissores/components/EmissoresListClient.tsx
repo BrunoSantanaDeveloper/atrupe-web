@@ -72,6 +72,9 @@ export function EmissoresListClient() {
   const [wizardOpen, setWizardOpen] = useState(false)
   const [wizardEmissor, setWizardEmissor] = useState<EmissorData | null>(null)
   const [wizardEnv, setWizardEnv] = useState<FiscalEnv>('PRODUCAO')
+  const [wizardDocType, setWizardDocType] = useState<'NFE' | 'NFSE' | 'NFCE'>(
+    'NFCE',
+  )
 
   // 1. Buscar Empresas
   const { data: companiesResponse, isLoading: isLoadingCompanies } = useQuery({
@@ -312,13 +315,18 @@ export function EmissoresListClient() {
     })
   }
 
-  const handleActivate = (e: EmissorData, environment: FiscalEnv) => {
+  const handleActivate = (
+    e: EmissorData,
+    environment: FiscalEnv,
+    docType: 'NFE' | 'NFSE' | 'NFCE',
+  ) => {
     if (!e.id) {
       handleEdit(e, 'GLOBAL')
       return
     }
     setWizardEmissor(e)
     setWizardEnv(environment)
+    setWizardDocType(docType)
     setWizardOpen(true)
   }
 
@@ -385,6 +393,7 @@ export function EmissoresListClient() {
         onOpenChange={setWizardOpen}
         emissor={wizardEmissor}
         environment={wizardEnv}
+        docType={wizardDocType}
       />
 
       <AlertDialog

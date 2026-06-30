@@ -40,6 +40,7 @@ interface ActivationWizardModalProps {
   environment: FiscalEnv
   open: boolean
   onOpenChange: (open: boolean) => void
+  docType?: 'NFE' | 'NFSE' | 'NFCE'
   /** Habilita o passo de numeração ambiental (requer backend PATCH /numbering). */
   numberingEnabled?: boolean
 }
@@ -59,11 +60,13 @@ export function ActivationWizardModal({
   environment,
   open,
   onOpenChange,
+  docType = 'NFCE',
   numberingEnabled = true,
 }: ActivationWizardModalProps) {
   const queryClient = useQueryClient()
   const emissorId = emissor?.id ?? ''
   const isProducao = environment === 'PRODUCAO'
+  const isNfce = docType === 'NFCE'
 
   const [step, setStep] = useState(0)
   const [idempotencyKey, setIdempotencyKey] = useState('')
@@ -75,7 +78,7 @@ export function ActivationWizardModal({
   const [activationError, setActivationError] = useState<string | null>(null)
   const [activated, setActivated] = useState(false)
 
-  const readiness = useEmissorReadiness(emissorId, environment, open)
+  const readiness = useEmissorReadiness(emissorId, environment, open, docType)
 
   // Reset ao abrir; gera um novo idempotencyKey por tentativa de ativação.
   useEffect(() => {
@@ -192,8 +195,27 @@ export function ActivationWizardModal({
 
   if (!emissor) return null
 
-  const goNext = () => setStep((s) => Math.min(s + 1, STEPS.length - 1))
-  const goBack = () => setStep((s) => Math.max(s - 1, 0))
+  // Steps 2 (CSC) e 3 (numeração) são exclusivos de NFC-e
+  const goNext = () => {
+    const next = step + 1
+    if (!isNfce && (next === 2 || next === 3)) {
+      setStep(4)
+    } else {
+      setStep(Math.min(next, STEPS.length - 1))
+    }
+  }
+  const goBack = () => {
+    const prev = step - 1
+    if (!isNfce && (prev === 2 || prev === 3)) {
+      setStep(1)
+    } else {
+      setStep(Math.max(prev, 0))
+    }
+  }
+
+  // Número de passos visíveis e posição atual para exibição no cabeçalho
+  const totalSteps = isNfce ? STEPS.length : STEPS.length - 2
+  const displayStep = isNfce ? step + 1 : step <= 1 ? step + 1 : step - 1
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -204,7 +226,7 @@ export function ActivationWizardModal({
             {emissor.company?.name || emissor.name}
           </DialogTitle>
           <DialogDescription>
-            Passo {step + 1} de {STEPS.length}: {STEPS[step]}
+            Passo {displayStep} de {totalSteps}: {STEPS[step]}
           </DialogDescription>
         </DialogHeader>
 
@@ -216,11 +238,34 @@ export function ActivationWizardModal({
                 A ativação de {ENV_LABEL[environment].toLowerCase()} depende de
                 itens sob responsabilidade da empresa/contabilidade:
               </p>
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Credenciamento do CNPJ para NFC-e (modelo 65) na SEFAZ.</li>
-                <li>Geração do CSC e do ID do CSC no portal fiscal.</li>
-                <li>Confirmação da série e do próximo número fiscal.</li>
-              </ul>
+              {isNfce ? (
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    Credenciamento do CNPJ para NFC-e (modelo 65) na SEFAZ.
+                  </li>
+                  <li>
+                    Geração do CSC e do ID do CSC no portal fiscal do seu
+                    estado.
+                  </li>
+                  <li>Confirmação da série e do próximo número fiscal.</li>
+                </ul>
+              ) : docType === 'NFSE' ? (
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    Credenciamento do CNPJ na prefeitura para emissão de NFS-e.
+                  </li>
+                  <li>Inscrição Municipal (IM) válida e ativa.</li>
+                  <li>Confirmação da série e do próximo número de RPS.</li>
+                </ul>
+              ) : (
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    Credenciamento do CNPJ para NF-e (modelo 55) na SEFAZ.
+                  </li>
+                  <li>Inscrição Estadual (IE) válida e ativa.</li>
+                  <li>Confirmação da série e do próximo número fiscal.</li>
+                </ul>
+              )}
               {isProducao && (
                 <div className="flex items-start gap-2 rounded-lg border border-warning-100 bg-warning-50 p-3 text-warning-700">
                   <IconAlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />

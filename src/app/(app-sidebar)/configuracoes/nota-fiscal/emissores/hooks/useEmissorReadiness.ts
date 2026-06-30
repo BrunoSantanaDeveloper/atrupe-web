@@ -14,14 +14,16 @@ export function useEmissorReadiness(
   emissorId: string,
   environment: FiscalEnv,
   enabled: boolean,
+  docType?: 'NFE' | 'NFSE' | 'NFCE',
 ) {
   return useQuery({
-    queryKey: ['emissor-readiness', emissorId, environment],
+    queryKey: ['emissor-readiness', emissorId, environment, docType],
     enabled: enabled && !!emissorId,
     staleTime: 30_000,
     queryFn: async () => {
+      const params = docType ? `?docType=${docType}` : ''
       const res = await getData({
-        route: `/fiscal/emissores/${emissorId}/environments/${environment}/readiness`,
+        route: `/fiscal/emissores/${emissorId}/environments/${environment}/readiness${params}`,
       })
       if (!res.success) {
         throw new Error(

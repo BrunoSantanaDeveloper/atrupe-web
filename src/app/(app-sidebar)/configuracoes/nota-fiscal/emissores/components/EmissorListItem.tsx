@@ -150,7 +150,11 @@ interface EmissorListItemProps {
   onDelete: (emissor: EmissorData) => void
   onSetDefault: (emissor: EmissorData) => void
   onTestConnection: (emissor: EmissorData) => void
-  onActivate: (emissor: EmissorData, environment: FiscalEnv) => void
+  onActivate: (
+    emissor: EmissorData,
+    environment: FiscalEnv,
+    docType: 'NFE' | 'NFSE' | 'NFCE',
+  ) => void
 }
 
 const toneClasses: Record<DocTone, string> = {
@@ -315,6 +319,7 @@ export function EmissorListItem({
                       docState.activeEnv === 'PRODUCAO'
                         ? 'HOMOLOGACAO'
                         : 'PRODUCAO',
+                      'NFCE',
                     )
                   }}
                 >
@@ -355,7 +360,7 @@ export function EmissorListItem({
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation()
-                  onActivate(emissor, 'PRODUCAO')
+                  onActivate(emissor, 'PRODUCAO', 'NFCE')
                 }}
               >
                 Ativar produção
@@ -363,7 +368,7 @@ export function EmissorListItem({
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation()
-                  onActivate(emissor, 'HOMOLOGACAO')
+                  onActivate(emissor, 'HOMOLOGACAO', 'NFCE')
                 }}
               >
                 Testar em homologação
@@ -450,6 +455,7 @@ export function EmissorListItem({
                       docState.activeEnv === 'PRODUCAO'
                         ? 'HOMOLOGACAO'
                         : 'PRODUCAO',
+                      editType,
                     )
                   }}
                 >
@@ -490,7 +496,7 @@ export function EmissorListItem({
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation()
-                  onActivate(emissor, 'PRODUCAO')
+                  onActivate(emissor, 'PRODUCAO', editType)
                 }}
               >
                 Ativar produção
@@ -498,7 +504,7 @@ export function EmissorListItem({
               <DropdownMenuItem
                 onClick={(e) => {
                   e.stopPropagation()
-                  onActivate(emissor, 'HOMOLOGACAO')
+                  onActivate(emissor, 'HOMOLOGACAO', editType)
                 }}
               >
                 Testar em homologação
