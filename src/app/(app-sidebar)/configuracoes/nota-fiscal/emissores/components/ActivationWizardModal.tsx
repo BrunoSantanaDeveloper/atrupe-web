@@ -31,7 +31,11 @@ import {
 import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 import { useEmissorReadiness } from '../hooks/useEmissorReadiness'
-import { ENV_LABEL, type FiscalEnv } from '../lib/fiscal-readiness'
+import {
+  ENV_LABEL,
+  readinessLabel,
+  type FiscalEnv,
+} from '../lib/fiscal-readiness'
 import { ReadinessChecklist } from './ReadinessChecklist'
 import type { EmissorData } from './EmissorListItem'
 
@@ -442,12 +446,14 @@ export function ActivationWizardModal({
                   <span className="text-gray-500">Ambiente:</span>{' '}
                   {ENV_LABEL[environment]}
                 </p>
-                <p>
-                  <span className="text-gray-500">CSC:</span>{' '}
-                  {emissor.cscConfigured || cscToken
-                    ? 'Configurado'
-                    : 'Não configurado'}
-                </p>
+                {isNfce && (
+                  <p>
+                    <span className="text-gray-500">CSC:</span>{' '}
+                    {emissor.cscConfigured || cscToken
+                      ? 'Configurado'
+                      : 'Não configurado'}
+                  </p>
+                )}
                 <p className="flex items-center gap-1">
                   <span className="text-gray-500">Prontidão:</span>{' '}
                   {ready ? (
@@ -464,6 +470,44 @@ export function ActivationWizardModal({
                 </p>
               </div>
 
+              {!ready &&
+                readiness.data?.blocking &&
+                readiness.data.blocking.length > 0 && (
+                  <div className="rounded-lg border border-error-100 bg-error-50 p-3 space-y-2">
+                    <p className="text-xs font-semibold text-error-700">
+                      Pendências que impedem a ativação:
+                    </p>
+                    <ul className="space-y-1">
+                      {readiness.data.blocking.map((check) => {
+                        const detail = readiness.data?.checks.find(
+                          (c) => c.check === check,
+                        )
+                        return (
+                          <li
+                            key={check}
+                            className="text-xs text-error-700 flex items-start gap-1.5"
+                          >
+                            <IconCircleXFilled className="h-3 w-3 shrink-0 mt-0.5" />
+                            <span>
+                              <span className="font-medium">
+                                {readinessLabel(check)}
+                              </span>
+                              {detail?.message && `: ${detail.message}`}
+                            </span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="text-xs text-error-700 underline underline-offset-2 hover:text-error-900"
+                    >
+                      Ver diagnóstico completo
+                    </button>
+                  </div>
+                )}
+
               {isProducao && (
                 <label className="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
                   <Checkbox
@@ -477,12 +521,6 @@ export function ActivationWizardModal({
                     fiscal.
                   </span>
                 </label>
-              )}
-
-              {!ready && (
-                <p className="text-xs text-error-700">
-                  Resolva as pendências do diagnóstico antes de ativar.
-                </p>
               )}
             </div>
           )}
