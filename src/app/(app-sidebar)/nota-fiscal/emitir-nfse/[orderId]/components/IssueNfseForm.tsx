@@ -160,11 +160,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
 
         const orders = results.map((r) => r.data as OrderData)
 
-        const clientIds = [
-          ...new Set(
-            orders.map((o) => o.quotation?.client?.id).filter(Boolean),
-          ),
-        ]
+        const clientIds = orders
+          .map((o) => o.quotation?.client?.id)
+          .filter((id, index, self) => id && self.indexOf(id) === index)
         if (clientIds.length > 1) {
           throw new Error(
             'Todas as ordens devem pertencer ao mesmo cliente para consolidar a NFS-e',

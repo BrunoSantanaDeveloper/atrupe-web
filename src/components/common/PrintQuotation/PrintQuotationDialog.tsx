@@ -64,7 +64,7 @@ export type PrintOptionsType = {
   showTotalValue: boolean
   showPaymentDelivery: boolean
   showItemsDetails: boolean
-  showSignature: boolean
+  showSignature?: boolean
 }
 
 interface Props {
