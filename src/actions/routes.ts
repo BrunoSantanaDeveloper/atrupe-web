@@ -6,6 +6,7 @@ const defaultRoute: { [key: string]: string } = {
   saleSeriesRoute: '/sale/series',
   quotationStatusRoute: '/sale/status',
   cancelReasonRoute: '/cancel-reason',
+  contactSourceRoute: '/contact-source',
   sellerProfileRoute: '/profile',
   sellerProfileEmployeeRoute: '/profile/employees', // Colaboradores sem perfil de vendedor
 

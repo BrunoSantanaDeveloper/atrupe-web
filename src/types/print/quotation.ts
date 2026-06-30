@@ -159,6 +159,7 @@ type DeliverySupplierType = {
 // Tipo para entrega
 type DeliveryType = {
   supplier: DeliverySupplierType
+  modality?: string | null
   daysAfterApproval: number
   estimatedDate: string
   clientAddress: AddressWithTypeType

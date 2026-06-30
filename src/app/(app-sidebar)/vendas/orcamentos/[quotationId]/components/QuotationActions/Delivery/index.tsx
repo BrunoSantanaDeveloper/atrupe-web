@@ -19,6 +19,7 @@ import { Button, buttonVariants } from '@/components/ui/button'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -264,10 +265,16 @@ export function DeliveryDialog({ quotationData }: Props) {
               />
               {showCustomAddressFields && (
                 <>
-                  <FormInput
+                  <FormInputZipCode
                     name="customAddress.zipcode"
                     label="CEP"
                     width="flex-[1_0_120px]"
+                    addressFields={{
+                      street: 'customAddress.street',
+                      neighborhood: 'customAddress.neighborhood',
+                      city: 'customAddress.city',
+                      state: 'customAddress.state',
+                    }}
                   />
                   <FormInput
                     name="customAddress.state"

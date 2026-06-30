@@ -12,6 +12,7 @@ import {
   IconStatusChange,
   IconTransactionDollar,
   IconAlertSquareRounded,
+  IconRoute,
 } from '@tabler/icons-react'
 
 // Hooks
@@ -32,6 +33,12 @@ export function SalesSettingsClient() {
           description: 'Defina os padrões básicos de vendas.',
           link: `${defaultPath}/series-de-venda`,
           permission: 'sales_settings:series:view',
+        },
+        {
+          title: 'Origens de contato',
+          icon: IconRoute,
+          description: 'Gerencie as origens de onde seus clientes chegam.',
+          link: `${defaultPath}/origens-de-contato`,
         },
         {
           title: 'Perfil de vendedor',

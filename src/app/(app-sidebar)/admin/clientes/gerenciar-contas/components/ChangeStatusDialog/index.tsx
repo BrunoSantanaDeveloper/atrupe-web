@@ -55,7 +55,7 @@ interface Props {
   rowData: AccountItem | null
 }
 
-type StatusOption = 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
+type StatusOption = 'ACTIVE' | 'BLOCKED' | 'INACTIVE' | 'CANCELED'
 
 const formSchema = z.object({
   status: z.enum(['ACTIVE', 'BLOCKED', 'INACTIVE']),
@@ -71,6 +71,7 @@ const getStatusConfig = (currentStatus?: StatusOption) => {
     ACTIVE: 'Conta ativa, o que deseja fazer?',
     BLOCKED: 'Conta bloqueada, o que deseja fazer?',
     INACTIVE: 'Conta inativa, o que deseja fazer?',
+    CANCELED: 'Conta cancelada, o que deseja fazer?',
   }
 
   const availableOptions: Record<
@@ -117,6 +118,18 @@ const getStatusConfig = (currentStatus?: StatusOption) => {
         label: 'Bloquear',
         value: 'BLOCKED',
         icon: IconLock,
+      },
+    ],
+    CANCELED: [
+      {
+        label: 'Ativar',
+        value: 'ACTIVE',
+        icon: IconCheck,
+      },
+      {
+        label: 'Inativar',
+        value: 'INACTIVE',
+        icon: IconSquareX,
       },
     ],
   }

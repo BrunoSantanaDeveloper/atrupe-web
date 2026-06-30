@@ -1305,6 +1305,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               >
                 <TruckDeliveryIcon />
                 <Text style={styles.sectionTitle}>Entrega</Text>
+                {data.delivery?.modality &&
+                  data.delivery.modality !== 'Indefinida' && (
+                    <Text>{data.delivery.modality}</Text>
+                  )}
                 <Text>{data.delivery?.supplier?.name}</Text>
                 {data.delivery?.estimatedDate && isProduction ? (
                   <Text>

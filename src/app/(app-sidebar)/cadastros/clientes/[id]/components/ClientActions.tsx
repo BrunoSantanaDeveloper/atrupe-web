@@ -106,19 +106,15 @@ export function ClientActions({ params, data, entityType }: Props) {
   return (
     <PermissionGate permissions={[`register:${entityType}:edit`]}>
       <div className="flex items-center gap-4">
-        <PermissionGate
-          permissions={[`register:${isClient ? 'supplier' : 'client'}:create`]}
-        >
-          <TooltipProvider>
-            <ActionButton
-              tooltip={`Tornar ${isClient ? 'cliente' : 'fornecedor'} em ${targetLabel}`}
-              size="iconMd"
-              variant="neutralOutline"
-              Icon={IconArrowsExchange}
-              onClick={handleExchange}
-            />
-          </TooltipProvider>
-        </PermissionGate>
+        <TooltipProvider>
+          <ActionButton
+            tooltip={`Tornar ${isClient ? 'cliente' : 'fornecedor'} em ${targetLabel}`}
+            size="iconMd"
+            variant="neutralOutline"
+            Icon={IconArrowsExchange}
+            onClick={handleExchange}
+          />
+        </TooltipProvider>
 
         <PermissionGate permissions={[`register:${entityType}:delete`]}>
           {(status === 'ACTIVE' || status === 'PROSPECT') && (

@@ -4,6 +4,21 @@ import { useState } from 'react'
 // UI
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogClose,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
+
+// Icons
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Components
 import { ReceiptPdf } from './Payment/ReceiptPdf'
@@ -35,13 +50,15 @@ export function PrintReceiptButton({
   className,
 }: PrintReceiptButtonProps) {
   const [isLoadingPDF, setIsLoadingPDF] = useState(false)
+  const [showOptions, setShowOptions] = useState(false)
+  const [showSignature, setShowSignature] = useState(true)
 
   const handlePrintReceipt = async () => {
     if (!installmentId || !type) return
 
     setIsLoadingPDF(true)
+    setShowOptions(false)
     try {
-      // Buscar dados do PDF da API
       const route = `/financial/${type}/installment/${installmentId}/receipt-data`
       const params = new URLSearchParams()
       if (paidDate) params.append('paidDate', paidDate.toISOString())
@@ -59,7 +76,9 @@ export function PrintReceiptButton({
       }
 
       const pdfData: ReceiptPdfType = result.data
-      const blob = await pdf(<ReceiptPdf data={pdfData} />).toBlob()
+      const blob = await pdf(
+        <ReceiptPdf data={pdfData} showSignature={showSignature} />,
+      ).toBlob()
 
       const url = URL.createObjectURL(blob)
 
@@ -76,15 +95,59 @@ export function PrintReceiptButton({
   if (type !== 'receivable') return null
 
   return (
-    <Button
-      type="button"
-      variant={variant}
-      onClick={handlePrintReceipt}
-      isLoading={isLoadingPDF}
-      disabled={isLoadingPDF}
-      className={className}
-    >
-      Imprimir recibo
-    </Button>
+    <>
+      <Dialog
+        open={showOptions}
+        onOpenChange={isLoadingPDF ? undefined : setShowOptions}
+      >
+        <DialogContent className="sm:max-w-[360px]">
+          <DialogHeader>
+            <DialogTitle>Opções de impressão</DialogTitle>
+            <DialogDescription className="sr-only">
+              Imprimir recibo
+            </DialogDescription>
+          </DialogHeader>
+          <DialogBody>
+            <div className="flex items-center gap-3">
+              <Checkbox
+                id="receipt-show-signature"
+                checked={showSignature}
+                onCheckedChange={(v) => setShowSignature(!!v)}
+              />
+              <Label htmlFor="receipt-show-signature">Exibir assinatura</Label>
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                disabled={isLoadingPDF}
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button
+              type="button"
+              RightIcon={IconCircleCheck}
+              isLoading={isLoadingPDF}
+              onClick={handlePrintReceipt}
+            >
+              Imprimir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Button
+        type="button"
+        variant={variant}
+        onClick={() => setShowOptions(true)}
+        disabled={isLoadingPDF}
+        className={className}
+      >
+        Imprimir recibo
+      </Button>
+    </>
   )
 }

@@ -75,7 +75,7 @@ export interface AccountItem {
   createdAt: string
   plan: string
   planType: 'START' | 'LITE' | 'PRO'
-  status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE'
+  status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE' | 'CANCELED'
   state: { id: string; name: string }
   city: { id: string; name: string }
 }

@@ -120,11 +120,8 @@ export function ApproveQuotation({ data }: Props) {
           />
           <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
           <AlertDialogDescription>
-            Ao aprovar o orçamento, ele será convertido em uma ordem de serviço.
-            <br />
-            <br />
-            Você será redirecionado para a nova ordem de serviço, e poderá
-            acessá-la novamente no menu &quot;Ordens de Serviço&quot;.
+            Ao aprovar, este trabalho mudará de status e passará a ficar
+            disponível na aba Ordens de Serviço.
           </AlertDialogDescription>
           {isAdmin && (
             <div className="flex flex-col gap-1.5 pt-2">

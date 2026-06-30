@@ -17,6 +17,7 @@ import { NewTransaction } from '@/app/(app-sidebar)/financeiro/_components/trans
 import { PaymentDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/Payment'
 import { TransacionNotesDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/Notes'
 import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails'
+import { BulkPrintReceiptButton } from '../Actions/BulkPrintReceiptButton'
 
 // UI
 import {
@@ -30,6 +31,8 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { CardFooter, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -46,10 +49,12 @@ import { formatToWeekDate } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl, truncateString } from '@/lib/utils'
 
 // Third-party
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconX,
   IconSearch,
   IconMessage,
   IconHistory,
@@ -66,10 +71,52 @@ interface Props extends SearchParamsType {
   type: 'receivable' | 'payable'
 }
 
+type SelectedInstallment = {
+  installmentId: string
+  clientId: string | undefined
+  clientName: string
+}
+
 export function TransactionsData({ type, searchParams }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
+  const [selectedInstallments, setSelectedInstallments] = useState<
+    SelectedInstallment[]
+  >([])
+
+  const toggleInstallment = (item: TransactionListType) => {
+    const installmentId = item.currentInstallment?.id
+    if (!installmentId) return
+
+    const isSelected = selectedInstallments.some(
+      (s) => s.installmentId === installmentId,
+    )
+
+    if (isSelected) {
+      setSelectedInstallments((prev) =>
+        prev.filter((s) => s.installmentId !== installmentId),
+      )
+      return
+    }
+
+    if (selectedInstallments.length > 0) {
+      const firstClientId = selectedInstallments[0].clientId
+      if (item.client?.id !== firstClientId) {
+        toast.error('Selecione parcelas do mesmo cliente')
+        return
+      }
+    }
+
+    setSelectedInstallments((prev) => [
+      ...prev,
+      {
+        installmentId,
+        clientId: item.client?.id,
+        clientName: item.client?.name || '',
+      },
+    ])
+  }
 
   const typePt = type === 'receivable' ? 'Receita' : 'Despesa'
 
@@ -99,6 +146,7 @@ export function TransactionsData({ type, searchParams }: Props) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  {type === 'receivable' && <TableHead className="w-10" />}
                   <TableHead className="min-w-64">Referência</TableHead>
                   <TableHead></TableHead>
                   <TableHead>Valor</TableHead>
@@ -111,7 +159,7 @@ export function TransactionsData({ type, searchParams }: Props) {
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100">
                       <TableCell
-                        colSpan={6}
+                        colSpan={type === 'receivable' ? 6 : 5}
                         className="text-gray font-medium text-xs py-1 pr-1"
                       >
                         <div className="flex justify-between items-center">
@@ -156,6 +204,21 @@ export function TransactionsData({ type, searchParams }: Props) {
 
                           return (
                             <TableRow key={item?.id}>
+                              {type === 'receivable' && (
+                                <TableCell className="w-10">
+                                  <Checkbox
+                                    checked={selectedInstallments.some(
+                                      (s) =>
+                                        s.installmentId ===
+                                        currentInstallment?.id,
+                                    )}
+                                    onCheckedChange={() =>
+                                      toggleInstallment(item)
+                                    }
+                                    disabled={item?.status === 'CANCELED'}
+                                  />
+                                </TableCell>
+                              )}
                               <TableCell>
                                 <p className="font-medium">
                                   {item?.client?.name ||
@@ -327,6 +390,36 @@ export function TransactionsData({ type, searchParams }: Props) {
                 ))}
               </TableBody>
             </Table>
+            {type === 'receivable' && selectedInstallments.length > 0 && (
+              <div className="sticky bottom-0 mt-2 flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-lg">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">
+                    {selectedInstallments.length} parcela(s)
+                  </span>{' '}
+                  selecionada(s)
+                  {selectedInstallments[0].clientName
+                    ? ` · ${selectedInstallments[0].clientName}`
+                    : ''}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="neutralOutline"
+                    LeftIcon={IconX}
+                    onClick={() => setSelectedInstallments([])}
+                  >
+                    Limpar
+                  </Button>
+                  <BulkPrintReceiptButton
+                    installmentIds={selectedInstallments.map(
+                      (s) => s.installmentId,
+                    )}
+                    onSuccess={() => setSelectedInstallments([])}
+                  />
+                </div>
+              </div>
+            )}
             <TransacionNotesDialog
               open={openDialog === 'notes'}
               setOpen={setOpenDialog}
