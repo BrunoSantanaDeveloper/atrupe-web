@@ -92,11 +92,6 @@ interface OrderData {
       }
     }
   }
-  company?: {
-    invoicyConfig?: {
-      ambiente?: string
-    }
-  }
 }
 
 interface ClientAddressItem {
@@ -134,6 +129,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const [isTomadorEditOpen, setIsTomadorEditOpen] = useState(false)
   const [tomadorOverride, setTomadorOverride] =
     useState<NfePrepareDestinatario | null>(null)
+  const [ambiente, setAmbiente] = useState<string | null>(null)
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -148,17 +144,26 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     setError(null)
 
     try {
-      if (isConsolidated) {
-        const results = await Promise.all(
-          orderIds!.map((oid) => getItem({ route: `/sale/order/${oid}` })),
-        )
+      const preparePromise = getItem({
+        route: '/fiscal/nfse/prepare-standalone',
+      })
 
-        const failed = results.find((r) => !r.success || !r.data)
+      if (isConsolidated) {
+        const [prepareResult, ...orderResults] = await Promise.all([
+          preparePromise,
+          ...orderIds!.map((oid) => getItem({ route: `/sale/order/${oid}` })),
+        ])
+
+        if (prepareResult.success && prepareResult.data?.ambiente) {
+          setAmbiente(prepareResult.data.ambiente as string)
+        }
+
+        const failed = orderResults.find((r) => !r.success || !r.data)
         if (failed) {
           throw new Error(failed.message || 'Erro ao carregar dados das ordens')
         }
 
-        const orders = results.map((r) => r.data as OrderData)
+        const orders = orderResults.map((r) => r.data as OrderData)
 
         const clientIds = orders
           .map((o) => o.quotation?.client?.id)
@@ -185,9 +190,14 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           )
         }
       } else {
-        const result = await getItem({
-          route: `/sale/order/${primaryId}`,
-        })
+        const [prepareResult, result] = await Promise.all([
+          preparePromise,
+          getItem({ route: `/sale/order/${primaryId}` }),
+        ])
+
+        if (prepareResult.success && prepareResult.data?.ambiente) {
+          setAmbiente(prepareResult.data.ambiente as string)
+        }
 
         if (!result.success || !result.data) {
           throw new Error(result.message || 'Erro ao carregar dados da ordem')
@@ -425,8 +435,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     : orderData.quotation?.quotationItems?.filter(
         (item) => item.product?.isService,
       ) || []
-  const isHomologacao =
-    orderData.company?.invoicyConfig?.ambiente === 'HOMOLOGACAO'
+  const isHomologacao = ambiente === 'HOMOLOGACAO'
 
   // Handlers for Delivery Address (Local de Prestação)
   const handleEntregaToggle = (enabled: boolean) => {
