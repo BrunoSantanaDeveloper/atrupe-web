@@ -21,6 +21,9 @@ import { numberToWords } from '@/lib/numberToWords'
 // Components
 import { PdfHeader } from '@/components/common/PdfHeader'
 
+// Lib
+import { getProxiedImageUrl } from '@/lib/image-proxy'
+
 // Icons
 import { MoneySignIcon, CalendarDollarIcon } from '@/assets/icons/PdfIcons'
 
@@ -389,8 +392,8 @@ export function PayrollPdf({
             </View>
           </View>
 
-          {/* Seção de acordo e assinaturas - apenas para adiantamento */}
-          {isAdvance && (
+          {/* Seção de acordo e assinaturas */}
+          {showSignature && (
             <>
               <View style={styles.clarityTextContainer}>
                 <Text style={styles.clarityParagraph}>
@@ -406,29 +409,27 @@ export function PayrollPdf({
               </View>
 
               {/* Assinaturas */}
-              {showSignature && (
-                <View style={styles.signatures}>
-                  <View style={styles.signatureLine}>
-                    {data.employeeSignatureUrl && (
-                      <Image
-                        src={data.employeeSignatureUrl}
-                        style={{
-                          width: 120,
-                          height: 40,
-                          objectFit: 'contain',
-                          marginBottom: 4,
-                        }}
-                      />
-                    )}
-                    <Text>{data.employeeName}</Text>
-                  </View>
-                  <View style={{ width: '33%' }} />
-                  <View style={styles.signatureLine}>
-                    <Text>{data.company?.name}</Text>
-                    <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-                  </View>
+              <View style={styles.signatures}>
+                <View style={styles.signatureLine}>
+                  {data.employeeSignatureUrl && (
+                    <Image
+                      src={getProxiedImageUrl(data.employeeSignatureUrl)}
+                      style={{
+                        width: 120,
+                        height: 40,
+                        objectFit: 'contain',
+                        marginBottom: 4,
+                      }}
+                    />
+                  )}
+                  <Text>{data.employeeName}</Text>
                 </View>
-              )}
+                <View style={{ width: '33%' }} />
+                <View style={styles.signatureLine}>
+                  <Text>{data.company?.name}</Text>
+                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+                </View>
+              </View>
             </>
           )}
 

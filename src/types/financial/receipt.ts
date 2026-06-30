@@ -33,4 +33,6 @@ export type ReceiptPdfType = {
     paymentMethod: string
     value: number
   }[]
+  employeeName?: string
+  employeeSignatureUrl?: string
 }

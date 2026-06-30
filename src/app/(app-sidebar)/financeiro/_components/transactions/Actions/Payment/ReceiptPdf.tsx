@@ -1,7 +1,14 @@
 'use client'
 
 // Component
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer'
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image as PDFImage,
+} from '@react-pdf/renderer'
 
 // Types
 import { ReceiptPdfType } from '@/types/financial/receipt'
@@ -9,6 +16,7 @@ import { ReceiptPdfType } from '@/types/financial/receipt'
 // Utils
 import { numberToWords } from '@/lib/numberToWords'
 import { formatCurrencyToBrl, maskCnpj } from '@/lib/utils'
+import { getProxiedImageUrl } from '@/lib/image-proxy'
 
 // Components
 import { PdfHeader } from '@/components/common/PdfHeader'
@@ -167,6 +175,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
   },
+  signatureImage: {
+    position: 'absolute',
+    top: -30,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    width: 80,
+    height: 30,
+    objectFit: 'contain',
+  },
 })
 
 interface Props {
@@ -251,6 +268,12 @@ export function ReceiptPdf({ data, showSignature = true }: Props) {
                 </View>
                 <View style={{ width: '33%' }} />
                 <View style={styles.signatureLine}>
+                  {data.employeeSignatureUrl && (
+                    <PDFImage
+                      src={getProxiedImageUrl(data.employeeSignatureUrl)}
+                      style={styles.signatureImage}
+                    />
+                  )}
                   <Text>{data.company?.name}</Text>
                   <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
                 </View>
