@@ -17,6 +17,8 @@ import { Logo } from '@/components/Logo'
 import { getPendingPaymentUrl } from '@/actions/subscription'
 import { TryAgainButton } from './components/TryAgainButton'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Conta Suspensa',
   description: 'Sua conta foi suspensa por pendências financeiras',

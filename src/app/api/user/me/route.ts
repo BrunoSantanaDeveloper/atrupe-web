@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import apiInstance from '@/lib/api'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Proxy para buscar dados do usuário autenticado
  * Usado pelo client-side para atualizar dados da sessão
