@@ -20,6 +20,8 @@ export type PaymentConditionsType = {
     id: string
     name: string
   }
+  generateInvoice?: boolean
+  invoiceType?: 'NFE' | 'NFSE' | 'NFCE'
   // para orçamento
   type: string
   billing: string

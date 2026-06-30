@@ -155,7 +155,9 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
   useEffect(() => {
     if (open && rowData?.status) {
       const config = getStatusConfig(rowData.status)
-      const defaultStatus = config.options[0]?.value as StatusOption
+      const defaultStatus = config.options[0]?.value as z.infer<
+        typeof formSchema
+      >['status']
       if (defaultStatus) {
         form.reset({
           status: defaultStatus,

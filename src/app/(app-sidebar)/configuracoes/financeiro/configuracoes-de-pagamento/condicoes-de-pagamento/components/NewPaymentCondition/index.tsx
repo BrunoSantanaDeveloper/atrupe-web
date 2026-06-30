@@ -88,8 +88,8 @@ export function NewPaymentCondition({
       ],
       receivingType: rowData?.receivingType || 'CASH',
       dayInterval: rowData?.dayInterval || 0,
-      generateInvoice: (rowData as any)?.generateInvoice || false,
-      invoiceType: (rowData as any)?.invoiceType || undefined,
+      generateInvoice: rowData?.generateInvoice || false,
+      invoiceType: rowData?.invoiceType || undefined,
     },
   })
 
@@ -246,6 +246,7 @@ export function NewPaymentCondition({
               <SelectPaymentMethodField
                 name="paymentMethodId"
                 width="w-full"
+                allowCreate
                 additionalOnChange={(_, label) => {
                   setValue('name', label)
                 }}
