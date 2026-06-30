@@ -112,8 +112,23 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
         />,
       ).toBlob()
 
+      const sanitize = (s: string) =>
+        s
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '_')
+          .trim()
+      const osCode = `${order.quotation.serie.code}-${order.quotation.quotationNumber}`
+      const clientName = sanitize(order.quotation.client?.name ?? '')
+      const fileName = `OS-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
+
       const url = URL.createObjectURL(blob)
-      window.open(url, '_blank')
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
     } catch (error) {
       toast.error('Erro ao gerar ficha de produção')
       console.error('Erro ao gerar PDF:', error)

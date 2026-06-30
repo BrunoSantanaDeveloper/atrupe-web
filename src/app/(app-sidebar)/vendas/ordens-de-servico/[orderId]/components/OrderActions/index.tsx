@@ -68,9 +68,23 @@ export function OrderActions({ data }: Props) {
         />,
       ).toBlob()
 
-      const url = URL.createObjectURL(blob)
+      const sanitize = (s: string) =>
+        s
+          .replace(/[^\w\s-]/g, '')
+          .replace(/\s+/g, '_')
+          .trim()
+      const osCode = `${data.quotation.serie.code}-${data.quotation.quotationNumber}`
+      const clientName = sanitize(data.quotation.client?.name ?? '')
+      const fileName = `OS-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
 
-      window.open(url, '_blank')
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = fileName
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
     } catch (error) {
       toast.error('Erro ao gerar PDF')
       console.error('Erro ao gerar PDF:', error)
