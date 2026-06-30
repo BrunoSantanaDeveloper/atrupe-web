@@ -154,7 +154,12 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           ...orderIds!.map((oid) => getItem({ route: `/sale/order/${oid}` })),
         ])
 
-        if (prepareResult.success && prepareResult.data?.ambiente) {
+        if (!prepareResult.success) {
+          throw new Error(
+            prepareResult.message || 'Emissor fiscal não configurado',
+          )
+        }
+        if (prepareResult.data?.ambiente) {
           setAmbiente(prepareResult.data.ambiente as string)
         }
 
@@ -195,7 +200,12 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           getItem({ route: `/sale/order/${primaryId}` }),
         ])
 
-        if (prepareResult.success && prepareResult.data?.ambiente) {
+        if (!prepareResult.success) {
+          throw new Error(
+            prepareResult.message || 'Emissor fiscal não configurado',
+          )
+        }
+        if (prepareResult.data?.ambiente) {
           setAmbiente(prepareResult.data.ambiente as string)
         }
 

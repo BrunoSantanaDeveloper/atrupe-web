@@ -172,6 +172,7 @@ export function ActivationWizardModal({
         route: `/fiscal/emissores/${emissorId}/environments/${environment}/activate`,
         data: {
           idempotencyKey,
+          docType,
           ...(isProducao ? { confirmFiscalValidity } : {}),
         },
       }),

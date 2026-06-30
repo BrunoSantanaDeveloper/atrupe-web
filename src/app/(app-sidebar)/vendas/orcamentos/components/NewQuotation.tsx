@@ -103,7 +103,6 @@ export function NewQuotationModal({
         seriesId: data?.serie.id || '',
         sellerId: data?.seller?.id || '',
         quickSale: !!data?.quickSale,
-        quotationNumber: data?.quotationNumber ?? undefined,
       })
     }
   }, [open, data, form])
@@ -282,16 +281,6 @@ export function NewQuotationModal({
                     name="createdAt"
                     label="Data de criação (retroativa)"
                     placeholder="Data atual"
-                    width="flex-[1_0_300px]"
-                  />
-                )}
-                {session?.user?.isAdmin && (
-                  <FormInput<QuotationFormType>
-                    name="quotationNumber"
-                    label={`Número do orçamento${!editMode ? ' (retroativo)' : ''}`}
-                    placeholder={!editMode ? 'Automático' : undefined}
-                    type="number"
-                    min={1}
                     width="flex-[1_0_300px]"
                   />
                 )}
