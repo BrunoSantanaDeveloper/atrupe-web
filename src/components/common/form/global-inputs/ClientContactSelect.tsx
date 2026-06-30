@@ -8,6 +8,9 @@ import { NewContactModal } from './NewContactModal'
 import { Button } from '@/components/ui/button'
 import { IconPlus } from '@tabler/icons-react'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type FormMethods = ReturnType<typeof useFormContext<any>>
+
 interface ContactType {
   id: string
   name?: string
@@ -32,6 +35,9 @@ export function ClientContactSelect({
   disabled = false,
 }: Props) {
   const form = useFormContext()
+  const formRef = useRef<FormMethods>(form)
+  formRef.current = form
+
   const [contacts, setContacts] = useState<ContactType[]>([])
   const [contactModalOpen, setContactModalOpen] = useState(false)
   const pendingContactIdRef = useRef<string | null>(null)
@@ -39,9 +45,11 @@ export function ClientContactSelect({
   useEffect(() => {
     if (!clientId) {
       setContacts([])
-      form.setValue(name, '', { shouldDirty: true })
+      formRef.current.setValue(name, '', { shouldDirty: true })
       return
     }
+
+    let cancelled = false
 
     const fetchContacts = async () => {
       try {
@@ -49,34 +57,44 @@ export function ClientContactSelect({
           route: `/client/${clientId}/contacts`,
         })
 
+        if (cancelled) return
+
         if (response.success && response.data) {
           setContacts(response.data || [])
 
           // Só define o primeiro contato se não houver um valor já selecionado
-          const currentValue = form.getValues(name)
+          const currentValue = formRef.current.getValues(name)
           if (!currentValue && response.data[0]?.id) {
-            form.setValue(name, response.data[0].id, { shouldDirty: true })
+            formRef.current.setValue(name, response.data[0].id, {
+              shouldDirty: true,
+            })
           }
         } else {
           setContacts([])
         }
       } catch (err) {
-        setContacts([])
-        console.error('Erro ao buscar contatos:', err)
+        if (!cancelled) {
+          setContacts([])
+          console.error('Erro ao buscar contatos:', err)
+        }
       }
     }
 
     fetchContacts()
-  }, [clientId, form, name])
+
+    return () => {
+      cancelled = true
+    }
+  }, [clientId, name])
 
   // Set form value AFTER React re-renders with updated options
   useEffect(() => {
     if (pendingContactIdRef.current) {
       const id = pendingContactIdRef.current
       pendingContactIdRef.current = null
-      form.setValue(name, id, { shouldDirty: true })
+      formRef.current.setValue(name, id, { shouldDirty: true })
     }
-  }, [contacts, form, name])
+  }, [contacts, name])
 
   const handleContactCreated = (newContact: { id: string; name: string }) => {
     pendingContactIdRef.current = newContact.id
