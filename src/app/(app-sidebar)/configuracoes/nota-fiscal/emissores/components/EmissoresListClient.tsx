@@ -107,6 +107,9 @@ export function EmissoresListClient() {
 
         // Estado por ambiente (Plano 2/4)
         activeEnvironment: config?.activeEnvironment ?? null,
+        activeEnvironmentNfe: config?.activeEnvironmentNfe ?? null,
+        activeEnvironmentNfse: config?.activeEnvironmentNfse ?? null,
+        activeEnvironmentNfce: config?.activeEnvironmentNfce ?? null,
         environmentSwitchLocked: config?.environmentSwitchLocked ?? null,
         environments: config?.environments,
 

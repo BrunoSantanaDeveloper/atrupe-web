@@ -40,9 +40,11 @@ import { ReadinessChecklist } from './ReadinessChecklist'
 import type { FiscalEnv } from '../lib/fiscal-readiness'
 
 export type EnvStatus = 'DRAFT' | 'VALIDATING' | 'READY' | 'ERROR' | 'DISABLED'
+export type FiscalDocType = 'NFE' | 'NFSE' | 'NFCE'
 
 export interface EmissorEnvironment {
   environment: FiscalEnv
+  docType: FiscalDocType
   status: EnvStatus
   cscConfigured: boolean
   lastValidationAt: string | null
@@ -59,6 +61,9 @@ export interface EmissorData {
 
   // Estado por ambiente (Plano 2/4)
   activeEnvironment?: FiscalEnv | null
+  activeEnvironmentNfe?: FiscalEnv | null
+  activeEnvironmentNfse?: FiscalEnv | null
+  activeEnvironmentNfce?: FiscalEnv | null
   environmentSwitchLocked?: boolean | null
   environments?: EmissorEnvironment[]
 
@@ -114,13 +119,25 @@ interface DocState {
   activeEnv: FiscalEnv | null
 }
 
-export function deriveDocState(emissor: EmissorData): DocState {
+export function deriveDocState(
+  emissor: EmissorData,
+  docType: FiscalDocType = 'NFCE',
+): DocState {
   if (!emissor.id || !emissor.environments?.length) {
     return { label: 'Pendente', tone: 'warning', activeEnv: null }
   }
 
-  const active = emissor.activeEnvironment ?? null
-  const activeCfg = emissor.environments.find((e) => e.environment === active)
+  // Resolve o ambiente ativo específico para este docType
+  const active =
+    docType === 'NFE'
+      ? (emissor.activeEnvironmentNfe ?? null)
+      : docType === 'NFSE'
+        ? (emissor.activeEnvironmentNfse ?? null)
+        : (emissor.activeEnvironmentNfce ?? emissor.activeEnvironment ?? null)
+
+  const activeCfg = emissor.environments.find(
+    (e) => e.environment === active && e.docType === docType,
+  )
 
   if (!active || !activeCfg) {
     return { label: 'Pendente', tone: 'warning', activeEnv: null }
@@ -219,19 +236,22 @@ export function EmissorListItem({
   }
 
   const hasEmissor = !!emissor.id
-  const docState = deriveDocState(emissor)
+  const nfeState = deriveDocState(emissor, 'NFE')
+  const nfseState = deriveDocState(emissor, 'NFSE')
+  const nfceState = deriveDocState(emissor, 'NFCE')
+  // docState global usado no badge do header (prioriza produção, senão o mais avançado)
+  const docState =
+    [nfceState, nfeState, nfseState].find((s) => s.label === 'Produção') ??
+    nfceState
   const switchLocked = emissor.environmentSwitchLocked === true
 
-  // Ambiente alvo do diagnóstico/pendências: o ativo ou produção por padrão.
-  const diagnosticsEnv: FiscalEnv = docState.activeEnv ?? 'PRODUCAO'
+  // Ambiente alvo do diagnóstico/pendências: o ativo do NFC-e ou produção por padrão.
+  const diagnosticsEnv: FiscalEnv = nfceState.activeEnv ?? 'PRODUCAO'
   const readiness = useEmissorReadiness(
     emissor.id,
     diagnosticsEnv,
     pendenciesOpen,
   )
-
-  const isReady =
-    docState.label === 'Produção' || docState.label === 'Homologação'
 
   const PendenciesPopover = ({ label }: { label: string }) => (
     <Popover open={pendenciesOpen} onOpenChange={setPendenciesOpen}>
@@ -250,190 +270,110 @@ export function EmissorListItem({
     </Popover>
   )
 
-  const NfceCard = () => (
-    <div
-      className={cn(
-        'flex items-center justify-between p-4 rounded-lg border flex-1 min-w-[200px]',
-        toneClasses[docState.tone],
-      )}
-    >
-      <div className="flex items-center gap-4">
-        {toneIcon[docState.tone]}
-        <div>
-          <div className="text-xs font-medium uppercase opacity-70">
-            {docState.label}
-          </div>
-          <div className="font-semibold">NFC-e</div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-1">
-        {docState.tone === 'error' && (
-          <PendenciesPopover label="Ver pendências" />
-        )}
-
-        {isReady ? (
-          <>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-current"
-              onClick={(e) => {
-                e.stopPropagation()
-                onTestConnection(emissor)
-              }}
-              title="Testar autenticação"
-            >
-              <IconPlugConnected size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-current"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit(emissor, 'NFCE')
-              }}
-              title="Editar"
-            >
-              <IconPencil size={16} />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2 text-current"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Mais opções"
-                >
-                  <IconDotsVertical size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onActivate(
-                      emissor,
-                      docState.activeEnv === 'PRODUCAO'
-                        ? 'HOMOLOGACAO'
-                        : 'PRODUCAO',
-                      'NFCE',
-                    )
-                  }}
-                >
-                  {docState.activeEnv === 'PRODUCAO'
-                    ? 'Mudar para homologação'
-                    : 'Mudar para produção'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </>
-        ) : switchLocked ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-2 text-current disabled:opacity-50"
-            disabled
-            title="Ativação de ambiente temporariamente bloqueada"
-          >
-            <span className="flex items-center gap-2">
-              Configurar <IconChevronRight size={14} />
-            </span>
-          </Button>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-current"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="flex items-center gap-2">
-                  Configurar <IconChevronRight size={14} />
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onActivate(emissor, 'PRODUCAO', 'NFCE')
-                }}
-              >
-                Ativar produção
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onActivate(emissor, 'HOMOLOGACAO', 'NFCE')
-                }}
-              >
-                Testar em homologação
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </div>
-    </div>
-  )
-
-  const SimpleCard = ({
+  const DocCard = ({
     type,
     editType,
+    cardState,
   }: {
     type: string
-    editType: 'NFE' | 'NFSE'
-  }) => (
-    <div
-      className={cn(
-        'flex items-center justify-between p-4 rounded-lg border flex-1 min-w-[200px]',
-        toneClasses[docState.tone],
-      )}
-    >
-      <div className="flex items-center gap-4">
-        {toneIcon[docState.tone]}
-        <div>
-          <div className="text-xs font-medium uppercase opacity-70">
-            {docState.label}
-          </div>
-          <div className="font-semibold">{type}</div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-1">
-        {docState.tone === 'error' && (
-          <PendenciesPopover label="Ver pendências" />
+    editType: FiscalDocType
+    cardState: DocState
+  }) => {
+    const ready =
+      cardState.label === 'Produção' || cardState.label === 'Homologação'
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-between p-4 rounded-lg border flex-1 min-w-[200px]',
+          toneClasses[cardState.tone],
         )}
+      >
+        <div className="flex items-center gap-4">
+          {toneIcon[cardState.tone]}
+          <div>
+            <div className="text-xs font-medium uppercase opacity-70">
+              {cardState.label}
+            </div>
+            <div className="font-semibold">{type}</div>
+          </div>
+        </div>
 
-        {isReady ? (
-          <>
+        <div className="flex items-center gap-1">
+          {cardState.tone === 'error' && (
+            <PendenciesPopover label="Ver pendências" />
+          )}
+
+          {ready ? (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-current"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onTestConnection(emissor)
+                }}
+                title="Testar autenticação"
+              >
+                <IconPlugConnected size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-current"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onEdit(emissor, editType)
+                }}
+                title="Editar"
+              >
+                <IconPencil size={16} />
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2 text-current"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Mais opções"
+                  >
+                    <IconDotsVertical size={16} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onActivate(
+                        emissor,
+                        cardState.activeEnv === 'PRODUCAO'
+                          ? 'HOMOLOGACAO'
+                          : 'PRODUCAO',
+                        editType,
+                      )
+                    }}
+                  >
+                    {cardState.activeEnv === 'PRODUCAO'
+                      ? 'Mudar para homologação'
+                      : 'Mudar para produção'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : switchLocked ? (
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-current"
-              onClick={(e) => {
-                e.stopPropagation()
-                onTestConnection(emissor)
-              }}
-              title="Testar autenticação"
+              className="h-8 px-2 text-current disabled:opacity-50"
+              disabled
+              title="Ativação de ambiente temporariamente bloqueada"
             >
-              <IconPlugConnected size={16} />
+              <span className="flex items-center gap-2">
+                Configurar <IconChevronRight size={14} />
+              </span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-8 px-2 text-current"
-              onClick={(e) => {
-                e.stopPropagation()
-                onEdit(emissor, editType)
-              }}
-              title="Editar"
-            >
-              <IconPencil size={16} />
-            </Button>
+          ) : (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -441,80 +381,36 @@ export function EmissorListItem({
                   size="sm"
                   className="h-8 px-2 text-current"
                   onClick={(e) => e.stopPropagation()}
-                  title="Mais opções"
                 >
-                  <IconDotsVertical size={16} />
+                  <span className="flex items-center gap-2">
+                    Configurar <IconChevronRight size={14} />
+                  </span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation()
-                    onActivate(
-                      emissor,
-                      docState.activeEnv === 'PRODUCAO'
-                        ? 'HOMOLOGACAO'
-                        : 'PRODUCAO',
-                      editType,
-                    )
+                    onActivate(emissor, 'PRODUCAO', editType)
                   }}
                 >
-                  {docState.activeEnv === 'PRODUCAO'
-                    ? 'Mudar para homologação'
-                    : 'Mudar para produção'}
+                  Ativar produção
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onActivate(emissor, 'HOMOLOGACAO', editType)
+                  }}
+                >
+                  Testar em homologação
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </>
-        ) : switchLocked ? (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-8 px-2 text-current disabled:opacity-50"
-            disabled
-            title="Ativação de ambiente temporariamente bloqueada"
-          >
-            <span className="flex items-center gap-2">
-              Configurar <IconChevronRight size={14} />
-            </span>
-          </Button>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-current"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="flex items-center gap-2">
-                  Configurar <IconChevronRight size={14} />
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onActivate(emissor, 'PRODUCAO', editType)
-                }}
-              >
-                Ativar produção
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onActivate(emissor, 'HOMOLOGACAO', editType)
-                }}
-              >
-                Testar em homologação
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+          )}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 
   return (
     <div
@@ -716,9 +612,9 @@ export function EmissorListItem({
 
           {/* Status Cards */}
           <div className="flex flex-col md:flex-row gap-4 pt-4 border-t border-gray-100">
-            <SimpleCard type="NF-e" editType="NFE" />
-            <SimpleCard type="NFS-e" editType="NFSE" />
-            <NfceCard />
+            <DocCard type="NF-e" editType="NFE" cardState={nfeState} />
+            <DocCard type="NFS-e" editType="NFSE" cardState={nfseState} />
+            <DocCard type="NFC-e" editType="NFCE" cardState={nfceState} />
           </div>
         </div>
       )}
