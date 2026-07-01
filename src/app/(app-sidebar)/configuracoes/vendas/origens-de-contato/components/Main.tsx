@@ -21,10 +21,16 @@ import { Button } from '@/components/ui/button'
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
+import { HideAlertDialog } from './Actions/Hide'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Icons
-import { IconTrash, IconPencil, IconSquarePlus } from '@tabler/icons-react'
+import {
+  IconTrash,
+  IconPencil,
+  IconSquarePlus,
+  IconEyeOff,
+} from '@tabler/icons-react'
 
 // Hooks
 import {
@@ -84,7 +90,20 @@ export function Main() {
                     <TableCell className="font-medium text-muted-foreground">
                       {item.name}
                     </TableCell>
-                    <TableCell></TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-1">
+                        <TooltipProvider>
+                          <ActionButton
+                            Icon={IconEyeOff}
+                            tooltip="Ocultar"
+                            onClick={() => {
+                              setOpenDialog('hide')
+                              setRowData(item)
+                            }}
+                          />
+                        </TooltipProvider>
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
 
@@ -148,6 +167,11 @@ export function Main() {
       />
       <DeleteAlertDialog
         open={openDialog === 'delete'}
+        setOpen={setOpenDialog}
+        rowData={rowData}
+      />
+      <HideAlertDialog
+        open={openDialog === 'hide'}
         setOpen={setOpenDialog}
         rowData={rowData}
       />
