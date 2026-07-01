@@ -53,6 +53,7 @@ export function ClientContactSelect({
 
     const fetchContacts = async () => {
       try {
+        const valueBeforeFetch = formRef.current.getValues(name)
         const response = await getItem({
           route: `/client/${clientId}/contacts`,
         })
@@ -64,7 +65,7 @@ export function ClientContactSelect({
 
           // Só define o primeiro contato se não houver um valor já selecionado
           const currentValue = formRef.current.getValues(name)
-          if (!currentValue && response.data[0]?.id) {
+          if (!currentValue && !valueBeforeFetch && response.data[0]?.id) {
             formRef.current.setValue(name, response.data[0].id, {
               shouldDirty: true,
             })

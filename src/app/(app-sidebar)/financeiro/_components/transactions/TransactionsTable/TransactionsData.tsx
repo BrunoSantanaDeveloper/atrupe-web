@@ -74,7 +74,7 @@ interface Props extends SearchParamsType {
 
 type SelectedInstallment = {
   installmentId: string
-  clientId: string | undefined
+  clientKey: string
   clientName: string
 }
 
@@ -89,6 +89,15 @@ export function TransactionsData({ type, searchParams }: Props) {
   const toggleInstallment = (item: TransactionListType) => {
     const installmentId = item.currentInstallment?.id
     if (!installmentId) return
+    const clientKey =
+      item.client?.cnpj?.replace(/\D/g, '') ||
+      item.client?.cpf?.replace(/\D/g, '') ||
+      ''
+
+    if (!clientKey) {
+      toast.error('Cliente sem CPF/CNPJ para agrupar recibo')
+      return
+    }
 
     const isSelected = selectedInstallments.some(
       (s) => s.installmentId === installmentId,
@@ -102,9 +111,9 @@ export function TransactionsData({ type, searchParams }: Props) {
     }
 
     if (selectedInstallments.length > 0) {
-      const firstClientId = selectedInstallments[0].clientId
-      if (item.client?.id !== firstClientId) {
-        toast.error('Selecione parcelas do mesmo cliente')
+      const firstClientKey = selectedInstallments[0].clientKey
+      if (clientKey !== firstClientKey) {
+        toast.error('Selecione parcelas do mesmo CPF/CNPJ')
         return
       }
     }
@@ -113,7 +122,7 @@ export function TransactionsData({ type, searchParams }: Props) {
       ...prev,
       {
         installmentId,
-        clientId: item.client?.id,
+        clientKey,
         clientName: item.client?.name || '',
       },
     ])

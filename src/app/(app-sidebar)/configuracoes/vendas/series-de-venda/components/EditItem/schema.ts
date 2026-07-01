@@ -4,7 +4,11 @@ export const schema = z.object({
   code: z.string().min(1, 'Informe o código da série de venda'),
   description: z.string().min(1, 'Informe a descrição da série de venda'),
   title: z.string().min(1, 'Informe o título da série de venda'),
-  currentBudgetNumber: z.number().readonly().optional(),
+  currentBudgetNumber: z.coerce
+    .number()
+    .int('Informe um numero inteiro')
+    .min(0, 'O numero do orçamento deve ser maior ou igual a zero')
+    .optional(),
   proposalValidity: z.coerce
     .number()
     .min(1, 'Informe a validade da proposta')

@@ -1,7 +1,11 @@
 // React
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { useQueryClient } from '@tanstack/react-query'
 
 // UI
+import { toast } from 'sonner'
+import { Input } from '@/components/ui/input'
 import {
   Accordion,
   AccordionItem,
@@ -26,7 +30,11 @@ import { formatToLocaleDateTime } from '@/lib/formatDate'
 import { cn, maskCpfCnpj, truncateString } from '@/lib/utils'
 
 // Icons
-import { IconPencil, IconFileInvoice } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconFileInvoice,
+  IconDeviceFloppy,
+} from '@tabler/icons-react'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -34,12 +42,120 @@ import { QuotationType } from '@/types/sales/quotation'
 // Consts
 import { clientStatusObj } from '@/consts/client'
 
+// Actions
+import { updateItemNew } from '@/actions/_cruds'
+
+import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
+
 interface Props {
   data: QuotationType
 }
 
+function formatDateForInput(date?: string | Date) {
+  if (!date) return ''
+
+  const dateParts = new Intl.DateTimeFormat('en-CA', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'America/Sao_Paulo',
+  }).formatToParts(new Date(date))
+
+  const getPart = (type: Intl.DateTimeFormatPartTypes) =>
+    dateParts.find((part) => part.type === type)?.value || ''
+
+  return `${getPart('year')}-${getPart('month')}-${getPart('day')}`
+}
+
+function dateInputToSaoPauloIso(date: string) {
+  return new Date(`${date}T00:00:00-03:00`).toISOString()
+}
+
+function EditableDateField({
+  label,
+  value,
+  field,
+  quotationId,
+}: {
+  label: string
+  value?: string | Date
+  field: 'createdAt' | 'approvedAt'
+  quotationId: string
+}) {
+  const queryClient = useQueryClient()
+  const [inputValue, setInputValue] = useState(formatDateForInput(value))
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    setInputValue(formatDateForInput(value))
+  }, [value])
+
+  const hasChanged = inputValue !== formatDateForInput(value)
+
+  const handleSave = async () => {
+    if (!inputValue) {
+      toast.error('Informe uma data válida.')
+      return
+    }
+
+    setIsSaving(true)
+    const res = await updateItemNew({
+      route: `/sale/quotation/${quotationId}`,
+      data: {
+        [field]: dateInputToSaoPauloIso(inputValue),
+      },
+    })
+    setIsSaving(false)
+
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
+
+    toast.success('Data atualizada com sucesso!')
+    queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
+    queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
+
+    if (field === 'approvedAt') {
+      queryClient.invalidateQueries({ queryKey: ['order-data'] })
+      queryClient.invalidateQueries({ queryKey: ['order-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-list'] })
+      queryClient.invalidateQueries({ queryKey: ['delivery-schedule-totals'] })
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <p className="text-xs text-gray">{label}</p>
+      <div className="flex items-center gap-2">
+        <Input
+          type="date"
+          value={inputValue}
+          onChange={(event) => setInputValue(event.target.value)}
+          className="h-9 max-w-[170px] text-sm"
+          disabled={isSaving}
+        />
+        <Button
+          type="button"
+          variant="neutralLight"
+          size="iconSm"
+          LeftIcon={IconDeviceFloppy}
+          leftIconSize={16}
+          title="Salvar data"
+          disabled={isSaving || !hasChanged}
+          isLoading={isSaving}
+          onClick={handleSave}
+        />
+      </div>
+    </div>
+  )
+}
+
 export function QuotationSummary({ data }: Props) {
   const [openDialog, setOpenDialog] = useState('')
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.isAdmin
 
   return (
     <Card className="w-full">
@@ -103,10 +219,19 @@ export function QuotationSummary({ data }: Props) {
                   supporting="CNPJ empresa"
                   text={maskCpfCnpj(data?.company?.cnpj || '-')}
                 />
-                <TextSupportingText
-                  supporting="Data de criação"
-                  text={formatToLocaleDateTime(data?.createdAt)}
-                />
+                {isAdmin ? (
+                  <EditableDateField
+                    label="Data de criação"
+                    value={data?.createdAt}
+                    field="createdAt"
+                    quotationId={data.id}
+                  />
+                ) : (
+                  <TextSupportingText
+                    supporting="Data de criação"
+                    text={formatToLocaleDateTime(data?.createdAt)}
+                  />
+                )}
               </DetailCardRowItem>
               {data?.status === 'DONE' && (
                 <DetailCardRowItem>
@@ -128,10 +253,19 @@ export function QuotationSummary({ data }: Props) {
                     supporting="Data de conclusão"
                     text={formatToLocaleDateTime(data?.finishedAt) || '-'}
                   />
-                  <TextSupportingText
-                    supporting="Data de aprovação"
-                    text={formatToLocaleDateTime(data?.approvedAt) || '-'}
-                  />
+                  {isAdmin ? (
+                    <EditableDateField
+                      label="Data de aprovação"
+                      value={data?.approvedAt}
+                      field="approvedAt"
+                      quotationId={data.id}
+                    />
+                  ) : (
+                    <TextSupportingText
+                      supporting="Data de aprovação"
+                      text={formatToLocaleDateTime(data?.approvedAt) || '-'}
+                    />
+                  )}
                 </DetailCardRowItem>
               )}
               {!data?.quickSale ? (

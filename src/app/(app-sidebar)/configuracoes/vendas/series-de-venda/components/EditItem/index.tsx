@@ -32,6 +32,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { schema, type FormType } from './schema'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 
 // Types
 import type { SaleSeriesType } from '@/types/settings/saleSeries'
@@ -79,7 +80,9 @@ interface Props {
 
 export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
   const [selectedProfileIds, setSelectedProfileIds] = useState<string[]>([])
+  const isAdmin = Boolean(session?.user?.isAdmin)
 
   const { canBillOnDeliveryAndCheckout, canManageDeliverySchedule } =
     usePlanFeatures()
@@ -120,7 +123,9 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
   const { handleSubmit, reset } = form
 
   const onSubmit = async (data: FormType) => {
-    delete data.currentBudgetNumber
+    if (!isAdmin) {
+      delete data.currentBudgetNumber
+    }
 
     const res = await updateItemNew({
       route: `/sale/series/${rowData?.id}`,
@@ -129,6 +134,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
 
     if (!res.success) {
       toast.error(res.message)
+      return
     }
 
     queryClient.invalidateQueries()
@@ -207,7 +213,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
                   label="Número orçamento atual"
                   placeholder="Nenhum orçamento nesta série"
                   width="flex-[1_0_250px]"
-                  disabled
+                  disabled={!isAdmin}
                 />
                 <FormInput<FormType>
                   type="number"

@@ -42,6 +42,10 @@ interface Props {
   data: QuotationType
 }
 
+function dateInputToSaoPauloIso(date: string) {
+  return new Date(`${date}T00:00:00-03:00`).toISOString()
+}
+
 export function ApproveQuotation({ data }: Props) {
   const [open, setOpen] = useState(false)
   const [approvedAt, setApprovedAt] = useState('')
@@ -70,7 +74,7 @@ export function ApproveQuotation({ data }: Props) {
   const handleApprove = async () => {
     const body =
       isAdmin && approvedAt
-        ? { approvedAt: new Date(approvedAt).toISOString() }
+        ? { approvedAt: dateInputToSaoPauloIso(approvedAt) }
         : undefined
     const res = await createItemNew({
       route: `/sale/quotation/${data.id}/approve`,

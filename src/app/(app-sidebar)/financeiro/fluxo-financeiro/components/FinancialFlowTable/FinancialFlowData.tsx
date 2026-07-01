@@ -16,6 +16,7 @@ import { ViewPaymentDialog } from '@/app/(app-sidebar)/financeiro/_components/tr
 import { TransactionHistoryDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/History'
 import { EditInstallments } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/EditInstallments'
 import { TransactionDetailsDialog } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/TransactionDetails'
+import { BulkPrintReceiptButton } from '@/app/(app-sidebar)/financeiro/_components/transactions/Actions/BulkPrintReceiptButton'
 
 // UI
 import {
@@ -28,6 +29,8 @@ import {
 } from '@/components/ui/table'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { CardFooter, CardContent } from '@/components/ui/card'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -45,10 +48,12 @@ import { formatToWeekDate } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
+import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconX,
   IconSearch,
   IconMessage,
   IconHistory,
@@ -66,11 +71,20 @@ interface Props extends SearchParamsType {
   showTotals: boolean
 }
 
+type SelectedInstallment = {
+  installmentId: string
+  clientKey: string
+  clientName: string
+}
+
 export function FinancialFlowData({ searchParams, showTotals }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<TransactionListType>()
   const [installment, setInstallment] = useState<InstallmentType>()
   const [isLoadingPayment, setIsLoadingPayment] = useState(false)
+  const [selectedInstallments, setSelectedInstallments] = useState<
+    SelectedInstallment[]
+  >([])
 
   const hasUrlDateParams = searchParams?.startDate && searchParams?.endDate
 
@@ -92,6 +106,49 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
     }, 2000)
   }
 
+  const toggleInstallment = (item: TransactionListType) => {
+    const installmentId = item.currentInstallment?.id
+    if (!installmentId || item.type !== 'receivable') return
+
+    const clientKey =
+      item.client?.cnpj?.replace(/\D/g, '') ||
+      item.client?.cpf?.replace(/\D/g, '') ||
+      ''
+
+    if (!clientKey) {
+      toast.error('Cliente sem CPF/CNPJ para agrupar recibo')
+      return
+    }
+
+    const isSelected = selectedInstallments.some(
+      (selected) => selected.installmentId === installmentId,
+    )
+
+    if (isSelected) {
+      setSelectedInstallments((prev) =>
+        prev.filter((selected) => selected.installmentId !== installmentId),
+      )
+      return
+    }
+
+    if (
+      selectedInstallments.length > 0 &&
+      selectedInstallments[0].clientKey !== clientKey
+    ) {
+      toast.error('Selecione parcelas do mesmo CPF/CNPJ')
+      return
+    }
+
+    setSelectedInstallments((prev) => [
+      ...prev,
+      {
+        installmentId,
+        clientKey,
+        clientName: item.client?.name || '',
+      },
+    ])
+  }
+
   return (
     <>
       <CardContent>
@@ -102,6 +159,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
+                  <TableHead className="w-10" />
                   <TableHead className="max-w-96">Referência</TableHead>
                   <TableHead></TableHead>
                   <TableHead>Valor</TableHead>
@@ -114,7 +172,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                 {transactionData.map((group) => (
                   <Fragment key={group.date}>
                     <TableRow className="bg-gray-100 max-h-11">
-                      <TableCell colSpan={6} className="py-1 pr-1">
+                      <TableCell colSpan={7} className="py-1 pr-1">
                         <div className="flex justify-between items-center">
                           <p className="font-medium text-gray text-xs">
                             {formatToWeekDate(group?.date)}
@@ -199,6 +257,21 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
 
                           return (
                             <TableRow key={item?.id} className="text-nowrap">
+                              <TableCell className="w-10">
+                                {item?.type === 'receivable' ? (
+                                  <Checkbox
+                                    checked={selectedInstallments.some(
+                                      (selected) =>
+                                        selected.installmentId ===
+                                        currentInstallment?.id,
+                                    )}
+                                    onCheckedChange={() =>
+                                      toggleInstallment(item)
+                                    }
+                                    disabled={item?.status === 'CANCELED'}
+                                  />
+                                ) : null}
+                              </TableCell>
                               <TableCell className="max-w-96">
                                 <p className="font-medium">
                                   {item?.client?.name ||
@@ -395,6 +468,36 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                 ))}
               </TableBody>
             </Table>
+            {selectedInstallments.length > 0 && (
+              <div className="sticky bottom-0 mt-2 flex items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-lg">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold">
+                    {selectedInstallments.length} parcela(s)
+                  </span>{' '}
+                  selecionada(s)
+                  {selectedInstallments[0].clientName
+                    ? ` · ${selectedInstallments[0].clientName}`
+                    : ''}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="neutralOutline"
+                    LeftIcon={IconX}
+                    onClick={() => setSelectedInstallments([])}
+                  >
+                    Limpar
+                  </Button>
+                  <BulkPrintReceiptButton
+                    installmentIds={selectedInstallments.map(
+                      (selected) => selected.installmentId,
+                    )}
+                    onSuccess={() => setSelectedInstallments([])}
+                  />
+                </div>
+              </div>
+            )}
             <TransacionNotesDialog
               open={openDialog === 'notes'}
               setOpen={setOpenDialog}

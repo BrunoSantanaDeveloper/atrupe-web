@@ -68,8 +68,10 @@ export function BulkPrintReceiptButton({ installmentIds, onSuccess }: Props) {
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')
       onSuccess?.()
-    } catch {
-      toast.error('Erro ao gerar recibo')
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao gerar recibo',
+      )
     } finally {
       setIsLoading(false)
     }

@@ -38,6 +38,8 @@ export type TransactionListType = {
   client?: {
     id: string
     name: string
+    cnpj?: string | null
+    cpf?: string | null
   }
   supplier?: {
     id: string

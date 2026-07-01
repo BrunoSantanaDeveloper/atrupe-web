@@ -3,6 +3,7 @@
 // Next
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -47,6 +48,8 @@ export const QUOTATION_DATA_QUERY_KEY = 'quotation-data'
 
 export function Quotation({ id }: Props) {
   const previousUrl = '/vendas/orcamentos' // TODO : incluir parametros de busca anteriores se houver
+  const { data: session } = useSession()
+  const isAdmin = session?.user?.isAdmin
 
   // const isMutating = useIsMutating()
   // const isFetching = useIsFetching()
@@ -111,7 +114,7 @@ export function Quotation({ id }: Props) {
 
   if (error || !data) notFound()
 
-  if (data.status === 'APPROVED') {
+  if (data.status === 'APPROVED' && !isAdmin) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-150px)]">
         <div className="max-w-[352px] text-center space-y-6">
@@ -144,6 +147,56 @@ export function Quotation({ id }: Props) {
   }
 
   // Se for "Sem lançamento" (Cortesia por exemplo), não exibir condições de pagamento
+  if (data.status === 'APPROVED' && isAdmin) {
+    return (
+      <PermissionGate permissions={['sale:quotation:view']}>
+        <div className="relative space-y-5">
+          <Topbar
+            title={`Orçamento #${data?.serie?.quotation || ''}-${data?.serie?.code || ''}`}
+            supportText={data?.client?.name || ''}
+            previousPage={previousUrl}
+            badge={
+              quotationsStatusObj[data?.status] || {
+                text: 'Desconhecido',
+                variant: 'neutralLight',
+              }
+            }
+            label={data?.quickSale ? 'Venda Rápida' : ''}
+          />
+          <Card className="w-full">
+            <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <FeaturedIcon
+                  Icon={IconReportMoney}
+                  size="md"
+                  variant="borderedLight"
+                  rounded
+                />
+                <div>
+                  <p className="font-semibold text-base text-gray-700">
+                    Orçamento aprovado
+                  </p>
+                  <p className="text-sm text-gray">
+                    A ordem de serviço já foi criada para esta venda.
+                  </p>
+                </div>
+              </div>
+              {data?.orderId && (
+                <Button type="button" asChild>
+                  <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
+                    Ver ordem de serviço
+                    <IconExternalLink size={24} className="ml-auto" />
+                  </Link>
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+          <QuotationSummary data={data} />
+        </div>
+      </PermissionGate>
+    )
+  }
+
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
 
   return (
