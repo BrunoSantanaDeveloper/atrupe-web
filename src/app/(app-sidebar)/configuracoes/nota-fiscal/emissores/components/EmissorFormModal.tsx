@@ -75,6 +75,10 @@ const sanitizeEmissorPayload = (data: EmissorFormValues) => {
   delete safe.ambiente
   delete safe.cscId
   delete safe.cscToken
+  // ie/im pertencem à Company (stateRegistration/municipalRegistration),
+  // não ao InvoicyConfig — o endpoint de emissor rejeita esses campos.
+  delete safe.ie
+  delete safe.im
   return safe as EmissorFormValues
 }
 
