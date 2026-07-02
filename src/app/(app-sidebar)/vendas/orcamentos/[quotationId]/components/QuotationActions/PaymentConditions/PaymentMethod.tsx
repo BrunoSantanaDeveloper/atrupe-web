@@ -45,7 +45,7 @@ export function PaymentMethodAndCondition({ quotationData: _ }: Props) {
 
     const minInstallments = data?.minInstallments || 1
     const maxInstallments = data?.maxInstallments || 1
-    const dayInterval = data?.dayInterval || 30
+    const dayInterval = data?.dayInterval ?? 30
 
     const additionalFee = data?.installments[0]?.operatorFeeTransfer || 0
     const additionalFeeType = data?.costType

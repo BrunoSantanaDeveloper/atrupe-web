@@ -198,7 +198,7 @@ function NewFixedExpenseModal({
                   startAdornment={<span className="text-2xl">R$</span>}
                   width="w-full [&_.form-message]:ml-auto [&_.form-message]:mr-6 [&_.form-message]:pb-2"
                   className={cn(
-                    'border-0 focus-within:ring-0 rounded-sm border-b-2 text-5xl font-medium h-20 [&>input]:text-right px-3',
+                    'border-0 focus-within:ring-0 rounded-sm border-b-2 text-2xl font-medium h-20 [&>input]:text-right px-3',
                     'text-error-700 border-error-600 focus-within:border-error-600 bg-error-25 [&>input]:placeholder:text-error-800',
                   )}
                 />

@@ -49,6 +49,8 @@ import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 
 interface Props {
   data: QuotationType
+  onEditClick?: () => void
+  editDisabled?: boolean
 }
 
 function formatDateForInput(date?: string | Date) {
@@ -152,7 +154,7 @@ function EditableDateField({
   )
 }
 
-export function QuotationSummary({ data }: Props) {
+export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const { data: session } = useSession()
   const isAdmin = session?.user?.isAdmin
@@ -179,9 +181,17 @@ export function QuotationSummary({ data }: Props) {
                     LeftIcon={IconPencil}
                     title="Editar"
                     onClick={() => {
-                      setOpenDialog('editQuotation')
+                      if (onEditClick) {
+                        onEditClick()
+                      } else {
+                        setOpenDialog('editQuotation')
+                      }
                     }}
-                    disabled={actionDisabled('editQuotation', data?.status)}
+                    disabled={
+                      editDisabled !== undefined
+                        ? editDisabled
+                        : actionDisabled('editQuotation', data?.status)
+                    }
                   />
                 </TooltipProvider>
                 <AccordionTrigger

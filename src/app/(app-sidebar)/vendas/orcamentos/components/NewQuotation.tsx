@@ -23,7 +23,6 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import NewClientTriggerButton from './NewClientTriggerButton'
 import { FormInput } from '@/components/common/form/FormInput'
-import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsyncSelect'
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
@@ -274,14 +273,6 @@ export function NewQuotationModal({
                     label="Empresa"
                     width="flex-[1_0_300px]"
                     disabled={editMode}
-                  />
-                )}
-                {session?.user?.isAdmin && !editMode && (
-                  <FormDatePickerInput
-                    name="createdAt"
-                    label="Data de criação (retroativa)"
-                    placeholder="Data atual"
-                    width="flex-[1_0_300px]"
                   />
                 )}
               </form>

@@ -127,24 +127,21 @@ export function ApproveQuotation({ data }: Props) {
             Ao aprovar, este trabalho mudará de status e passará a ficar
             disponível na aba Ordens de Serviço.
           </AlertDialogDescription>
-          {isAdmin && (
-            <div className="flex flex-col gap-1.5 pt-2">
-              <Label
-                htmlFor="approvedAt"
-                className="text-sm text-muted-foreground"
-              >
-                Data de aprovação (retroativa)
-              </Label>
-              <Input
-                id="approvedAt"
-                type="date"
-                value={approvedAt}
-                onChange={(e) => setApprovedAt(e.target.value)}
-                className="w-full"
-              />
-            </div>
-          )}
         </AlertDialogHeader>
+        {isAdmin && (
+          <div className="flex flex-col gap-1 px-1 pb-2">
+            <Label htmlFor="approvedAt-input" className="text-xs text-gray-600">
+              Data de aprovação retroativa (opcional)
+            </Label>
+            <Input
+              id="approvedAt-input"
+              type="date"
+              value={approvedAt}
+              onChange={(e) => setApprovedAt(e.target.value)}
+              className="h-9 max-w-[200px] text-sm"
+            />
+          </div>
+        )}
         <AlertDialogFooter>
           <AlertDialogCancel>Voltar</AlertDialogCancel>
           <AlertDialogAction

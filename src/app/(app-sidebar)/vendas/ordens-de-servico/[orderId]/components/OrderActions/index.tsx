@@ -11,8 +11,6 @@ import { EmitNfe } from './EmitNfe'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
-import { EditOrderInfoDialog } from './EditOrderInfo'
-
 // Icons
 import { IconPrinter } from '@tabler/icons-react'
 
@@ -126,7 +124,6 @@ export function OrderActions({ data }: Props) {
           )}
         </div>
         <div className="flex flex-wrap gap-4">
-          <EditOrderInfoDialog data={data} />
           {canCancel ? (
             <PermissionGate permissions={['sale:order:delete']}>
               <CancelOrder data={data} />

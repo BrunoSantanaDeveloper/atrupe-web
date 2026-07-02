@@ -19,6 +19,8 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
 
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -49,6 +51,8 @@ const schema = z.object({
   }),
   amount: z.number().min(0.01, 'Digite um valor'),
   notes: z.string().optional(),
+  markAsPaid: z.boolean().default(false),
+  paidDate: z.date().optional(),
 })
 
 type FormType = z.infer<typeof schema>
@@ -76,7 +80,8 @@ export function LaunchMovementModal({
     resolver: zodResolver(schema),
   })
 
-  const { handleSubmit, reset, formState } = form
+  const { handleSubmit, reset, watch, setValue, formState } = form
+  const markAsPaid = watch('markAsPaid')
 
   useEffect(() => {
     if (item && open) {
@@ -85,6 +90,8 @@ export function LaunchMovementModal({
         dueDate: item ? new Date(year, month, item.dueDay) : new Date(),
         amount: item.amount || 0,
         notes: '',
+        markAsPaid: false,
+        paidDate: new Date(),
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,6 +106,8 @@ export function LaunchMovementModal({
       dueDate: data.dueDate,
       amount: data.amount,
       notes: data.notes,
+      markAsPaid: data.markAsPaid,
+      paidDate: data.markAsPaid && data.paidDate ? data.paidDate : undefined,
     }
 
     const res = await createItemNew({
@@ -157,6 +166,26 @@ export function LaunchMovementModal({
                 placeholder="Digite aqui"
                 rows={4}
               />
+              <div className="flex flex-wrap items-center gap-6 pt-1">
+                <div className="flex items-center gap-3">
+                  <Switch
+                    id="markAsPaid"
+                    checked={markAsPaid}
+                    onCheckedChange={(checked) =>
+                      setValue('markAsPaid', checked)
+                    }
+                  />
+                  <Label htmlFor="markAsPaid" className="cursor-pointer">
+                    Marcar como pago
+                  </Label>
+                </div>
+                {markAsPaid && (
+                  <FormDatePickerInput
+                    name="paidDate"
+                    label="Data de pagamento"
+                  />
+                )}
+              </div>
             </DialogBody>
             <DialogFooter className="sm:justify-between">
               <div>

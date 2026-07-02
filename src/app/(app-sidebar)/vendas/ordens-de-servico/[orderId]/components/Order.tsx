@@ -3,6 +3,9 @@
 // Next
 import { notFound } from 'next/navigation'
 
+// React
+import { useState } from 'react'
+
 // UI
 import { Skeleton } from '@/components/ui/skeleton'
 import { buttonVariants } from '@/components/ui/button'
@@ -17,6 +20,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { QuotationSummary } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Summary'
 import { QuotationDelivery } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/Delivery'
 import { QuotationPaymentConditions } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/PaymentConditions'
+import { EditOrderInfoDialog } from './OrderActions/EditOrderInfo'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -33,7 +37,6 @@ import { getItemOld } from '@/actions/_cruds'
 // Consts
 import { ordersStatusObj } from '@/consts/orders'
 
-// Add import
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props {
@@ -41,6 +44,7 @@ interface Props {
 }
 
 export function Order({ id }: Props) {
+  const [editOrderOpen, setEditOrderOpen] = useState(false)
   const previousUrl = '/vendas/ordens-de-servico' // TODO : incluir parametros de busca anteriores se houver
 
   // const isMutating = useIsMutating()
@@ -132,7 +136,16 @@ export function Order({ id }: Props) {
         />
         <div className="space-y-3">
           <OrderActions data={data} />
-          <QuotationSummary data={data?.quotation} />
+          <QuotationSummary
+            data={data?.quotation}
+            onEditClick={() => setEditOrderOpen(true)}
+            editDisabled={data?.status === 'CANCELED'}
+          />
+          <EditOrderInfoDialog
+            data={data}
+            open={editOrderOpen}
+            onOpenChange={setEditOrderOpen}
+          />
           <OrderItems data={data} />
           <QuotationDelivery quotationData={data?.quotation} />
           <QuotationPaymentConditions quotationData={data?.quotation} />

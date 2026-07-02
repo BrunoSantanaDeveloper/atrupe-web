@@ -5,7 +5,7 @@ import { QuotationPaymentConditionsType } from './schema'
 import { addDays } from 'date-fns'
 import { getItem } from '@/actions/_cruds'
 import { PaymentConditionsType } from '@/types/settings/paymentCondition'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 const dueDate = new Date()
@@ -13,6 +13,7 @@ const dueDate = new Date()
 export function InstallmentQty() {
   const form = useFormContext<QuotationPaymentConditionsType>()
   const { setValue, watch } = form
+  const isInitialized = useRef(false)
 
   const minInstallmentQty = watch('minInstallmentQty') || 1
   const maxInstallmentQty = watch('maxInstallmentQty') || 1
@@ -22,7 +23,7 @@ export function InstallmentQty() {
   const installmentQty = watch('installmentQty')
   const installments = watch('installments')
   const hasDownPayment = watch('hasDownPayment')
-  const dayInterval = watch('dayInterval') || 30
+  const dayInterval = watch('dayInterval') ?? 30
 
   // Função para recalcular os valores das parcelas
   const recalculateInstallments = async (
@@ -96,14 +97,20 @@ export function InstallmentQty() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentConditionId])
 
-  // Recalcular parcelas quando o valor total ou o valor da entrada mudar
+  // Recalcular parcelas quando o valor total ou o valor da entrada mudar.
+  // Pula a primeira execução (mount após reset do form) para não sobrescrever
+  // valores salvos vindos do banco com distribuição igualitária.
   useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true
+      return
+    }
+
     if (
       installmentQty &&
       Number(installmentQty) > 0 &&
       installments?.length > 0
     ) {
-      // Usar o valor de acréscimo atual para manter consistência
       const currentAdditionalFee = installments[0]?.additionalFee || 0
       recalculateInstallments(
         Number(installmentQty),

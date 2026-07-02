@@ -66,10 +66,21 @@ type FormType = z.infer<typeof schema>
 
 interface Props {
   data: OrderType
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function EditOrderInfoDialog({ data }: Props) {
-  const [open, setOpen] = useState(false)
+export function EditOrderInfoDialog({
+  data,
+  open: openProp,
+  onOpenChange,
+}: Props) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const isControlled = openProp !== undefined
+  const open = isControlled ? openProp : internalOpen
+  const setOpen = isControlled
+    ? (onOpenChange as (v: boolean) => void)
+    : setInternalOpen
   const queryClient = useQueryClient()
 
   const quotation = data.quotation as QuotationType
@@ -170,15 +181,17 @@ export function EditOrderInfoDialog({ data }: Props) {
 
   return (
     <PermissionGate permissions={['sale:order:edit']}>
-      <Button
-        type="button"
-        variant="neutralLight"
-        size="sm"
-        LeftIcon={IconPencil}
-        onClick={() => setOpen(true)}
-      >
-        Editar informações
-      </Button>
+      {!isControlled && (
+        <Button
+          type="button"
+          variant="neutralLight"
+          size="sm"
+          LeftIcon={IconPencil}
+          onClick={() => setOpen(true)}
+        >
+          Editar informações
+        </Button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[696px]">
