@@ -14,6 +14,7 @@ import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 import { SyncAsaasDialog } from '../SyncAsaasDialog'
+import { SyncAddressDialog } from '../SyncAddressDialog'
 import { ResetPasswordDialog } from '../ResetPasswordDialog'
 
 // UI
@@ -53,6 +54,7 @@ import {
   IconBuildingStore,
   IconRefresh,
   IconKey,
+  IconMapPin,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -100,6 +102,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false)
+  const [isSyncAddressDialogOpen, setIsSyncAddressDialogOpen] = useState(false)
   const [isResetPasswordDialogOpen, setIsResetPasswordDialogOpen] =
     useState(false)
 
@@ -243,6 +246,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       }}
                                     />
                                     <ActionButton
+                                      Icon={IconMapPin}
+                                      tooltip="Endereço Asaas"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsSyncAddressDialogOpen(true)
+                                      }}
+                                    />
+                                    <ActionButton
                                       Icon={IconKey}
                                       tooltip="Redefinir senha"
                                       onClick={() => {
@@ -334,6 +345,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <SyncAsaasDialog
         open={isSyncDialogOpen}
         setOpen={setIsSyncDialogOpen}
+        rowData={rowData}
+      />
+
+      <SyncAddressDialog
+        open={isSyncAddressDialogOpen}
+        setOpen={setIsSyncAddressDialogOpen}
         rowData={rowData}
       />
 

@@ -537,6 +537,7 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
           sellerId: 'Vendedor',
           contactId: 'Responsável',
           deliveryClientAddressId: 'Endereço de entrega',
+          deliveryAddress: 'Endereço de entrega',
         }
         const nameFields: Record<string, string> = {
           clientId: 'clientName',

@@ -393,45 +393,41 @@ export function PayrollPdf({
           </View>
 
           {/* Seção de acordo e assinaturas */}
-          {showSignature && (
-            <>
-              <View style={styles.clarityTextContainer}>
-                <Text style={styles.clarityParagraph}>
-                  e para clareza, firmo(amos) o presente.
-                </Text>
-              </View>
+          <View style={styles.clarityTextContainer}>
+            <Text style={styles.clarityParagraph}>
+              e para clareza, firmo(amos) o presente.
+            </Text>
+          </View>
 
-              <View style={styles.infoDate}>
-                <View />
-                <View>
-                  <Text>De acordo, ____/____/______</Text>
-                </View>
-              </View>
+          <View style={styles.infoDate}>
+            <View />
+            <View>
+              <Text>De acordo, ____/____/______</Text>
+            </View>
+          </View>
 
-              {/* Assinaturas */}
-              <View style={styles.signatures}>
-                <View style={styles.signatureLine}>
-                  {data.employeeSignatureUrl && (
-                    <Image
-                      src={getProxiedImageUrl(data.employeeSignatureUrl)}
-                      style={{
-                        width: 120,
-                        height: 40,
-                        objectFit: 'contain',
-                        marginBottom: 4,
-                      }}
-                    />
-                  )}
-                  <Text>{data.employeeName}</Text>
-                </View>
-                <View style={{ width: '33%' }} />
-                <View style={styles.signatureLine}>
-                  <Text>{data.company?.name}</Text>
-                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-                </View>
-              </View>
-            </>
-          )}
+          {/* Assinaturas */}
+          <View style={styles.signatures}>
+            <View style={styles.signatureLine}>
+              <Text>{data.employeeName}</Text>
+            </View>
+            <View style={{ width: '33%' }} />
+            <View style={styles.signatureLine}>
+              {showSignature && data.employeeSignatureUrl && (
+                <Image
+                  src={getProxiedImageUrl(data.employeeSignatureUrl)}
+                  style={{
+                    width: 120,
+                    height: 40,
+                    objectFit: 'contain',
+                    marginBottom: 4,
+                  }}
+                />
+              )}
+              <Text>{data.company?.name}</Text>
+              <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+            </View>
+          </View>
 
           {/* Linha divisória - apenas para folha de pagamento */}
           {!isAdvance && <View style={styles.divider} />}

@@ -18,6 +18,21 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async headers() {
+    if (process.env.NEXT_PUBLIC_ENV === 'production') return []
+
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex, nofollow',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig

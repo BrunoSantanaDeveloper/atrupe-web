@@ -247,39 +247,35 @@ export function ReceiptPdf({ data, showSignature = true }: Props) {
           </View>
 
           {/* Seção de acordo e assinaturas */}
-          {showSignature && (
-            <>
-              <View style={styles.clarityTextContainer}>
-                <Text style={styles.clarityParagraph}>
-                  e para clareza, firmo(amos) o presente.
-                </Text>
-              </View>
+          <View style={styles.clarityTextContainer}>
+            <Text style={styles.clarityParagraph}>
+              e para clareza, firmo(amos) o presente.
+            </Text>
+          </View>
 
-              <View style={styles.infoDate}>
-                <View />
-                <View>
-                  <Text>De acordo, ____/____/______</Text>
-                </View>
-              </View>
+          <View style={styles.infoDate}>
+            <View />
+            <View>
+              <Text>De acordo, ____/____/______</Text>
+            </View>
+          </View>
 
-              <View style={styles.signatures}>
-                <View style={styles.signatureLine}>
-                  <Text>{data.clientName}</Text>
-                </View>
-                <View style={{ width: '33%' }} />
-                <View style={styles.signatureLine}>
-                  {data.employeeSignatureUrl && (
-                    <PDFImage
-                      src={getProxiedImageUrl(data.employeeSignatureUrl)}
-                      style={styles.signatureImage}
-                    />
-                  )}
-                  <Text>{data.company?.name}</Text>
-                  <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
-                </View>
-              </View>
-            </>
-          )}
+          <View style={styles.signatures}>
+            <View style={styles.signatureLine}>
+              <Text>{data.clientName}</Text>
+            </View>
+            <View style={{ width: '33%' }} />
+            <View style={styles.signatureLine}>
+              {showSignature && data.employeeSignatureUrl && (
+                <PDFImage
+                  src={getProxiedImageUrl(data.employeeSignatureUrl)}
+                  style={styles.signatureImage}
+                />
+              )}
+              <Text>{data.company?.name}</Text>
+              <Text>{maskCnpj(data.company?.cnpj || '')}</Text>
+            </View>
+          </View>
         </View>
 
         {/* Número da Página */}
