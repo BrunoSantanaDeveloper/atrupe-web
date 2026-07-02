@@ -21,16 +21,10 @@ import { Button } from '@/components/ui/button'
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
-import { HideAlertDialog } from './Actions/Hide'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Icons
-import {
-  IconTrash,
-  IconPencil,
-  IconSquarePlus,
-  IconEyeOff,
-} from '@tabler/icons-react'
+import { IconTrash, IconPencil, IconSquarePlus } from '@tabler/icons-react'
 
 // Hooks
 import {
@@ -46,6 +40,29 @@ export function Main() {
 
   const companyOwned = contactSources?.filter((s) => s.companyId) ?? []
   const global = contactSources?.filter((s) => !s.companyId) ?? []
+
+  const ActionButtons = ({ item }: { item: IContactSource }) => (
+    <div className="flex justify-end gap-1">
+      <TooltipProvider>
+        <ActionButton
+          Icon={IconPencil}
+          tooltip="Editar"
+          onClick={() => {
+            setOpenDialog('edit')
+            setRowData(item)
+          }}
+        />
+        <ActionButton
+          Icon={IconTrash}
+          tooltip="Excluir"
+          onClick={() => {
+            setOpenDialog('delete')
+            setRowData(item)
+          }}
+        />
+      </TooltipProvider>
+    </div>
+  )
 
   return (
     <div className="space-y-5">
@@ -91,18 +108,7 @@ export function Main() {
                       {item.name}
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <TooltipProvider>
-                          <ActionButton
-                            Icon={IconEyeOff}
-                            tooltip="Ocultar"
-                            onClick={() => {
-                              setOpenDialog('hide')
-                              setRowData(item)
-                            }}
-                          />
-                        </TooltipProvider>
-                      </div>
+                      <ActionButtons item={item} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -121,26 +127,7 @@ export function Main() {
                   <TableRow key={item.id}>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <TooltipProvider>
-                          <ActionButton
-                            Icon={IconPencil}
-                            tooltip="Editar"
-                            onClick={() => {
-                              setOpenDialog('edit')
-                              setRowData(item)
-                            }}
-                          />
-                          <ActionButton
-                            Icon={IconTrash}
-                            tooltip="Excluir"
-                            onClick={() => {
-                              setOpenDialog('delete')
-                              setRowData(item)
-                            }}
-                          />
-                        </TooltipProvider>
-                      </div>
+                      <ActionButtons item={item} />
                     </TableCell>
                   </TableRow>
                 ))}
@@ -167,11 +154,6 @@ export function Main() {
       />
       <DeleteAlertDialog
         open={openDialog === 'delete'}
-        setOpen={setOpenDialog}
-        rowData={rowData}
-      />
-      <HideAlertDialog
-        open={openDialog === 'hide'}
         setOpen={setOpenDialog}
         rowData={rowData}
       />
