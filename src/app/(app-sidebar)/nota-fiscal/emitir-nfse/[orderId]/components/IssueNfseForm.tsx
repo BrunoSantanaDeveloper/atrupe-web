@@ -16,7 +16,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Topbar } from '@/components/common/Topbar'
 import { CustomButton } from '@/components/common/CustomButton'
 import { NfseTomadorSection } from './NfseTomadorSection'
-import { NfseServicosSection } from './NfseServicosSection'
 import { NfseDadosFiscaisSection } from './NfseDadosFiscaisSection'
 import { NfseTotaisSection } from './NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
@@ -159,8 +158,15 @@ export function IssueNfseForm({ id, orderIds }: Props) {
             prepareResult.message || 'Emissor fiscal não configurado',
           )
         }
-        if (prepareResult.data?.ambiente) {
-          setAmbiente(prepareResult.data.ambiente as string)
+        const prepareData = prepareResult.data
+        if (prepareData?.prestador?.ambiente) {
+          setAmbiente(prepareData.prestador.ambiente as string)
+        }
+        if (prepareData?.codigoServico) {
+          setCodigoServico(prepareData.codigoServico as string)
+        }
+        if (prepareData?.aliquotaIss) {
+          setAliquotaIss(prepareData.aliquotaIss as number)
         }
 
         const failed = orderResults.find((r) => !r.success || !r.data)
@@ -205,8 +211,15 @@ export function IssueNfseForm({ id, orderIds }: Props) {
             prepareResult.message || 'Emissor fiscal não configurado',
           )
         }
-        if (prepareResult.data?.ambiente) {
-          setAmbiente(prepareResult.data.ambiente as string)
+        const prepareData = prepareResult.data
+        if (prepareData?.prestador?.ambiente) {
+          setAmbiente(prepareData.prestador.ambiente as string)
+        }
+        if (prepareData?.codigoServico) {
+          setCodigoServico(prepareData.codigoServico as string)
+        }
+        if (prepareData?.aliquotaIss) {
+          setAliquotaIss(prepareData.aliquotaIss as number)
         }
 
         if (!result.success || !result.data) {
@@ -436,15 +449,6 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   }
 
   const client = orderData.quotation?.client
-  const serviceItems = isConsolidated
-    ? allOrdersData.flatMap((o) =>
-        (o.quotation?.quotationItems || []).filter(
-          (item) => item.product?.isService,
-        ),
-      )
-    : orderData.quotation?.quotationItems?.filter(
-        (item) => item.product?.isService,
-      ) || []
   const isHomologacao = ambiente === 'HOMOLOGACAO'
 
   // Handlers for Delivery Address (Local de Prestação)
@@ -610,11 +614,6 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           onEntregaToggle={handleEntregaToggle}
           onAddressSelect={handleEntregaAddressSelect}
           onEntregaChange={handleEntregaChange}
-        />
-
-        <NfseServicosSection
-          items={serviceItems}
-          formatCurrency={formatCurrency}
         />
 
         <NfseDadosFiscaisSection
