@@ -376,24 +376,22 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   }
 
   const getServicesTotal = () => {
+    const sumItems = (items: QuotationItem[]) => {
+      const serviceItems = items.filter((i) => i.product?.isService)
+      const toSum = serviceItems.length > 0 ? serviceItems : items
+      return toSum.reduce((acc, i) => acc + (i.finalValue || 0), 0)
+    }
+
     if (isConsolidated && allOrdersData.length > 0) {
       return (
-        allOrdersData.reduce((total, o) => {
-          return (
-            total +
-            (o.quotation?.quotationItems || [])
-              .filter((item) => item.product?.isService)
-              .reduce((acc, item) => acc + (item.finalValue || 0), 0)
-          )
-        }, 0) / 100
+        allOrdersData.reduce(
+          (total, o) => total + sumItems(o.quotation?.quotationItems || []),
+          0,
+        ) / 100
       )
     }
     if (!orderData?.quotation?.quotationItems) return 0
-    return (
-      orderData.quotation.quotationItems
-        .filter((item) => item.product?.isService)
-        .reduce((acc, item) => acc + (item.finalValue || 0), 0) / 100
-    )
+    return sumItems(orderData.quotation.quotationItems) / 100
   }
 
   const formatCurrency = (value: number) => {
