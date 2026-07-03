@@ -265,7 +265,6 @@ export function StandaloneNfseForm() {
         // Optional RPS / config from prepare-standalone
         naturezaOperacao: prepareData?.naturezaOperacao,
         codigoMunicipio: prepareData?.codigoMunicipio,
-        addressId: selectedAddressId || undefined,
         ...(entrega
           ? {
               entregaEndereco: entrega.endereco,
