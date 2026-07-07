@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -87,6 +87,19 @@ export function NfcePaymentSection({
 
   const totalPago = pagamentos.reduce((acc, p) => acc + p.valor, 0)
   const restante = Math.max(0, totalNota - totalPago)
+
+  useEffect(() => {
+    if (restante > 0) {
+      setPaymentValue(
+        restante.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      )
+    } else {
+      setPaymentValue('')
+    }
+  }, [restante])
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString('pt-BR', {

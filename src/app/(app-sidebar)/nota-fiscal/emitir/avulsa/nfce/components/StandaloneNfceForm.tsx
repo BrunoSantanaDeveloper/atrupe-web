@@ -41,6 +41,7 @@ import type {
   NfePrepareItem,
   NfePrepareResponse,
 } from '@/types/fiscal/nfe-prepare'
+import type { OrderType } from '@/types/sales/order'
 
 interface PrepareNfceData {
   numero: number
@@ -50,6 +51,18 @@ interface PrepareNfceData {
   naturezaOperacao: string
   informacoesComplementares: string
   prazoCancelamentoMinutos: number
+}
+
+interface ProductFiscalResult {
+  code?: string
+  unitOfMeasureCode?: string
+  fiscalData?: {
+    ncm?: string
+    cfopInState?: string
+    icmsCst?: string
+    pisCst?: string
+    cofinsCst?: string
+  } | null
 }
 
 export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
@@ -81,20 +94,87 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
     setError(null)
 
     try {
-      const result = await getItem({
-        route: '/fiscal/nfce/prepare-standalone',
-      })
+      const [defaultsResult, orderResult] = await Promise.all([
+        getItem({ route: '/fiscal/nfce/prepare-standalone' }),
+        linkedOrderId
+          ? getItem({ route: '/sale/order', id: linkedOrderId })
+          : Promise.resolve(null),
+      ])
 
-      if (!result.success || !result.data) {
+      if (!defaultsResult.success || !defaultsResult.data) {
         setPrepareData(null)
-        setError(result.message || 'Erro ao carregar configurações fiscais')
+        setError(
+          defaultsResult.message || 'Erro ao carregar configurações fiscais',
+        )
       } else {
-        const data = result.data as PrepareNfceData
+        const data = defaultsResult.data as PrepareNfceData
         setPrepareData(data)
         if (data.naturezaOperacao) {
           setNaturezaOperacao(data.naturezaOperacao)
         }
         setInformacoesComplementares(data.informacoesComplementares || '')
+      }
+
+      if (orderResult?.success && orderResult?.data) {
+        const order = orderResult.data as OrderType
+        const { client, quotationItems } = order.quotation
+
+        if (client) {
+          const cnpjCpf = client.cpf || client.cnpj || ''
+          setConsumidorNome(client.name || '')
+          setCpfConsumidor(cnpjCpf)
+          setSelectedClient({ id: client.id, name: client.name, cnpjCpf })
+        }
+
+        if (quotationItems?.length > 0) {
+          const productResults = await Promise.all(
+            quotationItems.map((qi) =>
+              qi.product.originalProductId
+                ? getItem({
+                    route: '/product',
+                    id: qi.product.originalProductId,
+                  }).catch(() => null)
+                : Promise.resolve(null),
+            ),
+          )
+
+          const mappedItems: NfePrepareItem[] = quotationItems.map(
+            (qi, idx) => {
+              const prodResult = productResults[idx]
+              const prod = prodResult?.success
+                ? (prodResult.data as ProductFiscalResult)
+                : null
+              const fiscal = prod?.fiscalData
+
+              return {
+                itemNumber: idx + 1,
+                productId: qi.product.originalProductId || '',
+                productCode: prod?.code || '',
+                description: qi.description || qi.product.name,
+                ncm: fiscal?.ncm || '',
+                cfop: fiscal?.cfopInState || '5102',
+                cstIcms: fiscal?.icmsCst || '',
+                cstIpi: '',
+                cstPis: fiscal?.pisCst || '',
+                cstCofins: fiscal?.cofinsCst || '',
+                unit: prod?.unitOfMeasureCode || 'UN',
+                uCom: prod?.unitOfMeasureCode || 'UN',
+                ean: '',
+                ceantrib: '',
+                quantity: qi.product.quantity,
+                unitValue: qi.unitValue,
+                discount: qi.discount || 0,
+                freight: 0,
+                insurance: 0,
+                totalValue: qi.finalValue,
+                isService: false,
+                needsConfiguration: !fiscal?.ncm,
+              }
+            },
+          )
+
+          setItems(mappedItems)
+        }
       }
     } catch {
       setPrepareData(null)
@@ -102,7 +182,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
     } finally {
       setIsLoading(false)
     }
-  }, [])
+  }, [linkedOrderId])
 
   useEffect(() => {
     fetchDefaults()
