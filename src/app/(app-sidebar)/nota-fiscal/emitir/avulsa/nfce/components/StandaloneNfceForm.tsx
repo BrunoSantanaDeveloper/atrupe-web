@@ -97,7 +97,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       const [defaultsResult, orderResult] = await Promise.all([
         getItem({ route: '/fiscal/nfce/prepare-standalone' }),
         linkedOrderId
-          ? getItem({ route: '/sale/order', id: linkedOrderId })
+          ? getItem({ route: `/sale/order/${linkedOrderId}` })
           : Promise.resolve(null),
       ])
 
@@ -131,8 +131,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             quotationItems.map((qi) =>
               qi.product.originalProductId
                 ? getItem({
-                    route: '/product',
-                    id: qi.product.originalProductId,
+                    route: `/product/${qi.product.originalProductId}`,
                   }).catch(() => null)
                 : Promise.resolve(null),
             ),
