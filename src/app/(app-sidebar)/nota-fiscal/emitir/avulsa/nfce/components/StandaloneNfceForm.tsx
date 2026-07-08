@@ -167,7 +167,13 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
                 insurance: 0,
                 totalValue: qi.finalValue,
                 isService: false,
-                needsConfiguration: !fiscal?.ncm,
+                needsConfiguration:
+                  !fiscal?.ncm ||
+                  !fiscal?.cfopInState ||
+                  !prod?.unitOfMeasureCode ||
+                  !fiscal?.icmsCst ||
+                  !fiscal?.pisCst ||
+                  !fiscal?.cofinsCst,
               }
             },
           )
@@ -263,6 +269,24 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
 
     if (pagamentos.length === 0) {
       toast.error('Adicione pelo menos uma forma de pagamento')
+      return
+    }
+
+    const invalidItem = items.find(
+      (item) =>
+        item.needsConfiguration ||
+        !item.ncm ||
+        !item.cfop ||
+        !item.unit ||
+        !item.cstIcms ||
+        !item.cstPis ||
+        !item.cstCofins,
+    )
+
+    if (invalidItem) {
+      toast.error(
+        `Complete os dados fiscais do item "${invalidItem.description}" antes de emitir a NFC-e`,
+      )
       return
     }
 

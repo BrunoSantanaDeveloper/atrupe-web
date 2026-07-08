@@ -12,9 +12,8 @@ import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { DuplicateQuotationButton } from '@/components/common/DuplicateQuotationButton'
 import { CancelOrderButton } from './CancelOrderButton'
-import { EmitNfeDialog } from './EmitNfeDialog'
-import { EmitNfseButton } from './EmitNfseButton'
 import { OrderHistoryDialog } from '../OrderHistory/OrderHistoryDialog'
+import { InvoiceTypeSelectModal } from '@/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceTypeSelectModal'
 
 // UI
 import {
@@ -69,7 +68,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const [rowData, setRowData] = useState<OrderType | null>(null)
   const [openPrintDialog, setOpenPrintDialog] = useState(false)
   const [openHistoryDialog, setOpenHistoryDialog] = useState(false)
-  const [openNfeDialog, setOpenNfeDialog] = useState(false)
+  const [openInvoiceTypeModal, setOpenInvoiceTypeModal] = useState(false)
   const [loadingProdPDF, setLoadingProdPDF] = useState([''])
 
   // Hook para controle de features
@@ -186,6 +185,15 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                           const link = `/vendas/ordens-de-servico/${order?.id}`
                           const quotation = order?.quotation
                           const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+                          const authorizedNfe = order?.nfes?.find(
+                            (nfe) => nfe.status === 'AUTHORIZED',
+                          )
+                          const issuedNfce = order?.nfces?.find((nfce) =>
+                            ['AUTHORIZED', 'CONTINGENCY'].includes(nfce.status),
+                          )
+                          const issuedNfse = order?.nfses?.find(
+                            (nfse) => nfse.status === 'AUTHORIZED',
+                          )
 
                           return (
                             <TableRow key={order?.id} className="text-nowrap">
@@ -319,15 +327,40 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                         <PermissionGate
                                           permissions={['sale:order:view']}
                                         >
-                                          {order?.nfes?.[0]?.status ===
-                                          'AUTHORIZED' ? (
+                                          {authorizedNfe ? (
                                             <ActionButton
                                               Icon={IconFileInvoice}
-                                              tooltip={`DANFE ${order.nfes[0].numero}/${order.nfes[0].serie}`}
+                                              tooltip={`DANFE NF-e ${authorizedNfe.numero}/${authorizedNfe.serie}`}
                                               onClick={() => {
-                                                if (order.nfes?.[0]?.danfeUrl) {
+                                                if (authorizedNfe.danfeUrl) {
                                                   window.open(
-                                                    order.nfes[0].danfeUrl,
+                                                    authorizedNfe.danfeUrl,
+                                                    '_blank',
+                                                  )
+                                                }
+                                              }}
+                                            />
+                                          ) : issuedNfce ? (
+                                            <ActionButton
+                                              Icon={IconFileInvoice}
+                                              tooltip={`DANFE NFC-e ${issuedNfce.numero}/${issuedNfce.serie}`}
+                                              onClick={() => {
+                                                if (issuedNfce.danfeUrl) {
+                                                  window.open(
+                                                    issuedNfce.danfeUrl,
+                                                    '_blank',
+                                                  )
+                                                }
+                                              }}
+                                            />
+                                          ) : issuedNfse ? (
+                                            <ActionButton
+                                              Icon={IconFileInvoice}
+                                              tooltip={`PDF NFS-e ${issuedNfse.numero}/${issuedNfse.serie}`}
+                                              onClick={() => {
+                                                if (issuedNfse.pdfUrl) {
+                                                  window.open(
+                                                    issuedNfse.pdfUrl,
                                                     '_blank',
                                                   )
                                                 }
@@ -336,24 +369,13 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                           ) : (
                                             <ActionButton
                                               Icon={IconFileInvoice}
-                                              tooltip="Emitir NF-e"
+                                              tooltip="Emitir nota fiscal"
                                               onClick={() => {
                                                 setRowData(order)
-                                                setOpenNfeDialog(true)
+                                                setOpenInvoiceTypeModal(true)
                                               }}
                                             />
                                           )}
-                                        </PermissionGate>
-                                      )}
-                                    {hasFiscalModule &&
-                                      order?.status !== 'CANCELED' && (
-                                        <PermissionGate
-                                          permissions={['sale:order:view']}
-                                        >
-                                          <EmitNfseButton
-                                            orderId={order?.id}
-                                            orderStatus={order?.status}
-                                          />
                                         </PermissionGate>
                                       )}
                                     <PermissionGate
@@ -399,10 +421,10 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                   setOpen={setOpenHistoryDialog}
                   order={rowData}
                 />
-                <EmitNfeDialog
-                  open={openNfeDialog}
-                  setOpen={setOpenNfeDialog}
-                  orderId={rowData?.id}
+                <InvoiceTypeSelectModal
+                  open={openInvoiceTypeModal}
+                  onOpenChange={setOpenInvoiceTypeModal}
+                  orderId={rowData.id}
                 />
               </>
             )}

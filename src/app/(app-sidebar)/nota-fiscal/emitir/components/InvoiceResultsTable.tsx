@@ -79,7 +79,10 @@ interface NfeItem {
 
 interface FiscalRecordWithRejection {
   id?: string
+  numero?: number
+  serie?: string | number
   status?: string
+  pdfUrl?: string | null
   motivoRejeicao?: string | null
 }
 
@@ -93,6 +96,7 @@ interface UnifiedInvoiceItem {
   totalValue: number
   finalidade?: number
   nfes: NfeItem[]
+  nfses?: FiscalRecordWithRejection[]
   nfse?: FiscalRecordWithRejection
   nfce?: {
     id: string
@@ -183,11 +187,29 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
   if (authorizedNfe)
     return { label: 'Emitida', variant: 'successLight' as const }
 
+  const authorizedNfse = item.nfses?.find((n) => n.status === 'AUTHORIZED')
+  if (authorizedNfse)
+    return { label: 'Emitida', variant: 'successLight' as const }
+
   const draftNfe = item.nfes?.find((n) => n.status === 'DRAFT')
   if (draftNfe) return { label: 'Em digitação', variant: 'blueLight' as const }
 
+  const draftNfse = item.nfses?.find((n) =>
+    ['DRAFT', 'PENDING', 'PROCESSING'].includes(n.status || ''),
+  )
+  if (draftNfse)
+    return { label: 'Em processamento', variant: 'blueLight' as const }
+
   const rejectedNfe = item.nfes?.find((n) => n.status === 'REJECTED')
   if (rejectedNfe) {
+    return {
+      label: 'Rejeitada',
+      variant: 'errorLight' as const,
+    }
+  }
+
+  const rejectedNfse = item.nfses?.find((n) => n.status === 'REJECTED')
+  if (rejectedNfse) {
     return {
       label: 'Rejeitada',
       variant: 'errorLight' as const,
@@ -216,16 +238,25 @@ const canSelectForConsolidation = (item: UnifiedInvoiceItem) => {
   const hasBlockingNfe = item.nfes?.some((n) =>
     ['AUTHORIZED', 'DRAFT', 'CORRECTION_SENT'].includes(n.status),
   )
-  if (hasBlockingNfe) return false
+  const hasBlockingNfse = item.nfses?.some((n) =>
+    ['AUTHORIZED', 'DRAFT', 'PENDING', 'PROCESSING'].includes(n.status || ''),
+  )
+  if (hasBlockingNfe || hasBlockingNfse) return false
   return item.status?.toUpperCase() !== 'CANCELED'
 }
 
 const findRejectedNfe = (item: UnifiedInvoiceItem) =>
   item.nfes?.find((n) => n.status === 'REJECTED')
 
+const findRejectedNfse = (item: UnifiedInvoiceItem) =>
+  item.nfses?.find((n) => n.status === 'REJECTED')
+
 const getRejectionReason = (item: UnifiedInvoiceItem) => {
   if (item.type === 'ORDER') {
-    return findRejectedNfe(item)?.motivoRejeicao
+    return (
+      findRejectedNfe(item)?.motivoRejeicao ||
+      findRejectedNfse(item)?.motivoRejeicao
+    )
   }
 
   if (item.type === 'NFE_AVULSA') {
@@ -256,7 +287,8 @@ const getReissueHref = (item: UnifiedInvoiceItem) => {
 }
 
 const isRejectedInvoice = (item: UnifiedInvoiceItem) => {
-  if (item.type === 'ORDER') return Boolean(findRejectedNfe(item))
+  if (item.type === 'ORDER')
+    return Boolean(findRejectedNfe(item) || findRejectedNfse(item))
   return item.status === 'REJECTED'
 }
 
@@ -979,6 +1011,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 const draftNfe = item.nfes?.find(
                                   (n) => n.status === 'DRAFT',
                                 )
+                                const authorizedNfse = item.nfses?.find(
+                                  (n) => n.status === 'AUTHORIZED',
+                                )
                                 const isCancelingThis =
                                   cancelingDraftId === draftNfe?.id
 
@@ -987,6 +1022,23 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     <NfeActionsDropdown
                                       nfe={authorizedNfe}
                                       onRefetch={fetchOrders}
+                                    />
+                                  )
+                                }
+
+                                if (authorizedNfse) {
+                                  return (
+                                    <ActionButton
+                                      Icon={IconReceipt}
+                                      tooltip={`Ver PDF NFS-e ${authorizedNfse.numero}/${authorizedNfse.serie}`}
+                                      onClick={() => {
+                                        if (authorizedNfse.pdfUrl) {
+                                          window.open(
+                                            authorizedNfse.pdfUrl,
+                                            '_blank',
+                                          )
+                                        }
+                                      }}
                                     />
                                   )
                                 }

@@ -5,7 +5,7 @@ import { useState } from 'react'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
-import { EmitNfeDialog } from '../../../../components/OrdersTable/EmitNfeDialog'
+import { InvoiceTypeSelectModal } from '@/app/(app-sidebar)/nota-fiscal/emitir/components/InvoiceTypeSelectModal'
 
 // Icons
 import { IconDownload, IconFileInvoice } from '@tabler/icons-react'
@@ -22,6 +22,10 @@ export function EmitNfe({ data }: Props) {
 
   // Verificar se já existe NF-e autorizada
   const existingNfe = data.nfes?.[0]
+  const existingNfce = data.nfces?.find((nfce) =>
+    ['AUTHORIZED', 'CONTINGENCY'].includes(nfce.status),
+  )
+  const existingNfse = data.nfses?.find((nfse) => nfse.status === 'AUTHORIZED')
   const hasAuthorizedNfe = existingNfe?.status === 'AUTHORIZED'
 
   // Se já tem NF-e autorizada, mostrar botão para visualizar
@@ -39,14 +43,46 @@ export function EmitNfe({ data }: Props) {
     )
   }
 
+  if (existingNfce) {
+    return (
+      <CustomButton
+        icon={IconDownload}
+        title={`DANFE NFC-e ${existingNfce.numero}/${existingNfce.serie}`}
+        onClick={() => {
+          if (existingNfce.danfeUrl) {
+            window.open(existingNfce.danfeUrl, '_blank')
+          }
+        }}
+      />
+    )
+  }
+
+  if (existingNfse) {
+    return (
+      <CustomButton
+        icon={IconDownload}
+        title={`PDF NFS-e ${existingNfse.numero}/${existingNfse.serie}`}
+        onClick={() => {
+          if (existingNfse.pdfUrl) {
+            window.open(existingNfse.pdfUrl, '_blank')
+          }
+        }}
+      />
+    )
+  }
+
   return (
     <>
       <CustomButton
         icon={IconFileInvoice}
-        title="Emitir NF-e"
+        title="Emitir nota fiscal"
         onClick={() => setOpen(true)}
       />
-      <EmitNfeDialog open={open} setOpen={setOpen} orderId={data.id} />
+      <InvoiceTypeSelectModal
+        open={open}
+        onOpenChange={setOpen}
+        orderId={data.id}
+      />
     </>
   )
 }

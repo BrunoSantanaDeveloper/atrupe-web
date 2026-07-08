@@ -309,6 +309,24 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       return
     }
 
+    if (getServicesTotal() <= 0) {
+      toast.error('A NFS-e precisa ter valor de serviÃ§os maior que zero')
+      return
+    }
+
+    const tomadorDocumento =
+      tomadorOverride?.cnpjCpf ||
+      clientToDestinatario(orderData.quotation.client).cnpjCpf
+    const tomadorDocumentoDigits = tomadorDocumento.replace(/\D/g, '')
+
+    if (
+      tomadorDocumentoDigits.length !== 11 &&
+      tomadorDocumentoDigits.length !== 14
+    ) {
+      toast.error('Informe CPF ou CNPJ vÃ¡lido para o tomador da NFS-e')
+      return
+    }
+
     setIsEmitting(true)
 
     try {

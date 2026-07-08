@@ -12,11 +12,40 @@ export type NfeType = {
   dataEmissao?: string
 }
 
+export type NfceType = {
+  id: string
+  numero: number
+  serie: number
+  status: string
+  chaveAcesso?: string
+  danfeUrl?: string
+  dataEmissao?: string
+  qrCodeUrl?: string
+  xmlAutorizado?: string
+  motivoRejeicao?: string
+}
+
+export type NfseType = {
+  id: string
+  numero: number
+  serie: string
+  rpsNumero?: number
+  rpsSerie?: string
+  status: string
+  codigoVerificacao?: string
+  pdfUrl?: string
+  dataEmissao?: string
+  xmlRetorno?: string
+  motivoRejeicao?: string
+}
+
 export type OrderType = {
   id: string
   status: string
   quotation: QuotationType
   nfes?: NfeType[]
+  nfces?: NfceType[]
+  nfses?: NfseType[]
 }
 
 export type OrderListType = {
