@@ -17,8 +17,6 @@ import {
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
@@ -146,23 +144,6 @@ export function ApproveQuotation({ data }: Props) {
               disponível na aba Ordens de Serviço.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          {isAdmin && (
-            <div className="flex flex-col gap-1 px-1 pb-2">
-              <Label
-                htmlFor="approvedAt-input"
-                className="text-xs text-gray-600"
-              >
-                Data de aprovação retroativa (opcional)
-              </Label>
-              <Input
-                id="approvedAt-input"
-                type="date"
-                value={approvedAt}
-                onChange={(e) => setApprovedAt(e.target.value)}
-                className="h-9 max-w-[200px] text-sm"
-              />
-            </div>
-          )}
           <AlertDialogFooter>
             <AlertDialogCancel>Voltar</AlertDialogCancel>
             <AlertDialogAction

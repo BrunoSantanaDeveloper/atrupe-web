@@ -314,7 +314,7 @@ export function DeliveryDialog({ quotationData }: Props) {
                 maxLength={5}
                 inputMode="numeric"
                 endAdornment={<IconClock className="size-4" />}
-                width="flex-[1_0_160px]"
+                width="flex-[1_0_300px]"
                 additionalOnChange={(value) => {
                   setValue('deliveryTime', maskTime(String(value)))
                 }}
