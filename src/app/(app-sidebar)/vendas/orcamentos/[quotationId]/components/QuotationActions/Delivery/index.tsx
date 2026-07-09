@@ -298,27 +298,29 @@ export function DeliveryDialog({ quotationData }: Props) {
                   setValue('daysAfterApproval', diffDays)
                 }}
               />
-              <FormRadio<FormType>
-                name="deliveryDisplayMode"
-                label="Exibir prazo no PDF como"
-                className="w-full"
-                items={[
-                  { value: 'DAYS', label: 'Quantidade de dias' },
-                  { value: 'DATE', label: 'Data exata' },
-                ]}
-              />
-              <FormInput
-                name="deliveryTime"
-                label="Horário de entrega"
-                placeholder="00:00"
-                maxLength={5}
-                inputMode="numeric"
-                endAdornment={<IconClock className="size-4" />}
-                width="flex-[1_0_300px]"
-                additionalOnChange={(value) => {
-                  setValue('deliveryTime', maskTime(String(value)))
-                }}
-              />
+              <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+                <FormRadio<FormType>
+                  name="deliveryDisplayMode"
+                  label="Exibir prazo no PDF como"
+                  className="min-w-0"
+                  items={[
+                    { value: 'DAYS', label: 'Quantidade de dias' },
+                    { value: 'DATE', label: 'Data exata' },
+                  ]}
+                />
+                <FormInput
+                  name="deliveryTime"
+                  label="Horário de entrega"
+                  placeholder="00:00"
+                  maxLength={5}
+                  inputMode="numeric"
+                  endAdornment={<IconClock className="size-4" />}
+                  width="w-full"
+                  additionalOnChange={(value) => {
+                    setValue('deliveryTime', maskTime(String(value)))
+                  }}
+                />
+              </div>
               {showSupplierField && (
                 <SupplierSelector
                   name="supplierId"
