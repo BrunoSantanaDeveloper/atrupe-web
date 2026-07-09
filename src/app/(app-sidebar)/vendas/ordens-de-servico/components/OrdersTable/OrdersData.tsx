@@ -83,7 +83,6 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
       showImages: true,
       showDimensions: true,
       showUnitValue: true,
-      showDiscounts: true,
       showFinalValue: true,
       showTotalValue: true,
       showPaymentDelivery: true,

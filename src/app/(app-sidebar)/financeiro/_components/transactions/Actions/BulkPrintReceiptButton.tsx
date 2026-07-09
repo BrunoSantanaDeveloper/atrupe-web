@@ -98,7 +98,7 @@ export function BulkPrintReceiptButton({ installmentIds, onSuccess }: Props) {
                 onCheckedChange={(v) => setShowSignature(!!v)}
               />
               <Label htmlFor="bulk-receipt-show-signature">
-                Exibir assinatura
+                Exibir assinatura digital
               </Label>
             </div>
           </DialogBody>

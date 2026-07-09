@@ -64,6 +64,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   // Se tiver pendente de configurar as condições de pagamento, abrir o modal direto antes de concluir
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
+  const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition?.id
 
   // Se for "Sem lançamento" (Cortesia por exemplo), não verificar se existem condições de pagamento
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
@@ -125,44 +126,52 @@ export function FinishQuotation({ data, canFinish }: Props) {
   }
 
   const canFinishDirectly =
-    (hasInstallments || isNoInvoice) && !hasValueDivergence
+    (isNoInvoice || (hasInstallments && hasPaymentCondition)) &&
+    !hasValueDivergence
 
   return (
     <>
       {canFinish ? (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-          <CustomButton
-            icon={IconProgressCheck}
-            title="Concluir orçamento"
-            iconVariant="lightBlueBorderedLight"
-            onClick={handleFinish}
+        canFinishDirectly ? (
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <CustomButton
+              icon={IconProgressCheck}
+              title="Concluir orçamento"
+              iconVariant="lightBlueBorderedLight"
+              onClick={handleFinish}
+            />
+            <AlertDialogContent className="max-w-96">
+              <AlertDialogHeader>
+                <FeaturedIcon
+                  Icon={loading ? IconLoader2 : IconAlertTriangle}
+                  rounded
+                  size="lg"
+                  variant={
+                    loading ? 'neutralBorderedLight' : 'warningBorderedLight'
+                  }
+                  className={cn('mx-auto mb-2', loading && 'animate-spin')}
+                />
+                <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
+                <AlertDialogDescription /* className={cn(validated && 'sr-only')} */
+                >
+                  {alertDialog.description}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                {!loading && (
+                  <AlertDialogCancel onClick={handleClose}>
+                    Fechar
+                  </AlertDialogCancel>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : (
+          <PaymentConditionsDialog
+            quotationData={data}
+            onFinish={handleFinish}
           />
-          <AlertDialogContent className="max-w-96">
-            <AlertDialogHeader>
-              <FeaturedIcon
-                Icon={loading ? IconLoader2 : IconAlertTriangle}
-                rounded
-                size="lg"
-                variant={
-                  loading ? 'neutralBorderedLight' : 'warningBorderedLight'
-                }
-                className={cn('mx-auto mb-2', loading && 'animate-spin')}
-              />
-              <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
-              <AlertDialogDescription /* className={cn(validated && 'sr-only')} */
-              >
-                {alertDialog.description}
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              {!loading && (
-                <AlertDialogCancel onClick={handleClose}>
-                  Fechar
-                </AlertDialogCancel>
-              )}
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        )
       ) : null}
       <AlertDialog open={openSuccess} onOpenChange={setOpenSuccess}>
         <AlertDialogContent className="max-w-96">

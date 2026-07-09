@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
+import { PaymentConditionsDialog } from './PaymentConditions'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -58,15 +59,19 @@ export function ApproveQuotation({ data }: Props) {
 
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
-  const hasPaymentCondition = hasInstallments || isNoInvoice
+  const hasPaymentCondition =
+    isNoInvoice ||
+    (hasInstallments && !!data?.paymentConditions?.paymentCondition?.id)
 
   const handleTriggerClick = () => {
     if (!hasPaymentCondition) {
-      toast.error(
-        'Configure a condição de pagamento antes de aprovar o orçamento.',
-      )
       return
     }
+    setApprovedAt('')
+    setOpen(true)
+  }
+
+  const handlePaymentConditionsSaved = () => {
     setApprovedAt('')
     setOpen(true)
   }
@@ -106,52 +111,69 @@ export function ApproveQuotation({ data }: Props) {
   }
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <CustomButton
-        icon={IconCircleCheck}
-        title="Aprovar orçamento"
-        iconVariant="successLight"
-        onClick={handleTriggerClick}
-      />
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <FeaturedIcon
-            Icon={IconAlertTriangle}
-            rounded
-            size="lg"
-            variant="warningBorderedLight"
-            className="mx-auto mb-2"
+    <>
+      {!hasPaymentCondition && (
+        <PaymentConditionsDialog
+          quotationData={data}
+          onFinish={handlePaymentConditionsSaved}
+          actionIcon={IconCircleCheck}
+          actionTitle="Aprovar orçamento"
+          actionIconVariant="successLight"
+          submitLabel="Salvar e continuar"
+        />
+      )}
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        {hasPaymentCondition && (
+          <CustomButton
+            icon={IconCircleCheck}
+            title="Aprovar orçamento"
+            iconVariant="successLight"
+            onClick={handleTriggerClick}
           />
-          <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Ao aprovar, este trabalho mudará de status e passará a ficar
-            disponível na aba Ordens de Serviço.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        {isAdmin && (
-          <div className="flex flex-col gap-1 px-1 pb-2">
-            <Label htmlFor="approvedAt-input" className="text-xs text-gray-600">
-              Data de aprovação retroativa (opcional)
-            </Label>
-            <Input
-              id="approvedAt-input"
-              type="date"
-              value={approvedAt}
-              onChange={(e) => setApprovedAt(e.target.value)}
-              className="h-9 max-w-[200px] text-sm"
-            />
-          </div>
         )}
-        <AlertDialogFooter>
-          <AlertDialogCancel>Voltar</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleApprove}
-            RightIcon={IconCircleCheck}
-          >
-            Aprovar
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <FeaturedIcon
+              Icon={IconAlertTriangle}
+              rounded
+              size="lg"
+              variant="warningBorderedLight"
+              className="mx-auto mb-2"
+            />
+            <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Ao aprovar, este trabalho mudará de status e passará a ficar
+              disponível na aba Ordens de Serviço.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {isAdmin && (
+            <div className="flex flex-col gap-1 px-1 pb-2">
+              <Label
+                htmlFor="approvedAt-input"
+                className="text-xs text-gray-600"
+              >
+                Data de aprovação retroativa (opcional)
+              </Label>
+              <Input
+                id="approvedAt-input"
+                type="date"
+                value={approvedAt}
+                onChange={(e) => setApprovedAt(e.target.value)}
+                className="h-9 max-w-[200px] text-sm"
+              />
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleApprove}
+              RightIcon={IconCircleCheck}
+            >
+              Aprovar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }

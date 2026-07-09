@@ -143,7 +143,6 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
       showImages: true,
       showDimensions: true,
       showUnitValue: true,
-      showDiscounts: true,
       showFinalValue: true,
       showTotalValue: true,
       showPaymentDelivery: true,

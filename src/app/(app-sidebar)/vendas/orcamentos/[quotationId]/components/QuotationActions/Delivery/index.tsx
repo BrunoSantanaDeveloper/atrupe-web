@@ -35,13 +35,18 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { schema, type FormType } from './schema'
 
 // Icons
-import { IconBox, IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import {
+  IconBox,
+  IconClock,
+  IconPencil,
+  IconCircleCheck,
+} from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
 
 // Libs
-import { cn } from '@/lib/utils'
+import { cn, maskTime } from '@/lib/utils'
 import { actionDisabled } from '@/lib/quotation'
 
 // Actions
@@ -125,8 +130,12 @@ export function DeliveryDialog({ quotationData }: Props) {
   const modality = watch('modality')
 
   const isFOB = modality?.includes('FOB')
-  const showSupplierField = deliveryType === 'CARRIER' || cost > 0 || isFOB
-  const showCostFields = !isFOB
+  const isNoTransport = modality?.includes('Sem ocorrência de transporte')
+  const isCustomerPickup = deliveryType === 'PICKUP'
+  const isFreightOutsideSale = isFOB || isCustomerPickup || isNoTransport
+  const showSupplierField =
+    !isFreightOutsideSale && (deliveryType === 'CARRIER' || cost > 0)
+  const showCostFields = !isFreightOutsideSale
   const showCustomAddressFields = clientAddressId === 'custom'
 
   const queryClient = useQueryClient()
@@ -134,7 +143,11 @@ export function DeliveryDialog({ quotationData }: Props) {
   const onSubmit = async (data: FormType) => {
     if (actionDisabled('delivery', quotationData?.status)) return
 
-    if (!showSupplierField) {
+    if (isFreightOutsideSale) {
+      data.supplierId = null
+      data.cost = 0
+      data.value = 0
+    } else if (!showSupplierField) {
       data.supplierId = null
     }
 
@@ -144,6 +157,7 @@ export function DeliveryDialog({ quotationData }: Props) {
     }
 
     if (
+      !isFreightOutsideSale &&
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
       !data.supplierId
     ) {
@@ -264,8 +278,14 @@ export function DeliveryDialog({ quotationData }: Props) {
               <FormInput
                 name="deliveryTime"
                 label="Horário de entrega"
-                type="time"
+                placeholder="00:00"
+                maxLength={5}
+                inputMode="numeric"
+                endAdornment={<IconClock className="size-4" />}
                 width="flex-[1_0_160px]"
+                additionalOnChange={(value) => {
+                  setValue('deliveryTime', maskTime(String(value)))
+                }}
               />
               {showSupplierField && (
                 <SupplierSelector
@@ -335,6 +355,11 @@ export function DeliveryDialog({ quotationData }: Props) {
                 options={deliveryModalityOptions}
                 width="flex-[1_0_200px]"
               />
+              {isFreightOutsideSale && (
+                <p className="w-full rounded-md border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+                  O frete não faz parte desta venda
+                </p>
+              )}
               {/* TODO : Se houver custo, deve ir para despesas */}
               {showCostFields && (
                 <PermissionGate permissions={['values:values:create']}>

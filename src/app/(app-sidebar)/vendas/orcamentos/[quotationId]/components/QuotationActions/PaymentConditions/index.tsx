@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ComponentProps } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -68,9 +68,20 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 interface Props {
   quotationData: QuotationType
   onFinish?: () => void
+  actionTitle?: string
+  actionIcon?: ComponentProps<typeof CustomButton>['icon']
+  actionIconVariant?: ComponentProps<typeof CustomButton>['iconVariant']
+  submitLabel?: string
 }
 
-export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
+export function PaymentConditionsDialog({
+  quotationData,
+  onFinish,
+  actionTitle = 'Concluir orçamento',
+  actionIcon = IconProgressCheck,
+  actionIconVariant = 'lightBlueBorderedLight',
+  submitLabel,
+}: Props) {
   const [open, setOpen] = useState(false)
 
   // const isFetching = useIsFetching()
@@ -166,7 +177,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
 
     setOpen(false)
 
-    // Se está salvando infos de pgto após tentar "Concluir Orçamento"
+    // Continua o fluxo que abriu o modal, como concluir ou aprovar.
     onFinish?.()
   }
 
@@ -182,6 +193,8 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
 
   // const isBusy = isSubmitting || isFetching > 0
   const isBusy = isSubmitting
+  const saveButtonLabel =
+    submitLabel ?? (onFinish ? 'Salvar e concluir' : 'Salvar')
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -189,9 +202,9 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
         <DialogTrigger asChild>
           {onFinish ? (
             <CustomButton
-              icon={IconProgressCheck}
-              title="Concluir orçamento"
-              iconVariant="lightBlueBorderedLight"
+              icon={actionIcon}
+              title={actionTitle}
+              iconVariant={actionIconVariant}
             />
           ) : (
             <ActionButton
@@ -318,7 +331,7 @@ export function PaymentConditionsDialog({ quotationData, onFinish }: Props) {
               disabled={isBusy}
               isLoading={isSubmitting}
             >
-              Salvar {!!onFinish && 'e concluir'}
+              {saveButtonLabel}
             </Button>
           </div>
         </DialogFooter>

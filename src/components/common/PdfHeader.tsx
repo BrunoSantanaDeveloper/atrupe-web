@@ -112,6 +112,10 @@ interface Props {
   company?: CompanyInfo
 }
 
+function hasPrintableValue(value?: string | number | null) {
+  return String(value ?? '').trim().length > 0
+}
+
 export function PdfHeader({ company }: Props) {
   return (
     <View style={styles.header} fixed>
@@ -144,7 +148,7 @@ export function PdfHeader({ company }: Props) {
         </Text>
       </View>
       <View style={styles.socialInfo}>
-        {company?.socialNetworks?.instagram && (
+        {hasPrintableValue(company?.socialNetworks?.instagram) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>
               {company?.socialNetworks?.instagram}
@@ -152,7 +156,7 @@ export function PdfHeader({ company }: Props) {
             <InstagramIcon />
           </View>
         )}
-        {company?.socialNetworks?.facebook && (
+        {hasPrintableValue(company?.socialNetworks?.facebook) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>
               {company?.socialNetworks?.facebook}
@@ -160,7 +164,7 @@ export function PdfHeader({ company }: Props) {
             <FacebookIcon />
           </View>
         )}
-        {company?.socialNetworks?.linkedin && (
+        {hasPrintableValue(company?.socialNetworks?.linkedin) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>
               {company?.socialNetworks?.linkedin}
@@ -168,19 +172,19 @@ export function PdfHeader({ company }: Props) {
             <LinkedinIcon />
           </View>
         )}
-        {company?.siteUrl && (
+        {hasPrintableValue(company?.siteUrl) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>{company?.siteUrl}</Text>
             <WebsiteIcon />
           </View>
         )}
-        {company?.phone && (
+        {hasPrintableValue(company?.phone) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>{company?.phone}</Text>
             <PhoneIcon />
           </View>
         )}
-        {company?.email && (
+        {hasPrintableValue(company?.email) && (
           <View style={styles.flexRow}>
             <Text style={styles.textRightSmall}>{company?.email}</Text>
             <EmailIcon />

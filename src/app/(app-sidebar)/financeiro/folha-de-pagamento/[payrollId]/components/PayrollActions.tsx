@@ -138,7 +138,9 @@ export function PayrollActions({ data }: Props) {
                 checked={showSignature}
                 onCheckedChange={(v) => setShowSignature(!!v)}
               />
-              <Label htmlFor="payroll-show-signature">Exibir assinatura</Label>
+              <Label htmlFor="payroll-show-signature">
+                Exibir assinatura digital
+              </Label>
             </div>
           </DialogBody>
           <DialogFooter>

@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
   },
   deliveryPaymentSection: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 10,
     marginVertical: 24,
     marginTop: 5,
@@ -347,6 +348,12 @@ const styles = StyleSheet.create({
   paymentContainerFull: {
     width: '100%',
   },
+  combinedUndefinedNote: {
+    width: '100%',
+    fontSize: 7,
+    textAlign: 'center',
+    marginTop: 6,
+  },
   // Estilos para imagens grandes (não originais)
   itemImageLarge: {
     width: '100%',
@@ -395,6 +402,35 @@ type CompositionItemType = {
 }
 
 // Função para adaptar composição do PDF para o formato esperado pelas funções utilitárias
+function hasPrintableValue(value?: string | number | null) {
+  return String(value ?? '').trim().length > 0
+}
+
+function normalizePaymentText(value?: string | null) {
+  return String(value ?? '')
+    .trim()
+    .toLocaleLowerCase('pt-BR')
+}
+
+function getDayTime(value?: string | Date | null) {
+  if (!value) return null
+
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return null
+
+  date.setHours(0, 0, 0, 0)
+  return date.getTime()
+}
+
+function getDayDiff(start?: string | Date | null, end?: string | Date | null) {
+  const startTime = getDayTime(start)
+  const endTime = getDayTime(end)
+
+  if (startTime === null || endTime === null) return null
+
+  return Math.round((endTime - startTime) / (1000 * 60 * 60 * 24))
+}
+
 function adaptCompositionForDisplayUtils(comp: CompositionItemType) {
   // Inferir o tipo de unidade baseado nas dimensões disponíveis
   let unitKind = 'UNITY'
@@ -440,12 +476,70 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   const pdfSubtotal = data.total?.subtotal ?? totals.subtotal
   const pdfTotalDiscount = data.total?.totalDiscount ?? 0
   const finalTotalWithFreight = pdfSubtotal - pdfTotalDiscount + freightPrice
+  const hasTotalDiscount = pdfTotalDiscount > 0.01
+  const hasItemDiscounts = data.quotationItems.some(
+    (item) => Math.max(0, item.totalValue - item.finalValue) > 0.01,
+  )
+  const shouldShowItemDiscounts =
+    hasItemDiscounts &&
+    (printOptions.showUnitValue ||
+      printOptions.showFinalValue ||
+      printOptions.showTotalValue)
 
   // As inconsistências agora são tratadas no componente pai PrintQuotationDialog
   // O PDF sempre usa os valores corretos calculados
 
   const isProduction = type === 'production'
   const showWatermark = data.quotation?.status === 'OPEN'
+  const clientDocument = data.client?.document?.value
+  const clientPhone = data.client?.phone
+  const clientEmail = data.client?.email
+  const paymentInstallments = data.payment?.installments ?? []
+  const paymentMethod = data.payment?.method
+  const normalizedPaymentMethod = normalizePaymentText(paymentMethod)
+  const hasDifferentInstallmentMethod = paymentInstallments.some(
+    (installment) => {
+      const installmentMethod = normalizePaymentText(
+        installment.paymentMethod || installment.paymentCondition,
+      )
+
+      return (
+        installmentMethod &&
+        normalizedPaymentMethod &&
+        installmentMethod !== normalizedPaymentMethod
+      )
+    },
+  )
+  const hasDifferentInstallmentValue =
+    paymentInstallments.length > 1 &&
+    paymentInstallments.some(
+      (installment) =>
+        Math.abs((installment.value ?? 0) - paymentInstallments[0].value) >
+        0.01,
+    )
+  const paymentDateIntervals = [
+    data.payment?.downPayment?.dueDate
+      ? getDayDiff(
+          data.payment.downPayment.dueDate,
+          paymentInstallments[0]?.dueDate,
+        )
+      : null,
+    ...paymentInstallments
+      .slice(1)
+      .map((installment, index) =>
+        getDayDiff(paymentInstallments[index]?.dueDate, installment.dueDate),
+      ),
+  ].filter((interval): interval is number => interval !== null)
+  const hasIrregularInstallmentDates =
+    paymentDateIntervals.length > 1 &&
+    paymentDateIntervals.some(
+      (interval) => interval !== paymentDateIntervals[0],
+    )
+  const shouldDetailPayment =
+    paymentInstallments.length > 0 &&
+    (hasDifferentInstallmentMethod ||
+      hasDifferentInstallmentValue ||
+      hasIrregularInstallmentDates)
 
   // Verificar se há produtos compostos (múltiplas composições)
   const hasCompositeProducts = data.quotationItems.some(
@@ -486,7 +580,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
     if (printOptions.showDimensions) totalWidth += baseWidths.qtyTotal
     if (printOptions.showUnitValue) totalWidth += baseWidths.unitValue
-    if (printOptions.showDiscounts) totalWidth += baseWidths.discount
+    if (shouldShowItemDiscounts) totalWidth += baseWidths.discount
     if (printOptions.showFinalValue) totalWidth += baseWidths.finalValue
 
     // Calcular espaço restante e distribuir proporcionalmente
@@ -511,7 +605,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
       unitValue: printOptions.showUnitValue
         ? adjustWidth(baseWidths.unitValue)
         : '0%',
-      discount: printOptions.showDiscounts
+      discount: shouldShowItemDiscounts
         ? adjustWidth(baseWidths.discount)
         : '0%',
       finalValue: printOptions.showFinalValue
@@ -534,24 +628,42 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             <View style={styles.infoBlock}>
               <Text>Destinado a</Text>
               <Text style={styles.infoBold}>{data.client?.name}</Text>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-              >
-                <DocumentIcon />
-                <Text>{maskCpfCnpj(data.client?.document?.value)}</Text>
-              </View>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-              >
-                <PhoneIcon />
-                <Text>{MaskPhoneNumber(data.client?.phone)}</Text>
-              </View>
-              <View
-                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
-              >
-                <EmailIcon />
-                <Text>{data.client?.email}</Text>
-              </View>
+              {hasPrintableValue(clientDocument) && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <DocumentIcon />
+                  <Text>{maskCpfCnpj(clientDocument)}</Text>
+                </View>
+              )}
+              {hasPrintableValue(clientPhone) && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <PhoneIcon />
+                  <Text>{MaskPhoneNumber(clientPhone)}</Text>
+                </View>
+              )}
+              {hasPrintableValue(clientEmail) && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <EmailIcon />
+                  <Text>{clientEmail}</Text>
+                </View>
+              )}
               {isProduction && data.client?.notes && (
                 <Text style={styles.textSmallGray}>{data.client.notes}</Text>
               )}
@@ -562,8 +674,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 <>
                   <Text>A/C</Text>
                   <Text style={styles.infoBold}>{data.contact.name}</Text>
-                  <Text>{data.contact?.phone}</Text>
-                  <Text>{data.contact?.email}</Text>
+                  {hasPrintableValue(data.contact?.phone) && (
+                    <Text>{data.contact.phone}</Text>
+                  )}
+                  {hasPrintableValue(data.contact?.email) && (
+                    <Text>{data.contact.email}</Text>
+                  )}
                 </>
               </View>
             )}
@@ -714,7 +830,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 </Text>
               )}
 
-              {!isProduction && printOptions.showDiscounts && (
+              {!isProduction && shouldShowItemDiscounts && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -927,7 +1043,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       )}
 
                       {/* Desconto - desconto do item */}
-                      {!isProduction && printOptions.showDiscounts && (
+                      {!isProduction && shouldShowItemDiscounts && (
                         <View style={{ width: columnWidths.discount }}>
                           <Text style={styles.textDiscount}>
                             -
@@ -1192,7 +1308,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     )}
 
                     {/* Colunas descontos */}
-                    {!isProduction && printOptions.showDiscounts && (
+                    {!isProduction && shouldShowItemDiscounts && (
                       <View style={{ width: columnWidths.discount }}>
                         <Text style={styles.textDiscount}>
                           -
@@ -1237,7 +1353,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           {!isProduction &&
             (printOptions.showTotalValue || freightPrice > 0) && (
               <View style={styles.totalsSection}>
-                {printOptions.showTotalValue && (
+                {printOptions.showTotalValue && hasTotalDiscount && (
                   <View style={styles.totalRow}>
                     <Text>Subtotal itens</Text>
                     <Text>
@@ -1248,7 +1364,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   </View>
                 )}
 
-                {printOptions.showTotalValue && (
+                {printOptions.showTotalValue && hasTotalDiscount && (
                   <View style={styles.totalRow}>
                     <Text>Desconto</Text>
                     <Text>
@@ -1295,6 +1411,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
             }
           >
             {/* Seção de Entrega - só exibe se showPaymentDelivery estiver ativo */}
+            {!printOptions.showPaymentDelivery && !isProduction && (
+              <View style={styles.deliveryContainerHalf}>
+                <TruckDeliveryIcon />
+                <Text style={styles.sectionTitle}>Entrega</Text>
+                <Text>*A Combinar</Text>
+              </View>
+            )}
+
             {printOptions.showPaymentDelivery && (
               <View
                 style={
@@ -1373,29 +1497,57 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
             {/* Seção de Pagamento - apenas para não-produção */}
             {!isProduction && (
-              <View
-                style={
-                  printOptions.showPaymentDelivery
-                    ? styles.paymentContainerConditional
-                    : styles.paymentContainerFull
-                }
-              >
+              <View style={styles.paymentContainerConditional}>
                 <MoneySignIcon />
                 <Text style={styles.sectionTitle}>Pagamento</Text>
 
                 {printOptions.showPaymentDelivery && data.payment?.method ? (
                   // Exibição específica quando showPaymentDelivery está ativo e há dados
                   <>
-                    {data.payment?.downPayment && (
-                      <Text>
-                        {formatCurrencyToBrl(data.payment?.downPayment?.amount)}{' '}
-                        (Entrada) +
-                      </Text>
+                    {shouldDetailPayment ? (
+                      <>
+                        {data.payment?.downPayment && (
+                          <Text>
+                            Entrada:{' '}
+                            {formatCurrencyToBrl(
+                              data.payment.downPayment.amount,
+                            )}{' '}
+                            via{' '}
+                            {data.payment.downPayment.paymentCondition?.name ||
+                              data.payment.method}{' '}
+                            em{' '}
+                            {formatToLocaleDate(
+                              data.payment.downPayment.dueDate,
+                            )}
+                          </Text>
+                        )}
+                        {paymentInstallments.map((installment, index) => (
+                          <Text key={installment.number || index}>
+                            Parcela {index + 1}/{paymentInstallments.length} de{' '}
+                            {formatCurrencyToBrl(installment.value)} via{' '}
+                            {installment.paymentMethod ||
+                              installment.paymentCondition ||
+                              data.payment.method}{' '}
+                            em {formatToLocaleDate(installment.dueDate)}
+                          </Text>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {data.payment?.downPayment && (
+                          <Text>
+                            {formatCurrencyToBrl(
+                              data.payment?.downPayment?.amount,
+                            )}{' '}
+                            (Entrada) +
+                          </Text>
+                        )}
+                        <Text>{data.payment?.method}</Text>
+                        <Text>
+                          Até {data.payment?.totalInstallments}x no pedido
+                        </Text>
+                      </>
                     )}
-                    <Text>{data.payment?.method}</Text>
-                    <Text>
-                      Até {data.payment?.totalInstallments}x no pedido
-                    </Text>
                     {data.payment?.description && (
                       <Text style={styles.textSmallGray}>
                         {data.payment.description}
@@ -1420,30 +1572,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 ) : (
                   // Exibição genérica quando showPaymentDelivery está desativo
                   <>
-                    <Text>A combinar</Text>
-                    {data.payment?.availablePaymentMethods &&
-                      data.payment.availablePaymentMethods.length > 0 && (
-                        <Text style={styles.paymentContainer}>
-                          {data.payment.availablePaymentMethods.join(', ')}.
-                        </Text>
-                      )}
-                    <Text style={styles.paymentContainer}>
-                      Valores podem sofrer acréscimo conforme forma de
-                      pagamento.
-                    </Text>
-                    {data.payment?.description && (
-                      <Text style={styles.textSmallGray}>
-                        {data.payment.description}
-                      </Text>
-                    )}
-                    {data.client?.financialNotes && (
-                      <Text style={styles.textSmallGray}>
-                        {data.client.financialNotes}
-                      </Text>
-                    )}
+                    <Text>*A Combinar</Text>
                   </>
                 )}
               </View>
+            )}
+            {!printOptions.showPaymentDelivery && !isProduction && (
+              <Text style={styles.combinedUndefinedNote}>
+                *Entrega e condições de pagamento serão definidas posteriormente
+                e poderão impactar o valor final desta proposta.
+              </Text>
             )}
           </View>
 

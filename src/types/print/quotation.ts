@@ -181,7 +181,8 @@ type InstallmentType = {
   number: string
   dueDate: string
   value: number
-  paymentCondition: string
+  paymentCondition?: string
+  paymentMethod?: string
 }
 
 // Tipo para pagamento
@@ -201,8 +202,8 @@ type PaymentType = {
       id: string
       name: string
       paymentMethod: string
-    }
-  }
+    } | null
+  } | null
 }
 
 // Tipo para totais

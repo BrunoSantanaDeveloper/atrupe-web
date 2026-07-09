@@ -114,7 +114,9 @@ export function PrintReceiptButton({
                 checked={showSignature}
                 onCheckedChange={(v) => setShowSignature(!!v)}
               />
-              <Label htmlFor="receipt-show-signature">Exibir assinatura</Label>
+              <Label htmlFor="receipt-show-signature">
+                Exibir assinatura digital
+              </Label>
             </div>
           </DialogBody>
           <DialogFooter>

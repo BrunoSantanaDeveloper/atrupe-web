@@ -59,7 +59,6 @@ export type PrintOptionsType = {
   showImages: boolean
   showDimensions: boolean
   showUnitValue: boolean
-  showDiscounts: boolean
   showFinalValue: boolean
   showTotalValue: boolean
   showPaymentDelivery: boolean
@@ -107,7 +106,6 @@ export function PrintQuotationDialog({
       showImages: true,
       showDimensions: true,
       showUnitValue: hasValuesPermission,
-      showDiscounts: hasValuesPermission,
       showFinalValue: hasValuesPermission,
       showTotalValue: hasValuesPermission,
       showPaymentDelivery: true,
@@ -305,10 +303,6 @@ export function PrintQuotationDialog({
                         label="Exibir valor unitário"
                       />
                       <FormCheckbox<PrintOptionsType>
-                        name="showDiscounts"
-                        label="Exibir descontos"
-                      />
-                      <FormCheckbox<PrintOptionsType>
                         name="showFinalValue"
                         label="Exibir valor final do item"
                       />
@@ -338,7 +332,7 @@ export function PrintQuotationDialog({
                   )}
                   <FormCheckbox<PrintOptionsType>
                     name="showSignature"
-                    label="Exibir assinatura"
+                    label="Exibir assinatura digital"
                   />
                 </div>
               </form>
