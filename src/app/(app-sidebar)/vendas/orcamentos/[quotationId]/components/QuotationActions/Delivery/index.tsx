@@ -67,6 +67,17 @@ interface Props {
   quotationData: QuotationType
 }
 
+function isFreightOutsideSaleByValues(
+  deliveryType?: string | null,
+  modality?: string | null,
+) {
+  return (
+    deliveryType === 'PICKUP' ||
+    modality?.includes('FOB') ||
+    modality?.includes('Sem ocorr')
+  )
+}
+
 export function DeliveryDialog({ quotationData }: Props) {
   const [open, setOpen] = useState(false)
 
@@ -126,13 +137,14 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const deliveryType = watch('deliveryType')
   const cost = watch('cost')
+  const value = watch('value')
   const clientAddressId = watch('clientAddressId')
   const modality = watch('modality')
 
-  const isFOB = modality?.includes('FOB')
-  const isNoTransport = modality?.includes('Sem ocorrência de transporte')
-  const isCustomerPickup = deliveryType === 'PICKUP'
-  const isFreightOutsideSale = isFOB || isCustomerPickup || isNoTransport
+  const isFreightOutsideSale = isFreightOutsideSaleByValues(
+    deliveryType,
+    modality,
+  )
   const showSupplierField =
     !isFreightOutsideSale && (deliveryType === 'CARRIER' || cost > 0)
   const showCostFields = !isFreightOutsideSale
@@ -140,10 +152,30 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const queryClient = useQueryClient()
 
+  useEffect(() => {
+    if (!open || !isFreightOutsideSale) return
+
+    if (cost !== 0) {
+      setValue('cost', 0)
+    }
+
+    if (value !== 0) {
+      setValue('value', 0)
+    }
+
+    setValue('supplierId', null)
+    clearErrors('supplierId')
+  }, [clearErrors, cost, isFreightOutsideSale, open, setValue, value])
+
   const onSubmit = async (data: FormType) => {
     if (actionDisabled('delivery', quotationData?.status)) return
 
-    if (isFreightOutsideSale) {
+    const isSubmittedFreightOutsideSale = isFreightOutsideSaleByValues(
+      data.deliveryType,
+      data.modality,
+    )
+
+    if (isSubmittedFreightOutsideSale) {
       data.supplierId = null
       data.cost = 0
       data.value = 0
@@ -157,7 +189,7 @@ export function DeliveryDialog({ quotationData }: Props) {
     }
 
     if (
-      !isFreightOutsideSale &&
+      !isSubmittedFreightOutsideSale &&
       (data.deliveryType === 'CARRIER' || data.cost > 0) &&
       !data.supplierId
     ) {
