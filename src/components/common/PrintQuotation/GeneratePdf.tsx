@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     fontSize: 8,
     paddingBottom: 30,
-    paddingTop: 90,
+    paddingTop: 30,
   },
   infoContainer: {
     padding: 30,
@@ -120,8 +120,8 @@ const styles = StyleSheet.create({
     minHeight: 60,
   },
   itemImage: {
-    width: 80,
-    height: 60,
+    width: 86,
+    height: 68,
     backgroundColor: '#F3F4F6',
     borderRadius: 2,
     overflow: 'hidden',
@@ -131,19 +131,37 @@ const styles = StyleSheet.create({
   },
   itemInfo: {
     flex: 1,
-    marginLeft: 4,
-    gap: 4,
+    marginLeft: 6,
+    gap: 2,
   },
   itemTitle: {
-    fontSize: 8,
-    fontWeight: 'medium',
+    fontSize: 9,
+    fontWeight: 'bold',
     color: '#111827',
     marginBottom: 2,
-    marginLeft: -3,
+    lineHeight: 1.15,
   },
   itemDescription: {
     fontSize: 6,
     color: '#4B5563',
+  },
+  itemTechnicalDescriptionRow: {
+    marginTop: -34,
+    marginLeft: 116,
+    paddingRight: 4,
+  },
+  itemTechnicalDescriptionRowNoImage: {
+    marginTop: 3,
+    marginLeft: 22,
+    paddingRight: 4,
+  },
+  itemTechnicalDescription: {
+    fontSize: 6.5,
+    color: '#111827',
+    lineHeight: 1.05,
+  },
+  itemTechnicalLabel: {
+    fontWeight: 'bold',
   },
   totalsSection: {
     marginTop: -6,
@@ -172,7 +190,7 @@ const styles = StyleSheet.create({
   deliveryPaymentSection: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    justifyContent: 'space-between',
     marginVertical: 24,
     marginTop: 5,
     marginBottom: 0,
@@ -330,7 +348,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   deliveryContainerHalf: {
-    width: '50%',
+    width: '48%',
   },
   paymentContainer: {
     marginTop: 4,
@@ -343,7 +361,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   paymentContainerConditional: {
-    width: '50%',
+    width: '48%',
   },
   paymentContainerFull: {
     width: '100%',
@@ -360,15 +378,14 @@ const styles = StyleSheet.create({
     aspectRatio: 4 / 3,
     borderRadius: 4,
     overflow: 'hidden',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    paddingTop: 4,
   },
   itemRowWrapper: {
+    borderTopWidth: 1,
+    borderTopColor: '#D1D5DB',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
-    paddingTop: 4,
-    paddingBottom: 4,
+    paddingTop: 5,
+    paddingBottom: 6,
   },
   itemRowContent: {
     flexDirection: 'row',
@@ -730,69 +747,39 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
           {/* Tabela de Itens */}
           <View style={styles.table}>
-            <View style={styles.tableHeader}>
-              <Text
-                style={[
-                  styles.tableHeaderCell,
-                  { width: columnWidths.number, textAlign: 'center' },
-                ]}
-              >
-                #
-              </Text>
-              <Text
-                style={[
-                  styles.tableHeaderCell,
-                  { width: columnWidths.reference },
-                ]}
-              >
-                REFERÊNCIA
-              </Text>
-
-              {!isProduction && hasCompositeProducts && (
+            {isProduction && (
+              <View style={styles.tableHeader}>
                 <Text
                   style={[
                     styles.tableHeaderCell,
-                    {
-                      width: columnWidths.qtyItem,
-                      textAlign: 'center',
-                    },
+                    { width: columnWidths.number, textAlign: 'center' },
                   ]}
                 >
-                  QTD. ITEM
+                  #
                 </Text>
-              )}
-
-              {!isProduction && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
-                    {
-                      width: hasCompositeProducts
-                        ? columnWidths.details
-                        : `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
-                      textAlign: 'center',
-                    },
+                    { width: columnWidths.reference },
                   ]}
                 >
-                  DETALHAMENTO
+                  REFERÊNCIA
                 </Text>
-              )}
 
-              {isProduction && hasCompositeProducts && (
-                <Text
-                  style={[
-                    styles.tableHeaderCell,
-                    {
-                      width: columnWidths.qtyItem,
-                      textAlign: 'center',
-                    },
-                  ]}
-                >
-                  QTD. ITEM
-                </Text>
-              )}
+                {hasCompositeProducts && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      {
+                        width: columnWidths.qtyItem,
+                        textAlign: 'center',
+                      },
+                    ]}
+                  >
+                    QTD. ITEM
+                  </Text>
+                )}
 
-              {isProduction && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -806,9 +793,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 >
                   DETALHAMENTO
                 </Text>
-              )}
 
-              {(printOptions.showDimensions || isProduction) && (
                 <Text
                   style={[
                     styles.tableHeaderCell,
@@ -817,41 +802,8 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 >
                   QTD. TOTAL
                 </Text>
-              )}
-
-              {!isProduction && printOptions.showUnitValue && (
-                <Text
-                  style={[
-                    styles.tableHeaderCell,
-                    { width: columnWidths.unitValue, textAlign: 'right' },
-                  ]}
-                >
-                  VALOR UN.
-                </Text>
-              )}
-
-              {!isProduction && shouldShowItemDiscounts && (
-                <Text
-                  style={[
-                    styles.tableHeaderCell,
-                    { width: columnWidths.discount, textAlign: 'right' },
-                  ]}
-                >
-                  DESCONTO
-                </Text>
-              )}
-
-              {!isProduction && printOptions.showFinalValue && (
-                <Text
-                  style={[
-                    styles.tableHeaderCell,
-                    { width: columnWidths.finalValue, textAlign: 'right' },
-                  ]}
-                >
-                  VALOR FINAL
-                </Text>
-              )}
-            </View>
+              </View>
+            )}
 
             {data.quotationItems.map((item, index) => {
               const isComposite = item.product.compositions.length > 1
@@ -912,7 +864,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           <Text style={styles.itemTitle}>
                             {item?.description || '-'}
                           </Text>
-                          {item.technicalDescription && (
+                          {isProduction && item.technicalDescription && (
                             <Text style={styles.itemDescription}>
                               {item.technicalDescription}
                             </Text>
@@ -1064,6 +1016,23 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       )}
                     </View>
 
+                    {!isProduction && item.technicalDescription && (
+                      <View
+                        style={
+                          showSmallImage
+                            ? styles.itemTechnicalDescriptionRow
+                            : styles.itemTechnicalDescriptionRowNoImage
+                        }
+                      >
+                        <Text style={styles.itemTechnicalDescription}>
+                          <Text style={styles.itemTechnicalLabel}>
+                            Descritivo técnico:{' '}
+                          </Text>
+                          {item.technicalDescription}
+                        </Text>
+                      </View>
+                    )}
+
                     {/* Imagem grande abaixo das informações quando não for original */}
                     {showLargeImage && (
                       <View style={styles.itemImageLarge}>
@@ -1129,7 +1098,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         <Text style={styles.itemTitle}>
                           {item.description || '-'}
                         </Text>
-                        {item.technicalDescription && (
+                        {isProduction && item.technicalDescription && (
                           <Text style={styles.itemDescription}>
                             {item.technicalDescription}
                           </Text>
@@ -1334,6 +1303,23 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                     )}
                   </View>
+
+                  {!isProduction && item.technicalDescription && (
+                    <View
+                      style={
+                        showSmallImage
+                          ? styles.itemTechnicalDescriptionRow
+                          : styles.itemTechnicalDescriptionRowNoImage
+                      }
+                    >
+                      <Text style={styles.itemTechnicalDescription}>
+                        <Text style={styles.itemTechnicalLabel}>
+                          Descritivo técnico:{' '}
+                        </Text>
+                        {item.technicalDescription}
+                      </Text>
+                    </View>
+                  )}
 
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (

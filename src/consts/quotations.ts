@@ -50,27 +50,27 @@ export const deliveryTypeOptions = [
 export const deliveryModalityOptions = [
   { value: 'Indefinida', label: 'Indefinida' },
   {
+    value: 'Transporte próprio por conta do remetente',
+    label: 'Nossa empresa entrega (veículo próprio)',
+  },
+  {
     value: 'Contratação do frete por conta do remetente (CIF)',
-    label: 'Contratação do frete por conta do remetente (CIF)',
+    label: 'Nossa empresa contrata transportadora (CIF)',
   },
   {
     value: 'Contratação do frete por conta do destinatário (FOB)',
-    label: 'Contratação do frete por conta do destinatário (FOB)',
-  },
-  {
-    value: 'Contratação do frete por conta de terceiros',
-    label: 'Contratação do frete por conta de terceiros',
-  },
-  {
-    value: 'Transporte próprio por conta do remetente',
-    label: 'Transporte próprio por conta do remetente',
+    label: 'Cliente contrata transportadora (FOB)',
   },
   {
     value: 'Transporte próprio por conta do destinatário',
-    label: 'Transporte próprio por conta do destinatário',
+    label: 'Cliente retira',
   },
   {
     value: 'Sem ocorrência de transporte',
-    label: 'Sem ocorrência de transporte',
+    label: 'Sem transporte',
+  },
+  {
+    value: 'Contratação do frete por conta de terceiros',
+    label: 'Frete contratado por terceiros',
   },
 ]

@@ -19,22 +19,19 @@ import {
 
 const styles = StyleSheet.create({
   header: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
     width: '100%',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#F2F4F7',
-    padding: 30,
-    height: 76,
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    minHeight: 76,
   },
   logo: {
     width: 80,
-    height: 80,
+    height: 56,
     objectFit: 'contain',
   },
   companyInfo: {
@@ -118,7 +115,7 @@ function hasPrintableValue(value?: string | number | null) {
 
 export function PdfHeader({ company }: Props) {
   return (
-    <View style={styles.header} fixed>
+    <View style={styles.header}>
       <View style={styles.companyLogoContainer}>
         <PDFImage
           src={
