@@ -19,6 +19,7 @@ export interface NfeCorrectionEvent {
   protocolo?: string
   dataEvento?: string
   createdAt: string
+  hasXml?: boolean
 }
 
 export interface Nfe {

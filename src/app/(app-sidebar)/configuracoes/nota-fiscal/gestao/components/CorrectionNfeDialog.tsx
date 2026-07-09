@@ -33,7 +33,8 @@ import { createItemNew } from '@/actions/_cruds'
 const correctionSchema = z.object({
   correction: z
     .string()
-    .min(15, 'A correção deve ter pelo menos 15 caracteres'),
+    .min(15, 'A correção deve ter pelo menos 15 caracteres')
+    .max(1000, 'A correção deve ter no máximo 1000 caracteres'),
 })
 
 type CorrectionFormType = z.infer<typeof correctionSchema>
@@ -148,6 +149,7 @@ export function CorrectionNfeDialog({
                 label="Texto da Correção"
                 placeholder="Descreva a correção a ser feita (mínimo 15 caracteres)"
                 rows={4}
+                maxLength={1000}
               />
               {errorMsg && (
                 <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md border border-red-100">

@@ -30,7 +30,7 @@ interface CorrectionEvent {
   createdAt: string
   correcao: string
   protocolo?: string
-  xmlEvento?: string
+  hasXml?: boolean
 }
 
 interface CorrectionLetterDialogProps {
@@ -103,7 +103,6 @@ export function CorrectionLetterDialog({
         route: `/fiscal/nfe/${nfeId}/correction-letter`,
         data: {
           correcao: correctionText,
-          sequenciaEvento: nextSequence,
         },
       })
       if (!result.success) {
@@ -241,7 +240,7 @@ export function CorrectionLetterDialog({
                           Sem protocolo
                         </span>
                       )}
-                      {event.xmlEvento ? (
+                      {event.hasXml ? (
                         <Button
                           variant="ghost"
                           size="sm"

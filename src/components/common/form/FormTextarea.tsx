@@ -25,6 +25,7 @@ interface Props<T extends FieldValues> {
   width?: string
   rows?: number
   disabled?: boolean
+  maxLength?: number
 }
 
 export function FormTextarea<T extends FieldValues>({
@@ -35,6 +36,7 @@ export function FormTextarea<T extends FieldValues>({
   className = '',
   rows,
   disabled = false,
+  maxLength,
 }: Props<T>) {
   const { control } = useFormContext()
 
@@ -51,6 +53,7 @@ export function FormTextarea<T extends FieldValues>({
               className={cn('resize-none', className)}
               disabled={disabled}
               rows={rows}
+              maxLength={maxLength}
               {...field}
               onBlur={(e) => {
                 field.onBlur()
