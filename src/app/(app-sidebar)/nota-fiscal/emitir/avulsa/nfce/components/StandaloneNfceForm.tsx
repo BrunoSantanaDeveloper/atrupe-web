@@ -54,15 +54,14 @@ interface PrepareNfceData {
 }
 
 interface ProductFiscalResult {
-  code?: string
-  unitOfMeasureCode?: string
-  fiscalData?: {
-    ncm?: string
-    cfopInState?: string
-    icmsCst?: string
-    pisCst?: string
-    cofinsCst?: string
-  } | null
+  ncm?: string
+  cean?: string
+  productCode?: string
+  commercialUnit?: string
+  icmsCst?: string
+  pisCst?: string
+  cofinsCst?: string
+  cfopInState?: string
 }
 
 export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
@@ -127,11 +126,11 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
         }
 
         if (quotationItems?.length > 0) {
-          const productResults = await Promise.all(
+          const fiscalResults = await Promise.all(
             quotationItems.map((qi) =>
               qi.product.originalProductId
                 ? getItem({
-                    route: `/product/${qi.product.originalProductId}`,
+                    route: `/fiscal/product/${qi.product.originalProductId}`,
                   }).catch(() => null)
                 : Promise.resolve(null),
             ),
@@ -139,16 +138,16 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
 
           const mappedItems: NfePrepareItem[] = quotationItems.map(
             (qi, idx) => {
-              const prodResult = productResults[idx]
-              const prod = prodResult?.success
-                ? (prodResult.data as ProductFiscalResult)
-                : null
-              const fiscal = prod?.fiscalData
+              const fiscalResult = fiscalResults[idx]
+              const fiscal =
+                fiscalResult?.success && fiscalResult?.data
+                  ? (fiscalResult.data as ProductFiscalResult)
+                  : null
 
               return {
                 itemNumber: idx + 1,
                 productId: qi.product.originalProductId || '',
-                productCode: prod?.code || '',
+                productCode: fiscal?.productCode || '',
                 description: qi.description || qi.product.name,
                 ncm: fiscal?.ncm || '',
                 cfop: fiscal?.cfopInState || '5102',
@@ -156,21 +155,20 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
                 cstIpi: '',
                 cstPis: fiscal?.pisCst || '',
                 cstCofins: fiscal?.cofinsCst || '',
-                unit: prod?.unitOfMeasureCode || 'UN',
-                uCom: prod?.unitOfMeasureCode || 'UN',
-                ean: '',
+                unit: fiscal?.commercialUnit || 'UN',
+                uCom: fiscal?.commercialUnit || 'UN',
+                ean: fiscal?.cean || '',
                 ceantrib: '',
-                quantity: qi.product.quantity,
-                unitValue: qi.unitValue,
-                discount: qi.discount || 0,
+                quantity: Number(qi.product.quantity) || 1,
+                unitValue: Number(qi.unitValue) || 0,
+                discount: Number(qi.discount) || 0,
                 freight: 0,
                 insurance: 0,
-                totalValue: qi.finalValue,
+                totalValue: Number(qi.finalValue) || 0,
                 isService: false,
                 needsConfiguration:
                   !fiscal?.ncm ||
                   !fiscal?.cfopInState ||
-                  !prod?.unitOfMeasureCode ||
                   !fiscal?.icmsCst ||
                   !fiscal?.pisCst ||
                   !fiscal?.cofinsCst,

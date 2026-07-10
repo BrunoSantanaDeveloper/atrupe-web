@@ -227,11 +227,23 @@ const styles = StyleSheet.create({
     height: 40,
     objectFit: 'contain',
   },
-  pageNumber: {
+  footer: {
     position: 'absolute',
-    bottom: 16,
-    right: 16,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 30,
+    paddingBottom: 12,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#D0D5DD',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  footerText: {
     fontSize: 8,
+    color: '#6B7280',
   },
   watermark: {
     position: 'absolute',
@@ -380,8 +392,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   itemRowWrapper: {
-    borderTopWidth: 1,
-    borderTopColor: '#D1D5DB',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E7EB',
     paddingTop: 5,
@@ -421,31 +431,6 @@ type CompositionItemType = {
 // Função para adaptar composição do PDF para o formato esperado pelas funções utilitárias
 function hasPrintableValue(value?: string | number | null) {
   return String(value ?? '').trim().length > 0
-}
-
-function normalizePaymentText(value?: string | null) {
-  return String(value ?? '')
-    .trim()
-    .toLocaleLowerCase('pt-BR')
-}
-
-function getDayTime(value?: string | Date | null) {
-  if (!value) return null
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return null
-
-  date.setHours(0, 0, 0, 0)
-  return date.getTime()
-}
-
-function getDayDiff(start?: string | Date | null, end?: string | Date | null) {
-  const startTime = getDayTime(start)
-  const endTime = getDayTime(end)
-
-  if (startTime === null || endTime === null) return null
-
-  return Math.round((endTime - startTime) / (1000 * 60 * 60 * 24))
 }
 
 function adaptCompositionForDisplayUtils(comp: CompositionItemType) {
@@ -512,52 +497,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   const clientPhone = data.client?.phone
   const clientEmail = data.client?.email
   const paymentInstallments = data.payment?.installments ?? []
-  const paymentMethod = data.payment?.method
-  const normalizedPaymentMethod = normalizePaymentText(paymentMethod)
-  const hasDifferentInstallmentMethod = paymentInstallments.some(
-    (installment) => {
-      const installmentMethod = normalizePaymentText(
-        installment.paymentMethod || installment.paymentCondition,
-      )
-
-      return (
-        installmentMethod &&
-        normalizedPaymentMethod &&
-        installmentMethod !== normalizedPaymentMethod
-      )
-    },
-  )
-  const hasDifferentInstallmentValue =
-    paymentInstallments.length > 1 &&
-    paymentInstallments.some(
-      (installment) =>
-        Math.abs((installment.value ?? 0) - paymentInstallments[0].value) >
-        0.01,
-    )
-  const paymentDateIntervals = [
-    data.payment?.downPayment?.dueDate
-      ? getDayDiff(
-          data.payment.downPayment.dueDate,
-          paymentInstallments[0]?.dueDate,
-        )
-      : null,
-    ...paymentInstallments
-      .slice(1)
-      .map((installment, index) =>
-        getDayDiff(paymentInstallments[index]?.dueDate, installment.dueDate),
-      ),
-  ].filter((interval): interval is number => interval !== null)
-  const hasIrregularInstallmentDates =
-    paymentDateIntervals.length > 1 &&
-    paymentDateIntervals.some(
-      (interval) => interval !== paymentDateIntervals[0],
-    )
-  const shouldDetailPayment =
-    paymentInstallments.length > 0 &&
-    (hasDifferentInstallmentMethod ||
-      hasDifferentInstallmentValue ||
-      hasIrregularInstallmentDates)
-
   // Verificar se há produtos compostos (múltiplas composições)
   const hasCompositeProducts = data.quotationItems.some(
     (item) => item.product.compositions.length > 1,
@@ -636,8 +575,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Cabeçalho */}
-        <PdfHeader company={data.company} />
+        {/* Cabeçalho - marginTop negativo cancela paddingTop da Page para colar ao topo */}
+        <View style={{ marginTop: -30 }}>
+          <PdfHeader company={data.company} />
+        </View>
 
         <View style={styles.infoContainer}>
           {/* Informações do Cliente e Orçamento */}
@@ -1490,7 +1431,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {printOptions.showPaymentDelivery && data.payment?.method ? (
                   // Exibição específica quando showPaymentDelivery está ativo e há dados
                   <>
-                    {shouldDetailPayment ? (
+                    {paymentInstallments.length > 0 ? (
                       <>
                         {data.payment?.downPayment && (
                           <Text>
@@ -1529,9 +1470,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           </Text>
                         )}
                         <Text>{data.payment?.method}</Text>
-                        <Text>
-                          Até {data.payment?.totalInstallments}x no pedido
-                        </Text>
+                        {data.payment?.totalInstallments > 0 && (
+                          <Text>
+                            Até {data.payment?.totalInstallments}x no pedido
+                          </Text>
+                        )}
                       </>
                     )}
                     {data.payment?.description && (
@@ -1616,14 +1559,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
           )}
         </View>
 
-        {/* Número da Página */}
-        <Text
-          style={styles.pageNumber}
-          fixed
-          render={({ pageNumber, totalPages }) =>
-            `Página ${pageNumber} de ${totalPages}`
-          }
-        />
+        {/* Rodapé */}
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>{data.company?.name}</Text>
+          <Text
+            style={styles.footerText}
+            render={({ pageNumber }) =>
+              `Orçamento #${data.quotation?.number}-${data.quotation?.seriesCode}  |  Página ${pageNumber}`
+            }
+          />
+        </View>
 
         {/* Marca d'água - renderizada por último para ficar sobre todo conteúdo */}
         {showWatermark && (

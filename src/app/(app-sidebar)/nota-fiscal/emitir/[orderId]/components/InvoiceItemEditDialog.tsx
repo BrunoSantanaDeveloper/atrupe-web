@@ -49,7 +49,8 @@ import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'
 
 /** Formata número para string BRL sem o símbolo R$ (ex: "4.000,00") */
 function formatBRL(n: number): string {
-  return n.toLocaleString('pt-BR', {
+  const safe = typeof n === 'number' && isFinite(n) ? n : Number(n) || 0
+  return safe.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
