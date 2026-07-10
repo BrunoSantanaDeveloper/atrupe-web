@@ -106,11 +106,21 @@ function CurrencyInput({
           }
           placeholder="0,00"
           onChange={(e) => {
-            const raw = e.target.value.replace(/[^0-9,.]/g, '')
-            setDisplay(raw)
+            const digits = e.target.value.replace(/\D/g, '')
+            if (digits === '') {
+              setDisplay('')
+              return
+            }
+            const num = Number(digits) / 100
+            setDisplay(
+              num.toLocaleString('pt-BR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }),
+            )
           }}
           onBlur={() => {
-            const parsed = parseBRL(display)
+            const parsed = parseBRL(display || '0')
             onChange(parsed)
             setDisplay(formatBRL(parsed))
           }}
@@ -168,7 +178,7 @@ export function InvoiceItemEditDialog({
         pisCst: item.cstPis || '07',
         cofinsCst: item.cstCofins || '07',
         ipiCst: item.cstIpi || '',
-        cfopInState: item.cfop || '5102',
+        cfopInState: item.cfop ? String(item.cfop) : '5102',
         commercialUnit: item.uCom || 'UN',
       })
     }
