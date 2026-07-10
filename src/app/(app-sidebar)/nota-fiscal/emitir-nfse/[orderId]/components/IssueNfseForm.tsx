@@ -129,6 +129,8 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const [tomadorOverride, setTomadorOverride] =
     useState<NfePrepareDestinatario | null>(null)
   const [ambiente, setAmbiente] = useState<string | null>(null)
+  const [prestadorEndereco, setPrestadorEndereco] =
+    useState<NfePrepareEntrega | null>(null)
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -167,6 +169,20 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         }
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
+        }
+        const prestadorEnd = prepareData?.prestador?.endereco
+        if (prestadorEnd) {
+          const enderecoObj: NfePrepareEntrega = {
+            endereco: prestadorEnd.logradouro || '',
+            numero: prestadorEnd.numero || 'S/N',
+            complemento: prestadorEnd.complemento || '',
+            bairro: prestadorEnd.bairro || '',
+            cidade: prestadorEnd.cidade || '',
+            estado: prestadorEnd.uf || '',
+            cep: prestadorEnd.cep || '',
+          }
+          setEntrega(enderecoObj)
+          setPrestadorEndereco(enderecoObj)
         }
 
         const failed = orderResults.find((r) => !r.success || !r.data)
@@ -221,31 +237,26 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
         }
+        const prestadorEnd = prepareData?.prestador?.endereco
+        if (prestadorEnd) {
+          const enderecoObj: NfePrepareEntrega = {
+            endereco: prestadorEnd.logradouro || '',
+            numero: prestadorEnd.numero || 'S/N',
+            complemento: prestadorEnd.complemento || '',
+            bairro: prestadorEnd.bairro || '',
+            cidade: prestadorEnd.cidade || '',
+            estado: prestadorEnd.uf || '',
+            cep: prestadorEnd.cep || '',
+          }
+          setEntrega(enderecoObj)
+          setPrestadorEndereco(enderecoObj)
+        }
 
         if (!result.success || !result.data) {
           throw new Error(result.message || 'Erro ao carregar dados da ordem')
         }
 
         setOrderData(result.data as OrderData)
-
-        const deliveryAddr = (result.data as OrderData).quotation?.deliveryInfo
-          ?.clientAddress
-        if (deliveryAddr) {
-          setEntrega({
-            cnpjCpf:
-              result.data.quotation.client?.cnpj ||
-              result.data.quotation.client?.cpf ||
-              '',
-            endereco: deliveryAddr.street || '',
-            numero: deliveryAddr.number || 'S/N',
-            complemento: deliveryAddr.complement || '',
-            bairro: deliveryAddr.neighborhood || '',
-            cidade: deliveryAddr.city || '',
-            estado: deliveryAddr.state || '',
-            cep: deliveryAddr.zipcode || '',
-          })
-          setSelectedAddressId(deliveryAddr.id)
-        }
 
         const items = result.data.quotation?.quotationItems || []
         if (items.length > 0) {
@@ -470,29 +481,18 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   // Handlers for Delivery Address (Local de Prestação)
   const handleEntregaToggle = (enabled: boolean) => {
     if (enabled) {
-      const defaultEntrega = client?.address?.[0]
-        ? {
-            cnpjCpf: client.cnpj || client.cpf || '',
-            endereco: client.address[0].street || '',
-            numero: client.address[0].number || 'S/N',
-            complemento: client.address[0].complement || '',
-            bairro: client.address[0].neighborhood || '',
-            cidade: client.address[0].city || '',
-            estado: client.address[0].state || '',
-            cep: client.address[0].zipcode || '',
-          }
-        : {
-            cnpjCpf: client?.cnpj || client?.cpf || '',
-            endereco: '',
-            numero: 'S/N',
-            complemento: '',
-            bairro: '',
-            cidade: '',
-            estado: '',
-            cep: '',
-          }
-      setEntrega(defaultEntrega)
-      setSelectedAddressId(client?.address?.[0]?.id || null)
+      setEntrega(
+        prestadorEndereco ?? {
+          endereco: '',
+          numero: 'S/N',
+          complemento: '',
+          bairro: '',
+          cidade: '',
+          estado: '',
+          cep: '',
+        },
+      )
+      setSelectedAddressId(null)
       toast.success('Local de prestação habilitado')
     } else {
       setEntrega(null)
