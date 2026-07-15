@@ -846,16 +846,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             )}
                           </View>
                         </View>
-                        {!isProduction && item.technicalDescription && (
-                          <View style={{ marginTop: 4 }}>
-                            <Text style={styles.itemTechnicalDescription}>
-                              <Text style={styles.itemTechnicalLabel}>
-                                Descritivo técnico:{' '}
-                              </Text>
-                              {item.technicalDescription}
-                            </Text>
-                          </View>
-                        )}
                       </View>
 
                       {/* Detalhamento - para produtos simples */}
@@ -992,6 +982,22 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       )}
                     </View>
 
+                    {!isProduction && item.technicalDescription && (
+                      <View
+                        style={{
+                          marginTop: 4,
+                          marginLeft: showSmallImage ? 113 : 22,
+                        }}
+                      >
+                        <Text style={styles.itemTechnicalDescription}>
+                          <Text style={styles.itemTechnicalLabel}>
+                            Descritivo técnico:{' '}
+                          </Text>
+                          {item.technicalDescription}
+                        </Text>
+                      </View>
+                    )}
+
                     {/* Imagem grande abaixo das informações quando não for original */}
                     {showLargeImage && (
                       <PDFImage
@@ -1094,16 +1100,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             ))}
                         </View>
                       </View>
-                      {!isProduction && item.technicalDescription && (
-                        <View style={{ marginTop: 4 }}>
-                          <Text style={styles.itemTechnicalDescription}>
-                            <Text style={styles.itemTechnicalLabel}>
-                              Descritivo técnico:{' '}
-                            </Text>
-                            {item.technicalDescription}
-                          </Text>
-                        </View>
-                      )}
                     </View>
 
                     {/* Coluna Qtd. Item */}
@@ -1285,6 +1281,22 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                     )}
                   </View>
+
+                  {!isProduction && item.technicalDescription && (
+                    <View
+                      style={{
+                        marginTop: 4,
+                        marginLeft: showSmallImage ? 113 : 22,
+                      }}
+                    >
+                      <Text style={styles.itemTechnicalDescription}>
+                        <Text style={styles.itemTechnicalLabel}>
+                          Descritivo técnico:{' '}
+                        </Text>
+                        {item.technicalDescription}
+                      </Text>
+                    </View>
+                  )}
 
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (
