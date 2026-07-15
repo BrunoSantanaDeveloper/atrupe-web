@@ -778,119 +778,73 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   imageSize === 'large' &&
                   item.image?.url
 
-                return (
-                  <View
-                    key={item.id || index}
-                    style={styles.itemRowWrapper}
-                    wrap={false}
-                    minPresenceAhead={10}
-                  >
-                    {/* Linha com informações do produto */}
-                    <View style={styles.itemRowContent}>
-                      {/* Coluna Número */}
-                      <View
-                        style={[
-                          styles.columnNumber,
-                          { width: columnWidths.number },
-                        ]}
-                      >
-                        <Text style={styles.columnNumberText}>
-                          {index + 1}.
-                        </Text>
-                      </View>
-                      {/* Coluna Referência - Nome da composição diretamente */}
-                      <View
-                        style={{
-                          flexDirection: 'column',
-                          width: columnWidths.reference,
-                          gap: 2,
-                        }}
-                      >
+                // Ficha de produção: layout legado com colunas percentuais (alinha com cabeçalho)
+                if (isProduction) {
+                  return (
+                    <View
+                      key={item.id || index}
+                      style={styles.itemRowWrapper}
+                      wrap={false}
+                      minPresenceAhead={10}
+                    >
+                      <View style={styles.itemRowContent}>
                         <View
-                          style={{
-                            flexDirection: 'row',
-                            gap: 6,
-                            alignItems: 'flex-start',
-                          }}
+                          style={[
+                            styles.columnNumber,
+                            { width: columnWidths.number },
+                          ]}
                         >
-                          {showSmallImage && (
-                            <View style={styles.itemImage}>
-                              <PDFImage
-                                src={getProxiedImageUrl(item.image?.url)}
-                                style={{
-                                  width: 86,
-                                  height: 68,
-                                  objectFit: 'contain',
-                                }}
-                              />
-                            </View>
-                          )}
-                          <View style={{ flex: 1, gap: 2 }}>
-                            <Text style={styles.itemTitle}>
-                              {item?.description || '-'}
-                            </Text>
-                            {isProduction && item.technicalDescription && (
-                              <Text style={styles.itemDescription}>
-                                {item.technicalDescription}
-                              </Text>
-                            )}
-                            {isProduction && item.notes && (
-                              <Text
-                                style={[
-                                  styles.itemDescription,
-                                  { fontStyle: 'italic' },
-                                ]}
-                              >
-                                {item.notes}
-                              </Text>
-                            )}
-                          </View>
-                        </View>
-                      </View>
-
-                      {/* Detalhamento - para produtos simples */}
-                      {!isProduction && (
-                        <View
-                          style={{
-                            width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
-                          }}
-                        >
-                          <Text style={styles.textCenterSmall}>
-                            {(() => {
-                              const adaptedComp =
-                                adaptCompositionForDisplayUtils(composition)
-                              const compositionQty =
-                                composition.quantity ||
-                                composition.originalQuantity ||
-                                1
-                              const unitKind =
-                                adaptedComp.unitKind?.toUpperCase() || 'UNITY'
-                              let details = `${compositionQty} un`
-
-                              if (
-                                printOptions.showDimensions &&
-                                unitKind !== 'UNITY'
-                              ) {
-                                const fullDetails =
-                                  generateFormattedQuantityDetails(adaptedComp)
-                                // Extrair apenas a parte das dimensões (tudo após "un ")
-                                const dimensionPart = fullDetails.replace(
-                                  /^\d+\s+un\s*/,
-                                  '',
-                                )
-                                if (dimensionPart) {
-                                  details += ` ${dimensionPart}`
-                                }
-                              }
-
-                              return details
-                            })()}
+                          <Text style={styles.columnNumberText}>
+                            {index + 1}.
                           </Text>
                         </View>
-                      )}
-
-                      {/* Detalhamento - para produtos simples na ficha de produção */}
-                      {isProduction && (
+                        <View
+                          style={{
+                            flexDirection: 'column',
+                            width: columnWidths.reference,
+                          }}
+                        >
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              gap: 6,
+                              alignItems: 'flex-start',
+                            }}
+                          >
+                            {showSmallImage && (
+                              <View style={styles.itemImage}>
+                                <PDFImage
+                                  src={getProxiedImageUrl(item.image?.url)}
+                                  style={{
+                                    width: 86,
+                                    height: 68,
+                                    objectFit: 'contain',
+                                  }}
+                                />
+                              </View>
+                            )}
+                            <View style={{ flex: 1, gap: 2 }}>
+                              <Text style={styles.itemTitle}>
+                                {item?.description || '-'}
+                              </Text>
+                              {item.technicalDescription && (
+                                <Text style={styles.itemDescription}>
+                                  {item.technicalDescription}
+                                </Text>
+                              )}
+                              {item.notes && (
+                                <Text
+                                  style={[
+                                    styles.itemDescription,
+                                    { fontStyle: 'italic' },
+                                  ]}
+                                >
+                                  {item.notes}
+                                </Text>
+                              )}
+                            </View>
+                          </View>
+                        </View>
                         <View
                           style={{
                             width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
@@ -907,28 +861,20 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                               const unitKind =
                                 adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                               let details = `${compositionQty} un`
-
                               if (unitKind !== 'UNITY') {
                                 const fullDetails =
                                   generateFormattedQuantityDetails(adaptedComp)
-                                // Extrair apenas a parte das dimensões (tudo após "un ")
                                 const dimensionPart = fullDetails.replace(
                                   /^\d+\s+un\s*/,
                                   '',
                                 )
-                                if (dimensionPart) {
+                                if (dimensionPart)
                                   details += ` ${dimensionPart}`
-                                }
                               }
-
                               return details
                             })()}
                           </Text>
                         </View>
-                      )}
-
-                      {/* Qtd. Total */}
-                      {(printOptions.showDimensions || isProduction) && (
                         <View style={{ width: columnWidths.qtyTotal }}>
                           <Text style={styles.textCenterSmall}>
                             {
@@ -939,66 +885,213 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             }
                           </Text>
                         </View>
-                      )}
-
-                      {/* Valor Un. - valor do item dividido pela quantidade comercial */}
-                      {!isProduction && printOptions.showUnitValue && (
-                        <View style={{ width: columnWidths.unitValue }}>
-                          <Text style={styles.textRight}>
-                            {formatCurrencyToBrl(
-                              calculateDisplayUnitValue(
-                                item.product.quantity || 1,
-                                {
-                                  ...adaptCompositionForDisplayUtils(
-                                    composition,
-                                  ),
-                                  totalValue: item.totalValue,
-                                },
-                              ),
-                            )}
-                          </Text>
-                        </View>
-                      )}
-
-                      {/* Desconto - desconto do item */}
-                      {!isProduction && shouldShowItemDiscounts && (
-                        <View style={{ width: columnWidths.discount }}>
-                          <Text style={styles.textDiscount}>
-                            -
-                            {formatCurrencyToBrl(
-                              Math.max(0, item.totalValue - item.finalValue),
-                            )}
-                          </Text>
-                        </View>
-                      )}
-
-                      {/* Valor Final - valor final do item */}
-                      {!isProduction && printOptions.showFinalValue && (
-                        <View style={{ width: columnWidths.finalValue }}>
-                          <Text style={styles.textRight}>
-                            {formatCurrencyToBrl(item.finalValue)}
-                          </Text>
-                        </View>
+                      </View>
+                      {showLargeImage && (
+                        <PDFImage
+                          src={getProxiedImageUrl(item.image?.url)}
+                          style={styles.itemImageLarge}
+                        />
                       )}
                     </View>
+                  )
+                }
 
-                    {!isProduction && item.technicalDescription && (
+                // Orçamento/OS: layout com rowspan (imagem) + colspan (descritivo)
+                return (
+                  <View
+                    key={item.id || index}
+                    style={styles.itemRowWrapper}
+                    wrap={false}
+                    minPresenceAhead={10}
+                  >
+                    <View
+                      style={{ flexDirection: 'row', alignItems: 'flex-start' }}
+                    >
+                      {/* Coluna esquerda: número + imagem empilhados (efeito rowspan) */}
                       <View
                         style={{
-                          marginTop: 4,
-                          marginLeft: showSmallImage ? 113 : 22,
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          marginRight: 6,
                         }}
                       >
-                        <Text style={styles.itemTechnicalDescription}>
-                          <Text style={styles.itemTechnicalLabel}>
-                            Descritivo técnico:{' '}
-                          </Text>
-                          {item.technicalDescription}
+                        <Text
+                          style={[
+                            styles.columnNumberText,
+                            { width: 18, marginBottom: 2 },
+                          ]}
+                        >
+                          {index + 1}.
                         </Text>
+                        {showSmallImage && (
+                          <View style={styles.itemImage}>
+                            <PDFImage
+                              src={getProxiedImageUrl(item.image?.url)}
+                              style={{
+                                width: 86,
+                                height: 68,
+                                objectFit: 'contain',
+                              }}
+                            />
+                          </View>
+                        )}
                       </View>
-                    )}
 
-                    {/* Imagem grande abaixo das informações quando não for original */}
+                      {/* Coluna direita: linha de dados + descritivo (efeito colspan) */}
+                      <View style={{ flex: 1, flexDirection: 'column' }}>
+                        {/* Linha 1: título + colunas numéricas */}
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                          }}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Text style={styles.itemTitle}>
+                              {item?.description || '-'}
+                            </Text>
+                          </View>
+
+                          {/* Detalhamento */}
+                          <View
+                            style={{
+                              width:
+                                ((parseFloat(columnWidths.qtyItem) +
+                                  parseFloat(columnWidths.details)) /
+                                  100) *
+                                535,
+                            }}
+                          >
+                            <Text style={styles.textCenterSmall}>
+                              {(() => {
+                                const adaptedComp =
+                                  adaptCompositionForDisplayUtils(composition)
+                                const compositionQty =
+                                  composition.quantity ||
+                                  composition.originalQuantity ||
+                                  1
+                                const unitKind =
+                                  adaptedComp.unitKind?.toUpperCase() || 'UNITY'
+                                let details = `${compositionQty} un`
+                                if (
+                                  printOptions.showDimensions &&
+                                  unitKind !== 'UNITY'
+                                ) {
+                                  const fullDetails =
+                                    generateFormattedQuantityDetails(
+                                      adaptedComp,
+                                    )
+                                  const dimensionPart = fullDetails.replace(
+                                    /^\d+\s+un\s*/,
+                                    '',
+                                  )
+                                  if (dimensionPart)
+                                    details += ` ${dimensionPart}`
+                                }
+                                return details
+                              })()}
+                            </Text>
+                          </View>
+
+                          {/* Qtd. Total */}
+                          {printOptions.showDimensions && (
+                            <View
+                              style={{
+                                width:
+                                  (parseFloat(columnWidths.qtyTotal) / 100) *
+                                  535,
+                              }}
+                            >
+                              <Text style={styles.textCenterSmall}>
+                                {
+                                  calculateTotalQuantity(
+                                    item.product.quantity,
+                                    adaptCompositionForDisplayUtils(
+                                      composition,
+                                    ),
+                                  ).formatted
+                                }
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* Valor Un. */}
+                          {printOptions.showUnitValue && (
+                            <View
+                              style={{
+                                width:
+                                  (parseFloat(columnWidths.unitValue) / 100) *
+                                  535,
+                              }}
+                            >
+                              <Text style={styles.textRight}>
+                                {formatCurrencyToBrl(
+                                  calculateDisplayUnitValue(
+                                    item.product.quantity || 1,
+                                    {
+                                      ...adaptCompositionForDisplayUtils(
+                                        composition,
+                                      ),
+                                      totalValue: item.totalValue,
+                                    },
+                                  ),
+                                )}
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* Desconto */}
+                          {shouldShowItemDiscounts && (
+                            <View
+                              style={{
+                                width:
+                                  (parseFloat(columnWidths.discount) / 100) *
+                                  535,
+                              }}
+                            >
+                              <Text style={styles.textDiscount}>
+                                -
+                                {formatCurrencyToBrl(
+                                  Math.max(
+                                    0,
+                                    item.totalValue - item.finalValue,
+                                  ),
+                                )}
+                              </Text>
+                            </View>
+                          )}
+
+                          {/* Valor Final */}
+                          {printOptions.showFinalValue && (
+                            <View
+                              style={{
+                                width:
+                                  (parseFloat(columnWidths.finalValue) / 100) *
+                                  535,
+                              }}
+                            >
+                              <Text style={styles.textRight}>
+                                {formatCurrencyToBrl(item.finalValue)}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+
+                        {/* Linha 2: descritivo técnico (colspan — ocupa toda a seção direita) */}
+                        {item.technicalDescription && (
+                          <View style={{ marginTop: 4 }}>
+                            <Text style={styles.itemTechnicalDescription}>
+                              <Text style={styles.itemTechnicalLabel}>
+                                Descritivo técnico:{' '}
+                              </Text>
+                              {item.technicalDescription}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+
+                    {/* Imagem grande abaixo */}
                     {showLargeImage && (
                       <PDFImage
                         src={getProxiedImageUrl(item.image?.url)}
