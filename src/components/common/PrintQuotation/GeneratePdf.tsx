@@ -119,6 +119,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     minHeight: 60,
   },
+  itemImage: {
+    width: 86,
+    height: 68,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 2,
+  },
   itemInfo: {
     flex: 1,
     marginLeft: 6,
@@ -798,10 +804,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         ]}
                       >
                         {showSmallImage && (
-                          <PDFImage
-                            src={getProxiedImageUrl(item.image?.url)}
-                            style={{ width: 86, height: 68, borderRadius: 2 }}
-                          />
+                          <View style={styles.itemImage}>
+                            <PDFImage
+                              src={getProxiedImageUrl(item.image?.url)}
+                              style={{ width: 86, height: 68 }}
+                            />
+                          </View>
                         )}
 
                         <View style={styles.itemInfo}>
@@ -1028,10 +1036,12 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       ]}
                     >
                       {showSmallImage && (
-                        <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
-                          style={{ width: 86, height: 68, borderRadius: 2 }}
-                        />
+                        <View style={styles.itemImage}>
+                          <PDFImage
+                            src={getProxiedImageUrl(item.image?.url)}
+                            style={{ width: 86, height: 68 }}
+                          />
+                        </View>
                       )}
 
                       <View style={styles.itemInfo}>
