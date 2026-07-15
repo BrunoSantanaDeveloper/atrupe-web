@@ -338,9 +338,9 @@ const styles = StyleSheet.create({
   },
   // Estilos para imagens
   itemImageFull: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    width: 86,
+    height: 68,
+    objectFit: 'contain',
   },
   // Estilos para textos específicos
   textSmallGray: {
