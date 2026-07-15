@@ -480,6 +480,28 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
   const clientPhone = data.client?.phone
   const clientEmail = data.client?.email
   const paymentInstallments = data.payment?.installments ?? []
+
+  const getInstallmentMethod = (inst: (typeof paymentInstallments)[0]) =>
+    inst.paymentMethod || inst.paymentCondition || data.payment?.method || ''
+  const hasDifferentInstallmentMethod =
+    paymentInstallments.length > 1 &&
+    paymentInstallments.some(
+      (inst) =>
+        getInstallmentMethod(inst) !==
+        getInstallmentMethod(paymentInstallments[0]),
+    )
+  const paymentDueDates = paymentInstallments
+    .map((inst) => (inst.dueDate ? new Date(inst.dueDate).getTime() : null))
+    .filter((d): d is number => d !== null)
+  const paymentDateGaps = paymentDueDates
+    .slice(1)
+    .map((d, i) => Math.round((d - paymentDueDates[i]) / 86400000))
+  const hasIrregularInstallmentDates =
+    paymentDateGaps.length > 1 &&
+    paymentDateGaps.some((gap) => gap !== paymentDateGaps[0])
+  const shouldDetailPayment =
+    hasDifferentInstallmentMethod || hasIrregularInstallmentDates
+
   // Verificar se há produtos compostos (múltiplas composições)
   const hasCompositeProducts = data.quotationItems.some(
     (item) => item.product.compositions.length > 1,
@@ -1406,7 +1428,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                 {printOptions.showPaymentDelivery && data.payment?.method ? (
                   // Exibição específica quando showPaymentDelivery está ativo e há dados
                   <>
-                    {paymentInstallments.length > 0 ? (
+                    {shouldDetailPayment ? (
                       <>
                         {data.payment?.downPayment && (
                           <Text>
