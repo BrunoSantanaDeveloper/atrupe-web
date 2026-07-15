@@ -534,13 +534,13 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
     // Larguras base quando todas as colunas estão visíveis
     const baseWidths = {
-      reference: 35 - numberWidth,
-      qtyItem: 10,
-      details: 15,
-      qtyTotal: 12,
-      unitValue: 9,
-      discount: 9,
-      finalValue: 10,
+      reference: 38 - numberWidth,
+      qtyItem: 8,
+      details: 12,
+      qtyTotal: 11,
+      unitValue: 8,
+      discount: 8,
+      finalValue: 9,
     }
 
     // Calcular total de largura utilizada
@@ -800,40 +800,62 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                       {/* Coluna Referência - Nome da composição diretamente */}
                       <View
-                        style={[
-                          styles.columnReference,
-                          { width: columnWidths.reference },
-                        ]}
+                        style={{
+                          flexDirection: 'column',
+                          width: columnWidths.reference,
+                          gap: 2,
+                        }}
                       >
-                        {showSmallImage && (
-                          <View style={styles.itemImage}>
-                            <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
-                              style={{ width: 86, height: 68 }}
-                            />
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            gap: 6,
+                            alignItems: 'flex-start',
+                          }}
+                        >
+                          {showSmallImage && (
+                            <View style={styles.itemImage}>
+                              <PDFImage
+                                src={getProxiedImageUrl(item.image?.url)}
+                                style={{
+                                  width: 86,
+                                  height: 68,
+                                  objectFit: 'contain',
+                                }}
+                              />
+                            </View>
+                          )}
+                          <View style={{ flex: 1, gap: 2 }}>
+                            <Text style={styles.itemTitle}>
+                              {item?.description || '-'}
+                            </Text>
+                            {isProduction && item.technicalDescription && (
+                              <Text style={styles.itemDescription}>
+                                {item.technicalDescription}
+                              </Text>
+                            )}
+                            {isProduction && item.notes && (
+                              <Text
+                                style={[
+                                  styles.itemDescription,
+                                  { fontStyle: 'italic' },
+                                ]}
+                              >
+                                {item.notes}
+                              </Text>
+                            )}
                           </View>
-                        )}
-
-                        <View style={styles.itemInfo}>
-                          <Text style={styles.itemTitle}>
-                            {item?.description || '-'}
-                          </Text>
-                          {isProduction && item.technicalDescription && (
-                            <Text style={styles.itemDescription}>
+                        </View>
+                        {!isProduction && item.technicalDescription && (
+                          <View style={{ marginTop: 4 }}>
+                            <Text style={styles.itemTechnicalDescription}>
+                              <Text style={styles.itemTechnicalLabel}>
+                                Descritivo técnico:{' '}
+                              </Text>
                               {item.technicalDescription}
                             </Text>
-                          )}
-                          {isProduction && item.notes && (
-                            <Text
-                              style={[
-                                styles.itemDescription,
-                                { fontStyle: 'italic' },
-                              ]}
-                            >
-                              {item.notes}
-                            </Text>
-                          )}
-                        </View>
+                          </View>
+                        )}
                       </View>
 
                       {/* Detalhamento - para produtos simples */}
@@ -970,23 +992,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       )}
                     </View>
 
-                    {!isProduction && item.technicalDescription && (
-                      <View
-                        style={
-                          showSmallImage
-                            ? styles.itemTechnicalDescriptionRow
-                            : styles.itemTechnicalDescriptionRowNoImage
-                        }
-                      >
-                        <Text style={styles.itemTechnicalDescription}>
-                          <Text style={styles.itemTechnicalLabel}>
-                            Descritivo técnico:{' '}
-                          </Text>
-                          {item.technicalDescription}
-                        </Text>
-                      </View>
-                    )}
-
                     {/* Imagem grande abaixo das informações quando não for original */}
                     {showLargeImage && (
                       <PDFImage
@@ -1032,48 +1037,73 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     </View>
                     {/* Coluna Referência - Imagem e Descrição do item */}
                     <View
-                      style={[
-                        styles.columnReference,
-                        { width: columnWidths.reference },
-                      ]}
+                      style={{
+                        flexDirection: 'column',
+                        width: columnWidths.reference,
+                        gap: 2,
+                      }}
                     >
-                      {showSmallImage && (
-                        <View style={styles.itemImage}>
-                          <PDFImage
-                            src={getProxiedImageUrl(item.image?.url)}
-                            style={{ width: 86, height: 68 }}
-                          />
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          gap: 6,
+                          alignItems: 'flex-start',
+                        }}
+                      >
+                        {showSmallImage && (
+                          <View style={styles.itemImage}>
+                            <PDFImage
+                              src={getProxiedImageUrl(item.image?.url)}
+                              style={{
+                                width: 86,
+                                height: 68,
+                                objectFit: 'contain',
+                              }}
+                            />
+                          </View>
+                        )}
+                        <View style={{ flex: 1, gap: 2 }}>
+                          <Text style={styles.itemTitle}>
+                            {item.description || '-'}
+                          </Text>
+                          {isProduction && item.technicalDescription && (
+                            <Text style={styles.itemDescription}>
+                              {item.technicalDescription}
+                            </Text>
+                          )}
+                          {isProduction && item.notes && (
+                            <Text
+                              style={[
+                                styles.itemDescription,
+                                { fontStyle: 'italic' },
+                              ]}
+                            >
+                              {item.notes}
+                            </Text>
+                          )}
+                          {(isProduction ||
+                            (printOptions.showDimensions &&
+                              printOptions.showItemsDetails)) &&
+                            item.product.compositions.map((comp) => (
+                              <Text
+                                key={comp.id}
+                                style={styles.itemDescription}
+                              >
+                                {comp?.name}
+                              </Text>
+                            ))}
                         </View>
-                      )}
-
-                      <View style={styles.itemInfo}>
-                        <Text style={styles.itemTitle}>
-                          {item.description || '-'}
-                        </Text>
-                        {isProduction && item.technicalDescription && (
-                          <Text style={styles.itemDescription}>
+                      </View>
+                      {!isProduction && item.technicalDescription && (
+                        <View style={{ marginTop: 4 }}>
+                          <Text style={styles.itemTechnicalDescription}>
+                            <Text style={styles.itemTechnicalLabel}>
+                              Descritivo técnico:{' '}
+                            </Text>
                             {item.technicalDescription}
                           </Text>
-                        )}
-                        {isProduction && item.notes && (
-                          <Text
-                            style={[
-                              styles.itemDescription,
-                              { fontStyle: 'italic' },
-                            ]}
-                          >
-                            {item.notes}
-                          </Text>
-                        )}
-                        {(isProduction ||
-                          (printOptions.showDimensions &&
-                            printOptions.showItemsDetails)) &&
-                          item.product.compositions.map((comp) => (
-                            <Text key={comp.id} style={styles.itemDescription}>
-                              {comp?.name}
-                            </Text>
-                          ))}
-                      </View>
+                        </View>
+                      )}
                     </View>
 
                     {/* Coluna Qtd. Item */}
@@ -1255,23 +1285,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                     )}
                   </View>
-
-                  {!isProduction && item.technicalDescription && (
-                    <View
-                      style={
-                        showSmallImage
-                          ? styles.itemTechnicalDescriptionRow
-                          : styles.itemTechnicalDescriptionRowNoImage
-                      }
-                    >
-                      <Text style={styles.itemTechnicalDescription}>
-                        <Text style={styles.itemTechnicalLabel}>
-                          Descritivo técnico:{' '}
-                        </Text>
-                        {item.technicalDescription}
-                      </Text>
-                    </View>
-                  )}
 
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (
