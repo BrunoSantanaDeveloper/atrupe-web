@@ -119,16 +119,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     minHeight: 60,
   },
-  itemImage: {
-    width: 86,
-    height: 68,
-    backgroundColor: '#F3F4F6',
-    borderRadius: 2,
-    overflow: 'hidden',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   itemInfo: {
     flex: 1,
     marginLeft: 6,
@@ -336,12 +326,6 @@ const styles = StyleSheet.create({
     color: '#DC6803',
     fontSize: 7,
   },
-  // Estilos para imagens
-  itemImageFull: {
-    width: 86,
-    height: 68,
-    objectFit: 'contain',
-  },
   // Estilos para textos específicos
   textSmallGray: {
     fontSize: 7,
@@ -384,12 +368,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 6,
   },
-  // Estilos para imagens grandes (não originais)
   itemImageLarge: {
     width: '100%',
-    aspectRatio: 4 / 3,
     borderRadius: 4,
-    overflow: 'hidden',
+    marginTop: 4,
+    marginBottom: 4,
   },
   itemRowWrapper: {
     borderBottomWidth: 1,
@@ -793,12 +776,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         ]}
                       >
                         {showSmallImage && (
-                          <View style={styles.itemImage}>
-                            <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
-                              style={styles.itemImageFull}
-                            />
-                          </View>
+                          <PDFImage
+                            src={getProxiedImageUrl(item.image?.url)}
+                            style={{ width: 86, height: 68, borderRadius: 2 }}
+                          />
                         )}
 
                         <View style={styles.itemInfo}>
@@ -976,12 +957,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
                     {/* Imagem grande abaixo das informações quando não for original */}
                     {showLargeImage && (
-                      <View style={styles.itemImageLarge}>
-                        <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
-                          style={styles.itemImageFull}
-                        />
-                      </View>
+                      <PDFImage
+                        src={getProxiedImageUrl(item.image?.url)}
+                        style={styles.itemImageLarge}
+                      />
                     )}
                   </View>
                 )
@@ -1027,12 +1006,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       ]}
                     >
                       {showSmallImage && (
-                        <View style={styles.itemImage}>
-                          <PDFImage
-                            src={getProxiedImageUrl(item.image?.url)}
-                            style={styles.itemImageFull}
-                          />
-                        </View>
+                        <PDFImage
+                          src={getProxiedImageUrl(item.image?.url)}
+                          style={{ width: 86, height: 68, borderRadius: 2 }}
+                        />
                       )}
 
                       <View style={styles.itemInfo}>
@@ -1264,12 +1241,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (
-                    <View style={styles.itemImageLarge}>
-                      <PDFImage
-                        src={getProxiedImageUrl(item.image?.url)}
-                        style={styles.itemImageFull}
-                      />
-                    </View>
+                    <PDFImage
+                      src={getProxiedImageUrl(item.image?.url)}
+                      style={styles.itemImageLarge}
+                    />
                   )}
                 </View>
               )
