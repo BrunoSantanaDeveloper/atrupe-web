@@ -376,7 +376,6 @@ const styles = StyleSheet.create({
   },
   itemImageLarge: {
     width: '100%',
-    height: 160,
     objectFit: 'contain',
     borderRadius: 4,
     marginTop: 4,
