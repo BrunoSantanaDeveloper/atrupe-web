@@ -759,6 +759,73 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               </View>
             )}
 
+            {!isProduction && (
+              <View style={styles.tableHeader}>
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    { width: columnWidths.number, textAlign: 'center' },
+                  ]}
+                >
+                  #
+                </Text>
+                <Text style={[styles.tableHeaderCell, { flex: 1 }]}>
+                  REFERÊNCIA
+                </Text>
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    {
+                      width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  DETALHAMENTO
+                </Text>
+                {printOptions.showDimensions && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.qtyTotal, textAlign: 'center' },
+                    ]}
+                  >
+                    QTD. TOTAL
+                  </Text>
+                )}
+                {printOptions.showUnitValue && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.unitValue, textAlign: 'right' },
+                    ]}
+                  >
+                    VALOR UN.
+                  </Text>
+                )}
+                {shouldShowItemDiscounts && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.discount, textAlign: 'right' },
+                    ]}
+                  >
+                    DESCONTO
+                  </Text>
+                )}
+                {printOptions.showFinalValue && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.finalValue, textAlign: 'right' },
+                    ]}
+                  >
+                    VALOR FINAL
+                  </Text>
+                )}
+              </View>
+            )}
+
             {data.quotationItems.map((item, index) => {
               const isComposite = item.product.compositions.length > 1
 
