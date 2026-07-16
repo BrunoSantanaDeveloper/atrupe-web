@@ -916,7 +916,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         }}
                       >
                         {showSmallImage && (
-                          <View style={[styles.itemImage, { marginTop: -15 }]}>
+                          <View style={styles.itemImage}>
                             <PDFImage
                               src={getProxiedImageUrl(item.image?.url)}
                               style={{
@@ -942,7 +942,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             style={{
                               flexDirection: 'column',
                               alignItems: 'flex-start',
-                              marginRight: 6,
                             }}
                           >
                             <Text
