@@ -376,7 +376,7 @@ const styles = StyleSheet.create({
   },
   itemImageLarge: {
     width: '100%',
-    height: 300,
+    height: 400,
     objectFit: 'contain',
     borderRadius: 4,
     marginTop: 4,
@@ -924,7 +924,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           {index + 1}.
                         </Text>
                         {showSmallImage && (
-                          <View style={styles.itemImage}>
+                          <View style={[styles.itemImage, { marginTop: -18 }]}>
                             <PDFImage
                               src={getProxiedImageUrl(item.image?.url)}
                               style={{
