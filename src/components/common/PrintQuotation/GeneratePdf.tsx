@@ -1021,7 +1021,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             </Text>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text style={styles.itemTitle}>
+                            <Text style={[styles.itemTitle, { width: 500 }]}>
                               {item?.description || '-'}
                             </Text>
                           </View>
