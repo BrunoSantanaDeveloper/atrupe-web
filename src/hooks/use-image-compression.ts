@@ -45,10 +45,15 @@ export function useImageCompression() {
       setIsCompressing(true)
 
       try {
-        const compressedFile = await imageCompression(
-          file,
-          COMPRESSION_CONFIG[size],
-        )
+        // PDFs (react-pdf) só suportam PNG e JPG: converter outros formatos
+        // (ex: WebP) na compressão. PNG é mantido para preservar transparência.
+        const outputType =
+          file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+
+        const compressedFile = await imageCompression(file, {
+          ...COMPRESSION_CONFIG[size],
+          fileType: outputType,
+        })
 
         // Retornar com o nome original mas extensão correta
         const extension = compressedFile.type.split('/')[1] || 'jpg'

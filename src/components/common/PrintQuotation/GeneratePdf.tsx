@@ -23,7 +23,7 @@ import {
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 import { formatToLocaleDate } from '@/lib/formatDate'
-import { getProxiedImageUrl } from '@/lib/image-proxy'
+import { getPdfImageSrc } from '@/lib/image-proxy'
 
 // Types
 import type { PrintOptionsType } from './PrintQuotationDialog'
@@ -883,7 +883,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             {showSmallImage && (
                               <View style={styles.itemImage}>
                                 <PDFImage
-                                  src={getProxiedImageUrl(item.image?.url)}
+                                  src={getPdfImageSrc(item.image?.url)}
                                   style={{
                                     width: 86,
                                     height: 68,
@@ -957,7 +957,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                       {showLargeImage && (
                         <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
+                          src={getPdfImageSrc(item.image?.url)}
                           style={styles.itemImageLarge}
                         />
                       )}
@@ -987,7 +987,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         {showSmallImage && (
                           <View style={styles.itemImage}>
                             <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
+                              src={getPdfImageSrc(item.image?.url)}
                               style={{
                                 width: 86,
                                 height: 68,
@@ -1170,7 +1170,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {/* Imagem grande abaixo */}
                     {showLargeImage && (
                       <PDFImage
-                        src={getProxiedImageUrl(item.image?.url)}
+                        src={getPdfImageSrc(item.image?.url)}
                         style={styles.itemImageLarge}
                       />
                     )}
@@ -1228,7 +1228,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         {showSmallImage && (
                           <View style={styles.itemImage}>
                             <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
+                              src={getPdfImageSrc(item.image?.url)}
                               style={{
                                 width: 86,
                                 height: 68,
@@ -1470,7 +1470,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (
                     <PDFImage
-                      src={getProxiedImageUrl(item.image?.url)}
+                      src={getPdfImageSrc(item.image?.url)}
                       style={styles.itemImageLarge}
                     />
                   )}
@@ -1743,9 +1743,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {printOptions?.showSignature !== false &&
                     data.quotation?.seller?.signature && (
                       <PDFImage
-                        src={getProxiedImageUrl(
-                          data.quotation.seller.signature,
-                        )}
+                        src={getPdfImageSrc(data.quotation.seller.signature)}
                         style={styles.signatureImage}
                       />
                     )}
