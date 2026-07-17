@@ -520,10 +520,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
     const numberWidth = 4
 
     if (isProduction) {
+      // Referência (imagem + nome) ocupa o espaço restante:
+      // 100 - número - qtdItem - detalhamento - qtdTotal
       return {
         number: `${numberWidth}%`,
-        reference: '10%',
-        description: `${55 - numberWidth}%`,
+        reference: `${70 - numberWidth}%`,
         qtyItem: '10%',
         details: '10%',
         qtyTotal: '10%',
