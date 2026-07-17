@@ -536,7 +536,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
     // Larguras base quando todas as colunas estão visíveis
     const baseWidths = {
       reference: 38 - numberWidth,
-      description: 10,
       qtyItem: 8,
       details: 12,
       qtyTotal: 11,
@@ -568,7 +567,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
     return {
       number: `${numberWidth}%`,
       reference: adjustWidth(baseWidths.reference),
-      description: adjustWidth(baseWidths.description),
       qtyItem: adjustWidth(baseWidths.qtyItem),
       details: adjustWidth(baseWidths.details),
       qtyTotal: printOptions.showDimensions
@@ -1024,18 +1022,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             </Text>
                           </View>
                           <View style={{ flex: 1 }}>
-                            <Text
-                              style={[
-                                styles.itemTitle,
-                                {
-                                  width:
-                                    (parseFloat(columnWidths.description) /
-                                      100) *
-                                      535 +
-                                    40,
-                                },
-                              ]}
-                            >
+                            <Text style={styles.itemTitle}>
                               {item?.description || '-'}
                             </Text>
                           </View>
