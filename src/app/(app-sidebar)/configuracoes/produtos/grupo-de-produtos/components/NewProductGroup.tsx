@@ -28,7 +28,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 
 const newProductsGroupSchema = z.object({
-  name: z.string().min(4, 'Nome é obrigatório'),
+  name: z.string().min(1, 'Nome é obrigatório'),
   sectorId: z.string().min(1, 'Setor é obrigatório'),
 })
 
