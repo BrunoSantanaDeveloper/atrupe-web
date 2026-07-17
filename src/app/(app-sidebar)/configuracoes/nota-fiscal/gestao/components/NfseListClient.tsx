@@ -58,6 +58,7 @@ interface NfseItem {
   pdfUrl?: string
   rejectionReason?: string | null
   createdAt: string
+  environment: 'HOMOLOGACAO' | 'PRODUCAO'
   order?: {
     id: string
     quotation?: {
@@ -78,6 +79,7 @@ interface NfseBackendItem {
   pdfUrl?: string
   motivoRejeicao?: string | null
   createdAt: string
+  ambiente: number
   order?: {
     id: string
     quotation?: {
@@ -150,6 +152,7 @@ async function fetchNfseList(status?: string) {
     pdfUrl: nfse.pdfUrl,
     rejectionReason: nfse.motivoRejeicao,
     createdAt: nfse.createdAt,
+    environment: nfse.ambiente === 1 ? 'PRODUCAO' : 'HOMOLOGACAO',
     order: nfse.order,
   }))
 }
@@ -222,6 +225,7 @@ export function NfseListClient() {
               <TableHead>Numero/Serie</TableHead>
               <TableHead>RPS</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Ambiente</TableHead>
               <TableHead>Tomador</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Data</TableHead>
@@ -263,6 +267,19 @@ export function NfseListClient() {
                         <RejectionReasonAction reason={nfse.rejectionReason} />
                       )}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        nfse.environment === 'PRODUCAO'
+                          ? 'successLight'
+                          : 'warningLight'
+                      }
+                    >
+                      {nfse.environment === 'PRODUCAO'
+                        ? 'Produção'
+                        : 'Homologação'}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{nfse.recipientName}</div>

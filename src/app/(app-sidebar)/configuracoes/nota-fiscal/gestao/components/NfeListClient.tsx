@@ -65,6 +65,7 @@ interface NfeItem {
   xmlKey?: string
   rejectionReason?: string | null
   createdAt: string
+  environment: 'HOMOLOGACAO' | 'PRODUCAO'
   order?: {
     id: string
     quotation?: {
@@ -85,6 +86,7 @@ interface NfeBackendItem {
   chaveAcesso?: string
   motivoRejeicao?: string | null
   createdAt: string
+  ambiente: number
   order?: {
     id: string
     quotation?: {
@@ -159,6 +161,7 @@ async function fetchNfeList(status?: string) {
     xmlKey: nfe.chaveAcesso,
     rejectionReason: nfe.motivoRejeicao,
     createdAt: nfe.createdAt,
+    environment: nfe.ambiente === 1 ? 'PRODUCAO' : 'HOMOLOGACAO',
     order: nfe.order,
   }))
 }
@@ -243,6 +246,7 @@ export function NfeListClient() {
             <TableRow>
               <TableHead>Número/Série</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Ambiente</TableHead>
               <TableHead>Destinatário</TableHead>
               <TableHead>Valor</TableHead>
               <TableHead>Data</TableHead>
@@ -284,6 +288,19 @@ export function NfeListClient() {
                         />
                       )}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        nfe.environment === 'PRODUCAO'
+                          ? 'successLight'
+                          : 'warningLight'
+                      }
+                    >
+                      {nfe.environment === 'PRODUCAO'
+                        ? 'Produção'
+                        : 'Homologação'}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="font-medium">{nfe.recipientName}</div>
