@@ -11,7 +11,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 import { getDashboardFinancialOverview } from '@/actions/dashboard'
 
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { useDashboardValues } from './DashboardValuesContext'
 
 import {
   IconAlertCircle,
@@ -31,6 +31,8 @@ interface FinancialOverviewProps {
 }
 
 export function FinancialOverview({ filters }: FinancialOverviewProps) {
+  const { formatValue } = useDashboardValues()
+
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-financial-overview', filters],
     queryFn: () => getDashboardFinancialOverview(filters),
@@ -56,35 +58,35 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
   const cards = [
     {
       label: 'Receita realizada',
-      value: formatCurrencyToBrl(realizedRevenue),
+      value: formatValue(realizedRevenue),
       detail: `${revenues?.receivedCount ?? 0} recebimentos`,
       icon: IconTrendingUp,
       variant: 'successLight',
     },
     {
       label: 'Despesa realizada',
-      value: formatCurrencyToBrl(realizedExpense),
+      value: formatValue(realizedExpense),
       detail: `${expenses?.receivedCount ?? 0} pagamentos`,
       icon: IconTrendingDown,
       variant: 'errorLight',
     },
     {
       label: 'Saldo realizado',
-      value: formatCurrencyToBrl(realizedBalance),
-      detail: `Projetado ${formatCurrencyToBrl(projectedBalance)}`,
+      value: formatValue(realizedBalance),
+      detail: `Projetado ${formatValue(projectedBalance)}`,
       icon: IconCash,
       variant: realizedBalance >= 0 ? 'successLight' : 'errorLight',
     },
     {
       label: 'A realizar',
-      value: formatCurrencyToBrl(pendingRevenue - pendingExpense),
-      detail: `${formatCurrencyToBrl(pendingRevenue)} a receber`,
+      value: formatValue(pendingRevenue - pendingExpense),
+      detail: `${formatValue(pendingRevenue)} a receber`,
       icon: IconClockHour4,
       variant: 'warningLight',
     },
     {
       label: 'Vencidos',
-      value: formatCurrencyToBrl(overdueTotal),
+      value: formatValue(overdueTotal),
       detail: `${overdueCount} parcelas`,
       icon: IconAlertCircle,
       variant: 'errorLight',

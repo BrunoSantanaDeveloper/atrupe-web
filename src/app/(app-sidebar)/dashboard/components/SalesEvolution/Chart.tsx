@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 import { getDashboardSalesEvolution } from '@/actions/dashboard'
 
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { useDashboardValues } from '../DashboardValuesContext'
 
 type DashboardFilters = {
   startDate?: string
@@ -32,6 +32,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function SalesEvolutionChart({ filters }: SalesEvolutionChartProps) {
+  const { showValues, formatValue } = useDashboardValues()
+
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-sales-evolution', filters],
     queryFn: () => getDashboardSalesEvolution(filters),
@@ -71,8 +73,8 @@ export function SalesEvolutionChart({ filters }: SalesEvolutionChartProps) {
         <YAxis
           tickLine={false}
           axisLine={false}
-          tickFormatter={(value) => formatCurrencyToBrl(value)}
-          width={90}
+          tickFormatter={(value) => formatValue(value)}
+          width={showValues ? 90 : 60}
         />
         <ChartTooltip
           cursor={false}
@@ -90,7 +92,7 @@ export function SalesEvolutionChart({ filters }: SalesEvolutionChartProps) {
                       {chartConfig[name as keyof typeof chartConfig]?.label}
                     </span>
                     <span className="font-medium tabular-nums">
-                      {formatCurrencyToBrl(value as number)}
+                      {formatValue(value as number)}
                     </span>
                   </div>
                 </div>
