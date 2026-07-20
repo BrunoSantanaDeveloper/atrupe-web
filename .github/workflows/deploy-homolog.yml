@@ -28,18 +28,14 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      # O deployment carrega o metadado de branch (dev), então a Vercel atribui
+      # homolog.atrupe.com.br automaticamente por ser branch domain da dev.
+      # Não usar `vercel alias set`: domínios ligados a um ambiente recusam
+      # atribuição manual ("You don't have access to the domain").
       - name: Deploy Project Artifacts to Vercel
-        id: deploy
         run: |
           URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployment: $URL"
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-      - name: Point homolog domain to the new deployment
-        run: vercel alias set ${{ steps.deploy.outputs.url }} homolog.atrupe.com.br --scope=atrupes-projects --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
