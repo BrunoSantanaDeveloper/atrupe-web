@@ -12,7 +12,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { getDashboardSalesBySeller } from '@/actions/dashboard'
-import { formatCurrencyToBrl } from '@/lib/utils'
+
+import { useDashboardValues } from '../DashboardValuesContext'
 
 type DashboardFilters = {
   startDate?: string
@@ -30,16 +31,18 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-const currencyFormatter = (value: unknown) => (
-  <div className="flex flex-1 justify-between items-center gap-2 leading-none">
-    <span className="text-gray-500">Vendas</span>
-    <span className="font-mono font-medium tabular-nums text-gray-950">
-      {formatCurrencyToBrl(Number(value))}
-    </span>
-  </div>
-)
-
 export function SalesBySellerChart({ filters }: SalesBySellerChartProps) {
+  const { formatValue } = useDashboardValues()
+
+  const currencyFormatter = (value: unknown) => (
+    <div className="flex flex-1 justify-between items-center gap-2 leading-none">
+      <span className="text-gray-500">Vendas</span>
+      <span className="font-mono font-medium tabular-nums text-gray-950">
+        {formatValue(Number(value))}
+      </span>
+    </div>
+  )
+
   const { data = [], isLoading } = useQuery({
     queryKey: ['dashboard-sales-by-seller', filters],
     queryFn: () => getDashboardSalesBySeller(filters),

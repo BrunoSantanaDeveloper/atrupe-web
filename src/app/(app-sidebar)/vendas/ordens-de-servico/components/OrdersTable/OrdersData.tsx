@@ -58,6 +58,11 @@ import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQu
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import {
+  FiscalEnvironmentBadge,
+  resolveFiscalEnvironment,
+  useFiscalEnvironmentConfig,
+} from '@/components/common/fiscal/FiscalEnvironmentBadge'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -148,10 +153,23 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
   const totalColumns = showCurrentPhase ? 5 : 4
 
   const hasFiscalModule = hasFeature('nota_fiscal')
+  const { data: fiscalConfig } = useFiscalEnvironmentConfig()
+  const activeEnvironment = {
+    nfe: resolveFiscalEnvironment(fiscalConfig, 'NFE') === 'PRODUCAO' ? 1 : 2,
+    nfse: resolveFiscalEnvironment(fiscalConfig, 'NFSE') === 'PRODUCAO' ? 1 : 2,
+    nfce: resolveFiscalEnvironment(fiscalConfig, 'NFCE') === 'PRODUCAO' ? 1 : 2,
+  }
 
   return (
     <>
       <CardContent>
+        {hasFiscalModule && (
+          <div className="mb-3 flex flex-wrap justify-end gap-2">
+            <FiscalEnvironmentBadge documentType="NFE" showDocumentType />
+            <FiscalEnvironmentBadge documentType="NFSE" showDocumentType />
+            <FiscalEnvironmentBadge documentType="NFCE" showDocumentType />
+          </div>
+        )}
         {isLoading ? (
           <TableSkeleton cols={totalColumns} />
         ) : hasData ? (
@@ -185,14 +203,39 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                           const quotation = order?.quotation
                           const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
                           const authorizedNfe = order?.nfes?.find(
-                            (nfe) => nfe.status === 'AUTHORIZED',
+                            (nfe) =>
+                              nfe.status === 'AUTHORIZED' &&
+                              nfe.ambiente === activeEnvironment.nfe,
                           )
-                          const issuedNfce = order?.nfces?.find((nfce) =>
-                            ['AUTHORIZED', 'CONTINGENCY'].includes(nfce.status),
+                          const issuedNfce = order?.nfces?.find(
+                            (nfce) =>
+                              ['AUTHORIZED', 'CONTINGENCY'].includes(
+                                nfce.status,
+                              ) && nfce.ambiente === activeEnvironment.nfce,
                           )
                           const issuedNfse = order?.nfses?.find(
-                            (nfse) => nfse.status === 'AUTHORIZED',
+                            (nfse) =>
+                              nfse.status === 'AUTHORIZED' &&
+                              nfse.ambiente === activeEnvironment.nfse,
                           )
+                          const otherEnvironmentDocuments = [
+                            order?.nfes?.some(
+                              (nfe) =>
+                                nfe.status === 'AUTHORIZED' &&
+                                nfe.ambiente !== activeEnvironment.nfe,
+                            ) && 'NF-e',
+                            order?.nfces?.some(
+                              (nfce) =>
+                                ['AUTHORIZED', 'CONTINGENCY'].includes(
+                                  nfce.status,
+                                ) && nfce.ambiente !== activeEnvironment.nfce,
+                            ) && 'NFC-e',
+                            order?.nfses?.some(
+                              (nfse) =>
+                                nfse.status === 'AUTHORIZED' &&
+                                nfse.ambiente !== activeEnvironment.nfse,
+                            ) && 'NFS-e',
+                          ].filter(Boolean) as string[]
 
                           return (
                             <TableRow key={order?.id} className="text-nowrap">
@@ -207,6 +250,15 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
                                 >
                                   <p className="truncate">{description}</p>
                                 </Link>
+                                {otherEnvironmentDocuments.length > 0 && (
+                                  <Badge
+                                    variant="neutralLight"
+                                    className="mt-1"
+                                  >
+                                    {otherEnvironmentDocuments.join(', ')}{' '}
+                                    emitida em outro ambiente
+                                  </Badge>
+                                )}
                               </TableCell>
                               <PermissionGate
                                 permissions={['values:values:view']}

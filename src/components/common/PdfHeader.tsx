@@ -5,7 +5,7 @@ import { Text, View, StyleSheet, Image as PDFImage } from '@react-pdf/renderer'
 
 // Utils
 import { maskCnpj } from '@/lib/utils'
-import { getProxiedImageUrl } from '@/lib/image-proxy'
+import { getPdfImageSrc } from '@/lib/image-proxy'
 
 // Icons
 import {
@@ -118,10 +118,7 @@ export function PdfHeader({ company }: Props) {
     <View style={styles.header}>
       <View style={styles.companyLogoContainer}>
         <PDFImage
-          src={
-            getProxiedImageUrl(company?.logo || company?.logoUrl) ||
-            '/src/assets/icons/companyIconPlaceholder.png'
-          }
+          src={getPdfImageSrc(company?.logo || company?.logoUrl)}
           style={styles.logo}
         />
       </View>

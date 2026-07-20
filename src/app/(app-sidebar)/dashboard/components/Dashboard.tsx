@@ -2,9 +2,18 @@
 
 import { useMemo, useState } from 'react'
 
+import { IconEye, IconEyeOff } from '@tabler/icons-react'
+
 import { Card, CardContent } from '@/components/ui/card'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { usePermissions } from '@/hooks/usePermissions'
+
+import {
+  DashboardValuesProvider,
+  useDashboardValues,
+} from './DashboardValuesContext'
 
 import { DashboardQuotations } from './Quotations'
 import { FiscalOnboardingBanner } from './FiscalOnboardingBanner'
@@ -44,7 +53,23 @@ function getDashboardDateRange(period: DashboardPeriod) {
   }
 }
 
-export function Dashboard() {
+function ToggleValuesButton() {
+  const { showValues, toggleValues } = useDashboardValues()
+
+  return (
+    <TooltipProvider>
+      <ActionButton
+        tooltip={showValues ? 'Ocultar valores' : 'Mostrar valores'}
+        size="iconMd"
+        variant="neutralOutline"
+        Icon={showValues ? IconEyeOff : IconEye}
+        onClick={toggleValues}
+      />
+    </TooltipProvider>
+  )
+}
+
+function DashboardContent() {
   const [period, setPeriod] = useState<DashboardPeriod>('current_month')
   const { hasAnyPermission } = usePermissions()
 
@@ -67,8 +92,9 @@ export function Dashboard() {
     <div className="space-y-4 mt-1 w-full">
       <FiscalOnboardingBanner />
 
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-end gap-2">
         <DashboardPeriodFilter value={period} onChange={setPeriod} />
+        <ToggleValuesButton />
       </div>
 
       {!canSeeDashboard && (
@@ -103,5 +129,13 @@ export function Dashboard() {
         </div>
       </PermissionGate>
     </div>
+  )
+}
+
+export function Dashboard() {
+  return (
+    <DashboardValuesProvider>
+      <DashboardContent />
+    </DashboardValuesProvider>
   )
 }

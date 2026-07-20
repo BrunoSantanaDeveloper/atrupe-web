@@ -10,6 +10,7 @@ export type NfeType = {
   chaveAcesso?: string
   danfeUrl?: string
   dataEmissao?: string
+  ambiente: number
 }
 
 export type NfceType = {
@@ -23,6 +24,7 @@ export type NfceType = {
   qrCodeUrl?: string
   xmlAutorizado?: string
   motivoRejeicao?: string
+  ambiente: number
 }
 
 export type NfseType = {
@@ -37,6 +39,7 @@ export type NfseType = {
   dataEmissao?: string
   xmlRetorno?: string
   motivoRejeicao?: string
+  ambiente: number
 }
 
 export type OrderType = {

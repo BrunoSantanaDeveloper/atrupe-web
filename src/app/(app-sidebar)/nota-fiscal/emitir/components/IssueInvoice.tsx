@@ -38,6 +38,7 @@ import { NfeAvulsaSection } from './NfeAvulsaSection'
 import { FiscalModulePendingBanner } from '../../components/FiscalModulePendingBanner'
 import { FiscalModuleGate } from '../../components/FiscalModuleGate'
 import { ExportXmlButton } from '@/components/common/fiscal/ExportXmlButton'
+import { FiscalEnvironmentBadge } from '@/components/common/fiscal/FiscalEnvironmentBadge'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -138,6 +139,17 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
             title="Emissão de Nota Fiscal"
             primaryCta={
               <div className="flex items-center gap-3">
+                <div className="hidden flex-wrap gap-2 xl:flex">
+                  <FiscalEnvironmentBadge documentType="NFE" showDocumentType />
+                  <FiscalEnvironmentBadge
+                    documentType="NFSE"
+                    showDocumentType
+                  />
+                  <FiscalEnvironmentBadge
+                    documentType="NFCE"
+                    showDocumentType
+                  />
+                </div>
                 <ExportXmlButton />
                 <Button LeftIcon={IconFilePlus} onClick={handleOpenModal}>
                   Emitir Nota Avulsa

@@ -23,7 +23,7 @@ import {
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 import { formatToLocaleDate } from '@/lib/formatDate'
-import { getProxiedImageUrl } from '@/lib/image-proxy'
+import { getPdfImageSrc } from '@/lib/image-proxy'
 
 // Types
 import type { PrintOptionsType } from './PrintQuotationDialog'
@@ -520,12 +520,14 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
     const numberWidth = 4
 
     if (isProduction) {
+      // Referência (imagem + nome) ocupa o espaço restante:
+      // 100 - número - qtdItem - detalhamento - qtdTotal
       return {
         number: `${numberWidth}%`,
-        reference: `${55 - numberWidth}%`,
-        qtyItem: '15%',
-        details: '15%',
-        qtyTotal: '15%',
+        reference: `${70 - numberWidth}%`,
+        qtyItem: '10%',
+        details: '10%',
+        qtyTotal: '10%',
         unitValue: '0%',
         discount: '0%',
         finalValue: '0%',
@@ -759,6 +761,73 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
               </View>
             )}
 
+            {!isProduction && (
+              <View style={styles.tableHeader}>
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    { width: columnWidths.number, textAlign: 'center' },
+                  ]}
+                >
+                  #
+                </Text>
+                <Text style={[styles.tableHeaderCell, { flex: 1 }]}>
+                  REFERÊNCIA
+                </Text>
+                <Text
+                  style={[
+                    styles.tableHeaderCell,
+                    {
+                      width: `${parseFloat(columnWidths.qtyItem) + parseFloat(columnWidths.details)}%`,
+                      textAlign: 'center',
+                    },
+                  ]}
+                >
+                  DETALHAMENTO
+                </Text>
+                {printOptions.showDimensions && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.qtyTotal, textAlign: 'center' },
+                    ]}
+                  >
+                    QTD. TOTAL
+                  </Text>
+                )}
+                {printOptions.showUnitValue && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.unitValue, textAlign: 'right' },
+                    ]}
+                  >
+                    VALOR UN.
+                  </Text>
+                )}
+                {shouldShowItemDiscounts && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.discount, textAlign: 'right' },
+                    ]}
+                  >
+                    DESCONTO
+                  </Text>
+                )}
+                {printOptions.showFinalValue && (
+                  <Text
+                    style={[
+                      styles.tableHeaderCell,
+                      { width: columnWidths.finalValue, textAlign: 'right' },
+                    ]}
+                  >
+                    VALOR FINAL
+                  </Text>
+                )}
+              </View>
+            )}
+
             {data.quotationItems.map((item, index) => {
               const isComposite = item.product.compositions.length > 1
 
@@ -814,7 +883,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             {showSmallImage && (
                               <View style={styles.itemImage}>
                                 <PDFImage
-                                  src={getProxiedImageUrl(item.image?.url)}
+                                  src={getPdfImageSrc(item.image?.url)}
                                   style={{
                                     width: 86,
                                     height: 68,
@@ -888,7 +957,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                       </View>
                       {showLargeImage && (
                         <PDFImage
-                          src={getProxiedImageUrl(item.image?.url)}
+                          src={getPdfImageSrc(item.image?.url)}
                           style={styles.itemImageLarge}
                         />
                       )}
@@ -915,18 +984,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                           marginRight: 6,
                         }}
                       >
-                        <Text
-                          style={[
-                            styles.columnNumberText,
-                            { width: 18, marginBottom: 2 },
-                          ]}
-                        >
-                          {index + 1}.
-                        </Text>
                         {showSmallImage && (
-                          <View style={[styles.itemImage, { marginTop: -18 }]}>
+                          <View style={styles.itemImage}>
                             <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
+                              src={getPdfImageSrc(item.image?.url)}
                               style={{
                                 width: 86,
                                 height: 68,
@@ -946,6 +1007,21 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             alignItems: 'flex-start',
                           }}
                         >
+                          <View
+                            style={{
+                              flexDirection: 'column',
+                              alignItems: 'flex-start',
+                            }}
+                          >
+                            <Text
+                              style={[
+                                styles.columnNumberText,
+                                { width: 18, marginBottom: 2 },
+                              ]}
+                            >
+                              {index + 1}.
+                            </Text>
+                          </View>
                           <View style={{ flex: 1 }}>
                             <Text style={styles.itemTitle}>
                               {item?.description || '-'}
@@ -1094,7 +1170,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     {/* Imagem grande abaixo */}
                     {showLargeImage && (
                       <PDFImage
-                        src={getProxiedImageUrl(item.image?.url)}
+                        src={getPdfImageSrc(item.image?.url)}
                         style={styles.itemImageLarge}
                       />
                     )}
@@ -1152,7 +1228,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                         {showSmallImage && (
                           <View style={styles.itemImage}>
                             <PDFImage
-                              src={getProxiedImageUrl(item.image?.url)}
+                              src={getPdfImageSrc(item.image?.url)}
                               style={{
                                 width: 86,
                                 height: 68,
@@ -1394,7 +1470,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {/* Imagem grande abaixo das informações quando não for original */}
                   {showLargeImage && (
                     <PDFImage
-                      src={getProxiedImageUrl(item.image?.url)}
+                      src={getPdfImageSrc(item.image?.url)}
                       style={styles.itemImageLarge}
                     />
                   )}
@@ -1667,9 +1743,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   {printOptions?.showSignature !== false &&
                     data.quotation?.seller?.signature && (
                       <PDFImage
-                        src={getProxiedImageUrl(
-                          data.quotation.seller.signature,
-                        )}
+                        src={getPdfImageSrc(data.quotation.seller.signature)}
                         style={styles.signatureImage}
                       />
                     )}

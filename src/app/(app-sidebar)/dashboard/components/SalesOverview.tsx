@@ -11,7 +11,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 import { getDashboardSalesSummary } from '@/actions/dashboard'
 
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { useDashboardValues } from './DashboardValuesContext'
 
 import {
   IconCircleCheck,
@@ -31,6 +31,8 @@ interface SalesOverviewProps {
 }
 
 export function SalesOverview({ filters }: SalesOverviewProps) {
+  const { formatValue } = useDashboardValues()
+
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-sales-summary', filters],
     queryFn: () => getDashboardSalesSummary(filters),
@@ -48,35 +50,35 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
   const cards = [
     {
       label: 'Vendas aprovadas',
-      value: formatCurrencyToBrl(data?.approvedTotal || 0),
+      value: formatValue(data?.approvedTotal || 0),
       detail: `${data?.approvedCount || 0} aprovadas`,
       icon: IconCircleCheck,
       variant: 'successLight',
     },
     {
       label: 'Aguardando resposta',
-      value: formatCurrencyToBrl(data?.noResponseTotal || 0),
+      value: formatValue(data?.noResponseTotal || 0),
       detail: `${data?.noResponseCount || 0} orcamentos`,
       icon: IconClockCheck,
       variant: 'warningLight',
     },
     {
       label: 'Nao aprovadas',
-      value: formatCurrencyToBrl(lostTotal),
+      value: formatValue(lostTotal),
       detail: `${lostCount} registros`,
       icon: IconCircleX,
       variant: 'errorLight',
     },
     {
       label: 'Ticket medio',
-      value: formatCurrencyToBrl(data?.averageTicket || 0),
+      value: formatValue(data?.averageTicket || 0),
       detail: `Aprovacao media ${data?.approvalTime || '0d 0h'}`,
       icon: IconCoin,
       variant: 'neutralLight',
     },
     {
       label: 'Comissao estimada',
-      value: formatCurrencyToBrl(data?.commission || 0),
+      value: formatValue(data?.commission || 0),
       detail: 'Sobre vendas aprovadas',
       icon: IconReceiptDollar,
       variant: 'neutralLight',
