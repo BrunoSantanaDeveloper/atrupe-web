@@ -31,6 +31,10 @@ import { InvoiceFilter } from './InvoiceFilter'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
+import {
+  resolveFiscalEnvironment,
+  useFiscalEnvironmentConfig,
+} from '@/components/common/fiscal/FiscalEnvironmentBadge'
 
 // Icons
 import {
@@ -70,6 +74,7 @@ interface NfeItem {
   numero: number
   serie: number
   status: string
+  ambiente?: number
   chaveAcesso?: string | null
   danfeUrl?: string | null
   xmlAutorizado?: string | null
@@ -82,6 +87,7 @@ interface FiscalRecordWithRejection {
   numero?: number
   serie?: string | number
   status?: string
+  ambiente?: number
   pdfUrl?: string | null
   motivoRejeicao?: string | null
 }
@@ -103,6 +109,7 @@ interface UnifiedInvoiceItem {
     numero: number
     serie: number
     status: string
+    ambiente?: number
     chaveAcesso?: string | null
     danfeUrl?: string | null
     xmlAutorizado?: string | null
@@ -233,18 +240,6 @@ const getInvoiceStatusProps = (item: UnifiedInvoiceItem) => {
   }
 }
 
-const canSelectForConsolidation = (item: UnifiedInvoiceItem) => {
-  if (item.type !== 'ORDER') return false
-  const hasBlockingNfe = item.nfes?.some((n) =>
-    ['AUTHORIZED', 'DRAFT', 'CORRECTION_SENT'].includes(n.status),
-  )
-  const hasBlockingNfse = item.nfses?.some((n) =>
-    ['AUTHORIZED', 'DRAFT', 'PENDING', 'PROCESSING'].includes(n.status || ''),
-  )
-  if (hasBlockingNfe || hasBlockingNfse) return false
-  return item.status?.toUpperCase() !== 'CANCELED'
-}
-
 const findRejectedNfe = (item: UnifiedInvoiceItem) =>
   item.nfes?.find((n) => n.status === 'REJECTED')
 
@@ -292,8 +287,229 @@ const isRejectedInvoice = (item: UnifiedInvoiceItem) => {
   return item.status === 'REJECTED'
 }
 
+type ActiveFiscalEnvironment = {
+  nfe: number
+  nfse: number
+  nfce: number
+}
+
+const getDocumentEnvironmentLabel = (ambiente?: number) =>
+  ambiente === 1 ? 'Produção' : 'Homologação'
+
+const getDocumentEnvironmentVariant = (ambiente?: number) =>
+  ambiente === 1 ? ('successLight' as const) : ('warningLight' as const)
+
+const isActiveEnvironmentDocument = (
+  document: { ambiente?: number } | undefined | null,
+  activeEnvironment: number,
+) => (document?.ambiente ?? 2) === activeEnvironment
+
+const findActiveNfe = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+  statuses: string[],
+) =>
+  item.nfes?.find(
+    (n) =>
+      statuses.includes(n.status) &&
+      isActiveEnvironmentDocument(n, activeEnvironment.nfe),
+  )
+
+const findActiveNfse = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+  statuses: string[],
+) =>
+  item.nfses?.find(
+    (n) =>
+      statuses.includes(n.status || '') &&
+      isActiveEnvironmentDocument(n, activeEnvironment.nfse),
+  )
+
+const getEnvironmentAwareStatusProps = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type !== 'ORDER') return getInvoiceStatusProps(item)
+
+  if (
+    findActiveNfe(item, activeEnvironment, ['AUTHORIZED', 'CORRECTION_SENT']) ||
+    findActiveNfse(item, activeEnvironment, ['AUTHORIZED'])
+  ) {
+    return { label: 'Emitida', variant: 'successLight' as const }
+  }
+
+  if (findActiveNfe(item, activeEnvironment, ['DRAFT'])) {
+    return { label: 'Em digitação', variant: 'blueLight' as const }
+  }
+
+  if (
+    findActiveNfse(item, activeEnvironment, ['DRAFT', 'PENDING', 'PROCESSING'])
+  ) {
+    return { label: 'Em processamento', variant: 'blueLight' as const }
+  }
+
+  if (
+    findActiveNfe(item, activeEnvironment, ['REJECTED']) ||
+    findActiveNfse(item, activeEnvironment, ['REJECTED'])
+  ) {
+    return { label: 'Rejeitada', variant: 'errorLight' as const }
+  }
+
+  const hasOtherEnvironmentDocument =
+    item.nfes?.some(
+      (n) =>
+        ['AUTHORIZED', 'CORRECTION_SENT', 'DRAFT'].includes(n.status) &&
+        !isActiveEnvironmentDocument(n, activeEnvironment.nfe),
+    ) ||
+    item.nfses?.some(
+      (n) =>
+        ['AUTHORIZED', 'DRAFT', 'PENDING', 'PROCESSING'].includes(
+          n.status || '',
+        ) && !isActiveEnvironmentDocument(n, activeEnvironment.nfse),
+    )
+
+  if (hasOtherEnvironmentDocument) {
+    return { label: 'Não emitida', variant: 'neutralLight' as const }
+  }
+
+  return getInvoiceStatusProps(item)
+}
+
+const canSelectForConsolidationInActiveEnvironment = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type !== 'ORDER') return false
+  const hasBlockingNfe = item.nfes?.some(
+    (n) =>
+      ['AUTHORIZED', 'DRAFT', 'CORRECTION_SENT'].includes(n.status) &&
+      isActiveEnvironmentDocument(n, activeEnvironment.nfe),
+  )
+  const hasBlockingNfse = item.nfses?.some(
+    (n) =>
+      ['AUTHORIZED', 'DRAFT', 'PENDING', 'PROCESSING'].includes(
+        n.status || '',
+      ) && isActiveEnvironmentDocument(n, activeEnvironment.nfse),
+  )
+  if (hasBlockingNfe || hasBlockingNfse) return false
+  return item.status?.toUpperCase() !== 'CANCELED'
+}
+
+const getEnvironmentAwareRejectionReason = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type !== 'ORDER') return getRejectionReason(item)
+  return (
+    findActiveNfe(item, activeEnvironment, ['REJECTED'])?.motivoRejeicao ||
+    findActiveNfse(item, activeEnvironment, ['REJECTED'])?.motivoRejeicao
+  )
+}
+
+const getEnvironmentAwareReissueHref = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type === 'NFE_AVULSA') return getReissueHref(item)
+  const rejectedNfe = findActiveNfe(item, activeEnvironment, ['REJECTED'])
+  return rejectedNfe
+    ? `/nota-fiscal/emitir/avulsa/nfe?reissueOf=${rejectedNfe.id}`
+    : undefined
+}
+
+const isRejectedInvoiceInActiveEnvironment = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type !== 'ORDER') return isRejectedInvoice(item)
+  return Boolean(
+    findActiveNfe(item, activeEnvironment, ['REJECTED']) ||
+      findActiveNfse(item, activeEnvironment, ['REJECTED']),
+  )
+}
+
+const getInvoiceEnvironmentBadges = (
+  item: UnifiedInvoiceItem,
+  activeEnvironment: ActiveFiscalEnvironment,
+) => {
+  if (item.type === 'NFE_AVULSA') {
+    return (item.nfes || []).map((nfe) => ({
+      key: `nfe-${nfe.id}`,
+      label: `NF-e: ${getDocumentEnvironmentLabel(nfe.ambiente)}`,
+      ambiente: nfe.ambiente,
+      otherEnvironment: !isActiveEnvironmentDocument(
+        nfe,
+        activeEnvironment.nfe,
+      ),
+    }))
+  }
+
+  if (item.type === 'NFSE_AVULSA' && item.nfse) {
+    return [
+      {
+        key: `nfse-${item.nfse.id}`,
+        label: `NFS-e: ${getDocumentEnvironmentLabel(item.nfse.ambiente)}`,
+        ambiente: item.nfse.ambiente,
+        otherEnvironment: !isActiveEnvironmentDocument(
+          item.nfse,
+          activeEnvironment.nfse,
+        ),
+      },
+    ]
+  }
+
+  if (item.type === 'NFCE_AVULSA' && item.nfce) {
+    return [
+      {
+        key: `nfce-${item.nfce.id}`,
+        label: `NFC-e: ${getDocumentEnvironmentLabel(item.nfce.ambiente)}`,
+        ambiente: item.nfce.ambiente,
+        otherEnvironment: !isActiveEnvironmentDocument(
+          item.nfce,
+          activeEnvironment.nfce,
+        ),
+      },
+    ]
+  }
+
+  if (item.type !== 'ORDER') return []
+
+  return [
+    ...(item.nfes || []).map((nfe) => ({
+      key: `nfe-${nfe.id}`,
+      label: `NF-e: ${getDocumentEnvironmentLabel(nfe.ambiente)}`,
+      ambiente: nfe.ambiente,
+      otherEnvironment: !isActiveEnvironmentDocument(
+        nfe,
+        activeEnvironment.nfe,
+      ),
+    })),
+    ...(item.nfses || []).map((nfse) => ({
+      key: `nfse-${nfse.id}`,
+      label: `NFS-e: ${getDocumentEnvironmentLabel(nfse.ambiente)}`,
+      ambiente: nfse.ambiente,
+      otherEnvironment: !isActiveEnvironmentDocument(
+        nfse,
+        activeEnvironment.nfse,
+      ),
+    })),
+  ]
+}
+
 export function InvoiceResultsTable({ searchParams }: Props) {
   const router = useRouter()
+  const { data: fiscalConfig } = useFiscalEnvironmentConfig()
+  const activeEnvironment = useMemo(
+    () => ({
+      nfe: resolveFiscalEnvironment(fiscalConfig, 'NFE') === 'PRODUCAO' ? 1 : 2,
+      nfse:
+        resolveFiscalEnvironment(fiscalConfig, 'NFSE') === 'PRODUCAO' ? 1 : 2,
+      nfce:
+        resolveFiscalEnvironment(fiscalConfig, 'NFCE') === 'PRODUCAO' ? 1 : 2,
+    }),
+    [fiscalConfig],
+  )
   const [isLoading, setIsLoading] = useState(true)
   const [orderGroups, setOrderGroups] = useState<OrderGroupFromBackend[]>([])
   const [totalPages, setTotalPages] = useState(1)
@@ -379,8 +595,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   )
 
   const selectableOrders = useMemo(
-    () => visibleOrders.filter(canSelectForConsolidation),
-    [visibleOrders],
+    () =>
+      visibleOrders.filter((order) =>
+        canSelectForConsolidationInActiveEnvironment(order, activeEnvironment),
+      ),
+    [activeEnvironment, visibleOrders],
   )
 
   const selectedOrders = useMemo(
@@ -632,10 +851,26 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                     </TableCell>
                   </TableRow>
                   {group.items.map((item) => {
-                    const statusProps = getInvoiceStatusProps(item)
-                    const rejected = isRejectedInvoice(item)
-                    const rejectionReason = getRejectionReason(item)
-                    const reissueHref = getReissueHref(item)
+                    const statusProps = getEnvironmentAwareStatusProps(
+                      item,
+                      activeEnvironment,
+                    )
+                    const rejected = isRejectedInvoiceInActiveEnvironment(
+                      item,
+                      activeEnvironment,
+                    )
+                    const rejectionReason = getEnvironmentAwareRejectionReason(
+                      item,
+                      activeEnvironment,
+                    )
+                    const reissueHref = getEnvironmentAwareReissueHref(
+                      item,
+                      activeEnvironment,
+                    )
+                    const environmentBadges = getInvoiceEnvironmentBadges(
+                      item,
+                      activeEnvironment,
+                    )
 
                     return (
                       <TableRow key={item.id} className="hover:bg-gray-50">
@@ -646,7 +881,12 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 <span className="inline-flex">
                                   <Checkbox
                                     id={`check-${item.id}`}
-                                    disabled={!canSelectForConsolidation(item)}
+                                    disabled={
+                                      !canSelectForConsolidationInActiveEnvironment(
+                                        item,
+                                        activeEnvironment,
+                                      )
+                                    }
                                     checked={selectedOrderIds.has(item.id)}
                                     onCheckedChange={(checked) =>
                                       toggleOrderSelection(
@@ -686,15 +926,39 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             <p className="font-medium text-gray-800">
                               {item.reference}
                             </p>
+                            {environmentBadges.length > 0 && (
+                              <div className="flex flex-wrap gap-1">
+                                {environmentBadges.map((badge) => (
+                                  <Badge
+                                    key={badge.key}
+                                    variant={
+                                      badge.otherEnvironment
+                                        ? 'neutralLight'
+                                        : getDocumentEnvironmentVariant(
+                                            badge.ambiente,
+                                          )
+                                    }
+                                    className="w-fit"
+                                  >
+                                    {badge.label}
+                                    {badge.otherEnvironment
+                                      ? ' (outro ambiente)'
+                                      : ''}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
                             {(() => {
                               if (item.type === 'ORDER') {
-                                const authorizedNfe = item.nfes?.find(
-                                  (n) =>
-                                    n.status === 'AUTHORIZED' ||
-                                    n.status === 'CORRECTION_SENT',
+                                const authorizedNfe = findActiveNfe(
+                                  item,
+                                  activeEnvironment,
+                                  ['AUTHORIZED', 'CORRECTION_SENT'],
                                 )
-                                const draftNfe = item.nfes?.find(
-                                  (n) => n.status === 'DRAFT',
+                                const draftNfe = findActiveNfe(
+                                  item,
+                                  activeEnvironment,
+                                  ['DRAFT'],
                                 )
                                 if (authorizedNfe) {
                                   return (
@@ -1003,16 +1267,20 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 }
 
                                 // Type ORDER
-                                const authorizedNfe = item.nfes?.find(
-                                  (n) =>
-                                    n.status === 'AUTHORIZED' ||
-                                    n.status === 'CORRECTION_SENT',
+                                const authorizedNfe = findActiveNfe(
+                                  item,
+                                  activeEnvironment,
+                                  ['AUTHORIZED', 'CORRECTION_SENT'],
                                 )
-                                const draftNfe = item.nfes?.find(
-                                  (n) => n.status === 'DRAFT',
+                                const draftNfe = findActiveNfe(
+                                  item,
+                                  activeEnvironment,
+                                  ['DRAFT'],
                                 )
-                                const authorizedNfse = item.nfses?.find(
-                                  (n) => n.status === 'AUTHORIZED',
+                                const authorizedNfse = findActiveNfse(
+                                  item,
+                                  activeEnvironment,
+                                  ['AUTHORIZED'],
                                 )
                                 const isCancelingThis =
                                   cancelingDraftId === draftNfe?.id
