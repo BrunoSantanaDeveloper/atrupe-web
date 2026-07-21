@@ -128,26 +128,9 @@ export function PrintQuotationDialog({
       />,
     ).toBlob()
 
-    const sanitize = (s: string) =>
-      s
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '_')
-        .trim()
-    const prefix = type === 'quotation' ? 'ORC' : 'OS'
-    const seriesCode = quotationData?.quotation?.seriesCode ?? ''
-    const number = quotationData?.quotation?.number ?? ''
-    const clientName = sanitize(quotationData?.client?.name ?? '')
-    const osCode = `${seriesCode}-${number}`
-    const fileName = `${prefix}-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
-
+    // Abre a prévia do PDF em nova aba; o cliente decide se baixa/imprime
     const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    window.open(url, '_blank')
   }
 
   const onSubmit = async (formData: PrintOptionsType) => {
