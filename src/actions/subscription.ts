@@ -1,6 +1,18 @@
 'use server'
 
-import { getData, getItem } from './_cruds'
+import { getData, getItem, updateItemNew } from './_cruds'
+
+/**
+ * Troca o plano da assinatura atual (in-place).
+ * Disponível mesmo com a conta bloqueada por inadimplência: a cobrança em
+ * aberto é preservada e continua sendo o que restaura o acesso ao ser paga.
+ */
+export async function changeSubscriptionPlan(planId: string) {
+  return await updateItemNew({
+    route: '/subscriptions/change-plan',
+    data: { planId },
+  })
+}
 
 /**
  * Busca a URL de pagamento pendente para a empresa do usuário logado
