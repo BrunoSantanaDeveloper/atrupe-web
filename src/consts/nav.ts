@@ -421,6 +421,11 @@ export const adminMainNavigation: MainNavigationType[] = [
         title: 'Cupons de desconto',
         path: '/admin/sistema/cupons',
       },
+      {
+        icon: IconLayoutGrid,
+        title: 'Planos',
+        path: '/admin/sistema/planos',
+      },
     ],
   },
 ]
