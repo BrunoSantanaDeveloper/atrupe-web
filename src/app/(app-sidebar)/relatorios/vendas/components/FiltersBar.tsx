@@ -117,8 +117,13 @@ function FiltersContent({ searchParams }: SearchParamsType) {
   const updateOptions = { router, params }
 
   const { data: contactSources = [] } = useContactSources()
-  const { hasPermission } = usePermissions()
-  const canSeeOtherSellers = hasPermission('sale:other_quotation:view')
+  const { hasAnyPermission } = usePermissions()
+  // Cargos legados usam 'sale:other_sellers'; os salvos pela tela de cargos
+  // usam 'sale:other_quotation'. Aceitar as duas chaves.
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
 
   const { data: sellers = [] } = useQuery({
     queryKey: ['sellers'],

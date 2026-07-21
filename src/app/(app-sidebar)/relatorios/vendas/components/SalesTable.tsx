@@ -68,8 +68,13 @@ export function SalesTable({ searchParams }: SalesTableProps) {
   const pathname = usePathname()
   const urlSearchParams = useSearchParams()
 
-  const { hasPermission } = usePermissions()
-  const canSeeOtherSellers = hasPermission('sale:other_quotation:view')
+  const { hasAnyPermission } = usePermissions()
+  // Cargos legados usam 'sale:other_sellers'; os salvos pela tela de cargos
+  // usam 'sale:other_quotation'. Aceitar as duas chaves.
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
 
   const groupBy =
     (searchParams?.groupBy as 'none' | 'client' | 'seller') || 'client'
