@@ -4,8 +4,13 @@ export type ListSuppliersDataType = {
   createdAt: string
   updatedAt: string
   kind: string
+  type?: 'COMPANY' | 'PERSON'
   status: string
   name: string
+  corporateName?: string
+  cpf?: string
+  cnpj?: string
+  stateRegistration?: string
   email: null
   phoneNumber: null
   mobilePhone: null

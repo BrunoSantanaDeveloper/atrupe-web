@@ -682,9 +682,6 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   <Text>
                     Emissão: {formatToLocaleDate(data.quotation?.createdAt)}
                   </Text>
-                  <Text>
-                    Validade: {formatToLocaleDate(data.quotation?.dueDate)}
-                  </Text>
                 </>
               )}
               <Text>Vendedor: {data.quotation?.seller?.name}</Text>

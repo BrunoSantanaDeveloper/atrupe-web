@@ -108,6 +108,7 @@ export const permissionsData = [
       {
         name: 'Cadastro de fornecedores',
         key: 'supplier',
+        exportable: true,
       },
     ],
   },

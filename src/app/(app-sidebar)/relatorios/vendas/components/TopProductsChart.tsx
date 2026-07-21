@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 // Components
-import { PrintButton } from '@/components/common/PrintButton'
+import { RankingPrintButton } from './print/RankingPrintButton'
 
 // Icons
 import { IconMaximize } from '@tabler/icons-react'
@@ -79,7 +79,11 @@ export function TopProductsChart({ searchParams }: TopProductsChartProps) {
           Produtos mais vendidos
         </CardTitle>
         <div className="flex items-center gap-1">
-          <PrintButton size="icon" variant="ghost" />
+          <RankingPrintButton
+            title="Produtos mais vendidos"
+            nameLabel="Produto"
+            items={topProducts}
+          />
           <Button
             type="button"
             size="icon"

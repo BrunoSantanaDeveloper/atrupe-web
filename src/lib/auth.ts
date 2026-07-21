@@ -222,6 +222,18 @@ export const {
               if (typeof session.company.plan.features !== 'undefined') {
                 token.features = session.company.plan.features
               }
+              if (typeof session.company.plan.active !== 'undefined') {
+                token.subscriptionActive = session.company.plan.active
+              }
+              if (typeof session.company.plan.limits !== 'undefined') {
+                token.limits = session.company.plan.limits
+              }
+              if (typeof session.company.plan.trialEndsAt !== 'undefined') {
+                token.trialEndsAt = session.company.plan.trialEndsAt
+              }
+            }
+            if (typeof session.company.blockLevel !== 'undefined') {
+              token.blockLevel = session.company.blockLevel
             }
           }
 

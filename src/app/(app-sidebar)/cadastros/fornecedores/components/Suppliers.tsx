@@ -20,18 +20,85 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { NewSupplier, NewSupplierTriggerButton } from './NewSupplier'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ExportDataButton } from '@/components/common/ExportDataButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { ExportColumn } from '@/lib/export-excel'
+import type { ListSuppliersDataType } from '../types'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getData, getDataOld } from '@/actions/_cruds'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconBuildingCommunity, IconFolders } from '@tabler/icons-react'
+
+// Consts
+import { supplierStatusObj } from '@/consts/supplier'
+
+const SUPPLIER_EXPORT_COLUMNS: ExportColumn<ListSuppliersDataType>[] = [
+  {
+    header: 'Nome',
+    key: 'name',
+  },
+  {
+    header: 'Razao social',
+    key: 'corporateName',
+  },
+  {
+    header: 'Tipo',
+    getValue: (supplier) => (supplier.type === 'COMPANY' ? 'PJ' : 'PF'),
+  },
+  {
+    header: 'CPF',
+    key: 'cpf',
+  },
+  {
+    header: 'CNPJ',
+    key: 'cnpj',
+  },
+  {
+    header: 'Inscricao estadual',
+    key: 'stateRegistration',
+  },
+  {
+    header: 'Email',
+    key: 'email',
+  },
+  {
+    header: 'Telefone',
+    key: 'phoneNumber',
+  },
+  {
+    header: 'Celular',
+    key: 'mobilePhone',
+  },
+  {
+    header: 'Grupo',
+    getValue: (supplier) => supplier.categoryRelation?.name,
+  },
+  {
+    header: 'Status',
+    getValue: (supplier) =>
+      supplierStatusObj[supplier.status]?.text || supplier.status,
+  },
+  {
+    header: 'Criado em',
+    key: 'createdAt',
+    type: 'date',
+  },
+  {
+    header: 'Observacoes',
+    key: 'notes',
+  },
+  {
+    header: 'Observacoes financeiras',
+    key: 'financialNotes',
+  },
+]
 
 type TotalsType = {
   todos: number
@@ -93,6 +160,18 @@ export function Suppliers({ searchParams }: SearchParamsType) {
 
   const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
+  const getExportSuppliers = async () => {
+    const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
+    const filters = { ...searchParams, status: exportStatus }
+    const result = await getData({ route: '/supplier/export', filters })
+
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+
+    return (result.data || []) as ListSuppliersDataType[]
+  }
+
   return (
     <div className="space-y-5">
       <Topbar
@@ -102,6 +181,15 @@ export function Suppliers({ searchParams }: SearchParamsType) {
         paramName="status"
         primaryCta={
           <TooltipProvider>
+            <PermissionGate permissions={['register:supplier:export']}>
+              <ExportDataButton
+                columns={SUPPLIER_EXPORT_COLUMNS}
+                fileName="fornecedores"
+                getData={getExportSuppliers}
+                sheetName="Fornecedores"
+                emptyMessage="Nenhum fornecedor disponivel para exportacao"
+              />
+            </PermissionGate>
             <ActionButton
               tooltip="Grupos de fornecedores"
               size="iconMd"

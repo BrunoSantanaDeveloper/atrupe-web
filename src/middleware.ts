@@ -25,12 +25,17 @@ export async function middleware(req: NextRequest) {
   const user = session?.user
   const isUserLoggedIn = !!user
   const trialEndsAt = session?.company?.plan?.trialEndsAt
+  const planName = session?.company?.plan?.name
   const blockLevel = session?.company?.blockLevel
   const userIsSystemAdmin = user?.isSystemAdmin
 
-  const isTrialExpired = trialEndsAt
-    ? new Date(trialEndsAt) < new Date()
-    : false
+  // Só redireciona por trial expirado se o plano ainda for TRIAL.
+  // Após contratar, o token pode ter trialEndsAt desatualizado — a troca de plano
+  // é propagada imediatamente e serve como flag definitiva.
+  const isTrialExpired =
+    planName === 'TRIAL' && trialEndsAt
+      ? new Date(trialEndsAt) < new Date()
+      : false
 
   const isFullBlocked = blockLevel === 'FULL'
 
