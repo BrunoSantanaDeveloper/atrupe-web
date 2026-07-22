@@ -112,17 +112,19 @@ export function ChangePlanButton({ plans, currentPlanName }: Props) {
                 <strong className="text-gray-900">{changedTo}</strong>.
               </p>
               <p>
-                Para reativar o acesso, conclua o pagamento da fatura em aberto
-                usando o botão <strong>Regularizar Pagamento</strong>. O valor
-                do novo plano passa a valer nas próximas cobranças.
+                Geramos uma nova cobrança no valor do plano escolhido, vencendo
+                hoje. Conclua o pagamento em{' '}
+                <strong>Regularizar Pagamento</strong> para reativar o acesso —
+                o período em que a conta ficou bloqueada não foi cobrado.
               </p>
             </DialogBody>
           ) : (
             <DialogBody className="space-y-3">
               <p className="text-sm text-gray-600">
-                Escolha o plano que deseja utilizar. A fatura em aberto continua
-                sendo o que restaura o seu acesso — o novo valor passa a valer
-                nas próximas cobranças.
+                Escolha o plano que deseja utilizar. Ao confirmar, sua cobrança
+                em aberto é substituída por uma única cobrança no valor do plano
+                escolhido, vencendo hoje — você não paga pelo período em que
+                ficou sem acesso.
               </p>
 
               <div className="space-y-2">
