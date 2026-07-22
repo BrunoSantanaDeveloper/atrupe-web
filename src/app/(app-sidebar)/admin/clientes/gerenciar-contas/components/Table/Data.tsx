@@ -12,6 +12,7 @@ import { EditClientDialog } from '../EditClientDialog'
 import { ChangeStatusDialog } from '../ChangeStatusDialog'
 import { DeleteAccountDialog } from '../DeleteAccountDialog'
 import { ModulesDialog } from '../ModulesDialog'
+import { ChangePlanDialog } from '../ChangePlanDialog'
 import { ClientHistoryDialog } from '../ClientHistoryDialog'
 import { SyncAsaasDialog } from '../SyncAsaasDialog'
 import { SyncAddressDialog } from '../SyncAddressDialog'
@@ -55,6 +56,7 @@ import {
   IconRefresh,
   IconKey,
   IconMapPin,
+  IconArrowsExchange,
 } from '@tabler/icons-react'
 import Image from 'next/image'
 
@@ -99,6 +101,7 @@ export function Data({ searchParams, searchDescription }: Props) {
   const [isChangeStatusDialogOpen, setIsChangeStatusDialogOpen] =
     useState(false)
   const [isModulesDialogOpen, setIsModulesDialogOpen] = useState(false)
+  const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false)
   const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [isSyncDialogOpen, setIsSyncDialogOpen] = useState(false)
@@ -238,6 +241,14 @@ export function Data({ searchParams, searchDescription }: Props) {
                                       }}
                                     />
                                     <ActionButton
+                                      Icon={IconArrowsExchange}
+                                      tooltip="Trocar plano"
+                                      onClick={() => {
+                                        setRowData(item)
+                                        setIsChangePlanDialogOpen(true)
+                                      }}
+                                    />
+                                    <ActionButton
                                       Icon={IconRefresh}
                                       tooltip="Verificar Asaas"
                                       onClick={() => {
@@ -327,6 +338,12 @@ export function Data({ searchParams, searchDescription }: Props) {
       <ModulesDialog
         open={isModulesDialogOpen}
         setOpen={setIsModulesDialogOpen}
+        rowData={rowData}
+      />
+
+      <ChangePlanDialog
+        open={isChangePlanDialogOpen}
+        setOpen={setIsChangePlanDialogOpen}
         rowData={rowData}
       />
 

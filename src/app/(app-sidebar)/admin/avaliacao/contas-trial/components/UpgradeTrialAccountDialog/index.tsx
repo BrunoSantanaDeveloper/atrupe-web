@@ -15,15 +15,16 @@ import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Form
 import { useForm } from 'react-hook-form'
 import { FormType, schema } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { createItemNew } from '@/actions/_cruds'
+import { getData, createItemNew } from '@/actions/_cruds'
 
 // Types
 import type { TrialAccountItem } from '../Table/Data'
@@ -33,12 +34,20 @@ import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
 import { IconCircleCheck } from '@tabler/icons-react'
 
 // Libs
-import { maskCpfCnpj } from '@/lib/utils'
+import { maskCpfCnpj, formatCurrencyToBrl } from '@/lib/utils'
 
 interface Props {
   open: boolean
   setOpen: (value: boolean) => void
   rowData: TrialAccountItem | null
+}
+
+interface ManageablePlan {
+  id: string
+  name: string
+  planType: string
+  basePrice: number
+  isActive: boolean
 }
 
 export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
@@ -47,11 +56,27 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
+      planId: '',
       password: '',
     },
   })
 
   const { handleSubmit, reset } = form
+
+  const { data: plansRes } = useQuery({
+    queryKey: ['admin-manageable-plans'],
+    queryFn: () => getData({ route: '/plan/manage' }),
+    enabled: open,
+  })
+
+  const plans: ManageablePlan[] = plansRes?.success ? plansRes.data : []
+
+  const planOptions = plans
+    .filter((plan) => plan.isActive)
+    .map((plan) => ({
+      value: plan.id,
+      label: `${plan.name} — ${formatCurrencyToBrl(plan.basePrice)}/mês`,
+    }))
 
   const onSubmit = async (data: FormType) => {
     if (!rowData?.company?.id) {
@@ -63,6 +88,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
       route: '/subscriptions/assign-manual',
       data: {
         companyId: rowData.company.id,
+        planId: data.planId,
         password: data.password,
       },
     })
@@ -73,7 +99,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
     }
 
     queryClient.invalidateQueries()
-    toast.success('Conta atualizada para plano Start com sucesso!')
+    toast.success('Conta atualizada com sucesso!')
     handleOpenChange(false)
   }
 
@@ -91,7 +117,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
           <DialogTitle>
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconAtrupeLogo} />
-              <span>Upgrade para plano Start</span>
+              <span>Upgrade de plano</span>
             </div>
           </DialogTitle>
           <DialogDescription hidden></DialogDescription>
@@ -116,10 +142,19 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
                 </div>
               </div>
 
+              <FormSelect<FormType>
+                name="planId"
+                label="Plano"
+                placeholder="Selecione o plano"
+                options={planOptions}
+                emptyMessage="Nenhum plano disponível"
+                width="w-full"
+              />
+
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
-                  Esta ação irá converter a conta Trial para o plano Start. Para
-                  confirmar, insira sua senha gerencial.
+                  Esta ação irá converter a conta Trial para o plano escolhido.
+                  Para confirmar, insira sua senha gerencial.
                 </p>
               </div>
 
