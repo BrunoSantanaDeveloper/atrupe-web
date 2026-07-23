@@ -154,6 +154,13 @@ export function EmissoresListClient() {
         cscConfigured: config?.cscConfigured,
         defaultCfop: config?.defaultCfop,
         defaultOperationNature: config?.defaultOperationNature,
+
+        // Informações complementares e envio
+        taxInfoText: config?.taxInfoText,
+        sendDanfeXmlAutomatically: config?.sendDanfeXmlAutomatically,
+        sendDanfeAutomatically: config?.sendDanfeAutomatically,
+        sendXmlAutomatically: config?.sendXmlAutomatically,
+        sendFiscalEmailCopyTo: config?.sendFiscalEmailCopyTo,
       }
       return emissorData
     }) || []

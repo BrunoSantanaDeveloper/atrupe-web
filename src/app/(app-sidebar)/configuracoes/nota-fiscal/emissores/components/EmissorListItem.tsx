@@ -109,6 +109,13 @@ export interface EmissorData {
   cscConfigured?: boolean
   defaultCfop?: string
   defaultOperationNature?: string
+
+  // Informações complementares e envio
+  taxInfoText?: string
+  sendDanfeXmlAutomatically?: boolean
+  sendDanfeAutomatically?: boolean
+  sendXmlAutomatically?: boolean
+  sendFiscalEmailCopyTo?: string
 }
 
 type DocTone = 'neutral' | 'warning' | 'success' | 'error'

@@ -18,6 +18,9 @@ import { Separator } from '@/components/ui/separator'
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormTextarea } from '@/components/common/form/FormTextarea'
+import { FormSwitch } from '@/components/common/form/FormSwitch'
+import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 
 // Icons
 import {
@@ -60,6 +63,17 @@ const emissoresSchema = z.object({
   proximoNumeroNfce: z.coerce.number().optional(),
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
+
+  // Informações complementares e envio
+  taxInfoText: z.string().optional(),
+  sendDanfeXmlAutomatically: z.boolean().optional(),
+  sendDanfeAutomatically: z.boolean().optional(),
+  sendXmlAutomatically: z.boolean().optional(),
+  sendFiscalEmailCopyTo: z
+    .string()
+    .email('E-mail inválido')
+    .optional()
+    .or(z.literal('')),
 })
 
 export type EmissorFormValues = z.infer<typeof emissoresSchema>
@@ -134,8 +148,15 @@ export function EmissorFormModal({
       proximoRpsNfse: 1,
       serieNfce: 1,
       proximoNumeroNfce: 1,
+      taxInfoText: '',
+      sendDanfeXmlAutomatically: false,
+      sendDanfeAutomatically: true,
+      sendXmlAutomatically: true,
+      sendFiscalEmailCopyTo: '',
     },
   })
+
+  const sendFiscalAutomatically = form.watch('sendDanfeXmlAutomatically')
 
   // Reset form when emissor changes
   useEffect(() => {
@@ -163,6 +184,11 @@ export function EmissorFormModal({
           proximoNumeroNfce: emissor.proximoNumeroNfce || 1,
           defaultCfop: emissor.defaultCfop || '',
           defaultOperationNature: emissor.defaultOperationNature || '',
+          taxInfoText: emissor.taxInfoText || '',
+          sendDanfeXmlAutomatically: emissor.sendDanfeXmlAutomatically || false,
+          sendDanfeAutomatically: emissor.sendDanfeAutomatically !== false,
+          sendXmlAutomatically: emissor.sendXmlAutomatically !== false,
+          sendFiscalEmailCopyTo: emissor.sendFiscalEmailCopyTo || '',
         })
       } else {
         form.reset()
@@ -542,6 +568,66 @@ export function EmissorFormModal({
                   )}
                 </div>
               </div>
+
+              {/* Informações Complementares */}
+              {editType === 'GLOBAL' && (
+                <>
+                  <Separator className="bg-gray-100" />
+                  <div className="space-y-4">
+                    <div className="space-y-2 pb-2 border-b border-gray-100">
+                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                        Informações Complementares
+                      </h3>
+                    </div>
+
+                    <FormTextarea
+                      name="taxInfoText"
+                      label="Informações Fiscais Complementares"
+                      placeholder="Texto que será incluído nas notas fiscais"
+                      rows={4}
+                    />
+                  </div>
+
+                  {/* Envio ao Cliente */}
+                  <Separator className="bg-gray-100" />
+                  <div className="space-y-4">
+                    <div className="space-y-2 pb-2 border-b border-gray-100">
+                      <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                        Envio ao Cliente
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        Configure o envio automático dos documentos fiscais
+                        quando a NF-e for autorizada.
+                      </p>
+                    </div>
+
+                    <FormSwitch
+                      name="sendDanfeXmlAutomatically"
+                      label="Enviar DANFE/XML automaticamente ao cliente"
+                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <FormCheckbox
+                        name="sendDanfeAutomatically"
+                        label="Enviar DANFE"
+                        disabled={!sendFiscalAutomatically}
+                      />
+                      <FormCheckbox
+                        name="sendXmlAutomatically"
+                        label="Enviar XML"
+                        disabled={!sendFiscalAutomatically}
+                      />
+                    </div>
+
+                    <FormInput
+                      name="sendFiscalEmailCopyTo"
+                      label="E-mail para cópia"
+                      type="email"
+                      placeholder="financeiro@empresa.com"
+                    />
+                  </div>
+                </>
+              )}
             </form>
           </Form>
         </div>

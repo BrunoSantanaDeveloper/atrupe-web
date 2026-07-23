@@ -7,11 +7,7 @@ import { CompanySettingsList } from '../components/CompanySettingsList'
 import type { CompanySettingsType } from '../components/CompanySettingsList'
 
 // Icons
-import {
-  IconBuilding,
-  IconArrowsSplit,
-  IconSettings,
-} from '@tabler/icons-react'
+import { IconBuilding, IconArrowsSplit } from '@tabler/icons-react'
 
 const defaultPath = 'nota-fiscal'
 
@@ -23,7 +19,8 @@ export function FiscalSettingsClient() {
         {
           title: 'Dados do Emissor',
           icon: IconBuilding,
-          description: 'Configure os dados do emitente para suas notas fiscais',
+          description:
+            'Configure emitente, séries, numeração e padrões para emissão de notas fiscais',
           link: `${defaultPath}/emissores`,
           permission: 'invoice_settings:nf:view',
         },
@@ -33,14 +30,6 @@ export function FiscalSettingsClient() {
           description:
             'Configure as naturezas de operação e CFOPs para emissão de notas',
           link: `${defaultPath}/cfop`,
-          permission: 'invoice_settings:nf:view',
-        },
-        {
-          title: 'Configurações Gerais',
-          icon: IconSettings,
-          description:
-            'Configure séries, numeração e informações complementares padrão',
-          link: `${defaultPath}/invoicy`,
           permission: 'invoice_settings:nf:view',
         },
       ],
