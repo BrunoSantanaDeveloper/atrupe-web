@@ -12,7 +12,6 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 import { Button } from '@/components/ui/button'
 import { IconRefresh } from '@tabler/icons-react'
 import { toast } from 'sonner'
-import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
 
 interface Props {
@@ -23,7 +22,6 @@ interface Props {
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue, watch } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
-  const { hasFiscalModule } = usePlanFeatures()
 
   const primaryCountry = watch('addresses.0.country')
   const isForeign = !!(primaryCountry && primaryCountry !== 'Brasil')
@@ -282,13 +280,11 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           className="col-span-2"
         />
 
-        {/* Campos fiscais (IE / Indicador IE) — apenas se módulo Nota Fiscal contratado */}
-        {hasFiscalModule() && (
-          <RecipientFiscalFields
-            namePrefix="general."
-            fieldWidth="flex-[1_0_250px]"
-          />
-        )}
+        {/* Campos fiscais (IE / Indicador IE) */}
+        <RecipientFiscalFields
+          namePrefix="general."
+          fieldWidth="flex-[1_0_250px]"
+        />
 
         {type === 'PERSON' && (
           <>

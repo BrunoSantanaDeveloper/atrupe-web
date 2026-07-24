@@ -23,6 +23,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { Button } from '@/components/ui/button'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
@@ -48,6 +49,9 @@ import {
   IconRefresh,
   IconQrcode,
   IconPrinter,
+  IconBuildingStore,
+  IconTool,
+  IconLayoutGrid,
 } from '@tabler/icons-react'
 
 // Components (modal)
@@ -531,6 +535,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const recordType = searchParams?.recordType as string | undefined
   const startDate = searchParams?.startDate as string | undefined
   const endDate = searchParams?.endDate as string | undefined
+  const currentDocType =
+    (searchParams?.docType as string | undefined) || 'TODOS'
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true)
@@ -542,6 +548,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       }
 
       if (recordType) filters.recordType = recordType
+      if (currentDocType && currentDocType !== 'TODOS')
+        filters.docType = currentDocType
       if (currentSearch) filters.search = currentSearch
       if (startDate) filters.startDate = startDate
       if (endDate) filters.endDate = endDate
@@ -577,6 +585,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     currentSearch,
     currentNfeStatus,
     recordType,
+    currentDocType,
     startDate,
     endDate,
   ])
@@ -587,7 +596,14 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
   useEffect(() => {
     setSelectedOrderIds(new Set())
-  }, [currentPage, currentSearch, currentNfeStatus, startDate, endDate])
+  }, [
+    currentPage,
+    currentSearch,
+    currentNfeStatus,
+    currentDocType,
+    startDate,
+    endDate,
+  ])
 
   const visibleOrders = useMemo(
     () => orderGroups.flatMap((group) => group.items),
@@ -751,6 +767,43 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     })
   }
 
+  // Troca a aba de tipo de documento (NF-e / NFS-e / NFC-e) via query param
+  const handleDocTypeChange = (value: string) => {
+    const params = new URLSearchParams(searchParams as Record<string, string>)
+    if (value === 'TODOS') {
+      params.delete('docType')
+    } else {
+      params.set('docType', value)
+    }
+    params.delete('page')
+    router.push(`?${params.toString()}`)
+  }
+
+  const docTypeTabs = (
+    <div className="px-4 pt-3">
+      <Tabs
+        value={currentDocType}
+        onValueChange={handleDocTypeChange}
+        intent="success"
+      >
+        <TabsList>
+          <TabsTrigger value="TODOS" icon={<IconLayoutGrid size={16} />}>
+            Todos
+          </TabsTrigger>
+          <TabsTrigger value="NFE" icon={<IconBuildingStore size={16} />}>
+            NF-e
+          </TabsTrigger>
+          <TabsTrigger value="NFSE" icon={<IconTool size={16} />}>
+            NFS-e
+          </TabsTrigger>
+          <TabsTrigger value="NFCE" icon={<IconFileInvoice size={16} />}>
+            NFC-e
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+    </div>
+  )
+
   // Loading state
   if (isLoading) {
     return (
@@ -758,6 +811,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <TableFiltersHeader searchParams={searchParams}>
           <InvoiceFilter searchParams={searchParams} />
         </TableFiltersHeader>
+        {docTypeTabs}
         <CardContent className="flex-1 p-4 space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
             <Skeleton key={i} className="h-16 w-full" />
@@ -774,6 +828,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <TableFiltersHeader searchParams={searchParams}>
           <InvoiceFilter searchParams={searchParams} />
         </TableFiltersHeader>
+        {docTypeTabs}
         <CardContent className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <FeaturedIcon
@@ -803,6 +858,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <TableFiltersHeader searchParams={searchParams}>
           <InvoiceFilter searchParams={searchParams} />
         </TableFiltersHeader>
+        {docTypeTabs}
 
         <CardContent className="flex-1 overflow-auto p-0">
           <Table>

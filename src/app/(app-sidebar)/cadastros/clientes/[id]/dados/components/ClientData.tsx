@@ -18,7 +18,6 @@ import {
   IconReceiptTax,
 } from '@tabler/icons-react'
 import { Fragment } from 'react'
-import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   data: ClientInfoType
@@ -31,9 +30,6 @@ const INDICADOR_IE_LABELS: Record<number, string> = {
 }
 
 export function ClientData({ data }: Props) {
-  const { hasFiscalModule } = usePlanFeatures()
-  const showFiscal = hasFiscalModule()
-
   if (!data) return null
 
   return (
@@ -82,8 +78,8 @@ export function ClientData({ data }: Props) {
         </DetailCard>
       )}
 
-      {/* Dados Fiscais — apenas se módulo NF contratado */}
-      {showFiscal && data.general && (
+      {/* Dados Fiscais */}
+      {data.general && (
         <DetailCard title="Dados Fiscais" icon={IconReceiptTax}>
           <DetailCardRowItem showSeparator={false}>
             <TextSupportingText

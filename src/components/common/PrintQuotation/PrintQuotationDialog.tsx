@@ -128,8 +128,22 @@ export function PrintQuotationDialog({
       />,
     ).toBlob()
 
-    // Abre a prévia do PDF em nova aba; o cliente decide se baixa/imprime
-    const url = URL.createObjectURL(blob)
+    const sanitize = (s: string) =>
+      s
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '_')
+        .trim()
+    const prefix = type === 'quotation' ? 'ORC' : 'OS'
+    const seriesCode = quotationData?.quotation?.seriesCode ?? ''
+    const number = quotationData?.quotation?.number ?? ''
+    const clientName = sanitize(quotationData?.client?.name ?? '')
+    const osCode = `${seriesCode}-${number}`
+    const fileName = `${prefix}-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
+
+    // Abre a prévia do PDF em nova aba; o cliente decide se baixa/imprime.
+    // Usamos File (não Blob) para que o nome do arquivo seja preservado ao baixar.
+    const file = new File([blob], fileName, { type: 'application/pdf' })
+    const url = URL.createObjectURL(file)
     window.open(url, '_blank')
   }
 
