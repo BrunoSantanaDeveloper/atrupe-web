@@ -54,7 +54,7 @@ import {
 import { useQueryClient } from '@tanstack/react-query'
 
 // Actions
-import { updateItemNew } from '@/actions/_cruds'
+import { getItem, updateItemNew } from '@/actions/_cruds'
 
 // Libs
 import { actionDisabled } from '@/lib/quotation'
@@ -62,6 +62,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { QuotationType } from '@/types/sales/quotation'
+import type { PaymentConditionsType } from '@/types/settings/paymentCondition'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -96,6 +97,7 @@ export function PaymentConditionsDialog({
   const {
     watch,
     reset,
+    setValue,
     setError,
     getValues,
     handleSubmit,
@@ -109,6 +111,22 @@ export function PaymentConditionsDialog({
     // Resetar o formulário com os valores padrão
     const initialValues = defaultValues(quotationData)
     reset(initialValues)
+
+    // O mín/máx de parcelas salvo no orçamento pode estar desatualizado
+    // (ex.: gravado como 1x), o que limitava o campo Parcelas a "1x" ao
+    // reabrir. Busca a configuração atual da condição selecionada e
+    // sincroniza mín/máx — sem tocar em installmentQty/installments para
+    // não sobrescrever as parcelas já salvas.
+    const conditionId = (initialValues as QuotationPaymentConditionsType)
+      .paymentConditionId
+    if (conditionId) {
+      getItem({ route: `/payment-condition/${conditionId}` }).then((res) => {
+        if (!res.success || !res.data) return
+        const data = res.data as PaymentConditionsType
+        setValue('minInstallmentQty', data.minInstallments || 1)
+        setValue('maxInstallmentQty', data.maxInstallments || 1)
+      })
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, quotationData])

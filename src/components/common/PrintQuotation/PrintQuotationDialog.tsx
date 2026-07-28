@@ -140,11 +140,62 @@ export function PrintQuotationDialog({
     const osCode = `${seriesCode}-${number}`
     const fileName = `${prefix}-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
 
-    // Abre a prévia do PDF em nova aba; o cliente decide se baixa/imprime.
-    // Usamos File (não Blob) para que o nome do arquivo seja preservado ao baixar.
-    const file = new File([blob], fileName, { type: 'application/pdf' })
-    const url = URL.createObjectURL(file)
-    window.open(url, '_blank')
+    const url = URL.createObjectURL(blob)
+
+    // Abre a prévia em nova aba dentro de uma página própria, com uma barra
+    // de download que garante o nome correto do arquivo. Isso é necessário
+    // porque o visualizador de PDF nativo do navegador usa o ID do blob como
+    // nome (não é possível renomeá-lo por segurança).
+    const preview = window.open('', '_blank')
+
+    // Pop-up bloqueado: cai para abrir o PDF direto.
+    if (!preview) {
+      window.open(url, '_blank')
+      return
+    }
+
+    preview.document.write(
+      '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8" />' +
+        '<meta name="viewport" content="width=device-width, initial-scale=1" />' +
+        '<title></title><style>' +
+        '*{box-sizing:border-box}html,body{margin:0;height:100%}' +
+        'body{display:flex;flex-direction:column;background:#525659;' +
+        'font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}' +
+        '.bar{display:flex;align-items:center;gap:12px;padding:10px 16px;' +
+        'background:#323639;color:#fff;flex:0 0 auto}' +
+        '.bar .name{font-size:14px;font-weight:500;white-space:nowrap;' +
+        'overflow:hidden;text-overflow:ellipsis}' +
+        '.bar button{margin-left:auto;display:inline-flex;align-items:center;' +
+        'gap:6px;background:#2f6feb;color:#fff;border:0;border-radius:6px;' +
+        'padding:8px 16px;font-size:14px;font-weight:500;cursor:pointer}' +
+        '.bar button:hover{background:#1f5ed6}' +
+        'iframe{flex:1 1 auto;border:0;width:100%}' +
+        '</style></head><body>' +
+        '<div class="bar"><span class="name" id="fname"></span>' +
+        '<button id="dl" type="button">Baixar PDF</button></div>' +
+        '<iframe id="frame" title="Pré-visualização do PDF"></iframe>' +
+        '</body></html>',
+    )
+    preview.document.close()
+
+    // Preenche nome/título via textContent (nunca interpolado no HTML acima),
+    // evitando qualquer injeção a partir do nome do cliente.
+    preview.document.title = fileName
+    const nameEl = preview.document.getElementById('fname')
+    if (nameEl) nameEl.textContent = fileName
+    const frameEl = preview.document.getElementById(
+      'frame',
+    ) as HTMLIFrameElement | null
+    if (frameEl) frameEl.src = url
+    const dlBtn = preview.document.getElementById('dl')
+    dlBtn?.addEventListener('click', () => {
+      const a = preview.document.createElement('a')
+      a.href = url
+      a.download = fileName
+      preview.document.body.appendChild(a)
+      a.click()
+      preview.document.body.removeChild(a)
+    })
   }
 
   const onSubmit = async (formData: PrintOptionsType) => {

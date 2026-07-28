@@ -19,8 +19,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   async headers() {
-    if (process.env.NEXT_PUBLIC_ENV === 'production') return []
-
+    // noindex em TODAS as respostas deste projeto (app.atrupe.com.br e a URL de
+    // homolog na Vercel). O site institucional www.atrupe.com.br é outro projeto
+    // e não é afetado. Sem gate por ambiente: nenhum domínio deste projeto deve
+    // ser indexado.
     return [
       {
         source: '/:path*',
