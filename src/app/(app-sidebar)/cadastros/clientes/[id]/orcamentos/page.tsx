@@ -2,6 +2,9 @@ import { QuotationsData } from '@/app/(app-sidebar)/vendas/orcamentos/components
 import { Loader2 } from 'lucide-react'
 import { Suspense } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { UpgradeFallback } from '@/components/common/UpgradeFallback'
+import { FEATURES } from '@/consts/features'
 
 interface Props {
   params: {
@@ -12,22 +15,32 @@ interface Props {
 
 export default function ClientQuotationsPage({ params }: Props) {
   return (
-    <PermissionGate
-      permissions={['sale:quotation:view']}
+    <FeatureGate
+      features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
       fallback={
-        <div className="p-4">
-          Você não tem permissão para visualizar orçamentos.
-        </div>
+        <UpgradeFallback
+          title="Abas adicionais de cliente"
+          description="A aba de orçamentos no cadastro do cliente faz parte do plano Lite. Faça upgrade para acessá-la."
+        />
       }
     >
-      <div className="rounded-lg my-6 bg-white overflow-hidden">
-        <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
-          <QuotationsData
-            searchParams={{ clientId: params.id }}
-            searchDescription="Nenhum orçamento encontrado para esse cliente"
-          />
-        </Suspense>
-      </div>
-    </PermissionGate>
+      <PermissionGate
+        permissions={['sale:quotation:view']}
+        fallback={
+          <div className="p-4">
+            Você não tem permissão para visualizar orçamentos.
+          </div>
+        }
+      >
+        <div className="rounded-lg my-6 bg-white overflow-hidden">
+          <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
+            <QuotationsData
+              searchParams={{ clientId: params.id }}
+              searchDescription="Nenhum orçamento encontrado para esse cliente"
+            />
+          </Suspense>
+        </div>
+      </PermissionGate>
+    </FeatureGate>
   )
 }

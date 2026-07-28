@@ -2,6 +2,9 @@ import { OrdersData } from '@/app/(app-sidebar)/vendas/ordens-de-servico/compone
 import { Loader2 } from 'lucide-react'
 import { Suspense } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { UpgradeFallback } from '@/components/common/UpgradeFallback'
+import { FEATURES } from '@/consts/features'
 
 interface Props {
   params: {
@@ -12,22 +15,32 @@ interface Props {
 
 export default function ClientOrdersPage({ params }: Props) {
   return (
-    <PermissionGate
-      permissions={['sale:order:view']}
+    <FeatureGate
+      features={[FEATURES.CONTACTS.CLIENT_ADDITIONAL_TABS]}
       fallback={
-        <div className="p-4">
-          Você não tem permissão para visualizar ordens de serviço.
-        </div>
+        <UpgradeFallback
+          title="Abas adicionais de cliente"
+          description="A aba de ordens de serviço no cadastro do cliente faz parte do plano Lite. Faça upgrade para acessá-la."
+        />
       }
     >
-      <div className="rounded-lg my-6 bg-white overflow-hidden">
-        <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
-          <OrdersData
-            searchParams={{ clientId: params.id }}
-            searchDescription="Nenhuma ordem de serviço encontrada para esse cliente"
-          />
-        </Suspense>
-      </div>
-    </PermissionGate>
+      <PermissionGate
+        permissions={['sale:order:view']}
+        fallback={
+          <div className="p-4">
+            Você não tem permissão para visualizar ordens de serviço.
+          </div>
+        }
+      >
+        <div className="rounded-lg my-6 bg-white overflow-hidden">
+          <Suspense fallback={<Loader2 className="size-16 animate-spin p-8" />}>
+            <OrdersData
+              searchParams={{ clientId: params.id }}
+              searchDescription="Nenhuma ordem de serviço encontrada para esse cliente"
+            />
+          </Suspense>
+        </div>
+      </PermissionGate>
+    </FeatureGate>
   )
 }
