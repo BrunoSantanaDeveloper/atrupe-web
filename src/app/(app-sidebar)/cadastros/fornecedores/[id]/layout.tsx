@@ -34,30 +34,16 @@ export default function SupplierDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useSupplierById({ id: params.id })
   const { canManageSuppliers } = usePlanFeatures()
 
-  const totals: { [key: string]: number } = {
-    orcamentos: data?.quotationsQuantity,
-    ordens: data?.ordersQuantity,
-  }
-
   const showAdvancedTabs = canManageSuppliers()
 
+  // Fornecedor não possui orçamentos nem ordens de serviço (são documentos de
+  // venda, ligados a cliente). A única aba adicional é o Financeiro (contas a
+  // pagar), liberada pelo plano Lite via `supplier_additional_tabs`.
   const allTabs: TabNavType[] = [
     {
       value: 'REGISTER',
       tab: 'cadastro',
       label: 'Cadastro',
-    },
-    {
-      value: 'QUOTATIONS',
-      tab: 'orcamentos',
-      label: 'Orçamentos',
-      count: totals?.orcamentos,
-    },
-    {
-      value: 'ORDERS',
-      tab: 'ordens',
-      label: 'Ordens de serviço',
-      count: totals?.ordens,
     },
     {
       value: 'FINANCIAL',
