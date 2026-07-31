@@ -39,6 +39,7 @@ interface NfeAvulsaItem {
   status: string
   valorTotal: number
   dataEmissao: string
+  dataAutorizacao?: string | null
   danfeUrl?: string | null
   chaveAcesso?: string | null
   xmlAutorizado?: string | null

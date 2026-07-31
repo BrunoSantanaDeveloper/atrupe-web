@@ -131,6 +131,16 @@ export function StandaloneNfeForm() {
               : result.data.emissao.finalidade,
             ...(defaultFinality === '4' ? { tipo: 0 } : {}),
           },
+          // O backend devolve o país como código BACEN (ou como nome, quando vem do XML
+          // de uma NF-e já emitida). O formulário trabalha sempre com o nome — normaliza aqui.
+          ...(result.data.destinatario
+            ? {
+                destinatario: {
+                  ...result.data.destinatario,
+                  pais: getCountryNameByBacen(result.data.destinatario.pais),
+                },
+              }
+            : {}),
           volumes: result.data.volumes || [],
           duplicatas: result.data.duplicatas || [],
           autXml: result.data.autXml || [],
@@ -139,10 +149,7 @@ export function StandaloneNfeForm() {
         setData(preparedData)
 
         if (preparedData.destinatario) {
-          const countryFriendlyName = getCountryNameByBacen(
-            preparedData.destinatario.pais,
-          )
-          preparedData.destinatario.pais = countryFriendlyName
+          const countryFriendlyName = preparedData.destinatario.pais
 
           if (
             preparedData.destinatario.cnpjCpf ||
@@ -162,6 +169,7 @@ export function StandaloneNfeForm() {
               state: preparedData.destinatario.estado,
               cep: preparedData.destinatario.cep,
               ie: preparedData.destinatario.ie,
+              indicadorIE: preparedData.destinatario.indIEDest,
               country: countryFriendlyName,
               idEstrangeiro: preparedData.destinatario.idEstrangeiro,
             })
@@ -206,8 +214,9 @@ export function StandaloneNfeForm() {
           razaoSocial: recipient.destNome,
           cnpjCpf: recipient.destCnpjCpf,
           ie: recipient.destIe,
+          indIEDest: client.indicadorIE ?? 9,
           email: recipient.destEmail,
-          telefone: '',
+          telefone: client.phone || '',
           cep: recipient.destCep,
           estado: recipient.destUf,
           cidade: recipient.destMunicipio,
@@ -461,6 +470,7 @@ export function StandaloneNfeForm() {
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
           destPais: getBacenCodeByName(data.destinatario.pais),
+          destIndIEDest: data.destinatario.indIEDest ?? 9,
           destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
           ...(data.entrega
             ? {

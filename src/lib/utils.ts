@@ -111,6 +111,70 @@ export function maskCpfCnpj(value: string | null | undefined) {
   }
 }
 
+/**
+ * Retorna o CEP no formato usado pelos formulários: 00000-000.
+ * (Diferente de `maskCep`, que usa o formato legado 00.000-000.)
+ */
+export function maskZipCode(value: string | number | null | undefined) {
+  const digits = String(value ?? '')
+    .replace(/\D/g, '')
+    .slice(0, 8)
+  if (!digits) return ''
+  if (digits.length <= 5) return digits
+  return `${digits.slice(0, 5)}-${digits.slice(5)}`
+}
+
+/** Valida os dígitos verificadores de um CPF (aceita com ou sem máscara). */
+export function isValidCpf(value: string | null | undefined) {
+  const digits = String(value ?? '').replace(/\D/g, '')
+  if (digits.length !== 11) return false
+  if (/^(\d)\1{10}$/.test(digits)) return false
+
+  const checkDigit = (length: number) => {
+    let sum = 0
+    for (let i = 0; i < length; i++) {
+      sum += Number(digits[i]) * (length + 1 - i)
+    }
+    const rest = (sum * 10) % 11
+    return rest === 10 ? 0 : rest
+  }
+
+  return (
+    checkDigit(9) === Number(digits[9]) && checkDigit(10) === Number(digits[10])
+  )
+}
+
+/** Valida os dígitos verificadores de um CNPJ (aceita com ou sem máscara). */
+export function isValidCnpj(value: string | null | undefined) {
+  const digits = String(value ?? '').replace(/\D/g, '')
+  if (digits.length !== 14) return false
+  if (/^(\d)\1{13}$/.test(digits)) return false
+
+  const checkDigit = (length: number) => {
+    let position = length - 7
+    let sum = 0
+    for (let i = 0; i < length; i++) {
+      sum += Number(digits[i]) * position--
+      if (position < 2) position = 9
+    }
+    const rest = sum % 11
+    return rest < 2 ? 0 : 11 - rest
+  }
+
+  return (
+    checkDigit(12) === Number(digits[12]) &&
+    checkDigit(13) === Number(digits[13])
+  )
+}
+
+/** Valida CPF (11 dígitos) ou CNPJ (14 dígitos) pelo tamanho informado. */
+export function isValidCpfCnpj(value: string | null | undefined) {
+  const digits = String(value ?? '').replace(/\D/g, '')
+  if (digits.length === 11) return isValidCpf(digits)
+  if (digits.length === 14) return isValidCnpj(digits)
+  return false
+}
+
 // Retorna o valor formatado em (99) 99999-9999 ou (99) 9999-9999
 export function MaskPhoneNumber(phone?: string | number | null) {
   if (!phone) return ''

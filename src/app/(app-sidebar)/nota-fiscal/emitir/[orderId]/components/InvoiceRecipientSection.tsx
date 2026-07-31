@@ -8,7 +8,7 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { cn, maskCpfCnpj, maskZipCode, MaskPhoneNumber } from '@/lib/utils'
 
 // Icons
 import { IconPencil, IconUserCog, IconUserSearch } from '@tabler/icons-react'
@@ -38,7 +38,7 @@ export function InvoiceRecipientSection({
             label: 'ID Estrangeiro',
             value: destinatario.idEstrangeiro || 'N/D',
           }
-        : { label: 'CNPJ/CPF', value: destinatario.cnpjCpf },
+        : { label: 'CNPJ/CPF', value: maskCpfCnpj(destinatario.cnpjCpf) },
       isForeign
         ? { label: 'País', value: destinatario.pais }
         : { label: 'I.E.', value: destinatario.ie || 'N/D' },
@@ -51,14 +51,17 @@ export function InvoiceRecipientSection({
       ...(!isForeign
         ? [
             { label: 'Bairro', value: destinatario.bairro },
-            { label: 'CEP', value: destinatario.cep },
+            { label: 'CEP', value: maskZipCode(destinatario.cep) },
           ]
         : []),
     ],
     [
       { label: 'Cidade', value: destinatario.cidade },
       { label: 'Estado', value: destinatario.estado },
-      { label: 'Telefone', value: destinatario.telefone || 'N/D' },
+      {
+        label: 'Telefone',
+        value: MaskPhoneNumber(destinatario.telefone) || 'N/D',
+      },
       { label: 'E-mail', value: destinatario.email || 'N/D' },
     ],
   ]

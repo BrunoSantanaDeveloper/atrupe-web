@@ -32,16 +32,10 @@ import {
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { CancelNfeDialog } from './CancelNfeDialog'
-import { CorrectionNfeDialog } from './CorrectionNfeDialog'
 import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
 // Icons
-import {
-  IconExternalLink,
-  IconX,
-  IconPencil,
-  IconRefresh,
-} from '@tabler/icons-react'
+import { IconExternalLink, IconX, IconRefresh } from '@tabler/icons-react'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -169,7 +163,6 @@ async function fetchNfeList(status?: string) {
 export function NfeListClient() {
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
-  const [correctionDialogOpen, setCorrectionDialogOpen] = useState(false)
   const [selectedNfe, setSelectedNfe] = useState<NfeItem | null>(null)
 
   const queryClient = useQueryClient()
@@ -190,11 +183,6 @@ export function NfeListClient() {
   const handleOpenCancel = (nfe: NfeItem) => {
     setSelectedNfe(nfe)
     setCancelDialogOpen(true)
-  }
-
-  const handleOpenCorrection = (nfe: NfeItem) => {
-    setSelectedNfe(nfe)
-    setCorrectionDialogOpen(true)
   }
 
   const formatCurrency = (value: number) => {
@@ -260,8 +248,6 @@ export function NfeListClient() {
                 label: nfe.status,
               }
               const canCancel =
-                nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
-              const canCorrect =
                 nfe.status === 'AUTHORIZED' || nfe.status === 'AUTORIZADA'
               const isRejected =
                 nfe.status === 'REJECTED' || nfe.status === 'REJEITADA'
@@ -329,22 +315,6 @@ export function NfeListClient() {
                           </Tooltip>
                         )}
 
-                        {canCorrect && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="neutralGhost"
-                                size="icon"
-                                onClick={() => handleOpenCorrection(nfe)}
-                              >
-                                <IconPencil className="size-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Carta de Correção</TooltipContent>
-                          </Tooltip>
-                        )}
-
                         {canCancel && (
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -379,13 +349,6 @@ export function NfeListClient() {
       <CancelNfeDialog
         open={cancelDialogOpen}
         onOpenChange={setCancelDialogOpen}
-        nfe={selectedNfe}
-        onSuccess={handleRefresh}
-      />
-
-      <CorrectionNfeDialog
-        open={correctionDialogOpen}
-        onOpenChange={setCorrectionDialogOpen}
         nfe={selectedNfe}
         onSuccess={handleRefresh}
       />

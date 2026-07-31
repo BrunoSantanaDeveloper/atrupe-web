@@ -15,21 +15,31 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 // Icons
-import { IconDownload } from '@tabler/icons-react'
+import { IconDownload, IconAlertTriangle } from '@tabler/icons-react'
 
 // Actions
 import { createItemNew, getData } from '@/actions/_cruds'
+
+/** Limite legal de cartas de correção por NF-e (NT 2011/003). */
+const MAX_CORRECTIONS = 20
+
+/** Prazo legal da CC-e: 720 horas (30 dias) contadas da autorização. */
+const DEADLINE_HOURS = 720
+
+type CorrectionStatus = 'PENDING' | 'REGISTERED' | 'REJECTED'
 
 interface CorrectionEvent {
   id: string
   sequenciaEvento: number
   createdAt: string
+  dataEvento?: string | null
   correcao: string
+  status?: CorrectionStatus
   protocolo?: string
+  motivoRejeicao?: string | null
   hasXml?: boolean
 }
 
@@ -37,6 +47,8 @@ interface CorrectionLetterDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   nfeId: string | null
+  /** Base do prazo de 720h. Sem isso, o aviso de prazo não é exibido. */
+  authorizedAt?: string | null
   onSuccess: () => void
 }
 
@@ -44,6 +56,7 @@ export function CorrectionLetterDialog({
   open,
   onOpenChange,
   nfeId,
+  authorizedAt,
   onSuccess,
 }: CorrectionLetterDialogProps) {
   const [correctionText, setCorrectionText] = useState('')
@@ -51,9 +64,13 @@ export function CorrectionLetterDialog({
   const [errorMsg, setErrorMsg] = useState('')
   const [history, setHistory] = useState<CorrectionEvent[]>([])
   const [nextSequence, setNextSequence] = useState<number>(1)
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false)
+  const [historyError, setHistoryError] = useState(false)
 
   const fetchHistory = useCallback(async () => {
     if (!nfeId) return
+    setIsLoadingHistory(true)
+    setHistoryError(false)
     try {
       const result = await getData({
         route: `/fiscal/nfe/${nfeId}/corrections`,
@@ -67,12 +84,16 @@ export function CorrectionLetterDialog({
         )
         setNextSequence(maxSeq + 1)
       } else {
+        // Não assumir "primeira correção": o usuário reenviaria uma carta que já
+        // existe, consumindo mais uma das 20 sequências permitidas.
         setHistory([])
-        setNextSequence(1)
+        setHistoryError(true)
       }
     } catch {
       setHistory([])
-      setNextSequence(1)
+      setHistoryError(true)
+    } finally {
+      setIsLoadingHistory(false)
     }
   }, [nfeId])
 
@@ -82,17 +103,27 @@ export function CorrectionLetterDialog({
     } else {
       setHistory([])
       setNextSequence(1)
+      setHistoryError(false)
     }
   }, [open, nfeId, fetchHistory])
 
+  const hoursSinceAuthorization = authorizedAt
+    ? (Date.now() - new Date(authorizedAt).getTime()) / 3600000
+    : null
+  const isExpired =
+    hoursSinceAuthorization !== null && hoursSinceAuthorization > DEADLINE_HOURS
+  const daysLeft =
+    hoursSinceAuthorization !== null
+      ? Math.max(0, Math.ceil((DEADLINE_HOURS - hoursSinceAuthorization) / 24))
+      : null
+
+  const limitReached = nextSequence > MAX_CORRECTIONS
+  const blocked = historyError || isLoadingHistory || limitReached || isExpired
+
   const handleSend = async () => {
     if (!nfeId) return
-    if (correctionText.length < 15) {
+    if (correctionText.trim().length < 15) {
       toast.error('A correção deve ter no mínimo 15 caracteres.')
-      return
-    }
-    if (correctionText.length > 1000) {
-      toast.error('A correção deve ter no máximo 1000 caracteres.')
       return
     }
 
@@ -126,6 +157,9 @@ export function CorrectionLetterDialog({
 
       setErrorMsg(message)
       toast.error(message)
+      // O envio pode ter sido registrado como tentativa; recarrega para o
+      // usuário ver a sequência real antes de tentar de novo.
+      fetchHistory()
     } finally {
       setIsSending(false)
     }
@@ -164,27 +198,70 @@ export function CorrectionLetterDialog({
     onOpenChange(value)
   }
 
+  const statusLabel: Record<CorrectionStatus, string> = {
+    PENDING: 'Em processamento',
+    REGISTERED: 'Registrada',
+    REJECTED: 'Rejeitada',
+  }
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Carta de Correção (CC-e)</DialogTitle>
           <DialogDescription>
-            Informe o texto da correção. A carta de correção não corrige valor,
-            dados cadastrais ou alíquota. Mínimo 15 caracteres.
+            A CC-e <strong>não pode</strong> corrigir valores, base de cálculo,
+            alíquota, dados que identifiquem o destinatário, data de emissão ou
+            de saída. Nesses casos use NF-e complementar ou de ajuste.
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="sequence">Sequência do Evento</Label>
-            <Input
-              id="sequence"
-              type="number"
-              value={nextSequence}
-              disabled
-              className="bg-gray-50 text-gray-500"
-            />
+          <div className="rounded-md bg-blue-50 p-3 text-sm text-blue-800">
+            {isLoadingHistory ? (
+              'Carregando histórico de correções…'
+            ) : limitReached ? (
+              <>
+                Esta NF-e já utilizou as {MAX_CORRECTIONS} cartas de correção
+                permitidas pela SEFAZ.
+              </>
+            ) : (
+              <>
+                Esta será a correção <strong>{nextSequence}</strong> de{' '}
+                {MAX_CORRECTIONS} permitidas por nota.
+                {daysLeft !== null && !isExpired && (
+                  <> Restam {daysLeft} dia(s) do prazo de 30 dias.</>
+                )}
+              </>
+            )}
           </div>
+
+          {isExpired && (
+            <div className="flex gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+              <IconAlertTriangle size={18} className="mt-0.5 shrink-0" />
+              <span>
+                O prazo de {DEADLINE_HOURS} horas (30 dias) para carta de
+                correção expirou. A regularização deve ser feita por NF-e
+                complementar ou de ajuste.
+              </span>
+            </div>
+          )}
+
+          {historyError && (
+            <div className="flex items-start justify-between gap-2 rounded-md border border-red-100 bg-red-50 p-3 text-sm text-red-600">
+              <span>
+                Não foi possível carregar o histórico de correções desta nota. O
+                envio está bloqueado para evitar uma correção duplicada.
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 shrink-0 px-2 text-xs"
+                onClick={fetchHistory}
+              >
+                Tentar novamente
+              </Button>
+            </div>
+          )}
 
           <div className="space-y-1">
             <Label htmlFor="correctionText">Texto da Correção *</Label>
@@ -195,6 +272,7 @@ export function CorrectionLetterDialog({
               placeholder="Descreva a correção a ser feita na nota fiscal..."
               rows={4}
               maxLength={1000}
+              disabled={blocked}
             />
             <p className="text-xs text-gray-500 text-right">
               {correctionText.length}/1000 caracteres
@@ -222,14 +300,28 @@ export function CorrectionLetterDialog({
                     className="p-3 bg-gray-50 rounded-md border border-gray-100 flex flex-col gap-1.5"
                   >
                     <div className="flex justify-between items-center text-xs text-gray-500 font-medium">
-                      <span>Sequência #{event.sequenciaEvento}</span>
                       <span>
-                        {new Date(event.createdAt).toLocaleString('pt-BR')}
+                        Sequência #{event.sequenciaEvento}
+                        {event.status && event.status !== 'REGISTERED' && (
+                          <span className="ml-2 text-warning-600">
+                            {statusLabel[event.status]}
+                          </span>
+                        )}
+                      </span>
+                      <span>
+                        {new Date(
+                          event.dataEvento || event.createdAt,
+                        ).toLocaleString('pt-BR')}
                       </span>
                     </div>
                     <p className="text-sm text-gray-700 font-mono whitespace-pre-wrap leading-relaxed">
                       {event.correcao}
                     </p>
+                    {event.motivoRejeicao && (
+                      <p className="text-xs text-red-600">
+                        {event.motivoRejeicao}
+                      </p>
+                    )}
                     <div className="flex justify-between items-center mt-1 pt-1.5 border-t border-gray-200">
                       {event.protocolo ? (
                         <span className="text-xs text-success-700 bg-success-50 px-2 py-0.5 rounded font-mono">
@@ -255,7 +347,7 @@ export function CorrectionLetterDialog({
                       ) : (
                         <span
                           className="text-xs text-gray-400 cursor-not-allowed flex items-center gap-1"
-                          title="XML não disponível para este evento antigo"
+                          title="XML não disponível para este evento"
                         >
                           <IconDownload size={14} className="opacity-50" />
                           XML Indisponível
@@ -278,7 +370,7 @@ export function CorrectionLetterDialog({
           </Button>
           <Button
             onClick={handleSend}
-            disabled={isSending || correctionText.length < 15}
+            disabled={isSending || blocked || correctionText.trim().length < 15}
           >
             {isSending ? 'Enviando...' : 'Enviar Carta de Correção'}
           </Button>

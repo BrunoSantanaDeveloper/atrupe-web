@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { cn } from '@/lib/utils'
+import { cn, maskZipCode } from '@/lib/utils'
 import { useCheckZipcode } from '@/hooks/queries/useCheckZipcode'
 
 interface AddressFields {
@@ -96,18 +96,13 @@ export function FormInputZipCode({
   ])
 
   const handleZipCodeChange = (value: string) => {
-    let zipCode = String(value).replace(/\D/g, '') // Remove tudo que não é número
-    if (zipCode.length > 8) zipCode = zipCode.slice(0, 8) // Limita a 8 dígitos
+    const digits = String(value).replace(/\D/g, '').slice(0, 8)
 
     // Atualiza o estado para buscar CEP
-    setCurrentZipCode(zipCode)
+    setCurrentZipCode(digits)
 
     // Aplica a máscara: 00000-000
-    if (zipCode.length > 5) {
-      zipCode = zipCode.replace(/(\d{5})(\d{1,3})/, '$1-$2')
-    }
-
-    return zipCode
+    return maskZipCode(digits)
   }
 
   return (
@@ -121,8 +116,12 @@ export function FormInputZipCode({
             <Input
               placeholder="00000-000"
               maxLength={9}
+              inputMode="numeric"
+              autoComplete="postal-code"
               {...field}
               {...props}
+              // Valores carregados da API podem vir sem máscara (ex: "88103000")
+              value={maskZipCode(field.value)}
               disabled={isLoading || props.disabled}
               onChange={(e) => {
                 const maskedValue = handleZipCodeChange(e.target.value)

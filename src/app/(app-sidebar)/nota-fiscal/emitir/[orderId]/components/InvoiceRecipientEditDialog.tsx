@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 // TanStack Query
 import { useQueryClient } from '@tanstack/react-query'
@@ -29,7 +29,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
-import { COUNTRIES } from '@/consts/country-codes'
+import { COUNTRIES, getCountryNameByBacen } from '@/consts/country-codes'
 
 // Form
 import { z } from 'zod'
@@ -45,7 +45,13 @@ import {
 } from '@tabler/icons-react'
 
 // Masks / utils
-import { maskCnpj, maskCpf, MaskPhoneNumber } from '@/lib/utils'
+import {
+  maskCnpj,
+  maskCpf,
+  maskZipCode,
+  MaskPhoneNumber,
+  isValidCpfCnpj,
+} from '@/lib/utils'
 
 // Hooks
 import { useDocumentSearch } from '@/hooks/useDocumentSearch'
@@ -103,49 +109,81 @@ interface Props {
 }
 
 // ─── Schema ──────────────────────────────────────────────────────────────────
+// Limites conforme o layout da NF-e (leiaute 4.00, grupo E - Destinatário)
 const recipientSchema = z
   .object({
-    razaoSocial: z.string().min(1, 'Razão social é obrigatória'),
+    razaoSocial: z
+      .string()
+      .min(2, 'Razão social é obrigatória')
+      .max(60, 'Máximo de 60 caracteres'),
     cnpjCpf: z.string().optional(),
     idEstrangeiro: z.string().optional(),
-    inscricaoMunicipal: z.string().optional(),
-    stateRegistration: z.string().optional(),
+    stateRegistration: z.string().max(14, 'Máximo de 14 caracteres').optional(),
     indicadorIE: z.string().optional(),
     telefone: z.string().optional(),
-    email: z.string().optional(),
+    email: z
+      .string()
+      .max(60, 'Máximo de 60 caracteres')
+      .optional()
+      .refine(
+        (value) => !value?.trim() || /^\S+@\S+\.\S+$/.test(value.trim()),
+        'E-mail inválido',
+      ),
     cep: z.string().optional(),
     estado: z.string().optional(),
-    cidade: z.string().optional(),
-    bairro: z.string().optional(),
-    numero: z.string().optional(),
-    endereco: z.string().optional(),
-    complemento: z.string().optional(),
-    pais: z.string().optional(),
-    type: z.string().optional(),
+    cidade: z.string().max(60, 'Máximo de 60 caracteres').optional(),
+    bairro: z.string().max(60, 'Máximo de 60 caracteres').optional(),
+    numero: z.string().max(60, 'Máximo de 60 caracteres').optional(),
+    endereco: z.string().max(60, 'Máximo de 60 caracteres').optional(),
+    complemento: z.string().max(60, 'Máximo de 60 caracteres').optional(),
+    pais: z.string().min(1, 'País é obrigatório'),
+    type: z.string().max(60, 'Máximo de 60 caracteres').optional(),
   })
   .superRefine((data, ctx) => {
-    const isForeign = data.pais && data.pais !== 'Brasil'
+    const addIssue = (path: keyof typeof data, message: string) =>
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: [path], message })
+
+    const isForeign = !!data.pais && data.pais !== 'Brasil'
+
     if (!isForeign) {
-      if (!data.cnpjCpf || data.cnpjCpf.trim() === '') {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['cnpjCpf'],
-          message: 'CNPJ/CPF é obrigatório',
-        })
+      const documentDigits = (data.cnpjCpf || '').replace(/\D/g, '')
+      if (!documentDigits) {
+        addIssue('cnpjCpf', 'CNPJ/CPF é obrigatório')
+      } else if (documentDigits.length !== 11 && documentDigits.length !== 14) {
+        addIssue('cnpjCpf', 'Informe 11 dígitos (CPF) ou 14 (CNPJ)')
+      } else if (!isValidCpfCnpj(documentDigits)) {
+        addIssue(
+          'cnpjCpf',
+          documentDigits.length === 11 ? 'CPF inválido' : 'CNPJ inválido',
+        )
       }
+
+      const cepDigits = (data.cep || '').replace(/\D/g, '')
+      if (!cepDigits) {
+        addIssue('cep', 'CEP é obrigatório')
+      } else if (cepDigits.length !== 8) {
+        addIssue('cep', 'CEP deve ter 8 dígitos')
+      }
+
+      if (!data.estado?.trim()) addIssue('estado', 'UF é obrigatória')
+      if (!data.bairro?.trim()) addIssue('bairro', 'Bairro é obrigatório')
     } else {
-      if (
-        !data.idEstrangeiro ||
-        data.idEstrangeiro.trim().length < 5 ||
-        data.idEstrangeiro.trim().length > 20
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['idEstrangeiro'],
-          message:
-            'Identificação estrangeiro é obrigatória (5 a 20 caracteres)',
-        })
+      const idEstrangeiro = (data.idEstrangeiro || '').trim()
+      if (idEstrangeiro.length < 5 || idEstrangeiro.length > 20) {
+        addIssue(
+          'idEstrangeiro',
+          'Identificação estrangeiro é obrigatória (5 a 20 caracteres)',
+        )
       }
+    }
+
+    if (!data.cidade?.trim()) addIssue('cidade', 'Cidade é obrigatória')
+    if (!data.endereco?.trim()) addIssue('endereco', 'Rua é obrigatória')
+    if (!data.numero?.trim()) addIssue('numero', 'Número é obrigatório')
+
+    const phoneDigits = (data.telefone || '').replace(/\D/g, '')
+    if (phoneDigits && (phoneDigits.length < 10 || phoneDigits.length > 11)) {
+      addIssue('telefone', 'Telefone deve ter DDD + 8 ou 9 dígitos')
     }
   })
 
@@ -170,28 +208,34 @@ export function InvoiceRecipientEditDialog({
   const { searchByDocument } = useDocumentSearch()
   const [isSearchingDocument, setIsSearchingDocument] = useState(false)
 
-  const getDefaultValues = useCallback(
-    (): RecipientFormType => ({
+  const getDefaultValues = useCallback((): RecipientFormType => {
+    // O país pode chegar como código BACEN ("1058") ou como nome ("BRASIL", vindo do XML
+    // de uma NF-e já emitida — caso das devoluções). Normaliza para o nome exibido no select.
+    const pais = getCountryNameByBacen(destinatario.pais)
+    const ie = destinatario.ie || ''
+
+    return {
       razaoSocial: destinatario.razaoSocial || '',
-      cnpjCpf: destinatario.cnpjCpf || '',
+      // Valores vindos da API/XML chegam sem máscara — aplica na abertura do modal
+      cnpjCpf: maskDocument(destinatario.cnpjCpf || ''),
       idEstrangeiro: destinatario.idEstrangeiro || '',
-      inscricaoMunicipal: '',
-      stateRegistration: destinatario.ie || 'ISENTO',
-      indicadorIE: destinatario.ie && destinatario.ie !== 'ISENTO' ? '1' : '9',
-      telefone: destinatario.telefone || '',
+      stateRegistration: ie || 'ISENTO',
+      indicadorIE: String(
+        destinatario.indIEDest ?? (ie && ie !== 'ISENTO' ? 1 : 9),
+      ),
+      telefone: MaskPhoneNumber(destinatario.telefone),
       email: destinatario.email || '',
-      cep: destinatario.cep || '',
+      cep: maskZipCode(destinatario.cep),
       estado: destinatario.estado || '',
       cidade: destinatario.cidade || '',
       bairro: destinatario.bairro || '',
       numero: destinatario.numero || '',
       endereco: destinatario.endereco || '',
       complemento: destinatario.complemento || '',
-      pais: destinatario.pais || 'Brasil',
+      pais,
       type: '',
-    }),
-    [destinatario],
-  )
+    }
+  }, [destinatario])
 
   const form = useForm<RecipientFormType>({
     resolver: zodResolver(recipientSchema),
@@ -210,9 +254,11 @@ export function InvoiceRecipientEditDialog({
 
   useEffect(() => {
     if (open && addresses && destinatario) {
+      // CEP pode estar com ou sem máscara em cada origem — compara só os dígitos
+      const destCepDigits = (destinatario.cep || '').replace(/\D/g, '')
       const matchingAddr = addresses.find(
         (a) =>
-          a.zipcode === destinatario.cep &&
+          (a.zipcode || '').replace(/\D/g, '') === destCepDigits &&
           a.street === destinatario.endereco &&
           a.number === destinatario.numero,
       )
@@ -229,10 +275,16 @@ export function InvoiceRecipientEditDialog({
   const paisValue = watch('pais')
   const isForeign = paisValue && paisValue !== 'Brasil'
 
+  // Documento carregado ao abrir o modal — a busca automática só vale para o que o
+  // usuário digitar depois, senão o cadastro da Receita sobrescreveria o endereço já escolhido.
+  const initialDocumentRef = useRef<string>('')
+
   // Reset form when dialog opens
   useEffect(() => {
     if (open) {
-      reset(getDefaultValues())
+      const defaults = getDefaultValues()
+      initialDocumentRef.current = (defaults.cnpjCpf || '').replace(/\D/g, '')
+      reset(defaults)
     }
   }, [open, getDefaultValues, reset])
 
@@ -254,7 +306,7 @@ export function InvoiceRecipientEditDialog({
         setValue('razaoSocial', data.name || '')
         if (data.phone) setValue('telefone', MaskPhoneNumber(data.phone))
         if (data.address) {
-          setValue('cep', data.address.zipcode || '')
+          setValue('cep', maskZipCode(data.address.zipcode))
           setValue('estado', data.address.state || '')
           setValue('cidade', data.address.city || '')
           setValue('bairro', data.address.neighborhood || '')
@@ -271,39 +323,50 @@ export function InvoiceRecipientEditDialog({
 
   // Watch para disparar busca automática quando CNPJ/CPF ficar completo
   useEffect(() => {
-    if (!cnpjCpfValue) return
+    if (!open || !cnpjCpfValue) return
     const digits = cnpjCpfValue.replace(/\D/g, '')
+    if (digits === initialDocumentRef.current) return
     if (digits.length === 14 || digits.length === 11) {
       handleDocumentChange(cnpjCpfValue)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cnpjCpfValue])
+  }, [cnpjCpfValue, open])
 
   // ── Salvar ───────────────────────────────────────────────────────────────
   const buildDestinatario = (
     data: RecipientFormType,
-  ): NfePrepareDestinatario => ({
-    razaoSocial: data.razaoSocial,
-    cnpjCpf: data.cnpjCpf || '',
-    idEstrangeiro: data.idEstrangeiro || '',
-    ie: data.stateRegistration || '',
-    email: data.email || '',
-    telefone: data.telefone || '',
-    cep: data.cep || '',
-    estado: data.estado || '',
-    cidade: data.cidade || '',
-    bairro: data.bairro || '',
-    endereco: data.endereco || '',
-    numero: data.numero || '',
-    complemento: data.complemento || '',
-    pais: data.pais || 'Brasil',
-  })
+  ): NfePrepareDestinatario => {
+    const isForeignRecipient = !!data.pais && data.pais !== 'Brasil'
+
+    return {
+      razaoSocial: data.razaoSocial.trim(),
+      cnpjCpf: isForeignRecipient ? '' : data.cnpjCpf || '',
+      idEstrangeiro: isForeignRecipient ? data.idEstrangeiro?.trim() || '' : '',
+      ie: data.stateRegistration || '',
+      // Indicador de IE do destinatário (1 = contribuinte, 2 = isento, 9 = não contribuinte)
+      indIEDest: Number(data.indicadorIE) || 9,
+      email: data.email?.trim() || '',
+      telefone: data.telefone || '',
+      cep: data.cep || '',
+      estado: data.estado || '',
+      cidade: data.cidade || '',
+      bairro: data.bairro || '',
+      endereco: data.endereco || '',
+      numero: data.numero || '',
+      complemento: data.complemento || '',
+      pais: data.pais || 'Brasil',
+    }
+  }
+
+  /** O modal tem rolagem — avisa quando o bloqueio veio de um campo fora da área visível */
+  const notifyInvalid = () =>
+    toast.error('Verifique os campos destacados antes de salvar.')
 
   /** Salva apenas para a NF atual — não chama API */
   const handleSaveNfeOnly = handleSubmit((data) => {
     onSave(buildDestinatario(data), { updateClient: false })
     onOpenChange(false)
-  })
+  }, notifyInvalid)
 
   /** Salva e também atualiza o cadastro do cliente (ou cria novo) */
   const handleSaveWithClient = handleSubmit(async (data) => {
@@ -357,6 +420,7 @@ export function InvoiceRecipientEditDialog({
               email: data.email,
               phone: data.telefone,
               stateRegistration: data.stateRegistration,
+              indicadorIE: Number(data.indicadorIE) || 9,
             },
           },
         })
@@ -381,7 +445,7 @@ export function InvoiceRecipientEditDialog({
     } finally {
       setIsSavingWithClient(false)
     }
-  })
+  }, notifyInvalid)
 
   /** Salva e cria um novo endereço no cadastro do cliente */
   const handleCreateNewAddress = handleSubmit(async (data) => {
@@ -418,6 +482,7 @@ export function InvoiceRecipientEditDialog({
             email: data.email,
             phone: data.telefone,
             stateRegistration: data.stateRegistration,
+            indicadorIE: Number(data.indicadorIE) || 9,
           },
         },
       })
@@ -441,7 +506,7 @@ export function InvoiceRecipientEditDialog({
     } finally {
       setIsSavingNewAddress(false)
     }
-  })
+  }, notifyInvalid)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -466,10 +531,14 @@ export function InvoiceRecipientEditDialog({
               {/* Seletor de endereço cadastrado */}
               {_clientId && addresses && addresses.length > 0 && (
                 <div className="flex-[1_0_100%] flex flex-col gap-1.5 mb-2">
-                  <label className="text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="recipient-saved-address"
+                    className="text-sm font-medium text-gray-700"
+                  >
                     Selecionar endereço cadastrado
                   </label>
                   <select
+                    id="recipient-saved-address"
                     value={selectedAddressId || ''}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     onChange={(e) => {
@@ -482,7 +551,7 @@ export function InvoiceRecipientEditDialog({
 
                       const addr = addresses.find((a) => a.id === selectedId)
                       if (addr) {
-                        setValue('cep', addr.zipcode || '')
+                        setValue('cep', maskZipCode(addr.zipcode))
                         setValue('estado', addr.state || '')
                         setValue('cidade', addr.city || '')
                         setValue('bairro', addr.neighborhood || '')
@@ -514,6 +583,7 @@ export function InvoiceRecipientEditDialog({
                   label="Título do endereço"
                   placeholder="Ex: Sede, Fábrica, Filial SP"
                   width="flex-[1_0_100%]"
+                  maxLength={60}
                 />
               )}
 
@@ -549,6 +619,7 @@ export function InvoiceRecipientEditDialog({
                   placeholder="00.000.000/0000-00"
                   width="flex-[1_0_280px]"
                   disabled={isSearchingDocument}
+                  inputMode="numeric"
                   formatValue={(v) => {
                     if (!v) return ''
                     return maskDocument(String(v))
@@ -576,16 +647,8 @@ export function InvoiceRecipientEditDialog({
                 label="Razão social / Nome"
                 width="flex-[2_0_360px]"
                 disabled={isSearchingDocument}
+                maxLength={60}
               />
-
-              {/* Inscrição Municipal */}
-              {!isForeign && (
-                <FormInput
-                  name="inscricaoMunicipal"
-                  label="Inscrição Municipal"
-                  width="flex-[1_0_240px]"
-                />
-              )}
 
               {/* Inscrição Estadual + Indicador IE — componente reutilizável */}
               {!isForeign && (
@@ -599,6 +662,9 @@ export function InvoiceRecipientEditDialog({
               <FormInput
                 name="telefone"
                 label="Telefone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
                 placeholder="(00) 00000-0000"
                 width="flex-[1_0_200px]"
                 additionalOnChange={(v) => {
@@ -609,7 +675,16 @@ export function InvoiceRecipientEditDialog({
               />
 
               {/* E-mail */}
-              <FormInput name="email" label="E-mail" width="flex-[2_0_280px]" />
+              <FormInput
+                name="email"
+                label="E-mail"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="contato@empresa.com.br"
+                width="flex-[2_0_280px]"
+                maxLength={60}
+              />
 
               {/* CEP com auto-preenchimento */}
               {!isForeign && (
@@ -644,20 +719,13 @@ export function InvoiceRecipientEditDialog({
               )}
 
               {/* Cidade */}
-              {!isForeign ? (
-                <FormInput
-                  name="cidade"
-                  label="Cidade"
-                  width="flex-[2_0_220px]"
-                />
-              ) : (
-                <FormInput
-                  name="cidade"
-                  label="Cidade"
-                  width="flex-[2_0_220px]"
-                  disabled
-                />
-              )}
+              <FormInput
+                name="cidade"
+                label="Cidade"
+                width="flex-[2_0_220px]"
+                disabled={!!isForeign}
+                maxLength={60}
+              />
 
               {/* Bairro */}
               {!isForeign && (
@@ -665,17 +733,25 @@ export function InvoiceRecipientEditDialog({
                   name="bairro"
                   label="Bairro"
                   width="flex-[2_0_220px]"
+                  maxLength={60}
                 />
               )}
 
               {/* Rua */}
-              <FormInput name="endereco" label="Rua" width="flex-[3_0_320px]" />
+              <FormInput
+                name="endereco"
+                label="Rua"
+                width="flex-[3_0_320px]"
+                maxLength={60}
+              />
 
               {/* Número */}
               <FormInput
                 name="numero"
                 label="Número"
+                placeholder="S/N"
                 width="flex-[1_0_100px]"
+                maxLength={60}
               />
 
               {/* Complemento — linha completa */}
@@ -683,6 +759,7 @@ export function InvoiceRecipientEditDialog({
                 name="complemento"
                 label="Complemento"
                 width="flex-[1_0_100%]"
+                maxLength={60}
               />
             </form>
           </Form>

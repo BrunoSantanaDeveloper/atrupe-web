@@ -21,6 +21,8 @@ export interface NfePrepareDestinatario {
   razaoSocial: string
   cnpjCpf: string
   ie: string
+  /** Indicador da IE do destinatário: 1 = contribuinte, 2 = isento, 9 = não contribuinte */
+  indIEDest?: number
   email: string
   telefone: string
   cep: string

@@ -11,13 +11,21 @@ export type NfeStatus =
   | 'ERROR'
   | 'CORRECTION_SENT'
 
+export type NfeCorrectionStatus = 'PENDING' | 'REGISTERED' | 'REJECTED'
+
 export interface NfeCorrectionEvent {
   id: string
   nfeId: string
   sequenciaEvento: number
   correcao: string
+  status?: NfeCorrectionStatus
   protocolo?: string
   dataEvento?: string
+  motivoRejeicao?: string | null
+  sitCodigo?: number | null
+  ambiente?: number | null
+  createdBy?: string | null
+  createdByName?: string | null
   createdAt: string
   hasXml?: boolean
 }

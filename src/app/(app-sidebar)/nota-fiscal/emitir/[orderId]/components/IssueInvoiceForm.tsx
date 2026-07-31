@@ -264,6 +264,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           destMunicipio: data.destinatario.cidade,
           destUf: data.destinatario.estado,
           destPais: getBacenCodeByName(data.destinatario.pais),
+          destIndIEDest: data.destinatario.indIEDest ?? 9,
           destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
           ...(data.entrega
             ? {
@@ -767,11 +768,15 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         </DialogContent>
       </Dialog>
 
-      {/* Correction Letter Dialog */}
+      {/* Correction Letter Dialog.
+          authorizedAt usa dataEmissao como proxy do prazo de 720h: este payload
+          nao traz dataAutorizacao e a emissao fica a minutos da autorizacao. O
+          backend segue sendo a fonte da verdade e recusa envio fora do prazo. */}
       <CorrectionLetterDialog
         open={correctionDialogOpen}
         onOpenChange={setCorrectionDialogOpen}
         nfeId={data?.existingNfe?.id || null}
+        authorizedAt={data?.existingNfe?.dataEmissao || null}
         onSuccess={fetchData}
       />
     </TooltipProvider>

@@ -216,6 +216,10 @@ export const permissionsData = [
         key: 'cancelar',
       },
       {
+        name: 'Carta de correção (CC-e)',
+        key: 'carta_correcao',
+      },
+      {
         name: 'Configurações fiscais',
         key: 'config',
       },

@@ -8,9 +8,22 @@ export interface Country {
   bacen: string | null
 }
 
+/** Códigos BACEN têm 4 dígitos com zero à esquerda (ex: "0132"). */
+const normalizeBacen = (value: string) =>
+  value.replace(/\D/g, '').padStart(4, '0')
+
 export const getBacenCodeByName = (name?: string): string => {
   if (!name) return '1058'
-  const normalized = name.trim().toLowerCase()
+  const raw = String(name).trim()
+  if (!raw) return '1058'
+
+  // Já veio como código BACEN (ex: "1058", "132") — apenas normaliza
+  if (/^\d+$/.test(raw)) {
+    const code = normalizeBacen(raw)
+    return COUNTRIES.some((c) => c.bacen === code) ? code : '1058'
+  }
+
+  const normalized = raw.toLowerCase()
   if (normalized === 'brasil' || normalized === 'brazil' || normalized === 'br')
     return '1058'
 
@@ -24,10 +37,36 @@ export const getBacenCodeByName = (name?: string): string => {
   return found?.bacen || '1058'
 }
 
+/**
+ * Resolve o nome do país (em pt-BR) a partir do código BACEN.
+ * Aceita também o país já em formato de nome ("Brasil", "BRASIL", "Brazil", "BR"),
+ * porque o XML autorizado guarda `xPais`/`cPais` e os rascunhos guardam o código —
+ * ambos chegam neste campo. Quando não for possível resolver, assume "Brasil"
+ * (mesmo fallback de `getBacenCodeByName`, mantendo ida e volta consistentes).
+ */
 export const getCountryNameByBacen = (bacen?: string): string => {
-  if (!bacen || bacen === '1058') return 'Brasil'
-  const found = COUNTRIES.find((c) => c.bacen === bacen)
-  return found ? found.namePt : 'Estrangeiro'
+  if (!bacen) return 'Brasil'
+  const raw = String(bacen).trim()
+  if (!raw) return 'Brasil'
+
+  if (/^\d+$/.test(raw)) {
+    const code = normalizeBacen(raw)
+    if (code === '1058') return 'Brasil'
+    const found = COUNTRIES.find((c) => c.bacen === code)
+    return found ? found.namePt : 'Brasil'
+  }
+
+  const normalized = raw.toLowerCase()
+  if (normalized === 'brasil' || normalized === 'brazil' || normalized === 'br')
+    return 'Brasil'
+
+  const found = COUNTRIES.find(
+    (c) =>
+      c.namePt.toLowerCase() === normalized ||
+      c.name.toLowerCase() === normalized ||
+      c.code.toLowerCase() === normalized,
+  )
+  return found ? found.namePt : 'Brasil'
 }
 
 export const COUNTRIES: Country[] = [

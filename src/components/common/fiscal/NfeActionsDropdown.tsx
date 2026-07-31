@@ -52,6 +52,7 @@ interface NfeActionsDropdownProps {
     danfeUrl?: string | null
     xmlAutorizado?: string | null
     dataEmissao?: string | null
+    dataAutorizacao?: string | null
   }
   onRefetch: () => void
 }
@@ -71,6 +72,13 @@ export function NfeActionsDropdown({
     ? (Date.now() - new Date(nfe.dataEmissao).getTime()) / (1000 * 60 * 60)
     : 0
   const cancelDisabled = horasDesdeEmissao > 24
+
+  // CC-e tem prazo de 720h (30 dias) contadas da autorizacao.
+  const baseCce = nfe.dataAutorizacao || nfe.dataEmissao
+  const horasDesdeAutorizacao = baseCce
+    ? (Date.now() - new Date(baseCce).getTime()) / (1000 * 60 * 60)
+    : 0
+  const cceDisabled = horasDesdeAutorizacao > 720
 
   const handleDownloadXml = async () => {
     if (!nfe.xmlAutorizado) {
@@ -252,10 +260,29 @@ export function NfeActionsDropdown({
           )}
 
           {showCce && (
-            <DropdownMenuItem onClick={() => setIsCcEDialogOpen(true)}>
-              <IconEdit className="mr-2 h-4 w-4" />
-              <span>Carta de Correção</span>
-            </DropdownMenuItem>
+            <TooltipProvider>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <div className="w-full">
+                    <DropdownMenuItem
+                      disabled={cceDisabled}
+                      onClick={() => !cceDisabled && setIsCcEDialogOpen(true)}
+                      className={
+                        cceDisabled ? 'opacity-50 cursor-not-allowed' : ''
+                      }
+                    >
+                      <IconEdit className="mr-2 h-4 w-4" />
+                      <span>Carta de Correção</span>
+                    </DropdownMenuItem>
+                  </div>
+                </TooltipTrigger>
+                {cceDisabled && (
+                  <TooltipContent>
+                    <p>O prazo para carta de correção (30 dias) expirou.</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
           )}
 
           {isAuthorized && (
@@ -355,6 +382,7 @@ export function NfeActionsDropdown({
         open={isCcEDialogOpen}
         onOpenChange={setIsCcEDialogOpen}
         nfeId={isCcEDialogOpen ? nfe.id : null}
+        authorizedAt={baseCce}
         onSuccess={onRefetch}
       />
 
