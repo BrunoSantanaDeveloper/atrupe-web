@@ -11,6 +11,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
 
 // Components
 import { CustomButton } from '@/components/common/CustomButton'
@@ -23,8 +24,12 @@ import { NfseTomadorSection } from '../../../../emitir-nfse/[orderId]/components
 import { NfseDadosFiscaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseDadosFiscaisSection'
 import { NfseTotaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
+import { InvoiceRecipientEditDialog } from '../../../../emitir/[orderId]/components/InvoiceRecipientEditDialog'
 import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
-import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
+import type {
+  NfePrepareEntrega,
+  NfePrepareDestinatario,
+} from '@/types/fiscal/nfe-prepare'
 
 // Icons
 import {
@@ -90,6 +95,90 @@ function tomadorToClientData(
   }
 }
 
+function clientToDestinatario(client: ClientData): NfePrepareDestinatario {
+  return {
+    razaoSocial: client.name || '',
+    cnpjCpf: client.cnpjCpf || '',
+    idEstrangeiro: '',
+    ie: '',
+    email: client.email || '',
+    telefone: '',
+    cep: client.cep || '',
+    estado: client.state || '',
+    cidade: client.city || '',
+    bairro: client.neighborhood || '',
+    endereco: client.address || '',
+    numero: client.addressNumber || '',
+    complemento: client.complement || '',
+    pais: 'Brasil',
+  }
+}
+
+// ─── Currency input ────────────────────────────────────────────────────────
+
+function formatBRL(value: number) {
+  return value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+
+function parseBRL(display: string): number {
+  const digits = display.replace(/\D/g, '')
+  if (!digits) return 0
+  return Number(digits) / 100
+}
+
+interface CurrencyInputProps {
+  id: string
+  value: number
+  onChange: (value: number) => void
+}
+
+function CurrencyInput({ id, value, onChange }: CurrencyInputProps) {
+  const [display, setDisplay] = useState(() => formatBRL(value))
+
+  useEffect(() => {
+    setDisplay(formatBRL(value))
+  }, [value])
+
+  return (
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none">
+        R$
+      </span>
+      <Input
+        id={id}
+        type="text"
+        inputMode="decimal"
+        value={display}
+        className="pl-9"
+        placeholder="0,00"
+        onChange={(e) => {
+          const digits = e.target.value.replace(/\D/g, '')
+          if (digits === '') {
+            setDisplay('')
+            return
+          }
+          const num = Number(digits) / 100
+          setDisplay(
+            num.toLocaleString('pt-BR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }),
+          )
+        }}
+        onBlur={() => {
+          const parsed = parseBRL(display || '0')
+          onChange(parsed)
+          setDisplay(formatBRL(parsed))
+        }}
+        onFocus={(e) => e.target.select()}
+      />
+    </div>
+  )
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function StandaloneNfseForm() {
@@ -108,6 +197,9 @@ export function StandaloneNfseForm() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     null,
   )
+  const [isTomadorEditOpen, setIsTomadorEditOpen] = useState(false)
+  const [tomadorOverride, setTomadorOverride] =
+    useState<NfePrepareDestinatario | null>(null)
 
   // Form fields
   const [codigoServico, setCodigoServico] = useState('')
@@ -132,19 +224,16 @@ export function StandaloneNfseForm() {
       })
 
       if (!result.success || !result.data) {
-        // Non-fatal: we can still work without defaults
         setPrepareData(null)
       } else {
         const data = result.data as PrepareStandaloneData
         setPrepareData(data)
 
-        // Pre-fill fields from defaults
         if (data.aliquotaIss !== undefined) setAliquotaIss(data.aliquotaIss)
         if (data.issRetido !== undefined) setIssRetido(data.issRetido)
         if (data.codigoServico) setCodigoServico(data.codigoServico)
       }
     } catch {
-      // Non-fatal: defaults loading failure shouldn't block the form
       setPrepareData(null)
     } finally {
       setIsLoading(false)
@@ -159,6 +248,13 @@ export function StandaloneNfseForm() {
     setSelectedClient(client)
     setSelectedAddressId(null)
     setEntrega(null)
+    setTomadorOverride(null)
+  }
+
+  const handleTomadorSave = (updated: NfePrepareDestinatario) => {
+    setTomadorOverride(updated)
+    setIsTomadorEditOpen(false)
+    toast.success('Dados do tomador atualizados')
   }
 
   const handleEntregaToggle = (enabled: boolean) => {
@@ -250,19 +346,31 @@ export function StandaloneNfseForm() {
     setIsEmitting(true)
 
     try {
-      const tomador = clientToNfseTomador(selectedClient)
+      const baseTomador = clientToNfseTomador(selectedClient)
+
+      // Merge any overrides from the edit dialog
+      const tomador = tomadorOverride
+        ? {
+            ...baseTomador,
+            razaoSocial: tomadorOverride.razaoSocial || baseTomador.razaoSocial,
+            email: tomadorOverride.email || baseTomador.email,
+            endereco: tomadorOverride.endereco || baseTomador.endereco,
+            numero: tomadorOverride.numero || baseTomador.numero,
+            complemento: tomadorOverride.complemento || baseTomador.complemento,
+            bairro: tomadorOverride.bairro || baseTomador.bairro,
+            municipio: tomadorOverride.cidade || baseTomador.municipio,
+            uf: tomadorOverride.estado || baseTomador.uf,
+            cep: tomadorOverride.cep || baseTomador.cep,
+          }
+        : baseTomador
 
       const payload = {
-        // Tomador
         tomador,
-        // Serviço
         codigoServico,
         discriminacao,
-        valorServicos: Math.round(valorServicos * 100), // cents
-        // Fiscal
+        valorServicos,
         aliquotaIss: aliquotaIss || undefined,
         issRetido,
-        // Optional RPS / config from prepare-standalone
         naturezaOperacao: prepareData?.naturezaOperacao,
         codigoMunicipio: prepareData?.codigoMunicipio,
         ...(entrega
@@ -308,10 +416,27 @@ export function StandaloneNfseForm() {
   const isHomologacao = prepareData?.ambiente === 'HOMOLOGACAO'
 
   // ─── Tomador display data ──────────────────────────────────────────────────
-  const tomadorDisplayClient = selectedClient
+  const baseTomador = selectedClient
+    ? clientToNfseTomador(selectedClient)
+    : null
+
+  const tomadorDisplayClient = baseTomador
     ? tomadorToClientData(
-        clientToNfseTomador(selectedClient),
-        selectedClient.name,
+        tomadorOverride
+          ? {
+              ...baseTomador,
+              endereco: tomadorOverride.endereco || baseTomador.endereco,
+              numero: tomadorOverride.numero || baseTomador.numero,
+              complemento:
+                tomadorOverride.complemento || baseTomador.complemento,
+              bairro: tomadorOverride.bairro || baseTomador.bairro,
+              municipio: tomadorOverride.cidade || baseTomador.municipio,
+              uf: tomadorOverride.estado || baseTomador.uf,
+              cep: tomadorOverride.cep || baseTomador.cep,
+              email: tomadorOverride.email || baseTomador.email,
+            }
+          : baseTomador,
+        tomadorOverride?.razaoSocial || selectedClient!.name,
       )
     : undefined
 
@@ -438,6 +563,7 @@ export function StandaloneNfseForm() {
           <NfseTomadorSection
             client={tomadorDisplayClient}
             servicesTotal={formatCurrency(valorServicos)}
+            onEditClick={() => setIsTomadorEditOpen(true)}
           />
         )}
 
@@ -461,17 +587,12 @@ export function StandaloneNfseForm() {
                 htmlFor="valorServicos"
                 className="text-sm font-medium text-gray-700"
               >
-                Valor dos Serviços (R$) *
+                Valor dos Serviços *
               </label>
-              <input
+              <CurrencyInput
                 id="valorServicos"
-                type="number"
-                min="0"
-                step="0.01"
-                value={valorServicos || ''}
-                onChange={(e) => setValorServicos(Number(e.target.value))}
-                placeholder="Ex: 500.00"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                value={valorServicos}
+                onChange={setValorServicos}
               />
               <p className="text-xs text-gray-500">
                 Valor total bruto dos serviços prestados
@@ -500,6 +621,17 @@ export function StandaloneNfseForm() {
           formatCurrency={formatCurrency}
         />
       </div>
+
+      {/* Tomador edit dialog */}
+      {selectedClient && (
+        <InvoiceRecipientEditDialog
+          open={isTomadorEditOpen}
+          onOpenChange={setIsTomadorEditOpen}
+          destinatario={tomadorOverride ?? clientToDestinatario(selectedClient)}
+          clientId={selectedClient.id}
+          onSave={handleTomadorSave}
+        />
+      )}
     </TooltipProvider>
   )
 }
