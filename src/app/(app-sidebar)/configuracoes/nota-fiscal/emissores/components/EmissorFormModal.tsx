@@ -46,11 +46,16 @@ import { cn } from '@/lib/utils'
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   isDefault: z.boolean().optional(),
+  isActive: z.boolean().optional(),
 
   // Identificação
   emitCrt: z.string().optional(),
   ie: z.string().optional(),
   im: z.string().optional(),
+
+  // Padrões de produto e NFC-e
+  defaultNcm: z.string().optional(),
+  prazoCancelamentoNfce: z.coerce.number().min(1).max(1440).optional(),
 
   // Fiscal Configs
   serieNfe: z.coerce.number().optional(),
@@ -100,6 +105,7 @@ const crtOptions = [
   { value: '1', label: '1 - Simples Nacional' },
   { value: '2', label: '2 - Simples Nacional - Excesso de sublimite' },
   { value: '3', label: '3 - Regime Normal' },
+  { value: '4', label: '4 - MEI' },
 ]
 
 const certTypeOptions = [
@@ -141,7 +147,10 @@ export function EmissorFormModal({
     defaultValues: {
       name: '',
       isDefault: false,
+      isActive: true,
       emitCrt: '1',
+      defaultNcm: '',
+      prazoCancelamentoNfce: 30,
       serieNfe: 1,
       proximoNumeroNfe: 1,
       serieNfse: 'A1',
@@ -171,7 +180,10 @@ export function EmissorFormModal({
         form.reset({
           name: emissor.name || '',
           isDefault: emissor.isDefault || false,
+          isActive: emissor.isActive !== false,
           emitCrt: String(emissor.emitCrt || '1'),
+          defaultNcm: emissor.defaultNcm || '',
+          prazoCancelamentoNfce: emissor.prazoCancelamentoNfce ?? 30,
           ie: emissor.ie || '',
           im: emissor.im || '',
           serieNfe: emissor.serieNfe || 1,
@@ -311,6 +323,27 @@ export function EmissorFormModal({
                   label="Código de Regime Tributário"
                   options={crtOptions}
                 />
+
+                <div>
+                  <FormInput
+                    name="defaultNcm"
+                    label="NCM padrão para novos produtos"
+                    placeholder="Ex: 49119900"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Aplicado ao cadastrar produtos novos. Não altera produtos
+                    existentes nem substitui o NCM informado na nota.
+                  </p>
+                </div>
+
+                {isEditing && (
+                  <div>
+                    <FormSwitch name="isActive" label="Emissor ativo" />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Emissores inativos não podem ser usados em novas emissões.
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Certificado Digital */}
@@ -485,6 +518,18 @@ export function EmissorFormModal({
                               type="number"
                               placeholder="1"
                             />
+                          </div>
+                          <div className="grid grid-cols-1">
+                            <FormInput
+                              name="prazoCancelamentoNfce"
+                              label="Prazo de cancelamento (minutos)"
+                              type="number"
+                              placeholder="30"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Definido pela legislação da UF. Consulte a SEFAZ
+                              do seu estado antes de alterar.
+                            </p>
                           </div>
                           <div className="rounded-md border border-dashed border-gray-200 bg-white p-3">
                             <p className="text-xs text-gray-600">

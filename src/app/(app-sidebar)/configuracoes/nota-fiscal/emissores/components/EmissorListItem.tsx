@@ -95,6 +95,9 @@ export interface EmissorData {
   ibgeCode?: string
   ie?: string
   im?: string
+  isActive?: boolean
+  defaultNcm?: string
+  prazoCancelamentoNfce?: number
 
   // Fiscal Series
   serieNfe?: number
