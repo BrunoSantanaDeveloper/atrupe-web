@@ -18,6 +18,7 @@ export function ResponsibilitiesTab() {
   const handleAddResponsible = () => {
     append({
       name: '',
+      sector: '',
       email: '',
       phone: '',
       mobile: '',
@@ -50,6 +51,12 @@ export function ResponsibilitiesTab() {
             <FormInput<NewClientFormType>
               name={`responsibilities.${index}.name`}
               label="Nome"
+              placeholder="Digite aqui"
+            />
+
+            <FormInput<NewClientFormType>
+              name={`responsibilities.${index}.sector`}
+              label="Setor"
               placeholder="Digite aqui"
             />
 

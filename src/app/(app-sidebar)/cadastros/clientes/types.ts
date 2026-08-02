@@ -26,6 +26,7 @@ export type ListClientsDataType = {
   addressId: string
   details: CompanyDetails
   responsibleId: string
+  responsible?: { id: string; name: string } | null
   companyId: string
   categoryRelation: { id: string; name: string }
 }

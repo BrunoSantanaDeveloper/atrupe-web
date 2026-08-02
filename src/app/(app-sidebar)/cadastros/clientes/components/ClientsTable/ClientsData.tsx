@@ -40,6 +40,9 @@ import { toast } from 'sonner'
 // Store
 import { useAlertDialog } from '@/store/useAlertDialog'
 
+// Hooks
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+
 // Consts
 import { clientStatusObj } from '@/consts/client'
 
@@ -58,6 +61,8 @@ export function ClientsData({ searchParams, tabs }: Props) {
 
   const { open: openAlertDialog } = useAlertDialog()
   const queryClient = useQueryClient()
+  const { canManageClientResponsible } = usePlanFeatures()
+  const showResponsible = canManageClientResponsible()
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -212,6 +217,11 @@ export function ClientsData({ searchParams, tabs }: Props) {
                     >
                       {clientStatusObj[client?.status]?.text}
                     </Badge>
+                    {showResponsible && (
+                      <p className="mt-1 text-sm text-gray italic">
+                        {client?.responsible?.name || 'Sem Responsável'}
+                      </p>
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">

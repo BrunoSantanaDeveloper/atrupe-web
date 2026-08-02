@@ -48,6 +48,7 @@ export const FEATURES = {
   CONTACTS: {
     CLIENT_ADDITIONAL_TABS: 'client_additional_tabs',
     SUPPLIER_ADDITIONAL_TABS: 'supplier_additional_tabs',
+    CLIENT_RESPONSIBLE_MANAGEMENT: 'client_responsible_management',
   },
 } as const
 

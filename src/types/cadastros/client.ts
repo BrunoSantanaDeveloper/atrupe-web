@@ -35,6 +35,7 @@ export type ClientInfoType = {
     notes: string
     stateRegistration?: string
     indicadorIE?: number
+    responsible?: { id: string; name: string } | null
   }
   // addind id to address
   addresses: AddressType[]

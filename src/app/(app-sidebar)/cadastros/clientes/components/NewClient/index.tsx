@@ -92,6 +92,8 @@ export function NewClientModal({
     if (!apiData) return defaultPersonValues
     return {
       type: apiData.type || 'PERSON',
+      responsibleId:
+        apiData.general?.responsible?.id || apiData.responsibleId || '',
       general: {
         name: apiData.general?.name || '',
         corporateName: apiData.general?.corporateName || '',
@@ -137,6 +139,7 @@ export function NewClientModal({
       responsibilities: apiData.contacts?.length
         ? apiData.contacts.map((contact: any) => ({
             name: contact.name || '',
+            sector: contact.sector || '',
             email: contact.email || '',
             phone: contact.phone || '',
             mobile: contact.mobile || '',
@@ -145,6 +148,7 @@ export function NewClientModal({
         : [
             {
               name: '',
+              sector: '',
               email: '',
               phone: '',
               mobile: '',
@@ -243,6 +247,9 @@ export function NewClientModal({
     const { responsibilities, ...dataWithoutResponsibilities } = data
     let formData = {
       ...dataWithoutResponsibilities,
+      // responsibleId vazio ('') não é UUID válido; envia undefined para omitir
+      // do payload e evitar erro de validação (mantém "Sem Responsável").
+      responsibleId: dataWithoutResponsibilities.responsibleId || undefined,
       contacts: responsibilities || [],
     }
 

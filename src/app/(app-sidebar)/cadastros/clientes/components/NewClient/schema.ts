@@ -3,6 +3,7 @@ import * as z from 'zod'
 export const newClientSchema = z
   .object({
     type: z.enum(['PERSON', 'COMPANY']),
+    responsibleId: z.string().optional(),
     general: z.object({
       name: z.string().min(1, 'Nome é obrigatório'),
       corporateName: z.string().optional(),
@@ -36,6 +37,7 @@ export const newClientSchema = z
     responsibilities: z.array(
       z.object({
         name: z.string(),
+        sector: z.string().optional(),
         email: z.string().email('Email inválido').optional().or(z.literal('')),
         phone: z.string().optional(),
         mobile: z.string(),
@@ -102,6 +104,7 @@ export type NewClientFormType = z.infer<typeof newClientSchema>
 
 export const defaultPersonValues: NewClientFormType = {
   type: 'PERSON',
+  responsibleId: '',
   general: {
     name: '',
     email: '',
@@ -133,6 +136,7 @@ export const defaultPersonValues: NewClientFormType = {
   responsibilities: [
     {
       name: '',
+      sector: '',
       email: '',
       phone: '',
       mobile: '',
@@ -161,6 +165,7 @@ export const defaultPersonValues: NewClientFormType = {
 
 export const defaultCompanyValues: NewClientFormType = {
   type: 'COMPANY',
+  responsibleId: '',
   general: {
     name: '',
     corporateName: '',
@@ -192,6 +197,7 @@ export const defaultCompanyValues: NewClientFormType = {
   responsibilities: [
     {
       name: '',
+      sector: '',
       email: '',
       phone: '',
       mobile: '',

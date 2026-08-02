@@ -12,7 +12,9 @@ import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInpu
 import { Button } from '@/components/ui/button'
 import { IconRefresh } from '@tabler/icons-react'
 import { toast } from 'sonner'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
+import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 
 interface Props {
   type: 'PERSON' | 'COMPANY'
@@ -22,6 +24,8 @@ interface Props {
 export function GeneralInfoTab({ type, context = 'client' }: Props) {
   const { setValue, watch } = useFormContext<NewClientFormType>()
   const { searchByDocument } = useDocumentSearch()
+  const { canManageClientResponsible } = usePlanFeatures()
+  const showResponsible = context === 'client' && canManageClientResponsible()
 
   const primaryCountry = watch('addresses.0.country')
   const isForeign = !!(primaryCountry && primaryCountry !== 'Brasil')
@@ -310,6 +314,15 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
           label="Grupo"
           options={categoryOptions}
         />
+
+        {showResponsible && (
+          <SelectSellerField<NewClientFormType>
+            name="responsibleId"
+            label="Responsável"
+            placeholder="Selecione o responsável"
+            width="col-span-1"
+          />
+        )}
 
         <FormInput
           name="general.phone"

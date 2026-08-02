@@ -18,6 +18,7 @@ import {
   IconReceiptTax,
 } from '@tabler/icons-react'
 import { Fragment } from 'react'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   data: ClientInfoType
@@ -30,6 +31,8 @@ const INDICADOR_IE_LABELS: Record<number, string> = {
 }
 
 export function ClientData({ data }: Props) {
+  const { canManageClientResponsible } = usePlanFeatures()
+
   if (!data) return null
 
   return (
@@ -67,6 +70,12 @@ export function ClientData({ data }: Props) {
               supporting="Data de cadastro"
               text={formatToLocaleDateTime(data.createdAt)}
             />
+            {canManageClientResponsible() && (
+              <TextSupportingText
+                supporting="Responsável"
+                text={data.general.responsible?.name || 'Sem Responsável'}
+              />
+            )}
           </DetailCardRowItem>
           <DetailCardRowItem showSeparator={false}>
             <TextSupportingText

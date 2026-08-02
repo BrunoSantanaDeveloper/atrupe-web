@@ -76,6 +76,9 @@ export function usePlanFeatures() {
 
   const canManageSuppliers = () => hasFeature('supplier_additional_tabs')
 
+  const canManageClientResponsible = () =>
+    hasFeature('client_responsible_management')
+
   const canManageDeliverySchedule = () => hasFeature('delivery_production_tabs')
 
   const canShowQuotationItemDetails = () => hasFeature('pdf_show_item_details')
@@ -108,6 +111,7 @@ export function usePlanFeatures() {
     canManageProductionStages,
     canManageClients,
     canManageSuppliers,
+    canManageClientResponsible,
     canManageDeliverySchedule,
     canManageMultipleCompanies,
     canShowQuotationItemDetails,
