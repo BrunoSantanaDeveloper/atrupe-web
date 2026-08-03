@@ -137,7 +137,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
         onSuccess={(product) => {
-          const hasPermission = hasAllPermissions(['invoice_settings:nf:view'])
+          const hasPermission = hasAllPermissions(['nota_fiscal:config:edit'])
 
           if (hasPermission) {
             // Increased timeout to ensure NewProduct modal is fully closed and state is settled

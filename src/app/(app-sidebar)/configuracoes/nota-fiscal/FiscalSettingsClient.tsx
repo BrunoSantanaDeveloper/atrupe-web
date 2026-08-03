@@ -22,7 +22,7 @@ export function FiscalSettingsClient() {
           description:
             'Configure emitente, séries, numeração e padrões para emissão de notas fiscais',
           link: `${defaultPath}/emissores`,
-          permission: 'invoice_settings:nf:view',
+          permission: 'nota_fiscal:config:view',
         },
         {
           title: 'Natureza de Operação e CFOP',
@@ -30,7 +30,7 @@ export function FiscalSettingsClient() {
           description:
             'Configure as naturezas de operação e CFOPs para emissão de notas',
           link: `${defaultPath}/cfop`,
-          permission: 'invoice_settings:nf:view',
+          permission: 'nota_fiscal:config:view',
         },
       ],
     },

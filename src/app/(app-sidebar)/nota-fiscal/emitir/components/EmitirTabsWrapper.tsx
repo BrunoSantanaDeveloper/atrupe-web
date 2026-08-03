@@ -4,6 +4,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconFilePlus, IconHistory } from '@tabler/icons-react'
 import { ReactNode } from 'react'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props {
   emitirContent: ReactNode
@@ -14,7 +15,21 @@ export function EmitirTabsWrapper({ emitirContent, gestaoContent }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const currentTab = searchParams.get('tab') || 'emitir'
+  const { hasPermission } = usePermissions()
+
+  // Abas com permissoes distintas: consultar notas emitidas nao exige poder
+  // emitir. Sem isso, quem so tem 'emitidas:view' nao alcanca a gestao.
+  const canEmitir = hasPermission('nota_fiscal:emitir:create')
+  const canGestao = hasPermission('nota_fiscal:emitidas:view')
+
+  const requestedTab = searchParams.get('tab') || 'emitir'
+  // Se a aba pedida nao e permitida, cai na outra que o usuario pode ver.
+  const currentTab =
+    requestedTab === 'gestao' && !canGestao
+      ? 'emitir'
+      : requestedTab === 'emitir' && !canEmitir
+        ? 'gestao'
+        : requestedTab
 
   const handleTabChange = (value: string) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -37,30 +52,38 @@ export function EmitirTabsWrapper({ emitirContent, gestaoContent }: Props) {
     >
       <div className="flex flex-col mb-4">
         <TabsList className="w-fit">
-          <TabsTrigger value="emitir" className="flex items-center gap-2">
-            <IconFilePlus className="size-4" />
-            Emissão de Notas
-          </TabsTrigger>
-          <TabsTrigger value="gestao" className="flex items-center gap-2">
-            <IconHistory className="size-4" />
-            Gestão de Notas Emitidas
-          </TabsTrigger>
+          {canEmitir && (
+            <TabsTrigger value="emitir" className="flex items-center gap-2">
+              <IconFilePlus className="size-4" />
+              Emissão de Notas
+            </TabsTrigger>
+          )}
+          {canGestao && (
+            <TabsTrigger value="gestao" className="flex items-center gap-2">
+              <IconHistory className="size-4" />
+              Gestão de Notas Emitidas
+            </TabsTrigger>
+          )}
         </TabsList>
       </div>
 
-      <TabsContent
-        value="emitir"
-        className="flex-1 min-h-0 m-0 overflow-hidden"
-      >
-        {emitirContent}
-      </TabsContent>
+      {canEmitir && (
+        <TabsContent
+          value="emitir"
+          className="flex-1 min-h-0 m-0 overflow-hidden"
+        >
+          {emitirContent}
+        </TabsContent>
+      )}
 
-      <TabsContent
-        value="gestao"
-        className="flex-1 min-h-0 m-0 overflow-hidden flex flex-col"
-      >
-        {gestaoContent}
-      </TabsContent>
+      {canGestao && (
+        <TabsContent
+          value="gestao"
+          className="flex-1 min-h-0 m-0 overflow-hidden flex flex-col"
+        >
+          {gestaoContent}
+        </TabsContent>
+      )}
     </Tabs>
   )
 }

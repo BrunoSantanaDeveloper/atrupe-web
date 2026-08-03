@@ -117,7 +117,7 @@ export function OrderActions({ data }: Props) {
             />
           </PermissionGate>
           {hasFiscalModule && (
-            <PermissionGate permissions={['invoice_settings:nf:view']}>
+            <PermissionGate permissions={['nota_fiscal:emitir:create']}>
               <EmitNfe data={data} />
             </PermissionGate>
           )}

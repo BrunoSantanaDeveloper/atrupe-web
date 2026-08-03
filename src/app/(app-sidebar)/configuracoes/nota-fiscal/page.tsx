@@ -11,7 +11,7 @@ export function metadata() {
 export default function InvoicePage() {
   return (
     <PermissionGate
-      permissions={['invoice_settings:nf:view']}
+      permissions={['nota_fiscal:config:view']}
       fallback={
         <div className="p-4">
           Você não tem permissão para visualizar as configurações de nota

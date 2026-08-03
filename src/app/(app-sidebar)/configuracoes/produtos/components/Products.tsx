@@ -245,7 +245,7 @@ export function Products({ searchParams }: SearchParamsType) {
                     open={openDialog === 'new-product'}
                     onOpenChange={() => setOpenDialog('')}
                     onSuccess={(product) => {
-                      if (hasAllPermissions(['invoice_settings:nf:view'])) {
+                      if (hasAllPermissions(['nota_fiscal:config:edit'])) {
                         setTimeout(() => {
                           setSelectedProductId(product.id)
                           setSelectedProductName(product.name)

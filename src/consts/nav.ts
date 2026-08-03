@@ -296,7 +296,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconReceitaFederal,
         title: 'Nota Fiscal',
         path: '/configuracoes/nota-fiscal',
-        permission: 'invoice_settings:nf:view',
+        permission: 'nota_fiscal:config:view',
         requiredModule: 'nota_fiscal',
       },
       {
