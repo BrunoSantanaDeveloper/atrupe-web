@@ -385,6 +385,9 @@ export function EmissoresListClient() {
               onSetDefault={handleSetDefault}
               onTestConnection={handleTestConnection}
               onActivate={handleActivate}
+              onRefresh={() =>
+                queryClient.invalidateQueries({ queryKey: ['emissores'] })
+              }
             />
           ))}
         </div>

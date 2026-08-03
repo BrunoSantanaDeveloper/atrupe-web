@@ -16,6 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { ContingenciaNfceDialog } from './ContingenciaNfceDialog'
+import { InutilizarNfceDialog } from './InutilizarNfceDialog'
 
 import {
   IconBan,
@@ -98,6 +100,11 @@ export interface EmissorData {
   isActive?: boolean
   defaultNcm?: string
   prazoCancelamentoNfce?: number
+
+  // Contingência NFC-e (emissão offline quando a SEFAZ está indisponível)
+  contingenciaNfceAtiva?: boolean
+  contingenciaNfceMotivo?: string | null
+  contingenciaNfceDataHora?: string | null
 
   // Fiscal Series
   serieNfe?: number
@@ -182,6 +189,8 @@ interface EmissorListItemProps {
     environment: FiscalEnv,
     docType: 'NFE' | 'NFSE' | 'NFCE',
   ) => void
+  /** Recarrega a lista após ações que mudam o estado do emissor. */
+  onRefresh?: () => void
 }
 
 const toneClasses: Record<DocTone, string> = {
@@ -231,9 +240,12 @@ export function EmissorListItem({
   onSetDefault,
   onTestConnection,
   onActivate,
+  onRefresh,
 }: EmissorListItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [pendenciesOpen, setPendenciesOpen] = useState(false)
+  const [contingenciaOpen, setContingenciaOpen] = useState(false)
+  const [inutilizarOpen, setInutilizarOpen] = useState(false)
 
   const formatCnpj = (cnpj?: string) => {
     if (!cnpj) return '—'
@@ -368,6 +380,35 @@ export function EmissorListItem({
                       ? 'Mudar para homologação'
                       : 'Mudar para produção'}
                   </DropdownMenuItem>
+
+                  {/*
+                    Contingência e inutilização são exclusivas da NFC-e e até
+                    aqui só existiam como endpoint, sem nenhuma tela.
+                  */}
+                  {editType === 'NFCE' && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setContingenciaOpen(true)
+                        }}
+                      >
+                        {emissor.contingenciaNfceAtiva
+                          ? 'Desativar contingência'
+                          : 'Ativar contingência'}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-error-600 focus:text-error-600"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setInutilizarOpen(true)
+                        }}
+                      >
+                        Inutilizar faixa de numeração
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </>
@@ -628,6 +669,22 @@ export function EmissorListItem({
           </div>
         </div>
       )}
+
+      <ContingenciaNfceDialog
+        open={contingenciaOpen}
+        onOpenChange={setContingenciaOpen}
+        ativa={!!emissor.contingenciaNfceAtiva}
+        motivoAtual={emissor.contingenciaNfceMotivo}
+        dataHoraAtual={emissor.contingenciaNfceDataHora}
+        onSuccess={onRefresh}
+      />
+
+      <InutilizarNfceDialog
+        open={inutilizarOpen}
+        onOpenChange={setInutilizarOpen}
+        serie={emissor.serieNfce}
+        onSuccess={onRefresh}
+      />
     </div>
   )
 }
