@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import type { DateRange } from 'react-day-picker'
 
 // Components
@@ -25,7 +25,15 @@ const NFE_STATUS_OPTIONS = [
 
 export function InvoiceFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
+  const pathname = usePathname()
   const params = new URLSearchParams(searchParams as Record<string, string>)
+
+  // Sem o pathname, uma query vazia viraria `router.push('?')`, que o Next
+  // resolve como URL relativa e não recarrega a listagem.
+  const pushParams = () => {
+    const query = params.toString()
+    router.push(query ? `${pathname}?${query}` : pathname)
+  }
 
   const formatDateToISO = (date: Date): string => {
     const year = date.getFullYear()
@@ -49,13 +57,13 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
     }
 
     params.delete('page')
-    router.push(`?${params.toString()}`)
+    pushParams()
   }
 
   const handleNfeStatusChange = (value: string) => {
     params.set('nfeStatus', value)
     params.delete('page')
-    router.push(`?${params.toString()}`)
+    pushParams()
   }
 
   const defaultDateRange: DateRange | undefined =
@@ -71,7 +79,7 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
   const handleRecordTypeChange = (value: string) => {
     params.set('recordType', value)
     params.delete('page')
-    router.push(`?${params.toString()}`)
+    pushParams()
   }
 
   return (

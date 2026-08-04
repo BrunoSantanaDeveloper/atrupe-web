@@ -1,7 +1,14 @@
 'use client'
 
-import { Fragment, useEffect, useState, useCallback, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import {
+  Fragment,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
 // UI
@@ -336,6 +343,12 @@ const getEnvironmentAwareStatusProps = (
 ) => {
   if (item.type !== 'ORDER') return getInvoiceStatusProps(item)
 
+  // O cancelamento da O.S. tem precedencia: sem isso, uma ordem cancelada com
+  // documento em outro ambiente caia no ramo "Nao emitida" e parecia disponivel.
+  if (item.status?.toUpperCase() === 'CANCELED') {
+    return { label: 'Cancelada', variant: 'errorLight' as const }
+  }
+
   if (
     findActiveNfe(item, activeEnvironment, ['AUTHORIZED', 'CORRECTION_SENT']) ||
     findActiveNfse(item, activeEnvironment, ['AUTHORIZED'])
@@ -503,6 +516,22 @@ const getInvoiceEnvironmentBadges = (
 
 export function InvoiceResultsTable({ searchParams }: Props) {
   const router = useRouter()
+  const pathname = usePathname()
+  const urlSearchParams = useSearchParams()
+
+  /**
+   * A URL do navegador é a fonte de verdade dos filtros. O prop `searchParams`
+   * vem do server component e pode chegar defasado nas trocas de aba, o que
+   * fazia a lista continuar presa ao filtro anterior.
+   */
+  const activeParams = useMemo<Record<string, string>>(
+    () =>
+      urlSearchParams
+        ? Object.fromEntries(urlSearchParams.entries())
+        : ((searchParams ?? {}) as Record<string, string>),
+    [urlSearchParams, searchParams],
+  )
+
   const { data: fiscalConfig } = useFiscalEnvironmentConfig()
   const activeEnvironment = useMemo(
     () => ({
@@ -515,6 +544,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     [fiscalConfig],
   )
   const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const latestRequestIdRef = useRef(0)
   const [orderGroups, setOrderGroups] = useState<OrderGroupFromBackend[]>([])
   const [totalPages, setTotalPages] = useState(1)
   const [modalOrderId, setModalOrderId] = useState<string | null>(null)
@@ -528,17 +559,18 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     serie: number
   } | null>(null)
 
-  const currentPage = parseInt((searchParams?.page as string) || '1', 10)
-  const currentSearch = searchParams?.search as string | undefined
-  const currentNfeStatus =
-    (searchParams?.nfeStatus as string | undefined) || 'TODOS'
-  const recordType = searchParams?.recordType as string | undefined
-  const startDate = searchParams?.startDate as string | undefined
-  const endDate = searchParams?.endDate as string | undefined
-  const currentDocType =
-    (searchParams?.docType as string | undefined) || 'TODOS'
+  const currentPage = parseInt(activeParams.page || '1', 10)
+  const currentSearch = activeParams.search
+  const currentNfeStatus = activeParams.nfeStatus || 'TODOS'
+  const recordType = activeParams.recordType
+  const startDate = activeParams.startDate
+  const endDate = activeParams.endDate
+  const currentDocType = activeParams.docType || 'TODOS'
 
   const fetchOrders = useCallback(async () => {
+    // Descarta respostas de requisições antigas: ao trocar de aba rapidamente a
+    // resposta anterior podia chegar depois e sobrescrever a lista atual.
+    const requestId = ++latestRequestIdRef.current
     setIsLoading(true)
 
     try {
@@ -560,6 +592,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         perPage: '20',
       })
 
+      if (requestId !== latestRequestIdRef.current) return
+
       if (result.success && result.data) {
         // Defensive check to ensure data is an array before setting it to state
         // This prevents "TypeError: n.map is not a function" crashes on render
@@ -571,14 +605,20 @@ export function InvoiceResultsTable({ searchParams }: Props) {
             : []
         setOrderGroups(dataArray as OrderGroupFromBackend[])
         setTotalPages(result.lastPage || 1)
+        setLoadError(null)
       } else {
         setOrderGroups([])
+        setLoadError(
+          result.message || 'Não foi possível carregar os documentos.',
+        )
       }
     } catch (error) {
+      if (requestId !== latestRequestIdRef.current) return
       console.error('Erro ao buscar notas/pedidos:', error)
       setOrderGroups([])
+      setLoadError('Não foi possível carregar os documentos.')
     } finally {
-      setIsLoading(false)
+      if (requestId === latestRequestIdRef.current) setIsLoading(false)
     }
   }, [
     currentPage,
@@ -767,16 +807,19 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     })
   }
 
-  // Troca a aba de tipo de documento (NF-e / NFS-e / NFC-e) via query param
+  // Troca a aba de tipo de documento (NF-e / NFS-e / NFC-e) via query param.
+  // O push usa o pathname completo: voltar para "Todos" zera a query string e
+  // um `router.push('?')` seria resolvido como URL relativa pelo Next.
   const handleDocTypeChange = (value: string) => {
-    const params = new URLSearchParams(searchParams as Record<string, string>)
+    const params = new URLSearchParams(activeParams)
     if (value === 'TODOS') {
       params.delete('docType')
     } else {
       params.set('docType', value)
     }
     params.delete('page')
-    router.push(`?${params.toString()}`)
+    const query = params.toString()
+    router.push(query ? `${pathname}?${query}` : pathname)
   }
 
   const docTypeTabs = (
@@ -808,8 +851,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   if (isLoading) {
     return (
       <Card className="h-full flex flex-col">
-        <TableFiltersHeader searchParams={searchParams}>
-          <InvoiceFilter searchParams={searchParams} />
+        <TableFiltersHeader searchParams={activeParams}>
+          <InvoiceFilter searchParams={activeParams} />
         </TableFiltersHeader>
         {docTypeTabs}
         <CardContent className="flex-1 p-4 space-y-3">
@@ -825,27 +868,39 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   if (orderGroups.length === 0) {
     return (
       <Card className="h-full flex flex-col">
-        <TableFiltersHeader searchParams={searchParams}>
-          <InvoiceFilter searchParams={searchParams} />
+        <TableFiltersHeader searchParams={activeParams}>
+          <InvoiceFilter searchParams={activeParams} />
         </TableFiltersHeader>
         {docTypeTabs}
         <CardContent className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-4">
             <FeaturedIcon
-              Icon={IconFileInvoice}
+              Icon={loadError ? IconRefresh : IconFileInvoice}
               size="xl"
-              variant="borderedLight"
+              variant={loadError ? 'errorBorderedLight' : 'borderedLight'}
               rounded
               color="neutral"
             />
             <div className="space-y-1">
               <p className="font-semibold text-lg text-gray-900">
-                Nenhum registro encontrado
+                {loadError
+                  ? 'Não foi possível carregar os documentos'
+                  : 'Nenhum registro encontrado'}
               </p>
               <p className="text-sm text-gray-500">
-                Tente ajustar os filtros ou selecionar outro cliente
+                {loadError ||
+                  'Tente ajustar os filtros ou selecionar outro cliente'}
               </p>
             </div>
+            {loadError && (
+              <Button
+                variant="neutralOutline"
+                LeftIcon={IconRefresh}
+                onClick={fetchOrders}
+              >
+                Tentar novamente
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -855,8 +910,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   return (
     <>
       <Card className="h-full flex flex-col">
-        <TableFiltersHeader searchParams={searchParams}>
-          <InvoiceFilter searchParams={searchParams} />
+        <TableFiltersHeader searchParams={activeParams}>
+          <InvoiceFilter searchParams={activeParams} />
         </TableFiltersHeader>
         {docTypeTabs}
 
@@ -1367,6 +1422,29 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   )
                                 }
 
+                                // Precede o rascunho: ordem cancelada nao volta
+                                // para a emissao, mas o rascunho orfao ainda
+                                // precisa poder ser excluido.
+                                if (item.status?.toUpperCase() === 'CANCELED') {
+                                  return draftNfe ? (
+                                    <ActionButton
+                                      Icon={IconTrash}
+                                      tooltip="Excluir rascunho (ordem cancelada)"
+                                      variant="errorGhost"
+                                      disabled={isCancelingThis}
+                                      onClick={() =>
+                                        handleCancelDraft(draftNfe.id)
+                                      }
+                                    />
+                                  ) : (
+                                    <ActionButton
+                                      Icon={IconBan}
+                                      tooltip="Ordem cancelada"
+                                      disabled
+                                    />
+                                  )
+                                }
+
                                 if (draftNfe) {
                                   return (
                                     <>
@@ -1385,16 +1463,6 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         }
                                       />
                                     </>
-                                  )
-                                }
-
-                                if (item.status?.toUpperCase() === 'CANCELED') {
-                                  return (
-                                    <ActionButton
-                                      Icon={IconBan}
-                                      tooltip="Ordem cancelada"
-                                      disabled
-                                    />
                                   )
                                 }
 
@@ -1447,7 +1515,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
         <CardFooter className="border-t border-gray-100 p-4 mt-auto">
           <TablePagination
-            searchParams={searchParams}
+            searchParams={activeParams}
             lastPage={totalPages}
             activeVariant="success"
           />

@@ -77,9 +77,9 @@ export function ChangePlanDialog({ open, setOpen, rowData }: Props) {
 
   const plans: ManageablePlan[] = plansRes?.success ? plansRes.data : []
 
-  // Apenas planos liberados para contratação e diferentes do atual
+  // Todos os planos globais, exceto o plano atual da empresa
   const options = plans
-    .filter((plan) => plan.isActive && plan.planType !== rowData?.planType)
+    .filter((plan) => plan.planType !== rowData?.planType)
     .map((plan) => ({
       value: plan.id,
       label: `${plan.name} — ${formatCurrencyToBrl(plan.basePrice)}/mês`,

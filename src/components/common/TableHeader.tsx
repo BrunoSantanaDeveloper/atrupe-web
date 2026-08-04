@@ -4,7 +4,7 @@
 import { PropsWithChildren, useState } from 'react'
 
 // Next Imports
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 // UI component Imports
 import { Label } from '@/components/ui/label'
@@ -25,6 +25,7 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
   const [search, setSearch] = useState(searchParams.search || '')
 
   const router = useRouter()
+  const pathname = usePathname()
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
@@ -42,7 +43,10 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
 
     params.delete('page')
 
-    router.push(`?${params.toString()}`)
+    // Query vazia com `?` seria resolvida como URL relativa pelo Next e a
+    // listagem não recarregaria; o pathname garante uma navegação real.
+    const queryString = params.toString()
+    router.push(queryString ? `${pathname}?${queryString}` : pathname)
   }
 
   return (

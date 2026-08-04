@@ -18,7 +18,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 
 // Icons
-import { IconDownload, IconAlertTriangle } from '@tabler/icons-react'
+import {
+  IconDownload,
+  IconAlertTriangle,
+  IconFileText,
+} from '@tabler/icons-react'
 
 // Actions
 import { createItemNew, getData } from '@/actions/_cruds'
@@ -66,6 +70,7 @@ export function CorrectionLetterDialog({
   const [nextSequence, setNextSequence] = useState<number>(1)
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)
   const [historyError, setHistoryError] = useState(false)
+  const [downloadingPdf, setDownloadingPdf] = useState<string | null>(null)
 
   const fetchHistory = useCallback(async () => {
     if (!nfeId) return
@@ -162,6 +167,35 @@ export function CorrectionLetterDialog({
       fetchHistory()
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleDownloadPdf = async (eventId: string, sequence: number) => {
+    setDownloadingPdf(eventId)
+    try {
+      const result = await getData({
+        route: `/fiscal/nfe/${nfeId}/corrections/${eventId}/pdf`,
+      })
+      if (!result.success || !result.data?.pdfBase64) {
+        toast.error(result.message || 'DACCE não disponível para este evento.')
+        return
+      }
+
+      const binary = atob(result.data.pdfBase64)
+      const bytes = new Uint8Array(binary.length)
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+
+      const url = window.URL.createObjectURL(
+        new Blob([bytes], { type: 'application/pdf' }),
+      )
+      window.open(url, '_blank')
+      // Revogar de imediato fecharia a aba recém-aberta antes de renderizar.
+      setTimeout(() => window.URL.revokeObjectURL(url), 60000)
+      toast.success(`DACCE da sequência #${sequence} aberta.`)
+    } catch {
+      toast.error('Erro ao obter a DACCE da carta de correção.')
+    } finally {
+      setDownloadingPdf(null)
     }
   }
 
@@ -332,27 +366,45 @@ export function CorrectionLetterDialog({
                           Sem protocolo
                         </span>
                       )}
-                      {event.hasXml ? (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 px-2 text-xs font-semibold text-blue-600 hover:text-blue-700 gap-1 flex items-center"
-                          onClick={() =>
-                            handleDownloadXml(event.id, event.sequenciaEvento)
-                          }
-                        >
-                          <IconDownload size={14} />
-                          XML do Evento
-                        </Button>
-                      ) : (
-                        <span
-                          className="text-xs text-gray-400 cursor-not-allowed flex items-center gap-1"
-                          title="XML não disponível para este evento"
-                        >
-                          <IconDownload size={14} className="opacity-50" />
-                          XML Indisponível
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {event.status === 'REGISTERED' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs font-semibold text-blue-600 hover:text-blue-700 gap-1 flex items-center"
+                            disabled={downloadingPdf === event.id}
+                            onClick={() =>
+                              handleDownloadPdf(event.id, event.sequenciaEvento)
+                            }
+                          >
+                            <IconFileText size={14} />
+                            {downloadingPdf === event.id
+                              ? 'Obtendo...'
+                              : 'DACCE'}
+                          </Button>
+                        )}
+                        {event.hasXml ? (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 px-2 text-xs font-semibold text-blue-600 hover:text-blue-700 gap-1 flex items-center"
+                            onClick={() =>
+                              handleDownloadXml(event.id, event.sequenciaEvento)
+                            }
+                          >
+                            <IconDownload size={14} />
+                            XML
+                          </Button>
+                        ) : (
+                          <span
+                            className="text-xs text-gray-400 cursor-not-allowed flex items-center gap-1"
+                            title="XML não disponível para este evento"
+                          >
+                            <IconDownload size={14} className="opacity-50" />
+                            XML Indisponível
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
