@@ -77,6 +77,23 @@ import type {
 } from '@/types/fiscal/nfe-prepare'
 import type { ClientData } from '../../components/ClientSelect'
 
+/**
+ * Busca o endereço principal do cliente. Necessário porque GET /client não
+ * traz os endereços — o ClientSelect entrega o cliente sem endereço.
+ */
+async function fetchPrimaryClientAddress(
+  clientId: string,
+): Promise<ClientAddressItem | null> {
+  try {
+    const result = await getItem({ route: `/address/client/${clientId}` })
+    const addresses = result?.data as ClientAddressItem[] | undefined
+    return addresses?.[0] || null
+  } catch {
+    // Endereço é opcional aqui — segue com o que veio do ClientSelect
+    return null
+  }
+}
+
 export function StandaloneNfeForm() {
   const alertDialog = useAlertDialog()
   const [isLoading, setIsLoading] = useState(true)
@@ -206,17 +223,37 @@ export function StandaloneNfeForm() {
         return
       }
 
+      // GET /client não retorna endereços, então o ClientSelect entrega o
+      // cliente sem endereço; completamos com o primeiro endereço cadastrado.
+      let resolvedClient = client
+      if (!client.address) {
+        const primaryAddress = await fetchPrimaryClientAddress(client.id)
+        if (primaryAddress) {
+          resolvedClient = {
+            ...client,
+            address: primaryAddress.street,
+            addressNumber: primaryAddress.number,
+            complement: primaryAddress.complement,
+            neighborhood: primaryAddress.neighborhood,
+            city: primaryAddress.city,
+            state: primaryAddress.state,
+            cep: primaryAddress.zipcode,
+          }
+          setSelectedClient(resolvedClient)
+        }
+      }
+
       // Use clientToNfeRecipient to map client data directly into destinatario
       if (data) {
-        const recipient = clientToNfeRecipient(client)
-        const countryFriendlyName = client.country || 'Brasil'
+        const recipient = clientToNfeRecipient(resolvedClient)
+        const countryFriendlyName = resolvedClient.country || 'Brasil'
         const updatedDestinatario: NfePrepareDestinatario = {
           razaoSocial: recipient.destNome,
           cnpjCpf: recipient.destCnpjCpf,
           ie: recipient.destIe,
-          indIEDest: client.indicadorIE ?? 9,
+          indIEDest: resolvedClient.indicadorIE ?? 9,
           email: recipient.destEmail,
-          telefone: client.phone || '',
+          telefone: resolvedClient.phone || '',
           cep: recipient.destCep,
           estado: recipient.destUf,
           cidade: recipient.destMunicipio,
@@ -231,10 +268,10 @@ export function StandaloneNfeForm() {
         setData({
           ...data,
           destinatario: updatedDestinatario,
-          clientId: client.id,
+          clientId: resolvedClient.id,
           emissao: {
             ...data.emissao,
-            consumidorFinal: getConsumidorFinalFromClient(client),
+            consumidorFinal: getConsumidorFinalFromClient(resolvedClient),
           },
         })
       }
