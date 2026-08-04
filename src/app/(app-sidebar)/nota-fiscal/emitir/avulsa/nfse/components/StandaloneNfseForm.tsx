@@ -95,22 +95,26 @@ function tomadorToClientData(
   }
 }
 
-function clientToDestinatario(client: ClientData): NfePrepareDestinatario {
+function tomadorToDestinatario(
+  tomador: ReturnType<typeof clientToNfseTomador>,
+  client: ClientData,
+  override: NfePrepareDestinatario | null,
+): NfePrepareDestinatario {
   return {
-    razaoSocial: client.name || '',
+    razaoSocial: tomador.razaoSocial,
     cnpjCpf: client.cnpjCpf || '',
-    idEstrangeiro: '',
-    ie: '',
-    email: client.email || '',
-    telefone: '',
-    cep: client.cep || '',
-    estado: client.state || '',
-    cidade: client.city || '',
-    bairro: client.neighborhood || '',
-    endereco: client.address || '',
-    numero: client.addressNumber || '',
-    complemento: client.complement || '',
-    pais: 'Brasil',
+    idEstrangeiro: tomador.idEstrangeiro,
+    ie: client.ie || '',
+    email: tomador.email,
+    telefone: override?.telefone || client.phone || '',
+    cep: tomador.cep,
+    estado: tomador.uf,
+    cidade: tomador.municipio,
+    bairro: tomador.bairro,
+    endereco: tomador.endereco,
+    numero: tomador.numero,
+    complemento: tomador.complemento,
+    pais: client.country || 'Brasil',
   }
 }
 
@@ -214,6 +218,49 @@ export function StandaloneNfseForm() {
     clientId: selectedClient?.id || '',
   })
 
+  // GET /client não retorna endereços, então o ClientSelect entrega o cliente
+  // sem endereço; completamos com o primeiro endereço de /address/client/:id.
+  const primaryAddress = addresses?.[0]
+
+  const effectiveTomador = selectedClient
+    ? (() => {
+        const base = clientToNfseTomador(selectedClient)
+        return {
+          ...base,
+          razaoSocial: tomadorOverride?.razaoSocial || base.razaoSocial,
+          email: tomadorOverride?.email || base.email,
+          endereco:
+            tomadorOverride?.endereco ||
+            base.endereco ||
+            primaryAddress?.street ||
+            '',
+          numero:
+            tomadorOverride?.numero ||
+            base.numero ||
+            primaryAddress?.number ||
+            '',
+          complemento:
+            tomadorOverride?.complemento ||
+            base.complemento ||
+            primaryAddress?.complement ||
+            '',
+          bairro:
+            tomadorOverride?.bairro ||
+            base.bairro ||
+            primaryAddress?.neighborhood ||
+            '',
+          municipio:
+            tomadorOverride?.cidade ||
+            base.municipio ||
+            primaryAddress?.city ||
+            '',
+          uf: tomadorOverride?.estado || base.uf || primaryAddress?.state || '',
+          cep:
+            tomadorOverride?.cep || base.cep || primaryAddress?.zipcode || '',
+        }
+      })()
+    : null
+
   const fetchDefaults = useCallback(async () => {
     setIsLoading(true)
     setError(null)
@@ -259,27 +306,16 @@ export function StandaloneNfseForm() {
 
   const handleEntregaToggle = (enabled: boolean) => {
     if (enabled) {
-      const defaultEntrega = selectedClient?.address
-        ? {
-            cnpjCpf: selectedClient.cnpjCpf || '',
-            endereco: selectedClient.address || '',
-            numero: selectedClient.addressNumber || 'S/N',
-            complemento: selectedClient.complement || '',
-            bairro: selectedClient.neighborhood || '',
-            cidade: selectedClient.city || '',
-            estado: selectedClient.state || '',
-            cep: selectedClient.cep || '',
-          }
-        : {
-            cnpjCpf: selectedClient?.cnpjCpf || '',
-            endereco: '',
-            numero: 'S/N',
-            complemento: '',
-            bairro: '',
-            cidade: '',
-            estado: '',
-            cep: '',
-          }
+      const defaultEntrega = {
+        cnpjCpf: selectedClient?.cnpjCpf || '',
+        endereco: effectiveTomador?.endereco || '',
+        numero: effectiveTomador?.numero || 'S/N',
+        complemento: effectiveTomador?.complemento || '',
+        bairro: effectiveTomador?.bairro || '',
+        cidade: effectiveTomador?.municipio || '',
+        estado: effectiveTomador?.uf || '',
+        cep: effectiveTomador?.cep || '',
+      }
       setEntrega(defaultEntrega)
       setSelectedAddressId(null)
       toast.success('Local de prestação habilitado')
@@ -326,7 +362,7 @@ export function StandaloneNfseForm() {
   }
 
   const handleEmit = async () => {
-    if (!selectedClient) {
+    if (!selectedClient || !effectiveTomador) {
       toast.error('Selecione um cliente / tomador do serviço')
       return
     }
@@ -346,26 +382,8 @@ export function StandaloneNfseForm() {
     setIsEmitting(true)
 
     try {
-      const baseTomador = clientToNfseTomador(selectedClient)
-
-      // Merge any overrides from the edit dialog
-      const tomador = tomadorOverride
-        ? {
-            ...baseTomador,
-            razaoSocial: tomadorOverride.razaoSocial || baseTomador.razaoSocial,
-            email: tomadorOverride.email || baseTomador.email,
-            endereco: tomadorOverride.endereco || baseTomador.endereco,
-            numero: tomadorOverride.numero || baseTomador.numero,
-            complemento: tomadorOverride.complemento || baseTomador.complemento,
-            bairro: tomadorOverride.bairro || baseTomador.bairro,
-            municipio: tomadorOverride.cidade || baseTomador.municipio,
-            uf: tomadorOverride.estado || baseTomador.uf,
-            cep: tomadorOverride.cep || baseTomador.cep,
-          }
-        : baseTomador
-
       const payload = {
-        tomador,
+        tomador: effectiveTomador,
         codigoServico,
         discriminacao,
         valorServicos,
@@ -416,28 +434,8 @@ export function StandaloneNfseForm() {
   const isHomologacao = prepareData?.ambiente === 'HOMOLOGACAO'
 
   // ─── Tomador display data ──────────────────────────────────────────────────
-  const baseTomador = selectedClient
-    ? clientToNfseTomador(selectedClient)
-    : null
-
-  const tomadorDisplayClient = baseTomador
-    ? tomadorToClientData(
-        tomadorOverride
-          ? {
-              ...baseTomador,
-              endereco: tomadorOverride.endereco || baseTomador.endereco,
-              numero: tomadorOverride.numero || baseTomador.numero,
-              complemento:
-                tomadorOverride.complemento || baseTomador.complemento,
-              bairro: tomadorOverride.bairro || baseTomador.bairro,
-              municipio: tomadorOverride.cidade || baseTomador.municipio,
-              uf: tomadorOverride.estado || baseTomador.uf,
-              cep: tomadorOverride.cep || baseTomador.cep,
-              email: tomadorOverride.email || baseTomador.email,
-            }
-          : baseTomador,
-        tomadorOverride?.razaoSocial || selectedClient!.name,
-      )
+  const tomadorDisplayClient = effectiveTomador
+    ? tomadorToClientData(effectiveTomador, effectiveTomador.razaoSocial)
     : undefined
 
   // ─── Loading state ─────────────────────────────────────────────────────────
@@ -623,11 +621,15 @@ export function StandaloneNfseForm() {
       </div>
 
       {/* Tomador edit dialog */}
-      {selectedClient && (
+      {selectedClient && effectiveTomador && (
         <InvoiceRecipientEditDialog
           open={isTomadorEditOpen}
           onOpenChange={setIsTomadorEditOpen}
-          destinatario={tomadorOverride ?? clientToDestinatario(selectedClient)}
+          destinatario={tomadorToDestinatario(
+            effectiveTomador,
+            selectedClient,
+            tomadorOverride,
+          )}
           clientId={selectedClient.id}
           onSave={handleTomadorSave}
         />
