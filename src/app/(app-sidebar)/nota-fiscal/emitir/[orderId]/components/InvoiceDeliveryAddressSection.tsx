@@ -275,58 +275,62 @@ export function InvoiceDeliveryAddressSection({
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  {/* Select address from registered */}
-                  {addressesList.length > 0 && (
-                    <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50/50">
-                      <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
-                        📍 Escolher Endereço Cadastrado:
-                      </span>
-                      <Select
-                        value={selectedAddressId || 'custom'}
-                        onValueChange={(selectedId) => {
-                          if (selectedId === 'custom') {
-                            onAddressSelect(null)
-                            return
-                          }
-                          const addr = addressesList.find(
-                            (a) => a.id === selectedId,
-                          )
-                          if (addr) {
-                            onAddressSelect(addr)
-                            setIsEditing(false)
-                          }
-                        }}
-                      >
-                        <SelectTrigger
-                          id="select-delivery-address"
-                          className="w-full max-w-xl bg-white h-11"
+                  {/* O seletor só faz sentido com endereços cadastrados, mas o
+                      botão de editar precisa existir sempre — senão clientes sem
+                      endereço ficam com o local de prestação somente leitura. */}
+                  <div className="px-6 py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 bg-gray-50/50">
+                    {addressesList.length > 0 && (
+                      <>
+                        <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
+                          📍 Escolher Endereço Cadastrado:
+                        </span>
+                        <Select
+                          value={selectedAddressId || 'custom'}
+                          onValueChange={(selectedId) => {
+                            if (selectedId === 'custom') {
+                              onAddressSelect(null)
+                              return
+                            }
+                            const addr = addressesList.find(
+                              (a) => a.id === selectedId,
+                            )
+                            if (addr) {
+                              onAddressSelect(addr)
+                              setIsEditing(false)
+                            }
+                          }}
                         >
-                          <SelectValue placeholder="-- Digitar endereço personalizado --" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="custom">
-                            -- Digitar endereço personalizado --
-                          </SelectItem>
-                          {addressesList.map((addr) => (
-                            <SelectItem key={addr.id} value={addr.id}>
-                              {addr.type || 'Sem Título'} — {addr.street},{' '}
-                              {addr.number} - {addr.city}/{addr.state}
+                          <SelectTrigger
+                            id="select-delivery-address"
+                            className="w-full max-w-xl bg-white h-11"
+                          >
+                            <SelectValue placeholder="-- Digitar endereço personalizado --" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="custom">
+                              -- Digitar endereço personalizado --
                             </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        type="button"
-                        variant={isEditing ? 'neutralLight' : 'neutralOutline'}
-                        size="sm"
-                        onClick={() => setIsEditing(!isEditing)}
-                        className="sm:ml-auto"
-                      >
-                        <IconEdit size={16} className="mr-2" />
-                        {isEditing ? 'Ver Dados' : 'Editar Endereço'}
-                      </Button>
-                    </div>
-                  )}
+                            {addressesList.map((addr) => (
+                              <SelectItem key={addr.id} value={addr.id}>
+                                {addr.type || 'Sem Título'} — {addr.street},{' '}
+                                {addr.number} - {addr.city}/{addr.state}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </>
+                    )}
+                    <Button
+                      type="button"
+                      variant={isEditing ? 'neutralLight' : 'neutralOutline'}
+                      size="sm"
+                      onClick={() => setIsEditing(!isEditing)}
+                      className="sm:ml-auto"
+                    >
+                      <IconEdit size={16} className="mr-2" />
+                      {isEditing ? 'Ver Dados' : 'Editar Endereço'}
+                    </Button>
+                  </div>
 
                   {isEditing ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">

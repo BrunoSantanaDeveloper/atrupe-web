@@ -478,6 +478,32 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const client = orderData.quotation?.client
   const isHomologacao = ambiente === 'HOMOLOGACAO'
 
+  // Reflete as edições do diálogo do tomador na exibição — sem isso o aviso de
+  // "tomador sem endereço" persistia mesmo após o usuário informar o endereço.
+  const clientComOverride =
+    client && tomadorOverride
+      ? {
+          ...client,
+          corporateName: tomadorOverride.razaoSocial || client.corporateName,
+          email: tomadorOverride.email || client.email,
+          phone: tomadorOverride.telefone || client.phone,
+          address: tomadorOverride.endereco
+            ? [
+                {
+                  ...client.address?.[0],
+                  street: tomadorOverride.endereco,
+                  number: tomadorOverride.numero,
+                  complement: tomadorOverride.complemento,
+                  neighborhood: tomadorOverride.bairro,
+                  city: tomadorOverride.cidade,
+                  state: tomadorOverride.estado,
+                  zipcode: tomadorOverride.cep,
+                },
+              ]
+            : client.address,
+        }
+      : client
+
   // Handlers for Delivery Address (Local de Prestação)
   const handleEntregaToggle = (enabled: boolean) => {
     if (enabled) {
@@ -607,7 +633,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         )}
 
         <NfseTomadorSection
-          client={client}
+          client={clientComOverride}
           servicesTotal={formatCurrency(getServicesTotal())}
           onEditClick={() => setIsTomadorEditOpen(true)}
         />
@@ -619,13 +645,13 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           pais="Brasil"
           sectionTitle="Local de Prestação"
           destinatarioAddress={{
-            endereco: client?.address?.[0]?.street,
-            numero: client?.address?.[0]?.number,
-            complemento: client?.address?.[0]?.complement,
-            bairro: client?.address?.[0]?.neighborhood,
-            cidade: client?.address?.[0]?.city,
-            estado: client?.address?.[0]?.state,
-            cep: client?.address?.[0]?.zipcode,
+            endereco: clientComOverride?.address?.[0]?.street,
+            numero: clientComOverride?.address?.[0]?.number,
+            complemento: clientComOverride?.address?.[0]?.complement,
+            bairro: clientComOverride?.address?.[0]?.neighborhood,
+            cidade: clientComOverride?.address?.[0]?.city,
+            estado: clientComOverride?.address?.[0]?.state,
+            cep: clientComOverride?.address?.[0]?.zipcode,
           }}
           onEntregaToggle={handleEntregaToggle}
           onAddressSelect={handleEntregaAddressSelect}
