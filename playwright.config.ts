@@ -12,7 +12,7 @@ export default defineConfig({
   // 1 retry no CI (evita falha por flakiness de rede)
   retries: process.env.CI ? 1 : 0,
   workers: 1,
-  // Reporter rico no CI (GitHub Actions / Bitbucket), lista simples local
+  // Reporter rico no CI (GitHub Actions), lista simples local
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   globalSetup: './e2e/global-setup.ts',
   outputDir: 'test-results/',

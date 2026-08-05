@@ -1,8 +1,10 @@
 type ContactType = {
   id: string
   name?: string
+  sector?: string
   email?: string
   phone?: string
+  mobile?: string
   notes?: string
 }
 
@@ -33,6 +35,7 @@ export type ClientInfoType = {
     phone: string
     mobile: string
     notes: string
+    financialNotes?: string
     stateRegistration?: string
     indicadorIE?: number
     responsible?: { id: string; name: string } | null

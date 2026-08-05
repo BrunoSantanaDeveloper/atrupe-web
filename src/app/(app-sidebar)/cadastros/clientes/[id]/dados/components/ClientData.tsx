@@ -81,7 +81,12 @@ export function ClientData({ data }: Props) {
             <TextSupportingText
               supporting="Observações gerais"
               text={data.general.notes}
-              containerClassName="col-span-2 md:col-span-3 lg:col-span-4"
+              containerClassName="col-span-2"
+            />
+            <TextSupportingText
+              supporting="Observações financeiras"
+              text={data.general.financialNotes}
+              containerClassName="col-span-2"
             />
           </DetailCardRowItem>
         </DetailCard>
@@ -110,7 +115,7 @@ export function ClientData({ data }: Props) {
         ? data.contacts.map((contact) => (
             <Fragment key={contact.id}>
               <DetailCard
-                title={`Responsável - ${contact.name || ''}`}
+                title={`Contato - ${contact.name || ''}`}
                 icon={IconUserStar}
               >
                 <DetailCardRowItem>
@@ -119,19 +124,27 @@ export function ClientData({ data }: Props) {
                     text={contact.name || ''}
                   />
                   <TextSupportingText
+                    supporting="Setor"
+                    text={contact.sector || ''}
+                  />
+                  <TextSupportingText
                     supporting="E-mail"
                     text={contact.email || ''}
                   />
                   <TextSupportingText
-                    supporting="Celular"
+                    supporting="Telefone"
                     text={contact.phone || ''}
                   />
                 </DetailCardRowItem>
                 <DetailCardRowItem showSeparator={false}>
                   <TextSupportingText
+                    supporting="Celular"
+                    text={contact.mobile || ''}
+                  />
+                  <TextSupportingText
                     supporting="Observações"
                     text={contact.notes || ''}
-                    containerClassName="col-span-2 md:col-span-3 lg:col-span-4"
+                    containerClassName="col-span-2 md:col-span-3"
                   />
                 </DetailCardRowItem>
               </DetailCard>
