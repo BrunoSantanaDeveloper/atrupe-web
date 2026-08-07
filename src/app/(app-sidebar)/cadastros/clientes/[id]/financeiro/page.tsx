@@ -1,8 +1,8 @@
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { UpgradeFallback } from '@/components/common/UpgradeFallback'
+import { EntityFinancialSummary } from '@/components/common/entity-financial/EntityFinancialSummary'
 import { FEATURES } from '@/consts/features'
-import { ClientFinancialSummary } from './components/ClientFinancialSummary'
 
 interface Props {
   params: {
@@ -31,7 +31,7 @@ export default function ClientFinancialPage({ params }: Props) {
           </div>
         }
       >
-        <ClientFinancialSummary clientId={params.id} />
+        <EntityFinancialSummary entityId={params.id} entityType="client" />
       </PermissionGate>
     </FeatureGate>
   )

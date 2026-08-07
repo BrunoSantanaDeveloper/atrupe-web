@@ -10,7 +10,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
 
@@ -31,6 +30,7 @@ import { IProduct, useProducts } from '@/hooks/queries/useProduct'
 
 import { useQuotation } from '@/contexts/quotationContext'
 import { SelectSectorWithProductsField } from '@/components/common/form/global-inputs/SectorWithProductsSelectField'
+import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Helper para converter unitKind para símbolo da unidade
 function getUnitSymbol(unitKind: string | null | undefined): string {
@@ -119,11 +119,41 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
     openChangeModal(true, 'productDetail')
   }
 
-  const calculateTotalItemsPrice = useCallback((product: IProduct): number => {
-    return product.items.reduce((total, item) => {
-      return total + item.salePrice * (item?.quantity ?? 1)
-    }, 0)
-  }, [])
+  const handleSelectProduct = (productId: string) => {
+    updateQuotationData({ productId })
+    handleSubmit(onSubmit)()
+  }
+
+  /**
+   * Preço exibido na listagem.
+   *
+   * Preferimos o total (`salePrice` somado dos itens). Produto vendido por unidade
+   * dimensional (m², metro, kg, hora…) sem medida cadastrada não tem total — nesse
+   * caso mostramos o preço por unidade de exibição, convertendo o `unitCost` bruto
+   * (R$/mm², R$/segundo…) de volta, como já faz a tela de produtos.
+   */
+  const getDisplayPrice = useCallback(
+    (product: IProduct): { value: number; unit: string } => {
+      const total = (product.items ?? []).reduce(
+        (sum, item) => sum + (item.salePrice ?? 0) * (item?.quantity ?? 1),
+        0,
+      )
+
+      if (total > 0) return { value: total, unit: '' }
+
+      const firstItem = product.items?.[0]
+      if (!firstItem?.unitCost) {
+        return { value: product?.salePrice ?? 0, unit: '' }
+      }
+
+      const unitSymbol = getUnitSymbol(firstItem.unitKind)
+      return {
+        value: convertRawToUnitCost(firstItem.unitKind, firstItem.unitCost),
+        unit: unitSymbol === 'un' ? '' : `/${unitSymbol}`,
+      }
+    },
+    [],
+  )
 
   return (
     <Dialog open={open} onOpenChange={openChangeModal}>
@@ -169,43 +199,45 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
         {/* Table */}
         <div className="pr-1 mt-0 m-6 bg-white rounded-xl h-[calc(50vh-100px)] overflow-y-auto">
           {filteredProducts.length > 0 ? (
-            <Table>
+            <Table className="table-fixed">
               <TableBody>
-                {filteredProducts?.map((item) => (
-                  <TableRow key={item.id}>
-                    <Button
-                      variant="raw"
-                      className="w-full h-full px-0"
-                      form="form-id"
-                      onClick={() => {
-                        updateQuotationData({
-                          productId: item.id,
-                        })
-                        // createQueryString('productId', item.id)
-                        // form.handleSubmit(onSubmit)()
+                {filteredProducts?.map((item) => {
+                  const price = getDisplayPrice(item)
+
+                  return (
+                    <TableRow
+                      key={item.id}
+                      role="button"
+                      tabIndex={0}
+                      className="cursor-pointer"
+                      onClick={() => handleSelectProduct(item.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') {
+                          event.preventDefault()
+                          handleSelectProduct(item.id)
+                        }
                       }}
                     >
-                      <TableCell className="w-[15%] font-normal text-gray-600">
+                      <TableCell className="w-[15%] font-normal text-gray-600 truncate">
                         {item.code}
                       </TableCell>
-                      <TableCell className="w-full text-left text-gray-900">
+                      <TableCell className="text-left text-gray-900 truncate">
                         {item.name}
                       </TableCell>
-                      <TableCell className="w-[10%] text-right">
+                      <TableCell className="w-[12%] text-right">
                         <Badge variant="blueLight" size={'lg'}>
                           {getUnitSymbol(item.items?.[0]?.unitKind)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="w-full max-w-[15%] text-start">
-                        {parseCurrencyToBrl(
-                          item?.items?.length > 0
-                            ? calculateTotalItemsPrice(item)
-                            : (item?.salePrice ?? 0),
+                      <TableCell className="w-[20%] text-start whitespace-nowrap">
+                        {parseCurrencyToBrl(price.value)}
+                        {price.unit && (
+                          <span className="text-gray-500">{price.unit}</span>
                         )}
                       </TableCell>
-                    </Button>
-                  </TableRow>
-                ))}
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
           ) : (

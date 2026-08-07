@@ -20,6 +20,9 @@ import { useSignupStore } from '@/store/signupStore'
 // Actions
 import { createItemNew } from '@/actions/_cruds'
 
+// Analytics
+import { pushToDataLayer } from '@/lib/gtm'
+
 // Components
 import { toast } from 'sonner'
 import { Logo } from '@/components/Logo'
@@ -75,6 +78,12 @@ export default function ValidationPage() {
           router.replace('/cadastro/inicio')
           return
         }
+
+        // Conta criada e teste grátis iniciado com sucesso pelo backend.
+        // Dispara uma única vez por conta: o guard processStarted evita o
+        // double-invoke do StrictMode, e após o sucesso o store é limpo
+        // (clearSignupData), então um reload não repete a criação nem o evento.
+        pushToDataLayer({ event: 'sign_up', method: 'free_trial' })
 
         toast.success('Cadastro realizado com sucesso. Fazendo login...')
 

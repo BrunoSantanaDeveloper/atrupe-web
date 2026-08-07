@@ -1399,11 +1399,11 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                 if (item.type === 'NFE_AVULSA') {
                                   const n = item.nfes?.[0]
-                                  if (
-                                    n?.status === 'AUTHORIZED' ||
-                                    n?.status === 'CORRECTION_SENT' ||
-                                    n?.status === 'REJECTED'
-                                  ) {
+                                  // Toda nota que ja' foi transmitida — inclusive
+                                  // cancelada — e' um documento fechado e mostra
+                                  // as acoes de consulta. So' rascunho continua
+                                  // a emissao.
+                                  if (n && n.status !== 'DRAFT') {
                                     return (
                                       <NfeActionsDropdown
                                         nfe={n}
@@ -1411,15 +1411,19 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                       />
                                     )
                                   }
+                                  // Retomar rascunho de nota avulsa nunca
+                                  // existiu: a pagina de emissao avulsa e'
+                                  // estatica e nao carrega rascunho. O botao
+                                  // "Continuar emissao" apontava para uma rota
+                                  // inexistente e so' dava 404, entao aqui a
+                                  // unica acao honesta e' descartar.
                                   return (
                                     <ActionButton
-                                      Icon={IconReceipt}
-                                      tooltip="Continuar emissão"
-                                      onClick={() =>
-                                        router.push(
-                                          `/nota-fiscal/emitir/avulsa/nfe/${item.id}`,
-                                        )
-                                      }
+                                      Icon={IconTrash}
+                                      tooltip="Excluir rascunho"
+                                      variant="errorGhost"
+                                      disabled={cancelingDraftId === item.id}
+                                      onClick={() => handleCancelDraft(item.id)}
                                     />
                                   )
                                 }

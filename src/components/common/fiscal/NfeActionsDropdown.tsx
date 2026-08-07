@@ -201,6 +201,10 @@ export function NfeActionsDropdown({
     nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
   const isAuthorized =
     nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
+  // A DANFE e o XML de uma nota cancelada continuam existindo e precisam ficar
+  // acessiveis: o documento e o evento de cancelamento sao guardados pelo mesmo
+  // prazo. Sem isso o menu de uma nota cancelada fica vazio.
+  const hasFiscalDocument = isAuthorized || nfe.status === 'CANCELLED'
 
   return (
     <>
@@ -216,7 +220,7 @@ export function NfeActionsDropdown({
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {isAuthorized && (
+          {hasFiscalDocument && (
             <DropdownMenuItem
               disabled={isOpeningDanfe}
               onClick={(event) => {
@@ -240,7 +244,7 @@ export function NfeActionsDropdown({
             </DropdownMenuItem>
           )}
 
-          {(showCce || isAuthorized) && <DropdownMenuSeparator />}
+          {(showCce || hasFiscalDocument) && <DropdownMenuSeparator />}
 
           {isAuthorized && (
             <DropdownMenuItem
@@ -326,7 +330,8 @@ export function NfeActionsDropdown({
 
           {(nfe.status === 'AUTHORIZED' ||
             nfe.status === 'PENDING' ||
-            nfe.status === 'REJECTED') && (
+            nfe.status === 'REJECTED' ||
+            nfe.status === 'CANCELLED') && (
             <DropdownMenuItem
               disabled={isConsulting}
               onClick={(e) => {

@@ -1,4 +1,8 @@
-import { redirect } from 'next/navigation'
+import { PermissionGate } from '@/components/common/PermissionGate'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { UpgradeFallback } from '@/components/common/UpgradeFallback'
+import { EntityFinancialSummary } from '@/components/common/entity-financial/EntityFinancialSummary'
+import { FEATURES } from '@/consts/features'
 
 interface Props {
   params: {
@@ -8,5 +12,27 @@ interface Props {
 }
 
 export default function SupplierFinancialPage({ params }: Props) {
-  redirect(`/financeiro/fluxo-financeiro?supplierId=${params.id}`)
+  return (
+    <FeatureGate
+      features={[FEATURES.CONTACTS.SUPPLIER_ADDITIONAL_TABS]}
+      fallback={
+        <UpgradeFallback
+          title="Abas adicionais de fornecedor"
+          description="A aba financeiro no cadastro do fornecedor faz parte do plano Lite. Faça upgrade para acessá-la."
+        />
+      }
+    >
+      <PermissionGate
+        requireAll
+        permissions={['financial:flow:view', 'values:values:view']}
+        fallback={
+          <div className="p-4">
+            Você não tem permissão para visualizar o financeiro do fornecedor.
+          </div>
+        }
+      >
+        <EntityFinancialSummary entityId={params.id} entityType="supplier" />
+      </PermissionGate>
+    </FeatureGate>
+  )
 }

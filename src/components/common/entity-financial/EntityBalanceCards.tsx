@@ -17,24 +17,39 @@ import { getFinancialSummary } from '@/actions/financial-report'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 interface Props {
-  clientId: string
+  /**
+   * ID da entidade (cliente ou fornecedor). O endpoint de resumo usa o mesmo
+   * parâmetro `clientId` para ambos: em receitas filtra recebíveis por cliente;
+   * em despesas ele é reinterpretado como `supplierId` (pagáveis por fornecedor).
+   */
+  entityId: string
   startDate: string
   endDate: string
 }
 
-// As queryKeys/queryFn abaixo espelham as usadas pelo SummaryCards, então o
+// As queryKeys/queryFn espelham as usadas pelo SummaryCards, então o
 // react-query deduplica as requisições (sem chamada de rede extra).
-export function ClientBalanceCards({ clientId, startDate, endDate }: Props) {
+export function EntityBalanceCards({ entityId, startDate, endDate }: Props) {
   const { data: receitas, isLoading: loadingReceitas } = useQuery({
-    queryKey: ['financial-summary', startDate, endDate, clientId, 'receitas'],
+    queryKey: ['financial-summary', startDate, endDate, entityId, 'receitas'],
     queryFn: () =>
-      getFinancialSummary({ tab: 'receitas', startDate, endDate, clientId }),
+      getFinancialSummary({
+        tab: 'receitas',
+        startDate,
+        endDate,
+        clientId: entityId,
+      }),
   })
 
   const { data: despesas, isLoading: loadingDespesas } = useQuery({
-    queryKey: ['financial-summary', startDate, endDate, clientId, 'despesas'],
+    queryKey: ['financial-summary', startDate, endDate, entityId, 'despesas'],
     queryFn: () =>
-      getFinancialSummary({ tab: 'despesas', startDate, endDate, clientId }),
+      getFinancialSummary({
+        tab: 'despesas',
+        startDate,
+        endDate,
+        clientId: entityId,
+      }),
   })
 
   const isLoading = loadingReceitas || loadingDespesas
