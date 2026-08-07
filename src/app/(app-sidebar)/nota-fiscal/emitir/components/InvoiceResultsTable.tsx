@@ -64,6 +64,7 @@ import {
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
 import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
+import { NfseActionsDropdown } from '@/components/common/fiscal/NfseActionsDropdown'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -512,6 +513,32 @@ const getInvoiceEnvironmentBadges = (
       ),
     })),
   ]
+}
+
+/**
+ * O badge comunica apenas tipo + ambiente — não traz número, série nem status.
+ * Como a listagem anexa todos os documentos da ordem (inclusive tentativas
+ * rejeitadas), uma ordem com N rejeições rendia N badges idênticos. Agrupa por
+ * rótulo e mostra a contagem no lugar da repetição.
+ */
+const groupEnvironmentBadges = (
+  badges: ReturnType<typeof getInvoiceEnvironmentBadges>,
+) => {
+  const grouped = new Map<string, (typeof badges)[number] & { count: number }>()
+
+  for (const badge of badges) {
+    const groupKey = `${badge.label}|${badge.otherEnvironment}`
+    const existing = grouped.get(groupKey)
+
+    if (existing) {
+      existing.count += 1
+      continue
+    }
+
+    grouped.set(groupKey, { ...badge, key: groupKey, count: 1 })
+  }
+
+  return Array.from(grouped.values())
 }
 
 export function InvoiceResultsTable({ searchParams }: Props) {
@@ -978,9 +1005,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                       item,
                       activeEnvironment,
                     )
-                    const environmentBadges = getInvoiceEnvironmentBadges(
-                      item,
-                      activeEnvironment,
+                    const environmentBadges = groupEnvironmentBadges(
+                      getInvoiceEnvironmentBadges(item, activeEnvironment),
                     )
 
                     return (
@@ -1052,6 +1078,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                     className="w-fit"
                                   >
                                     {badge.label}
+                                    {badge.count > 1 ? ` ×${badge.count}` : ''}
                                     {badge.otherEnvironment
                                       ? ' (outro ambiente)'
                                       : ''}
@@ -1121,6 +1148,26 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             <TooltipProvider>
                               {(() => {
                                 if (item.type === 'NFSE_AVULSA') {
+                                  const nfse = item.nfse
+
+                                  if (
+                                    nfse?.id &&
+                                    nfse.status === 'AUTHORIZED'
+                                  ) {
+                                    return (
+                                      <NfseActionsDropdown
+                                        nfse={{
+                                          id: nfse.id,
+                                          numero: nfse.numero ?? 0,
+                                          serie: String(nfse.serie ?? ''),
+                                          status: nfse.status,
+                                          pdfUrl: nfse.pdfUrl,
+                                        }}
+                                        onRefetch={fetchOrders}
+                                      />
+                                    )
+                                  }
+
                                   return (
                                     <ActionButton
                                       Icon={IconReceipt}
@@ -1405,19 +1452,20 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   )
                                 }
 
-                                if (authorizedNfse) {
+                                if (authorizedNfse?.id) {
                                   return (
-                                    <ActionButton
-                                      Icon={IconReceipt}
-                                      tooltip={`Ver PDF NFS-e ${authorizedNfse.numero}/${authorizedNfse.serie}`}
-                                      onClick={() => {
-                                        if (authorizedNfse.pdfUrl) {
-                                          window.open(
-                                            authorizedNfse.pdfUrl,
-                                            '_blank',
-                                          )
-                                        }
+                                    <NfseActionsDropdown
+                                      nfse={{
+                                        id: authorizedNfse.id,
+                                        numero: authorizedNfse.numero ?? 0,
+                                        serie: String(
+                                          authorizedNfse.serie ?? '',
+                                        ),
+                                        status:
+                                          authorizedNfse.status ?? 'AUTHORIZED',
+                                        pdfUrl: authorizedNfse.pdfUrl,
                                       }}
+                                      onRefetch={fetchOrders}
                                     />
                                   )
                                 }
@@ -1543,7 +1591,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                 }
               : null
           }
-          isNfce={true}
+          docType="NFCE"
           onSuccess={fetchOrders}
         />
       </Card>
