@@ -40,6 +40,8 @@ export function EmitirTabsWrapper({ emitirContent, gestaoContent }: Props) {
     params.delete('search')
     params.delete('status')
     params.delete('nfeStatus')
+    // Sem isso a aba de gestão herdaria o ambiente escolhido na emissão.
+    params.delete('ambiente')
 
     router.push(`${pathname}?${params.toString()}`)
   }

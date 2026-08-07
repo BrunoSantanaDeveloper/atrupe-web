@@ -27,6 +27,7 @@ import {
   IconArrowRight,
   IconCloudUpload,
   IconAlertCircle,
+  IconBuildingBank,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
@@ -35,6 +36,7 @@ import {
   uploadImportFile,
   validateImport,
   processImport,
+  createImportBankAccounts,
 } from '@/actions/import'
 import {
   Table,
@@ -60,7 +62,10 @@ export function ImportFinancialModal() {
   const [isValidating, setIsValidating] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
   const [showErrors, setShowErrors] = useState(false)
-  const [_importId, setImportId] = useState<string | null>(null)
+  const [importId, setImportId] = useState<string | null>(null)
+  const [missingAccounts, setMissingAccounts] = useState<string[]>([])
+  const [showBankAccounts, setShowBankAccounts] = useState(false)
+  const [isCreatingAccounts, setIsCreatingAccounts] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -111,6 +116,121 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
     )
   }
 
+  /**
+   * Valida e, se estiver tudo certo, processa a importação.
+   *
+   * Fica separado do upload porque a validação roda de novo depois que o usuário
+   * confirma a criação das contas bancárias. `allowBankAccountStep` desliga esse
+   * passo na segunda rodada: se alguma conta não pôde ser criada, o usuário vê a
+   * lista de erros em vez do mesmo diálogo outra vez.
+   */
+  const validateAndProcess = async (
+    currentImportId: string,
+    allowBankAccountStep = true,
+  ) => {
+    setIsValidating(true)
+    const validateResult = await validateImport(currentImportId)
+    setIsValidating(false)
+
+    if (!validateResult.success || !validateResult.data) {
+      throw new Error(validateResult.error)
+    }
+
+    // Contas citadas na planilha que a empresa não tem: oferecemos criar em vez
+    // de barrar, já que a tela de contas bancárias é feature de plano.
+    const missing = validateResult.data.missingBankAccounts ?? []
+    if (allowBankAccountStep && missing.length > 0) {
+      setMissingAccounts(missing)
+      setShowBankAccounts(true)
+      return
+    }
+
+    if (validateResult.data.errors && validateResult.data.errors.length > 0) {
+      const formattedErrors = validateResult.data.errors.map((err) => ({
+        row: err.row,
+        field: err.field,
+        value: err.value,
+        error: err.error,
+      }))
+      setErrors(formattedErrors)
+      setShowErrors(true)
+      return
+    }
+
+    const processResult = await processImport(currentImportId)
+
+    if (!processResult.success || !processResult.data) {
+      throw new Error(processResult.error)
+    }
+
+    // Se houver erros durante o processamento, mostrar
+    if (processResult.data.errors && processResult.data.errors.length > 0) {
+      const formattedErrors = processResult.data.errors.map((err) => ({
+        row: err.row,
+        field: 'Processamento',
+        value: '',
+        error: err.error,
+      }))
+      setErrors(formattedErrors)
+      setShowErrors(true)
+      return
+    }
+
+    // Sucesso! Importação completa
+    const successMsg =
+      processResult.data.successRows > 0
+        ? `${processResult.data.successRows} lançamento(s) financeiro(s) importado(s) com sucesso!`
+        : 'Nenhum lançamento foi importado'
+
+    if (processResult.data.successRows > 0) {
+      toast.success(successMsg)
+
+      // Invalidar queries para recarregar a lista
+      await queryClient.invalidateQueries({
+        queryKey: ['financial-flow-list'],
+      })
+      await queryClient.invalidateQueries({
+        queryKey: ['financial-flow-totals'],
+      })
+
+      // Fechar modal
+      handleOpenChange(false)
+    } else {
+      toast.warning(successMsg)
+    }
+  }
+
+  const handleCreateBankAccounts = async () => {
+    if (!importId) return
+
+    try {
+      setIsCreatingAccounts(true)
+
+      const result = await createImportBankAccounts(importId)
+
+      if (!result.success || !result.data) {
+        throw new Error(result.error)
+      }
+
+      const total = result.data.created.length + result.data.reactivated.length
+      if (total > 0) {
+        toast.success(`${total} conta(s) bancária(s) cadastrada(s)`)
+      }
+
+      setShowBankAccounts(false)
+      setMissingAccounts([])
+
+      await validateAndProcess(importId, false)
+    } catch (error) {
+      toast.error(
+        (error as Error).message || 'Erro ao criar as contas bancárias',
+      )
+    } finally {
+      setIsCreatingAccounts(false)
+      setIsValidating(false)
+    }
+  }
+
   const handleImport = async () => {
     if (!file) return
 
@@ -146,73 +266,10 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
       const uploadedImportId = uploadResult.data.importId
       setImportId(uploadedImportId)
 
-      // Fase 2: Validação
+      // Fases 2 e 3: validação e processamento
       setIsUploading(false)
-      setIsValidating(true)
 
-      const validateResult = await validateImport(uploadedImportId)
-
-      setIsValidating(false)
-
-      if (!validateResult.success || !validateResult.data) {
-        throw new Error(validateResult.error)
-      }
-
-      // Se houver erros de validação, mostrar modal de erros
-      if (validateResult.data.errors && validateResult.data.errors.length > 0) {
-        const formattedErrors = validateResult.data.errors.map((err) => ({
-          row: err.row,
-          field: err.field,
-          value: err.value,
-          error: err.error,
-        }))
-        setErrors(formattedErrors)
-        setShowErrors(true)
-        return
-      }
-
-      // Fase 3: Processar importação
-      const processResult = await processImport(uploadedImportId)
-
-      if (!processResult.success || !processResult.data) {
-        throw new Error(processResult.error)
-      }
-
-      // Se houver erros durante o processamento, mostrar
-      if (processResult.data.errors && processResult.data.errors.length > 0) {
-        const formattedErrors = processResult.data.errors.map((err) => ({
-          row: err.row,
-          field: 'Processamento',
-          value: '',
-          error: err.error,
-        }))
-        setErrors(formattedErrors)
-        setShowErrors(true)
-        return
-      }
-
-      // Sucesso! Importação completa
-      const successMsg =
-        processResult.data.successRows > 0
-          ? `${processResult.data.successRows} lançamento(s) financeiro(s) importado(s) com sucesso!`
-          : 'Nenhum lançamento foi importado'
-
-      if (processResult.data.successRows > 0) {
-        toast.success(successMsg)
-
-        // Invalidar queries para recarregar a lista
-        await queryClient.invalidateQueries({
-          queryKey: ['financial-flow-list'],
-        })
-        await queryClient.invalidateQueries({
-          queryKey: ['financial-flow-totals'],
-        })
-
-        // Fechar modal
-        handleOpenChange(false)
-      } else {
-        toast.warning(successMsg)
-      }
+      await validateAndProcess(uploadedImportId)
     } catch (error) {
       toast.error((error as Error).message || 'Erro ao processar importação')
     } finally {
@@ -230,6 +287,9 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
       setImportId(null)
       setIsUploading(false)
       setIsValidating(false)
+      setMissingAccounts([])
+      setShowBankAccounts(false)
+      setIsCreatingAccounts(false)
     }
     setOpen(value)
   }
@@ -238,7 +298,10 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+      <Dialog
+        open={open && !showErrors && !showBankAccounts}
+        onOpenChange={handleOpenChange}
+      >
         <DialogTrigger asChild>
           <Button type="button" RightIcon={IconArrowRight} className="w-full">
             Importar
@@ -346,6 +409,70 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
               RightIcon={IconArrowRight}
             >
               Importar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmação de criação das contas bancárias citadas na planilha */}
+      <Dialog
+        open={showBankAccounts}
+        onOpenChange={(value) => !value && setShowBankAccounts(false)}
+      >
+        <DialogContent className="sm:max-w-[578px]">
+          <DialogHeader>
+            <div className="flex items-center gap-4">
+              <FeaturedIcon variant="neutralOutline" Icon={IconBuildingBank} />
+              <DialogTitle>Contas bancárias não cadastradas</DialogTitle>
+              <DialogDescription className="sr-only">
+                Confirme a criação das contas bancárias usadas na planilha para
+                continuar a importação
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+
+          <DialogBody>
+            <p className="text-sm text-gray-600">
+              A planilha usa {missingAccounts.length} conta(s) que ainda não
+              existem nesta empresa. Podemos cadastrá-las agora para continuar a
+              importação:
+            </p>
+
+            <ul className="mt-4 bg-white border border-gray-200 rounded-md divide-y divide-gray-200">
+              {missingAccounts.map((name) => (
+                <li
+                  key={name}
+                  className="px-4 py-3 text-sm font-medium text-gray-900"
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+
+            <Alert variant="warning" className="mt-4">
+              <IconAlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                As contas serão criadas sem instituição definida. Você pode
+                ajustar o banco depois em Configurações &gt; Financeiro &gt;
+                Contas bancárias.
+              </AlertDescription>
+            </Alert>
+          </DialogBody>
+
+          <DialogFooter>
+            <Button
+              variant="neutralOutline"
+              onClick={() => setShowBankAccounts(false)}
+              disabled={isCreatingAccounts}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleCreateBankAccounts}
+              isLoading={isCreatingAccounts}
+              RightIcon={IconArrowRight}
+            >
+              Cadastrar e importar
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -19,6 +19,7 @@ import { clientStatusObj } from '@/consts/client'
 // Hooks
 import { useClientById } from '@/hooks/queries/useClient'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props {
   params: {
@@ -31,6 +32,18 @@ interface Props {
 export default function ClientDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useClientById({ id: params.id })
   const { canManageClients } = usePlanFeatures()
+  const { hasPermission, hasAllPermissions } = usePermissions()
+
+  // Cada aba avançada só aparece se o usuário tiver a permissão do seu conteúdo.
+  const canViewTab: Record<string, boolean> = {
+    cadastro: true,
+    orcamentos: hasPermission('sale:quotation:view'),
+    ordens: hasPermission('sale:order:view'),
+    financeiro: hasAllPermissions([
+      'financial:flow:view',
+      'values:values:view',
+    ]),
+  }
 
   const totals: { [key: string]: number } = {
     orcamentos: data?.quotationsQuantity,
@@ -64,9 +77,9 @@ export default function ClientDetailLayout({ children, params }: Props) {
     },
   ]
 
-  const tabs = showAdvancedTabs
-    ? allTabs
-    : allTabs.filter((tab) => tab.tab === 'cadastro')
+  const tabs = (
+    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'cadastro')
+  ).filter((tab) => canViewTab[tab.tab] ?? true)
 
   return (
     <PermissionGate

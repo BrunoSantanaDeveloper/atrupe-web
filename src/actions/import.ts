@@ -20,7 +20,15 @@ interface ValidateImportResponse {
     value: string
     error: string
   }>
+  /** Contas bancárias citadas no CSV que a empresa ainda não tem (só importação financeira) */
+  missingBankAccounts?: string[]
   preview: any[]
+}
+
+interface CreateImportBankAccountsResponse {
+  created: string[]
+  reactivated: string[]
+  skipped: string[]
 }
 
 interface ImportStatusResponse {
@@ -74,6 +82,27 @@ export async function validateImport(
     return {
       success: false,
       error: error.response?.data?.message || 'Erro ao validar importação',
+    }
+  }
+}
+
+/**
+ * Cria as contas bancárias que o CSV cita e a empresa não tem. Os nomes vêm do
+ * arquivo já enviado, então basta o importId.
+ */
+export async function createImportBankAccounts(importId: string) {
+  const api = await apiInstance()
+
+  try {
+    const response = await api.post<CreateImportBankAccountsResponse>(
+      `/import/${importId}/bank-accounts`,
+    )
+    return { success: true, data: response.data }
+  } catch (error: any) {
+    return {
+      success: false,
+      error:
+        error.response?.data?.message || 'Erro ao criar as contas bancárias',
     }
   }
 }

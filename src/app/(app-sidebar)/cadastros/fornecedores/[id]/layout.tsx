@@ -21,6 +21,7 @@ import { Badge } from '@/components/ui/badge'
 // Hooks
 import { useSupplierById } from '@/hooks/queries/useSupplierById'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { usePermissions } from '@/hooks/usePermissions'
 
 interface Props {
   params: {
@@ -33,8 +34,18 @@ interface Props {
 export default function SupplierDetailLayout({ children, params }: Props) {
   const { data, isLoading } = useSupplierById({ id: params.id })
   const { canManageSuppliers } = usePlanFeatures()
+  const { hasAllPermissions } = usePermissions()
 
   const showAdvancedTabs = canManageSuppliers()
+
+  // A aba Financeiro só aparece se o usuário tiver permissão do fluxo/valores.
+  const canViewTab: Record<string, boolean> = {
+    cadastro: true,
+    financeiro: hasAllPermissions([
+      'financial:flow:view',
+      'values:values:view',
+    ]),
+  }
 
   // Fornecedor não possui orçamentos nem ordens de serviço (são documentos de
   // venda, ligados a cliente). A única aba adicional é o Financeiro (contas a
@@ -52,9 +63,9 @@ export default function SupplierDetailLayout({ children, params }: Props) {
     },
   ]
 
-  const tabs = showAdvancedTabs
-    ? allTabs
-    : allTabs.filter((tab) => tab.tab === 'cadastro')
+  const tabs = (
+    showAdvancedTabs ? allTabs : allTabs.filter((tab) => tab.tab === 'cadastro')
+  ).filter((tab) => canViewTab[tab.tab] ?? true)
 
   return (
     <PermissionGate

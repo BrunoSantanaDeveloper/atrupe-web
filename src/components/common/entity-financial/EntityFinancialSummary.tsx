@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 // UI
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
 // Icons
 import { IconArrowRight } from '@tabler/icons-react'
@@ -86,7 +87,9 @@ export function EntityFinancialSummary({ entityId, entityType }: Props) {
             <Link href={flowHref}>Ver no fluxo financeiro</Link>
           </Button>
         </div>
-        <FinancialFlowData searchParams={listParams} showTotals={false} />
+        <Card>
+          <FinancialFlowData searchParams={listParams} showTotals={false} />
+        </Card>
       </section>
     </div>
   )

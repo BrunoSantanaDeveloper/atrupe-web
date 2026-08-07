@@ -59,6 +59,8 @@ import {
   IconBuildingStore,
   IconTool,
   IconLayoutGrid,
+  IconCircleCheck,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 
 // Components (modal)
@@ -77,6 +79,9 @@ import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/g
 
 // Actions
 import { getData, deleteItemNew, createItemNew } from '@/actions/_cruds'
+
+// Libs
+import { parseDateFromISO } from '@/lib/formatDate'
 
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -447,98 +452,30 @@ const isRejectedInvoiceInActiveEnvironment = (
   )
 }
 
-const getInvoiceEnvironmentBadges = (
-  item: UnifiedInvoiceItem,
-  activeEnvironment: ActiveFiscalEnvironment,
-) => {
-  if (item.type === 'NFE_AVULSA') {
-    return (item.nfes || []).map((nfe) => ({
-      key: `nfe-${nfe.id}`,
-      label: `NF-e: ${getDocumentEnvironmentLabel(nfe.ambiente)}`,
-      ambiente: nfe.ambiente,
-      otherEnvironment: !isActiveEnvironmentDocument(
-        nfe,
-        activeEnvironment.nfe,
-      ),
-    }))
-  }
-
-  if (item.type === 'NFSE_AVULSA' && item.nfse) {
-    return [
-      {
-        key: `nfse-${item.nfse.id}`,
-        label: `NFS-e: ${getDocumentEnvironmentLabel(item.nfse.ambiente)}`,
-        ambiente: item.nfse.ambiente,
-        otherEnvironment: !isActiveEnvironmentDocument(
-          item.nfse,
-          activeEnvironment.nfse,
-        ),
-      },
-    ]
-  }
-
-  if (item.type === 'NFCE_AVULSA' && item.nfce) {
-    return [
-      {
-        key: `nfce-${item.nfce.id}`,
-        label: `NFC-e: ${getDocumentEnvironmentLabel(item.nfce.ambiente)}`,
-        ambiente: item.nfce.ambiente,
-        otherEnvironment: !isActiveEnvironmentDocument(
-          item.nfce,
-          activeEnvironment.nfce,
-        ),
-      },
-    ]
-  }
-
-  if (item.type !== 'ORDER') return []
-
-  return [
-    ...(item.nfes || []).map((nfe) => ({
-      key: `nfe-${nfe.id}`,
-      label: `NF-e: ${getDocumentEnvironmentLabel(nfe.ambiente)}`,
-      ambiente: nfe.ambiente,
-      otherEnvironment: !isActiveEnvironmentDocument(
-        nfe,
-        activeEnvironment.nfe,
-      ),
-    })),
-    ...(item.nfses || []).map((nfse) => ({
-      key: `nfse-${nfse.id}`,
-      label: `NFS-e: ${getDocumentEnvironmentLabel(nfse.ambiente)}`,
-      ambiente: nfse.ambiente,
-      otherEnvironment: !isActiveEnvironmentDocument(
-        nfse,
-        activeEnvironment.nfse,
-      ),
-    })),
-  ]
-}
-
 /**
- * O badge comunica apenas tipo + ambiente — não traz número, série nem status.
- * Como a listagem anexa todos os documentos da ordem (inclusive tentativas
- * rejeitadas), uma ordem com N rejeições rendia N badges idênticos. Agrupa por
- * rótulo e mostra a contagem no lugar da repetição.
+ * Ambientes distintos representados na linha, para a coluna "Ambiente".
+ *
+ * Uma nota avulsa tem um só. Um pedido pode ter documentos nos dois — por
+ * exemplo, um teste em homologação e a emissão definitiva em produção — e
+ * nesse caso mostra os dois chips. A listagem anexa todas as tentativas,
+ * inclusive as rejeitadas, então o resultado é deduplicado: dez rejeições em
+ * homologação continuam valendo um chip.
  */
-const groupEnvironmentBadges = (
-  badges: ReturnType<typeof getInvoiceEnvironmentBadges>,
-) => {
-  const grouped = new Map<string, (typeof badges)[number] & { count: number }>()
+const getItemEnvironments = (item: UnifiedInvoiceItem): number[] => {
+  const documents: { ambiente?: number }[] =
+    item.type === 'NFSE_AVULSA'
+      ? item.nfse
+        ? [item.nfse]
+        : []
+      : item.type === 'NFCE_AVULSA'
+        ? item.nfce
+          ? [item.nfce]
+          : []
+        : [...(item.nfes || []), ...(item.nfses || [])]
 
-  for (const badge of badges) {
-    const groupKey = `${badge.label}|${badge.otherEnvironment}`
-    const existing = grouped.get(groupKey)
-
-    if (existing) {
-      existing.count += 1
-      continue
-    }
-
-    grouped.set(groupKey, { ...badge, key: groupKey, count: 1 })
-  }
-
-  return Array.from(grouped.values())
+  // `ambiente` ausente é homologação, mesma leitura de isActiveEnvironmentDocument.
+  const ambientes = new Set(documents.map((doc) => doc.ambiente ?? 2))
+  return Array.from(ambientes).sort()
 }
 
 export function InvoiceResultsTable({ searchParams }: Props) {
@@ -559,8 +496,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     [urlSearchParams, searchParams],
   )
 
-  const { data: fiscalConfig } = useFiscalEnvironmentConfig()
-  const activeEnvironment = useMemo(
+  const { data: fiscalConfig, isPending: isFiscalConfigPending } =
+    useFiscalEnvironmentConfig()
+  const configuredEnvironment = useMemo(
     () => ({
       nfe: resolveFiscalEnvironment(fiscalConfig, 'NFE') === 'PRODUCAO' ? 1 : 2,
       nfse:
@@ -594,7 +532,45 @@ export function InvoiceResultsTable({ searchParams }: Props) {
   const endDate = activeParams.endDate
   const currentDocType = activeParams.docType || 'TODOS'
 
+  /**
+   * Ambiente do filtro. Enquanto o usuário não escolher explicitamente, a tela
+   * abre no ambiente configurado do emissor — é o que ele usa no dia a dia.
+   * Só cai em "todos" quando os três tipos de documento divergem entre si, caso
+   * em que nenhum ambiente único representaria a listagem.
+   */
+  const defaultAmbiente = useMemo(() => {
+    const { nfe, nfse, nfce } = configuredEnvironment
+    return nfe === nfse && nfse === nfce ? String(nfe) : 'TODOS'
+  }, [configuredEnvironment])
+
+  const currentAmbiente = activeParams.ambiente || defaultAmbiente
+  const ambienteFiltrado =
+    currentAmbiente === '1' ? 1 : currentAmbiente === '2' ? 2 : undefined
+
+  /**
+   * Com um ambiente selecionado, os helpers de status precisam avaliar os
+   * documentos contra ELE, e não contra o ambiente configurado. Sem isso,
+   * filtrar homologação com o emissor em produção mostraria pedidos já
+   * emitidos como "Não emitida".
+   */
+  const activeEnvironment = useMemo(
+    () =>
+      ambienteFiltrado
+        ? {
+            nfe: ambienteFiltrado,
+            nfse: ambienteFiltrado,
+            nfce: ambienteFiltrado,
+          }
+        : configuredEnvironment,
+    [ambienteFiltrado, configuredEnvironment],
+  )
+
   const fetchOrders = useCallback(async () => {
+    // O ambiente padrão depende da config do emissor. Buscar antes dela chegar
+    // traria a lista sem filtro e logo em seguida um refetch — a query tem
+    // cache de 60s, então na prática isso resolve no mesmo tick.
+    if (isFiscalConfigPending) return
+
     // Descarta respostas de requisições antigas: ao trocar de aba rapidamente a
     // resposta anterior podia chegar depois e sobrescrever a lista atual.
     const requestId = ++latestRequestIdRef.current
@@ -609,6 +585,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       if (recordType) filters.recordType = recordType
       if (currentDocType && currentDocType !== 'TODOS')
         filters.docType = currentDocType
+      if (ambienteFiltrado) filters.ambiente = String(ambienteFiltrado)
       if (currentSearch) filters.search = currentSearch
       if (startDate) filters.startDate = startDate
       if (endDate) filters.endDate = endDate
@@ -653,6 +630,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     currentNfeStatus,
     recordType,
     currentDocType,
+    ambienteFiltrado,
+    isFiscalConfigPending,
     startDate,
     endDate,
   ])
@@ -668,6 +647,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     currentSearch,
     currentNfeStatus,
     currentDocType,
+    ambienteFiltrado,
     startDate,
     endDate,
   ])
@@ -810,10 +790,12 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     [fetchOrders],
   )
 
-  // Format date string for display
+  // O backend manda a data do grupo como YYYY-MM-DD. `new Date('2026-08-07')`
+  // parseia como meia-noite UTC e, renderizado em horário de Brasília, exibia
+  // o dia anterior — toda emissão aparecia com a data de ontem.
   const formatDate = (dateStr: string) => {
     try {
-      const date = new Date(dateStr)
+      const date = parseDateFromISO(dateStr)
       return date.toLocaleDateString('pt-BR', {
         weekday: 'long',
         year: 'numeric',
@@ -849,8 +831,17 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     router.push(query ? `${pathname}?${query}` : pathname)
   }
 
+  // O ambiente sempre vai explícito na URL, inclusive quando coincide com o
+  // padrão: assim um link compartilhado mostra a mesma lista para quem abrir.
+  const handleAmbienteChange = (value: string) => {
+    const params = new URLSearchParams(activeParams)
+    params.set('ambiente', value)
+    params.delete('page')
+    router.push(`${pathname}?${params.toString()}`)
+  }
+
   const docTypeTabs = (
-    <div className="px-4 pt-3">
+    <div className="flex flex-col gap-3 px-4 pt-3 lg:flex-row lg:items-center lg:justify-between">
       <Tabs
         value={currentDocType}
         onValueChange={handleDocTypeChange}
@@ -868,6 +859,23 @@ export function InvoiceResultsTable({ searchParams }: Props) {
           </TabsTrigger>
           <TabsTrigger value="NFCE" icon={<IconFileInvoice size={16} />}>
             NFC-e
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
+      <Tabs
+        value={currentAmbiente}
+        onValueChange={handleAmbienteChange}
+        variant="pill"
+        sizing="sm"
+      >
+        <TabsList aria-label="Filtrar por ambiente fiscal">
+          <TabsTrigger value="TODOS">Todos</TabsTrigger>
+          <TabsTrigger value="1" icon={<IconCircleCheck size={14} />}>
+            Produção
+          </TabsTrigger>
+          <TabsTrigger value="2" icon={<IconAlertTriangle size={14} />}>
+            Homologação
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -973,6 +981,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                 <TableHead>Tipo / Referência</TableHead>
                 <TableHead>Cliente</TableHead>
                 <TableHead>Valor</TableHead>
+                <TableHead className="hidden md:table-cell">Ambiente</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="w-12"></TableHead>
               </TableRow>
@@ -982,7 +991,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                 <Fragment key={group.date}>
                   <TableRow className="bg-gray-100">
                     <TableCell
-                      colSpan={6}
+                      colSpan={7}
                       className="text-gray font-medium text-xs py-3"
                     >
                       {formatDate(group.date)}
@@ -1005,9 +1014,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                       item,
                       activeEnvironment,
                     )
-                    const environmentBadges = groupEnvironmentBadges(
-                      getInvoiceEnvironmentBadges(item, activeEnvironment),
-                    )
+                    const itemEnvironments = getItemEnvironments(item)
 
                     return (
                       <TableRow key={item.id} className="hover:bg-gray-50">
@@ -1063,29 +1070,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                             <p className="font-medium text-gray-800">
                               {item.reference}
                             </p>
-                            {environmentBadges.length > 0 && (
-                              <div className="flex flex-wrap gap-1">
-                                {environmentBadges.map((badge) => (
-                                  <Badge
-                                    key={badge.key}
-                                    variant={
-                                      badge.otherEnvironment
-                                        ? 'neutralLight'
-                                        : getDocumentEnvironmentVariant(
-                                            badge.ambiente,
-                                          )
-                                    }
-                                    className="w-fit"
-                                  >
-                                    {badge.label}
-                                    {badge.count > 1 ? ` ×${badge.count}` : ''}
-                                    {badge.otherEnvironment
-                                      ? ' (outro ambiente)'
-                                      : ''}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
+                            {/* O ambiente saiu daqui para a coluna própria:
+                                repetido em toda linha, poluía a referência. */}
                             {(() => {
                               if (item.type === 'ORDER') {
                                 const authorizedNfe = findActiveNfe(
@@ -1130,6 +1116,25 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                         <TableCell className="font-semibold text-success-600">
                           {formatCurrency(item.totalValue)}
                         </TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {itemEnvironments.length === 0 ? (
+                            <span className="text-sm text-gray-400">—</span>
+                          ) : (
+                            <div className="flex flex-wrap gap-1">
+                              {itemEnvironments.map((ambiente) => (
+                                <Badge
+                                  key={ambiente}
+                                  variant={getDocumentEnvironmentVariant(
+                                    ambiente,
+                                  )}
+                                  className="w-fit"
+                                >
+                                  {getDocumentEnvironmentLabel(ambiente)}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Badge variant={statusProps.variant} status>
@@ -1150,33 +1155,25 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                 if (item.type === 'NFSE_AVULSA') {
                                   const nfse = item.nfse
 
-                                  if (
-                                    nfse?.id &&
-                                    nfse.status === 'AUTHORIZED'
-                                  ) {
-                                    return (
-                                      <NfseActionsDropdown
-                                        nfse={{
-                                          id: nfse.id,
-                                          numero: nfse.numero ?? 0,
-                                          serie: String(nfse.serie ?? ''),
-                                          status: nfse.status,
-                                          pdfUrl: nfse.pdfUrl,
-                                        }}
-                                        onRefetch={fetchOrders}
-                                      />
-                                    )
-                                  }
+                                  // O dropdown cobre todos os status: quando a
+                                  // nota não está autorizada ele mantém apenas
+                                  // "Consultar status", que é o caminho para
+                                  // destravar as que ficaram em processamento.
+                                  // Antes, esses casos caíam num push para
+                                  // /nota-fiscal/emitir-nfse/avulsa/<id>, rota
+                                  // que nunca existiu — sempre 404.
+                                  if (!nfse?.id) return null
 
                                   return (
-                                    <ActionButton
-                                      Icon={IconReceipt}
-                                      tooltip="Ver nota de serviço"
-                                      onClick={() =>
-                                        router.push(
-                                          `/nota-fiscal/emitir-nfse/avulsa/${item.id}`,
-                                        )
-                                      }
+                                    <NfseActionsDropdown
+                                      nfse={{
+                                        id: nfse.id,
+                                        numero: nfse.numero ?? 0,
+                                        serie: String(nfse.serie ?? ''),
+                                        status: nfse.status ?? item.status,
+                                        pdfUrl: nfse.pdfUrl,
+                                      }}
+                                      onRefetch={fetchOrders}
                                     />
                                   )
                                 }
