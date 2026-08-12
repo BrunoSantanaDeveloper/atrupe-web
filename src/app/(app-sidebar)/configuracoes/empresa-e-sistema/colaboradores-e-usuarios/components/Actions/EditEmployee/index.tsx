@@ -177,7 +177,6 @@ export function EditEmployeeDialog({
                     label="Cargo"
                     width="flex-[1_0_190px]"
                     sectorId={watch('sectorId')}
-                    disabled={rowData?.role?.isAdmin}
                   />
 
                   <FormInput<FormType>
