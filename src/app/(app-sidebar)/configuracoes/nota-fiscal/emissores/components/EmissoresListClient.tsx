@@ -141,6 +141,9 @@ export function EmissoresListClient() {
         emitCrt: config?.emitCrt || '1',
         ibgeCode: config?.ibgeCode || '', // Refactored property from backend service
 
+        // Numeração efetiva por documento (linha do ambiente ativo)
+        activeNumbering: config?.activeNumbering,
+
         // Fiscal Configs
         serieNfe: config?.serieNfe,
         proximoNumeroNfe: config?.proximoNumeroNfe,

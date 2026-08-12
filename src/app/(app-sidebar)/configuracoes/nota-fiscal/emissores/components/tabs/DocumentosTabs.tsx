@@ -1,33 +1,104 @@
 'use client'
 
 import Link from 'next/link'
+import { useFormContext } from 'react-hook-form'
 import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
+import { FormSelect } from '@/components/common/form/FormSelect'
 
-import type { EmissorData } from '../EmissorListItem'
+import type { EmissorData, FiscalDocType } from '../EmissorListItem'
+import type { FiscalEnv } from '../../lib/fiscal-readiness'
+
+const AMBIENTE_OPTIONS = [
+  { label: 'Homologação', value: 'HOMOLOGACAO' },
+  { label: 'Produção', value: 'PRODUCAO' },
+]
+
+const AMBIENTE_LABEL: Record<string, string> = {
+  HOMOLOGACAO: 'homologação',
+  PRODUCAO: 'produção',
+}
 
 /**
- * Aviso reutilizado nas abas de numeração.
+ * Seletor de ambiente da numeração + aviso do que está sendo editado.
  *
- * A numeração passou a ser por (emissor, ambiente, tipo de documento) na
- * Fase 3. Os campos abaixo alimentam a sequência do ambiente de HOMOLOGAÇÃO;
- * produção tem sequência independente, ajustada no assistente de ativação.
+ * A numeração é por (emissor, ambiente, tipo de documento) desde a Fase 3 e é
+ * de lá que a reserva atômica tira o número. Antes esta tela editava só a
+ * coluna global de `invoicy_configs`, que a emissão não lê: o usuário digitava
+ * o próximo número, salvava, e a nota saía com a sequência do ambiente — que
+ * podia estar em 1 por causa da migration 20260803120000. Escolher o ambiente
+ * aqui é o que faz o valor digitado chegar onde a emissão vai buscar.
  */
-function NumeracaoHint() {
+function NumeracaoPorAmbiente({
+  emissor,
+  docType,
+  environmentField,
+  seriesField,
+  numberField,
+}: {
+  emissor?: EmissorData | null
+  docType: FiscalDocType
+  environmentField: string
+  seriesField: string
+  numberField: string
+}) {
+  const form = useFormContext()
+  const ambiente: FiscalEnv = form.watch(environmentField) || 'HOMOLOGACAO'
+
+  const numeracaoDe = (environment: string) =>
+    emissor?.environments?.find(
+      (e) => e.docType === docType && e.environment === environment,
+    )
+
+  // Trocar de ambiente troca a sequência exibida: os campos passam a mostrar
+  // (e a salvar) a numeração daquele ambiente, não a do anterior.
+  const handleAmbienteChange = (value: string) => {
+    const linha = numeracaoDe(value)
+    if (linha?.series !== undefined && linha?.series !== null) {
+      form.setValue(seriesField, linha.series, { shouldDirty: false })
+    }
+    if (linha?.nextNumber !== undefined && linha?.nextNumber !== null) {
+      form.setValue(numberField, linha.nextNumber, { shouldDirty: false })
+    }
+  }
+
+  const outro = ambiente === 'PRODUCAO' ? 'HOMOLOGACAO' : 'PRODUCAO'
+  const numeracaoOutro = numeracaoDe(outro)
+
   return (
-    <div className="flex gap-2 rounded-md border border-blue-200 bg-blue-50 p-3">
-      <IconInfoCircle className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
-      <p className="text-xs text-blue-900">
-        Homologação e produção têm sequências independentes. Estes campos
-        ajustam a numeração do ambiente de homologação.
-      </p>
+    <div className="space-y-3">
+      <FormSelect
+        name={environmentField}
+        label="Ambiente da numeração"
+        options={AMBIENTE_OPTIONS}
+        additionalOnChange={handleAmbienteChange}
+      />
+
+      <div className="flex gap-2 rounded-md border border-blue-200 bg-blue-50 p-3">
+        <IconInfoCircle className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+        <div className="text-xs text-blue-900">
+          <p>
+            A série e o próximo número acima valem para{' '}
+            <strong>{AMBIENTE_LABEL[ambiente]}</strong>. Cada ambiente tem
+            sequência independente.
+          </p>
+          {numeracaoOutro?.nextNumber != null && (
+            <p className="mt-1">
+              Em {AMBIENTE_LABEL[outro]} a sequência atual é{' '}
+              {numeracaoOutro.nextNumber}
+              {numeracaoOutro.series != null ? `/${numeracaoOutro.series}` : ''}
+              .
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
 
-export function NfeTab() {
+export function NfeTab({ emissor }: { emissor?: EmissorData | null }) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
@@ -47,7 +118,13 @@ export function NfeTab() {
           placeholder="1"
         />
       </div>
-      <NumeracaoHint />
+      <NumeracaoPorAmbiente
+        emissor={emissor}
+        docType="NFE"
+        environmentField="nfeNumberingEnvironment"
+        seriesField="serieNfe"
+        numberField="proximoNumeroNfe"
+      />
     </div>
   )
 }
@@ -74,7 +151,13 @@ export function NfceTab({ emissor }: { emissor?: EmissorData | null }) {
         />
       </div>
 
-      <NumeracaoHint />
+      <NumeracaoPorAmbiente
+        emissor={emissor}
+        docType="NFCE"
+        environmentField="nfceNumberingEnvironment"
+        seriesField="serieNfce"
+        numberField="proximoNumeroNfce"
+      />
 
       <div>
         <FormInput
@@ -105,7 +188,7 @@ export function NfceTab({ emissor }: { emissor?: EmissorData | null }) {
   )
 }
 
-export function NfseTab() {
+export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
@@ -123,7 +206,13 @@ export function NfseTab() {
         />
       </div>
 
-      <NumeracaoHint />
+      <NumeracaoPorAmbiente
+        emissor={emissor}
+        docType="NFSE"
+        environmentField="nfseNumberingEnvironment"
+        seriesField="serieNfse"
+        numberField="proximoRpsNfse"
+      />
 
       <div>
         <FormInput

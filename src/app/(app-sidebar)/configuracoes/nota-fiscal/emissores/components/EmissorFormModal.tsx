@@ -56,6 +56,13 @@ const emissoresSchema = z.object({
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
 
+  // Ambiente a que a numeração acima se aplica. Homologação e produção têm
+  // sequências independentes; sem isto o PATCH gravava só a coluna global e o
+  // número digitado não chegava ao ambiente que a emissão consulta.
+  nfeNumberingEnvironment: z.enum(['HOMOLOGACAO', 'PRODUCAO']).optional(),
+  nfceNumberingEnvironment: z.enum(['HOMOLOGACAO', 'PRODUCAO']).optional(),
+  nfseNumberingEnvironment: z.enum(['HOMOLOGACAO', 'PRODUCAO']).optional(),
+
   // Informações complementares e envio
   taxInfoText: z.string().optional(),
   sendDanfeXmlAutomatically: z.boolean().optional(),
@@ -72,8 +79,11 @@ export type EmissorFormValues = z.infer<typeof emissoresSchema>
 
 /**
  * Garante que o PATCH comum nunca altere ambiente ou credenciais sensíveis.
- * Ambiente muda apenas via `activate`; CSC via `/environments/:env/csc`;
- * numeração ambiental via `/environments/:env/numbering`.
+ * Ambiente ATIVO muda apenas via `activate`; CSC via `/environments/:env/csc`.
+ *
+ * Os campos `<doc>NumberingEnvironment` seguem no payload de propósito: eles
+ * não trocam o ambiente ativo, só dizem a qual sequência a numeração informada
+ * pertence.
  */
 const sanitizeEmissorPayload = (data: EmissorFormValues) => {
   const safe: Record<string, unknown> = { ...data }
@@ -132,6 +142,9 @@ export function EmissorFormModal({
       proximoRpsNfse: 1,
       serieNfce: 1,
       proximoNumeroNfce: 1,
+      nfeNumberingEnvironment: 'HOMOLOGACAO',
+      nfceNumberingEnvironment: 'HOMOLOGACAO',
+      nfseNumberingEnvironment: 'HOMOLOGACAO',
       taxInfoText: '',
       sendDanfeXmlAutomatically: false,
       sendDanfeAutomatically: true,
@@ -174,6 +187,12 @@ export function EmissorFormModal({
       setActiveTab(tabs[0]?.key ?? 'identificacao')
 
       if (emissor) {
+        // A numeração exibida sai de `activeNumbering` — a linha do ambiente
+        // ativo, que é a sequência que a emissão realmente consome. Os campos
+        // legados (serieNfe/proximoNumeroNfe) são globais e ficaram como
+        // fallback só para emissor antigo que ainda não tem linha ambiental.
+        const numeracao = emissor.activeNumbering
+
         form.reset({
           name: emissor.name || '',
           isDefault: emissor.isDefault || false,
@@ -183,14 +202,24 @@ export function EmissorFormModal({
           prazoCancelamentoNfce: emissor.prazoCancelamentoNfce ?? 30,
           ie: emissor.ie || '',
           im: emissor.im || '',
-          serieNfe: emissor.serieNfe || 1,
-          proximoNumeroNfe: emissor.proximoNumeroNfe || 1,
-          serieNfse: emissor.serieNfse || 'A1',
-          proximoRpsNfse: emissor.proximoRpsNfse || 1,
+          serieNfe: Number(numeracao?.nfe?.series ?? emissor.serieNfe ?? 1),
+          proximoNumeroNfe:
+            numeracao?.nfe?.nextNumber ?? emissor.proximoNumeroNfe ?? 1,
+          nfeNumberingEnvironment: numeracao?.nfe?.environment ?? 'HOMOLOGACAO',
+          serieNfse: String(
+            numeracao?.nfse?.series ?? emissor.serieNfse ?? 'A1',
+          ),
+          proximoRpsNfse:
+            numeracao?.nfse?.nextNumber ?? emissor.proximoRpsNfse ?? 1,
+          nfseNumberingEnvironment:
+            numeracao?.nfse?.environment ?? 'HOMOLOGACAO',
           codigoServico: emissor.codigoServico || '',
           aliquotaIss: emissor.aliquotaIss,
-          serieNfce: emissor.serieNfce || 1,
-          proximoNumeroNfce: emissor.proximoNumeroNfce || 1,
+          serieNfce: Number(numeracao?.nfce?.series ?? emissor.serieNfce ?? 1),
+          proximoNumeroNfce:
+            numeracao?.nfce?.nextNumber ?? emissor.proximoNumeroNfce ?? 1,
+          nfceNumberingEnvironment:
+            numeracao?.nfce?.environment ?? 'HOMOLOGACAO',
           defaultCfop: emissor.defaultCfop || '',
           defaultOperationNature: emissor.defaultOperationNature || '',
           taxInfoText: emissor.taxInfoText || '',
@@ -226,9 +255,20 @@ export function EmissorFormModal({
     const campoPorAba: Record<TabKey, string[]> = {
       identificacao: ['name', 'emitCrt', 'defaultNcm', 'isActive'],
       certificado: [],
-      nfe: ['serieNfe', 'proximoNumeroNfe'],
-      nfce: ['serieNfce', 'proximoNumeroNfce', 'prazoCancelamentoNfce'],
-      nfse: ['serieNfse', 'proximoRpsNfse', 'aliquotaIss', 'codigoServico'],
+      nfe: ['serieNfe', 'proximoNumeroNfe', 'nfeNumberingEnvironment'],
+      nfce: [
+        'serieNfce',
+        'proximoNumeroNfce',
+        'prazoCancelamentoNfce',
+        'nfceNumberingEnvironment',
+      ],
+      nfse: [
+        'serieNfse',
+        'proximoRpsNfse',
+        'aliquotaIss',
+        'codigoServico',
+        'nfseNumberingEnvironment',
+      ],
       padroes: ['defaultCfop', 'defaultOperationNature'],
       envio: ['taxInfoText', 'sendFiscalEmailCopyTo'],
     }
@@ -299,7 +339,7 @@ export function EmissorFormModal({
                 )}
 
                 <TabsContent value="nfe" className="m-0">
-                  <NfeTab />
+                  <NfeTab emissor={emissor} />
                 </TabsContent>
 
                 <TabsContent value="nfce" className="m-0">
@@ -307,7 +347,7 @@ export function EmissorFormModal({
                 </TabsContent>
 
                 <TabsContent value="nfse" className="m-0">
-                  <NfseTab />
+                  <NfseTab emissor={emissor} />
                 </TabsContent>
 
                 <TabsContent value="padroes" className="m-0">

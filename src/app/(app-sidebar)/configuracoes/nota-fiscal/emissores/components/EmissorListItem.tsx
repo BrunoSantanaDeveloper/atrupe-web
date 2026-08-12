@@ -52,6 +52,18 @@ export interface EmissorEnvironment {
   lastValidationAt: string | null
   lastValidationError: string | null
   activatedAt: string | null
+  // Numeração desta linha (emissor + ambiente + docType). Homologação e
+  // produção têm sequências independentes e é daqui que a emissão tira o
+  // número — os campos legados de EmissorData são globais.
+  series?: number | string | null
+  nextNumber?: number | null
+}
+
+/** Numeração efetiva de um documento: a do ambiente ativo dele. */
+export interface EmissorActiveNumbering {
+  environment: FiscalEnv
+  series: number | string
+  nextNumber: number
 }
 
 export interface EmissorData {
@@ -106,7 +118,16 @@ export interface EmissorData {
   contingenciaNfceMotivo?: string | null
   contingenciaNfceDataHora?: string | null
 
-  // Fiscal Series
+  // Numeração efetiva por documento (linha do ambiente ativo). É o que a
+  // emissão consome — preferir isto aos campos legados abaixo, que são globais
+  // e não distinguem homologação de produção.
+  activeNumbering?: {
+    nfe: EmissorActiveNumbering
+    nfce: EmissorActiveNumbering
+    nfse: EmissorActiveNumbering
+  }
+
+  // Fiscal Series (legado — global, sem ambiente)
   serieNfe?: number
   proximoNumeroNfe?: number
   serieNfse?: string
