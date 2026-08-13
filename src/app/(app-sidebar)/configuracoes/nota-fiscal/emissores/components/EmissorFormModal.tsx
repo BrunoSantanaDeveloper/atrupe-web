@@ -100,14 +100,6 @@ const sanitizeEmissorPayload = (data: EmissorFormValues) => {
 
 export type EditType = 'GLOBAL' | 'NFE' | 'NFSE' | 'NFCE'
 
-interface EmissorFormModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  emissor?: EmissorData | null
-  editType?: EditType
-  onSave: (data: EmissorFormValues) => Promise<void>
-}
-
 type TabKey =
   | 'identificacao'
   | 'certificado'
@@ -117,11 +109,23 @@ type TabKey =
   | 'padroes'
   | 'envio'
 
+interface EmissorFormModalProps {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  emissor?: EmissorData | null
+  editType?: EditType
+  /** Aba aberta ao montar. Usada por quem manda o usuário resolver algo
+   *  específico — por exemplo o wizard de ativação apontando o certificado. */
+  initialTab?: TabKey
+  onSave: (data: EmissorFormValues) => Promise<void>
+}
+
 export function EmissorFormModal({
   open,
   onOpenChange,
   emissor,
   editType = 'GLOBAL',
+  initialTab,
   onSave,
 }: EmissorFormModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -171,10 +175,16 @@ export function EmissorFormModal({
 
     if (editType === 'GLOBAL') return all
 
+    // O certificado é do emissor e bloqueia a ativação de QUALQUER tipo de
+    // documento, então precisa estar em todas as listas. Sem isso ele só
+    // aparecia com editType 'GLOBAL', que por sua vez só era usado para criar
+    // um emissor novo — e aí `isEditing` era falso e a aba sumia de novo. Na
+    // prática a aba era inalcançável e o wizard de ativação cobrava um
+    // certificado sem oferecer onde enviá-lo.
     const permitidas: Record<Exclude<EditType, 'GLOBAL'>, TabKey[]> = {
-      NFE: ['identificacao', 'nfe', 'padroes'],
-      NFCE: ['identificacao', 'nfce', 'padroes'],
-      NFSE: ['identificacao', 'nfse'],
+      NFE: ['identificacao', 'certificado', 'nfe', 'padroes'],
+      NFCE: ['identificacao', 'certificado', 'nfce', 'padroes'],
+      NFSE: ['identificacao', 'certificado', 'nfse'],
     }
     return all.filter((t) => permitidas[editType].includes(t.key))
   }, [editType, isEditing])
@@ -184,7 +194,11 @@ export function EmissorFormModal({
   // Reset form when emissor changes
   useEffect(() => {
     if (open) {
-      setActiveTab(tabs[0]?.key ?? 'identificacao')
+      const alvoInicial =
+        initialTab && tabs.some((t) => t.key === initialTab)
+          ? initialTab
+          : (tabs[0]?.key ?? 'identificacao')
+      setActiveTab(alvoInicial)
 
       if (emissor) {
         // A numeração exibida sai de `activeNumbering` — a linha do ambiente
@@ -234,7 +248,7 @@ export function EmissorFormModal({
     }
     // `tabs` é derivado de editType/isEditing; incluí-lo causaria reset extra.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, emissor, form])
+  }, [open, emissor, initialTab, form])
 
   const handleSubmit = async (data: EmissorFormValues) => {
     setIsSubmitting(true)

@@ -68,6 +68,9 @@ export function EmissoresListClient() {
     null,
   )
   const [editType, setEditType] = useState<EditType>('GLOBAL')
+  const [modalInitialTab, setModalInitialTab] = useState<
+    'certificado' | undefined
+  >(undefined)
   const [deleteEmissor, setDeleteEmissor] = useState<EmissorData | null>(null)
   const [wizardOpen, setWizardOpen] = useState(false)
   const [wizardEmissor, setWizardEmissor] = useState<EmissorData | null>(null)
@@ -288,6 +291,16 @@ export function EmissoresListClient() {
   const handleEdit = (emissor: EmissorData, type: EditType = 'GLOBAL') => {
     setSelectedEmissor(emissor)
     setEditType(type)
+    setModalInitialTab(undefined)
+    setModalOpen(true)
+  }
+
+  // Saída da pendência de certificado no wizard de ativação: abre o emissor
+  // já na aba do certificado, em vez de deixar o usuário procurar.
+  const handleCadastrarCertificado = (emissor: EmissorData) => {
+    setSelectedEmissor(emissor)
+    setEditType('GLOBAL')
+    setModalInitialTab('certificado')
     setModalOpen(true)
   }
 
@@ -401,6 +414,7 @@ export function EmissoresListClient() {
         onOpenChange={setModalOpen}
         emissor={selectedEmissor}
         editType={editType}
+        initialTab={modalInitialTab}
         onSave={handleSave}
       />
 
@@ -410,6 +424,11 @@ export function EmissoresListClient() {
         emissor={wizardEmissor}
         environment={wizardEnv}
         docType={wizardDocType}
+        onCadastrarCertificado={
+          wizardEmissor
+            ? () => handleCadastrarCertificado(wizardEmissor)
+            : undefined
+        }
       />
 
       <AlertDialog

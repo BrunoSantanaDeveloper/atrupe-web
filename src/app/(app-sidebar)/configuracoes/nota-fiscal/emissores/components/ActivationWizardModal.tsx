@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label'
 
 import {
   IconAlertTriangle,
+  IconCertificate,
   IconCircleCheckFilled,
   IconCircleXFilled,
   IconInfoCircle,
@@ -47,6 +48,9 @@ interface ActivationWizardModalProps {
   docType?: 'NFE' | 'NFSE' | 'NFCE'
   /** Habilita o passo de numeração ambiental (requer backend PATCH /numbering). */
   numberingEnabled?: boolean
+  /** Abre o cadastro do certificado digital do emissor. Sem isso a pendência
+   *  de certificado vira um beco sem saída: o wizard cobra, mas não diz onde. */
+  onCadastrarCertificado?: () => void
 }
 
 const STEPS = [
@@ -66,6 +70,7 @@ export function ActivationWizardModal({
   onOpenChange,
   docType = 'NFCE',
   numberingEnabled = true,
+  onCadastrarCertificado,
 }: ActivationWizardModalProps) {
   const queryClient = useQueryClient()
   const emissorId = emissor?.id ?? ''
@@ -499,13 +504,30 @@ export function ActivationWizardModal({
                         )
                       })}
                     </ul>
-                    <button
-                      type="button"
-                      onClick={() => setStep(1)}
-                      className="text-xs text-error-700 underline underline-offset-2 hover:text-error-900"
-                    >
-                      Ver diagnóstico completo
-                    </button>
+                    <div className="flex flex-wrap items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="text-xs text-error-700 underline underline-offset-2 hover:text-error-900"
+                      >
+                        Ver diagnóstico completo
+                      </button>
+                      {readiness.data.blocking.includes('certificate') &&
+                        onCadastrarCertificado && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="errorOutline"
+                            LeftIcon={IconCertificate}
+                            onClick={() => {
+                              onOpenChange(false)
+                              onCadastrarCertificado()
+                            }}
+                          >
+                            Cadastrar certificado
+                          </Button>
+                        )}
+                    </div>
                   </div>
                 )}
 

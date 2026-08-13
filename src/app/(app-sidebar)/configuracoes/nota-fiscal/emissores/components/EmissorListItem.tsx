@@ -563,6 +563,16 @@ export function EmissorListItem({
               align="end"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Único acesso ao editor completo depois que o emissor existe:
+                  os lápis dos cartões abrem só as abas daquele documento, e
+                  Certificado e Envio ficavam sem nenhuma porta de entrada. */}
+              <DropdownMenuItem
+                onClick={() => onEdit(emissor, 'GLOBAL')}
+                disabled={!hasEmissor}
+              >
+                <IconPencil size={16} className="mr-2" />
+                Editar emissor
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onTestConnection(emissor)}
                 disabled={!hasEmissor}
