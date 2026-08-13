@@ -1,12 +1,13 @@
 import { chromium, type FullConfig } from '@playwright/test'
 
+import { getTestCredentials } from './helpers/credentials'
+
 async function globalSetup(config: FullConfig) {
   // Pega a URL do projeto (que veio do E2E_BASE_URL no config) ou usa localhost
   const baseURL = config.projects[0].use.baseURL ?? 'http://localhost:3000'
 
-  // Usa variáveis de ambiente para a conta de smoke test, fallback para a de dev local
-  const email = process.env.E2E_USER_EMAIL ?? 'contig.um@gmail.com'
-  const password = process.env.E2E_USER_PASSWORD ?? 'Atrupe123@'
+  // Conta de smoke test — exigida via ambiente, sem fallback no repositório
+  const { email, password } = getTestCredentials()
 
   console.log(`[E2E Setup] Autenticando em: ${baseURL} com ${email}`)
 

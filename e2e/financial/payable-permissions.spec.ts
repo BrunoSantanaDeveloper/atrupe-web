@@ -1,5 +1,7 @@
 import { test, expect, Page } from '@playwright/test'
 
+import { getTestCredentials } from '../helpers/credentials'
+
 /**
  * ──────────────────────────────────────────────────────────────────────────────
  * SUITE: Validação de Permissões — Diretor Financeiro salva Despesa
@@ -372,13 +374,11 @@ test.describe.skip(
       const adminContext = await browser.newContext({ storageState: undefined })
       const adminPage = await adminContext.newPage()
 
+      const admin = getTestCredentials()
+
       await adminPage.goto('/login')
-      await adminPage
-        .getByLabel(/e-?mail/i)
-        .fill(process.env.E2E_USER || 'contig.um@gmail.com')
-      await adminPage
-        .getByLabel(/senha/i)
-        .fill(process.env.E2E_PASSWORD || 'Atrupe123@')
+      await adminPage.getByLabel(/e-?mail/i).fill(admin.email)
+      await adminPage.getByLabel(/senha/i).fill(admin.password)
       await adminPage
         .getByRole('button', { name: /entrar|login|acessar/i })
         .click()

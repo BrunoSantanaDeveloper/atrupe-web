@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
+import { loadEnvConfig } from '@next/env'
+
+// O Playwright não lê `.env` sozinho (diferente do Next). Sem isso, as credenciais
+// exigidas em e2e/helpers/credentials.ts só funcionariam exportadas no shell.
+loadEnvConfig(process.cwd())
 
 export default defineConfig({
   testDir: './e2e',

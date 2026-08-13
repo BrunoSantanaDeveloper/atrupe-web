@@ -1,5 +1,7 @@
 import { request, type APIRequestContext } from '@playwright/test'
 
+import { getTestCredentials } from './credentials'
+
 /**
  * Fixture helper para semear/limpar estado fiscal real no backend durante os
  * testes e2e (Plano 4). Autentica direto na API (JWT) e expõe operações de
@@ -16,8 +18,6 @@ import { request, type APIRequestContext } from '@playwright/test'
  */
 
 const API_URL = process.env.E2E_API_URL ?? 'https://dev.atrupe.com.br'
-const EMAIL = process.env.E2E_USER_EMAIL ?? 'contig.um@gmail.com'
-const PASSWORD = process.env.E2E_USER_PASSWORD ?? 'Atrupe123@'
 
 export type FiscalEnv = 'HOMOLOGACAO' | 'PRODUCAO'
 
@@ -28,9 +28,11 @@ export interface FiscalApiClient {
 }
 
 export async function createFiscalApiClient(): Promise<FiscalApiClient> {
+  const { email, password } = getTestCredentials()
+
   const ctx = await request.newContext({ baseURL: API_URL })
   const res = await ctx.post('/auth/login', {
-    data: { username: EMAIL, password: PASSWORD },
+    data: { username: email, password },
   })
   if (!res.ok()) {
     await ctx.dispose()
