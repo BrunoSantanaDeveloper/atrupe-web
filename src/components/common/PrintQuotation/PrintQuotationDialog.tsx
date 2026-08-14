@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { pdf } from '@react-pdf/renderer'
 import { GeneratePdf } from './GeneratePdf'
+import { buildPdfFileName } from './buildPdfFileName'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -128,17 +129,7 @@ export function PrintQuotationDialog({
       />,
     ).toBlob()
 
-    const sanitize = (s: string) =>
-      s
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '_')
-        .trim()
-    const prefix = type === 'quotation' ? 'ORC' : 'OS'
-    const seriesCode = quotationData?.quotation?.seriesCode ?? ''
-    const number = quotationData?.quotation?.number ?? ''
-    const clientName = sanitize(quotationData?.client?.name ?? '')
-    const osCode = `${seriesCode}-${number}`
-    const fileName = `${prefix}-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
+    const fileName = buildPdfFileName(quotationData, type)
 
     const url = URL.createObjectURL(blob)
 

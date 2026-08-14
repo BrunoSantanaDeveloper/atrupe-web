@@ -39,6 +39,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 import { useQuery } from '@tanstack/react-query'
 import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -50,6 +51,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [selectedProductName, setSelectedProductName] = useState<string>('')
 
   const { hasAllPermissions } = usePermissions()
+  const { hasFiscalModule } = usePlanFeatures()
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -137,9 +139,10 @@ export function ProductsData({ searchParams, tabs }: Props) {
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}
         onSuccess={(product) => {
-          const hasPermission = hasAllPermissions(['nota_fiscal:config:edit'])
+          const canConfigureFiscalData =
+            hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
 
-          if (hasPermission) {
+          if (canConfigureFiscalData) {
             // Increased timeout to ensure NewProduct modal is fully closed and state is settled
             setTimeout(() => {
               setSelectedProductId(product.id)

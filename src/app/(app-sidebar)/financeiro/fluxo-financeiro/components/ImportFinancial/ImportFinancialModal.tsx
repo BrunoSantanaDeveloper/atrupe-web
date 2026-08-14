@@ -27,7 +27,6 @@ import {
   IconArrowRight,
   IconCloudUpload,
   IconAlertCircle,
-  IconBuildingBank,
 } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
@@ -36,8 +35,11 @@ import {
   uploadImportFile,
   validateImport,
   processImport,
-  createImportBankAccounts,
+  createImportReferences,
+  type ImportReference,
+  type ImportWarning,
 } from '@/actions/import'
+import { ImportReviewDialog } from '@/components/common/import/ImportReviewDialog'
 import {
   Table,
   TableBody,
@@ -63,9 +65,10 @@ export function ImportFinancialModal() {
   const [errors, setErrors] = useState<ImportError[]>([])
   const [showErrors, setShowErrors] = useState(false)
   const [importId, setImportId] = useState<string | null>(null)
-  const [missingAccounts, setMissingAccounts] = useState<string[]>([])
-  const [showBankAccounts, setShowBankAccounts] = useState(false)
-  const [isCreatingAccounts, setIsCreatingAccounts] = useState(false)
+  const [missingRecords, setMissingRecords] = useState<ImportReference[]>([])
+  const [warnings, setWarnings] = useState<ImportWarning[]>([])
+  const [showReview, setShowReview] = useState(false)
+  const [isConfirmingReview, setIsConfirmingReview] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -120,13 +123,13 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
    * Valida e, se estiver tudo certo, processa a importação.
    *
    * Fica separado do upload porque a validação roda de novo depois que o usuário
-   * confirma a criação das contas bancárias. `allowBankAccountStep` desliga esse
-   * passo na segunda rodada: se alguma conta não pôde ser criada, o usuário vê a
-   * lista de erros em vez do mesmo diálogo outra vez.
+   * confirma a revisão. `allowReviewStep` desliga esse passo na segunda rodada:
+   * se algum cadastro não pôde ser criado, o usuário vê a lista de erros em vez
+   * do mesmo diálogo outra vez.
    */
   const validateAndProcess = async (
     currentImportId: string,
-    allowBankAccountStep = true,
+    allowReviewStep = true,
   ) => {
     setIsValidating(true)
     const validateResult = await validateImport(currentImportId)
@@ -136,12 +139,18 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
       throw new Error(validateResult.error)
     }
 
-    // Contas citadas na planilha que a empresa não tem: oferecemos criar em vez
-    // de barrar, já que a tela de contas bancárias é feature de plano.
-    const missing = validateResult.data.missingBankAccounts ?? []
-    if (allowBankAccountStep && missing.length > 0) {
-      setMissingAccounts(missing)
-      setShowBankAccounts(true)
+    // Cadastros citados na planilha que a empresa não tem e valores opcionais a
+    // normalizar: em vez de barrar, mostramos o que vai acontecer e confirmamos.
+    const records = validateResult.data.missingRecords ?? []
+    const validationWarnings = validateResult.data.warnings ?? []
+
+    if (
+      allowReviewStep &&
+      (records.length > 0 || validationWarnings.length > 0)
+    ) {
+      setMissingRecords(records)
+      setWarnings(validationWarnings)
+      setShowReview(true)
       return
     }
 
@@ -200,33 +209,37 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
     }
   }
 
-  const handleCreateBankAccounts = async () => {
+  const handleConfirmReview = async () => {
     if (!importId) return
 
     try {
-      setIsCreatingAccounts(true)
+      setIsConfirmingReview(true)
 
-      const result = await createImportBankAccounts(importId)
+      // Só chama a criação quando há cadastro faltando; aviso de valor opcional
+      // não precisa criar nada, é só seguir com a importação.
+      if (missingRecords.length > 0) {
+        const result = await createImportReferences(importId)
 
-      if (!result.success || !result.data) {
-        throw new Error(result.error)
+        if (!result.success || !result.data) {
+          throw new Error(result.error)
+        }
+
+        const total =
+          result.data.created.length + result.data.reactivated.length
+        if (total > 0) {
+          toast.success(`${total} cadastro(s) criado(s)`)
+        }
       }
 
-      const total = result.data.created.length + result.data.reactivated.length
-      if (total > 0) {
-        toast.success(`${total} conta(s) bancária(s) cadastrada(s)`)
-      }
-
-      setShowBankAccounts(false)
-      setMissingAccounts([])
+      setShowReview(false)
+      setMissingRecords([])
+      setWarnings([])
 
       await validateAndProcess(importId, false)
     } catch (error) {
-      toast.error(
-        (error as Error).message || 'Erro ao criar as contas bancárias',
-      )
+      toast.error((error as Error).message || 'Erro ao criar os cadastros')
     } finally {
-      setIsCreatingAccounts(false)
+      setIsConfirmingReview(false)
       setIsValidating(false)
     }
   }
@@ -287,9 +300,10 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
       setImportId(null)
       setIsUploading(false)
       setIsValidating(false)
-      setMissingAccounts([])
-      setShowBankAccounts(false)
-      setIsCreatingAccounts(false)
+      setMissingRecords([])
+      setWarnings([])
+      setShowReview(false)
+      setIsConfirmingReview(false)
     }
     setOpen(value)
   }
@@ -299,7 +313,7 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
   return (
     <>
       <Dialog
-        open={open && !showErrors && !showBankAccounts}
+        open={open && !showErrors && !showReview}
         onOpenChange={handleOpenChange}
       >
         <DialogTrigger asChild>
@@ -414,69 +428,14 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
         </DialogContent>
       </Dialog>
 
-      {/* Confirmação de criação das contas bancárias citadas na planilha */}
-      <Dialog
-        open={showBankAccounts}
-        onOpenChange={(value) => !value && setShowBankAccounts(false)}
-      >
-        <DialogContent className="sm:max-w-[578px]">
-          <DialogHeader>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconBuildingBank} />
-              <DialogTitle>Contas bancárias não cadastradas</DialogTitle>
-              <DialogDescription className="sr-only">
-                Confirme a criação das contas bancárias usadas na planilha para
-                continuar a importação
-              </DialogDescription>
-            </div>
-          </DialogHeader>
-
-          <DialogBody>
-            <p className="text-sm text-gray-600">
-              A planilha usa {missingAccounts.length} conta(s) que ainda não
-              existem nesta empresa. Podemos cadastrá-las agora para continuar a
-              importação:
-            </p>
-
-            <ul className="mt-4 bg-white border border-gray-200 rounded-md divide-y divide-gray-200">
-              {missingAccounts.map((name) => (
-                <li
-                  key={name}
-                  className="px-4 py-3 text-sm font-medium text-gray-900"
-                >
-                  {name}
-                </li>
-              ))}
-            </ul>
-
-            <Alert variant="warning" className="mt-4">
-              <IconAlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                As contas serão criadas sem instituição definida. Você pode
-                ajustar o banco depois em Configurações &gt; Financeiro &gt;
-                Contas bancárias.
-              </AlertDescription>
-            </Alert>
-          </DialogBody>
-
-          <DialogFooter>
-            <Button
-              variant="neutralOutline"
-              onClick={() => setShowBankAccounts(false)}
-              disabled={isCreatingAccounts}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleCreateBankAccounts}
-              isLoading={isCreatingAccounts}
-              RightIcon={IconArrowRight}
-            >
-              Cadastrar e importar
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ImportReviewDialog
+        open={showReview}
+        onOpenChange={(value) => !value && setShowReview(false)}
+        missingRecords={missingRecords}
+        warnings={warnings}
+        isConfirming={isConfirmingReview}
+        onConfirm={handleConfirmReview}
+      />
 
       {/* Error Dialog */}
       <Dialog open={showErrors} onOpenChange={() => setShowErrors(false)}>

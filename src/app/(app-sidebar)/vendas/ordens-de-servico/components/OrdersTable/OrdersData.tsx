@@ -55,6 +55,7 @@ import {
 } from '@tabler/icons-react'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
+import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -115,14 +116,7 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
         />,
       ).toBlob()
 
-      const sanitize = (s: string) =>
-        s
-          .replace(/[^\w\s-]/g, '')
-          .replace(/\s+/g, '_')
-          .trim()
-      const osCode = `${order.quotation.serie.code}-${order.quotation.quotationNumber}`
-      const clientName = sanitize(order.quotation.client?.name ?? '')
-      const fileName = `OS-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
+      const fileName = buildPdfFileName(pdfData, 'production')
 
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')

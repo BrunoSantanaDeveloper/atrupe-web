@@ -53,7 +53,7 @@ export function InstallmentQty() {
       amount: installmentValue,
     }))
 
-    setValue('installments', newInstallments)
+    setValue('installments', newInstallments, { shouldValidate: true })
   }
 
   const handleChangeInstallmentQty = async (value: string) => {

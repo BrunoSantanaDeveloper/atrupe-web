@@ -56,7 +56,8 @@ export function DownPayment() {
       amount: installmentValue,
     }))
 
-    setValue('installments', updatedInstallments)
+    // Valida na hora: uma entrada que consome todo o total zera as parcelas
+    setValue('installments', updatedInstallments, { shouldValidate: true })
   }
 
   return (

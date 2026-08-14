@@ -11,6 +11,7 @@ import { EmitNfe } from './EmitNfe'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
+import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
 // Icons
 import { IconPrinter } from '@tabler/icons-react'
 
@@ -66,14 +67,7 @@ export function OrderActions({ data }: Props) {
         />,
       ).toBlob()
 
-      const sanitize = (s: string) =>
-        s
-          .replace(/[^\w\s-]/g, '')
-          .replace(/\s+/g, '_')
-          .trim()
-      const osCode = `${data.quotation.serie.code}-${data.quotation.quotationNumber}`
-      const clientName = sanitize(data.quotation.client?.name ?? '')
-      const fileName = `OS-${osCode}${clientName ? `_${clientName}` : ''}.pdf`
+      const fileName = buildPdfFileName(pdfData, 'production')
 
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')

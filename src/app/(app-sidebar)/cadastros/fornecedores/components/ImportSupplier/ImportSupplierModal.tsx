@@ -36,7 +36,9 @@ import {
   uploadImportFile,
   validateImport,
   processImport,
+  type ImportWarning,
 } from '@/actions/import'
+import { ImportReviewDialog } from '@/components/common/import/ImportReviewDialog'
 import {
   Table,
   TableBody,
@@ -81,7 +83,10 @@ export function ImportSupplierModal() {
   const [isValidating, setIsValidating] = useState(false)
   const [errors, setErrors] = useState<ImportError[]>([])
   const [showErrors, setShowErrors] = useState(false)
-  const [_importId, setImportId] = useState<string | null>(null)
+  const [importId, setImportId] = useState<string | null>(null)
+  const [warnings, setWarnings] = useState<ImportWarning[]>([])
+  const [showReview, setShowReview] = useState(false)
+  const [isConfirmingReview, setIsConfirmingReview] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -131,6 +136,79 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
     )
   }
 
+  /**
+   * Valida e, se estiver tudo certo, processa a importação.
+   *
+   * Fica separado do upload porque a validação roda de novo depois que o usuário
+   * confirma a revisão. `allowReviewStep` desliga esse passo na segunda rodada,
+   * para o mesmo diálogo não reaparecer em loop.
+   */
+  const validateAndProcess = async (
+    currentImportId: string,
+    allowReviewStep = true,
+  ) => {
+    setIsValidating(true)
+    const validateResult = await validateImport(currentImportId)
+    setIsValidating(false)
+
+    if (!validateResult.success || !validateResult.data) {
+      throw new Error(validateResult.error)
+    }
+
+    // Valor mal formado em campo opcional (e-mail) não barra o arquivo: mostramos
+    // o que será ajustado e o usuário confirma.
+    const validationWarnings = validateResult.data.warnings ?? []
+    if (allowReviewStep && validationWarnings.length > 0) {
+      setWarnings(validationWarnings)
+      setShowReview(true)
+      return
+    }
+
+    if (validateResult.data.errors && validateResult.data.errors.length > 0) {
+      const formattedErrors = validateResult.data.errors.map((err) => ({
+        row: err.row,
+        field: err.field,
+        value: err.value,
+        error: err.error,
+      }))
+      setErrors(formattedErrors)
+      setShowErrors(true)
+      return
+    }
+
+    const processResult = await processImport(currentImportId)
+
+    if (!processResult.success || !processResult.data) {
+      throw new Error(processResult.error)
+    }
+
+    toast.success(
+      `${processResult.data.successRows} fornecedor(es) importado(s) com sucesso!`,
+    )
+
+    await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+    await queryClient.invalidateQueries({ queryKey: ['suppliers-totals'] })
+
+    handleOpenChange(false)
+  }
+
+  const handleConfirmReview = async () => {
+    if (!importId) return
+
+    try {
+      setIsConfirmingReview(true)
+      setShowReview(false)
+      setWarnings([])
+
+      await validateAndProcess(importId, false)
+    } catch (error) {
+      toast.error((error as Error).message || 'Erro ao processar importação')
+    } finally {
+      setIsConfirmingReview(false)
+      setIsValidating(false)
+    }
+  }
+
   const handleImport = async () => {
     if (!file) return
 
@@ -165,42 +243,8 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
       setImportId(uploadedImportId)
 
       setIsUploading(false)
-      setIsValidating(true)
 
-      const validateResult = await validateImport(uploadedImportId)
-
-      setIsValidating(false)
-
-      if (!validateResult.success || !validateResult.data) {
-        throw new Error(validateResult.error)
-      }
-
-      if (validateResult.data.errors && validateResult.data.errors.length > 0) {
-        const formattedErrors = validateResult.data.errors.map((err) => ({
-          row: err.row,
-          field: err.field,
-          value: err.value,
-          error: err.error,
-        }))
-        setErrors(formattedErrors)
-        setShowErrors(true)
-        return
-      }
-
-      const processResult = await processImport(uploadedImportId)
-
-      if (!processResult.success || !processResult.data) {
-        throw new Error(processResult.error)
-      }
-
-      toast.success(
-        `${processResult.data.successRows} fornecedor(es) importado(s) com sucesso!`,
-      )
-
-      await queryClient.invalidateQueries({ queryKey: ['suppliers'] })
-      await queryClient.invalidateQueries({ queryKey: ['suppliers-totals'] })
-
-      handleOpenChange(false)
+      await validateAndProcess(uploadedImportId)
     } catch (error) {
       toast.error((error as Error).message || 'Erro ao processar importação')
     } finally {
@@ -218,6 +262,9 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
       setImportId(null)
       setIsUploading(false)
       setIsValidating(false)
+      setWarnings([])
+      setShowReview(false)
+      setIsConfirmingReview(false)
     }
     setOpen(value)
   }
@@ -226,7 +273,10 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
 
   return (
     <>
-      <Dialog open={open && !showErrors} onOpenChange={handleOpenChange}>
+      <Dialog
+        open={open && !showErrors && !showReview}
+        onOpenChange={handleOpenChange}
+      >
         <DialogTrigger asChild>
           <Button type="button" RightIcon={IconArrowRight} className="w-full">
             Importar
@@ -338,6 +388,14 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ImportReviewDialog
+        open={showReview}
+        onOpenChange={(value) => !value && setShowReview(false)}
+        warnings={warnings}
+        isConfirming={isConfirmingReview}
+        onConfirm={handleConfirmReview}
+      />
 
       {/* Error Dialog */}
       <Dialog open={showErrors} onOpenChange={() => setShowErrors(false)}>

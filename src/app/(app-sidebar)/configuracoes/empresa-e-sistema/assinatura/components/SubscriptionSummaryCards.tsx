@@ -75,15 +75,7 @@ export function SubscriptionSummaryCards({
       (f.feature.key.includes('nf') && !f.feature.key.includes('nf_adicional')),
   )
 
-  const nfAdicionalFeatures = activeModules.filter((f) =>
-    f.feature.key.includes('nf_adicional'),
-  )
-
   const nfTotal = nfMainModule ? nfMainModule.price || 0 : 0
-  const nfAdicionalTotal = nfAdicionalFeatures.reduce(
-    (sum, f) => sum + (f.price || 0),
-    0,
-  )
 
   const handleRemoveModule = (feature: SubscriptionFeature) => {
     setSelectedModule(feature)
@@ -91,6 +83,7 @@ export function SubscriptionSummaryCards({
   }
 
   const isTrial = subscription.plan.planType === 'TRIAL'
+  const isStart = subscription.plan.planType === 'START'
   const isCanceled = subscription.status !== 'ACTIVE'
 
   return (
@@ -179,7 +172,7 @@ export function SubscriptionSummaryCards({
                 )}
               </p>
             </div>
-            {!isCanceled && (
+            {!isTrial && !isStart && !isCanceled && (
               <Button
                 type="button"
                 variant="light"

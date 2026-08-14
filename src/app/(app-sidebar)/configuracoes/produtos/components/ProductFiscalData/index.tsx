@@ -40,6 +40,7 @@ import { createItemNew, getData } from '@/actions/_cruds'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 interface Props {
   open: boolean
@@ -70,11 +71,13 @@ export function ProductFiscalDataDialog({
   productName,
 }: Props) {
   const queryClient = useQueryClient()
+  const { hasFiscalModule } = usePlanFeatures()
+  const hasModule = hasFiscalModule()
 
   const { data: fiscalData, isLoading } = useQuery({
     queryKey: ['product-fiscal-data', productId],
     queryFn: () => fetchFiscalData(productId),
-    enabled: open && !!productId,
+    enabled: open && !!productId && hasModule,
   })
 
   const form = useForm<ProductFiscalDataFormType>({
@@ -145,6 +148,9 @@ export function ProductFiscalDataDialog({
     form.reset(defaultFiscalDataValues)
     onOpenChange(false)
   }
+
+  // Módulo de Nota Fiscal não contratado — nada de configuração fiscal de produto
+  if (!hasModule) return null
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>

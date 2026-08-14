@@ -9,6 +9,22 @@ interface ImportUploadResponse {
   message: string
 }
 
+export type ImportReferenceType = 'nature' | 'subCategory' | 'bankAccount'
+
+export interface ImportReference {
+  type: ImportReferenceType
+  name: string
+  parent?: string
+}
+
+export interface ImportWarning {
+  row: number
+  field: string
+  value: string
+  error: string
+  newValue: string | null
+}
+
 interface ValidateImportResponse {
   importId: string
   valid: boolean
@@ -20,15 +36,17 @@ interface ValidateImportResponse {
     value: string
     error: string
   }>
-  /** Contas bancárias citadas no CSV que a empresa ainda não tem (só importação financeira) */
-  missingBankAccounts?: string[]
+  /** Campo opcional mal formado: não bloqueia, o valor é normalizado */
+  warnings?: ImportWarning[]
+  /** Cadastros citados no CSV que a empresa ainda não tem (só importação financeira) */
+  missingRecords?: ImportReference[]
   preview: any[]
 }
 
-interface CreateImportBankAccountsResponse {
-  created: string[]
-  reactivated: string[]
-  skipped: string[]
+interface CreateImportReferencesResponse {
+  created: ImportReference[]
+  reactivated: ImportReference[]
+  skipped: ImportReference[]
 }
 
 interface ImportStatusResponse {
@@ -87,22 +105,21 @@ export async function validateImport(
 }
 
 /**
- * Cria as contas bancárias que o CSV cita e a empresa não tem. Os nomes vêm do
- * arquivo já enviado, então basta o importId.
+ * Cria os cadastros que o CSV cita e a empresa não tem (natureza, subcategoria,
+ * conta bancária). Os nomes vêm do arquivo já enviado, então basta o importId.
  */
-export async function createImportBankAccounts(importId: string) {
+export async function createImportReferences(importId: string) {
   const api = await apiInstance()
 
   try {
-    const response = await api.post<CreateImportBankAccountsResponse>(
-      `/import/${importId}/bank-accounts`,
+    const response = await api.post<CreateImportReferencesResponse>(
+      `/import/${importId}/references`,
     )
     return { success: true, data: response.data }
   } catch (error: any) {
     return {
       success: false,
-      error:
-        error.response?.data?.message || 'Erro ao criar as contas bancárias',
+      error: error.response?.data?.message || 'Erro ao criar os cadastros',
     }
   }
 }

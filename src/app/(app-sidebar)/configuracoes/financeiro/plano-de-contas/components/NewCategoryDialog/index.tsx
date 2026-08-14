@@ -115,8 +115,8 @@ export function NewCategoryDialog({
     await alertDialog.open({
       title: `Deseja ${isInactiveTab ? 'ativar' : 'inativar'} esta categoria?`,
       confirmLabel: isInactiveTab ? 'Ativar' : 'Inativar',
-      onConfirm: () => {
-        inactivateMutation.mutateAsync({ id, status: isInactiveTab })
+      onConfirm: async () => {
+        await inactivateMutation.mutateAsync({ id, status: isInactiveTab })
         handleOpenChange(false)
       },
       toastMsg: {

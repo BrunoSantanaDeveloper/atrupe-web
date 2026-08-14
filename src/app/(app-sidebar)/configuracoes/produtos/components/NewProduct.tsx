@@ -315,16 +315,29 @@ function NewProductModal({
       if (showFiscalTab && savedId) {
         const fiscalData = fiscalForm.getValues()
         try {
-          await createItemNew({
+          // createItemNew sinaliza falha pelo retorno, não por exceção — sem
+          // este check um erro no upsert passaria como "salvo com sucesso"
+          const fiscalResult = await createItemNew({
             route: '/fiscal/product/upsert',
             data: { ...fiscalData, productId: savedId },
           })
+
+          if (!fiscalResult.success) {
+            throw new Error(fiscalResult.message)
+          }
+
           await queryClient.invalidateQueries({
             queryKey: ['product-fiscal-data', savedId],
           })
-        } catch {
+        } catch (error) {
           // Non-fatal: product was saved, just fiscal data failed
-          toast.warning('Produto salvo, mas erro ao salvar dados fiscais.')
+          toast.warning(
+            `Produto salvo, mas erro ao salvar dados fiscais${
+              error instanceof Error && error.message
+                ? `: ${error.message}`
+                : '.'
+            }`,
+          )
         }
       }
 
@@ -346,6 +359,16 @@ function NewProductModal({
       )
     }
   }
+
+  // O Tabs desmonta a aba inativa, então o <form id="new-product"> não existe no
+  // DOM enquanto "Dados Fiscais" está aberta e um submit nativo não encontraria
+  // o formulário. Disparar o handleSubmit direto salva a partir de qualquer aba.
+  const handleSave = handleSubmit(onSubmit, () => {
+    // Os campos inválidos estão na aba Produto — traz o usuário até eles
+    setActiveTab('general')
+    toast.error('Verifique os campos obrigatórios do produto.')
+  })
+
   function handleAppendProductItems() {
     items.append({
       name: '',
@@ -628,7 +651,7 @@ function NewProductModal({
                     <Form {...fiscalForm}>
                       <form
                         id="new-product-fiscal"
-                        onSubmit={fiscalForm.handleSubmit(() => {})}
+                        onSubmit={handleSave}
                         noValidate
                       >
                         <ProductFiscalTab />
@@ -684,8 +707,8 @@ function NewProductModal({
                 </Button>
               )}
               <Button
-                type="submit"
-                form="new-product"
+                type="button"
+                onClick={handleSave}
                 RightIcon={IconCircleCheck}
                 disabled={form.formState?.isSubmitting}
                 isLoading={form.formState?.isSubmitting}

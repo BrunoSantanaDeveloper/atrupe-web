@@ -18,6 +18,7 @@ import { ProductsFilter } from './ProductsTable/ProductsFilter'
 import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { ProductFiscalDataDialog } from './ProductFiscalData'
 import { usePermissions } from '@/hooks/usePermissions'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -83,6 +84,10 @@ const PRODUCT_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     type: 'currency',
     getValue: (product) => getVisualCurrencyValue(product, product.salePrice),
   },
+]
+
+// Colunas exclusivas do módulo de Nota Fiscal — só exportadas quando contratado
+const PRODUCT_FISCAL_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
   {
     header: 'NCM',
     getValue: (product) => product.fiscalData?.ncm,
@@ -131,6 +136,15 @@ export function Products({ searchParams }: SearchParamsType) {
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
   const { hasAllPermissions } = usePermissions()
+  const { hasFiscalModule } = usePlanFeatures()
+
+  const canConfigureProductFiscalData =
+    hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
+
+  const exportColumns = hasFiscalModule()
+    ? [...PRODUCT_EXPORT_COLUMNS, ...PRODUCT_FISCAL_EXPORT_COLUMNS]
+    : PRODUCT_EXPORT_COLUMNS
+
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['product-totals'],
@@ -191,7 +205,7 @@ export function Products({ searchParams }: SearchParamsType) {
                 permissions={['product_settings:products:export']}
               >
                 <ExportDataButton
-                  columns={PRODUCT_EXPORT_COLUMNS}
+                  columns={exportColumns}
                   fileName="produtos"
                   getData={getExportProducts}
                   sheetName="Produtos"
@@ -245,7 +259,7 @@ export function Products({ searchParams }: SearchParamsType) {
                     open={openDialog === 'new-product'}
                     onOpenChange={() => setOpenDialog('')}
                     onSuccess={(product) => {
-                      if (hasAllPermissions(['nota_fiscal:config:edit'])) {
+                      if (canConfigureProductFiscalData) {
                         setTimeout(() => {
                           setSelectedProductId(product.id)
                           setSelectedProductName(product.name)
@@ -263,7 +277,7 @@ export function Products({ searchParams }: SearchParamsType) {
           open={openDialog === 'new-product'}
           onOpenChange={() => setOpenDialog('')}
           onSuccess={(product) => {
-            if (hasAllPermissions(['invoice_settings:nf:view'])) {
+            if (canConfigureProductFiscalData) {
               setTimeout(() => {
                 setSelectedProductId(product.id)
                 setSelectedProductName(product.name)

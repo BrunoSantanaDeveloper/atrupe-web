@@ -1,7 +1,7 @@
 // Third-party Imports
 import { z } from 'zod'
 
-export const quotationPaymentConditionsSchema = z.object({
+const quotationPaymentConditionsFields = z.object({
   type: z.string().min(1, 'Campo obrigatório'),
   billing: z.string(),
   paymentConditionId: z.string().min(1, 'Campo obrigatório'),
@@ -53,8 +53,51 @@ export const quotationPaymentConditionsSchema = z.object({
   dayInterval: z.number().optional(),
 })
 
+// Os valores monetários deste formulário são armazenados em centavos.
+export const quotationPaymentConditionsSchema =
+  quotationPaymentConditionsFields.superRefine((data, ctx) => {
+    const totalValue = data.totalValue || 0
+
+    // Orçamento zerado não tem valor a distribuir, então não há o que validar
+    if (totalValue <= 0) return
+
+    const hasDownPayment = data.hasDownPayment === 'true'
+    const downPaymentAmount = hasDownPayment ? data.downPayment?.amount || 0 : 0
+
+    if (hasDownPayment) {
+      if (downPaymentAmount <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['downPayment', 'amount'],
+          message: 'Informe o valor da entrada',
+        })
+      } else if (
+        downPaymentAmount >= totalValue &&
+        (data.installments?.length || 0) > 0
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['downPayment', 'amount'],
+          message: 'A entrada não pode consumir todo o valor total',
+        })
+      }
+    }
+
+    // O valor das parcelas é calculado automaticamente (total - entrada), então
+    // uma parcela zerada passa despercebida se o campo não for destacado
+    data.installments?.forEach((installment, index) => {
+      if ((installment?.amount || 0) > 0) return
+
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['installments', index, 'amount'],
+        message: 'O valor da parcela deve ser maior que zero',
+      })
+    })
+  })
+
 export type QuotationPaymentConditionsType = z.infer<
-  typeof quotationPaymentConditionsSchema
+  typeof quotationPaymentConditionsFields
 >
 
 export const quotationCommissionSchema = z.object({

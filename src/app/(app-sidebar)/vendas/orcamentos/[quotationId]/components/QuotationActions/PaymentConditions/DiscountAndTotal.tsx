@@ -88,7 +88,7 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
       amount: installmentValue,
     }))
 
-    setValue('installments', updatedInstallments)
+    setValue('installments', updatedInstallments, { shouldValidate: true })
   }
 
   // Função para recalcular a comissão quando o valor base ou desconto mudar
