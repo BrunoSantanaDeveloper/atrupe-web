@@ -59,6 +59,7 @@ export default function ValidationPage() {
           company: signupData?.company,
           mobile: signupData?.mobile,
           password: newPasswordData?.password,
+          cpf: signupData?.cpf,
         },
       })
 

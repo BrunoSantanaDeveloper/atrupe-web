@@ -157,7 +157,7 @@ export function OrderItems({ data }: Props) {
                             {/* Linha única para produtos simples - dados da composição diretamente */}
                             <TableRow className="border-b">
                               <TableCell className="font-medium pl-14 flex items-center gap-4 py-6 text-sm">
-                                {composition?.name}
+                                {item?.description || '-'}
                               </TableCell>
                               <TableCell className="py-4 text-sm text-gray">
                                 {item.product.quantity}

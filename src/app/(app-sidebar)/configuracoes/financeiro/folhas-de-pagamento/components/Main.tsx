@@ -18,6 +18,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 // Components
 import { NewItemDialog } from './NewItem'
 import { TableFilter } from './TableFilter'
+import { ManageItemsDialog } from './ManageItems'
 import { Topbar } from '@/components/common/Topbar'
 import { UserInfo } from '@/components/common/UserInfo'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -106,6 +107,7 @@ export function Main({ searchParams }: SearchParamsType) {
       <Topbar
         title="Folha de pagamento"
         previousPage="/configuracoes/financeiro"
+        secondaryCta={<ManageItemsDialog />}
         primaryCta={<NewItemDialog />}
       />
       <div className="space-y-2">

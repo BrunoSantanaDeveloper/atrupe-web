@@ -69,10 +69,12 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
   }, [editMode, rowData, form, open])
 
   const onSubmit = async (data: FormType) => {
+    // Na edição só o valor é do colaborador; referência e operação pertencem
+    // ao item de custo (alterados em "Gerenciar itens de custo")
     const result = editMode
       ? await updateItemNew({
           route: `/financial/payroll-setup/${rowData?.id}`,
-          data,
+          data: { amount: data.amount },
         })
       : await createItemNew({
           route: '/financial/payroll-setup',
@@ -108,7 +110,11 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <DialogTitle>{editMode ? 'Editar custo' : 'Novo custo'}</DialogTitle>
-          <DialogDescription hidden></DialogDescription>
+          <DialogDescription hidden={!editMode}>
+            {editMode
+              ? 'Referência e operação são alteradas em "Gerenciar itens de custo", pois valem para todos os colaboradores.'
+              : null}
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
@@ -123,10 +129,12 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
                   label="Referência"
                   placeholder="Digite aqui"
                   width="flex-[1_0_300px]"
+                  disabled={editMode}
                 />
                 <FormSelect
                   name="type"
                   label="Operação em folha"
+                  disabled={editMode}
                   options={[
                     {
                       value: 'INCREASE',

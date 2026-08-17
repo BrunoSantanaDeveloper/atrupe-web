@@ -29,7 +29,7 @@ import { createItemNew } from '@/actions/_cruds'
 import { useSignupStore } from '@/store/signupStore'
 
 // import recaptcha from '@public/temp/recaptcha-v2.jpg'
-import { MaskPhoneNumber } from '@/lib/utils'
+import { MaskPhoneNumber, maskCpf } from '@/lib/utils'
 
 export function SignupForm() {
   const router = useRouter()
@@ -43,6 +43,7 @@ export function SignupForm() {
       email: signupData?.email || '',
       company: signupData?.company || '',
       mobile: signupData?.mobile || '',
+      cpf: signupData?.cpf || '',
     },
   })
 
@@ -128,6 +129,23 @@ export function SignupForm() {
           width="w-full"
           maxLength={15}
         />
+
+        <div className="flex flex-col gap-1">
+          <FormInput
+            name="cpf"
+            label="CPF do responsável principal"
+            inputMode="numeric"
+            placeholder="000.000.000-00"
+            additionalOnChange={(value) => {
+              setValue('cpf', maskCpf(value) || '')
+            }}
+            width="w-full"
+            maxLength={14}
+          />
+          <p className="text-xs text-muted-foreground">
+            CPF de quem será o administrador principal desta conta.
+          </p>
+        </div>
 
         {/* <div className="flex justify-center">
           <Image src={recaptcha} alt="ReCAPTCHA" width={302} height={76} />
