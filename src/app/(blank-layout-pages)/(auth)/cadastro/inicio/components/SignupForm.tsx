@@ -137,7 +137,7 @@ export function SignupForm() {
             inputMode="numeric"
             placeholder="000.000.000-00"
             additionalOnChange={(value) => {
-              setValue('cpf', maskCpf(value) || '')
+              setValue('cpf', maskCpf(String(value)) || '')
             }}
             width="w-full"
             maxLength={14}
