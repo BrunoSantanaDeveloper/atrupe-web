@@ -202,6 +202,7 @@ export type QuotationType = {
     name: string
     cnpj: string
   }
+  // A API retorna null quando o orçamento não tem cliente informado
   client: {
     id: string
     type: string
@@ -211,7 +212,7 @@ export type QuotationType = {
     cpf: string
     email: string
     phoneNumber: string
-  }
+  } | null
   contact?: {
     id: string
     name: string

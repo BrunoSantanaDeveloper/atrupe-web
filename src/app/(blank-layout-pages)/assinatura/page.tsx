@@ -296,6 +296,17 @@ export default function SubscriptionPage() {
     [modulesResponse],
   )
 
+  // Busca o contractId para registrar o aceite ao contratar
+  const { data: contractTermsData } = useQuery({
+    queryKey: ['contract-terms-id'],
+    queryFn: async () => {
+      const response = await getItem({ route: '/contract/terms' })
+      if (!response.success) return null
+      return response.data as { contractId: string; html: string } | null
+    },
+    staleTime: Infinity,
+  })
+
   // In add-module mode, filter out modules already contracted
   const modules: ModuleType[] = useMemo(() => {
     if (!isAddModuleMode) return allModules
@@ -432,6 +443,15 @@ export default function SubscriptionPage() {
           : `${selectedModules.length} módulos adicionados com sucesso!`,
       )
 
+      // Registrar aceite do contrato ao adicionar módulo
+      const contractId = contractTermsData?.contractId
+      if (contractId) {
+        await createItemNew({
+          route: `/contract/${contractId}/accept`,
+          data: {},
+        }).catch(() => {})
+      }
+
       // NOTE: The added module value will be included in the next billing cycle.
       // No immediate charge is generated — the subscription value in Asaas is updated
       // and the new total takes effect on the next invoice.
@@ -552,6 +572,15 @@ export default function SubscriptionPage() {
       if (!paymentUrl) {
         toast.error('URL de checkout não recebida')
         return
+      }
+
+      // Registrar aceite do contrato antes de redirecionar
+      const contractId = contractTermsData?.contractId
+      if (contractId) {
+        await createItemNew({
+          route: `/contract/${contractId}/accept`,
+          data: {},
+        }).catch(() => {})
       }
 
       // Redirecionar para o checkout do Asaas

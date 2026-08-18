@@ -498,6 +498,28 @@ export function calculateTotalQuantity(
 }
 
 /**
+ * Valor unitário exibido na coluna "Valor un." do orçamento e da O.S.
+ * Divide pela quantidade total da medida (m², hora, metro...), não pela
+ * quantidade do item — senão itens medidos mostram o valor cheio no unitário.
+ */
+export function calculateItemDisplayUnitValue(
+  item: {
+    totalValue?: number | null
+    product?: { quantity?: number | null } | null
+  },
+  composition: Parameters<typeof calculateTotalQuantity>[1],
+): number {
+  const totalQuantity = calculateTotalQuantity(
+    item?.product?.quantity,
+    composition,
+  ).value
+
+  if (!totalQuantity) return 0
+
+  return (item?.totalValue || 0) / totalQuantity
+}
+
+/**
  * Calcula o valor unitario comercial para exibicao.
  * As medidas ficam em Qtd. Total; Valor Un. divide o total pelas quantidades.
  */

@@ -287,8 +287,9 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                     supporting="Cliente"
                     text={data?.client?.name || '-'}
                     badge={{
-                      variant: clientStatusObj[data?.client?.status]?.variant,
-                      text: clientStatusObj[data?.client?.status]?.text,
+                      variant:
+                        clientStatusObj[data?.client?.status ?? '']?.variant,
+                      text: clientStatusObj[data?.client?.status ?? '']?.text,
                     }}
                   />
                   <TextSupportingText

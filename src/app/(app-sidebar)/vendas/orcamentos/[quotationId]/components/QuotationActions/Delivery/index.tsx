@@ -83,7 +83,8 @@ export function DeliveryDialog({ quotationData }: Props) {
 
   const { deliveryInfo } = quotationData
 
-  const clientId = quotationData.client.id
+  // Orçamento pode não ter cliente (venda rápida / cliente não informado)
+  const clientId = quotationData.client?.id ?? ''
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),

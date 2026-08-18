@@ -60,6 +60,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import {
   calculateTotalQuantity,
   calculateDisplayUnitValue,
+  calculateItemDisplayUnitValue,
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 
@@ -178,8 +179,10 @@ export function OrderItems({ data }: Props) {
                               >
                                 <TableCell className="py-4 text-sm text-gray">
                                   {formatCurrencyToBrl(
-                                    item?.totalValue /
-                                      (item?.product?.quantity || 1),
+                                    calculateItemDisplayUnitValue(
+                                      item,
+                                      composition,
+                                    ),
                                   )}
                                 </TableCell>
                                 <TableCell className="text-warning-600 text-nowrap py-4">

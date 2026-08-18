@@ -68,6 +68,7 @@ import { QUOTATION_DATA_QUERY_KEY } from './Quotation'
 import {
   calculateTotalQuantity,
   calculateDisplayUnitValue,
+  calculateItemDisplayUnitValue,
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 
@@ -189,11 +190,10 @@ export function QuotationItems({ data }: Props) {
                             >
                               <TableCell className="py-4 text-sm text-gray">
                                 {formatCurrencyToBrl(
-                                  item?.totalValue /
-                                    calculateTotalQuantity(
-                                      item.product.quantity,
-                                      composition,
-                                    ).value,
+                                  calculateItemDisplayUnitValue(
+                                    item,
+                                    composition,
+                                  ),
                                 )}
                               </TableCell>
                               <TableCell className="text-warning-600 text-nowrap py-4">

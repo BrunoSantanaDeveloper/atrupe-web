@@ -12,7 +12,7 @@ import { toast } from 'sonner'
 export function DownPayment() {
   const form = useFormContext<QuotationPaymentConditionsType>()
 
-  const { setValue, clearErrors, watch } = form
+  const { setValue, clearErrors, watch, trigger } = form
 
   const totalValue = watch('totalValue') || 0
   const installmentQty = watch('installmentQty')
@@ -56,8 +56,11 @@ export function DownPayment() {
       amount: installmentValue,
     }))
 
-    // Valida na hora: uma entrada que consome todo o total zera as parcelas
-    setValue('installments', updatedInstallments, { shouldValidate: true })
+    setValue('installments', updatedInstallments)
+
+    // Valida na hora: uma entrada que cobre todo o total zera as parcelas, que
+    // são calculadas automaticamente e passariam despercebidas sem destaque
+    trigger(['installments', 'downPayment.amount'])
   }
 
   return (
