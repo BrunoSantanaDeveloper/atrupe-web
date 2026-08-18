@@ -571,6 +571,17 @@ export function StandaloneNfseForm() {
             clientId={selectedClient.id}
             selectedAddressId={selectedAddressId}
             addresses={addresses}
+            pais="Brasil"
+            sectionTitle="Local de Prestação"
+            destinatarioAddress={{
+              endereco: effectiveTomador?.endereco,
+              numero: effectiveTomador?.numero,
+              complemento: effectiveTomador?.complemento,
+              bairro: effectiveTomador?.bairro,
+              cidade: effectiveTomador?.municipio,
+              estado: effectiveTomador?.uf,
+              cep: effectiveTomador?.cep,
+            }}
             onEntregaToggle={handleEntregaToggle}
             onAddressSelect={handleEntregaAddressSelect}
             onEntregaChange={handleEntregaChange}

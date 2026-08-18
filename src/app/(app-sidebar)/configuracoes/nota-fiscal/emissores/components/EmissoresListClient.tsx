@@ -154,6 +154,7 @@ export function EmissoresListClient() {
         proximoRpsNfse: config?.proximoRpsNfse,
         codigoServico: config?.codigoServico,
         aliquotaIss: config?.aliquotaIss,
+        regimeEspecialTributacao: config?.regimeEspecialTributacao,
         serieNfce: config?.serieNfce,
         proximoNumeroNfce: config?.proximoNumeroNfce,
         cscId: config?.cscId,

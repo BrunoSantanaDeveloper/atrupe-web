@@ -134,6 +134,7 @@ export interface EmissorData {
   proximoRpsNfse?: number
   codigoServico?: string
   aliquotaIss?: number
+  regimeEspecialTributacao?: number | null
   serieNfce?: number
   proximoNumeroNfce?: number
   cscId?: string

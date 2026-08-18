@@ -21,6 +21,18 @@ const AMBIENTE_LABEL: Record<string, string> = {
   PRODUCAO: 'produção',
 }
 
+// Enumeração ABRASF usada pelo InvoiCy, que a converte para o regEspTrib do
+// layout nacional. Vazio omite a tag — municípios divergem sobre exigi-la.
+const REGIME_ESPECIAL_TRIBUTACAO_OPTIONS = [
+  { label: 'Não informar', value: '' },
+  { label: '1 — Microempresa Municipal', value: '1' },
+  { label: '2 — Estimativa', value: '2' },
+  { label: '3 — Sociedade de Profissionais', value: '3' },
+  { label: '4 — Cooperativa', value: '4' },
+  { label: '5 — Microempreendedor Individual (MEI)', value: '5' },
+  { label: '6 — Microempresa e Empresa de Pequeno Porte (ME/EPP)', value: '6' },
+]
+
 /**
  * Seletor de ambiente da numeração + aviso do que está sendo editado.
  *
@@ -223,6 +235,19 @@ export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
         <p className="text-xs text-muted-foreground mt-1">
           Conforme Lei Complementar 116/2003. Usado apenas quando o produto não
           define um código próprio.
+        </p>
+      </div>
+
+      <div>
+        <FormSelect
+          name="regimeEspecialTributacao"
+          label="Regime Especial de Tributação"
+          options={REGIME_ESPECIAL_TRIBUTACAO_OPTIONS}
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          Alguns municípios exigem este campo e outros recusam a nota se ele for
+          enviado. Deixe em branco para omiti-lo. Sem preenchimento, empresas do
+          Simples Nacional usam ME/EPP.
         </p>
       </div>
     </div>
