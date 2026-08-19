@@ -22,9 +22,11 @@ const AMBIENTE_LABEL: Record<string, string> = {
 }
 
 // Enumeração ABRASF usada pelo InvoiCy, que a converte para o regEspTrib do
-// layout nacional. Vazio omite a tag — municípios divergem sobre exigi-la.
+// layout nacional. "Não informar" omite a tag — municípios divergem sobre
+// exigi-la. Usa sentinela em vez de string vazia: o Select do Radix reserva ''
+// para limpar a seleção e lança se um item declarar esse valor.
 const REGIME_ESPECIAL_TRIBUTACAO_OPTIONS = [
-  { label: 'Não informar', value: '' },
+  { label: 'Não informar', value: 'none' },
   { label: '1 — Microempresa Municipal', value: '1' },
   { label: '2 — Estimativa', value: '2' },
   { label: '3 — Sociedade de Profissionais', value: '3' },

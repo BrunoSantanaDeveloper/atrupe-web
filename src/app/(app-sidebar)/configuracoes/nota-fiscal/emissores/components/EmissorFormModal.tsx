@@ -51,7 +51,7 @@ const emissoresSchema = z.object({
   proximoRpsNfse: z.coerce.number().optional(),
   codigoServico: z.string().optional(),
   aliquotaIss: z.coerce.number().optional(),
-  // '' significa "não informar": o campo é omitido do payload.
+  // 'none' significa "não informar": o campo é omitido do payload.
   regimeEspecialTributacao: z.string().optional(),
   serieNfce: z.coerce.number().optional(),
   proximoNumeroNfce: z.coerce.number().optional(),
@@ -100,9 +100,10 @@ const sanitizeEmissorPayload = (data: EmissorFormValues) => {
 
   // Regime especial vazio significa "não informar": vai como null para limpar
   // um valor salvo antes, e como número quando preenchido.
-  safe.regimeEspecialTributacao = data.regimeEspecialTributacao
-    ? Number(data.regimeEspecialTributacao)
-    : null
+  safe.regimeEspecialTributacao =
+    data.regimeEspecialTributacao && data.regimeEspecialTributacao !== 'none'
+      ? Number(data.regimeEspecialTributacao)
+      : null
 
   return safe as EmissorFormValues
 }
@@ -153,6 +154,7 @@ export function EmissorFormModal({
       proximoNumeroNfe: 1,
       serieNfse: 'A1',
       proximoRpsNfse: 1,
+      regimeEspecialTributacao: 'none',
       serieNfce: 1,
       proximoNumeroNfce: 1,
       nfeNumberingEnvironment: 'HOMOLOGACAO',
@@ -241,7 +243,7 @@ export function EmissorFormModal({
           regimeEspecialTributacao:
             emissor.regimeEspecialTributacao != null
               ? String(emissor.regimeEspecialTributacao)
-              : '',
+              : 'none',
           serieNfce: Number(numeracao?.nfce?.series ?? emissor.serieNfce ?? 1),
           proximoNumeroNfce:
             numeracao?.nfce?.nextNumber ?? emissor.proximoNumeroNfce ?? 1,
