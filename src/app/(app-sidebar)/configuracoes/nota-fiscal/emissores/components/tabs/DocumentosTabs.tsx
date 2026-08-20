@@ -21,18 +21,39 @@ const AMBIENTE_LABEL: Record<string, string> = {
   PRODUCAO: 'produção',
 }
 
-// Enumeração ABRASF usada pelo InvoiCy, que a converte para o regEspTrib do
-// layout nacional. "Não informar" omite a tag — municípios divergem sobre
-// exigi-la. Usa sentinela em vez de string vazia: o Select do Radix reserva ''
-// para limpar a seleção e lança se um item declarar esse valor.
+// Lista completa do InvoiCy, que converte para o regEspTrib do layout nacional.
+// De 1 a 6 é a enumeração ABRASF, válida em qualquer município; de 7 a 16 são
+// valores que só existem no provedor da prefeitura indicado entre parênteses —
+// enviar um valor de provedor errado faz a nota ser recusada.
+// "Não informar" omite a tag. Usa sentinela em vez de string vazia: o Select do
+// Radix reserva '' para limpar a seleção e lança se um item declarar esse valor.
 const REGIME_ESPECIAL_TRIBUTACAO_OPTIONS = [
   { label: 'Não informar', value: 'none' },
-  { label: '1 — Microempresa Municipal', value: '1' },
+  { label: '1 — Microempresa municipal', value: '1' },
   { label: '2 — Estimativa', value: '2' },
-  { label: '3 — Sociedade de Profissionais', value: '3' },
+  { label: '3 — Sociedade de profissionais', value: '3' },
   { label: '4 — Cooperativa', value: '4' },
-  { label: '5 — Microempreendedor Individual (MEI)', value: '5' },
-  { label: '6 — Microempresa e Empresa de Pequeno Porte (ME/EPP)', value: '6' },
+  { label: '5 — Microempresário Individual (MEI)', value: '5' },
+  {
+    label: '6 — Microempresário e Empresa de Pequeno Porte (ME EPP)',
+    value: '6',
+  },
+  {
+    label: '7 — Optante pelo Simples Nacional (Elotech e GLC Consultoria 2.0)',
+    value: '7',
+  },
+  { label: '8 — Tributação Normal (E&L)', value: '8' },
+  { label: '9 — Autônomo (E&L)', value: '9' },
+  { label: '10 — Variável (GLC Consultoria 2.0)', value: '10' },
+  { label: '11 — Lucro Real (Digifred)', value: '11' },
+  { label: '12 — Lucro Presumido (Digifred)', value: '12' },
+  {
+    label: '13 — Sociedade de Profissionais Pessoa Jurídica (SEMFAZ)',
+    value: '13',
+  },
+  { label: '14 — Não (NF-Eletrônica)', value: '14' },
+  { label: '15 — Notas Totalizadoras (NF-Eletrônica)', value: '15' },
+  { label: '16 — Inscrito no PRODEVAL (NF-Eletrônica)', value: '16' },
 ]
 
 /**
