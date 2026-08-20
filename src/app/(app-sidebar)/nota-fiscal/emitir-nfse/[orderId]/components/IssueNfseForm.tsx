@@ -106,6 +106,16 @@ interface ClientAddressItem {
   type?: string
 }
 
+/** Conferência do cadastro fiscal dos serviços, feita antes de emitir. */
+interface ConferenciaEmissao {
+  codigoPadraoEmissor: string | null
+  bloqueiam: string[]
+  usandoCodigoPadrao: string[]
+  codigosDivergentes: string[]
+  podeEmitir: boolean
+  exigeConfirmacao: boolean
+}
+
 interface Props {
   id?: string
   orderIds?: string[]
@@ -126,6 +136,10 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     null,
   )
   const [isTomadorEditOpen, setIsTomadorEditOpen] = useState(false)
+  const [conferencia, setConferencia] = useState<ConferenciaEmissao | null>(
+    null,
+  )
+  const [confirmouClassificacao, setConfirmouClassificacao] = useState(false)
   const [tomadorOverride, setTomadorOverride] =
     useState<NfePrepareDestinatario | null>(null)
   const [ambiente, setAmbiente] = useState<string | null>(null)
@@ -280,6 +294,22 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     fetchData()
   }, [fetchData])
 
+  // Conferência do cadastro fiscal dos serviços da ordem. Roda em paralelo e
+  // não bloqueia a tela: se falhar, a emissão segue com as validações do
+  // backend, que continuam valendo.
+  useEffect(() => {
+    const ids = isConsolidated ? orderIds! : [primaryId]
+    if (!ids.filter(Boolean).length) return
+
+    getItem({
+      route: `/fiscal/nfse/conferir-emissao?orderIds=${ids.join(',')}`,
+    })
+      .then((r) => {
+        if (r.success && r.data) setConferencia(r.data as ConferenciaEmissao)
+      })
+      .catch(() => undefined)
+  }, [primaryId, isConsolidated, orderIds])
+
   const clientToDestinatario = (
     c: OrderData['quotation']['client'],
   ): NfePrepareDestinatario => ({
@@ -310,6 +340,21 @@ export function IssueNfseForm({ id, orderIds }: Props) {
 
   const handleEmit = async () => {
     if (!orderData) return
+
+    // Classificação fiscal: sem código próprio a nota sai com o código padrão
+    // do emissor, e a prefeitura autoriza mesmo assim. Exigir a confirmação
+    // explícita evita autorizar uma nota com classificação errada sem que
+    // ninguém perceba.
+    if (
+      conferencia &&
+      conferencia.exigeConfirmacao &&
+      !confirmouClassificacao
+    ) {
+      toast.error(
+        'Confirme a classificação fiscal dos serviços antes de emitir',
+      )
+      return
+    }
 
     if (!codigoServico.trim()) {
       toast.error('Código do serviço é obrigatório')
@@ -629,6 +674,72 @@ export function IssueNfseForm({ id, orderIds }: Props) {
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>
+          </div>
+        )}
+
+        {conferencia && conferencia.exigeConfirmacao && (
+          <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <FeaturedIcon variant="warningLight" Icon={IconAlertTriangle} />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-warning-800">
+                  Confira a classificação fiscal antes de emitir
+                </p>
+
+                {conferencia.usandoCodigoPadrao.length > 0 && (
+                  <p className="text-xs text-warning-700 mt-1">
+                    {conferencia.usandoCodigoPadrao.length === 1
+                      ? 'O serviço '
+                      : 'Os serviços '}
+                    <strong>{conferencia.usandoCodigoPadrao.join(', ')}</strong>{' '}
+                    não{' '}
+                    {conferencia.usandoCodigoPadrao.length === 1
+                      ? 'tem'
+                      : 'têm'}{' '}
+                    código da LC 116 cadastrado. A nota vai sair com o código
+                    padrão do emissor
+                    {conferencia.codigoPadraoEmissor
+                      ? ` (${conferencia.codigoPadraoEmissor})`
+                      : ''}
+                    , que pode não corresponder ao serviço prestado.
+                  </p>
+                )}
+
+                {conferencia.codigosDivergentes.length > 0 && (
+                  <p className="text-xs text-warning-700 mt-1">
+                    Os serviços desta emissão têm códigos diferentes (
+                    <strong>{conferencia.codigosDivergentes.join(', ')}</strong>
+                    ). A NFS-e carrega um único código, então apenas o primeiro
+                    será usado.
+                  </p>
+                )}
+
+                <label className="flex items-center gap-2 mt-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={confirmouClassificacao}
+                    onChange={(e) =>
+                      setConfirmouClassificacao(e.target.checked)
+                    }
+                    className="h-4 w-4 rounded border-warning-300"
+                  />
+                  <span className="text-xs font-medium text-warning-800">
+                    Confirmo a classificação e quero emitir assim
+                  </span>
+                </label>
+
+                <Button
+                  variant="neutralOutline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() =>
+                    router.push('/configuracoes/produtos?status=ativos')
+                  }
+                >
+                  Cadastrar o código do serviço
+                </Button>
+              </div>
+            </div>
           </div>
         )}
 

@@ -21,6 +21,7 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { FiscalPendenciasAlert } from './FiscalPendenciasAlert'
 import { ActionButton } from '@/components/common/ActionButton'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
 
@@ -231,6 +232,8 @@ export function Products({ searchParams }: SearchParamsType) {
             </TooltipProvider>
           }
         />
+        <FiscalPendenciasAlert />
+
         <div>
           <Card>
             {isLoading ? (
