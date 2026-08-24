@@ -167,6 +167,8 @@ export const commercialUnitOptions = [
   { value: 'M2', label: 'M2 - Metro quadrado' },
   { value: 'M3', label: 'M3 - Metro cúbico' },
   { value: 'L', label: 'L - Litro' },
+  { value: 'KM', label: 'KM - Quilômetro' },
+  { value: 'H', label: 'H - Hora' },
   { value: 'PAR', label: 'PAR - Par' },
   { value: 'JG', label: 'JG - Jogo' },
   { value: 'KIT', label: 'KIT - Kit' },

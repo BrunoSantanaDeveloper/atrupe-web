@@ -4,7 +4,7 @@
 import { Text, View, StyleSheet, Image as PDFImage } from '@react-pdf/renderer'
 
 // Utils
-import { maskCnpj } from '@/lib/utils'
+import { maskCnpj, MaskPhoneNumber } from '@/lib/utils'
 import { getPdfImageSrc } from '@/lib/image-proxy'
 
 // Icons
@@ -100,6 +100,7 @@ type CompanyInfo = {
   logoUrl?: string
   email?: string
   phone?: string
+  mobile?: string
   siteUrl?: string
   address?: CompanyAddress
   socialNetworks?: SocialNetworks
@@ -174,7 +175,17 @@ export function PdfHeader({ company }: Props) {
         )}
         {hasPrintableValue(company?.phone) && (
           <View style={styles.flexRow}>
-            <Text style={styles.textRightSmall}>{company?.phone}</Text>
+            <Text style={styles.textRightSmall}>
+              {MaskPhoneNumber(company?.phone)}
+            </Text>
+            <PhoneIcon />
+          </View>
+        )}
+        {hasPrintableValue(company?.mobile) && (
+          <View style={styles.flexRow}>
+            <Text style={styles.textRightSmall}>
+              {MaskPhoneNumber(company?.mobile)}
+            </Text>
             <PhoneIcon />
           </View>
         )}

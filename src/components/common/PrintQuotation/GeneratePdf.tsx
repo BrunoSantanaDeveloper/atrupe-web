@@ -23,6 +23,7 @@ import {
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
 import { formatToLocaleDate } from '@/lib/formatDate'
+import { addDays } from 'date-fns'
 import { getPdfImageSrc } from '@/lib/image-proxy'
 
 // Types
@@ -587,6 +588,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
 
   const columnWidths = getColumnWidths()
 
+  // O dueDate só é gravado ao concluir o orçamento. Na prévia de um
+  // orçamento ainda em digitação, calcula a partir da validade da série
+  const quotationCreatedAt = data.quotation?.createdAt
+  const proposalValidity = data.quotation?.proposalValidity
+  const validityDate = data.quotation?.dueDate
+    ? new Date(data.quotation.dueDate)
+    : proposalValidity && quotationCreatedAt
+      ? addDays(new Date(quotationCreatedAt), proposalValidity)
+      : null
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -682,6 +693,9 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                   <Text>
                     Emissão: {formatToLocaleDate(data.quotation?.createdAt)}
                   </Text>
+                  {type === 'quotation' && validityDate && (
+                    <Text>Validade: {formatToLocaleDate(validityDate)}</Text>
+                  )}
                 </>
               )}
               <Text>Vendedor: {data.quotation?.seller?.name}</Text>

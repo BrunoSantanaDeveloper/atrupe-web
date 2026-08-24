@@ -19,6 +19,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Form } from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Icons
 import {
@@ -30,6 +37,7 @@ import {
 } from '@tabler/icons-react'
 
 // Form
+import { commercialUnitOptions } from '@/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/schema'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -183,6 +191,10 @@ export function InvoiceItemEditDialog({
       })
     }
   }, [item, open, initialTab, fiscalForm])
+
+  // A unidade vive no fiscalForm; o watch mantém o select de Valores em dia
+  // quando ela é alterada pela aba Dados Fiscais.
+  const unidadeComercial = fiscalForm.watch('commercialUnit') || 'UN'
 
   /** Atualiza um campo numérico e recalcula o total */
   const updateField = useCallback(
@@ -375,19 +387,47 @@ export function InvoiceItemEditDialog({
                   />
                 </div>
 
-                {/* Quantidade — campo numérico simples (sem R$) */}
-                <div className="space-y-2">
-                  <Label htmlFor="edit-quantity">Quantidade</Label>
-                  <Input
-                    id="edit-quantity"
-                    type="number"
-                    min={0.001}
-                    step="any"
-                    value={formData.quantity}
-                    onChange={(e) =>
-                      updateField('quantity', Number(e.target.value))
-                    }
-                  />
+                {/* Quantidade + unidade andam juntas: a unidade só faz sentido
+                    lendo a quantidade ao lado. O estado é o MESMO da aba Dados
+                    Fiscais (fiscalForm.commercialUnit) — dois campos separados
+                    divergiriam e um sobrescreveria o outro no salvar. */}
+                <div className="grid grid-cols-[2fr_1fr] gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-quantity">Quantidade</Label>
+                    <Input
+                      id="edit-quantity"
+                      type="number"
+                      min={0.001}
+                      step="any"
+                      value={formData.quantity}
+                      onChange={(e) =>
+                        updateField('quantity', Number(e.target.value))
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-unit">Unidade</Label>
+                    <Select
+                      value={unidadeComercial}
+                      onValueChange={(value) =>
+                        fiscalForm.setValue('commercialUnit', value, {
+                          shouldDirty: true,
+                        })
+                      }
+                    >
+                      <SelectTrigger id="edit-unit">
+                        <SelectValue placeholder="UN" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {commercialUnitOptions.map((opcao) => (
+                          <SelectItem key={opcao.value} value={opcao.value}>
+                            {opcao.value}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 <CurrencyInput

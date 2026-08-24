@@ -30,6 +30,8 @@ type CompanyType = {
   textAfterItems: string
   siteUrl?: string
   email?: string
+  phone?: string
+  mobile?: string
   socialNetworks: {
     instagram: string
     facebook: string
@@ -79,6 +81,8 @@ type QuotationType = {
   seller: SellerType
   createdAt: string
   dueDate: string
+  // Validade da proposta em dias, configurada na série de venda
+  proposalValidity?: number | null
   approvedAt?: string
   finishedAt?: string
   status: QuotationStatusType
