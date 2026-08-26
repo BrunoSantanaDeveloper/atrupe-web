@@ -10,13 +10,28 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  Card as UiCard,
+  CardContent as UiCardContent,
+} from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { CustomButton } from '@/components/common/CustomButton'
 import { NfseTomadorSection } from './NfseTomadorSection'
 import { NfseDadosFiscaisSection } from './NfseDadosFiscaisSection'
+import {
+  NfseCamposAdicionaisSection,
+  type NfseCamposAdicionais,
+} from './NfseCamposAdicionaisSection'
+import {
+  ListaServicosSelect,
+  useListaServicosNfse,
+  type NfseServicoItem,
+} from '@/components/common/fiscal/ListaServicosNfse'
+
 import { NfseTotaisSection } from './NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
 import { InvoiceRecipientEditDialog } from '../../../emitir/[orderId]/components/InvoiceRecipientEditDialog'
@@ -140,6 +155,14 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     null,
   )
   const [confirmouClassificacao, setConfirmouClassificacao] = useState(false)
+  const [camposAdicionais, setCamposAdicionais] =
+    useState<NfseCamposAdicionais>({})
+  const { servicos: listaServicos } = useListaServicosNfse()
+  const [servicoEscolhidoId, setServicoEscolhidoId] = useState<string | null>(
+    null,
+  )
+  const [servicoEscolhido, setServicoEscolhido] =
+    useState<NfseServicoItem | null>(null)
   const [tomadorOverride, setTomadorOverride] =
     useState<NfePrepareDestinatario | null>(null)
   const [ambiente, setAmbiente] = useState<string | null>(null)
@@ -329,6 +352,16 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     pais: 'Brasil',
   })
 
+  const handleServicoEscolhido = (servico: NfseServicoItem | null) => {
+    setServicoEscolhidoId(servico?.id ?? null)
+    setServicoEscolhido(servico)
+    if (servico) {
+      setCodigoServico(servico.codigo)
+      if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+      toast.success(`Serviço ${servico.codigo} aplicado à emissão`)
+    }
+  }
+
   const handleTomadorSave = (
     updated: NfePrepareDestinatario,
     _options: { updateClient: boolean },
@@ -397,6 +430,19 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           aliquotaIss: aliquotaIss || undefined,
           issRetido,
           addressId: selectedAddressId || undefined,
+          // Classificação da lista de serviços escolhida no ato da emissão
+          ...(servicoEscolhido
+            ? {
+                nbs: servicoEscolhido.nbs || undefined,
+                codTribNacional: servicoEscolhido.codTribNacional || undefined,
+                codTribMunicipio:
+                  servicoEscolhido.codTribMunicipio || undefined,
+                codClassificacao:
+                  servicoEscolhido.codClassificacao || undefined,
+              }
+            : {}),
+          // Campos adicionais (Reforma Tributária / retenções)
+          ...camposAdicionais,
           ...(tomadorOverride
             ? {
                 tomadorRazaoSocial: tomadorOverride.razaoSocial,
@@ -769,6 +815,18 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           onEntregaChange={handleEntregaChange}
         />
 
+        {listaServicos.length > 0 && (
+          <UiCard className="border-none shadow-sm overflow-hidden">
+            <UiCardContent className="p-6">
+              <ListaServicosSelect
+                servicos={listaServicos}
+                selecionadoId={servicoEscolhidoId}
+                onSelecionar={handleServicoEscolhido}
+              />
+            </UiCardContent>
+          </UiCard>
+        )}
+
         <NfseDadosFiscaisSection
           codigoServico={codigoServico}
           aliquotaIss={aliquotaIss}
@@ -778,6 +836,11 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           onAliquotaIssChange={setAliquotaIss}
           onIssRetidoChange={setIssRetido}
           onDiscriminacaoChange={setDiscriminacao}
+        />
+
+        <NfseCamposAdicionaisSection
+          valores={camposAdicionais}
+          onChange={setCamposAdicionais}
         />
 
         <NfseTotaisSection

@@ -22,6 +22,15 @@ import {
 } from '../../components/ClientSelect'
 import { NfseTomadorSection } from '../../../../emitir-nfse/[orderId]/components/NfseTomadorSection'
 import { NfseDadosFiscaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseDadosFiscaisSection'
+import {
+  NfseCamposAdicionaisSection,
+  type NfseCamposAdicionais,
+} from '../../../../emitir-nfse/[orderId]/components/NfseCamposAdicionaisSection'
+import {
+  ListaServicosSelect,
+  useListaServicosNfse,
+  type NfseServicoItem,
+} from '@/components/common/fiscal/ListaServicosNfse'
 import { NfseTotaisSection } from '../../../../emitir-nfse/[orderId]/components/NfseTotaisSection'
 import { InvoiceDeliveryAddressSection } from '../../../../emitir/[orderId]/components/InvoiceDeliveryAddressSection'
 import { InvoiceRecipientEditDialog } from '../../../../emitir/[orderId]/components/InvoiceRecipientEditDialog'
@@ -211,6 +220,24 @@ export function StandaloneNfseForm() {
   const [aliquotaIss, setAliquotaIss] = useState<number>(0)
   const [issRetido, setIssRetido] = useState(false)
   const [valorServicos, setValorServicos] = useState<number>(0)
+  const [camposAdicionais, setCamposAdicionais] =
+    useState<NfseCamposAdicionais>({})
+  const { servicos: listaServicos } = useListaServicosNfse()
+  const [servicoEscolhidoId, setServicoEscolhidoId] = useState<string | null>(
+    null,
+  )
+  const [servicoEscolhido, setServicoEscolhido] =
+    useState<NfseServicoItem | null>(null)
+
+  const handleServicoEscolhido = (servico: NfseServicoItem | null) => {
+    setServicoEscolhidoId(servico?.id ?? null)
+    setServicoEscolhido(servico)
+    if (servico) {
+      setCodigoServico(servico.codigo)
+      if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+      toast.success(`Serviço ${servico.codigo} aplicado à emissão`)
+    }
+  }
 
   const router = useRouter()
 
@@ -391,6 +418,17 @@ export function StandaloneNfseForm() {
         issRetido,
         naturezaOperacao: prepareData?.naturezaOperacao,
         codigoMunicipio: prepareData?.codigoMunicipio,
+        // Classificação da lista de serviços escolhida no ato da emissão
+        ...(servicoEscolhido
+          ? {
+              nbs: servicoEscolhido.nbs || undefined,
+              codTribNacional: servicoEscolhido.codTribNacional || undefined,
+              codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
+              codClassificacao: servicoEscolhido.codClassificacao || undefined,
+            }
+          : {}),
+        // Campos adicionais (Reforma Tributária / retenções)
+        ...camposAdicionais,
         ...(entrega
           ? {
               entregaEndereco: entrega.endereco,
@@ -565,28 +603,27 @@ export function StandaloneNfseForm() {
           />
         )}
 
-        {selectedClient && (
-          <InvoiceDeliveryAddressSection
-            entrega={entrega}
-            clientId={selectedClient.id}
-            selectedAddressId={selectedAddressId}
-            addresses={addresses}
-            pais="Brasil"
-            sectionTitle="Local de Prestação"
-            destinatarioAddress={{
-              endereco: effectiveTomador?.endereco,
-              numero: effectiveTomador?.numero,
-              complemento: effectiveTomador?.complemento,
-              bairro: effectiveTomador?.bairro,
-              cidade: effectiveTomador?.municipio,
-              estado: effectiveTomador?.uf,
-              cep: effectiveTomador?.cep,
-            }}
-            onEntregaToggle={handleEntregaToggle}
-            onAddressSelect={handleEntregaAddressSelect}
-            onEntregaChange={handleEntregaChange}
-          />
-        )}
+        {/* Sempre visível: sem cliente ainda funciona com endereço manual. */}
+        <InvoiceDeliveryAddressSection
+          entrega={entrega}
+          clientId={selectedClient?.id || ''}
+          selectedAddressId={selectedAddressId}
+          addresses={addresses}
+          pais="Brasil"
+          sectionTitle="Local de Prestação"
+          destinatarioAddress={{
+            endereco: effectiveTomador?.endereco,
+            numero: effectiveTomador?.numero,
+            complemento: effectiveTomador?.complemento,
+            bairro: effectiveTomador?.bairro,
+            cidade: effectiveTomador?.municipio,
+            estado: effectiveTomador?.uf,
+            cep: effectiveTomador?.cep,
+          }}
+          onEntregaToggle={handleEntregaToggle}
+          onAddressSelect={handleEntregaAddressSelect}
+          onEntregaChange={handleEntregaChange}
+        />
 
         {/* Service value */}
         <Card className="border-none shadow-sm overflow-hidden">
@@ -610,6 +647,18 @@ export function StandaloneNfseForm() {
           </CardContent>
         </Card>
 
+        {listaServicos.length > 0 && (
+          <Card className="border-none shadow-sm overflow-hidden">
+            <CardContent className="p-6">
+              <ListaServicosSelect
+                servicos={listaServicos}
+                selecionadoId={servicoEscolhidoId}
+                onSelecionar={handleServicoEscolhido}
+              />
+            </CardContent>
+          </Card>
+        )}
+
         {/* Fiscal data (service code, ISS, discriminação) */}
         <NfseDadosFiscaisSection
           codigoServico={codigoServico}
@@ -620,6 +669,11 @@ export function StandaloneNfseForm() {
           onAliquotaIssChange={setAliquotaIss}
           onIssRetidoChange={setIssRetido}
           onDiscriminacaoChange={setDiscriminacao}
+        />
+
+        <NfseCamposAdicionaisSection
+          valores={camposAdicionais}
+          onChange={setCamposAdicionais}
         />
 
         {/* Totals */}

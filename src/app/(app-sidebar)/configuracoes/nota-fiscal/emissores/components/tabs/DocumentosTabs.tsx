@@ -2,11 +2,17 @@
 
 import Link from 'next/link'
 import { useFormContext } from 'react-hook-form'
-import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
+import {
+  IconArrowRight,
+  IconInfoCircle,
+  IconListDetails,
+} from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
+import { ListaServicosManagerDialog } from '@/components/common/fiscal/ListaServicosNfse'
+import { useState } from 'react'
 
 import type { EmissorData, FiscalDocType } from '../EmissorListItem'
 import type { FiscalEnv } from '../../lib/fiscal-readiness'
@@ -261,6 +267,8 @@ export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
         </p>
       </div>
 
+      <ListaServicosNfseBloco />
+
       <div>
         <FormSelect
           name="regimeEspecialTributacao"
@@ -318,6 +326,35 @@ export function PadroesTab() {
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Bloco de acesso à Lista de Serviços da empresa (aba NFS-e do emissor).
+ * A lista alimenta o seletor "Lista de Serviços" nas telas de emissão.
+ */
+function ListaServicosNfseBloco() {
+  const [aberto, setAberto] = useState(false)
+
+  return (
+    <div className="rounded-lg border border-gray-200 p-4 flex items-center justify-between gap-3">
+      <div>
+        <p className="text-sm font-semibold text-gray-700">Lista de Serviços</p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Cadastre os serviços da empresa (código LC 116, alíquota e
+          classificação fiscal) para escolher qual usar no ato da emissão.
+        </p>
+      </div>
+      <Button
+        type="button"
+        variant="neutralOutline"
+        onClick={() => setAberto(true)}
+        RightIcon={IconListDetails}
+      >
+        Gerenciar
+      </Button>
+      <ListaServicosManagerDialog open={aberto} onOpenChange={setAberto} />
     </div>
   )
 }
