@@ -414,7 +414,12 @@ export function StandaloneNfseForm() {
         codigoServico,
         discriminacao,
         valorServicos,
-        aliquotaIss: aliquotaIss || undefined,
+        // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
+        // Mas 0 vindo da lista é isenção legítima e precisa viajar.
+        aliquotaIss:
+          servicoEscolhido?.aliquotaIss != null
+            ? aliquotaIss
+            : aliquotaIss || undefined,
         issRetido,
         naturezaOperacao: prepareData?.naturezaOperacao,
         codigoMunicipio: prepareData?.codigoMunicipio,
@@ -425,6 +430,7 @@ export function StandaloneNfseForm() {
               codTribNacional: servicoEscolhido.codTribNacional || undefined,
               codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
               codClassificacao: servicoEscolhido.codClassificacao || undefined,
+              cnae: servicoEscolhido.cnae || undefined,
             }
           : {}),
         // Campos adicionais (Reforma Tributária / retenções)

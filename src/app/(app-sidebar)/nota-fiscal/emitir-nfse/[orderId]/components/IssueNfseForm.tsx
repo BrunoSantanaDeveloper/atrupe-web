@@ -427,7 +427,12 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           ...(isConsolidated ? { orderIds } : { orderId: primaryId }),
           codigoServico,
           discriminacao,
-          aliquotaIss: aliquotaIss || undefined,
+          // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
+          // Mas 0 vindo da lista é isenção legítima e precisa viajar.
+          aliquotaIss:
+            servicoEscolhido?.aliquotaIss != null
+              ? aliquotaIss
+              : aliquotaIss || undefined,
           issRetido,
           addressId: selectedAddressId || undefined,
           // Classificação da lista de serviços escolhida no ato da emissão
@@ -439,6 +444,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                   servicoEscolhido.codTribMunicipio || undefined,
                 codClassificacao:
                   servicoEscolhido.codClassificacao || undefined,
+                cnae: servicoEscolhido.cnae || undefined,
               }
             : {}),
           // Campos adicionais (Reforma Tributária / retenções)

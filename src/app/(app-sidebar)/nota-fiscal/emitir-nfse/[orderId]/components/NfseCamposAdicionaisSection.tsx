@@ -198,7 +198,19 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                         ? String(valores.tpEnteGov)
                         : 'none'
                     }
-                    onValueChange={(v) => selectNumerico('tpEnteGov', v)}
+                    onValueChange={(v) => {
+                      // Limpa os dependentes: sem isto tpOper/xTpEnteGov
+                      // ficavam ocultos na UI mas seguiam no payload.
+                      const tpEnteGov = v === 'none' ? undefined : Number(v)
+                      onChange({
+                        ...valores,
+                        tpEnteGov,
+                        ...(tpEnteGov === undefined
+                          ? { tpOper: undefined, xTpEnteGov: undefined }
+                          : {}),
+                        ...(tpEnteGov !== 9 ? { xTpEnteGov: undefined } : {}),
+                      })
+                    }}
                   >
                     <SelectTrigger>
                       <SelectValue />

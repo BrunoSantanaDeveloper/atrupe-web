@@ -59,19 +59,24 @@ export interface NfseServicoItem {
   isDefault: boolean
 }
 
-export function useListaServicosNfse() {
+/**
+ * @param rota Telas de emissão usam a raiz (permissão de emitir); o
+ * gerenciador usa /config (permissão de configuração) — sem isso quem só
+ * configura via a lista vazia e recadastrava em duplicata.
+ */
+export function useListaServicosNfse(rota = '/fiscal/nfse-servicos') {
   const [servicos, setServicos] = useState<NfseServicoItem[]>([])
 
   const carregar = useCallback(async () => {
     try {
-      const r = await getItem({ route: '/fiscal/nfse-servicos' })
+      const r = await getItem({ route: rota })
       if (r.success && Array.isArray(r.data)) {
         setServicos(r.data as NfseServicoItem[])
       }
     } catch {
       // Lista é opcional na emissão: sem ela os campos seguem manuais.
     }
-  }, [])
+  }, [rota])
 
   useEffect(() => {
     carregar()
@@ -152,7 +157,9 @@ export function ListaServicosManagerDialog({
   open,
   onOpenChange,
 }: ManagerProps) {
-  const { servicos, recarregar } = useListaServicosNfse()
+  const { servicos, recarregar } = useListaServicosNfse(
+    '/fiscal/nfse-servicos/config',
+  )
   const [editandoId, setEditandoId] = useState<string | null>(null)
   const [form, setForm] = useState(FORM_VAZIO)
   const [salvando, setSalvando] = useState(false)
