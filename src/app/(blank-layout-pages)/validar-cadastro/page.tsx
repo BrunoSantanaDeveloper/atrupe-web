@@ -16,12 +16,13 @@ import { ProgressCircle } from '@/components/ui/progress-circle'
 
 // Store
 import { useSignupStore } from '@/store/signupStore'
+import { useAttributionStore } from '@/store/attributionStore'
 
 // Actions
 import { createItemNew } from '@/actions/_cruds'
 
 // Analytics
-import { pushToDataLayer } from '@/lib/gtm'
+import { trackRegistrationCompleted, hashString } from '@/lib/analytics'
 
 // Components
 import { toast } from 'sonner'
@@ -81,10 +82,19 @@ export default function ValidationPage() {
         }
 
         // Conta criada e teste grátis iniciado com sucesso pelo backend.
-        // Dispara uma única vez por conta: o guard processStarted evita o
-        // double-invoke do StrictMode, e após o sucesso o store é limpo
-        // (clearSignupData), então um reload não repete a criação nem o evento.
-        pushToDataLayer({ event: 'sign_up', method: 'free_trial' })
+        // Dispara GA4 sign_up (+ OpenAI registration_completed quando o pixel
+        // for instalado) exatamente uma vez por conta. A dedup persiste em
+        // localStorage (sobrevive a F5/re-render/outra aba). Quando o backend
+        // passar a retornar o event_id (UUID, §5.2), troque dedupKey por ele e
+        // repasse eventId aqui.
+        const { oppref, utm } = useAttributionStore.getState()
+        trackRegistrationCompleted({
+          dedupKey: `signup:${hashString(normalizedEmail ?? '')}`,
+          attribution: { oppref, utm },
+        })
+        // Atribuição cumpriu o papel (vinculada ao cadastro); limpa para não
+        // vazar para um próximo cadastro no mesmo navegador.
+        useAttributionStore.getState().clear()
 
         toast.success('Cadastro realizado com sucesso. Fazendo login...')
 

@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card'
 
 // Component
 import { Logo } from '@/components/Logo'
+import { AttributionCapture } from '@/components/AttributionCapture'
 
 // Types
 import type { PropsWithChildren } from 'react'
@@ -10,6 +11,8 @@ import type { PropsWithChildren } from 'react'
 export default async function AuthLayout({ children }: PropsWithChildren) {
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#f2f4f7] py-8 overflow-y-auto">
+      {/* Captura oppref + UTMs na entrada do funil (§6) */}
+      <AttributionCapture />
       <div className="w-full max-w-[1440px] flex justify-center items-center gap-10 flex-col-reverse lg:flex-row mx-auto px-4 my-auto">
         {/* Coluna da esquerda - Banner */}
         <div className="flex justify-start items-center flex-grow-0 flex-shrink-0 relative">

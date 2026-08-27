@@ -10,14 +10,17 @@ import { Toaster } from '@/components/ui/sonner'
 import { DevEnvAlert } from '@/components/DevEnvAlert'
 import { GlobalAlertDialog } from '@/components/common/GlobalAlertDialog'
 
+// Config
+import { TRACKING } from '@/config/tracking'
+
 // Styles
 import './globals.css'
 import Providers from '@/components/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 
-// Google Tag Manager ID
-const GTM_ID = 'GTM-WV53Q7X7'
+// Google Tag Manager ID (config central — peça #4)
+const GTM_ID = TRACKING.gtmId
 
 export async function generateMetadata(): Promise<Metadata> {
   const session = await auth()
