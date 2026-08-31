@@ -15,6 +15,11 @@ export const productFiscalDataSchema = z.object({
   // icmsReducao: z.coerce.number().optional(),
   icmsCreditRate: z.coerce.number().optional(),
   icmsBaseModality: z.string().default('3'),
+  icmsStMva: z.coerce.number().optional(),
+  icmsStReducao: z.coerce.number().optional(),
+  icmsStRate: z.coerce.number().optional(),
+  fcpRate: z.coerce.number().optional(),
+  fcpStRate: z.coerce.number().optional(),
 
   // PIS/COFINS
   pisCst: z.string().default('07'),
@@ -47,6 +52,11 @@ export const defaultFiscalDataValues: ProductFiscalDataFormType = {
   // icmsReducao: undefined,
   icmsCreditRate: undefined,
   icmsBaseModality: '3',
+  icmsStMva: undefined,
+  icmsStReducao: undefined,
+  icmsStRate: undefined,
+  fcpRate: undefined,
+  fcpStRate: undefined,
   pisCst: '07',
   pisRate: undefined,
   cofinsCst: '07',

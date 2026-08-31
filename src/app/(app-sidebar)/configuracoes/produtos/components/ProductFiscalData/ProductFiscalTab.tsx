@@ -112,6 +112,42 @@ export function ProductFiscalTab() {
             options={icmsBaseModalityOptions}
           />
         </div>
+
+        {/* A margem da ST vem de protocolo entre estados, por NCM, e a alíquota
+            do FCP é de lei estadual: nenhum dos dois é derivável, por isso
+            ficam no cadastro do produto. */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <FormInput
+            name="icmsStMva"
+            label="MVA da ST (%)"
+            type="number"
+            placeholder="0.00"
+          />
+          <FormInput
+            name="icmsStReducao"
+            label="Redução BC da ST (%)"
+            type="number"
+            placeholder="0.00"
+          />
+          <FormInput
+            name="icmsStRate"
+            label="Alíquota ICMS-ST (%)"
+            type="number"
+            placeholder="0.00"
+          />
+          <FormInput
+            name="fcpRate"
+            label="Alíquota FCP (%)"
+            type="number"
+            placeholder="0.00"
+          />
+          <FormInput
+            name="fcpStRate"
+            label="Alíquota FCP-ST (%)"
+            type="number"
+            placeholder="0.00"
+          />
+        </div>
       </div>
 
       {/* PIS / COFINS */}

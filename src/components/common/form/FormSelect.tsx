@@ -26,6 +26,9 @@ import { type Path, useFormContext, type FieldValues } from 'react-hook-form'
 export interface SelectOption {
   label: string | JSX.Element
   value: string
+  /** Opção visível mas não selecionável — usada para sinalizar o que ainda
+   *  não é suportado, em vez de esconder e deixar o usuário procurar. */
+  disabled?: boolean
 }
 
 interface FormSelectProps<T extends FieldValues> {
@@ -77,7 +80,11 @@ export function FormSelect<T extends FieldValues>({
               <SelectGroup>
                 {options.length ? (
                   options.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
+                    <SelectItem
+                      key={option.value}
+                      value={option.value}
+                      disabled={option.disabled}
+                    >
                       {option.label}
                     </SelectItem>
                   ))

@@ -10,11 +10,20 @@ import { FormSwitch } from '@/components/common/form/FormSwitch'
 
 import type { EmissorData } from '../EmissorListItem'
 
+// Regime Normal e MEI ficam visíveis mas bloqueados: a emissão monta a nota
+// com base de cálculo e imposto zerados, o que está correto para o Simples
+// Nacional e produziria documento subdeclarado nos demais regimes. Esconder a
+// opção só faria o usuário procurar; o rótulo explica por que não dá para
+// selecionar. Liberar junto com o cálculo de imposto por item.
 const crtOptions = [
   { value: '1', label: '1 - Simples Nacional' },
   { value: '2', label: '2 - Simples Nacional - Excesso de sublimite' },
-  { value: '3', label: '3 - Regime Normal' },
-  { value: '4', label: '4 - MEI' },
+  {
+    value: '3',
+    label: '3 - Regime Normal (em desenvolvimento)',
+    disabled: true,
+  },
+  { value: '4', label: '4 - MEI (em desenvolvimento)', disabled: true },
 ]
 
 function ReadOnlyField({
@@ -57,6 +66,10 @@ export function IdentificacaoTab({ emissor, isEditing }: Props) {
           label="Código de Regime Tributário"
           options={crtOptions}
         />
+        <p className="text-xs text-muted-foreground -mt-2">
+          Lucro Real, Lucro Presumido e MEI ainda não são suportados: o cálculo
+          de ICMS, PIS, COFINS e IPI por item não está implementado.
+        </p>
 
         <div>
           <FormInput

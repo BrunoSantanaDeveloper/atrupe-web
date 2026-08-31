@@ -52,6 +52,11 @@ export default function ValidationPage() {
       // Normalizar email antes de finalizar o cadastro
       const normalizedEmail = signupData?.email?.toLowerCase().trim()
 
+      // Atribuição capturada na entrada do funil (§6): enviada ao backend para
+      // vincular à conta e reutilizada no evento de conversão.
+      const { oppref, utm } = useAttributionStore.getState()
+      const hasUtm = Object.keys(utm).length > 0
+
       const finishSignupPromise = createItemNew({
         route: '/user/create-password',
         data: {
@@ -61,6 +66,8 @@ export default function ValidationPage() {
           mobile: signupData?.mobile,
           password: newPasswordData?.password,
           cpf: signupData?.cpf,
+          oppref: oppref ?? undefined,
+          utm: hasUtm ? utm : undefined,
         },
       })
 
@@ -83,13 +90,14 @@ export default function ValidationPage() {
 
         // Conta criada e teste grátis iniciado com sucesso pelo backend.
         // Dispara GA4 sign_up (+ OpenAI registration_completed quando o pixel
-        // for instalado) exatamente uma vez por conta. A dedup persiste em
-        // localStorage (sobrevive a F5/re-render/outra aba). Quando o backend
-        // passar a retornar o event_id (UUID, §5.2), troque dedupKey por ele e
-        // repasse eventId aqui.
-        const { oppref, utm } = useAttributionStore.getState()
+        // for instalado) exatamente uma vez por conta. Usa o event_id (UUID)
+        // gerado pelo backend (§5.2) como chave de dedup e id do evento OpenAI;
+        // cai no hash do e-mail só se o backend não retornar o id. A dedup
+        // persiste em localStorage (sobrevive a F5/re-render/outra aba).
+        const eventId = signupResponse.data?.eventId as string | undefined
         trackRegistrationCompleted({
-          dedupKey: `signup:${hashString(normalizedEmail ?? '')}`,
+          dedupKey: eventId ?? `signup:${hashString(normalizedEmail ?? '')}`,
+          eventId,
           attribution: { oppref, utm },
         })
         // Atribuição cumpriu o papel (vinculada ao cadastro); limpa para não
