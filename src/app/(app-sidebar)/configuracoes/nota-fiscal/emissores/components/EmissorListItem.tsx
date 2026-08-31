@@ -41,6 +41,15 @@ import { useEmissorReadiness } from '../hooks/useEmissorReadiness'
 import { ReadinessChecklist } from './ReadinessChecklist'
 import type { FiscalEnv } from '../lib/fiscal-readiness'
 
+// Antes só 1 e 3 tinham rótulo e o resto caía em "Outro" — com o Regime
+// Normal liberado, 2 passou a ser escolhível e apareceria sem nome.
+const CRT_LABELS: Record<string, string> = {
+  '1': 'Simples Nacional',
+  '2': 'Simples Nacional - Excesso de sublimite',
+  '3': 'Regime Normal',
+  '4': 'MEI',
+}
+
 export type EnvStatus = 'DRAFT' | 'VALIDATING' | 'READY' | 'ERROR' | 'DISABLED'
 export type FiscalDocType = 'NFE' | 'NFSE' | 'NFCE'
 
@@ -649,11 +658,7 @@ export function EmissorListItem({
                 CRT
               </p>
               <p className="font-medium text-gray-900">
-                {String(emissor.emitCrt) === '1'
-                  ? 'Simples Nacional'
-                  : String(emissor.emitCrt) === '3'
-                    ? 'Regime Normal'
-                    : 'Outro'}
+                {CRT_LABELS[String(emissor.emitCrt)] ?? 'Não informado'}
               </p>
             </div>
             {/* Row 2 */}

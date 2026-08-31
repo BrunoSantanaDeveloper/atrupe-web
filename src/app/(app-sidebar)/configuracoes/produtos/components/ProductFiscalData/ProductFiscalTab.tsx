@@ -106,6 +106,14 @@ export function ProductFiscalTab() {
             type="number"
             placeholder="0.00"
           />
+          {/* Obrigatória nos CSTs 20 e 70: sem ela o Regime Normal barra a
+              emissão, e não havia onde informar. */}
+          <FormInput
+            name="icmsReducao"
+            label="Redução da BC do ICMS (%)"
+            type="number"
+            placeholder="0.00"
+          />
           <FormSelect
             name="icmsBaseModality"
             label="Modalidade BC"

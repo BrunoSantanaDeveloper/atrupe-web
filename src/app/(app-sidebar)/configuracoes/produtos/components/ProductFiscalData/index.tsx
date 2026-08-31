@@ -97,6 +97,9 @@ export function ProductFiscalDataDialog({
         icmsCst: fiscalData.icmsCst || '102',
         icmsRate: fiscalData.icmsRate || undefined,
         icmsCreditRate: fiscalData.icmsCreditRate || undefined,
+        // `??` e nao `||`: reducao 0 e' valor legitimo e nao pode virar vazio,
+        // que no proximo save apagaria o que estava gravado.
+        icmsReducao: fiscalData.icmsReducao ?? undefined,
         icmsBaseModality: fiscalData.icmsBaseModality || '3',
         icmsStMva: fiscalData.icmsStMva ?? undefined,
         icmsStReducao: fiscalData.icmsStReducao ?? undefined,
