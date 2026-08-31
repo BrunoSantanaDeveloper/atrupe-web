@@ -22,6 +22,7 @@ import { Label } from '@/components/ui/label'
 
 // Components
 import { ProductFiscalTab } from './ProductFiscalTab'
+import { ProductStRules } from './ProductStRules'
 
 // Icons
 import { IconReceipt, IconCircleCheck } from '@tabler/icons-react'
@@ -199,6 +200,10 @@ export function ProductFiscalDataDialog({
 
                 <ProductFiscalTab />
               </form>
+
+              {/* Fora do <form>: e' outro recurso, com endpoints proprios, e
+                  formulario aninhado em HTML nao e' valido. */}
+              <ProductStRules productId={productId} />
             </Form>
           )}
         </DialogBody>

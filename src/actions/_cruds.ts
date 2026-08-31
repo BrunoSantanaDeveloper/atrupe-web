@@ -308,6 +308,37 @@ export const updateItem = async (
   }
 }
 
+// SUBSTITUIR (PUT) — para endpoints de upsert, onde o corpo descreve o
+// estado final do recurso e a chave vai na rota.
+export const putItemNew = async ({
+  route,
+  data,
+}: {
+  route: string
+  data?: unknown
+}) => {
+  const api = await apiInstance()
+
+  try {
+    const res = await api.put(route, data)
+
+    return {
+      success: true,
+      message: 'Item salvo com sucesso!',
+      data: res.data,
+    }
+  } catch (error: any) {
+    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
+
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message || 'Não foi possível salvar o item.',
+      data: null,
+    }
+  }
+}
+
 // EDITAR NOVO (usar sempre este em vez de updateItem)
 export const updateItemNew = async ({
   route,

@@ -29,6 +29,18 @@ import { IdentificacaoTab } from './tabs/IdentificacaoTab'
 import { CertificadoTab } from './tabs/CertificadoTab'
 import { NfeTab, NfceTab, NfseTab, PadroesTab } from './tabs/DocumentosTabs'
 import { EnvioTab } from './tabs/EnvioTab'
+import { ReformaTab } from './tabs/ReformaTab'
+
+/**
+ * Percentual opcional onde vazio significa "usar o padrão", nao zero.
+ *
+ * `z.coerce.number()` converte '' em 0 — numa aliquota isso gravaria 0% e o
+ * calculo deixaria de cair no padrao nacional, zerando o tributo em silencio.
+ */
+const percentualOpcional = z.preprocess(
+  (v) => (v === '' || v === null ? undefined : v),
+  z.coerce.number().min(0).max(100).optional(),
+)
 
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -57,6 +69,15 @@ const emissoresSchema = z.object({
   proximoNumeroNfce: z.coerce.number().optional(),
   defaultCfop: z.string().optional(),
   defaultOperationNature: z.string().optional(),
+
+  // Reforma Tributária
+  reformaTributariaAtiva: z.boolean().optional(),
+  ibsCbsEnviarValores: z.boolean().optional(),
+  // 'none' significa "não informar", como em regimeEspecialTributacao.
+  regApIbsCbsSn: z.string().optional(),
+  aliquotaIbsUf: percentualOpcional,
+  aliquotaIbsMun: percentualOpcional,
+  aliquotaCbs: percentualOpcional,
 
   // Ambiente a que a numeração acima se aplica. Homologação e produção têm
   // sequências independentes; sem isto o PATCH gravava só a coluna global e o
@@ -105,6 +126,12 @@ const sanitizeEmissorPayload = (data: EmissorFormValues) => {
       ? Number(data.regimeEspecialTributacao)
       : null
 
+  // Mesmo tratamento do regime especial: vazio limpa o que estava salvo.
+  safe.regApIbsCbsSn =
+    data.regApIbsCbsSn && data.regApIbsCbsSn !== 'none'
+      ? Number(data.regApIbsCbsSn)
+      : null
+
   return safe as EmissorFormValues
 }
 
@@ -117,6 +144,7 @@ type TabKey =
   | 'nfce'
   | 'nfse'
   | 'padroes'
+  | 'reforma'
   | 'envio'
 
 interface EmissorFormModalProps {
@@ -155,6 +183,9 @@ export function EmissorFormModal({
       serieNfse: 'A1',
       proximoRpsNfse: 1,
       regimeEspecialTributacao: 'none',
+      reformaTributariaAtiva: false,
+      ibsCbsEnviarValores: false,
+      regApIbsCbsSn: 'none',
       serieNfce: 1,
       proximoNumeroNfce: 1,
       nfeNumberingEnvironment: 'HOMOLOGACAO',
@@ -181,6 +212,7 @@ export function EmissorFormModal({
       { key: 'nfce', label: 'NFC-e' },
       { key: 'nfse', label: 'NFS-e' },
       { key: 'padroes', label: 'Padrões' },
+      { key: 'reforma', label: 'Reforma' },
       { key: 'envio', label: 'Envio' },
     ]
 
@@ -193,9 +225,9 @@ export function EmissorFormModal({
     // prática a aba era inalcançável e o wizard de ativação cobrava um
     // certificado sem oferecer onde enviá-lo.
     const permitidas: Record<Exclude<EditType, 'GLOBAL'>, TabKey[]> = {
-      NFE: ['identificacao', 'certificado', 'nfe', 'padroes'],
-      NFCE: ['identificacao', 'certificado', 'nfce', 'padroes'],
-      NFSE: ['identificacao', 'certificado', 'nfse'],
+      NFE: ['identificacao', 'certificado', 'nfe', 'padroes', 'reforma'],
+      NFCE: ['identificacao', 'certificado', 'nfce', 'padroes', 'reforma'],
+      NFSE: ['identificacao', 'certificado', 'nfse', 'reforma'],
     }
     return all.filter((t) => permitidas[editType].includes(t.key))
   }, [editType, isEditing])
@@ -256,6 +288,17 @@ export function EmissorFormModal({
           sendDanfeAutomatically: emissor.sendDanfeAutomatically !== false,
           sendXmlAutomatically: emissor.sendXmlAutomatically !== false,
           sendFiscalEmailCopyTo: emissor.sendFiscalEmailCopyTo || '',
+          // `??` e nao `||`: alíquota 0 e' legitima e nao pode virar vazio,
+          // que no proximo save apagaria o ajuste do emissor.
+          reformaTributariaAtiva: emissor.reformaTributariaAtiva ?? false,
+          ibsCbsEnviarValores: emissor.ibsCbsEnviarValores ?? false,
+          regApIbsCbsSn:
+            emissor.regApIbsCbsSn != null
+              ? String(emissor.regApIbsCbsSn)
+              : 'none',
+          aliquotaIbsUf: emissor.aliquotaIbsUf ?? undefined,
+          aliquotaIbsMun: emissor.aliquotaIbsMun ?? undefined,
+          aliquotaCbs: emissor.aliquotaCbs ?? undefined,
         })
       } else {
         form.reset()
@@ -284,6 +327,14 @@ export function EmissorFormModal({
     const campoPorAba: Record<TabKey, string[]> = {
       identificacao: ['name', 'emitCrt', 'defaultNcm', 'isActive'],
       certificado: [],
+      reforma: [
+        'reformaTributariaAtiva',
+        'ibsCbsEnviarValores',
+        'regApIbsCbsSn',
+        'aliquotaIbsUf',
+        'aliquotaIbsMun',
+        'aliquotaCbs',
+      ],
       nfe: ['serieNfe', 'proximoNumeroNfe', 'nfeNumberingEnvironment'],
       nfce: [
         'serieNfce',
@@ -382,6 +433,10 @@ export function EmissorFormModal({
 
                 <TabsContent value="padroes" className="m-0">
                   <PadroesTab />
+                </TabsContent>
+
+                <TabsContent value="reforma" className="m-0">
+                  <ReformaTab />
                 </TabsContent>
 
                 <TabsContent value="envio" className="m-0">

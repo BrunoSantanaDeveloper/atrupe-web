@@ -143,6 +143,14 @@ export interface EmissorData {
   proximoRpsNfse?: number
   codigoServico?: string
   aliquotaIss?: number
+
+  // Reforma Tributária
+  reformaTributariaAtiva?: boolean
+  ibsCbsEnviarValores?: boolean
+  regApIbsCbsSn?: number | null
+  aliquotaIbsUf?: number | null
+  aliquotaIbsMun?: number | null
+  aliquotaCbs?: number | null
   regimeEspecialTributacao?: number | null
   serieNfce?: number
   proximoNumeroNfce?: number

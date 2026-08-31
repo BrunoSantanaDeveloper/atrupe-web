@@ -30,6 +30,7 @@ import {
   IconCalendarDollar,
   IconBuildingCommunity,
   IconDeviceDesktopDollar,
+  IconReceiptTax,
   IconTicket,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
@@ -415,6 +416,11 @@ export const adminMainNavigation: MainNavigationType[] = [
         icon: IconSettings,
         title: 'Integrações',
         path: '/admin/sistema/integracoes',
+      },
+      {
+        icon: IconReceiptTax,
+        title: 'Parâmetros Fiscais',
+        path: '/admin/sistema/fiscal',
       },
       {
         icon: IconTicket,

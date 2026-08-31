@@ -90,3 +90,54 @@ export async function updateAiAccessSettings(payload: AiAccessSettingsData) {
     }
   }
 }
+
+/**
+ * Alíquota interna do ICMS por UF, usada no cálculo do Regime Normal (DIFAL,
+ * ST e a "ALQ intra" da MVA ajustada).
+ *
+ * `origem` diz se o valor veio do padrão do sistema ou de ajuste do superadmin;
+ * `revisado` diz se o padrão foi conferido na legislação estadual. Enviar
+ * `null` numa UF remove o ajuste e volta ao padrão.
+ */
+export interface IcmsAliquotaInterna {
+  uf: string
+  aliquota: number
+  origem: 'padrao' | 'ajustado'
+  revisado: boolean
+}
+
+export async function updateIcmsAliquotas(
+  aliquotas: Record<string, number | null>,
+) {
+  const api = await apiInstance()
+
+  try {
+    const res = await api.put('/system-settings/icms-aliquotas-internas', {
+      aliquotas,
+    })
+    return {
+      success: true,
+      message: 'Alíquotas atualizadas com sucesso!',
+      data: res.data as IcmsAliquotaInterna[],
+    }
+  } catch (error: unknown) {
+    const err = error as {
+      response?: {
+        status?: number
+        data?: {
+          message?: string
+          userMessage?: { message?: string; statusCode?: number }
+        }
+      }
+    }
+    const userMessage = err?.response?.data?.userMessage
+    return {
+      success: false,
+      code: userMessage?.statusCode || err?.response?.status || 500,
+      message:
+        userMessage?.message ||
+        err?.response?.data?.message ||
+        'Erro ao atualizar as alíquotas internas de ICMS.',
+    }
+  }
+}
