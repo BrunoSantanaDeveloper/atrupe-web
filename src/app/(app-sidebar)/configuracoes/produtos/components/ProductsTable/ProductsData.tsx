@@ -1,12 +1,13 @@
 'use client'
 
 // React
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
+import { BulkNcmDialog } from '../ProductFiscalData/BulkNcmDialog'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -21,6 +22,8 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { CardFooter, CardContent } from '@/components/ui/card'
 
 // Types
@@ -41,6 +44,9 @@ import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
+// Icons
+import { IconReceiptTax } from '@tabler/icons-react'
+
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
 }
@@ -50,8 +56,14 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+
   const { hasAllPermissions } = usePermissions()
   const { hasFiscalModule } = usePlanFeatures()
+
+  const showNcmColumn = hasFiscalModule()
+  const canConfigureFiscalData =
+    showNcmColumn && hasAllPermissions(['nota_fiscal:config:edit'])
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
@@ -63,11 +75,69 @@ export function ProductsData({ searchParams, tabs }: Props) {
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
 
-  const products: ProductListType[] = data?.data || []
+  // useMemo para o array não trocar de identidade a cada render e invalidar
+  // os memos de seleção abaixo.
+  const products: ProductListType[] = useMemo(() => data?.data || [], [data])
   const hasData = products.length
+
+  // A seleção vale para a página visível: trocar de página, aba ou filtro
+  // zera para ninguém aplicar NCM em produto que não está mais à vista.
+  // A chave é o CONTEÚDO do searchParams — depender da identidade do objeto
+  // limparia a seleção em qualquer re-render que o recriasse.
+  const selectionScopeKey = JSON.stringify(searchParams)
+  useEffect(() => {
+    setSelectedIds([])
+  }, [selectionScopeKey])
+
+  const pageIds = useMemo(() => products.map((p) => p.id), [products])
+  const selectedOnPage = useMemo(
+    () => selectedIds.filter((id) => pageIds.includes(id)),
+    [selectedIds, pageIds],
+  )
+  const allOnPageSelected =
+    pageIds.length > 0 && selectedOnPage.length === pageIds.length
+
+  function toggleProduct(productId: string, checked: boolean) {
+    setSelectedIds((current) =>
+      checked
+        ? [...current, productId]
+        : current.filter((id) => id !== productId),
+    )
+  }
+
+  function toggleAllOnPage(checked: boolean) {
+    setSelectedIds(checked ? pageIds : [])
+  }
 
   return (
     <>
+      {canConfigureFiscalData && selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-brand-50 px-6 py-3">
+          <p className="text-sm font-medium text-gray-700">
+            {selectedIds.length} produto{selectedIds.length === 1 ? '' : 's'}{' '}
+            selecionado{selectedIds.length === 1 ? '' : 's'}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="neutralOutline"
+              onClick={() => setSelectedIds([])}
+            >
+              Limpar seleção
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              RightIcon={IconReceiptTax}
+              onClick={() => setOpenDialog('bulk-ncm')}
+            >
+              Alterar NCM
+            </Button>
+          </div>
+        </div>
+      )}
+
       <CardContent>
         {isLoading ? (
           <TableSkeleton />
@@ -75,8 +145,26 @@ export function ProductsData({ searchParams, tabs }: Props) {
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
+                {canConfigureFiscalData && (
+                  <TableHead className="w-10">
+                    <Checkbox
+                      aria-label="Selecionar todos os produtos desta página"
+                      checked={
+                        allOnPageSelected
+                          ? true
+                          : selectedOnPage.length > 0
+                            ? 'indeterminate'
+                            : false
+                      }
+                      onCheckedChange={(checked) =>
+                        toggleAllOnPage(checked === true)
+                      }
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Produto</TableHead>
                 <TableHead>Setor</TableHead>
+                {showNcmColumn && <TableHead>NCM</TableHead>}
                 <TableHead>P.V.</TableHead>
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
@@ -84,6 +172,17 @@ export function ProductsData({ searchParams, tabs }: Props) {
             <TableBody>
               {products.map((product) => (
                 <TableRow key={product?.id}>
+                  {canConfigureFiscalData && (
+                    <TableCell className="w-10">
+                      <Checkbox
+                        aria-label={`Selecionar ${product?.name}`}
+                        checked={selectedIds.includes(product.id)}
+                        onCheckedChange={(checked) =>
+                          toggleProduct(product.id, checked === true)
+                        }
+                      />
+                    </TableCell>
+                  )}
                   <TableCell>
                     <p className="font-medium">{product?.name}</p>
                     <p className="text-gray">{product?.code}</p>
@@ -91,6 +190,13 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell className="text-gray-600">
                     <Badge variant="neutralLight">{product?.sectorName}</Badge>
                   </TableCell>
+                  {showNcmColumn && (
+                    <TableCell className="text-gray-600">
+                      {product?.fiscalData?.ncm || (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell className="text-success-700">
                     {(() => {
                       const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
@@ -174,6 +280,14 @@ export function ProductsData({ searchParams, tabs }: Props) {
             setSelectedProductName('')
           }
         }}
+      />
+      <BulkNcmDialog
+        open={openDialog === 'bulk-ncm'}
+        productIds={selectedIds}
+        onOpenChange={(open) => {
+          if (!open) setOpenDialog('')
+        }}
+        onApplied={() => setSelectedIds([])}
       />
       {isLoading || hasData ? (
         <CardFooter>

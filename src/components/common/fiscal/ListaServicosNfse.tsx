@@ -55,6 +55,7 @@ export interface NfseServicoItem {
   cnae?: string | null
   nbs?: string | null
   codTribNacional?: string | null
+  cstIbsCbs?: string | null
   codClassificacao?: string | null
   isDefault: boolean
 }
@@ -145,6 +146,7 @@ const FORM_VAZIO = {
   cnae: '',
   nbs: '',
   codTribNacional: '',
+  cstIbsCbs: '',
   codClassificacao: '',
 }
 
@@ -178,6 +180,7 @@ export function ListaServicosManagerDialog({
       cnae: s.cnae ?? '',
       nbs: s.nbs ?? '',
       codTribNacional: s.codTribNacional ?? '',
+      cstIbsCbs: s.cstIbsCbs ?? '',
       codClassificacao: s.codClassificacao ?? '',
     })
   }
@@ -203,6 +206,7 @@ export function ListaServicosManagerDialog({
         cnae: form.cnae.trim() || undefined,
         nbs: form.nbs.trim() || undefined,
         codTribNacional: form.codTribNacional.trim() || undefined,
+        cstIbsCbs: form.cstIbsCbs.trim() || undefined,
         codClassificacao: form.codClassificacao.trim() || undefined,
       }
 
@@ -336,6 +340,17 @@ export function ListaServicosManagerDialog({
                   value={form.codTribNacional}
                   onChange={(e) =>
                     setForm({ ...form, codTribNacional: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="ls-cst">CST IBS/CBS</Label>
+                <Input
+                  id="ls-cst"
+                  placeholder="000"
+                  value={form.cstIbsCbs}
+                  onChange={(e) =>
+                    setForm({ ...form, cstIbsCbs: e.target.value })
                   }
                 />
               </div>

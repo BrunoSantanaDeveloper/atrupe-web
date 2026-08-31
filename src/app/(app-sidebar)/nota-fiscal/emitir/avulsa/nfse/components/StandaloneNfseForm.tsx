@@ -429,6 +429,7 @@ export function StandaloneNfseForm() {
               nbs: servicoEscolhido.nbs || undefined,
               codTribNacional: servicoEscolhido.codTribNacional || undefined,
               codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
+              cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
               codClassificacao: servicoEscolhido.codClassificacao || undefined,
               cnae: servicoEscolhido.cnae || undefined,
             }

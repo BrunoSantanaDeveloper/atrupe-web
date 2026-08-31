@@ -442,6 +442,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 codTribNacional: servicoEscolhido.codTribNacional || undefined,
                 codTribMunicipio:
                   servicoEscolhido.codTribMunicipio || undefined,
+                cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
                 codClassificacao:
                   servicoEscolhido.codClassificacao || undefined,
                 cnae: servicoEscolhido.cnae || undefined,

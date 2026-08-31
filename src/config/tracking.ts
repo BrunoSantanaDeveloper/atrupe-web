@@ -16,10 +16,15 @@ export const TRACKING = {
   // Mantido aqui como fonte única de referência dos IDs de tracking.
   ga4MeasurementId: process.env.NEXT_PUBLIC_GA4_ID ?? 'G-V8B7SDZ187',
 
-  // OpenAI Pixel (§4 do documento de medição). Ainda NÃO instalado — a peça #5
-  // (loader do pixel) consumirá este valor.
+  // OpenAI Pixel (§4 do documento de medição).
   openAiPixelId:
     process.env.NEXT_PUBLIC_OPENAI_PIXEL_ID ?? '5TZxCTcQhmzhW7DZ6ZHPFk',
+
+  // Ativação do OpenAI Pixel. Default DESLIGADO: o pixel só carrega quando
+  // NEXT_PUBLIC_OPENAI_PIXEL_ENABLED=true. Ligue primeiro em homolog para a
+  // validação do §8; em produção, SOMENTE após a decisão de consentimento
+  // (§4.2). Enquanto false, nada é carregado nem enviado.
+  openAiPixelEnabled: process.env.NEXT_PUBLIC_OPENAI_PIXEL_ENABLED === 'true',
 
   // Debug de analytics: liga em não-produção para a validação do §8 ("debug
   // habilitado apenas durante o teste"); silencioso em produção.
