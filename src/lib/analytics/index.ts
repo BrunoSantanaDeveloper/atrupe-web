@@ -103,6 +103,7 @@ function generateEventId(): string {
 // dados NÃO pessoais: oppref e utm_*. Ver §6 do documento de medição.
 export interface Attribution {
   oppref: string | null
+  gclid: string | null
   utm: Record<string, string>
 }
 
@@ -114,6 +115,7 @@ function attributionToParams(
   if (!attribution) return {}
   const params: Record<string, string> = {}
   if (attribution.oppref) params.oppref = attribution.oppref
+  if (attribution.gclid) params.gclid = attribution.gclid
   for (const [key, value] of Object.entries(attribution.utm)) {
     if (value) params[key] = value
   }

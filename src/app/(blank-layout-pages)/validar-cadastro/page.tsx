@@ -54,7 +54,7 @@ export default function ValidationPage() {
 
       // Atribuição capturada na entrada do funil (§6): enviada ao backend para
       // vincular à conta e reutilizada no evento de conversão.
-      const { oppref, utm } = useAttributionStore.getState()
+      const { oppref, gclid, utm } = useAttributionStore.getState()
       const hasUtm = Object.keys(utm).length > 0
 
       const finishSignupPromise = createItemNew({
@@ -67,6 +67,7 @@ export default function ValidationPage() {
           password: newPasswordData?.password,
           cpf: signupData?.cpf,
           oppref: oppref ?? undefined,
+          gclid: gclid ?? undefined,
           utm: hasUtm ? utm : undefined,
         },
       })
@@ -98,7 +99,7 @@ export default function ValidationPage() {
         trackRegistrationCompleted({
           dedupKey: eventId ?? `signup:${hashString(normalizedEmail ?? '')}`,
           eventId,
-          attribution: { oppref, utm },
+          attribution: { oppref, gclid, utm },
         })
         // Atribuição cumpriu o papel (vinculada ao cadastro); limpa para não
         // vazar para um próximo cadastro no mesmo navegador.

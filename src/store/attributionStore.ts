@@ -26,6 +26,7 @@ interface AttributionState extends Attribution {
 function extractAttribution(search: string): Attribution | null {
   const params = new URLSearchParams(search)
   const oppref = params.get('oppref')
+  const gclid = params.get('gclid')
 
   const utm: Record<string, string> = {}
   params.forEach((value, key) => {
@@ -35,16 +36,17 @@ function extractAttribution(search: string): Attribution | null {
     }
   })
 
-  const hasAttribution = !!oppref || Object.keys(utm).length > 0
+  const hasAttribution = !!oppref || !!gclid || Object.keys(utm).length > 0
   if (!hasAttribution) return null
 
-  return { oppref: oppref || null, utm }
+  return { oppref: oppref || null, gclid: gclid || null, utm }
 }
 
 export const useAttributionStore = create<AttributionState>()(
   persist(
     (set) => ({
       oppref: null,
+      gclid: null,
       utm: {},
       capturedAt: null,
 
@@ -53,12 +55,14 @@ export const useAttributionStore = create<AttributionState>()(
         if (!attribution) return // sem params → preserva a captura de entrada
         set({
           oppref: attribution.oppref,
+          gclid: attribution.gclid,
           utm: attribution.utm,
           capturedAt: Date.now(),
         })
       },
 
-      clear: () => set({ oppref: null, utm: {}, capturedAt: null }),
+      clear: () =>
+        set({ oppref: null, gclid: null, utm: {}, capturedAt: null }),
     }),
     {
       name: 'attribution-storage',

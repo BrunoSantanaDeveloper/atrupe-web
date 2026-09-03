@@ -229,7 +229,19 @@ export function NfceTab({ emissor }: { emissor?: EmissorData | null }) {
   )
 }
 
+/**
+ * A NFS-e nacional monta o Id do DPS a partir da série e o valida contra
+ * TSSerieDPS — `[0-9]{1,4}|[0-8][0-9]{4}`, ou seja, numérica de 1 a 89999.
+ * Municípios em layout próprio ainda aceitam série alfanumérica (há notas
+ * autorizadas com "A1"), então o campo segue livre e o aviso é informativo.
+ */
+const SERIE_NFSE_NACIONAL = /^(?:[0-9]{1,4}|[0-8][0-9]{4})$/
+
 export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
+  const { watch } = useFormContext()
+  const serie = String(watch('serieNfse') ?? '')
+  const serieForaDoPadraoNacional = !!serie && !SERIE_NFSE_NACIONAL.test(serie)
+
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
@@ -237,7 +249,7 @@ export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
       </h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <FormInput name="serieNfse" label="Série" placeholder="Ex: A1" />
+        <FormInput name="serieNfse" label="Série" placeholder="Ex: 1" />
         <FormInput name="proximoRpsNfse" label="Próximo RPS" type="number" />
         <FormInput
           name="aliquotaIss"
@@ -246,6 +258,16 @@ export function NfseTab({ emissor }: { emissor?: EmissorData | null }) {
           step="0.01"
         />
       </div>
+
+      {serieForaDoPadraoNacional && (
+        <div className="rounded-md border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">
+          A série <strong>{serie}</strong> não é aceita pelo padrão nacional da
+          NFS-e, que exige série numérica de 1 a 89999. Municípios em layout
+          próprio ainda a aceitam; nos demais a prefeitura rejeita com
+          &ldquo;Falha no esquema XML do DF-e&rdquo; (E1235). Trocar a série
+          inicia uma nova sequência de numeração.
+        </div>
+      )}
 
       <NumeracaoPorAmbiente
         emissor={emissor}

@@ -180,7 +180,7 @@ export function EmissorFormModal({
       prazoCancelamentoNfce: 30,
       serieNfe: 1,
       proximoNumeroNfe: 1,
-      serieNfse: 'A1',
+      serieNfse: '1',
       proximoRpsNfse: 1,
       regimeEspecialTributacao: 'none',
       reformaTributariaAtiva: false,
