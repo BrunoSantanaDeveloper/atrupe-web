@@ -53,6 +53,21 @@ export function ReformaTab() {
       </div>
 
       <div className="space-y-4">
+        <div>
+          <FormInput
+            name="indicadorOperacaoNfse"
+            label="Indicador de operação padrão da NFS-e (cIndOp)"
+            placeholder="Ex: 100301"
+            maxLength={6}
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            Obrigatório no layout da Reforma e normalmente o mesmo em todas as
+            notas do emissor. Preenchido aqui, entra automaticamente na emissão
+            — e continua editável nota a nota, em Campos adicionais, quando a
+            operação for diferente.
+          </p>
+        </div>
+
         <FormSelect
           name="regApIbsCbsSn"
           label="Regime de apuração do IBS/CBS (Simples Nacional)"

@@ -78,6 +78,7 @@ const emissoresSchema = z.object({
   aliquotaIbsUf: percentualOpcional,
   aliquotaIbsMun: percentualOpcional,
   aliquotaCbs: percentualOpcional,
+  indicadorOperacaoNfse: z.string().max(6).optional(),
 
   // Ambiente a que a numeração acima se aplica. Homologação e produção têm
   // sequências independentes; sem isto o PATCH gravava só a coluna global e o
@@ -186,6 +187,7 @@ export function EmissorFormModal({
       reformaTributariaAtiva: false,
       ibsCbsEnviarValores: false,
       regApIbsCbsSn: 'none',
+      indicadorOperacaoNfse: '',
       serieNfce: 1,
       proximoNumeroNfce: 1,
       nfeNumberingEnvironment: 'HOMOLOGACAO',
@@ -299,6 +301,7 @@ export function EmissorFormModal({
           aliquotaIbsUf: emissor.aliquotaIbsUf ?? undefined,
           aliquotaIbsMun: emissor.aliquotaIbsMun ?? undefined,
           aliquotaCbs: emissor.aliquotaCbs ?? undefined,
+          indicadorOperacaoNfse: emissor.indicadorOperacaoNfse ?? '',
         })
       } else {
         form.reset()
@@ -334,6 +337,7 @@ export function EmissorFormModal({
         'aliquotaIbsUf',
         'aliquotaIbsMun',
         'aliquotaCbs',
+        'indicadorOperacaoNfse',
       ],
       nfe: ['serieNfe', 'proximoNumeroNfe', 'nfeNumberingEnvironment'],
       nfce: [

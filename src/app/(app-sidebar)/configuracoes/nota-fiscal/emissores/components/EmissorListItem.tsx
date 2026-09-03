@@ -151,6 +151,7 @@ export interface EmissorData {
   aliquotaIbsUf?: number | null
   aliquotaIbsMun?: number | null
   aliquotaCbs?: number | null
+  indicadorOperacaoNfse?: string | null
   regimeEspecialTributacao?: number | null
   serieNfce?: number
   proximoNumeroNfce?: number
