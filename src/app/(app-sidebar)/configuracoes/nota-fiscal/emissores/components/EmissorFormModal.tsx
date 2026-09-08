@@ -41,6 +41,17 @@ const percentualOpcional = z.preprocess(
   z.coerce.number().min(0).max(100).optional(),
 )
 
+/**
+ * Inteiro opcional em que vazio significa "usar o padrao do sistema", nao 0.
+ * Mesma armadilha do percentual: `z.coerce.number()` transforma '' em 0, e um
+ * prazo de cancelamento 0 bloquearia todo cancelamento.
+ */
+const inteiroOpcional = (min: number, max: number) =>
+  z.preprocess(
+    (v) => (v === '' || v === null ? undefined : v),
+    z.coerce.number().int().min(min).max(max).optional(),
+  )
+
 const emissoresSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   isDefault: z.boolean().optional(),
@@ -54,6 +65,8 @@ const emissoresSchema = z.object({
   // Padrões de produto e NFC-e
   defaultNcm: z.string().optional(),
   prazoCancelamentoNfce: z.coerce.number().min(1).max(1440).optional(),
+  // Vazio = sem limite proprio; o backend usa o teto nacional.
+  prazoCancelamentoNfeHoras: inteiroOpcional(1, 1440),
 
   // Fiscal Configs
   serieNfe: z.coerce.number().optional(),
@@ -178,6 +191,7 @@ export function EmissorFormModal({
       emitCrt: '1',
       defaultNcm: '',
       prazoCancelamentoNfce: 30,
+      prazoCancelamentoNfeHoras: undefined,
       serieNfe: 1,
       proximoNumeroNfe: 1,
       serieNfse: '1',
@@ -258,6 +272,8 @@ export function EmissorFormModal({
           emitCrt: String(emissor.emitCrt || '1'),
           defaultNcm: emissor.defaultNcm || '',
           prazoCancelamentoNfce: emissor.prazoCancelamentoNfce ?? 30,
+          prazoCancelamentoNfeHoras:
+            emissor.prazoCancelamentoNfeHoras ?? undefined,
           ie: emissor.ie || '',
           im: emissor.im || '',
           serieNfe: Number(numeracao?.nfe?.series ?? emissor.serieNfe ?? 1),
@@ -339,7 +355,12 @@ export function EmissorFormModal({
         'aliquotaCbs',
         'indicadorOperacaoNfse',
       ],
-      nfe: ['serieNfe', 'proximoNumeroNfe', 'nfeNumberingEnvironment'],
+      nfe: [
+        'serieNfe',
+        'proximoNumeroNfe',
+        'nfeNumberingEnvironment',
+        'prazoCancelamentoNfeHoras',
+      ],
       nfce: [
         'serieNfce',
         'proximoNumeroNfce',

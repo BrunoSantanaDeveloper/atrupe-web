@@ -121,6 +121,7 @@ export interface EmissorData {
   isActive?: boolean
   defaultNcm?: string
   prazoCancelamentoNfce?: number
+  prazoCancelamentoNfeHoras?: number | null
 
   // Contingência NFC-e (emissão offline quando a SEFAZ está indisponível)
   contingenciaNfceAtiva?: boolean

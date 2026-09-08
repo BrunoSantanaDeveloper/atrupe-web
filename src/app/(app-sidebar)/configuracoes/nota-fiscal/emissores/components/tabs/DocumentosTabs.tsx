@@ -166,6 +166,22 @@ export function NfeTab({ emissor }: { emissor?: EmissorData | null }) {
         seriesField="serieNfe"
         numberField="proximoNumeroNfe"
       />
+
+      <div>
+        <FormInput
+          name="prazoCancelamentoNfeHoras"
+          label="Prazo para tentar o cancelamento (horas)"
+          type="number"
+          placeholder="Teto nacional"
+        />
+        <p className="text-xs text-muted-foreground mt-1">
+          O prazo regular é de 24 horas, contado da autorização. Passado ele,
+          vários estados ainda aceitam o cancelamento com penalidade — São
+          Paulo, por exemplo, recebe até 480 horas. Este campo é só o limite
+          para o sistema deixar tentar; quem decide é a SEFAZ do seu estado. Em
+          branco, o sistema não bloqueia antes do teto nacional.
+        </p>
+      </div>
     </div>
   )
 }
