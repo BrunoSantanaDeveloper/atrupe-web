@@ -40,6 +40,7 @@ import {
   IconX,
   IconArrowLeft,
   IconCircleCheck,
+  IconFileTypePdf,
   IconAlertTriangle,
   IconAlertTriangleFilled,
   IconBan,
@@ -50,6 +51,8 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
+import { NfsePreviewDialog } from '@/components/common/fiscal/preview/NfsePreviewDialog'
+import type { NfsePreview } from '@/types/fiscal/nfse-preview'
 
 interface QuotationItem {
   id: string
@@ -150,6 +153,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     null,
   )
   const [confirmouClassificacao, setConfirmouClassificacao] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previa, setPrevia] = useState<NfsePreview | null>(null)
   const [camposAdicionais, setCamposAdicionais] =
     useState<NfseCamposAdicionais>({})
   const { servicos: listaServicos, carregado: listaCarregada } =
@@ -404,8 +410,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     toast.success('Dados do tomador atualizados para esta NFS-e')
   }
 
-  const handleEmit = async () => {
-    if (!orderData) return
+  /** Pré-checagens comuns a emitir e pré-visualizar. */
+  const validarAntesDeEnviar = (): boolean => {
+    if (!orderData) return false
 
     // Classificação fiscal: sem código próprio a nota sai com o código padrão
     // do emissor, e a prefeitura autoriza mesmo assim. Exigir a confirmação
@@ -419,21 +426,21 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       toast.error(
         'Confirme a classificação fiscal dos serviços antes de emitir',
       )
-      return
+      return false
     }
 
     if (!codigoServico.trim()) {
       toast.error('Código do serviço é obrigatório')
-      return
+      return false
     }
     if (!discriminacao.trim()) {
       toast.error('Discriminação do serviço é obrigatória')
-      return
+      return false
     }
 
     if (getServicesTotal() <= 0) {
       toast.error('A NFS-e precisa ter valor de serviÃ§os maior que zero')
-      return
+      return false
     }
 
     const tomadorDocumento =
@@ -446,8 +453,104 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       tomadorDocumentoDigits.length !== 14
     ) {
       toast.error('Informe CPF ou CNPJ vÃ¡lido para o tomador da NFS-e')
-      return
+      return false
     }
+
+    return true
+  }
+
+  /**
+   * Corpo da emissão. A pré-visualização manda EXATAMENTE este objeto, para
+   * o que o usuário confere ser o que será transmitido.
+   */
+  const montarPayload = () => {
+    return {
+      ...(isConsolidated ? { orderIds } : { orderId: primaryId }),
+      codigoServico,
+      discriminacao,
+      // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
+      // Mas 0 vindo da lista é isenção legítima e precisa viajar.
+      aliquotaIss:
+        servicoEscolhido?.aliquotaIss != null
+          ? aliquotaIss
+          : aliquotaIss || undefined,
+      issRetido,
+      addressId: selectedAddressId || undefined,
+      // Classificação da lista de serviços escolhida no ato da emissão
+      ...(servicoEscolhido
+        ? {
+            nbs: servicoEscolhido.nbs || undefined,
+            codTribNacional: servicoEscolhido.codTribNacional || undefined,
+            codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
+            cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
+            codClassificacao: servicoEscolhido.codClassificacao || undefined,
+            cnae: servicoEscolhido.cnae || undefined,
+          }
+        : {}),
+      // Campos adicionais (Reforma Tributária / retenções)
+      ...camposAdicionais,
+      ...(tomadorOverride
+        ? {
+            tomadorRazaoSocial: tomadorOverride.razaoSocial,
+            tomadorCnpjCpf: tomadorOverride.cnpjCpf || null,
+            tomadorEmail: tomadorOverride.email || null,
+            tomadorTelefone: tomadorOverride.telefone || null,
+            tomadorEndereco: tomadorOverride.endereco || null,
+            tomadorNumero: tomadorOverride.numero || null,
+            tomadorComplemento: tomadorOverride.complemento || null,
+            tomadorBairro: tomadorOverride.bairro || null,
+            tomadorCep: tomadorOverride.cep || null,
+            tomadorMunicipio: tomadorOverride.cidade || null,
+            tomadorUf: tomadorOverride.estado || null,
+          }
+        : {}),
+      ...(entrega
+        ? {
+            entregaEndereco: entrega.endereco,
+            entregaNumero: entrega.numero,
+            entregaComplemento: entrega.complemento || null,
+            entregaBairro: entrega.bairro,
+            entregaCep: entrega.cep,
+            entregaMunicipio: entrega.cidade,
+            entregaUf: entrega.estado,
+          }
+        : {}),
+    }
+  }
+
+  const handlePreview = async () => {
+    if (!orderData || !validarAntesDeEnviar()) return
+
+    setIsPreviewing(true)
+    try {
+      const result = await createItemNew({
+        route: isConsolidated
+          ? '/fiscal/nfse/preview-consolidated'
+          : '/fiscal/nfse/preview',
+        data: montarPayload(),
+      })
+
+      if (!result.success) {
+        throw new Error(
+          result.message || 'Não foi possível gerar a pré-visualização',
+        )
+      }
+
+      setPrevia(result.data as NfsePreview)
+      setPreviewOpen(true)
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível gerar a pré-visualização',
+      )
+    } finally {
+      setIsPreviewing(false)
+    }
+  }
+
+  const handleEmit = async () => {
+    if (!orderData || !validarAntesDeEnviar()) return
 
     setIsEmitting(true)
 
@@ -456,66 +559,14 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         route: isConsolidated
           ? '/fiscal/nfse/emit-consolidated'
           : '/fiscal/nfse/emit',
-        data: {
-          ...(isConsolidated ? { orderIds } : { orderId: primaryId }),
-          codigoServico,
-          discriminacao,
-          // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
-          // Mas 0 vindo da lista é isenção legítima e precisa viajar.
-          aliquotaIss:
-            servicoEscolhido?.aliquotaIss != null
-              ? aliquotaIss
-              : aliquotaIss || undefined,
-          issRetido,
-          addressId: selectedAddressId || undefined,
-          // Classificação da lista de serviços escolhida no ato da emissão
-          ...(servicoEscolhido
-            ? {
-                nbs: servicoEscolhido.nbs || undefined,
-                codTribNacional: servicoEscolhido.codTribNacional || undefined,
-                codTribMunicipio:
-                  servicoEscolhido.codTribMunicipio || undefined,
-                cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
-                codClassificacao:
-                  servicoEscolhido.codClassificacao || undefined,
-                cnae: servicoEscolhido.cnae || undefined,
-              }
-            : {}),
-          // Campos adicionais (Reforma Tributária / retenções)
-          ...camposAdicionais,
-          ...(tomadorOverride
-            ? {
-                tomadorRazaoSocial: tomadorOverride.razaoSocial,
-                tomadorCnpjCpf: tomadorOverride.cnpjCpf || null,
-                tomadorEmail: tomadorOverride.email || null,
-                tomadorTelefone: tomadorOverride.telefone || null,
-                tomadorEndereco: tomadorOverride.endereco || null,
-                tomadorNumero: tomadorOverride.numero || null,
-                tomadorComplemento: tomadorOverride.complemento || null,
-                tomadorBairro: tomadorOverride.bairro || null,
-                tomadorCep: tomadorOverride.cep || null,
-                tomadorMunicipio: tomadorOverride.cidade || null,
-                tomadorUf: tomadorOverride.estado || null,
-              }
-            : {}),
-          ...(entrega
-            ? {
-                entregaEndereco: entrega.endereco,
-                entregaNumero: entrega.numero,
-                entregaComplemento: entrega.complemento || null,
-                entregaBairro: entrega.bairro,
-                entregaCep: entrega.cep,
-                entregaMunicipio: entrega.cidade,
-                entregaUf: entrega.estado,
-              }
-            : {}),
-        },
+        data: montarPayload(),
       })
 
       if (!result.success) {
         throw new Error(result.message || 'Erro ao emitir NFS-e')
       }
 
+      setPreviewOpen(false)
       toast.success('NFS-e emitida com sucesso!')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
@@ -736,21 +787,39 @@ export function IssueNfseForm({ id, orderIds }: Props) {
               iconVariant="errorLight"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
-            <CustomButton
-              icon={IconCircleCheck}
-              title={
-                isEmitting
-                  ? 'Emitindo...'
-                  : isConsolidated
-                    ? 'Emitir NFS-e Consolidada'
-                    : 'Emitir NFS-e'
-              }
-              iconVariant="successLight"
-              onClick={handleEmit}
-              disabled={isEmitting}
-              isLoading={isEmitting}
-            />
+            <div className="flex items-center gap-2">
+              <CustomButton
+                icon={IconFileTypePdf}
+                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                iconVariant="neutralOutline"
+                onClick={handlePreview}
+                disabled={isEmitting || isPreviewing}
+                isLoading={isPreviewing}
+              />
+              <CustomButton
+                icon={IconCircleCheck}
+                title={
+                  isEmitting
+                    ? 'Emitindo...'
+                    : isConsolidated
+                      ? 'Emitir NFS-e Consolidada'
+                      : 'Emitir NFS-e'
+                }
+                iconVariant="successLight"
+                onClick={handleEmit}
+                disabled={isEmitting}
+                isLoading={isEmitting}
+              />
+            </div>
           </div>
+
+          <NfsePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            previa={previa}
+            isEmitting={isEmitting}
+            onEmit={handleEmit}
+          />
         </div>
 
         {isHomologacao && (

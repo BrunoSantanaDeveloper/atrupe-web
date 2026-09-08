@@ -45,12 +45,15 @@ import {
   IconX,
   IconArrowLeft,
   IconCircleCheck,
+  IconFileTypePdf,
   IconAlertTriangle,
   IconAlertTriangleFilled,
 } from '@tabler/icons-react'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
+import { NfsePreviewDialog } from '@/components/common/fiscal/preview/NfsePreviewDialog'
+import type { NfsePreview } from '@/types/fiscal/nfse-preview'
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -197,6 +200,9 @@ function CurrencyInput({ id, value, onChange }: CurrencyInputProps) {
 export function StandaloneNfseForm() {
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previa, setPrevia] = useState<NfsePreview | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Prepare defaults
@@ -418,76 +424,115 @@ export function StandaloneNfseForm() {
     setEntrega(updatedEntrega)
   }
 
-  const handleEmit = async () => {
+  /** Pré-checagens comuns a emitir e pré-visualizar. */
+  const validarAntesDeEnviar = (): boolean => {
     if (!selectedClient || !effectiveTomador) {
       toast.error('Selecione um cliente / tomador do serviço')
-      return
+      return false
     }
     if (!codigoServico.trim()) {
       toast.error('Código do serviço é obrigatório')
-      return
+      return false
     }
     if (!discriminacao.trim()) {
       toast.error('Discriminação do serviço é obrigatória')
-      return
+      return false
     }
     if (!valorServicos || valorServicos <= 0) {
       toast.error('Valor dos serviços deve ser maior que zero')
-      return
+      return false
     }
+    return true
+  }
+
+  /**
+   * Corpo da emissão. A pré-visualização manda EXATAMENTE este objeto.
+   */
+  const montarPayload = () => ({
+    tomador: effectiveTomador,
+    codigoServico,
+    discriminacao,
+    valorServicos,
+    // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
+    // Mas 0 vindo da lista é isenção legítima e precisa viajar.
+    aliquotaIss:
+      servicoEscolhido?.aliquotaIss != null
+        ? aliquotaIss
+        : aliquotaIss || undefined,
+    issRetido,
+    naturezaOperacao: prepareData?.naturezaOperacao,
+    codigoMunicipio: prepareData?.codigoMunicipio,
+    // Classificação da lista de serviços escolhida no ato da emissão
+    ...(servicoEscolhido
+      ? {
+          nbs: servicoEscolhido.nbs || undefined,
+          codTribNacional: servicoEscolhido.codTribNacional || undefined,
+          codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
+          cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
+          codClassificacao: servicoEscolhido.codClassificacao || undefined,
+          cnae: servicoEscolhido.cnae || undefined,
+        }
+      : {}),
+    // Campos adicionais (Reforma Tributária / retenções)
+    ...camposAdicionais,
+    ...(entrega
+      ? {
+          entregaEndereco: entrega.endereco,
+          entregaNumero: entrega.numero,
+          entregaComplemento: entrega.complemento || null,
+          entregaBairro: entrega.bairro,
+          entregaCep: entrega.cep,
+          entregaMunicipio: entrega.cidade,
+          entregaUf: entrega.estado,
+        }
+      : {}),
+  })
+
+  const handlePreview = async () => {
+    if (!validarAntesDeEnviar()) return
+
+    setIsPreviewing(true)
+    try {
+      const result = await createItemNew({
+        route: '/fiscal/nfse/preview-full',
+        data: montarPayload(),
+      })
+
+      if (!result.success) {
+        throw new Error(
+          result.message || 'Não foi possível gerar a pré-visualização',
+        )
+      }
+
+      setPrevia(result.data as NfsePreview)
+      setPreviewOpen(true)
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível gerar a pré-visualização',
+      )
+    } finally {
+      setIsPreviewing(false)
+    }
+  }
+
+  const handleEmit = async () => {
+    if (!validarAntesDeEnviar()) return
 
     setIsEmitting(true)
 
     try {
-      const payload = {
-        tomador: effectiveTomador,
-        codigoServico,
-        discriminacao,
-        valorServicos,
-        // `??` não serve aqui: o estado inicia em 0 sem escolha do usuário.
-        // Mas 0 vindo da lista é isenção legítima e precisa viajar.
-        aliquotaIss:
-          servicoEscolhido?.aliquotaIss != null
-            ? aliquotaIss
-            : aliquotaIss || undefined,
-        issRetido,
-        naturezaOperacao: prepareData?.naturezaOperacao,
-        codigoMunicipio: prepareData?.codigoMunicipio,
-        // Classificação da lista de serviços escolhida no ato da emissão
-        ...(servicoEscolhido
-          ? {
-              nbs: servicoEscolhido.nbs || undefined,
-              codTribNacional: servicoEscolhido.codTribNacional || undefined,
-              codTribMunicipio: servicoEscolhido.codTribMunicipio || undefined,
-              cstIbsCbs: servicoEscolhido.cstIbsCbs || undefined,
-              codClassificacao: servicoEscolhido.codClassificacao || undefined,
-              cnae: servicoEscolhido.cnae || undefined,
-            }
-          : {}),
-        // Campos adicionais (Reforma Tributária / retenções)
-        ...camposAdicionais,
-        ...(entrega
-          ? {
-              entregaEndereco: entrega.endereco,
-              entregaNumero: entrega.numero,
-              entregaComplemento: entrega.complemento || null,
-              entregaBairro: entrega.bairro,
-              entregaCep: entrega.cep,
-              entregaMunicipio: entrega.cidade,
-              entregaUf: entrega.estado,
-            }
-          : {}),
-      }
-
       const result = await createItemNew({
         route: '/fiscal/nfse/emit-full',
-        data: payload,
+        data: montarPayload(),
       })
 
       if (!result.success) {
         throw new Error(result.message || 'Erro ao emitir NFS-e')
       }
 
+      setPreviewOpen(false)
       toast.success('NFS-e avulsa emitida com sucesso!')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
@@ -597,15 +642,33 @@ export function StandaloneNfseForm() {
               iconVariant="errorLight"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
-            <CustomButton
-              icon={IconCircleCheck}
-              title={isEmitting ? 'Emitindo...' : 'Emitir NFS-e'}
-              iconVariant="successLight"
-              onClick={handleEmit}
-              disabled={isEmitting}
-              isLoading={isEmitting}
-            />
+            <div className="flex items-center gap-2">
+              <CustomButton
+                icon={IconFileTypePdf}
+                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                iconVariant="neutralOutline"
+                onClick={handlePreview}
+                disabled={isEmitting || isPreviewing}
+                isLoading={isPreviewing}
+              />
+              <CustomButton
+                icon={IconCircleCheck}
+                title={isEmitting ? 'Emitindo...' : 'Emitir NFS-e'}
+                iconVariant="successLight"
+                onClick={handleEmit}
+                disabled={isEmitting}
+                isLoading={isEmitting}
+              />
+            </div>
           </div>
+
+          <NfsePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            previa={previa}
+            isEmitting={isEmitting}
+            onEmit={handleEmit}
+          />
         </div>
 
         {/* Homologação banner */}
