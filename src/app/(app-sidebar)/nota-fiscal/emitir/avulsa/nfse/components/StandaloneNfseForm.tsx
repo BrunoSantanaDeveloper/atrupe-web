@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ import {
   type NfseCamposAdicionais,
 } from '../../../../emitir-nfse/[orderId]/components/NfseCamposAdicionaisSection'
 import {
-  ListaServicosSelect,
+  encontrarServicoPadrao,
   useListaServicosNfse,
   type NfseServicoItem,
 } from '@/components/common/fiscal/ListaServicosNfse'
@@ -222,21 +222,37 @@ export function StandaloneNfseForm() {
   const [valorServicos, setValorServicos] = useState<number>(0)
   const [camposAdicionais, setCamposAdicionais] =
     useState<NfseCamposAdicionais>({})
-  const { servicos: listaServicos } = useListaServicosNfse()
+  const { servicos: listaServicos, carregado: listaCarregada } =
+    useListaServicosNfse()
   const [servicoEscolhidoId, setServicoEscolhidoId] = useState<string | null>(
     null,
   )
   const [servicoEscolhido, setServicoEscolhido] =
     useState<NfseServicoItem | null>(null)
+  const padraoAplicado = useRef(false)
 
-  const handleServicoEscolhido = (servico: NfseServicoItem | null) => {
-    setServicoEscolhidoId(servico?.id ?? null)
+  const aplicarServico = (
+    servico: NfseServicoItem,
+    { silencioso = false } = {},
+  ) => {
+    setServicoEscolhidoId(servico.id)
     setServicoEscolhido(servico)
-    if (servico) {
-      setCodigoServico(servico.codigo)
-      if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+    setCodigoServico(servico.codigo)
+    if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+    if (!silencioso) {
       toast.success(`Serviço ${servico.codigo} aplicado à emissão`)
     }
+  }
+
+  /**
+   * Código digitado à mão. Desfaz o vínculo com o item da lista: sem isso a
+   * nota saía com o código digitado e a classificação fiscal do serviço
+   * escolhido antes. A alíquota fica como está.
+   */
+  const handleCodigoManual = (novoCodigo: string) => {
+    setServicoEscolhidoId(null)
+    setServicoEscolhido(null)
+    setCodigoServico(novoCodigo)
   }
 
   const router = useRouter()
@@ -317,6 +333,20 @@ export function StandaloneNfseForm() {
   useEffect(() => {
     fetchDefaults()
   }, [fetchDefaults])
+
+  // Casa o código padrão do emissor com a lista, uma vez, quando as duas
+  // cargas terminam. Só age enquanto o campo ainda mostra o padrão.
+  useEffect(() => {
+    const codigoPadrao = prepareData?.codigoServico
+    if (padraoAplicado.current || !listaCarregada || !codigoPadrao) return
+    padraoAplicado.current = true
+
+    if (codigoServico !== codigoPadrao) return
+    const padrao = encontrarServicoPadrao(listaServicos, codigoPadrao)
+    if (padrao) aplicarServico(padrao, { silencioso: true })
+    // `codigoServico` entra só como guarda de "ninguém mexeu ainda".
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listaCarregada, listaServicos, prepareData?.codigoServico])
 
   const handleClientSelect = (client: ClientData | null) => {
     setSelectedClient(client)
@@ -654,25 +684,16 @@ export function StandaloneNfseForm() {
           </CardContent>
         </Card>
 
-        {listaServicos.length > 0 && (
-          <Card className="border-none shadow-sm overflow-hidden">
-            <CardContent className="p-6">
-              <ListaServicosSelect
-                servicos={listaServicos}
-                selecionadoId={servicoEscolhidoId}
-                onSelecionar={handleServicoEscolhido}
-              />
-            </CardContent>
-          </Card>
-        )}
-
         {/* Fiscal data (service code, ISS, discriminação) */}
         <NfseDadosFiscaisSection
           codigoServico={codigoServico}
           aliquotaIss={aliquotaIss}
           issRetido={issRetido}
           discriminacao={discriminacao}
-          onCodigoServicoChange={setCodigoServico}
+          servicos={listaServicos}
+          servicoEscolhidoId={servicoEscolhidoId}
+          onServicoEscolhido={(s) => aplicarServico(s)}
+          onCodigoServicoChange={handleCodigoManual}
           onAliquotaIssChange={setAliquotaIss}
           onIssRetidoChange={setIssRetido}
           onDiscriminacaoChange={setDiscriminacao}

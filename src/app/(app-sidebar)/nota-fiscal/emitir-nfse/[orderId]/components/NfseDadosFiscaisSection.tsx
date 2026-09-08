@@ -15,12 +15,21 @@ import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconSettings } from '@tabler/icons-react'
+import {
+  CodigoServicoCombobox,
+  type NfseServicoItem,
+} from '@/components/common/fiscal/ListaServicosNfse'
 
 interface NfseDadosFiscaisSectionProps {
   codigoServico: string
   aliquotaIss: number
   issRetido: boolean
   discriminacao: string
+  /** Serviços cadastrados nas configurações; vazio deixa o campo como input. */
+  servicos: NfseServicoItem[]
+  servicoEscolhidoId: string | null
+  onServicoEscolhido: (servico: NfseServicoItem) => void
+  /** Código digitado à mão: o pai desfaz o vínculo com o item da lista. */
   onCodigoServicoChange: (value: string) => void
   onAliquotaIssChange: (value: number) => void
   onIssRetidoChange: (value: boolean) => void
@@ -32,6 +41,9 @@ export function NfseDadosFiscaisSection({
   aliquotaIss,
   issRetido,
   discriminacao,
+  servicos,
+  servicoEscolhidoId,
+  onServicoEscolhido,
   onCodigoServicoChange,
   onAliquotaIssChange,
   onIssRetidoChange,
@@ -63,14 +75,18 @@ export function NfseDadosFiscaisSection({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="codigoServico">Código do Serviço *</Label>
-                  <Input
+                  <CodigoServicoCombobox
                     id="codigoServico"
-                    value={codigoServico}
-                    onChange={(e) => onCodigoServicoChange(e.target.value)}
-                    placeholder="Ex: 1.01"
+                    servicos={servicos}
+                    codigo={codigoServico}
+                    servicoEscolhidoId={servicoEscolhidoId}
+                    onEscolherServico={onServicoEscolhido}
+                    onCodigoManual={onCodigoServicoChange}
                   />
                   <p className="text-xs text-gray-500">
-                    Código conforme LC 116/03
+                    {servicos.length > 0
+                      ? 'Escolha um serviço cadastrado ou digite o código da LC 116/03'
+                      : 'Código conforme LC 116/03'}
                   </p>
                 </div>
                 <div className="space-y-2">

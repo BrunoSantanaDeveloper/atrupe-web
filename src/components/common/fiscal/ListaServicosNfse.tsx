@@ -13,12 +13,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,11 +34,16 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
 import {
+  IconCheck,
+  IconChevronDown,
   IconListDetails,
   IconPencil,
   IconPlus,
   IconTrash,
 } from '@tabler/icons-react'
+
+// Lib
+import { cn } from '@/lib/utils'
 
 // Actions
 import {
@@ -67,6 +79,7 @@ export interface NfseServicoItem {
  */
 export function useListaServicosNfse(rota = '/fiscal/nfse-servicos') {
   const [servicos, setServicos] = useState<NfseServicoItem[]>([])
+  const [carregado, setCarregado] = useState(false)
 
   const carregar = useCallback(async () => {
     try {
@@ -76,6 +89,11 @@ export function useListaServicosNfse(rota = '/fiscal/nfse-servicos') {
       }
     } catch {
       // Lista é opcional na emissão: sem ela os campos seguem manuais.
+    } finally {
+      // "A resposta chegou", com ou sem itens. Sem esta flag, quem aplica o
+      // serviço padrão não distingue lista vazia de lista ainda carregando e
+      // sobrescreveria o que o usuário já tivesse escolhido.
+      setCarregado(true)
     }
   }, [rota])
 
@@ -83,56 +101,212 @@ export function useListaServicosNfse(rota = '/fiscal/nfse-servicos') {
     carregar()
   }, [carregar])
 
-  return { servicos, recarregar: carregar }
+  return { servicos, carregado, recarregar: carregar }
 }
 
-// ─── Select usado nas telas de emissão ──────────────────────────────────────
+/**
+ * Serviço da lista correspondente ao código padrão do emissor.
+ *
+ * O padrão continua sendo o "Código de Serviço Padrão (LC 116)" do emissor —
+ * é o que o usuário configura e o que a conferência de emissão chama de
+ * padrão. A lista entra quando tem um item com o mesmo código: aí a emissão
+ * ganha junto a classificação fiscal (NBS, CNAE, CST e classificação do
+ * IBS/CBS), que antes só viajava se alguém clicasse no seletor.
+ *
+ * Comparação exata de propósito: `codigoServico` do emissor não passa por
+ * validação de formato no backend, então comparar só os dígitos deixaria
+ * '105' ambíguo entre 1.05 e 10.5.
+ */
+export function encontrarServicoPadrao(
+  servicos: NfseServicoItem[],
+  codigoEmissor?: string | null,
+): NfseServicoItem | null {
+  const alvo = (codigoEmissor ?? '').trim()
+  if (!alvo) return null
+  return servicos.find((s) => s.codigo.trim() === alvo) ?? null
+}
 
-interface SelectProps {
+// ─── Campo de código de serviço usado nas telas de emissão ──────────────────
+
+interface ComboboxProps {
+  id?: string
   servicos: NfseServicoItem[]
-  selecionadoId: string | null
-  onSelecionar: (servico: NfseServicoItem | null) => void
+  /** Código que vai na nota, venha da lista ou digitado. */
+  codigo: string
+  servicoEscolhidoId: string | null
+  onEscolherServico: (servico: NfseServicoItem) => void
+  /** Código digitado à mão: desfaz o vínculo com o item da lista. */
+  onCodigoManual: (codigo: string) => void
+  disabled?: boolean
 }
 
-export function ListaServicosSelect({
+/**
+ * Campo único de código de serviço: mostra o padrão já preenchido e, ao
+ * abrir, lista os serviços cadastrados nas configurações.
+ *
+ * Antes eram dois controles para a mesma decisão — um select "Lista de
+ * Serviços" num card à parte e o input "Código do Serviço" logo abaixo —, e
+ * editar o input depois de escolher da lista deixava o código de um item com
+ * a classificação fiscal de outro.
+ */
+export function CodigoServicoCombobox({
+  id,
   servicos,
-  selecionadoId,
-  onSelecionar,
-}: SelectProps) {
-  if (servicos.length === 0) return null
+  codigo,
+  servicoEscolhidoId,
+  onEscolherServico,
+  onCodigoManual,
+  disabled,
+}: ComboboxProps) {
+  const [open, setOpen] = useState(false)
+  const [busca, setBusca] = useState('')
+
+  const escolhido = servicos.find((s) => s.id === servicoEscolhidoId) ?? null
+  const buscaLimpa = busca.trim()
+  const jaExisteNaLista = servicos.some((s) => s.codigo.trim() === buscaLimpa)
+
+  // Sem lista cadastrada não há o que escolher: o campo é o input de sempre.
+  if (servicos.length === 0) {
+    return (
+      <Input
+        id={id}
+        value={codigo}
+        onChange={(e) => onCodigoManual(e.target.value)}
+        placeholder="Ex: 1.01"
+        disabled={disabled}
+      />
+    )
+  }
+
+  const usarCodigoManual = (valor: string) => {
+    onCodigoManual(valor)
+    setBusca('')
+    setOpen(false)
+  }
 
   return (
-    <div className="space-y-1.5">
-      <Label>Lista de Serviços</Label>
-      <Select
-        value={selecionadoId ?? 'none'}
-        onValueChange={(id) => {
-          if (id === 'none') {
-            onSelecionar(null)
-            return
-          }
-          const servico = servicos.find((s) => s.id === id)
-          if (servico) onSelecionar(servico)
-        }}
+    <Popover
+      open={open}
+      onOpenChange={(aberto) => {
+        setOpen(aberto)
+        if (!aberto) setBusca('')
+      }}
+    >
+      <PopoverTrigger asChild>
+        <Button
+          id={id}
+          type="button"
+          variant="input"
+          role="combobox"
+          aria-expanded={open}
+          disabled={disabled}
+          className={cn('w-full h-10 px-3 text-sm', !codigo && 'text-gray-400')}
+        >
+          <span className="flex-1 truncate text-left">
+            {escolhido ? (
+              <>
+                {escolhido.codigo} — {escolhido.descricao}
+              </>
+            ) : codigo ? (
+              <>
+                {codigo} <span className="text-gray-400">(fora da lista)</span>
+              </>
+            ) : (
+              'Escolher da lista ou digitar o código'
+            )}
+          </span>
+          {escolhido?.aliquotaIss != null && (
+            <Badge variant="blueLight" className="shrink-0">
+              ISS {escolhido.aliquotaIss}%
+            </Badge>
+          )}
+          <IconChevronDown
+            size={16}
+            className={cn(
+              'shrink-0 text-gray-400 transition-transform duration-200',
+              open && 'rotate-180',
+            )}
+          />
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent
+        className="p-0 w-[var(--radix-popover-trigger-width)] min-w-[320px]"
+        align="start"
+        sideOffset={4}
       >
-        <SelectTrigger>
-          <SelectValue placeholder="Escolher da lista cadastrada" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="none">— Preencher manualmente —</SelectItem>
-          {servicos.map((s) => (
-            <SelectItem key={s.id} value={s.id}>
-              {s.codigo} — {s.descricao}
-              {s.aliquotaIss != null ? ` (ISS ${s.aliquotaIss}%)` : ''}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <p className="text-[11px] text-gray-500">
-        Escolher um item preenche código, alíquota e a classificação fiscal da
-        nota
-      </p>
-    </div>
+        <Command>
+          <CommandInput
+            placeholder="Buscar serviço ou digitar código (ex: 24.01)"
+            value={busca}
+            onValueChange={setBusca}
+          />
+          <CommandList>
+            <CommandEmpty>
+              {buscaLimpa
+                ? 'Nenhum serviço cadastrado com esse código.'
+                : 'Nenhum serviço cadastrado.'}
+            </CommandEmpty>
+
+            <CommandGroup heading="Serviços cadastrados">
+              {servicos.map((s) => (
+                <CommandItem
+                  key={s.id}
+                  value={`${s.codigo} ${s.descricao}`}
+                  onSelect={() => {
+                    onEscolherServico(s)
+                    setBusca('')
+                    setOpen(false)
+                  }}
+                  className="flex items-center gap-2 px-3 py-2.5 cursor-pointer"
+                >
+                  <IconCheck
+                    size={16}
+                    className={cn(
+                      'shrink-0 transition-opacity',
+                      escolhido?.id === s.id
+                        ? 'opacity-100 text-brand-600'
+                        : 'opacity-0',
+                    )}
+                  />
+                  <div className="flex flex-col min-w-0 flex-1">
+                    <span className="font-medium text-gray-800 truncate">
+                      {s.codigo} — {s.descricao}
+                    </span>
+                    {s.aliquotaIss != null && (
+                      <span className="text-xs text-gray-400">
+                        ISS {s.aliquotaIss}%
+                      </span>
+                    )}
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+
+            {/* Código fora da lista continua válido: a prefeitura aceita
+                qualquer código da LC 116, e o backend não exige cadastro. */}
+            {buscaLimpa && !jaExisteNaLista && (
+              <>
+                <CommandSeparator />
+                <CommandGroup forceMount>
+                  <CommandItem
+                    forceMount
+                    value="__codigo_manual__"
+                    onSelect={() => usarCodigoManual(buscaLimpa)}
+                    className="flex items-center gap-2 px-3 py-2.5 cursor-pointer text-brand-600"
+                  >
+                    <IconPlus size={16} className="shrink-0" />
+                    <span className="font-medium">
+                      Usar o código &ldquo;{buscaLimpa}&rdquo; sem cadastrar
+                    </span>
+                  </CommandItem>
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   )
 }
 

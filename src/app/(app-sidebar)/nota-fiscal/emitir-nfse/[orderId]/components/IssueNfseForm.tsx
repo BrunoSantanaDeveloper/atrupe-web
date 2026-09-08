@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 // UI
 import { toast } from 'sonner'
@@ -10,12 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  Card as UiCard,
-  CardContent as UiCardContent,
-} from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -27,7 +22,7 @@ import {
   type NfseCamposAdicionais,
 } from './NfseCamposAdicionaisSection'
 import {
-  ListaServicosSelect,
+  encontrarServicoPadrao,
   useListaServicosNfse,
   type NfseServicoItem,
 } from '@/components/common/fiscal/ListaServicosNfse'
@@ -157,7 +152,8 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const [confirmouClassificacao, setConfirmouClassificacao] = useState(false)
   const [camposAdicionais, setCamposAdicionais] =
     useState<NfseCamposAdicionais>({})
-  const { servicos: listaServicos } = useListaServicosNfse()
+  const { servicos: listaServicos, carregado: listaCarregada } =
+    useListaServicosNfse()
   const [servicoEscolhidoId, setServicoEscolhidoId] = useState<string | null>(
     null,
   )
@@ -174,6 +170,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
   const [discriminacao, setDiscriminacao] = useState('')
   const [aliquotaIss, setAliquotaIss] = useState<number>(0)
   const [issRetido, setIssRetido] = useState(false)
+  // Código padrão do emissor, guardado para casar com a lista de serviços.
+  const [codigoPadraoEmissor, setCodigoPadraoEmissor] = useState('')
+  const padraoAplicado = useRef(false)
 
   const router = useRouter()
 
@@ -203,6 +202,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         }
         if (prepareData?.codigoServico) {
           setCodigoServico(prepareData.codigoServico as string)
+          setCodigoPadraoEmissor(prepareData.codigoServico as string)
         }
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
@@ -270,6 +270,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         }
         if (prepareData?.codigoServico) {
           setCodigoServico(prepareData.codigoServico as string)
+          setCodigoPadraoEmissor(prepareData.codigoServico as string)
         }
         if (prepareData?.aliquotaIss) {
           setAliquotaIss(prepareData.aliquotaIss as number)
@@ -352,15 +353,47 @@ export function IssueNfseForm({ id, orderIds }: Props) {
     pais: 'Brasil',
   })
 
-  const handleServicoEscolhido = (servico: NfseServicoItem | null) => {
-    setServicoEscolhidoId(servico?.id ?? null)
+  const aplicarServico = (
+    servico: NfseServicoItem,
+    { silencioso = false } = {},
+  ) => {
+    setServicoEscolhidoId(servico.id)
     setServicoEscolhido(servico)
-    if (servico) {
-      setCodigoServico(servico.codigo)
-      if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+    setCodigoServico(servico.codigo)
+    if (servico.aliquotaIss != null) setAliquotaIss(servico.aliquotaIss)
+    if (!silencioso) {
       toast.success(`Serviço ${servico.codigo} aplicado à emissão`)
     }
   }
+
+  /**
+   * Código digitado à mão. Precisa desfazer o vínculo com o item da lista:
+   * sem isso a nota saía com o código digitado e a classificação fiscal
+   * (NBS, CNAE, CST do IBS/CBS) do serviço escolhido antes. A alíquota fica
+   * como está — quem digita um código pode manter o ISS que já conferiu.
+   */
+  const handleCodigoManual = (novoCodigo: string) => {
+    setServicoEscolhidoId(null)
+    setServicoEscolhido(null)
+    setCodigoServico(novoCodigo)
+  }
+
+  // Casa o código padrão do emissor com a lista, uma vez, assim que as duas
+  // cargas terminam. Só age enquanto o campo ainda mostra o padrão: se o
+  // usuário já escolheu ou digitou outro código, não sobrescreve.
+  useEffect(() => {
+    if (padraoAplicado.current || !listaCarregada || !codigoPadraoEmissor) {
+      return
+    }
+    padraoAplicado.current = true
+
+    if (codigoServico !== codigoPadraoEmissor) return
+    const padrao = encontrarServicoPadrao(listaServicos, codigoPadraoEmissor)
+    if (padrao) aplicarServico(padrao, { silencioso: true })
+    // `codigoServico` entra só como guarda de "ninguém mexeu ainda"; incluí-lo
+    // nas dependências reexecutaria o efeito a cada digitação.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listaCarregada, listaServicos, codigoPadraoEmissor])
 
   const handleTomadorSave = (
     updated: NfePrepareDestinatario,
@@ -749,11 +782,15 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                     {conferencia.usandoCodigoPadrao.length === 1
                       ? 'tem'
                       : 'têm'}{' '}
-                    código da LC 116 cadastrado. A nota vai sair com o código
-                    padrão do emissor
-                    {conferencia.codigoPadraoEmissor
-                      ? ` (${conferencia.codigoPadraoEmissor})`
-                      : ''}
+                    código da LC 116 cadastrado. A nota vai sair com o código{' '}
+                    {codigoServico &&
+                    codigoServico !== conferencia.codigoPadraoEmissor
+                      ? `${codigoServico}, escolhido nesta tela`
+                      : `padrão do emissor${
+                          conferencia.codigoPadraoEmissor
+                            ? ` (${conferencia.codigoPadraoEmissor})`
+                            : ''
+                        }`}
                     , que pode não corresponder ao serviço prestado.
                   </p>
                 )}
@@ -822,24 +859,15 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           onEntregaChange={handleEntregaChange}
         />
 
-        {listaServicos.length > 0 && (
-          <UiCard className="border-none shadow-sm overflow-hidden">
-            <UiCardContent className="p-6">
-              <ListaServicosSelect
-                servicos={listaServicos}
-                selecionadoId={servicoEscolhidoId}
-                onSelecionar={handleServicoEscolhido}
-              />
-            </UiCardContent>
-          </UiCard>
-        )}
-
         <NfseDadosFiscaisSection
           codigoServico={codigoServico}
           aliquotaIss={aliquotaIss}
           issRetido={issRetido}
           discriminacao={discriminacao}
-          onCodigoServicoChange={setCodigoServico}
+          servicos={listaServicos}
+          servicoEscolhidoId={servicoEscolhidoId}
+          onServicoEscolhido={(s) => aplicarServico(s)}
+          onCodigoServicoChange={handleCodigoManual}
           onAliquotaIssChange={setAliquotaIss}
           onIssRetidoChange={setIssRetido}
           onDiscriminacaoChange={setDiscriminacao}
