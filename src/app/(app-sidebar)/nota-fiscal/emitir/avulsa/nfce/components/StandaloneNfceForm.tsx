@@ -26,6 +26,7 @@ import { NfceTotalsSection } from './NfceTotalsSection'
 import {
   IconArrowLeft,
   IconCircleCheck,
+  IconFileTypePdf,
   IconAlertTriangle,
   IconAlertTriangleFilled,
   IconUser,
@@ -35,6 +36,8 @@ import {
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
+import { NfcePreviewDialog } from '@/components/common/fiscal/preview/NfcePreviewDialog'
+import type { NfcePreview } from '@/types/fiscal/nfce-preview'
 
 // Types
 import type {
@@ -68,6 +71,9 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
   const linkedOrderId = orderId?.trim() || undefined
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previa, setPrevia] = useState<NfcePreview | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   // Prepare defaults
@@ -259,15 +265,16 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
   const totalNota = Math.max(0, subtotal - descontos)
   const totalPago = pagamentos.reduce((acc, p) => acc + p.valor, 0)
 
-  const handleEmit = async () => {
+  /** Pré-checagens comuns a emitir e pré-visualizar. */
+  const validarAntesDeEnviar = (): boolean => {
     if (items.length === 0) {
       toast.error('Adicione pelo menos um produto na NFC-e')
-      return
+      return false
     }
 
     if (pagamentos.length === 0) {
       toast.error('Adicione pelo menos uma forma de pagamento')
-      return
+      return false
     }
 
     const invalidItem = items.find(
@@ -285,56 +292,93 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       toast.error(
         `Complete os dados fiscais do item "${invalidItem.description}" antes de emitir a NFC-e`,
       )
-      return
+      return false
     }
 
     if (totalPago < totalNota) {
       toast.error('O valor total pago é menor que o valor total da nota')
-      return
+      return false
     }
+
+    return true
+  }
+
+  /**
+   * Corpo da emissão. A pré-visualização manda EXATAMENTE este objeto.
+   */
+  const montarPayload = () => ({
+    cpfConsumidor: cpfConsumidor ? cpfConsumidor.replace(/\D/g, '') : undefined,
+    consumidorNome: consumidorNome || undefined,
+    naturezaOperacao,
+    informacoesComplementares,
+    itens: items.map((item) => ({
+      productId: item.productId,
+      codigo: item.productCode,
+      descricao: item.description,
+      ncm: item.ncm,
+      cfop: item.cfop,
+      unidade: item.unit,
+      quantidade: item.quantity,
+      valorUnitario: item.unitValue,
+      valorDesconto: item.discount || undefined,
+      cean: item.ean || undefined,
+      icmsCst: item.cstIcms || undefined,
+      pisCst: item.cstPis || undefined,
+      cofinsCst: item.cstCofins || undefined,
+    })),
+    pagamentos: pagamentos.map((pag) => ({
+      tipo: pag.tipo,
+      valor: pag.valor,
+    })),
+    valorTroco: valorTroco || undefined,
+    orderId: linkedOrderId,
+  })
+
+  const handlePreview = async () => {
+    if (!validarAntesDeEnviar()) return
+
+    setIsPreviewing(true)
+    try {
+      const result = await createItemNew({
+        route: '/fiscal/nfce/preview',
+        data: montarPayload(),
+      })
+
+      if (!result.success) {
+        throw new Error(
+          result.message || 'Não foi possível gerar a pré-visualização',
+        )
+      }
+
+      setPrevia(result.data as NfcePreview)
+      setPreviewOpen(true)
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível gerar a pré-visualização',
+      )
+    } finally {
+      setIsPreviewing(false)
+    }
+  }
+
+  const handleEmit = async () => {
+    if (!validarAntesDeEnviar()) return
 
     setIsEmitting(true)
 
     try {
-      const payload = {
-        cpfConsumidor: cpfConsumidor
-          ? cpfConsumidor.replace(/\D/g, '')
-          : undefined,
-        consumidorNome: consumidorNome || undefined,
-        naturezaOperacao,
-        informacoesComplementares,
-        itens: items.map((item) => ({
-          productId: item.productId,
-          codigo: item.productCode,
-          descricao: item.description,
-          ncm: item.ncm,
-          cfop: item.cfop,
-          unidade: item.unit,
-          quantidade: item.quantity,
-          valorUnitario: item.unitValue,
-          valorDesconto: item.discount || undefined,
-          cean: item.ean || undefined,
-          icmsCst: item.cstIcms || undefined,
-          pisCst: item.cstPis || undefined,
-          cofinsCst: item.cstCofins || undefined,
-        })),
-        pagamentos: pagamentos.map((pag) => ({
-          tipo: pag.tipo,
-          valor: pag.valor,
-        })),
-        valorTroco: valorTroco || undefined,
-        orderId: linkedOrderId,
-      }
-
       const result = await createItemNew({
         route: '/fiscal/nfce/emit',
-        data: payload,
+        data: montarPayload(),
       })
 
       if (!result.success) {
         throw new Error(result.message || 'Erro ao emitir NFC-e')
       }
 
+      setPreviewOpen(false)
       toast.success('NFC-e avulsa emitida com sucesso!')
       router.push(
         linkedOrderId
@@ -415,15 +459,33 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               iconVariant="errorLight"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
-            <CustomButton
-              icon={IconCircleCheck}
-              title={isEmitting ? 'Emitindo...' : 'Emitir NFC-e'}
-              iconVariant="successLight"
-              onClick={handleEmit}
-              disabled={isEmitting}
-              isLoading={isEmitting}
-            />
+            <div className="flex items-center gap-2">
+              <CustomButton
+                icon={IconFileTypePdf}
+                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                iconVariant="neutralOutline"
+                onClick={handlePreview}
+                disabled={isEmitting || isPreviewing}
+                isLoading={isPreviewing}
+              />
+              <CustomButton
+                icon={IconCircleCheck}
+                title={isEmitting ? 'Emitindo...' : 'Emitir NFC-e'}
+                iconVariant="successLight"
+                onClick={handleEmit}
+                disabled={isEmitting}
+                isLoading={isEmitting}
+              />
+            </div>
           </div>
+
+          <NfcePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            previa={previa}
+            isEmitting={isEmitting}
+            onEmit={handleEmit}
+          />
         </div>
 
         {/* Homologação banner */}
