@@ -25,13 +25,16 @@ declare global {
   }
 }
 
-// --- Consentimento (seam) ---------------------------------------------------
-// Ponto ÚNICO de decisão de consentimento. Hoje retorna true, preservando o
-// comportamento atual (GTM/GA4 já disparam sem gating no projeto). Quando um
-// mecanismo central de consentimento for adotado, ligue-o AQUI — não espalhe
-// checagens pelos disparos (§4.2: não criar lógica paralela sem alinhamento).
+// --- Onde/quando é permitido disparar (seam) --------------------------------
+// Ponto ÚNICO de decisão. Hoje restringe por hostname: pixels de marketing só
+// disparam em produção (www/app), nunca em preview/homolog/localhost/URLs da
+// Vercel — atende §9.1/§10 do relatório de 03/09. Quando um mecanismo central
+// de consentimento existir, combine-o AQUI (§4.2), sem espalhar checagens.
 export function isTrackingAllowed(): boolean {
-  return true
+  if (typeof window === 'undefined') return false
+  return (TRACKING.productionHostnames as readonly string[]).includes(
+    window.location.hostname,
+  )
 }
 
 // --- Debug (seam) -----------------------------------------------------------

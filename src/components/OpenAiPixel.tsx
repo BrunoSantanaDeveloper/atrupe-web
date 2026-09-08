@@ -1,6 +1,7 @@
 'use client'
 
 import Script from 'next/script'
+import { useEffect, useState } from 'react'
 
 // Config / Analytics
 import { TRACKING } from '@/config/tracking'
@@ -8,17 +9,23 @@ import { isTrackingAllowed } from '@/lib/analytics'
 
 // Loader do OpenAI Pixel (peça #5 / §4 do documento de medição).
 //
-// Inerte por padrão: só injeta o script quando o pixel está habilitado por
-// ambiente (NEXT_PUBLIC_OPENAI_PIXEL_ENABLED=true) E o consentimento permite.
-// Assim nada carrega em produção até a decisão de consentimento (§4.2); em
-// homolog, ligue a flag para a validação do §8.
+// Inerte por padrão: só injeta o script quando (a) habilitado por ambiente
+// (NEXT_PUBLIC_OPENAI_PIXEL_ENABLED=true) E (b) o hostname é de produção
+// (isTrackingAllowed — nunca preview/homolog/localhost/Vercel, §9.1/§10 do
+// relatório de 03/09). O IIFE oficial guarda `if (w.oaiq) return`, garantindo
+// uma única inicialização por carregamento mesmo com re-render/troca de rota.
 //
-// O IIFE oficial guarda `if (w.oaiq) return`, garantindo uma única
-// inicialização por carregamento mesmo com re-render/troca de rota (§4.1).
-// Montado no layout do funil (blank-layout-pages), cobrindo /cadastro/inicio
-// até /validar-cadastro sem alcançar o app autenticado.
+// isTrackingAllowed() lê window.location (client-only), então avaliamos após a
+// montagem: servidor e primeira renderização retornam null; depois o script é
+// injetado se permitido, evitando mismatch de hidratação.
 export function OpenAiPixel() {
-  if (!TRACKING.openAiPixelEnabled || !isTrackingAllowed()) return null
+  const [enabled, setEnabled] = useState(false)
+
+  useEffect(() => {
+    setEnabled(TRACKING.openAiPixelEnabled && isTrackingAllowed())
+  }, [])
+
+  if (!enabled) return null
 
   return (
     <Script

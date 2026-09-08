@@ -26,6 +26,11 @@ export const TRACKING = {
   // (§4.2). Enquanto false, nada é carregado nem enviado.
   openAiPixelEnabled: process.env.NEXT_PUBLIC_OPENAI_PIXEL_ENABLED === 'true',
 
+  // Hostnames de produção onde os pixels de marketing podem disparar. Fora
+  // daqui (preview/homolog/localhost/URLs da Vercel) nada é enviado — atende
+  // §9.1/§10 do relatório de 03/09 ("0 eventos em preview/homologação/local").
+  productionHostnames: ['www.atrupe.com.br', 'app.atrupe.com.br'],
+
   // Debug de analytics: liga em não-produção para a validação do §8 ("debug
   // habilitado apenas durante o teste"); silencioso em produção.
   debug: process.env.NEXT_PUBLIC_ENV !== 'production',
