@@ -12,7 +12,13 @@ import { toast } from 'sonner'
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Icons
-import { IconX, IconArrowLeft, IconSend, IconPencil } from '@tabler/icons-react'
+import {
+  IconX,
+  IconArrowLeft,
+  IconSend,
+  IconPencil,
+  IconFileTypePdf,
+} from '@tabler/icons-react'
 
 // Actions
 import { deleteItemNew } from '@/actions/_cruds'
@@ -24,6 +30,9 @@ interface InvoiceFormHeaderProps {
   data: NfePrepareResponse
   isEmitting: boolean
   onEmit: () => void
+  /** Conferência antes de transmitir; ausente esconde o botão. */
+  onPreview?: () => void
+  isPreviewing?: boolean
   onCorrectionLetter?: () => void
 }
 
@@ -45,6 +54,8 @@ export function InvoiceFormHeader({
   data,
   isEmitting,
   onEmit,
+  onPreview,
+  isPreviewing,
   onCorrectionLetter,
 }: InvoiceFormHeaderProps) {
   const router = useRouter()
@@ -119,14 +130,26 @@ export function InvoiceFormHeader({
             disabled={isCanceling || isEmitting}
             isLoading={isCanceling}
           />
-          <CustomButton
-            icon={IconSend}
-            title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-            iconVariant="light"
-            onClick={onEmit}
-            disabled={isEmitting || isCanceling}
-            isLoading={isEmitting}
-          />
+          <div className="flex items-center gap-2">
+            {onPreview && (
+              <CustomButton
+                icon={IconFileTypePdf}
+                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                iconVariant="neutralOutline"
+                onClick={onPreview}
+                disabled={isEmitting || isCanceling || isPreviewing}
+                isLoading={isPreviewing}
+              />
+            )}
+            <CustomButton
+              icon={IconSend}
+              title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
+              iconVariant="light"
+              onClick={onEmit}
+              disabled={isEmitting || isCanceling}
+              isLoading={isEmitting}
+            />
+          </div>
         </div>
       ) : data.existingNfe?.status === 'AUTHORIZED' ||
         data.existingNfe?.status === 'CORRECTION_SENT' ? (

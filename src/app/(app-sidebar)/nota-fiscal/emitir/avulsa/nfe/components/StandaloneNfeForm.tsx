@@ -56,6 +56,7 @@ import {
   IconArrowLeft,
   IconX,
   IconSend,
+  IconFileTypePdf,
   IconBan,
   IconFilePlus,
   IconEdit,
@@ -66,6 +67,8 @@ import { createItemNew, getItem } from '@/actions/_cruds'
 
 // Components - shared
 import { CustomButton } from '@/components/common/CustomButton'
+import { NfePreviewDialog } from '@/components/common/fiscal/preview/NfePreviewDialog'
+import type { NfePreview } from '@/types/fiscal/nfe-preview'
 import { Badge } from '@/components/ui/badge'
 
 // Types
@@ -98,6 +101,9 @@ export function StandaloneNfeForm() {
   const alertDialog = useAlertDialog()
   const [isLoading, setIsLoading] = useState(true)
   const [isEmitting, setIsEmitting] = useState(false)
+  const [isPreviewing, setIsPreviewing] = useState(false)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previa, setPrevia] = useState<NfePreview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<NfePrepareResponse | null>(null)
   const [selectedClient, setSelectedClient] = useState<ClientData | null>(null)
@@ -438,9 +444,9 @@ export function StandaloneNfeForm() {
     })
   }
 
-  // Handle emit
-  const handleEmit = async () => {
-    if (!data) return
+  /** Pré-checagens comuns a emitir e pré-visualizar. */
+  const validarAntesDeEnviar = (): { referencedKey: string } | null => {
+    if (!data) return null
 
     const referencedKey = (data.emissao.nfeReferenciada || '').replace(
       /\D/g,
@@ -448,12 +454,12 @@ export function StandaloneNfeForm() {
     )
     if (referencedKey.length > 0 && referencedKey.length !== 44) {
       toast.error('A NF-e referenciada deve conter uma chave com 44 digitos.')
-      return
+      return null
     }
 
     if (data.items.length === 0) {
       toast.error('Adicione pelo menos um item antes de emitir a NF-e.')
-      return
+      return null
     }
 
     const invalidItems = data.items.filter((item) => item.needsConfiguration)
@@ -462,7 +468,7 @@ export function StandaloneNfeForm() {
       toast.error(
         `Existem produtos que precisam de configuração fiscal: ${itemNames}`,
       )
-      return
+      return null
     }
 
     const dest = data.destinatario
@@ -478,83 +484,137 @@ export function StandaloneNfeForm() {
       toast.error(
         'O destinatário selecionado não possui um endereço completo cadastrado. Edite os dados do destinatário antes de emitir.',
       )
-      return
+      return null
     }
+
+    return { referencedKey }
+  }
+
+  /**
+   * Corpo da emissão. A pré-visualização manda EXATAMENTE este objeto, para o
+   * que o usuário confere ser o que será transmitido.
+   */
+  const montarPayload = (referencedKey: string) => {
+    if (!data) return null
+    return {
+      operationNature: data.emissao.operationNature,
+      tipo: data.emissao.tipo,
+      finalidade: data.emissao.finalidade,
+      consumidorFinal: data.emissao.consumidorFinal,
+      presencaConsumidor: data.emissao.presencaConsumidor,
+      dataSaida: data.emissao.dataSaida,
+      nfeReferenciada: referencedKey || null,
+      additionalInfo: data.informacoesComplementares,
+      destCnpjCpf: data.destinatario.cnpjCpf || null,
+      destNome: data.destinatario.razaoSocial,
+      destIe: data.destinatario.ie,
+      destEmail: data.destinatario.email,
+      destEndereco: data.destinatario.endereco,
+      destNumero: data.destinatario.numero,
+      destComplemento: data.destinatario.complemento,
+      destBairro: data.destinatario.bairro,
+      destCep: data.destinatario.cep,
+      destMunicipio: data.destinatario.cidade,
+      destUf: data.destinatario.estado,
+      destPais: getBacenCodeByName(data.destinatario.pais),
+      destIndIEDest: data.destinatario.indIEDest ?? 9,
+      destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
+      ...(data.entrega
+        ? {
+            entregaCnpjCpf: data.entrega.cnpjCpf || null,
+            entregaEndereco: data.entrega.endereco,
+            entregaNumero: data.entrega.numero,
+            entregaComplemento: data.entrega.complemento || null,
+            entregaBairro: data.entrega.bairro,
+            entregaCep: data.entrega.cep,
+            entregaMunicipio: data.entrega.cidade,
+            entregaUf: data.entrega.estado,
+          }
+        : {}),
+      items: data.items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+        unitValue: item.unitValue,
+        discount: item.discount,
+        description: item.description,
+        ncm: item.ncm,
+        cfop: item.cfop ? Number(item.cfop) : undefined,
+        uCom: item.uCom,
+        ean: item.ean,
+        ceantrib: item.ceantrib,
+        cstIcms: item.cstIcms,
+        cstPis: item.cstPis,
+        cstCofins: item.cstCofins,
+        cstIpi: item.cstIpi,
+        freight: item.freight,
+        insurance: item.insurance,
+      })),
+      transportadora: data.transportadora,
+      volumes: data.volumes,
+      pagamento: {
+        forma: data.pagamento?.forma,
+        valor: data.pagamento?.valor,
+      },
+      duplicatas: data.duplicatas,
+      autXml: data.autXml,
+      modalidadeFrete: data.emissao.modalidadeFrete,
+    }
+  }
+
+  const handlePreview = async () => {
+    const validacao = validarAntesDeEnviar()
+    if (!validacao) return
+
+    const payload = montarPayload(validacao.referencedKey)
+    if (!payload) return
+
+    setIsPreviewing(true)
+    try {
+      const result = await createItemNew({
+        route: '/fiscal/nfe/preview',
+        data: payload,
+      })
+
+      if (!result.success) {
+        throw new Error(
+          result.message || 'Não foi possível gerar a pré-visualização',
+        )
+      }
+
+      setPrevia(result.data as NfePreview)
+      setPreviewOpen(true)
+    } catch (err) {
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : 'Não foi possível gerar a pré-visualização',
+      )
+    } finally {
+      setIsPreviewing(false)
+    }
+  }
+
+  // Handle emit
+  const handleEmit = async () => {
+    const validacao = validarAntesDeEnviar()
+    if (!validacao) return
+
+    const payload = montarPayload(validacao.referencedKey)
+    if (!payload) return
 
     setIsEmitting(true)
 
     try {
       const result = await createItemNew({
         route: '/fiscal/nfe/emit-full',
-        data: {
-          operationNature: data.emissao.operationNature,
-          tipo: data.emissao.tipo,
-          finalidade: data.emissao.finalidade,
-          consumidorFinal: data.emissao.consumidorFinal,
-          presencaConsumidor: data.emissao.presencaConsumidor,
-          dataSaida: data.emissao.dataSaida,
-          nfeReferenciada: referencedKey || null,
-          additionalInfo: data.informacoesComplementares,
-          destCnpjCpf: data.destinatario.cnpjCpf || null,
-          destNome: data.destinatario.razaoSocial,
-          destIe: data.destinatario.ie,
-          destEmail: data.destinatario.email,
-          destEndereco: data.destinatario.endereco,
-          destNumero: data.destinatario.numero,
-          destComplemento: data.destinatario.complemento,
-          destBairro: data.destinatario.bairro,
-          destCep: data.destinatario.cep,
-          destMunicipio: data.destinatario.cidade,
-          destUf: data.destinatario.estado,
-          destPais: getBacenCodeByName(data.destinatario.pais),
-          destIndIEDest: data.destinatario.indIEDest ?? 9,
-          destIdEstrangeiro: data.destinatario.idEstrangeiro || null,
-          ...(data.entrega
-            ? {
-                entregaCnpjCpf: data.entrega.cnpjCpf || null,
-                entregaEndereco: data.entrega.endereco,
-                entregaNumero: data.entrega.numero,
-                entregaComplemento: data.entrega.complemento || null,
-                entregaBairro: data.entrega.bairro,
-                entregaCep: data.entrega.cep,
-                entregaMunicipio: data.entrega.cidade,
-                entregaUf: data.entrega.estado,
-              }
-            : {}),
-          items: data.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            unitValue: item.unitValue,
-            discount: item.discount,
-            description: item.description,
-            ncm: item.ncm,
-            cfop: item.cfop ? Number(item.cfop) : undefined,
-            uCom: item.uCom,
-            ean: item.ean,
-            ceantrib: item.ceantrib,
-            cstIcms: item.cstIcms,
-            cstPis: item.cstPis,
-            cstCofins: item.cstCofins,
-            cstIpi: item.cstIpi,
-            freight: item.freight,
-            insurance: item.insurance,
-          })),
-          transportadora: data.transportadora,
-          volumes: data.volumes,
-          pagamento: {
-            forma: data.pagamento?.forma,
-            valor: data.pagamento?.valor,
-          },
-          duplicatas: data.duplicatas,
-          autXml: data.autXml,
-          modalidadeFrete: data.emissao.modalidadeFrete,
-        },
+        data: payload,
       })
 
       if (!result.success) {
         throw new Error(result.message || 'Erro ao emitir NF-e')
       }
 
+      setPreviewOpen(false)
       toast.success('NF-e emitida com sucesso!')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
@@ -651,15 +711,33 @@ export function StandaloneNfeForm() {
               iconVariant="errorLight"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
-            <CustomButton
-              icon={IconSend}
-              title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-              iconVariant="light"
-              onClick={handleEmit}
-              disabled={isEmitting || !data}
-              isLoading={isEmitting}
-            />
+            <div className="flex items-center gap-2">
+              <CustomButton
+                icon={IconFileTypePdf}
+                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                iconVariant="neutralOutline"
+                onClick={handlePreview}
+                disabled={isEmitting || isPreviewing || !data}
+                isLoading={isPreviewing}
+              />
+              <CustomButton
+                icon={IconSend}
+                title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
+                iconVariant="light"
+                onClick={handleEmit}
+                disabled={isEmitting || !data}
+                isLoading={isEmitting}
+              />
+            </div>
           </div>
+
+          <NfePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            previa={previa}
+            isEmitting={isEmitting}
+            onEmit={handleEmit}
+          />
         </div>
 
         {/* Alert Area */}
