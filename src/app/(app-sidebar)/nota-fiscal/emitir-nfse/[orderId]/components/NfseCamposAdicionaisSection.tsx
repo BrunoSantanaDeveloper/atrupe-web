@@ -27,7 +27,7 @@ import { IconAdjustments } from '@tabler/icons-react'
 /**
  * Campos adicionais da emissão de NFS-e — indicadores da Reforma Tributária,
  * tributos aproximados e INSS. Nomes e semântica conforme o layout
- * Layout_Recepcao_NFSe_Reforma_Tributaria v4 do InvoiCy.
+ * Layout_Recepcao_NFSe_Reforma_Tributaria v8 do InvoiCy.
  *
  * Todos opcionais: vazio omite o campo do payload e a nota sai como antes.
  * Sentinela 'none' nos selects — o Radix reserva '' para limpar a seleção.
@@ -37,7 +37,6 @@ export interface NfseCamposAdicionais {
   indFinal?: number
   indDest?: number
   tpEnteGov?: number
-  xTpEnteGov?: string
   tpOper?: number
   tribAproxFederal?: number
   tribAproxEstadual?: number
@@ -58,22 +57,34 @@ const IND_DEST_OPTIONS = [
   { value: '1', label: '1 — Destinatário diverso do tomador/adquirente' },
 ]
 
+// Só 1..4: o layout do InvoiCy (v4 e v8) não tem "9 — Outro"; ele e o
+// xTpEnteGov são de uso específico do padrão IPM de prefeitura, que nenhum
+// emissor da base usa. O backend continua aceitando o 9 por compatibilidade.
 const TP_ENTE_GOV_OPTIONS = [
   { value: 'none', label: 'Nenhum' },
   { value: '1', label: '1 — União' },
   { value: '2', label: '2 — Estado' },
   { value: '3', label: '3 — Distrito Federal' },
   { value: '4', label: '4 — Município' },
-  { value: '9', label: '9 — Outro' },
 ]
 
+// Redação idêntica à do InvoiCy Web, que é a que o cliente conhece.
 const TP_OPER_OPTIONS = [
-  { value: 'none', label: 'Não informar' },
-  { value: '1', label: '1 — Fornecimento com pagamento posterior' },
-  { value: '2', label: '2 — Recebimento com fornecimento já realizado' },
-  { value: '3', label: '3 — Fornecimento com pagamento já realizado' },
-  { value: '4', label: '4 — Recebimento com fornecimento posterior' },
-  { value: '5', label: '5 — Fornecimento e recebimento concomitantes' },
+  { value: 'none', label: 'Nenhum' },
+  { value: '1', label: '1 – Fornecimento com pagamento posterior' },
+  {
+    value: '2',
+    label: '2 – Recebimento do pagamento com fornecimento já realizado',
+  },
+  { value: '3', label: '3 – Fornecimento com pagamento já realizado' },
+  {
+    value: '4',
+    label: '4 – Recebimento do pagamento com fornecimento posterior',
+  },
+  {
+    value: '5',
+    label: '5 – Fornecimento e recebimento do pagamento concomitantes',
+  },
 ]
 
 interface Props {
@@ -190,7 +201,36 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                   </Select>
                 </div>
 
-                <div className="space-y-1.5">
+                {/* tpOper é o campo "Operação com Entes Governamentais" do
+                    InvoiCy Web. Fica sempre visível e independe do ente: o
+                    layout o prevê também para serviços sobre bens imóveis. */}
+                <div className="space-y-1.5 lg:col-span-2">
+                  <Label>Operação com Entes Governamentais</Label>
+                  <Select
+                    value={
+                      valores.tpOper !== undefined
+                        ? String(valores.tpOper)
+                        : 'none'
+                    }
+                    onValueChange={(v) => selectNumerico('tpOper', v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {TP_OPER_OPTIONS.map((o) => (
+                        <SelectItem key={o.value} value={o.value}>
+                          {o.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-[11px] text-gray-500">
+                    Também usado em serviços sobre bens imóveis (tpOper)
+                  </p>
+                </div>
+
+                <div className="space-y-1.5 lg:col-span-2">
                   <Label>Ente Governamental</Label>
                   <Select
                     value={
@@ -198,19 +238,7 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                         ? String(valores.tpEnteGov)
                         : 'none'
                     }
-                    onValueChange={(v) => {
-                      // Limpa os dependentes: sem isto tpOper/xTpEnteGov
-                      // ficavam ocultos na UI mas seguiam no payload.
-                      const tpEnteGov = v === 'none' ? undefined : Number(v)
-                      onChange({
-                        ...valores,
-                        tpEnteGov,
-                        ...(tpEnteGov === undefined
-                          ? { tpOper: undefined, xTpEnteGov: undefined }
-                          : {}),
-                        ...(tpEnteGov !== 9 ? { xTpEnteGov: undefined } : {}),
-                      })
-                    }}
+                    onValueChange={(v) => selectNumerico('tpEnteGov', v)}
                   >
                     <SelectTrigger>
                       <SelectValue />
@@ -223,47 +251,11 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-[11px] text-gray-500">
+                    Só quando o tomador é administração pública direta,
+                    autarquia ou fundação (tpEnteGov)
+                  </p>
                 </div>
-
-                {valores.tpEnteGov === 9 && (
-                  <div className="space-y-1.5">
-                    <Label htmlFor="xTpEnteGov">Descrição do ente</Label>
-                    <Input
-                      id="xTpEnteGov"
-                      placeholder="Ex: Comitê Gestor do IBS"
-                      maxLength={100}
-                      value={valores.xTpEnteGov ?? ''}
-                      onChange={(e) =>
-                        setCampo('xTpEnteGov', e.target.value || undefined)
-                      }
-                    />
-                  </div>
-                )}
-
-                {valores.tpEnteGov !== undefined && (
-                  <div className="space-y-1.5 lg:col-span-2">
-                    <Label>Tipo de operação (ente gov.)</Label>
-                    <Select
-                      value={
-                        valores.tpOper !== undefined
-                          ? String(valores.tpOper)
-                          : 'none'
-                      }
-                      onValueChange={(v) => selectNumerico('tpOper', v)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TP_OPER_OPTIONS.map((o) => (
-                          <SelectItem key={o.value} value={o.value}>
-                            {o.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 pt-4 border-t border-gray-100">
