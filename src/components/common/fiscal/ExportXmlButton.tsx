@@ -16,21 +16,29 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconFileZip, IconDownload } from '@tabler/icons-react'
 import { getAuthToken } from '@/actions/fiscal'
+import { extractApiErrorMessage } from '@/lib/api-error-message'
+
+/**
+ * AAAA-MM-DD no horário local. `toISOString()` é UTC: depois das 21h no
+ * Brasil o "hoje" virava amanhã e o período padrão nascia errado.
+ */
+function dataLocal(date: Date) {
+  const ano = date.getFullYear()
+  const mes = String(date.getMonth() + 1).padStart(2, '0')
+  const dia = String(date.getDate()).padStart(2, '0')
+  return `${ano}-${mes}-${dia}`
+}
 
 export function ExportXmlButton() {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  // Default dates: start of current month to today
+  // Período padrão: do início do mês até hoje.
   const today = new Date()
   const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
 
-  const formatDateForInput = (date: Date) => {
-    return date.toISOString().split('T')[0]
-  }
-
-  const [startDate, setStartDate] = useState(formatDateForInput(startOfMonth))
-  const [endDate, setEndDate] = useState(formatDateForInput(today))
+  const [startDate, setStartDate] = useState(dataLocal(startOfMonth))
+  const [endDate, setEndDate] = useState(dataLocal(today))
 
   const handleExport = async () => {
     if (!startDate || !endDate) {
@@ -38,7 +46,7 @@ export function ExportXmlButton() {
       return
     }
 
-    if (new Date(startDate) > new Date(endDate)) {
+    if (startDate > endDate) {
       toast.error('A data inicial não pode ser maior que a final')
       return
     }
@@ -57,12 +65,18 @@ export function ExportXmlButton() {
       )
 
       if (!response.ok) {
-        const data = await response.json().catch(() => ({}))
-        if (response.status === 404) {
-          throw new Error('Nenhuma NF-e com XML encontrada neste período.')
-        }
-        throw new Error(data.message || 'Erro ao exportar XMLs')
+        // A mensagem do backend distingue "nenhuma nota no período" de
+        // "notas sem XML"; o texto fixo de antes escondia essa diferença.
+        const data = await response.json().catch(() => null)
+        throw new Error(
+          data
+            ? extractApiErrorMessage(data)
+            : 'Não foi possível exportar os XMLs.',
+        )
       }
+
+      const total = Number(response.headers.get('X-Nfe-Total') ?? 0)
+      const faltantes = Number(response.headers.get('X-Nfe-Missing-Xml') ?? 0)
 
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
@@ -74,7 +88,14 @@ export function ExportXmlButton() {
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
 
-      toast.success('XMLs exportados com sucesso!')
+      if (faltantes > 0) {
+        toast.warning(
+          `ZIP gerado com ${total - faltantes} de ${total} XMLs. ` +
+            `${faltantes} nota(s) sem XML no provedor — veja FALTANTES.txt no arquivo.`,
+        )
+      } else {
+        toast.success('XMLs exportados com sucesso!')
+      }
       setIsOpen(false)
     } catch (err: unknown) {
       const error = err as Error
@@ -101,8 +122,9 @@ export function ExportXmlButton() {
           <DialogHeader>
             <DialogTitle>Exportar XMLs de NF-e</DialogTitle>
             <DialogDescription>
-              Selecione o período para gerar um arquivo ZIP contendo os XMLs de
-              todas as notas autorizadas.
+              Gera um ZIP com os XMLs das NF-e (modelo 55) autorizadas no
+              período, incluindo as cartas de correção. NFS-e e NFC-e não
+              entram.
             </DialogDescription>
           </DialogHeader>
           <DialogBody>

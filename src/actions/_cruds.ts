@@ -3,25 +3,10 @@
 
 // Lib Imports
 import apiInstance from '@/lib/api'
+import { extractApiErrorMessage } from '@/lib/api-error-message'
 import { defaultRoutes } from './routes'
 
 const defaultRoute = defaultRoutes()
-
-const extractApiErrorMessage = (payload: any) => {
-  const userMessage = payload?.userMessage
-  const message =
-    userMessage?.message ||
-    payload?.message ||
-    payload?.data?.message ||
-    payload?.data?.error ||
-    userMessage
-
-  return Array.isArray(message)
-    ? message[0]
-    : typeof message === 'string'
-      ? message
-      : 'Erro desconhecido.'
-}
 
 const getEmbeddedError = (payload: any) => {
   const statusCode = Number(
