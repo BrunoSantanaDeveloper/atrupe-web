@@ -57,6 +57,9 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [selectedProductName, setSelectedProductName] = useState<string>('')
 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  // "Todos os N produtos da lista", além dos marcados nesta página. Padrão do
+  // Gmail: só aparece depois que a página inteira está marcada.
+  const [selecionouTodos, setSelecionouTodos] = useState(false)
 
   const { hasAllPermissions } = usePermissions()
   const { hasFiscalModule } = usePlanFeatures()
@@ -87,6 +90,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const selectionScopeKey = JSON.stringify(searchParams)
   useEffect(() => {
     setSelectedIds([])
+    setSelecionouTodos(false)
   }, [selectionScopeKey])
 
   const pageIds = useMemo(() => products.map((p) => p.id), [products])
@@ -98,6 +102,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
     pageIds.length > 0 && selectedOnPage.length === pageIds.length
 
   function toggleProduct(productId: string, checked: boolean) {
+    // Desmarcar uma linha desfaz o "todos": o usuário quis um subconjunto.
+    if (!checked) setSelecionouTodos(false)
     setSelectedIds((current) =>
       checked
         ? [...current, productId]
@@ -107,34 +113,95 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   function toggleAllOnPage(checked: boolean) {
     setSelectedIds(checked ? pageIds : [])
+    if (!checked) setSelecionouTodos(false)
+  }
+
+  function limparSelecao() {
+    setSelectedIds([])
+    setSelecionouTodos(false)
+  }
+
+  const totalDaLista = data?.total ?? 0
+  const podeSelecionarTodos = allOnPageSelected && totalDaLista > pageIds.length
+  const temBusca = Boolean(searchParams?.search)
+
+  // Os mesmos filtros que a listagem usou, para o backend atingir exatamente
+  // o conjunto que o usuário está vendo.
+  const filtrosDaLista = {
+    search: searchParams?.search,
+    categoryId: searchParams?.categoryId,
+    sectorId: searchParams?.sectorId,
+    unitKind: searchParams?.unitKind,
+    categoryKind: searchParams?.categoryKind,
+    status: status || undefined,
   }
 
   return (
     <>
       {canConfigureFiscalData && selectedIds.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-brand-50 px-6 py-3">
-          <p className="text-sm font-medium text-gray-700">
-            {selectedIds.length} produto{selectedIds.length === 1 ? '' : 's'}{' '}
-            selecionado{selectedIds.length === 1 ? '' : 's'}
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              size="sm"
-              variant="neutralOutline"
-              onClick={() => setSelectedIds([])}
-            >
-              Limpar seleção
-            </Button>
-            <Button
-              type="button"
-              size="sm"
-              RightIcon={IconReceiptTax}
-              onClick={() => setOpenDialog('bulk-ncm')}
-            >
-              Alterar NCM
-            </Button>
+        <div className="space-y-2 border-b border-gray-100 bg-brand-50 px-6 py-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm font-medium text-gray-700">
+              {selecionouTodos ? (
+                <>
+                  Todos os {totalDaLista} produtos{' '}
+                  {temBusca ? 'da busca' : 'da lista'} selecionados
+                </>
+              ) : (
+                <>
+                  {selectedIds.length} produto
+                  {selectedIds.length === 1 ? '' : 's'} selecionado
+                  {selectedIds.length === 1 ? '' : 's'}
+                </>
+              )}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="neutralOutline"
+                onClick={limparSelecao}
+              >
+                Limpar seleção
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                RightIcon={IconReceiptTax}
+                onClick={() => setOpenDialog('bulk-ncm')}
+              >
+                Alterar NCM
+              </Button>
+            </div>
           </div>
+
+          {podeSelecionarTodos && (
+            <p className="text-xs text-gray-600">
+              {selecionouTodos ? (
+                <>
+                  <button
+                    type="button"
+                    className="text-brand-700 underline"
+                    onClick={() => setSelecionouTodos(false)}
+                  >
+                    Selecionar apenas os {pageIds.length} desta página
+                  </button>
+                </>
+              ) : (
+                <>
+                  Os {pageIds.length} produtos desta página estão selecionados.{' '}
+                  <button
+                    type="button"
+                    className="text-brand-700 underline"
+                    onClick={() => setSelecionouTodos(true)}
+                  >
+                    Selecionar todos os {totalDaLista} produtos{' '}
+                    {temBusca ? 'da busca' : 'da lista'}
+                  </button>
+                </>
+              )}
+            </p>
+          )}
         </div>
       )}
 
@@ -283,11 +350,15 @@ export function ProductsData({ searchParams, tabs }: Props) {
       />
       <BulkNcmDialog
         open={openDialog === 'bulk-ncm'}
-        productIds={selectedIds}
+        scope={
+          selecionouTodos
+            ? { kind: 'all', filters: filtrosDaLista, total: totalDaLista }
+            : { kind: 'selected', productIds: selectedIds }
+        }
         onOpenChange={(open) => {
           if (!open) setOpenDialog('')
         }}
-        onApplied={() => setSelectedIds([])}
+        onApplied={limparSelecao}
       />
       {isLoading || hasData ? (
         <CardFooter>
