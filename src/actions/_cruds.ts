@@ -359,12 +359,15 @@ export const updateItemNew = async ({
     }
   } catch (error: any) {
     if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const userMessage = error?.response?.data?.userMessage
+    const payload = error?.response?.data
+    const userMessage = payload?.userMessage
 
     return {
       success: false,
-      code: userMessage?.statusCode || 500,
-      message: userMessage?.message || 'Erro desconhecido.',
+      code: userMessage?.statusCode || payload?.statusCode || 500,
+      // O 400 do class-validator traz `message` como array; sem extrair, o
+      // toast mostrava "Erro desconhecido." ou o array cru.
+      message: extractApiErrorMessage(payload),
     }
   }
 }

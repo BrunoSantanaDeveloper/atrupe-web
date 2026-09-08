@@ -113,6 +113,20 @@ export async function getReadiness(
   return res.json()
 }
 
+/** PATCH genérico do emissor; devolve status e corpo para asserções de contrato. */
+export async function updateEmissor(
+  client: FiscalApiClient,
+  id: string,
+  data: Record<string, unknown>,
+) {
+  const res = await client.ctx.patch(`/fiscal/emissores/${id}`, {
+    headers: authHeaders(client.token),
+    data,
+  })
+  const body = await res.json().catch(() => null)
+  return { status: res.status(), ok: res.ok(), body }
+}
+
 export async function deleteEmissor(client: FiscalApiClient, id: string) {
   await client.ctx
     .delete(`/fiscal/emissores/${id}`, { headers: authHeaders(client.token) })

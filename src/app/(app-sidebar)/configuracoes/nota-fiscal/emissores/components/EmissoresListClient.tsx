@@ -100,11 +100,22 @@ export function EmissoresListClient() {
         (e: EmissorData) => e.companyId === company.id,
       )
 
-      // Cria um objeto EmissorData híbrido
+      // Cria um objeto EmissorData híbrido.
+      //
+      // Parte do `config` INTEIRO devolvido pela API e só sobrescreve o que a
+      // tela deriva da empresa. Antes era uma cópia campo a campo, e todo campo
+      // novo do emissor (NCM padrão, aba Reforma, prazo da NFC-e, "emissor
+      // ativo") ficava fora dela: o modal abria vazio e, como ele envia o
+      // formulário inteiro, o "Salvar" seguinte apagava no banco o que o
+      // usuário tinha configurado. Era a quarta allowlist do emissor, além de
+      // mapDtoToDb/mapDbToResponse no backend e form.reset no modal.
       const emissorData: EmissorData = {
+        ...config,
         id: config?.id || '', // ID vazio indica que não existe config
         companyId: company.id,
-        name: company.general.name,
+        // O nome próprio do emissor é o que o usuário gravou; o nome fantasia
+        // só entra enquanto o emissor não existe ou está sem nome.
+        name: config?.name || company.general.name,
         isDefault: config?.isDefault || false,
         environment: config?.environment, // Se undefined, será tratado como não configurado
 
@@ -143,54 +154,34 @@ export function EmissoresListClient() {
         // Configuração Fiscal
         emitCrt: config?.emitCrt || '1',
         ibgeCode: config?.ibgeCode || '', // Refactored property from backend service
-
-        // Numeração efetiva por documento (linha do ambiente ativo)
-        activeNumbering: config?.activeNumbering,
-
-        // Fiscal Configs
-        serieNfe: config?.serieNfe,
-        proximoNumeroNfe: config?.proximoNumeroNfe,
-        serieNfse: config?.serieNfse,
-        proximoRpsNfse: config?.proximoRpsNfse,
-        codigoServico: config?.codigoServico,
-        aliquotaIss: config?.aliquotaIss,
-        regimeEspecialTributacao: config?.regimeEspecialTributacao,
-        serieNfce: config?.serieNfce,
-        proximoNumeroNfce: config?.proximoNumeroNfce,
-        cscId: config?.cscId,
-        cscConfigured: config?.cscConfigured,
-        defaultCfop: config?.defaultCfop,
-        defaultOperationNature: config?.defaultOperationNature,
-
-        // Informações complementares e envio
-        taxInfoText: config?.taxInfoText,
-        sendDanfeXmlAutomatically: config?.sendDanfeXmlAutomatically,
-        sendDanfeAutomatically: config?.sendDanfeAutomatically,
-        sendXmlAutomatically: config?.sendXmlAutomatically,
-        sendFiscalEmailCopyTo: config?.sendFiscalEmailCopyTo,
       }
       return emissorData
     }) || []
 
+  // As actions de CRUD resolvem `{ success: false }` em vez de rejeitar. Sem
+  // lançar aqui, `mutateAsync` resolvia, o modal fechava e o usuário achava
+  // que tinha salvo — inclusive quando o backend recusava o payload.
   const createMutation = useMutation({
     mutationFn: async (data: EmissorFormValues) => {
-      return createItemNew({
+      const result = await createItemNew({
         route: '/fiscal/emissores',
         data,
       })
-    },
-    onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.message || 'Erro ao criar emissor')
-        return
+        throw new Error(result.message || 'Erro ao criar emissor')
       }
+      return result
+    },
+    onSuccess: () => {
       toast.success('Emissor configurado com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
     },
     onError: (error) => {
-      toast.error('Erro ao criar emissor')
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao criar emissor',
+      )
       console.error(error)
     },
   })
@@ -203,23 +194,25 @@ export function EmissoresListClient() {
       id: string
       data: Partial<EmissorFormValues>
     }) => {
-      return updateItemNew({
+      const result = await updateItemNew({
         route: `/fiscal/emissores/${id}`,
         data,
       })
-    },
-    onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.message || 'Erro ao atualizar emissor')
-        return
+        throw new Error(result.message || 'Erro ao atualizar emissor')
       }
+      return result
+    },
+    onSuccess: () => {
       toast.success('Emissor atualizado com sucesso!')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
     },
     onError: (error) => {
-      toast.error('Erro ao atualizar emissor')
+      toast.error(
+        error instanceof Error ? error.message : 'Erro ao atualizar emissor',
+      )
       console.error(error)
     },
   })

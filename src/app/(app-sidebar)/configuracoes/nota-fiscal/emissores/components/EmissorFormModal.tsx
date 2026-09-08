@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react'
 
 // UI
-import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
@@ -317,7 +316,8 @@ export function EmissorFormModal({
       await onSave(sanitizeEmissorPayload(data))
       onOpenChange(false)
     } catch (error) {
-      toast.error('Erro ao salvar emissor')
+      // Quem chama onSave já mostra a mensagem da API; aqui só garantimos que
+      // o modal continue aberto para o usuário corrigir e tentar de novo.
       console.error(error)
     } finally {
       setIsSubmitting(false)
