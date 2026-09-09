@@ -73,21 +73,26 @@ function pushToDataLayer(event: DataLayerEvent): void {
   debug('dataLayer <-', event)
 }
 
-function measureOpenAI(eventName: string, eventId: string): void {
+// OpenAI Measurement Pixel — conversão do teste grátis. Usa a taxonomia
+// OFICIAL da OpenAI: `trial_started` / `plan_enrollment` (cadastro e início do
+// trial ocorrem no mesmo instante no Atrupe, então trial_started é a conversão
+// principal). sign_up/free_trial NÃO são eventos padrão do pixel. O event_id
+// (4º arg) permite deduplicação futura com a Conversions API.
+function measureTrialStarted(eventId: string): void {
   if (typeof window === 'undefined') return
   if (typeof window.oaiq !== 'function') {
-    // Pixel OpenAI ainda não instalado (peça #5). Não é erro: o disparo GA4
-    // segue valendo e o OpenAI passa a funcionar assim que o pixel existir.
-    debug('oaiq ausente — evento OpenAI', eventName, 'ignorado')
+    // Pixel OpenAI não carregado (flag off ou hostname fora de produção).
+    // Não é erro: o disparo GA4 segue valendo.
+    debug('oaiq ausente — evento OpenAI trial_started ignorado')
     return
   }
   window.oaiq(
     'measure',
-    eventName,
-    { type: 'customer_action' },
+    'trial_started',
+    { type: 'plan_enrollment', plan_id: 'free_trial_7_days' },
     { event_id: eventId },
   )
-  debug('oaiq <-', eventName, { event_id: eventId })
+  debug('oaiq <- trial_started', { event_id: eventId })
 }
 
 function generateEventId(): string {
@@ -147,7 +152,7 @@ export interface RegistrationCompletedParams {
 
 /**
  * Dispara o conjunto de eventos de "cadastro concluído" — GA4 `sign_up` e
- * OpenAI `registration_completed` — exatamente uma vez por conta.
+ * OpenAI `trial_started` — exatamente uma vez por conta.
  *
  * Deve ser chamado SOMENTE no callback de sucesso do backend que confirma a
  * criação da conta (§5.1). Não chamar em etapas intermediárias, erro, timeout
@@ -182,8 +187,8 @@ export function trackRegistrationCompleted(
     ...attributionToParams(attribution),
   })
 
-  // OpenAI Pixel — registration_completed (no-op até o pixel ser instalado).
-  measureOpenAI('registration_completed', eventId)
+  // OpenAI Pixel — trial_started (no-op se o pixel não estiver carregado).
+  measureTrialStarted(eventId)
 
   debug('cadastro concluído rastreado', { dedupKey, eventId, attribution })
 }
