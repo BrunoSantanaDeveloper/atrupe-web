@@ -101,6 +101,14 @@ export function CancelNfeDialog({
       }
 
       toast.success(`${docLabel} cancelada com sucesso!`)
+
+      // Cancelamento aceito fora do prazo regular de 24 horas: o backend
+      // devolve o aviso porque a SEFAZ pode cobrar penalidade, e quem cancelou
+      // precisa saber disso na hora.
+      const avisoPrazo = (result.data as { avisoPrazo?: string } | undefined)
+        ?.avisoPrazo
+      if (avisoPrazo) toast.warning(avisoPrazo, { duration: 12000 })
+
       onSuccess()
       handleClose()
     } catch (error) {

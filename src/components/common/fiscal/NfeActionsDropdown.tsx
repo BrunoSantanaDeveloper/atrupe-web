@@ -68,16 +68,23 @@ export function NfeActionsDropdown({
   const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [isOpeningDanfe, setIsOpeningDanfe] = useState(false)
 
-  const horasDesdeEmissao = nfe.dataEmissao
-    ? (Date.now() - new Date(nfe.dataEmissao).getTime()) / (1000 * 60 * 60)
+  // Os dois prazos correm da autorização de uso, não da emissão.
+  const baseDoPrazo = nfe.dataAutorizacao || nfe.dataEmissao
+  const horasDesdeAutorizacao = baseDoPrazo
+    ? (Date.now() - new Date(baseDoPrazo).getTime()) / (1000 * 60 * 60)
     : 0
-  const cancelDisabled = horasDesdeEmissao > 24
+
+  /**
+   * O cancelamento NÃO é bloqueado aqui. As 24 horas são o prazo regular
+   * nacional, mas quem valida é a SEFAZ da UF do emitente, e vários estados
+   * recebem o evento depois disso, com penalidade: São Paulo até 480 horas.
+   * Desabilitar o item impediria o usuário de sequer tentar, que é o problema
+   * relatado pelo cliente. O backend barra só o que nenhuma UF aceita e
+   * devolve a mensagem da SEFAZ.
+   */
+  const foraDoPrazoRegular = horasDesdeAutorizacao > 24
 
   // CC-e tem prazo de 720h (30 dias) contadas da autorizacao.
-  const baseCce = nfe.dataAutorizacao || nfe.dataEmissao
-  const horasDesdeAutorizacao = baseCce
-    ? (Date.now() - new Date(baseCce).getTime()) / (1000 * 60 * 60)
-    : 0
   const cceDisabled = horasDesdeAutorizacao > 720
 
   const handleDownloadXml = async () => {
@@ -356,24 +363,21 @@ export function NfeActionsDropdown({
                   <TooltipTrigger asChild>
                     <div className="w-full">
                       <DropdownMenuItem
-                        disabled={cancelDisabled}
-                        onClick={() =>
-                          !cancelDisabled && setIsCancelDialogOpen(true)
-                        }
-                        className={
-                          cancelDisabled
-                            ? 'opacity-50 cursor-not-allowed text-error-600 focus:bg-error-50 focus:text-error-600'
-                            : 'text-error-600 focus:bg-error-50 focus:text-error-600'
-                        }
+                        onClick={() => setIsCancelDialogOpen(true)}
+                        className="text-error-600 focus:bg-error-50 focus:text-error-600"
                       >
                         <IconBan className="mr-2 h-4 w-4" />
                         <span>Cancelar NF-e</span>
                       </DropdownMenuItem>
                     </div>
                   </TooltipTrigger>
-                  {cancelDisabled && (
+                  {foraDoPrazoRegular && (
                     <TooltipContent>
-                      <p>O prazo para cancelamento (24h) expirou.</p>
+                      <p className="max-w-64">
+                        Fora do prazo regular de 24 horas. Vários estados ainda
+                        aceitam o cancelamento, com penalidade. A SEFAZ dá a
+                        palavra final.
+                      </p>
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -387,7 +391,7 @@ export function NfeActionsDropdown({
         open={isCcEDialogOpen}
         onOpenChange={setIsCcEDialogOpen}
         nfeId={isCcEDialogOpen ? nfe.id : null}
-        authorizedAt={baseCce}
+        authorizedAt={baseDoPrazo}
         onSuccess={onRefetch}
       />
 
