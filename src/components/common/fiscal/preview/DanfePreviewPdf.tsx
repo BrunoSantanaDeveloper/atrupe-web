@@ -1,222 +1,245 @@
 'use client'
 
-import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer'
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Image as PDFImage,
+} from '@react-pdf/renderer'
 
 import type { NfePreview, NfePreviewItem } from '@/types/fiscal/nfe-preview'
+import { getPdfImageSrc } from '@/lib/image-proxy'
 
 /**
  * DANFE de pré-visualização — SEM VALOR FISCAL.
  *
- * Reproduz o layout do DANFE em retrato (Manual de Orientação do Contribuinte,
- * Anexo I): canhoto, cabeçalho com o quadro do emitente e o da chave de
- * acesso, destinatário, fatura, cálculo do imposto, transportador, quadro de
- * produtos e dados adicionais — na mesma ordem e com os mesmos rótulos do
- * documento impresso, para a conferência ser feita onde o usuário já procura.
+ * Segue o DANFE que o sistema legado imprime (padrão NFePHP), que é o que os
+ * clientes já conhecem: fonte serifada, canhoto com destinatário e valor
+ * total, quadro do emitente com logo, destinatário e cálculo do imposto com
+ * as mesmas colunas, bloco de volumes, quadro de produtos ocupando o resto da
+ * folha e marca d'água vermelha em diagonal. As larguras foram medidas no
+ * DANFE do legado.
  *
- * O que não existe antes da autorização fica explícito no lugar em que
- * apareceria: chave de acesso, código de barras e protocolo. Sem eles, a
- * folha não pode ser confundida com um DANFE válido.
+ * Chave de acesso, código de barras e protocolo ficam em branco porque só
+ * existem depois da autorização. Como no legado, é a marca d'água que impede
+ * a folha de passar por um DANFE válido.
  */
 
-const cores = {
-  borda: '#111827',
-  texto: '#111827',
-  rotulo: '#4b5563',
-  faixa: '#f3f4f6',
-  alerta: '#b91c1c',
-}
+const BORDA = 0.6
+const PRETO = '#000000'
+const VERMELHO = '#dc2626'
 
 const styles = StyleSheet.create({
   page: {
-    fontFamily: 'Helvetica',
-    fontSize: 6.5,
-    color: cores.texto,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 22,
+    fontFamily: 'Times-Roman',
+    fontSize: 7,
+    color: PRETO,
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 14,
     backgroundColor: '#fff',
   },
+  // Largura folgada de propósito: numa caixa estreita o react-pdf quebra a
+  // frase em duas linhas e hifeniza ("SEM VALOR FIS-" / "CAL").
   marcaDagua: {
     position: 'absolute',
-    top: 360,
-    left: 0,
-    right: 0,
+    top: 540,
+    left: -60,
+    width: 760,
     textAlign: 'center',
-    fontSize: 46,
-    color: '#e5e7eb',
-    transform: 'rotate(-24deg)',
+    fontFamily: 'Times-Bold',
+    fontSize: 66,
+    color: VERMELHO,
+    opacity: 0.55,
+    transform: 'rotate(-35deg)',
   },
 
-  // Estrutura de quadros do DANFE
-  quadro: { borderWidth: 0.7, borderColor: cores.borda },
-  quadroEspaco: { marginTop: 3 },
-  tituloSecao: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 6,
-    marginTop: 3,
-    marginBottom: 1,
-  },
+  quadro: { borderWidth: BORDA, borderColor: PRETO },
   linha: { flexDirection: 'row' },
-  linhaDivisor: { borderTopWidth: 0.7, borderTopColor: cores.borda },
-  campo: {
-    paddingVertical: 2,
-    paddingHorizontal: 3,
-    borderRightWidth: 0.7,
-    borderRightColor: cores.borda,
-    justifyContent: 'flex-start',
+  linhaTopo: {
+    flexDirection: 'row',
+    borderTopWidth: BORDA,
+    borderTopColor: PRETO,
   },
-  campoFim: { paddingVertical: 2, paddingHorizontal: 3 },
-  rotulo: { fontSize: 4.8, color: cores.rotulo },
-  valor: { fontSize: 7 },
-  valorForte: { fontSize: 7.5, fontFamily: 'Helvetica-Bold' },
-  centro: { textAlign: 'center' },
+  campo: {
+    paddingHorizontal: 2,
+    paddingTop: 1,
+    paddingBottom: 1.5,
+    borderRightWidth: BORDA,
+    borderRightColor: PRETO,
+  },
+  campoFim: { paddingHorizontal: 2, paddingTop: 1, paddingBottom: 1.5 },
+  rotulo: { fontFamily: 'Times-Bold', fontSize: 5.4 },
+  valor: { fontSize: 7.5, marginTop: 1 },
+  valorForte: { fontFamily: 'Times-Bold', fontSize: 7.5, marginTop: 1 },
+  titulo: { fontFamily: 'Times-Bold', fontSize: 6.5, marginTop: 2 },
   direita: { textAlign: 'right' },
+  centro: { textAlign: 'center' },
 
   // Canhoto
   corte: {
-    borderTopWidth: 0.7,
-    borderTopColor: cores.borda,
+    borderTopWidth: BORDA,
+    borderTopColor: PRETO,
     borderTopStyle: 'dashed',
-    marginVertical: 4,
+    marginVertical: 5,
   },
-  canhotoTexto: { fontSize: 5.5, paddingVertical: 3, paddingHorizontal: 3 },
 
   // Cabeçalho
-  danfeTitulo: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 12,
+  nomeEmitente: { fontFamily: 'Times-Bold', fontSize: 12.5, marginTop: 1 },
+  enderecoEmitente: { fontFamily: 'Times-Bold', fontSize: 6.2, marginTop: 1 },
+  danfeTitulo: { fontFamily: 'Times-Bold', fontSize: 12 },
+  danfeTipo: { fontFamily: 'Times-Bold', fontSize: 7 },
+  caixaTipo: {
+    borderWidth: BORDA,
+    borderColor: PRETO,
+    width: 13,
+    height: 12,
+    marginLeft: 5,
+    paddingTop: 1.5,
     textAlign: 'center',
-  },
-  danfeSub: { fontSize: 5.2, textAlign: 'center', color: cores.rotulo },
-  entradaSaida: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  quadradoTipo: {
-    borderWidth: 0.7,
-    borderColor: cores.borda,
-    width: 12,
-    height: 11,
-    marginLeft: 4,
-    textAlign: 'center',
+    fontFamily: 'Times-Bold',
     fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-    paddingTop: 1,
   },
-  numeroNota: {
-    fontFamily: 'Helvetica-Bold',
-    fontSize: 8,
+  danfeNumero: { fontFamily: 'Times-Bold', fontSize: 8, marginTop: 1 },
+  consulta: {
+    fontFamily: 'Times-Bold',
+    fontSize: 7.5,
     textAlign: 'center',
-    marginTop: 3,
-  },
-  chaveVazia: {
-    borderWidth: 0.7,
-    borderColor: cores.alerta,
-    borderStyle: 'dashed',
-    paddingVertical: 6,
-    marginBottom: 2,
-    textAlign: 'center',
-    fontSize: 6,
-    color: cores.alerta,
+    lineHeight: 1.3,
   },
 
-  // Tabela de produtos
-  thead: {
-    flexDirection: 'row',
-    backgroundColor: cores.faixa,
-    borderBottomWidth: 0.7,
-    borderBottomColor: cores.borda,
-  },
+  // Quadro de produtos
   th: {
-    fontSize: 4.6,
-    fontFamily: 'Helvetica-Bold',
-    paddingVertical: 2,
-    paddingHorizontal: 2,
-    color: cores.rotulo,
-    borderRightWidth: 0.5,
-    borderRightColor: cores.borda,
-  },
-  tr: {
-    flexDirection: 'row',
-    borderBottomWidth: 0.4,
-    borderBottomColor: '#9ca3af',
+    fontFamily: 'Times-Bold',
+    fontSize: 5.2,
+    paddingHorizontal: 1.5,
+    paddingVertical: 1.5,
+    borderRightWidth: BORDA,
+    borderRightColor: PRETO,
   },
   td: {
-    fontSize: 5.8,
-    paddingVertical: 2,
-    paddingHorizontal: 2,
-    borderRightWidth: 0.4,
-    borderRightColor: '#d1d5db',
+    fontSize: 6,
+    paddingHorizontal: 1.5,
+    paddingVertical: 1,
+    borderRightWidth: BORDA,
+    borderRightColor: PRETO,
   },
 
-  // Avisos
-  tarja: {
-    borderWidth: 0.7,
-    borderColor: cores.alerta,
-    color: cores.alerta,
-    paddingVertical: 3,
-    marginBottom: 4,
-    textAlign: 'center',
-    fontSize: 8,
-    fontFamily: 'Helvetica-Bold',
-  },
   bloqueio: {
-    borderWidth: 0.7,
-    borderColor: cores.alerta,
-    backgroundColor: '#fef2f2',
+    borderWidth: BORDA,
+    borderColor: VERMELHO,
     padding: 4,
     marginBottom: 4,
   },
   bloqueioTitulo: {
-    fontFamily: 'Helvetica-Bold',
-    color: cores.alerta,
-    fontSize: 6.5,
+    fontFamily: 'Times-Bold',
+    color: VERMELHO,
+    fontSize: 7.5,
     marginBottom: 1,
   },
-  aviso: { fontSize: 5.6, color: cores.rotulo, marginBottom: 0.5 },
-  rodape: {
-    marginTop: 5,
-    fontSize: 5.2,
-    color: cores.rotulo,
-    textAlign: 'center',
-  },
+  bloqueioTexto: { fontSize: 6.5, color: VERMELHO },
 })
 
-/** Os valores do payload já vêm em reais; o app formata centavos em outro lugar. */
-const brl = (valor?: string | number | null) =>
-  new Intl.NumberFormat('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(Number(valor ?? 0) || 0)
+// ─── Formatação ──────────────────────────────────────────────────────────────
 
-const num = (valor?: string | number | null, casas = 4) =>
+const decimal = (valor: string | number | null | undefined, casas: number) =>
   new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: casas,
     maximumFractionDigits: casas,
   }).format(Number(valor ?? 0) || 0)
 
-const dataHora = (iso?: string) =>
-  iso ? new Date(iso).toLocaleDateString('pt-BR') : ''
+/** Os valores do payload já vêm em reais, com ponto decimal. */
+const brl = (valor?: string | number | null) => decimal(valor, 2)
+
+/**
+ * Unitário com duas casas, como no legado, a não ser que isso esconda o valor
+ * real — um unitário de 0,0357 sairia como 0,04 e a conta não fecharia.
+ */
+const unitario = (valor?: string | number | null) => {
+  const n = Number(valor ?? 0) || 0
+  return decimal(n, Number(n.toFixed(2)) === Number(n.toFixed(4)) ? 2 : 4)
+}
+
+/**
+ * Sem hifenização automática: o hifenizador do react-pdf segue padrões do
+ * inglês e partia nomes ("HOMOLO-GACAO"). Com ele desligado, nomes e endereços
+ * só quebram nos espaços, como no DANFE do legado.
+ */
+const semHifen = (palavra: string) => [palavra]
+
+/**
+ * Código do produto em linhas curtas, cortando de preferência logo depois de
+ * um hífen. O código costuma ser longo e sem espaços ("08-d1deca-4c34-...");
+ * deixado ao react-pdf, ele quebrava com hífen duplo ("08--") e a segunda
+ * linha invadia a coluna da descrição. A quebra de linha explícita não
+ * acrescenta hífen nenhum.
+ */
+const quebrarCodigo = (codigo: string, maximo = 16) => {
+  const pedacos = codigo.split(/(?<=-)/)
+  const linhas: string[] = []
+  let atual = ''
+  for (const pedaco of pedacos) {
+    if ((atual + pedaco).length <= maximo) {
+      atual += pedaco
+      continue
+    }
+    if (atual) linhas.push(atual)
+    // Pedaço maior que a linha inteira: corta no tamanho, sem hífen.
+    let resto = pedaco
+    while (resto.length > maximo) {
+      linhas.push(resto.slice(0, maximo))
+      resto = resto.slice(maximo)
+    }
+    atual = resto
+  }
+  if (atual) linhas.push(atual)
+  return linhas.join(String.fromCharCode(10))
+}
+
+const FUSO = 'America/Sao_Paulo'
+
+const dataBr = (iso?: string) =>
+  iso ? new Date(iso).toLocaleDateString('pt-BR', { timeZone: FUSO }) : ''
+
+const horaBr = (iso?: string, comSegundos = false) =>
+  iso
+    ? new Date(iso).toLocaleTimeString('pt-BR', {
+        timeZone: FUSO,
+        hour: '2-digit',
+        minute: '2-digit',
+        ...(comSegundos ? { second: '2-digit' } : {}),
+      })
+    : ''
+
+const documento = (valor?: string) => {
+  const d = (valor ?? '').replace(/\D/g, '')
+  if (d.length === 14)
+    return d.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')
+  if (d.length === 11)
+    return d.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')
+  return valor ?? ''
+}
 
 const cep = (valor?: number) => {
-  const digitos = String(valor ?? '').padStart(8, '0')
-  return valor ? `${digitos.slice(0, 5)}-${digitos.slice(5)}` : ''
+  if (!valor) return ''
+  const d = String(valor).padStart(8, '0')
+  return `${d.slice(0, 5)}-${d.slice(5)}`
 }
 
-const documento = (valor?: string) => valor ?? ''
-
-const MOD_FRETE: Record<string, string> = {
-  '0': '0-Emitente',
-  '1': '1-Destinatário',
-  '2': '2-Terceiros',
-  '3': '3-Próprio/Rem.',
-  '4': '4-Próprio/Dest.',
-  '9': '9-Sem frete',
+const FRETE: Record<string, string> = {
+  '0': '0-Por conta do emitente',
+  '1': '1-Por conta do destinatário',
+  '2': '2-Por conta de terceiros',
+  '3': '3-Próprio por conta do remetente',
+  '4': '4-Próprio por conta do destinatário',
+  '9': '9-Sem ocorrência de transporte',
 }
 
-/** Campo rotulado do DANFE: rótulo miúdo em cima, valor embaixo. */
+// ─── Blocos ──────────────────────────────────────────────────────────────────
+
+/** Campo do DANFE: rótulo em negrito miúdo em cima, valor embaixo. */
 function Campo({
   rotulo,
   valor,
@@ -224,144 +247,174 @@ function Campo({
   ultimo,
   alinhamento,
   forte,
+  alturaMinima,
 }: {
-  rotulo?: string
+  rotulo: string
   valor?: string | number | null
   largura: string
   ultimo?: boolean
-  alinhamento?: 'centro' | 'direita'
+  alinhamento?: 'direita' | 'centro'
   forte?: boolean
+  alturaMinima?: number
 }) {
-  const estiloValor = [
-    forte ? styles.valorForte : styles.valor,
-    alinhamento === 'centro' ? styles.centro : {},
-    alinhamento === 'direita' ? styles.direita : {},
-  ]
   return (
     <View
       style={[
         ultimo ? styles.campoFim : styles.campo,
-        { width: largura, flexGrow: 0 },
+        { width: largura },
+        alturaMinima ? { minHeight: alturaMinima } : {},
       ]}
     >
-      {rotulo ? <Text style={styles.rotulo}>{rotulo}</Text> : null}
-      <Text style={estiloValor}>
+      <Text style={styles.rotulo}>{rotulo}</Text>
+      <Text
+        hyphenationCallback={semHifen}
+        style={[
+          forte ? styles.valorForte : styles.valor,
+          alinhamento === 'direita' ? styles.direita : {},
+          alinhamento === 'centro' ? styles.centro : {},
+        ]}
+      >
         {valor === null || valor === undefined || valor === '' ? ' ' : valor}
       </Text>
     </View>
   )
 }
 
-/** Colunas do quadro "DADOS DO PRODUTO / SERVIÇO", somando 100%. */
-const COLUNAS: Array<{
+/** Uma linha de campos com as larguras do legado; a primeira não tem borda em cima. */
+function Linha({
+  primeira,
+  children,
+}: {
+  primeira?: boolean
+  children: React.ReactNode
+}) {
+  return (
+    <View style={primeira ? styles.linha : styles.linhaTopo}>{children}</View>
+  )
+}
+
+type Coluna = {
   titulo: string
   largura: string
-  alinhamento?: 'centro' | 'direita'
+  alinhamento?: 'direita' | 'centro'
   valor: (item: NfePreviewItem) => string
-}> = [
-  { titulo: 'CÓDIGO', largura: '7%', valor: (i) => i.cProd ?? '' },
-  {
-    titulo: 'DESCRIÇÃO DO PRODUTO / SERVIÇO',
-    largura: '24%',
-    valor: (i) => i.xProd ?? '',
-  },
-  {
-    titulo: 'NCM/SH',
-    largura: '7%',
-    alinhamento: 'centro',
-    valor: (i) => i.NCM ?? '',
-  },
-  {
-    titulo: 'CST',
-    largura: '4%',
-    alinhamento: 'centro',
-    valor: (i) =>
-      `${i.tributos?.ICMS?.orig ?? ''}${i.tributos?.ICMS?.CST ?? ''}`,
-  },
-  {
-    titulo: 'CFOP',
-    largura: '4%',
-    alinhamento: 'centro',
-    valor: (i) => String(i.CFOP ?? ''),
-  },
-  {
-    titulo: 'UNID',
-    largura: '4%',
-    alinhamento: 'centro',
-    valor: (i) => i.uCOM ?? '',
-  },
-  {
-    titulo: 'QUANT',
-    largura: '6%',
-    alinhamento: 'direita',
-    valor: (i) => num(i.qCOM, 2),
-  },
-  {
-    titulo: 'VALOR UNIT',
-    largura: '8%',
-    alinhamento: 'direita',
-    valor: (i) => brl(i.vUnCom),
-  },
-  {
-    titulo: 'VALOR TOTAL',
-    largura: '8%',
-    alinhamento: 'direita',
-    valor: (i) => brl(i.vProd),
-  },
-  {
-    titulo: 'B.CÁLC ICMS',
-    largura: '7%',
-    alinhamento: 'direita',
-    valor: (i) => brl(i.tributos?.ICMS?.vBC),
-  },
-  {
-    titulo: 'VALOR ICMS',
-    largura: '6%',
-    alinhamento: 'direita',
-    valor: (i) => brl(i.tributos?.ICMS?.vICMS_icms),
-  },
-  {
-    titulo: 'VALOR IPI',
-    largura: '6%',
-    alinhamento: 'direita',
-    valor: (i) => brl(i.tributos?.IPI?.CSTIPI?.vIPI),
-  },
-  {
-    titulo: 'ALÍQ ICMS',
-    largura: '4.5%',
-    alinhamento: 'direita',
-    valor: (i) => num(i.tributos?.ICMS?.pICMS, 2),
-  },
-  {
-    titulo: 'ALÍQ IPI',
-    largura: '4.5%',
-    alinhamento: 'direita',
-    valor: (i) => num(i.tributos?.IPI?.CSTIPI?.pIPI, 2),
-  },
-]
+}
+
+/** Colunas do quadro de produtos, com as larguras medidas no legado. */
+function colunasProdutos(simplesNacional: boolean): Coluna[] {
+  return [
+    {
+      titulo: 'CÓD. PROD.',
+      largura: '10.4%',
+      valor: (i) => quebrarCodigo(i.cProd ?? ''),
+    },
+    {
+      titulo: 'DESCRIÇÃO DO PRODUTO / SERVIÇO',
+      largura: '24.4%',
+      valor: (i) => i.xProd ?? '',
+    },
+    {
+      titulo: 'NCM/SH',
+      largura: '5.2%',
+      alinhamento: 'centro',
+      valor: (i) => i.NCM ?? '',
+    },
+    {
+      // O legado mostra CSOSN para o Simples e CST para o Regime Normal,
+      // sempre com a origem na frente.
+      titulo: simplesNacional ? 'CSOSN' : 'CST',
+      largura: '3.6%',
+      alinhamento: 'centro',
+      valor: (i) =>
+        `${i.tributos?.ICMS?.orig ?? ''}${i.tributos?.ICMS?.CST ?? ''}`,
+    },
+    {
+      titulo: 'CFOP',
+      largura: '3.7%',
+      alinhamento: 'centro',
+      valor: (i) => String(i.CFOP ?? ''),
+    },
+    {
+      titulo: 'UN',
+      largura: '5.3%',
+      alinhamento: 'centro',
+      valor: (i) => i.uCOM ?? '',
+    },
+    {
+      titulo: 'QTD',
+      largura: '6.3%',
+      alinhamento: 'direita',
+      valor: (i) => decimal(i.qCOM, 4),
+    },
+    {
+      titulo: 'V. UNITÁRIO',
+      largura: '7.2%',
+      alinhamento: 'direita',
+      valor: (i) => unitario(i.vUnCom),
+    },
+    {
+      titulo: 'V. TOTAL',
+      largura: '6.7%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.vProd),
+    },
+    {
+      titulo: 'BC ICMS',
+      largura: '7.2%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.tributos?.ICMS?.vBC),
+    },
+    {
+      titulo: 'V. ICMS',
+      largura: '6.2%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.tributos?.ICMS?.vICMS_icms),
+    },
+    {
+      titulo: 'V. IPI',
+      largura: '6.0%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.tributos?.IPI?.CSTIPI?.vIPI),
+    },
+    {
+      titulo: 'ALÍQ. ICMS',
+      largura: '3.7%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.tributos?.ICMS?.pICMS),
+    },
+    {
+      titulo: 'ALÍQ. IPI',
+      largura: '4.1%',
+      alinhamento: 'direita',
+      valor: (i) => brl(i.tributos?.IPI?.CSTIPI?.pIPI),
+    },
+  ]
+}
+
+// ─── Documento ───────────────────────────────────────────────────────────────
 
 export function DanfePreviewPdf({ previa }: { previa: NfePreview }) {
   const doc = previa.documento
   const emit = previa.emitente ?? {}
+  const end = emit.enderEmit ?? {}
+  const contato = previa.emitenteContato ?? {}
   const dest = previa.destinatario ?? {}
-  const endEmit = emit.enderEmit ?? {}
   const endDest = dest.enderDest ?? {}
   const t = previa.totais?.ICMStot ?? {}
-  const homologacao = doc?.ambiente === 'HOMOLOGACAO'
   const itens = previa.itens ?? []
-  const duplicatas = previa.duplicatas ?? []
+  const colunas = colunasProdutos(emit.CRT === 1)
 
-  const numeroSerie = `Nº ${String(doc?.numeroPrevisto ?? '').padStart(9, '0')}
-SÉRIE ${doc?.serie ?? ''}`
+  const numero = String(doc?.numeroPrevisto ?? '').padStart(9, '0')
+  const serie = doc?.serie ?? ''
 
-  const enderecoEmit = [
-    [endEmit.xLgr, endEmit.nro].filter(Boolean).join(', '),
-    endEmit.xBairro,
-    [endEmit.xMun, endEmit.UF].filter(Boolean).join(' / '),
-    cep(endEmit.CEP),
-  ]
-    .filter(Boolean)
-    .join(' - ')
+  const linhasEndereco = [
+    [end.xLgr, end.nro].filter(Boolean).join(' '),
+    end.xBairro,
+    [end.xMun, end.UF].filter(Boolean).join('-'),
+    end.CEP ? `CEP: ${cep(end.CEP)}` : '',
+    contato.fone ? `Fone: ${contato.fone}` : '',
+    contato.email ?? '',
+  ].filter(Boolean)
 
   return (
     <Document title="Pré-visualização da NF-e (DANFE sem valor fiscal)">
@@ -370,346 +423,431 @@ SÉRIE ${doc?.serie ?? ''}`
           SEM VALOR FISCAL
         </Text>
 
-        <Text style={styles.tarja}>
-          PRÉ-VISUALIZAÇÃO — DOCUMENTO SEM VALOR FISCAL
-          {homologacao ? ' — AMBIENTE DE HOMOLOGAÇÃO' : ''}
-        </Text>
-
         {previa.bloqueios.length > 0 && (
           <View style={styles.bloqueio}>
             <Text style={styles.bloqueioTitulo}>
               A nota não pode ser emitida assim:
             </Text>
             {previa.bloqueios.map((bloqueio, i) => (
-              <Text key={i} style={styles.aviso}>
+              <Text key={i} style={styles.bloqueioTexto}>
                 • {bloqueio}
               </Text>
             ))}
           </View>
         )}
 
-        {/* ── CANHOTO ──────────────────────────────────────────────── */}
-        <View style={styles.quadro}>
-          <View style={styles.linha}>
-            <View style={[styles.campo, { width: '78%', flexGrow: 0 }]}>
-              <Text style={styles.canhotoTexto}>
-                RECEBEMOS DE {emit.xNome ?? ''} OS PRODUTOS CONSTANTES DA NOTA
-                FISCAL INDICADA AO LADO
+        {/* ── CANHOTO ─────────────────────────────────────────────── */}
+        <View style={[styles.quadro, styles.linha]}>
+          <View
+            style={{
+              width: '86.7%',
+              borderRightWidth: BORDA,
+              borderRightColor: PRETO,
+            }}
+          >
+            <View
+              style={[
+                styles.linha,
+                {
+                  justifyContent: 'space-between',
+                  paddingHorizontal: 2,
+                  paddingVertical: 2,
+                },
+              ]}
+            >
+              <Text style={styles.rotulo}>RECEBEMOS DE {emit.xNome ?? ''}</Text>
+              <Text style={styles.rotulo}>
+                OS PRODUTOS CONSTANTES DA NOTA FISCAL INDICADA AO LADO
               </Text>
             </View>
-            <View style={[styles.campoFim, { width: '22%', flexGrow: 0 }]}>
-              <Text style={[styles.centro, { fontSize: 6 }]}>NF-e</Text>
-              <Text style={[styles.numeroNota, { marginTop: 1 }]}>
-                {numeroSerie}
-              </Text>
-            </View>
+            <Linha>
+              <Campo
+                rotulo="DATA DE RECEBIMENTO"
+                largura="15.7%"
+                alturaMinima={20}
+              />
+              <Campo
+                rotulo="IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR"
+                largura="36.4%"
+              />
+              <Campo
+                rotulo="DESTINATÁRIO"
+                valor={dest.xNome_dest}
+                largura="34.3%"
+              />
+              <Campo
+                rotulo="VLR TOTAL NOTA"
+                valor={brl(t.vNF)}
+                largura="13.6%"
+                alinhamento="direita"
+                ultimo
+              />
+            </Linha>
           </View>
-          <View style={[styles.linha, styles.linhaDivisor]}>
-            <Campo rotulo="DATA DE RECEBIMENTO" valor=" " largura="26%" />
-            <Campo
-              rotulo="IDENTIFICAÇÃO E ASSINATURA DO RECEBEDOR"
-              valor=" "
-              largura="52%"
-            />
-            <Campo rotulo=" " valor=" " largura="22%" ultimo />
+          <View
+            style={{ width: '13.3%', paddingHorizontal: 4, paddingVertical: 2 }}
+          >
+            <Text style={[styles.valorForte, styles.centro, { fontSize: 9 }]}>
+              NF-e
+            </Text>
+            <Text style={styles.valorForte}>Nº {numero}</Text>
+            <Text style={styles.valorForte}>Série {serie}</Text>
           </View>
         </View>
 
         <View style={styles.corte} />
 
-        {/* ── CABEÇALHO ────────────────────────────────────────────── */}
+        {/* ── CABEÇALHO ───────────────────────────────────────────── */}
         <View style={styles.quadro}>
           <View style={styles.linha}>
             {/* Emitente */}
-            <View style={[styles.campo, { width: '38%', flexGrow: 0 }]}>
+            <View style={[styles.campo, { width: '45.6%', minHeight: 110 }]}>
               <Text style={styles.rotulo}>IDENTIFICAÇÃO DO EMITENTE</Text>
-              <Text style={[styles.valorForte, { marginTop: 3 }]}>
-                {emit.xNome ?? '—'}
-              </Text>
-              <Text style={[styles.valor, { marginTop: 2 }]}>
-                {enderecoEmit}
-              </Text>
-              {endEmit.fone ? (
-                <Text style={styles.valor}>Fone: {endEmit.fone}</Text>
-              ) : null}
-              <Text style={[styles.valor, { marginTop: 2 }]}>
-                CNPJ: {documento(emit.CNPJ_emit)}
-              </Text>
+              <Text style={styles.nomeEmitente}>{emit.xNome ?? ''}</Text>
+              <View
+                style={[styles.linha, { marginTop: 3, alignItems: 'center' }]}
+              >
+                {contato.logoUrl ? (
+                  <View style={{ width: '44%', paddingRight: 4 }}>
+                    <PDFImage
+                      src={getPdfImageSrc(contato.logoUrl)}
+                      style={{
+                        width: '100%',
+                        height: 58,
+                        objectFit: 'contain',
+                      }}
+                    />
+                  </View>
+                ) : null}
+                <View style={{ flex: 1 }}>
+                  {linhasEndereco.map((texto, i) => (
+                    <Text key={i} style={styles.enderecoEmitente}>
+                      {texto}
+                    </Text>
+                  ))}
+                </View>
+              </View>
             </View>
 
             {/* DANFE */}
-            <View style={[styles.campo, { width: '27%', flexGrow: 0 }]}>
+            <View
+              style={[styles.campo, { width: '15.7%', alignItems: 'center' }]}
+            >
               <Text style={styles.danfeTitulo}>DANFE</Text>
-              <Text style={styles.danfeSub}>
-                Documento Auxiliar da{'\n'}Nota Fiscal Eletrônica
+              <Text style={[styles.rotulo, styles.centro, { fontSize: 6.2 }]}>
+                Documento Auxiliar da Nota Fiscal Eletrônica
               </Text>
-              <View style={styles.entradaSaida}>
-                <Text style={{ fontSize: 5.5 }}>
-                  0 - ENTRADA{'\n'}1 - SAÍDA
-                </Text>
-                <Text style={styles.quadradoTipo}>{doc?.tipo ?? ''}</Text>
+              <View
+                style={[styles.linha, { marginTop: 5, alignItems: 'center' }]}
+              >
+                <View>
+                  <Text style={styles.danfeTipo}>0 - ENTRADA</Text>
+                  <Text style={styles.danfeTipo}>1 - SAÍDA</Text>
+                </View>
+                <Text style={styles.caixaTipo}>{doc?.tipo ?? ''}</Text>
               </View>
-              <Text style={styles.numeroNota}>{numeroSerie}</Text>
-              <Text style={[styles.danfeSub, { marginTop: 2 }]}>FOLHA 1/1</Text>
+              <View style={{ alignSelf: 'stretch', marginTop: 4 }}>
+                <Text style={styles.danfeNumero}>Nº {numero}</Text>
+                <Text style={styles.danfeNumero}>SÉRIE {serie}</Text>
+                <Text style={styles.danfeNumero}>FL 1 / 1</Text>
+              </View>
             </View>
 
-            {/* Chave de acesso */}
-            <View style={[styles.campoFim, { width: '35%', flexGrow: 0 }]}>
-              <View style={styles.chaveVazia}>
-                <Text>CÓDIGO DE BARRAS E CHAVE DE ACESSO</Text>
-                <Text style={{ marginTop: 2 }}>
-                  Gerados pela SEFAZ na autorização
+            {/* Chave de acesso: em branco até a autorização */}
+            <View style={{ width: '38.7%' }}>
+              <View style={{ height: 38 }} />
+              <View
+                style={[
+                  styles.linhaTopo,
+                  { borderBottomWidth: BORDA, borderBottomColor: PRETO },
+                ]}
+              >
+                <Campo rotulo="CHAVE DE ACESSO" largura="100%" ultimo />
+              </View>
+              <View
+                style={{
+                  flexGrow: 1,
+                  justifyContent: 'center',
+                  paddingHorizontal: 8,
+                  paddingVertical: 6,
+                }}
+              >
+                <Text style={styles.consulta}>
+                  Consulta de autenticidade no portal nacional da NF-e
+                  www.nfe.fazenda.gov.br/portal ou no site da Sefaz Autorizadora
                 </Text>
               </View>
-              <Text style={styles.rotulo}>
-                CONSULTA DE AUTENTICIDADE NO PORTAL NACIONAL DA NF-e
-              </Text>
-              <Text style={{ fontSize: 5.5 }}>
-                www.nfe.fazenda.gov.br/portal
-              </Text>
             </View>
           </View>
 
-          <View style={[styles.linha, styles.linhaDivisor]}>
+          <Linha>
             <Campo
               rotulo="NATUREZA DA OPERAÇÃO"
-              valor={doc?.naturezaOperacao}
-              largura="65%"
+              valor={doc?.naturezaOperacao?.toUpperCase()}
+              largura="61.3%"
             />
             <Campo
               rotulo="PROTOCOLO DE AUTORIZAÇÃO DE USO"
-              valor="Emitido na autorização"
-              largura="35%"
+              largura="38.7%"
               ultimo
             />
-          </View>
-
-          <View style={[styles.linha, styles.linhaDivisor]}>
-            <Campo rotulo="INSCRIÇÃO ESTADUAL" valor={emit.IE} largura="33%" />
+          </Linha>
+          <Linha>
+            <Campo
+              rotulo="INSCRIÇÃO ESTADUAL"
+              valor={emit.IE}
+              largura="29.2%"
+            />
             <Campo
               rotulo="INSC. ESTADUAL DO SUBST. TRIBUTÁRIO"
-              valor=" "
-              largura="34%"
+              largura="32.1%"
             />
             <Campo
-              rotulo="CNPJ"
+              rotulo="CPF/CNPJ"
               valor={documento(emit.CNPJ_emit)}
-              largura="33%"
+              largura="38.7%"
               ultimo
             />
-          </View>
+          </Linha>
         </View>
 
-        {/* ── DESTINATÁRIO / REMETENTE ─────────────────────────────── */}
-        <Text style={styles.tituloSecao}>DESTINATÁRIO / REMETENTE</Text>
+        {/* ── DESTINATÁRIO / REMETENTE ────────────────────────────── */}
+        <Text style={styles.titulo}>DESTINATÁRIO / REMETENTE</Text>
         <View style={styles.quadro}>
-          <View style={styles.linha}>
+          <Linha primeira>
             <Campo
               rotulo="NOME / RAZÃO SOCIAL"
               valor={dest.xNome_dest}
-              largura="58%"
+              largura="61.3%"
             />
             <Campo
-              rotulo="CNPJ / CPF"
-              valor={
-                dest.CNPJ_dest ?? dest.CPF_dest ?? dest.idEstrangeiro ?? ''
-              }
-              largura="24%"
+              rotulo="CNPJ / CPF / ID Estrangeiro"
+              valor={documento(
+                dest.CNPJ_dest ?? dest.CPF_dest ?? dest.idEstrangeiro,
+              )}
+              largura="23%"
+              forte
             />
             <Campo
               rotulo="DATA DA EMISSÃO"
-              valor={dataHora(doc?.dataEmissaoPrevista)}
-              largura="18%"
+              valor={`${dataBr(doc?.dataEmissaoPrevista)} ${horaBr(
+                doc?.dataEmissaoPrevista,
+              )}`}
+              largura="15.7%"
+              forte
               ultimo
             />
-          </View>
-          <View style={[styles.linha, styles.linhaDivisor]}>
+          </Linha>
+          <Linha>
             <Campo
               rotulo="ENDEREÇO"
               valor={[endDest.xLgr_dest, endDest.nro_dest]
                 .filter(Boolean)
-                .join(', ')}
-              largura="44%"
+                .join(' ')}
+              largura="43.8%"
             />
             <Campo
               rotulo="BAIRRO / DISTRITO"
               valor={endDest.xBairro_dest}
-              largura="24%"
+              largura="26.6%"
             />
-            <Campo rotulo="CEP" valor={cep(endDest.CEP_dest)} largura="14%" />
             <Campo
-              rotulo="DATA DA SAÍDA / ENTRADA"
-              valor={dataHora(doc?.dataSaidaEntrada)}
-              largura="18%"
+              rotulo="COMPLEMENTO"
+              valor={endDest.xCpl_dest}
+              largura="13.9%"
+            />
+            <Campo
+              rotulo="DATA DA ENTRADA/SAÍDA"
+              valor={dataBr(doc?.dataSaidaEntrada)}
+              largura="15.7%"
+              forte
               ultimo
             />
-          </View>
-          <View style={[styles.linha, styles.linhaDivisor]}>
-            <Campo rotulo="MUNICÍPIO" valor={endDest.xMun_dest} largura="34%" />
+          </Linha>
+          <Linha>
+            <Campo
+              rotulo="MUNICÍPIO"
+              valor={endDest.xMun_dest}
+              largura="43.5%"
+              alturaMinima={18}
+            />
             <Campo
               rotulo="FONE / FAX"
               valor={endDest.fone_dest}
-              largura="16%"
+              largura="13.8%"
             />
-            <Campo
-              rotulo="UF"
-              valor={endDest.UF_dest}
-              largura="8%"
-              alinhamento="centro"
-            />
+            <Campo rotulo="UF" valor={endDest.UF_dest} largura="4.1%" />
             <Campo
               rotulo="INSCRIÇÃO ESTADUAL"
               valor={dest.IE_dest}
-              largura="24%"
+              largura="13.8%"
             />
-            <Campo rotulo="HORA DA SAÍDA" valor=" " largura="18%" ultimo />
-          </View>
+            <Campo rotulo="CEP" valor={cep(endDest.CEP_dest)} largura="9.1%" />
+            <Campo
+              rotulo="HORA DE ENTRADA/SAÍDA"
+              valor={horaBr(doc?.dataSaidaEntrada, true)}
+              largura="15.7%"
+              forte
+              ultimo
+            />
+          </Linha>
         </View>
 
-        {/* ── FATURA / DUPLICATAS ──────────────────────────────────── */}
-        {duplicatas.length > 0 && (
-          <>
-            <Text style={styles.tituloSecao}>FATURA / DUPLICATAS</Text>
-            <View style={styles.quadro}>
-              <View style={styles.linha}>
-                {duplicatas.slice(0, 4).map((dup, i, lista) => (
-                  <Campo
-                    key={i}
-                    rotulo={`DUPLICATA ${dup.nDup ?? i + 1}`}
-                    valor={`Venc. ${dup.dVenc ?? ''}  ${brl(dup.vDup)}`}
-                    largura={`${100 / lista.length}%`}
-                    ultimo={i === lista.length - 1}
-                  />
-                ))}
-              </View>
-            </View>
-          </>
-        )}
-
-        {/* ── CÁLCULO DO IMPOSTO ───────────────────────────────────── */}
-        <Text style={styles.tituloSecao}>CÁLCULO DO IMPOSTO</Text>
+        {/* ── CÁLCULO DO IMPOSTO ──────────────────────────────────── */}
+        <Text style={styles.titulo}>CÁLCULO DO IMPOSTO</Text>
         <View style={styles.quadro}>
-          <View style={styles.linha}>
+          <Linha primeira>
             <Campo
-              rotulo="BASE DE CÁLCULO DO ICMS"
+              rotulo="BC ICMS"
               valor={brl(t.vBC_ttlnfe)}
-              largura="20%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="VALOR DO ICMS"
+              rotulo="VALOR ICMS"
               valor={brl(t.vICMS_ttlnfe)}
-              largura="20%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="BASE DE CÁLC. ICMS ST"
+              rotulo="BC ICMS SUBSTITUIÇÃO"
               valor={brl(t.vBCST_ttlnfe)}
-              largura="20%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="VALOR DO ICMS ST"
+              rotulo="VALOR ICMS SUBS"
               valor={brl(t.vST_ttlnfe)}
-              largura="20%"
+              largura="16.66%"
+              alinhamento="direita"
+            />
+            <Campo
+              rotulo="VALOR IMP. IMPORTAÇÃO"
+              valor={brl(t.vII_ttlnfe)}
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
               rotulo="VALOR TOTAL DOS PRODUTOS"
               valor={brl(t.vProd_ttlnfe)}
-              largura="20%"
+              largura="16.7%"
               alinhamento="direita"
               ultimo
             />
-          </View>
-          <View style={[styles.linha, styles.linhaDivisor]}>
+          </Linha>
+          <Linha>
             <Campo
-              rotulo="VALOR DO FRETE"
+              rotulo="VALOR FRETE"
               valor={brl(t.vFrete_ttlnfe)}
-              largura="16.6%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="VALOR DO SEGURO"
+              rotulo="VALOR SEGURO"
               valor={brl(t.vSeg_ttlnfe)}
-              largura="16.6%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="DESCONTO"
+              rotulo="VALOR DESCONTO"
               valor={brl(t.vDesc_ttlnfe)}
-              largura="16.6%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="OUTRAS DESPESAS"
+              rotulo="OUTRAS DESPESAS ACESSÓRIAS"
               valor={brl(t.vOutro)}
-              largura="16.6%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
-              rotulo="VALOR TOTAL DO IPI"
+              rotulo="VALOR IPI"
               valor={brl(t.vIPI_ttlnfe)}
-              largura="16.6%"
+              largura="16.66%"
               alinhamento="direita"
             />
             <Campo
               rotulo="VALOR TOTAL DA NOTA"
               valor={brl(t.vNF)}
-              largura="17%"
+              largura="16.7%"
               alinhamento="direita"
               forte
               ultimo
             />
-          </View>
+          </Linha>
         </View>
 
-        {/* ── TRANSPORTADOR / VOLUMES ──────────────────────────────── */}
-        <Text style={styles.tituloSecao}>
-          TRANSPORTADOR / VOLUMES TRANSPORTADOS
-        </Text>
+        {/* ── TRANSPORTADOR / VOLUMES ─────────────────────────────── */}
+        <Text style={styles.titulo}>TRANSPORTADOR / VOLUMES TRANSPORTADOS</Text>
         <View style={styles.quadro}>
-          <View style={styles.linha}>
-            <Campo rotulo="RAZÃO SOCIAL" valor=" " largura="40%" />
+          <Linha primeira>
+            <Campo rotulo="RAZÃO SOCIAL" largura="38.9%" />
             <Campo
               rotulo="FRETE POR CONTA"
-              valor={MOD_FRETE[previa.transporte?.modFrete ?? '9'] ?? ''}
-              largura="20%"
+              valor={FRETE[previa.transporte?.modFrete ?? '9']}
+              largura="19.1%"
             />
-            <Campo rotulo="PLACA DO VEÍCULO" valor=" " largura="14%" />
-            <Campo rotulo="UF" valor=" " largura="8%" alinhamento="centro" />
-            <Campo rotulo="CNPJ / CPF" valor=" " largura="18%" ultimo />
-          </View>
+            <Campo rotulo="CÓDIGO ANTT" largura="13.7%" />
+            <Campo rotulo="PLACA" largura="5.8%" />
+            <Campo rotulo="UF" largura="3.7%" />
+            <Campo rotulo="CNPJ/CPF" largura="18.8%" ultimo />
+          </Linha>
+          <Linha>
+            <Campo rotulo="ENDEREÇO" largura="38.9%" />
+            <Campo rotulo="MUNICÍPIO" largura="38.6%" />
+            <Campo rotulo="UF" largura="3.7%" />
+            <Campo rotulo="INSCRIÇÃO ESTADUAL" largura="18.8%" ultimo />
+          </Linha>
+        </View>
+        <Text style={styles.titulo}>VOLUMES</Text>
+        <View style={styles.quadro}>
+          <Linha primeira>
+            <Campo rotulo="QUANTIDADE" largura="12.1%" />
+            <Campo rotulo="ESPÉCIE" largura="14.4%" />
+            <Campo rotulo="MARCA" largura="24.4%" />
+            <Campo rotulo="NUMERAÇÃO" largura="21%" />
+            <Campo rotulo="PESO BRUTO" largura="12.6%" />
+            <Campo rotulo="PESO LÍQUIDO" largura="15.5%" ultimo />
+          </Linha>
         </View>
 
-        {/* ── DADOS DO PRODUTO / SERVIÇO ───────────────────────────── */}
-        <Text style={styles.tituloSecao}>DADOS DO PRODUTO / SERVIÇO</Text>
-        <View style={styles.quadro}>
-          <View style={styles.thead}>
-            {COLUNAS.map((coluna, i) => (
+        {/* ── DADOS DO PRODUTO / SERVIÇO ──────────────────────────── */}
+        <Text style={styles.titulo}>DADOS DO PRODUTO / SERVIÇO</Text>
+        {/* Ocupa o resto da folha, com as linhas das colunas descendo até o
+            fim, como no DANFE impresso. */}
+        <View style={[styles.quadro, { flexGrow: 1 }]}>
+          <View
+            style={[
+              styles.linha,
+              { borderBottomWidth: BORDA, borderBottomColor: PRETO },
+            ]}
+          >
+            {colunas.map((coluna, i) => (
               <Text
                 key={coluna.titulo}
                 style={[
                   styles.th,
                   { width: coluna.largura },
-                  i === COLUNAS.length - 1 ? { borderRightWidth: 0 } : {},
+                  i === colunas.length - 1 ? { borderRightWidth: 0 } : {},
                 ]}
               >
                 {coluna.titulo}
               </Text>
             ))}
           </View>
+
           {itens.map((item) => (
-            <View key={item.sequencia} style={styles.tr} wrap={false}>
-              {COLUNAS.map((coluna, i) => (
+            <View key={item.sequencia} style={styles.linha} wrap={false}>
+              {colunas.map((coluna, i) => (
                 <Text
                   key={coluna.titulo}
+                  hyphenationCallback={semHifen}
                   style={[
                     styles.td,
                     { width: coluna.largura },
-                    coluna.alinhamento === 'centro' ? styles.centro : {},
                     coluna.alinhamento === 'direita' ? styles.direita : {},
-                    i === COLUNAS.length - 1 ? { borderRightWidth: 0 } : {},
+                    coluna.alinhamento === 'centro' ? styles.centro : {},
+                    i === colunas.length - 1 ? { borderRightWidth: 0 } : {},
                   ]}
                 >
                   {coluna.valor(item)}
@@ -717,40 +855,34 @@ SÉRIE ${doc?.serie ?? ''}`
               ))}
             </View>
           ))}
-        </View>
 
-        {/* ── DADOS ADICIONAIS ─────────────────────────────────────── */}
-        <Text style={styles.tituloSecao}>DADOS ADICIONAIS</Text>
-        <View style={[styles.quadro, { minHeight: 54 }]}>
-          <View style={styles.linha}>
-            <View style={[styles.campo, { width: '65%', flexGrow: 0 }]}>
-              <Text style={styles.rotulo}>INFORMAÇÕES COMPLEMENTARES</Text>
-              <Text style={[styles.valor, { marginTop: 1 }]}>
-                {previa.informacoesComplementares ?? ' '}
-              </Text>
-              {previa.avisos.length > 0 && (
-                <>
-                  <Text style={[styles.rotulo, { marginTop: 4 }]}>
-                    OBSERVAÇÕES DA CONFERÊNCIA (não vão na nota)
-                  </Text>
-                  {previa.avisos.map((aviso, i) => (
-                    <Text key={i} style={styles.aviso}>
-                      • {aviso}
-                    </Text>
-                  ))}
-                </>
-              )}
-            </View>
-            <View style={[styles.campoFim, { width: '35%', flexGrow: 0 }]}>
-              <Text style={styles.rotulo}>RESERVADO AO FISCO</Text>
-            </View>
+          <View style={[styles.linha, { flexGrow: 1 }]}>
+            {colunas.map((coluna, i) => (
+              <View
+                key={coluna.titulo}
+                style={{
+                  width: coluna.largura,
+                  borderRightWidth: i === colunas.length - 1 ? 0 : BORDA,
+                  borderRightColor: PRETO,
+                }}
+              />
+            ))}
           </View>
         </View>
 
-        <Text style={styles.rodape} fixed>
-          Pré-visualização gerada pelo Atrupe. Não é documento fiscal e não
-          substitui a DANFE, que só existe depois da autorização da SEFAZ.
-        </Text>
+        {/* ── DADOS ADICIONAIS ────────────────────────────────────── */}
+        <Text style={styles.titulo}>DADOS ADICIONAIS</Text>
+        <View style={[styles.quadro, styles.linha, { height: 72 }]}>
+          <View style={[styles.campo, { width: '65%' }]}>
+            <Text style={styles.rotulo}>INFORMAÇÕES COMPLEMENTARES</Text>
+            <Text style={styles.valor}>
+              {previa.informacoesComplementares ?? ''}
+            </Text>
+          </View>
+          <View style={[styles.campoFim, { width: '35%' }]}>
+            <Text style={styles.rotulo}>RESERVADO AO FISCO</Text>
+          </View>
+        </View>
       </Page>
     </Document>
   )

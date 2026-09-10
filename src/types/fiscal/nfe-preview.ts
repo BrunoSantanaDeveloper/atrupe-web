@@ -143,6 +143,12 @@ export interface NfePreview {
   avisos: string[]
   documento?: NfePreviewDocumento
   emitente?: NfePreviewEmitente
+  /** Logo e contato do emitente: vão na DANFE, não no payload. */
+  emitenteContato?: {
+    logoUrl?: string | null
+    fone?: string | null
+    email?: string | null
+  }
   destinatario?: NfePreviewDestinatario
   entrega?: Record<string, string | number | undefined> | null
   itens?: NfePreviewItem[]
