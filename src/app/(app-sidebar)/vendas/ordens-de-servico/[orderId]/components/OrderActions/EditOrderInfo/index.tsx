@@ -2,6 +2,7 @@
 
 // React
 import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 // UI
 import { toast } from 'sonner'
@@ -27,6 +28,7 @@ import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsy
 import { SelectSellerField } from '@/components/common/form/global-inputs/SellersSelectField'
 import { ClientContactSelect } from '@/components/common/form/global-inputs/ClientContactSelect'
 import { ClientAddressSelectField } from '@/components/common/form/global-inputs/ClientAddressSelectField'
+import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'
 
 // Icons
 import { IconPencil, IconCircleCheck, IconUserEdit } from '@tabler/icons-react'
@@ -48,6 +50,7 @@ const schema = z.object({
   clientId: z.any().optional(),
   sellerId: z.string().optional(),
   contactId: z.string().optional(),
+  seriesId: z.string().optional(),
   deliveryClientAddressId: z.string().optional(),
   deliveryCustomAddress: z
     .object({
@@ -82,6 +85,8 @@ export function EditOrderInfoDialog({
     ? (onOpenChange as (v: boolean) => void)
     : setInternalOpen
   const queryClient = useQueryClient()
+  const { data: session } = useSession()
+  const isAdmin = !!session?.user?.isAdmin
 
   const quotation = data.quotation as QuotationType
 
@@ -108,6 +113,7 @@ export function EditOrderInfoDialog({
           : undefined,
         sellerId: quotation?.seller?.id ?? '',
         contactId: quotation?.contact?.id ?? '',
+        seriesId: quotation?.serie?.id ?? '',
         deliveryClientAddressId:
           quotation?.deliveryInfo?.clientAddress?.type === 'CustomForDelivery'
             ? 'custom'
@@ -149,6 +155,13 @@ export function EditOrderInfoDialog({
     ) {
       payload.contactId = formData.contactId || null
     }
+    const seriesChanged =
+      isAdmin &&
+      !!formData.seriesId &&
+      formData.seriesId !== quotation?.serie?.id
+    if (seriesChanged) {
+      payload.seriesId = formData.seriesId
+    }
     if (formData.deliveryClientAddressId !== undefined) {
       payload.deliveryClientAddressId = formData.deliveryClientAddressId
       if (formData.deliveryClientAddressId === 'custom') {
@@ -172,8 +185,15 @@ export function EditOrderInfoDialog({
       return
     }
 
-    toast.success('Informações da OS atualizadas com sucesso.')
+    toast.success(
+      seriesChanged
+        ? 'Informações da OS atualizadas. A nova série gerou uma nova numeração.'
+        : 'Informações da OS atualizadas com sucesso.',
+    )
     queryClient.invalidateQueries({ queryKey: ['order-data', data.id] })
+    // O número aparece na listagem de OS: a troca de série precisa refletir lá
+    if (seriesChanged)
+      queryClient.invalidateQueries({ queryKey: ['order-list'] })
     setOpen(false)
   }
 
@@ -239,6 +259,14 @@ export function EditOrderInfoDialog({
                   width="flex-[1_0_280px]"
                   clientId={clientId}
                 />
+
+                {isAdmin && (
+                  <SelectSerieField<FormType>
+                    name="seriesId"
+                    label="Série"
+                    width="flex-[1_0_280px]"
+                  />
+                )}
 
                 <Separator className="bg-gray-300" />
 

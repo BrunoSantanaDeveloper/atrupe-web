@@ -67,8 +67,14 @@ const groupByOptions = [
 
 const orderByOptions = [
   { value: 'approvedDate', label: 'Data de aprovação' },
+  { value: 'deliveryDate', label: 'Data de entrega' },
   { value: 'valueDesc', label: 'Maior valor' },
   { value: 'valueAsc', label: 'Menor valor' },
+]
+
+const periodByOptions = [
+  { value: 'approvedAt', label: 'Data de aprovação' },
+  { value: 'deliveryDate', label: 'Data de entrega' },
 ]
 
 export function AdvancedReportDialog() {
@@ -100,6 +106,7 @@ export function AdvancedReportDialog() {
       clientId: null,
       groupBy: 'client',
       orderBy: 'approvedDate',
+      periodBy: 'approvedAt',
     },
   })
 
@@ -140,6 +147,7 @@ export function AdvancedReportDialog() {
         clientId: data.clientId || undefined,
         groupBy: data.groupBy,
         orderBy: data.orderBy,
+        periodBy: data.periodBy,
         startDate: data.dateRange?.from
           ? formatDateToISO(data.dateRange.from)
           : undefined,
@@ -155,11 +163,13 @@ export function AdvancedReportDialog() {
       }
 
       if (data.format === 'pdf') {
-        const blob = await pdf(<SalesReportPdf data={reportData} />).toBlob()
+        const blob = await pdf(
+          <SalesReportPdf data={reportData} groupBy={data.groupBy} />,
+        ).toBlob()
         const url = URL.createObjectURL(blob)
         window.open(url, '_blank')
       } else {
-        generateSalesExcel(reportData)
+        generateSalesExcel(reportData, data.groupBy)
       }
 
       setOpen(false)
@@ -242,12 +252,21 @@ export function AdvancedReportDialog() {
                 />
               </div>
 
-              <FormDateRangePickerInput
-                name="dateRange"
-                label="Período"
-                placeholder="Selecione o período"
-                width="w-full"
-              />
+              <div className="grid grid-cols-2 gap-4">
+                <FormDateRangePickerInput
+                  name="dateRange"
+                  label="Período"
+                  placeholder="Selecione o período"
+                  width="w-full"
+                />
+
+                <FormSelect
+                  name="periodBy"
+                  label="Filtrar período por"
+                  options={periodByOptions}
+                  width="w-full"
+                />
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormSelect

@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useMemo } from 'react'
+import { Fragment } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
@@ -30,6 +30,8 @@ import type {
   SalesClientGroup,
   SalesSellerGroup,
   SaleRecord,
+  SalesOrderBy,
+  SalesPeriodBy,
 } from '../types'
 import type { SearchParamsType } from '@/types/coreTypes'
 
@@ -78,9 +80,8 @@ export function SalesTable({ searchParams }: SalesTableProps) {
 
   const groupBy =
     (searchParams?.groupBy as 'none' | 'client' | 'seller') || 'client'
-  const orderBy =
-    (searchParams?.orderBy as 'approvedDate' | 'valueDesc' | 'valueAsc') ||
-    'approvedDate'
+  const orderBy = (searchParams?.orderBy as SalesOrderBy) || 'approvedDate'
+  const periodBy = (searchParams?.periodBy as SalesPeriodBy) || 'approvedAt'
   const page = Number(searchParams?.page) || 1
 
   // Helper to update URL params
@@ -95,11 +96,12 @@ export function SalesTable({ searchParams }: SalesTableProps) {
   }
 
   const { data, isLoading } = useQuery({
-    queryKey: ['sales-table', groupBy, orderBy, page, searchParams],
+    queryKey: ['sales-table', groupBy, orderBy, periodBy, page, searchParams],
     queryFn: () =>
       getSalesTableData({
         groupBy,
         orderBy,
+        periodBy,
         page,
         limit: 10,
         sellerId: searchParams?.sellerId as string,
@@ -115,29 +117,16 @@ export function SalesTable({ searchParams }: SalesTableProps) {
     grouped: false as const,
     records: [] as SaleRecord[],
     totalCount: 0,
+    totalValue: 0,
     pagination: { page: 1, totalPages: 1, totalRecords: 0 },
   }
   const tableData = data ?? defaultData
   const isGrouped = tableData.grouped
   const totalPages = tableData.pagination?.totalPages || 1
 
-  // Calculate total filtered value for percentage column
-  const totalFiltered = useMemo(() => {
-    if (!tableData) return 0
-    if ('groups' in tableData && tableData.groups) {
-      return tableData.groups.reduce(
-        (sum: number, g: SalesClientGroup | SalesSellerGroup) => sum + g.total,
-        0,
-      )
-    }
-    if ('records' in tableData && tableData.records) {
-      return tableData.records.reduce(
-        (sum: number, r: SaleRecord) => sum + r.value,
-        0,
-      )
-    }
-    return 0
-  }, [tableData])
+  // Total do período inteiro (não só da página aberta), para a porcentagem
+  // bater com a do PDF
+  const totalFiltered = tableData.totalValue || 0
 
   const renderRecord = (record: SaleRecord) => {
     const pct =
@@ -146,6 +135,9 @@ export function SalesTable({ searchParams }: SalesTableProps) {
         : '0.0'
     return (
       <TableRow key={record.id}>
+        <TableCell className="text-gray-600 text-nowrap">
+          {record.osNumber}
+        </TableCell>
         <TableCell>
           {groupBy === 'client' ? (
             <p className="font-medium">
@@ -161,7 +153,13 @@ export function SalesTable({ searchParams }: SalesTableProps) {
           )}
         </TableCell>
         <TableCell className="text-gray-600">
+          {record.clientCity || '-'}
+        </TableCell>
+        <TableCell className="text-gray-600">
           {record.approvedDate || '-'}
+        </TableCell>
+        <TableCell className="text-gray-600">
+          {record.deliveryDate || '-'}
         </TableCell>
         <TableCell className="text-success-700 text-nowrap">
           {formatCurrencyToBrl(record.value)}
@@ -205,8 +203,20 @@ export function SalesTable({ searchParams }: SalesTableProps) {
           onChange={(value) => updateUrlParam('orderBy', value)}
           options={[
             { value: 'approvedDate', label: 'Data de aprovação' },
+            { value: 'deliveryDate', label: 'Data de entrega' },
             { value: 'valueDesc', label: 'Maior valor' },
             { value: 'valueAsc', label: 'Menor valor' },
+          ]}
+        />
+        <SelectBasic
+          name="periodBy"
+          label="Filtrar período por"
+          className="w-[260px]"
+          value={periodBy}
+          onChange={(value) => updateUrlParam('periodBy', value)}
+          options={[
+            { value: 'approvedAt', label: 'Data de aprovação' },
+            { value: 'deliveryDate', label: 'Data de entrega' },
           ]}
         />
       </CardHeader>
@@ -215,8 +225,11 @@ export function SalesTable({ searchParams }: SalesTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
+                <TableHead>O.S.</TableHead>
                 <TableHead>Serviços</TableHead>
+                <TableHead>Cidade</TableHead>
                 <TableHead>Aprovado</TableHead>
+                <TableHead>Entrega</TableHead>
                 <TableHead>Vendas</TableHead>
                 <TableHead>Fase atual</TableHead>
                 <TableHead className="text-right">%</TableHead>
@@ -228,10 +241,19 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                 .map((_, i) => (
                   <TableRow key={i}>
                     <TableCell>
+                      <Skeleton className="h-4 w-14" />
+                    </TableCell>
+                    <TableCell>
                       <div className="space-y-1">
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-48" />
                       </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
                     </TableCell>
                     <TableCell>
                       <Skeleton className="h-4 w-20" />
@@ -253,6 +275,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-gray-50">
+                <TableHead>O.S.</TableHead>
                 <TableHead>
                   <div className="flex items-center gap-2">
                     <span>Serviços</span>
@@ -261,7 +284,9 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                     </Badge>
                   </div>
                 </TableHead>
+                <TableHead>Cidade</TableHead>
                 <TableHead>Aprovado</TableHead>
+                <TableHead>Entrega</TableHead>
                 <TableHead>Vendas</TableHead>
                 <TableHead>Fase atual</TableHead>
                 <TableHead className="text-right">100%</TableHead>
@@ -284,7 +309,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                           {/* Group Header Row */}
                           <TableRow className="bg-gray-100 border-b border-gray-200">
                             <TableCell
-                              colSpan={2}
+                              colSpan={5}
                               className="text-gray font-medium text-xs py-3"
                             >
                               <div className="flex items-center gap-2">

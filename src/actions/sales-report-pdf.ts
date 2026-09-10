@@ -2,6 +2,10 @@
 
 import apiInstance from '@/lib/api'
 import type { SalesReportPdfData } from '@/app/(app-sidebar)/relatorios/vendas/pdf-types'
+import type {
+  SalesOrderBy,
+  SalesPeriodBy,
+} from '@/app/(app-sidebar)/relatorios/vendas/types'
 
 interface SalesReportFilters {
   sellerId?: string
@@ -9,7 +13,8 @@ interface SalesReportFilters {
   clientId?: string
   serieId?: string
   groupBy?: 'none' | 'client' | 'seller'
-  orderBy?: 'approvedDate' | 'valueDesc' | 'valueAsc'
+  orderBy?: SalesOrderBy
+  periodBy?: SalesPeriodBy
   startDate?: string
   endDate?: string
 }

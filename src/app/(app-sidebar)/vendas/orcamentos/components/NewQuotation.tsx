@@ -173,7 +173,13 @@ export function NewQuotationModal({
         return
       }
 
-      toast.success('Orçamento atualizado com sucesso!')
+      const seriesChanged =
+        !!formData.seriesId && formData.seriesId !== data?.serie?.id
+      toast.success(
+        seriesChanged
+          ? 'Orçamento atualizado. A nova série gerou uma nova numeração.'
+          : 'Orçamento atualizado com sucesso!',
+      )
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
       queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
@@ -243,11 +249,12 @@ export function NewQuotationModal({
                   label="Descrição do serviço"
                   width="w-full"
                 />
+                {/* Em edição só o admin troca a série, porque a troca renumera */}
                 <SelectSerieField
                   name="seriesId"
                   label="Série"
                   width="flex-[1_0_300px]"
-                  disabled={editMode}
+                  disabled={editMode && !session?.user?.isAdmin}
                 />
                 <SelectContactSourceField<QuotationFormType>
                   name="contactSourceId"

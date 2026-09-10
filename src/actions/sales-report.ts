@@ -9,6 +9,8 @@ import type {
   TopProductData,
   TopClientData,
   SalesTableData,
+  SalesOrderBy,
+  SalesPeriodBy,
 } from '@/app/(app-sidebar)/relatorios/vendas/types'
 
 interface SalesReportFilters {
@@ -19,7 +21,8 @@ interface SalesReportFilters {
   startDate?: string
   endDate?: string
   groupBy?: 'none' | 'client' | 'seller'
-  orderBy?: 'approvedDate' | 'valueDesc' | 'valueAsc'
+  orderBy?: SalesOrderBy
+  periodBy?: SalesPeriodBy
   page?: number
   limit?: number
 }
@@ -146,6 +149,7 @@ export async function getSalesTableData(
       grouped: false,
       records: [],
       totalCount: 0,
+      totalValue: 0,
       pagination: { page: 1, totalPages: 1, totalRecords: 0 },
     }
   }

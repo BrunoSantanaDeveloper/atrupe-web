@@ -1,6 +1,16 @@
 // Types for Sales Report page
 // Ready for backend integration
 
+export type SalesOrderBy =
+  | 'approvedDate'
+  | 'deliveryDate'
+  | 'valueDesc'
+  | 'valueAsc'
+
+// Qual data o período filtra na tabela/PDF/Excel (cards e gráficos seguem
+// sempre a aprovação)
+export type SalesPeriodBy = 'approvedAt' | 'deliveryDate'
+
 export interface SalesReportFilters {
   sellerId: string | null
   originId: string | null
@@ -15,7 +25,8 @@ export interface SalesReportFilters {
   startDate: Date | null
   endDate: Date | null
   groupBy: 'none' | 'client' | 'seller'
-  orderBy: 'approvedDate' | 'valueDesc' | 'valueAsc'
+  orderBy: SalesOrderBy
+  periodBy: SalesPeriodBy
 }
 
 export interface SalesSummary {
@@ -80,9 +91,12 @@ export type SalePhase = 'em-producao' | 'entregue' | 'aguardando' | 'cancelada'
 
 export interface SaleRecord {
   id: string
+  osNumber: string
   clientName: string
+  clientCity: string | null
   serviceDescription: string
   approvedDate: string | null
+  deliveryDate: string | null
   dueDate: string
   value: number
   phase: SalePhase
@@ -108,12 +122,20 @@ export interface SalesSellerGroup {
 }
 
 // Table data can be either flat (no grouping), grouped by client, or grouped by seller
+// `totalValue` é o total do período inteiro (todas as páginas), base da
+// porcentagem exibida na tabela
 export type SalesTableData =
-  | { grouped: false; records: SaleRecord[]; totalCount: number }
+  | {
+      grouped: false
+      records: SaleRecord[]
+      totalCount: number
+      totalValue: number
+    }
   | {
       grouped: true
       groups: (SalesClientGroup | SalesSellerGroup)[]
       totalCount: number
+      totalValue: number
     }
 
 export interface SalesReportData {

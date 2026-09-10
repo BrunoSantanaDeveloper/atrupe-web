@@ -21,8 +21,9 @@ export const advancedSalesReportSchema = z.object({
     .optional(),
   groupBy: z.enum(['none', 'client', 'seller']).default('client'),
   orderBy: z
-    .enum(['approvedDate', 'valueDesc', 'valueAsc'])
+    .enum(['approvedDate', 'deliveryDate', 'valueDesc', 'valueAsc'])
     .default('approvedDate'),
+  periodBy: z.enum(['approvedAt', 'deliveryDate']).default('approvedAt'),
 })
 
 export type AdvancedSalesReportFormType = z.infer<

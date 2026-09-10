@@ -469,7 +469,7 @@ export function formatQuotationHistoryEvent(
             const afterVal = after[field]
             if (beforeVal !== afterVal) {
               details.push(
-                `${formatKey(field)}: ${beforeVal ?? '(vazio)'} 🡢 ${afterVal ?? '(vazio)'}`,
+                `${field === 'serie' ? 'Série' : formatKey(field)}: ${beforeVal ?? '(vazio)'} 🡢 ${afterVal ?? '(vazio)'}`,
               )
             }
           })
@@ -536,6 +536,7 @@ export function formatOrderHistoryEvent(item: OrderHistoryItem): TimelineEvent {
           clientId: 'Cliente',
           sellerId: 'Vendedor',
           contactId: 'Responsável',
+          serie: 'Série',
           deliveryClientAddressId: 'Endereço de entrega',
           deliveryAddress: 'Endereço de entrega',
         }

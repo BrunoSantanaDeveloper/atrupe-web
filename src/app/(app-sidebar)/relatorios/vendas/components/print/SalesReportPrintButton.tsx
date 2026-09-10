@@ -26,6 +26,9 @@ import {
   type PeriodType,
 } from '@/lib/filter-utils'
 
+// Types
+import type { SalesOrderBy, SalesPeriodBy } from '../../types'
+
 // PDF Component
 import { SalesReportPdf } from './SalesReportPdf'
 
@@ -58,11 +61,8 @@ export function SalesReportPrintButton() {
       groupBy:
         (searchParams.get('groupBy') as 'none' | 'client' | 'seller') ||
         undefined,
-      orderBy:
-        (searchParams.get('orderBy') as
-          | 'approvedDate'
-          | 'valueDesc'
-          | 'valueAsc') || undefined,
+      orderBy: (searchParams.get('orderBy') as SalesOrderBy) || undefined,
+      periodBy: (searchParams.get('periodBy') as SalesPeriodBy) || undefined,
       startDate,
       endDate,
     }

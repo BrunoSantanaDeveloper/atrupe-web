@@ -4,14 +4,28 @@ import * as XLSX from 'xlsx'
 import type { SalesReportPdfData } from '../../pdf-types'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
+// Colunas de valor e % (índices base 0), formatadas como texto no fim
+const VALUE_COL = 7
+const PERCENT_COL = 8
+
 export function generateSalesExcel(
   data: SalesReportPdfData,
   groupBy?: 'none' | 'client' | 'seller',
 ) {
   const rows: (string | number)[][] = []
 
-  // Header row
-  rows.push(['Serviços', 'Código', 'Aprovado', 'Fase atual', 'Valor', '%'])
+  // Header row — cliente e cidade em todas as linhas, para filtrar na planilha
+  rows.push([
+    'O.S.',
+    'Cliente',
+    'Cidade',
+    'Serviço',
+    'Aprovado',
+    'Data de entrega',
+    'Fase atual',
+    'Valor',
+    '%',
+  ])
 
   const totalSuffix =
     groupBy === 'client'
@@ -27,58 +41,66 @@ export function generateSalesExcel(
       '',
       '',
       '',
+      '',
+      '',
+      '',
       group.total,
       group.percentage,
     ])
 
     // Group records
     group.records.forEach((record) => {
-      if (groupBy === 'client') {
-        rows.push([
-          record.description,
-          record.serviceCode,
-          record.approvedDate || '',
-          record.phase,
-          record.value,
-          record.percentage,
-        ])
-      } else {
-        rows.push([
-          record.clientName,
-          `${record.serviceCode} - ${record.description}`,
-          record.approvedDate || '',
-          record.phase,
-          record.value,
-          record.percentage,
-        ])
-      }
+      rows.push([
+        record.osNumber,
+        record.clientName,
+        record.clientCity || '',
+        record.description,
+        record.approvedDate || '',
+        record.deliveryDate || '',
+        record.phase,
+        record.value,
+        record.percentage,
+      ])
     })
   })
 
   // Total row
-  rows.push(['TOTAL', '', '', '', data.totalValue, data.totalPercentage])
+  rows.push([
+    'TOTAL',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    data.totalValue,
+    data.totalPercentage,
+  ])
 
   const ws = XLSX.utils.aoa_to_sheet(rows)
 
   // Set column widths
   ws['!cols'] = [
-    { wch: 30 }, // Serviços
-    { wch: 35 }, // Código
-    { wch: 14 }, // Aprovado
+    { wch: 12 }, // O.S.
+    { wch: 30 }, // Cliente
+    { wch: 20 }, // Cidade
+    { wch: 40 }, // Serviço
+    { wch: 12 }, // Aprovado
+    { wch: 16 }, // Data de entrega
     { wch: 16 }, // Fase atual
     { wch: 18 }, // Valor
-    { wch: 10 }, // %
+    { wch: 8 }, // %
   ]
 
   // Format value column as currency and percentage column
   const range = XLSX.utils.decode_range(ws['!ref'] || 'A1')
   for (let r = 1; r <= range.e.r; r++) {
-    const valueCell = ws[XLSX.utils.encode_cell({ r, c: 4 })]
+    const valueCell = ws[XLSX.utils.encode_cell({ r, c: VALUE_COL })]
     if (valueCell && typeof valueCell.v === 'number') {
       valueCell.t = 's'
       valueCell.v = formatCurrencyToBrl(valueCell.v as number)
     }
-    const pctCell = ws[XLSX.utils.encode_cell({ r, c: 5 })]
+    const pctCell = ws[XLSX.utils.encode_cell({ r, c: PERCENT_COL })]
     if (pctCell && typeof pctCell.v === 'number') {
       pctCell.t = 's'
       pctCell.v = `${pctCell.v}%`

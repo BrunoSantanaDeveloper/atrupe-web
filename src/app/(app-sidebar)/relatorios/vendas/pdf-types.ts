@@ -24,10 +24,12 @@ export interface SalesReportPdfCompany {
 
 export interface SalesReportPdfRecord {
   id: string
+  osNumber: string
   clientName: string
-  serviceCode: string
+  clientCity: string | null
   description: string
   approvedDate: string | null
+  deliveryDate: string | null
   phase: string
   value: number
   percentage: number

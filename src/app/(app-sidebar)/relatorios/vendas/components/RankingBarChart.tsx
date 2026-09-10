@@ -5,21 +5,21 @@
  *
  * Barra horizontal de ranking (produtos mais vendidos, melhores clientes).
  *
- * Os dois rankings do relatório de vendas eram componentes idênticos e traziam
- * o mesmo defeito: o eixo Y tinha 80px de largura, e nomes longos de produto
- * ("LUMINOSO EM ACM COM ACRÍLICO...") eram quebrados pelo recharts em três ou
- * quatro linhas que se sobrepunham entre as barras, deixando o eixo ilegível.
+ * Dois defeitos de texto que este componente existe para não repetir:
+ * - nome do eixo quebrado em várias linhas sobrepostas (o eixo tinha 80px):
+ *   o tick é uma <text> própria, numa linha, truncada POR LARGURA MEDIDA com a
+ *   fonte real — contar caracteres não serve para fonte proporcional, ver
+ *   ranking-chart-layout.ts;
+ * - valor da ponta quebrado em "R$ / 1,2 / mil" nas barras curtas: o LabelList
+ *   do recharts entrega ao <Text> uma largura derivada da barra, e o <Text>
+ *   quebra palavra por palavra para caber. O valor também é uma <text> própria.
  *
- * Decisões de leitura:
- * - rótulo do eixo em UMA linha, truncado, com o nome completo no tooltip e na
- *   visão expandida — quebrar linha é o que causava a sobreposição;
- * - altura proporcional ao número de itens, em vez de espremer 10 barras num
- *   container de altura fixa;
- * - valor impresso na ponta da barra, para o número não ficar refém do hover.
+ * A altura acompanha o número de itens, e o valor fica impresso na ponta da
+ * barra para não depender do hover.
  */
 
 // React
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 // UI
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -40,15 +40,29 @@ import { RankingExpandedDialog } from './RankingExpandedDialog'
 import { IconMaximize, IconChartBarOff } from '@tabler/icons-react'
 
 // Third-party
-import { Bar, XAxis, YAxis, BarChart, LabelList } from 'recharts'
+import {
+  Bar,
+  XAxis,
+  YAxis,
+  BarChart,
+  LabelList,
+  type LabelProps,
+} from 'recharts'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import {
+  LABEL_FONT_SIZE,
+  VALUE_LABEL_OFFSET,
+  computeRankingLayout,
+  createCanvasMeasurer,
+  estimateTextWidth,
+  formatCompactBrl,
+  type MeasureText,
+  type RankingItem,
+} from './ranking-chart-layout'
 
-export interface RankingItem {
-  name: string
-  value: number
-}
+export type { RankingItem } from './ranking-chart-layout'
 
 /** brand-500. Único da série, e aprovado nos checks de luminosidade e de
  * contraste contra a superfície branca do card — o verde anterior (#6CE9A6)
@@ -59,49 +73,12 @@ const BAR_COLOR = '#099260'
 const ROW_HEIGHT = 34
 const MIN_CHART_HEIGHT = 180
 
-/**
- * Largura do eixo e corte do rótulo. Medidos no navegador com os nomes reais
- * (caixa alta, ~7px/caractere a 12px), não estimados: 25 caracteres dão 178px
- * de texto e 14px de folga dentro dos 200px do eixo. Com 28 caracteres três
- * rótulos passavam da borda do SVG e perdiam a primeira letra.
- */
-const AXIS_WIDTH = 200
-const MAX_LABEL_CHARS = 25
-
 const chartConfig = {
   value: {
     label: 'Valor',
     color: BAR_COLOR,
   },
 } satisfies ChartConfig
-
-function truncateLabel(value: string) {
-  if (value.length <= MAX_LABEL_CHARS) return value
-  return `${value.slice(0, MAX_LABEL_CHARS - 1).trimEnd()}…`
-}
-
-/**
- * Valor compacto para a ponta da barra: "R$ 12,3 mil" ocupa metade do espaço de
- * "R$ 12.345,67" e sobra largura para a barra. O valor exato fica no tooltip e
- * na visão expandida.
- */
-export function formatCompactBrl(valueInCents: number) {
-  const value = (valueInCents || 0) / 100
-
-  if (value >= 1_000_000) {
-    return `R$ ${(value / 1_000_000).toLocaleString('pt-BR', {
-      maximumFractionDigits: 1,
-    })} mi`
-  }
-
-  if (value >= 1_000) {
-    return `R$ ${(value / 1_000).toLocaleString('pt-BR', {
-      maximumFractionDigits: 1,
-    })} mil`
-  }
-
-  return formatCurrencyToBrl(valueInCents)
-}
 
 const currencyFormatter = (value: unknown) => (
   <div className="flex flex-1 justify-between items-center gap-4 leading-none">
@@ -112,25 +89,50 @@ const currencyFormatter = (value: unknown) => (
   </div>
 )
 
-// O tick padrão do recharts quebra o texto em várias linhas quando ele não cabe
-// na largura do eixo. Uma <text> própria garante uma linha só.
 interface AxisTickProps {
   x?: number
   y?: number
   payload?: { value?: string }
+  labelFor: (name: string) => string
 }
 
-function AxisTick({ x, y, payload }: AxisTickProps) {
+function AxisTick({ x, y, payload, labelFor }: AxisTickProps) {
+  const name = String(payload?.value ?? '')
+  const label = labelFor(name)
+
   return (
     <text
       x={x}
       y={y}
       dy={4}
       textAnchor="end"
-      fontSize={12}
+      fontSize={LABEL_FONT_SIZE}
       className="fill-gray-600"
     >
-      {truncateLabel(String(payload?.value ?? ''))}
+      {/* Nome truncado mostra o completo ao passar o mouse no próprio eixo */}
+      {label !== name && <title>{name}</title>}
+      {label}
+    </text>
+  )
+}
+
+function ValueLabel({ viewBox, value }: LabelProps) {
+  const bar = viewBox as
+    | { x?: number; y?: number; width?: number; height?: number }
+    | undefined
+
+  const x = Number(bar?.x ?? 0) + Number(bar?.width ?? 0) + VALUE_LABEL_OFFSET
+  const y = Number(bar?.y ?? 0) + Number(bar?.height ?? 0) / 2
+
+  return (
+    <text
+      x={x}
+      y={y}
+      dy={4}
+      fontSize={LABEL_FONT_SIZE}
+      className="fill-gray-600"
+    >
+      {formatCompactBrl(Number(value))}
     </text>
   )
 }
@@ -145,12 +147,47 @@ interface Props {
 
 export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
   const [expanded, setExpanded] = useState(false)
+  const [chartEl, setChartEl] = useState<HTMLDivElement | null>(null)
+  const [chartWidth, setChartWidth] = useState(0)
+  const [measure, setMeasure] = useState<MeasureText | null>(null)
 
-  const chartHeight = useMemo(
-    () => Math.max(items.length * ROW_HEIGHT, MIN_CHART_HEIGHT),
-    [items.length],
+  useEffect(() => {
+    if (!chartEl) return
+
+    let active = true
+    const style = getComputedStyle(chartEl)
+    const font = `${style.fontWeight} ${LABEL_FONT_SIZE}px ${style.fontFamily}`
+
+    // O medidor vai embrulhado: uma função passada direto ao setState seria
+    // tratada pelo React como updater e chamada com o estado anterior.
+    const rebuildMeasure = () => {
+      if (active) setMeasure(() => createCanvasMeasurer(font))
+    }
+
+    setChartWidth(chartEl.getBoundingClientRect().width)
+    rebuildMeasure()
+
+    const observer = new ResizeObserver(([entry]) => {
+      setChartWidth(entry.contentRect.width)
+    })
+    observer.observe(chartEl)
+
+    // A Inter chega por next/font com display: swap. Se a medida rodou antes,
+    // usou a fonte de fallback; refaz quando a real terminar de carregar.
+    document.fonts?.ready.then(rebuildMeasure)
+
+    return () => {
+      active = false
+      observer.disconnect()
+    }
+  }, [chartEl])
+
+  const layout = useMemo(
+    () => computeRankingLayout(items, chartWidth, measure ?? estimateTextWidth),
+    [items, chartWidth, measure],
   )
 
+  const chartHeight = Math.max(items.length * ROW_HEIGHT, MIN_CHART_HEIGHT)
   const hasData = items.length > 0
 
   return (
@@ -189,6 +226,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
           </div>
         ) : (
           <ChartContainer
+            ref={setChartEl}
             config={chartConfig}
             // aspect-auto cancela o aspect-video que o ChartContainer traz na
             // base — a altura aqui vem do número de itens, não de uma razão.
@@ -199,18 +237,25 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
               accessibilityLayer
               data={items}
               layout="vertical"
-              // right: espaço para o valor na ponta da barra sem cortar
-              margin={{ left: 0, right: 72, top: 4, bottom: 4 }}
+              margin={{ left: 0, right: layout.rightMargin, top: 4, bottom: 4 }}
             >
-              <XAxis type="number" dataKey="value" hide />
+              {/* dataMax: a barra do 1º colocado usa a largura toda */}
+              <XAxis
+                type="number"
+                dataKey="value"
+                domain={[0, 'dataMax']}
+                hide
+              />
               <YAxis
                 type="category"
                 dataKey="name"
                 tickLine={false}
                 axisLine={false}
-                width={AXIS_WIDTH}
+                width={layout.axisWidth}
                 interval={0}
-                tick={<AxisTick />}
+                tick={(props) => (
+                  <AxisTick {...props} labelFor={layout.labelFor} />
+                )}
               />
               <ChartTooltip
                 cursor={false}
@@ -222,14 +267,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
                 radius={[0, 4, 4, 0]}
                 barSize={18}
               >
-                <LabelList
-                  dataKey="value"
-                  position="right"
-                  offset={8}
-                  fontSize={12}
-                  className="fill-gray-600"
-                  formatter={(value: number) => formatCompactBrl(value)}
-                />
+                <LabelList dataKey="value" content={ValueLabel} />
               </Bar>
             </BarChart>
           </ChartContainer>

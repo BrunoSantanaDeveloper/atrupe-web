@@ -62,11 +62,16 @@ const styles = StyleSheet.create({
     color: '#667085',
     textTransform: 'uppercase',
   },
-  colServices: { width: '40%' },
-  colSeller: { width: '22%' },
-  colPhase: { width: '15%' },
-  colValue: { width: '13%', textAlign: 'right' },
-  colPercent: { width: '10%', textAlign: 'right' },
+  colOs: { width: '9%', paddingRight: 4 },
+  colServices: { width: '29%', paddingRight: 4 },
+  colCity: { width: '13%', paddingRight: 4 },
+  colApproved: { width: '10%' },
+  colDelivery: { width: '10%' },
+  // Nome do grupo ocupa O.S. + Serviços + Cidade + Aprovado + Entrega
+  colGroupName: { width: '71%' },
+  colPhase: { width: '11%' },
+  colValue: { width: '12%', textAlign: 'right' },
+  colPercent: { width: '6%', textAlign: 'right' },
   // Group Header Row
   groupHeader: {
     flexDirection: 'row',
@@ -141,23 +146,27 @@ interface Props {
 export function SalesReportPdf({ data, groupBy = 'client' }: Props) {
   const renderRecord = (record: SalesReportPdfRecord) => (
     <View key={record.id} style={styles.tableRow} wrap={false}>
+      <View style={styles.colOs}>
+        <Text style={styles.cellText}>{record.osNumber}</Text>
+      </View>
       <View style={styles.colServices}>
         {groupBy === 'client' ? (
-          <>
-            <Text style={styles.cellText}>{record.description}</Text>
-            <Text style={styles.cellSubText}>Código: {record.serviceCode}</Text>
-          </>
+          <Text style={styles.cellText}>{record.description}</Text>
         ) : (
           <>
             <Text style={styles.cellText}>{record.clientName}</Text>
-            <Text style={styles.cellSubText}>
-              {record.serviceCode} - {record.description}
-            </Text>
+            <Text style={styles.cellSubText}>{record.description}</Text>
           </>
         )}
       </View>
-      <View style={styles.colSeller}>
-        <Text style={styles.cellText}>{record.approvedDate || ''}</Text>
+      <View style={styles.colCity}>
+        <Text style={styles.cellText}>{record.clientCity || '-'}</Text>
+      </View>
+      <View style={styles.colApproved}>
+        <Text style={styles.cellText}>{record.approvedDate || '-'}</Text>
+      </View>
+      <View style={styles.colDelivery}>
+        <Text style={styles.cellText}>{record.deliveryDate || '-'}</Text>
       </View>
       <View style={styles.colPhase}>
         <Text style={styles.cellPhase}>{record.phase}</Text>
@@ -184,13 +193,12 @@ export function SalesReportPdf({ data, groupBy = 'client' }: Props) {
       <View key={group.clientId} wrap={false}>
         {/* Group Header */}
         <View style={styles.groupHeader}>
-          <View style={styles.colServices}>
+          <View style={styles.colGroupName}>
             <Text style={styles.groupName}>
               {group.clientName}
               {totalSuffix}
             </Text>
           </View>
-          <View style={styles.colSeller} />
           <View style={styles.colPhase} />
           <View style={styles.colValue}>
             <Text style={styles.groupValue}>
@@ -220,13 +228,24 @@ export function SalesReportPdf({ data, groupBy = 'client' }: Props) {
 
           {/* Table Header */}
           <View style={styles.tableHeader} fixed>
+            <View style={styles.colOs}>
+              <Text style={styles.tableHeaderCell}>O.S.</Text>
+            </View>
             <View style={styles.colServices}>
               <Text style={styles.tableHeaderCell}>SERVIÇOS</Text>
             </View>
-            <View style={styles.colSeller}>
-              <Text style={styles.tableHeaderCell}>VENDEDOR</Text>
+            <View style={styles.colCity}>
+              <Text style={styles.tableHeaderCell}>CIDADE</Text>
             </View>
-            <View style={styles.colPhase} />
+            <View style={styles.colApproved}>
+              <Text style={styles.tableHeaderCell}>APROVADO</Text>
+            </View>
+            <View style={styles.colDelivery}>
+              <Text style={styles.tableHeaderCell}>ENTREGA</Text>
+            </View>
+            <View style={styles.colPhase}>
+              <Text style={styles.tableHeaderCell}>FASE</Text>
+            </View>
             <View style={styles.colValue}>
               <Text style={styles.tableHeaderCell}>
                 {formatCurrencyToBrl(data.totalValue)}
