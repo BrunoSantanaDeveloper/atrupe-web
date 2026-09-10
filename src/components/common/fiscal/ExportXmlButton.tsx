@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { IconFileZip, IconDownload } from '@tabler/icons-react'
-import { getAuthToken } from '@/actions/fiscal'
 import { extractApiErrorMessage } from '@/lib/api-error-message'
 
 /**
@@ -53,15 +52,14 @@ export function ExportXmlButton() {
 
     try {
       setIsLoading(true)
-      const token = await getAuthToken()
 
+      // Rota do próprio Next, que fala com a API pelo servidor. Antes a
+      // chamada ia direto para `NEXT_PUBLIC_API_URL`, variável que não existe
+      // neste projeto: virava `undefined`, caía no 404 do Next e nunca
+      // chegava ao backend.
+      const parametros = new URLSearchParams({ startDate, endDate })
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/fiscal/nfe/export-xml/zip?startDate=${startDate}&endDate=${endDate}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        `/api/fiscal/nfe/export-xml?${parametros.toString()}`,
       )
 
       if (!response.ok) {
