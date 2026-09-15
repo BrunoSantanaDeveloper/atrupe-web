@@ -50,9 +50,16 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
   // Desconto total combinado (itens + desconto geral)
   const combinedDiscountTotal = itemsDiscountTotal + discountTotal
 
-  // Calcular o percentual de desconto total
+  // Calcular o percentual de desconto total.
+  // Arredondado como no checkout do backend: sem isso, 10% de 1.163,73 vira
+  // 10.000000000000002 e o aviso acusa estouro de um limite de exatos 10%.
   const totalDiscountPercentage =
-    originalValue > 0 ? (combinedDiscountTotal / originalValue) * 100 : 0
+    originalValue > 0
+      ? Math.round(
+          ((combinedDiscountTotal / originalValue) * 100 + Number.EPSILON) *
+            100,
+        ) / 100
+      : 0
 
   // Limite máximo de desconto do vendedor
   const maxDiscount = quotationData?.seller?.maxDiscount
