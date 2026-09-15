@@ -179,7 +179,12 @@ export function PaymentConditionsDialog({
   const onSubmit = async (data: QuotationPaymentConditionsType) => {
     const body = refineData(data)
 
-    if (!body) return
+    // refineData só devolve vazio quando falta a forma de pagamento da entrada.
+    // Sem aviso, clicar em "Salvar e concluir" não fazia absolutamente nada.
+    if (!body) {
+      toast.error('Informe a forma de pagamento da entrada para continuar.')
+      return
+    }
 
     const res = await updateItemNew({
       route: `sale/quotation/payment/${quotationData.id}`,

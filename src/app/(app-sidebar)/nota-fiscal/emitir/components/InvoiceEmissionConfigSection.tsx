@@ -100,7 +100,9 @@ function toDateTimeLocal(value?: string) {
   if (Number.isNaN(date.getTime())) return ''
 
   const timezoneOffset = date.getTimezoneOffset() * 60000
-  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+  // 19 e nao 16: cortar nos minutos zerava os segundos e ja colocava a data de
+  // saida ate 59s antes da emissao, o que a SEFAZ rejeita (505).
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 19)
 }
 
 function fromDateTimeLocal(value: string) {
@@ -219,6 +221,8 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                   <Label>Data de saida/entrada</Label>
                   <Input
                     type="datetime-local"
+                    // step=1 faz o navegador exibir e preservar os segundos.
+                    step="1"
                     value={toDateTimeLocal(data.emissao.dataSaida)}
                     onChange={(event) =>
                       updateEmission(

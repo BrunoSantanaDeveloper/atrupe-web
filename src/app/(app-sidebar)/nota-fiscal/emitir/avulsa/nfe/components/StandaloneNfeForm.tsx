@@ -504,6 +504,9 @@ export function StandaloneNfeForm() {
       presencaConsumidor: data.emissao.presencaConsumidor,
       dataSaida: data.emissao.dataSaida,
       nfeReferenciada: referencedKey || null,
+      // Reemissao de nota rejeitada: sem este id o backend nao tem como saber
+      // que e a mesma nota e cria uma linha nova a cada tentativa.
+      reissueOfNfeId: reissueOf || null,
       additionalInfo: data.informacoesComplementares,
       destCnpjCpf: data.destinatario.cnpjCpf || null,
       destNome: data.destinatario.razaoSocial,

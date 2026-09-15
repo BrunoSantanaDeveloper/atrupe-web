@@ -1,9 +1,14 @@
 import { QuotationType } from '@/types/sales/quotation'
 import { QuotationCommissionType } from './schema'
 
-export function defaultValues(quotationData: QuotationType) {
-  if (!quotationData) return {}
-
+/**
+ * Partes do valor que as condições de pagamento precisam cobrir.
+ *
+ * Fonte única para o formulário e para a validação do checkout: as duas contas
+ * já divergiram, e o checkout acusava divergência em orçamento fechado porque
+ * ignorava o desconto e a entrada.
+ */
+export function calculatePaymentTotals(quotationData: QuotationType) {
   // Valor base para as condições de pagamento DEVE considerar os descontos DADOS AOS ITENS
   const itemsTotalValue =
     quotationData?.quotationItems?.reduce(
@@ -15,21 +20,21 @@ export function defaultValues(quotationData: QuotationType) {
     itemsTotalValue + (quotationData?.deliveryInfo?.value || 0)
 
   const discountTotal =
-    quotationData.paymentConditions?.discount?.discountTotal || 0
+    quotationData?.paymentConditions?.discount?.discountTotal || 0
 
   const addComissionValue =
-    quotationData.paymentConditions?.commission?.type === 'ADD'
-      ? quotationData.paymentConditions?.commission?.totalCommission || 0
+    quotationData?.paymentConditions?.commission?.type === 'ADD'
+      ? quotationData?.paymentConditions?.commission?.totalCommission || 0
       : 0
+
+  const mainAdditionalFee =
+    quotationData?.paymentConditions?.mainAdditionalFee || 0
+  const downPaymentAdditionalFee =
+    quotationData?.paymentConditions?.downPayment?.additionalFee || 0
+  const totalAdditionalFee = mainAdditionalFee + downPaymentAdditionalFee
 
   const totalValue =
     paymentConditionsBaseValue + addComissionValue - discountTotal
-
-  const mainAdditionalFee =
-    quotationData.paymentConditions?.mainAdditionalFee || 0
-  const downPaymentAdditionalFee =
-    quotationData.paymentConditions?.downPayment?.additionalFee || 0
-  const totalAdditionalFee = mainAdditionalFee + downPaymentAdditionalFee
 
   // finalValue = base (itens+frete) + comissão ADD + acréscimos - desconto geral
   const finalValue =
@@ -37,6 +42,39 @@ export function defaultValues(quotationData: QuotationType) {
     addComissionValue +
     totalAdditionalFee -
     discountTotal
+
+  return {
+    itemsTotalValue,
+    paymentConditionsBaseValue,
+    discountTotal,
+    addComissionValue,
+    totalAdditionalFee,
+    totalValue,
+    finalValue,
+  }
+}
+
+/**
+ * O que o cliente efetivamente paga: entrada + parcelas.
+ */
+export function calculateScheduledTotal(quotationData: QuotationType) {
+  const downPaymentAmount =
+    quotationData?.paymentConditions?.downPayment?.amount || 0
+
+  const installmentsTotal =
+    quotationData?.paymentConditions?.installments?.reduce(
+      (sum, installment) => sum + (installment?.amount || 0),
+      0,
+    ) || 0
+
+  return downPaymentAmount + installmentsTotal
+}
+
+export function defaultValues(quotationData: QuotationType) {
+  if (!quotationData) return {}
+
+  const { paymentConditionsBaseValue, discountTotal, totalValue, finalValue } =
+    calculatePaymentTotals(quotationData)
 
   return {
     type: quotationData.paymentConditions?.type || 'NFE',

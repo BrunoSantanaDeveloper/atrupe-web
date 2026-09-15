@@ -42,6 +42,10 @@ import {
 } from '@tabler/icons-react'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 import { PaymentConditionsDialog } from './PaymentConditions'
+import {
+  calculatePaymentTotals,
+  calculateScheduledTotal,
+} from './PaymentConditions/utils'
 
 const alertDefaultValues = {
   title: '',
@@ -69,25 +73,16 @@ export function FinishQuotation({ data, canFinish }: Props) {
   // Se for "Sem lançamento" (Cortesia por exemplo), não verificar se existem condições de pagamento
   const isNoInvoice = data?.paymentConditions?.billing === 'NO_INVOICE'
 
-  // Verificar se há divergência entre o valor esperado e o valor das parcelas
-  // Valor esperado = valor dos itens + frete + comissão(ADD)
-  const deliveryValue = data?.deliveryInfo?.value || 0
-  const commissionValue =
-    data?.paymentConditions?.commission?.type === 'ADD'
-      ? data?.paymentConditions?.commission?.totalCommission || 0
-      : 0
-  const expectedTotalValue = data?.totalValue + deliveryValue + commissionValue
+  // A conta tem que ser a mesma do modal de condições de pagamento. Antes o
+  // esperado vinha de `data.totalValue` (sem desconto) e era comparado só com a
+  // soma das parcelas (sem a entrada): qualquer orçamento com entrada ou
+  // desconto acusava divergência e nunca concluía direto.
+  const { finalValue: expectedTotalValue } = calculatePaymentTotals(data)
+  const scheduledTotal = calculateScheduledTotal(data)
 
-  // Valor das parcelas (soma de amount de cada parcela)
-  const installmentsTotal =
-    data?.paymentConditions?.installments?.reduce(
-      (sum, inst) => sum + (inst?.amount || 0),
-      0,
-    ) || 0
-
-  // Verificar se há divergência (tolerância de 1 centavo para erros de arredondamento)
+  // Tolerância de 1 centavo para erros de arredondamento
   const hasValueDivergence =
-    hasInstallments && Math.abs(expectedTotalValue - installmentsTotal) > 1
+    hasInstallments && Math.abs(expectedTotalValue - scheduledTotal) > 1
 
   const handleClose = () => {
     setOpen(false)
