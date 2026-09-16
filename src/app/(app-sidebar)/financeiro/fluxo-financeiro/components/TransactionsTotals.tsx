@@ -21,10 +21,14 @@ type TotalsType = {
   receivables: {
     expected: number
     totalPaid: number
+    // Soma parcela a parcela do que ainda esta em aberto. Opcional porque
+    // versoes anteriores da API nao devolviam o campo.
+    open?: number
   }
   payables: {
     expected: number
     totalPaid: number
+    open?: number
   }
 }
 
@@ -42,12 +46,26 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
     receivables: {
       expected: 0,
       totalPaid: 0,
+      open: 0,
     },
     payables: {
       expected: 0,
       totalPaid: 0,
+      open: 0,
     },
   }
+
+  // "A receber" / "A pagar" vem somado parcela a parcela pelo backend.
+  // O fallback reproduz o calculo antigo (previsto - pago do conjunto),
+  // que deixava residuo de toda parcela quitada por valor diferente do
+  // previsto; serve so enquanto a API nao estiver atualizada.
+  const receivablesOpen =
+    totals.receivables.open ??
+    totals.receivables.expected - totals.receivables.totalPaid
+  const payablesOpen =
+    totals.payables.open ?? totals.payables.expected - totals.payables.totalPaid
+
+  const byPaidDate = searchParams?.dateType === 'paidDate'
 
   if (isLoading) {
     return (
@@ -90,32 +108,29 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
         <div className="flex items-center gap-3">
           <FeaturedIcon size="sm" Icon={IconThumbDown} variant="errorLight" />
           <span className="font-semibold text-gray-700">Não realizado</span>
+          <span className="text-xs text-gray">
+            {byPaidDate
+              ? 'sem pagamento no período'
+              : 'vence no período e está em aberto'}
+          </span>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
             <p className="text-xs text-gray">A receber</p>
             <p className="text-lG font-medium text-gray-600">
-              {formatCurrencyToBrl(
-                totals.receivables.expected - totals.receivables.totalPaid,
-              )}
+              {formatCurrencyToBrl(receivablesOpen)}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray">A pagar</p>
             <p className="text-lG font-medium text-gray-600">
-              {formatCurrencyToBrl(
-                totals.payables.expected - totals.payables.totalPaid,
-              )}
+              {formatCurrencyToBrl(payablesOpen)}
             </p>
           </div>
           <div>
             <p className="text-xs text-gray">Saldo</p>
             <p className="text-lG font-medium">
-              {formatCurrencyToBrl(
-                totals.receivables.expected -
-                  totals.receivables.totalPaid -
-                  (totals.payables.expected - totals.payables.totalPaid),
-              )}
+              {formatCurrencyToBrl(receivablesOpen - payablesOpen)}
             </p>
           </div>
         </div>
@@ -124,6 +139,11 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
         <div className="flex items-center gap-3">
           <FeaturedIcon size="sm" Icon={IconThumbUp} variant="successLight" />
           <span className="font-semibold text-gray-700">Realizado</span>
+          <span className="text-xs text-gray">
+            {byPaidDate
+              ? 'movimentado no período'
+              : 'de títulos que vencem no período'}
+          </span>
         </div>
         <div className="grid grid-cols-3 gap-4">
           <div>
