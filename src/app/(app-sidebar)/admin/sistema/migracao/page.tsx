@@ -177,9 +177,11 @@ export default function AdminMigracaoPage() {
             <div>
               <h2 className="text-lg font-semibold">1. Escolha o cliente</h2>
               <p className="text-sm text-muted-foreground">
-                A lista vem do próprio sistema legado. O CNPJ precisa
-                corresponder ao da empresa no Atrupe — se não corresponder, a
-                carga é recusada antes de gravar qualquer coisa.
+                A lista vem do próprio sistema legado. A migração preenche uma
+                conta que já existe: crie a conta do cliente normalmente, com o
+                mesmo CNPJ, e ela aparece vinculada aqui. Login e senha são os
+                do cadastro — a migração não cria acessos, traz os colaboradores
+                para o admin do cliente criar depois.
               </p>
             </div>
 
@@ -220,10 +222,15 @@ export default function AdminMigracaoPage() {
                           <span>{base.empresaVinculada!.name}</span>
                         </div>
                       ) : (
-                        <Badge variant="outline" className="gap-1">
-                          <IconAlertTriangle size={14} />
-                          Sem empresa com este CNPJ
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge variant="outline" className="gap-1">
+                            <IconAlertTriangle size={14} />
+                            Conta ainda não criada
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            Crie a conta com este CNPJ e volte aqui
+                          </span>
+                        </div>
                       )}
                     </button>
                   )
