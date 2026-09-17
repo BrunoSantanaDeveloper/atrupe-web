@@ -14,13 +14,15 @@ import type { EmissorData } from '../EmissorListItem'
 // porque o cálculo de imposto por item existe e barra a emissão quando falta
 // dado no cadastro, em vez de zerar o imposto em silêncio.
 //
-// MEI segue bloqueado e visível: esconder a opção só faria o usuário procurar,
-// enquanto o rótulo explica por que não dá para selecionar.
+// MEI é o CRT 4 do layout do provedor. Apura pelo DAS, então a nota sai pelo
+// mesmo caminho do Simples Nacional — o que muda são os códigos, não o
+// cálculo. Depende de a empresa estar cadastrada no provedor com CRT 4 e,
+// para NFS-e, com o parâmetro de Ambiente Nacional ligado.
 const crtOptions = [
   { value: '1', label: '1 - Simples Nacional' },
   { value: '2', label: '2 - Simples Nacional - Excesso de sublimite' },
   { value: '3', label: '3 - Regime Normal (Lucro Real ou Presumido)' },
-  { value: '4', label: '4 - MEI (em desenvolvimento)', disabled: true },
+  { value: '4', label: '4 - MEI (Microempreendedor Individual)' },
 ]
 
 function ReadOnlyField({
@@ -66,8 +68,9 @@ export function IdentificacaoTab({ emissor, isEditing }: Props) {
         <p className="text-xs text-muted-foreground -mt-2">
           No Regime Normal o imposto é calculado por item a partir do cadastro
           fiscal do produto. Sem CST, alíquota ou MVA cadastrados, a emissão é
-          barrada com o motivo — a nota nunca sai com imposto zerado. MEI ainda
-          não é suportado.
+          barrada com o motivo — a nota nunca sai com imposto zerado. O MEI
+          apura pelo DAS e segue o caminho do Simples Nacional; para usá-lo, a
+          empresa precisa estar cadastrada como MEI no provedor.
         </p>
 
         <div>
