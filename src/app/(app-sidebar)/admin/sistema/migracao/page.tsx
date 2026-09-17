@@ -67,6 +67,10 @@ interface StepSummary {
   documents?: number
   /** Cadastros de apoio criados na etapa, ou a criar quando é simulação. */
   created?: string[]
+  /** Registros que a conta já tinha e a carga aproveita em vez de duplicar. */
+  adopted?: number
+  /** Decisões da etapa numa conta já em uso: série do histórico, corte por data. */
+  notes?: string[]
 }
 
 interface RunError {
@@ -479,6 +483,40 @@ export default function AdminMigracaoPage() {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+
+              {(run.summary ?? []).some((etapa) => etapa.notes?.length) && (
+                <div className="flex flex-col gap-1 rounded-md border border-warning-300 bg-warning-50 p-3">
+                  <p className="text-sm font-medium text-warning-700">
+                    {run.dryRun
+                      ? 'O que a carga vai fazer nesta conta'
+                      : 'O que a carga fez nesta conta'}
+                  </p>
+                  {(run.summary ?? [])
+                    .filter((etapa) => etapa.notes?.length)
+                    .flatMap((etapa) =>
+                      etapa.notes!.map((nota, i) => (
+                        <p key={`${etapa.label}-${i}`} className="text-xs">
+                          <span className="text-muted-foreground">
+                            {etapa.label}:{' '}
+                          </span>
+                          {nota}
+                        </p>
+                      )),
+                    )}
+                </div>
+              )}
+
+              {(run.summary ?? []).some((etapa) => etapa.adopted) && (
+                <p className="text-xs text-muted-foreground">
+                  Registros que a conta já tinha e a migração aproveita em vez
+                  de duplicar:{' '}
+                  {(run.summary ?? [])
+                    .filter((etapa) => etapa.adopted)
+                    .map((etapa) => `${etapa.label} ${etapa.adopted}`)
+                    .join(' · ')}
+                  .
+                </p>
               )}
 
               {(run.summary ?? []).some((etapa) => etapa.created?.length) && (
