@@ -65,6 +65,8 @@ interface StepSummary {
   skipped?: number
   expected?: number
   documents?: number
+  /** Cadastros de apoio criados na etapa, ou a criar quando é simulação. */
+  created?: string[]
 }
 
 interface RunError {
@@ -477,6 +479,30 @@ export default function AdminMigracaoPage() {
                     ))}
                   </TableBody>
                 </Table>
+              )}
+
+              {(run.summary ?? []).some((etapa) => etapa.created?.length) && (
+                <div className="flex flex-col gap-1 rounded-md bg-muted p-3">
+                  <p className="text-sm font-medium">
+                    {run.dryRun
+                      ? 'Cadastros que a carga vai criar'
+                      : 'Cadastros criados'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Setor de produto, natureza, subcategoria e conta bancária
+                    que o cliente usa no legado e a conta nova ainda não tinha.
+                  </p>
+                  {(run.summary ?? [])
+                    .filter((etapa) => etapa.created?.length)
+                    .map((etapa) => (
+                      <p key={etapa.label} className="text-xs">
+                        <span className="text-muted-foreground">
+                          {etapa.label}:{' '}
+                        </span>
+                        {etapa.created!.join(', ')}
+                      </p>
+                    ))}
+                </div>
               )}
 
               {run.errors && run.errors.length > 0 && (
