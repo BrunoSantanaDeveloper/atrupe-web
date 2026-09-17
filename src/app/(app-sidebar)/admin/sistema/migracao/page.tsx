@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
@@ -10,11 +10,13 @@ import {
   IconDatabaseImport,
   IconLoader2,
   IconPlayerPlay,
+  IconSearch,
   IconX,
 } from '@tabler/icons-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Topbar } from '@/components/common/Topbar'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
@@ -37,6 +39,7 @@ import {
 } from '@/components/ui/table'
 
 import { getData, createItemNew } from '@/actions/_cruds'
+import { isValidCnpj, maskCnpj } from '@/lib/utils'
 
 interface LegacyBase {
   base: string
@@ -45,6 +48,12 @@ interface LegacyBase {
   empresaVinculada: { id: string; name: string } | null
   /** Motivo para não migrar: CNPJ em mais de uma conta, ou base já carregada em outra. */
   bloqueio: string | null
+}
+
+interface BaseSearch {
+  /** Bases de cliente que o usuário do legado consegue ler. */
+  basesConsultadas: number
+  encontradas: LegacyBase[]
 }
 
 interface StepSummary {
@@ -95,15 +104,53 @@ export default function AdminMigracaoPage() {
   const [disparando, setDisparando] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
 
-  const { data: bases, isLoading: carregandoBases } = useQuery({
-    queryKey: ['migration-bases'],
+  const [cnpj, setCnpj] = useState('')
+  const [cnpjBuscado, setCnpjBuscado] = useState<string | null>(null)
+
+  const {
+    data: busca,
+    error: erroBusca,
+    isFetching: buscando,
+    refetch: refazerBusca,
+  } = useQuery({
+    queryKey: ['migration-bases', cnpjBuscado],
     queryFn: async () => {
       const res = (await getData({
         route: 'admin/migration/bases',
-      })) as unknown as ApiEnvelope<LegacyBase[]>
-      return res?.data ?? []
+        filters: { cnpj: cnpjBuscado ?? undefined },
+      })) as unknown as ApiEnvelope<BaseSearch>
+      // Sem isto, qualquer falha (acesso ao legado não configurado, conexão
+      // recusada) aparecia na tela como "nenhuma base".
+      if (!res?.success) {
+        throw new Error(res?.message ?? 'Não foi possível consultar o legado')
+      }
+      return res.data as BaseSearch
     },
+    enabled: !!cnpjBuscado,
+    retry: false,
   })
+
+  // Com um único resultado pronto para migrar, não há o que escolher.
+  useEffect(() => {
+    const [unica, ...outras] = busca?.encontradas ?? []
+    if (unica && !outras.length && unica.empresaVinculada && !unica.bloqueio) {
+      setBaseSelecionada(unica)
+    }
+  }, [busca])
+
+  function buscar(event: FormEvent) {
+    event.preventDefault()
+    if (!isValidCnpj(cnpj)) {
+      toast.error('CNPJ inválido')
+      return
+    }
+    setBaseSelecionada(null)
+    setRunId(null)
+    // Repetir o mesmo CNPJ consulta de novo: a conta pode ter sido criada
+    // depois da primeira busca.
+    if (cnpj === cnpjBuscado) refazerBusca()
+    else setCnpjBuscado(cnpj)
+  }
 
   const { data: run } = useQuery({
     queryKey: ['migration-run', runId],
@@ -177,21 +224,65 @@ export default function AdminMigracaoPage() {
         <Card>
           <CardContent className="flex flex-col gap-4 p-6">
             <div>
-              <h2 className="text-lg font-semibold">1. Escolha o cliente</h2>
+              <h2 className="text-lg font-semibold">1. Encontre o cliente</h2>
               <p className="text-sm text-muted-foreground">
-                A lista vem do próprio sistema legado. A migração preenche uma
-                conta que já existe: crie a conta do cliente normalmente, com o
-                mesmo CNPJ, e ela aparece vinculada aqui. Login e senha são os
-                do cadastro — a migração não cria acessos, traz os colaboradores
-                para o admin do cliente criar depois.
+                Informe o CNPJ que o cliente passou ao pedir a migração. A busca
+                procura a base dele no sistema legado e a conta do Atrupe com o
+                mesmo CNPJ — crie essa conta pelo cadastro normal antes de
+                migrar. Login e senha são os do cadastro: a migração não cria
+                acessos, traz os colaboradores para o admin do cliente criar
+                depois.
               </p>
             </div>
 
-            {carregandoBases ? (
-              <Skeleton className="h-32 w-full" />
-            ) : (
+            <form
+              onSubmit={buscar}
+              className="flex flex-wrap items-center gap-2"
+            >
+              <Input
+                value={maskCnpj(cnpj)}
+                onChange={(e) =>
+                  setCnpj(e.target.value.replace(/\D/g, '').slice(0, 14))
+                }
+                placeholder="00.000.000/0000-00"
+                inputMode="numeric"
+                aria-label="CNPJ do cliente"
+                className="w-64"
+                disabled={rodando}
+              />
+              <Button
+                type="submit"
+                disabled={buscando || rodando || cnpj.length !== 14}
+              >
+                {buscando ? (
+                  <IconLoader2 className="animate-spin" size={16} />
+                ) : (
+                  <IconSearch size={16} />
+                )}
+                Buscar no legado
+              </Button>
+            </form>
+
+            {erroBusca && (
+              <p className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                {(erroBusca as Error).message}
+              </p>
+            )}
+
+            {buscando && !busca && <Skeleton className="h-20 w-full" />}
+
+            {busca && !erroBusca && (
               <div className="flex flex-col gap-2">
-                {(bases ?? []).map((base) => {
+                {busca.encontradas.length > 1 && (
+                  <p className="flex items-start gap-2 rounded-md bg-muted p-3 text-sm">
+                    <IconAlertTriangle size={16} className="mt-0.5 shrink-0" />
+                    Este CNPJ aparece em {busca.encontradas.length} bases do
+                    legado. Confirme com o cliente qual está em uso: cada conta
+                    recebe uma base só.
+                  </p>
+                )}
+
+                {busca.encontradas.map((base) => {
                   const selecionada = baseSelecionada?.base === base.base
                   const pronta = !!base.empresaVinculada && !base.bloqueio
 
@@ -243,7 +334,7 @@ export default function AdminMigracaoPage() {
                             Conta ainda não criada
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            Crie a conta com este CNPJ e volte aqui
+                            Crie a conta com este CNPJ e busque de novo
                           </span>
                         </div>
                       )}
@@ -251,9 +342,16 @@ export default function AdminMigracaoPage() {
                   )
                 })}
 
-                {(bases ?? []).length === 0 && (
+                {busca.encontradas.length === 0 ? (
                   <p className="text-sm text-muted-foreground">
-                    Nenhuma base liberada no sistema legado.
+                    Nenhuma base do legado tem este CNPJ (
+                    {consultadas(busca.basesConsultadas)}). Confira o número com
+                    o cliente. Se estiver certo, a base dele pode não estar
+                    liberada para leitura — acione o time de desenvolvimento.
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {consultadas(busca.basesConsultadas)} no legado.
                   </p>
                 )}
               </div>
@@ -453,6 +551,10 @@ export default function AdminMigracaoPage() {
       </Dialog>
     </>
   )
+}
+
+function consultadas(total: number) {
+  return total === 1 ? '1 base consultada' : `${total} bases consultadas`
 }
 
 function StatusBadge({ status }: { status: MigrationRun['status'] }) {
