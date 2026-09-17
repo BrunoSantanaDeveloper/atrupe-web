@@ -43,6 +43,8 @@ interface LegacyBase {
   razaoSocial: string | null
   cnpj: string | null
   empresaVinculada: { id: string; name: string } | null
+  /** Motivo para não migrar: CNPJ em mais de uma conta, ou base já carregada em outra. */
+  bloqueio: string | null
 }
 
 interface StepSummary {
@@ -191,7 +193,7 @@ export default function AdminMigracaoPage() {
               <div className="flex flex-col gap-2">
                 {(bases ?? []).map((base) => {
                   const selecionada = baseSelecionada?.base === base.base
-                  const pronta = !!base.empresaVinculada
+                  const pronta = !!base.empresaVinculada && !base.bloqueio
 
                   return (
                     <button
@@ -216,7 +218,20 @@ export default function AdminMigracaoPage() {
                         </p>
                       </div>
 
-                      {pronta ? (
+                      {base.bloqueio ? (
+                        <div className="flex max-w-md flex-col items-end gap-1 text-right">
+                          <Badge
+                            variant="errorOutline"
+                            className="gap-1 px-2 py-0.5"
+                          >
+                            <IconAlertTriangle size={14} />
+                            Migração bloqueada
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {base.bloqueio}
+                          </span>
+                        </div>
+                      ) : pronta ? (
                         <div className="flex items-center gap-2 text-sm">
                           <IconArrowRight size={16} />
                           <span>{base.empresaVinculada!.name}</span>
@@ -246,7 +261,7 @@ export default function AdminMigracaoPage() {
           </CardContent>
         </Card>
 
-        {baseSelecionada?.empresaVinculada && (
+        {baseSelecionada?.empresaVinculada && !baseSelecionada.bloqueio && (
           <Card>
             <CardContent className="flex flex-col gap-4 p-6">
               <div>
