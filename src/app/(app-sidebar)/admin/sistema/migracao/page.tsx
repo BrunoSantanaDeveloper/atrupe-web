@@ -54,6 +54,14 @@ interface BaseSearch {
   /** Bases de cliente que o usuário do legado consegue ler. */
   basesConsultadas: number
   encontradas: LegacyBase[]
+  /** Só quando nada casa: o que a busca leu em cada base liberada. */
+  consultadas?: {
+    base: string
+    razaoSocial: string | null
+    cnpj: string | null
+    cpf: string | null
+    erro?: string
+  }[]
 }
 
 interface StepSummary {
@@ -348,14 +356,40 @@ export default function AdminMigracaoPage() {
                   )
                 })}
 
-                {busca.encontradas.length === 0 ? (
+                {busca.encontradas.length === 0 && (
                   <p className="text-sm text-muted-foreground">
                     Nenhuma base do legado tem este CNPJ (
                     {consultadas(busca.basesConsultadas)}). Confira o número com
                     o cliente. Se estiver certo, a base dele pode não estar
                     liberada para leitura — acione o time de desenvolvimento.
                   </p>
-                ) : (
+                )}
+
+                {busca.encontradas.length === 0 &&
+                  !!busca.consultadas?.length && (
+                    <div className="rounded-md border">
+                      <p className="border-b px-3 py-2 text-xs text-muted-foreground">
+                        O que a busca leu em cada base liberada. O documento sai
+                        do cadastro da empresa dentro da própria base do legado.
+                      </p>
+                      {busca.consultadas.map((item) => (
+                        <p
+                          key={item.base}
+                          className="border-b px-3 py-2 text-xs last:border-b-0"
+                        >
+                          <span className="font-medium">{item.base}</span> ·{' '}
+                          {item.razaoSocial ?? '—'} ·{' '}
+                          {item.cnpj ||
+                            item.cpf ||
+                            (item.erro
+                              ? `sem leitura: ${item.erro}`
+                              : 'sem documento cadastrado')}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                {busca.encontradas.length > 0 && (
                   <p className="text-xs text-muted-foreground">
                     {consultadas(busca.basesConsultadas)} no legado.
                   </p>
