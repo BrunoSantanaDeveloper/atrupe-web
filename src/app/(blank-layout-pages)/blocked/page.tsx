@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 // Icons
@@ -12,6 +13,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 // Component
 import { Logo } from '@/components/Logo'
+
+// Config
+import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/config/routes'
 
 // Actions
 import { auth } from '@/lib/auth'
@@ -31,12 +35,16 @@ export const metadata: Metadata = {
 }
 
 export default async function BlockedPage() {
-  // Get dynamic payment URL
-  const { paymentUrl } = await getPendingPaymentUrl()
+  const session = await auth()
+
+  // Só o middleware envia para cá, e apenas com bloqueio total
+  if (session?.company?.blockLevel !== 'FULL') {
+    redirect(session?.user?.isSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE)
+  }
 
   // Planos disponíveis para troca (a rota é pública, acessível mesmo bloqueado)
-  const [session, plansRes] = await Promise.all([
-    auth(),
+  const [{ paymentUrl }, plansRes] = await Promise.all([
+    getPendingPaymentUrl(),
     getData({ route: '/plan/public/subscription' }),
   ])
 

@@ -3,7 +3,7 @@ import { z } from 'zod'
 
 export const companySchema = z.object({
   general: z.object({
-    legalName: z.string().min(1, 'Nome fantasia é obrigatório'),
+    legalName: z.string().min(1, 'Razão social é obrigatória'),
     name: z.string(),
     cnpj: z.string(),
     stateRegistration: z.string().optional(),

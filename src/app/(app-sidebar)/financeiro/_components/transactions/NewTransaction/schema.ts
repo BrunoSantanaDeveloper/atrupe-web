@@ -5,7 +5,7 @@ export const MAX_INSTALLMENTS_ALLOWED = 120
 export const schemas = z.any()
 
 export const schema = z.object({
-  totalValue: z.number().min(1, 'Digite um valor').optional(),
+  totalValue: z.number().positive('Digite um valor').optional(),
   clientOrSupplierId: z
     .object({
       label: z.string(),

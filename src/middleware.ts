@@ -58,6 +58,12 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectUrl, req.url).toString())
   }
 
+  // Rota inexistente: renderiza o 404 padrão sem revelar o título da página restrita
+  const isAdminRoute = pathname === '/admin' || pathname.startsWith('/admin/')
+  if (isUserLoggedIn && isAdminRoute && !userIsSystemAdmin) {
+    return NextResponse.rewrite(new URL('/pagina-nao-encontrada', req.url))
+  }
+
   // If the user is logged in and is trying to access a guest route, redirect to the root page
   const isRequestedRouteIsGuestRoute = GUEST_ROUTES.some((route) =>
     pathname.endsWith(route),

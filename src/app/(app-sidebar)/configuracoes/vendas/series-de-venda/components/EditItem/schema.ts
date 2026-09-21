@@ -6,17 +6,17 @@ export const schema = z.object({
   title: z.string().min(1, 'Informe o título da série de venda'),
   currentBudgetNumber: z.coerce
     .number()
-    .int('Informe um numero inteiro')
-    .min(0, 'O numero do orçamento deve ser maior ou igual a zero')
+    .int('Informe um número inteiro')
+    .min(0, 'O número do orçamento deve ser maior ou igual a zero')
     .optional(),
   proposalValidity: z.coerce
     .number()
     .min(1, 'Informe a validade da proposta')
-    .max(999, 'A validade da proposta deve ser menor que 999'),
+    .max(999, 'A validade da proposta deve ser de no máximo 999 dias'),
   deliveryDeadline: z.coerce
     .number()
     .min(1, 'Informe o prazo de entrega')
-    .max(999, 'O prazo de entrega deve ser menor que 999'),
+    .max(999, 'O prazo de entrega deve ser de no máximo 999 dias'),
   billing: z.string().min(1, 'Informe o tipo de faturamento'),
   sendToProduction: z
     .string()

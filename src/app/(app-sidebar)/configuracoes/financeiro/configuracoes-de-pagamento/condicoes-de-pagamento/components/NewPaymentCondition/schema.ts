@@ -27,7 +27,7 @@ export const schema = z.object({
     )
     .optional(),
   receivingType: z.string().min(1, 'Campo obrigatório.'),
-  dayInterval: z.number().min(0, 'Deve ser maior que 0'),
+  dayInterval: z.number().min(0, 'Não pode ser negativo'),
   generateInvoice: z.boolean().optional(),
   invoiceType: z.enum(['NFE', 'NFSE', 'NFCE']).optional(),
 })

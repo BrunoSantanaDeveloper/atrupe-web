@@ -28,7 +28,7 @@ export const invoicyConfigSchema = z.object({
   sendXmlAutomatically: z.boolean().optional().default(true),
   sendFiscalEmailCopyTo: z
     .string()
-    .email('E-mail invalido')
+    .email('E-mail inválido')
     .optional()
     .or(z.literal('')),
 })

@@ -66,30 +66,30 @@ const finalityOptions = [
   { value: '1', label: '1 - NF-e normal' },
   { value: '2', label: '2 - NF-e complementar' },
   { value: '3', label: '3 - NF-e de ajuste' },
-  { value: '4', label: '4 - Devolucao/Retorno' },
+  { value: '4', label: '4 - Devolução/Retorno' },
 ]
 
 const consumerPresenceOptions = [
-  { value: '0', label: '0 - Nao se aplica' },
-  { value: '1', label: '1 - Operacao presencial' },
-  { value: '2', label: '2 - Operacao nao presencial, pela Internet' },
-  { value: '3', label: '3 - Operacao nao presencial, Teleatendimento' },
-  { value: '4', label: '4 - NFC-e com entrega a domicilio' },
-  { value: '9', label: '9 - Operacao nao presencial, outros' },
+  { value: '0', label: '0 - Não se aplica' },
+  { value: '1', label: '1 - Operação presencial' },
+  { value: '2', label: '2 - Operação não presencial, pela Internet' },
+  { value: '3', label: '3 - Operação não presencial, Teleatendimento' },
+  { value: '4', label: '4 - NFC-e com entrega a domicílio' },
+  { value: '9', label: '9 - Operação não presencial, outros' },
 ]
 
 const freightOptions = [
   { value: '0', label: '0 - Frete por conta do remetente (CIF)' },
-  { value: '1', label: '1 - Frete por conta do destinatario (FOB)' },
+  { value: '1', label: '1 - Frete por conta do destinatário (FOB)' },
   { value: '2', label: '2 - Frete por conta de terceiros' },
-  { value: '3', label: '3 - Transporte proprio pelo remetente' },
-  { value: '4', label: '4 - Transporte proprio pelo destinatario' },
-  { value: '9', label: '9 - Sem ocorrencia de transporte' },
+  { value: '3', label: '3 - Transporte próprio pelo remetente' },
+  { value: '4', label: '4 - Transporte próprio pelo destinatário' },
+  { value: '9', label: '9 - Sem ocorrência de transporte' },
 ]
 
 function getDestinoLabel(destino: number) {
-  if (destino === 1) return '1 - Operacao interna'
-  if (destino === 2) return '2 - Operacao interestadual'
+  if (destino === 1) return '1 - Operação interna'
+  if (destino === 2) return '2 - Operação interestadual'
   return String(destino || '')
 }
 

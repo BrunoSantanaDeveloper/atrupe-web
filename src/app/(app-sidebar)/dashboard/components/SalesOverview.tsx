@@ -58,26 +58,26 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
     {
       label: 'Aguardando resposta',
       value: formatValue(data?.noResponseTotal || 0),
-      detail: `${data?.noResponseCount || 0} orcamentos`,
+      detail: `${data?.noResponseCount || 0} orçamentos`,
       icon: IconClockCheck,
       variant: 'warningLight',
     },
     {
-      label: 'Nao aprovadas',
+      label: 'Não aprovadas',
       value: formatValue(lostTotal),
       detail: `${lostCount} registros`,
       icon: IconCircleX,
       variant: 'errorLight',
     },
     {
-      label: 'Ticket medio',
+      label: 'Ticket médio',
       value: formatValue(data?.averageTicket || 0),
-      detail: `Aprovacao media ${data?.approvalTime || '0d 0h'}`,
+      detail: `Aprovação média ${data?.approvalTime || '0d 0h'}`,
       icon: IconCoin,
       variant: 'neutralLight',
     },
     {
-      label: 'Comissao estimada',
+      label: 'Comissão estimada',
       value: formatValue(data?.commission || 0),
       detail: 'Sobre vendas aprovadas',
       icon: IconReceiptDollar,
@@ -99,7 +99,7 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
             <Link
               href={`/relatorios/vendas?startDate=${filters.startDate}&endDate=${filters.endDate}`}
             >
-              Ver relatorio
+              Ver relatório
             </Link>
           </Button>
         </PermissionGate>

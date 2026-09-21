@@ -4,19 +4,23 @@ export const newProductsSchema = z.object({
   id: z.string().optional(),
   name: z
     .string({ required_error: 'Campo obrigatório' })
-    .min(2, { message: 'Campo obrigatório' })
+    .min(1, { message: 'Campo obrigatório' })
+    .min(2, { message: 'Mínimo de 2 caracteres' })
     .max(100, 'Máximo 100 caracteres'),
   code: z
     .string({ required_error: 'Campo obrigatório' })
-    .min(2, { message: 'Campo obrigatório' })
+    .min(1, { message: 'Campo obrigatório' })
+    .min(2, { message: 'Mínimo de 2 caracteres' })
     .trim(),
   categoryId: z
     .string({ required_error: 'Campo obrigatório' })
-    .min(2, { message: 'Campo obrigatório' })
+    .min(1, { message: 'Campo obrigatório' })
+    .min(2, { message: 'Mínimo de 2 caracteres' })
     .trim(),
   sectorId: z
     .string({ required_error: 'Campo obrigatório' })
-    .min(2, { message: 'Campo obrigatório' })
+    .min(1, { message: 'Campo obrigatório' })
+    .min(2, { message: 'Mínimo de 2 caracteres' })
     .trim(),
   technicalDescription: z.string().optional().nullable(),
   allowEditValues: z.boolean().default(true),
@@ -28,11 +32,13 @@ export const newProductsSchema = z.object({
       id: z.string({ required_error: 'Campo obrigatório' }).trim().optional(),
       name: z
         .string({ required_error: 'Campo obrigatório' })
-        .min(2, { message: 'Campo obrigatório' })
+        .min(1, { message: 'Campo obrigatório' })
+        .min(2, { message: 'Mínimo de 2 caracteres' })
         .trim(),
       unitKind: z
         .string({ required_error: 'Campo obrigatório' })
-        .min(2, { message: 'Campo obrigatório' })
+        .min(1, { message: 'Campo obrigatório' })
+        .min(2, { message: 'Mínimo de 2 caracteres' })
         .trim(),
       unitCost: z.number().optional().nullable(),
       salePrice: z.number(),
@@ -40,7 +46,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -48,7 +54,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -56,7 +62,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -64,7 +70,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -72,7 +78,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -80,7 +86,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -88,7 +94,7 @@ export const newProductsSchema = z.object({
         .union([z.number(), z.string()])
         .transform((val) => parseFloat(val.toString()))
         .refine((val) => !isNaN(val), {
-          message: 'Formatado inválido',
+          message: 'Formato inválido',
         })
         .optional()
         .nullable(),
@@ -99,7 +105,8 @@ export const newProductsSchema = z.object({
       id: z.string({ required_error: 'Campo obrigatório' }).trim(),
       name: z
         .string({ required_error: 'Campo obrigatório' })
-        .min(2, { message: 'Campo obrigatório' })
+        .min(1, { message: 'Campo obrigatório' })
+        .min(2, { message: 'Mínimo de 2 caracteres' })
         .trim(),
       icon: z.string().optional().nullable(),
       isActive: z.boolean().default(false),

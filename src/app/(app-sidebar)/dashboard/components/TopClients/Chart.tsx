@@ -55,7 +55,7 @@ export function TopClientsChart({ filters }: TopClientsChartProps) {
   if (!data.length) {
     return (
       <div className="flex h-[260px] items-center justify-center text-sm text-gray">
-        Nenhum cliente com venda aprovada no periodo.
+        Nenhum cliente com venda aprovada no período.
       </div>
     )
   }

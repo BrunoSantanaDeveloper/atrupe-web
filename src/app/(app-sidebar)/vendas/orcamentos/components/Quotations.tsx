@@ -77,7 +77,7 @@ function getQuotationFinalValue(quotation: QuotationExportType) {
 
 const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
   {
-    header: 'Referencia',
+    header: 'Referência',
     getValue: getQuotationReference,
   },
   {
@@ -85,7 +85,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     getValue: (quotation) => quotation.client?.name,
   },
   {
-    header: 'Email do cliente',
+    header: 'E-mail do cliente',
     getValue: (quotation) => quotation.client?.email,
   },
   {
@@ -98,7 +98,7 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     getValue: (quotation) => quotation.tag?.text,
   },
   {
-    header: 'Venda rapida',
+    header: 'Venda rápida',
     type: 'boolean',
     key: 'quickSale',
   },
@@ -108,12 +108,12 @@ const QUOTATION_BASE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
     type: 'date',
   },
   {
-    header: 'Concluido em',
+    header: 'Concluído em',
     key: 'finishedAt',
     type: 'date',
   },
   {
-    header: 'Valido ate',
+    header: 'Válido até',
     key: 'dueDate',
     type: 'date',
   },
@@ -137,7 +137,7 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
       (quotation.quotationPayment?.discountTotal ?? 0) / 100,
   },
   {
-    header: 'Comissao adicionada',
+    header: 'Comissão adicionada',
     type: 'currency',
     getValue: (quotation) =>
       quotation.quotationPayment?.commission?.type === 'ADD'
@@ -239,8 +239,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 columns={exportColumns}
                 fileName="orcamentos"
                 getData={getExportQuotations}
-                sheetName="Orcamentos"
-                emptyMessage="Nenhum orcamento disponivel para exportacao"
+                sheetName="Orçamentos"
+                emptyMessage="Nenhum orçamento disponível para exportação"
               />
             </PermissionGate>
             <NewQuotationTriggerButton
@@ -258,7 +258,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty
-                title={`Nenhum orçamento para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
+                title={`Nenhum orçamento com o status ${statusLabel || 'selecionado'}`}
                 icon={IconReportOff}
               />
             ) : (

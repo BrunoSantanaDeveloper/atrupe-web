@@ -8,7 +8,7 @@ export const schema = z.object({
     .min(1, 'Referência é obrigatória')
     .max(100, 'Referência deve ter no máximo 100 caracteres'),
   type: z.enum(['INCREASE', 'DISCOUNT', 'ADVANCE']),
-  amount: z.number().min(0, 'Valor deve ser maior que 0'),
+  amount: z.number().positive('Valor deve ser maior que 0'),
 })
 
 export type FormType = z.infer<typeof schema>

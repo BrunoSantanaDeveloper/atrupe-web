@@ -53,7 +53,7 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
       icon: IconCheck,
     },
     {
-      label: 'Nao aprovados',
+      label: 'Não aprovados',
       value: rejectedCount,
       icon: IconCircleX,
     },
@@ -65,12 +65,12 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="indigoLight" Icon={IconCoin} />
           <CardTitle className="text-gray-700 font-semibold text-base">
-            Orcamentos
+            Orçamentos
           </CardTitle>
         </div>
         <PermissionGate permissions={['sale:quotation:view']}>
           <Button asChild type="button" size="sm" variant="neutralOutline">
-            <Link href="/vendas/orcamentos">Ver orcamentos</Link>
+            <Link href="/vendas/orcamentos">Ver orçamentos</Link>
           </Button>
         </PermissionGate>
       </CardHeader>

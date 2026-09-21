@@ -5,6 +5,12 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
 
+export function metadata() {
+  return {
+    title: 'Assinatura',
+  }
+}
+
 export default function Page({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate

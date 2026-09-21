@@ -55,7 +55,7 @@ export function SalesBySellerChart({ filters }: SalesBySellerChartProps) {
   if (!data.length) {
     return (
       <div className="flex h-[260px] items-center justify-center text-sm text-gray">
-        Nenhuma venda por vendedor no periodo.
+        Nenhuma venda por vendedor no período.
       </div>
     )
   }

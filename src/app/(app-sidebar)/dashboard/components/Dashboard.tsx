@@ -102,7 +102,7 @@ function DashboardContent() {
           <CardContent className="p-8 text-center">
             <h3 className="text-lg font-medium mb-2">Acesso restrito</h3>
             <p className="text-gray-600">
-              Voce nao tem permissao para visualizar informacoes gerais do
+              Você não tem permissão para visualizar informações gerais do
               dashboard.
             </p>
           </CardContent>

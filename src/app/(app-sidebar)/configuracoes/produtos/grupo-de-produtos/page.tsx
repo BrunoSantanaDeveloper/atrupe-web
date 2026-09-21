@@ -5,6 +5,12 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 // Type Imports
 import type { SearchParamsType } from '@/types/coreTypes'
 
+export function metadata() {
+  return {
+    title: 'Grupos de Produtos',
+  }
+}
+
 export default function ProductsGroupPage({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate

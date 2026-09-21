@@ -89,7 +89,7 @@ function getMainNfe(order: OrderExportType) {
 
 const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
   {
-    header: 'Referencia',
+    header: 'Referência',
     getValue: getOrderReference,
   },
   {
@@ -97,7 +97,7 @@ const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
     getValue: (order) => order.quotation?.client?.name,
   },
   {
-    header: 'Email do cliente',
+    header: 'E-mail do cliente',
     getValue: (order) => order.quotation?.client?.email,
   },
   {
@@ -113,7 +113,7 @@ const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
     getValue: (order) => order.quotation?.tag?.text,
   },
   {
-    header: 'Venda rapida',
+    header: 'Venda rápida',
     type: 'boolean',
     getValue: (order) => order.quotation?.quickSale,
   },
@@ -132,15 +132,15 @@ const ORDER_BASE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
     getValue: (order) => getMainNfe(order)?.status,
   },
   {
-    header: 'NF-e numero',
+    header: 'NF-e número',
     getValue: (order) => getMainNfe(order)?.numero,
   },
   {
-    header: 'NF-e serie',
+    header: 'NF-e série',
     getValue: (order) => getMainNfe(order)?.serie,
   },
   {
-    header: 'NF-e emissao',
+    header: 'NF-e emissão',
     getValue: (order) => getMainNfe(order)?.dataEmissao,
     type: 'date',
   },
@@ -164,7 +164,7 @@ const ORDER_VALUE_EXPORT_COLUMNS: ExportColumn<OrderExportType>[] = [
       (order.quotation?.quotationPayment?.discountTotal ?? 0) / 100,
   },
   {
-    header: 'Comissao adicionada',
+    header: 'Comissão adicionada',
     type: 'currency',
     getValue: (order) =>
       order.quotation?.quotationPayment?.commission?.type === 'ADD'
@@ -276,7 +276,7 @@ export function Orders({ searchParams }: SearchParamsType) {
                     fileName="ordens-de-servico"
                     getData={getExportOrders}
                     sheetName="Ordens"
-                    emptyMessage="Nenhuma ordem de servico disponivel para exportacao"
+                    emptyMessage="Nenhuma ordem de serviço disponível para exportação"
                   />
                 </PermissionGate>
                 <NewQuotationTriggerButton
@@ -293,7 +293,7 @@ export function Orders({ searchParams }: SearchParamsType) {
             ) : totals?.todas && totals?.todas > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Nenhuma ordem de serviço para o status ${statusLabel ? `: ${statusLabel}` : 'selecionado'}`}
+                  title={`Nenhuma ordem de serviço com o status ${statusLabel || 'selecionado'}`}
                   icon={IconNewsOff}
                 />
               ) : (

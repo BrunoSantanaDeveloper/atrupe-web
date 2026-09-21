@@ -1,3 +1,5 @@
+import packageJson from '../../../../package.json'
+
 export default function VersionPage() {
-  return <div>Versão: 0.1.1</div>
+  return <div>Versão: {packageJson.version}</div>
 }

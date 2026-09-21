@@ -147,6 +147,9 @@ export default function FinishSubscriptionPage() {
         setTimeout(() => {
           router.replace('/dashboard')
         }, 3000)
+      } else if (checkResult.status === 'not_found') {
+        toast.info('Nenhuma assinatura em andamento')
+        router.replace('/assinatura')
       } else {
         setStatus('waiting_payment')
         setErrorMessage(
@@ -250,8 +253,12 @@ export default function FinishSubscriptionPage() {
             'Aguardando confirmação do pagamento. Você receberá um e-mail quando o pagamento for confirmado.',
           )
           setCountdown(30)
+        } else if (checkResult.status === 'not_found') {
+          // Sem contratação em andamento: não há pagamento a aguardar
+          toast.info('Nenhuma assinatura em andamento')
+          router.replace('/assinatura')
         } else {
-          // Outro status (not_found, no_payments, etc.)
+          // Outro status (no_payments, etc.)
           setStatus('waiting_payment')
           setErrorMessage(
             'Assinatura em processamento. Você receberá um e-mail quando o pagamento for confirmado.',
