@@ -30,8 +30,12 @@ O Atrupe Web é uma aplicação web robusta que oferece funcionalidades completa
 
 ### Pré-requisitos
 
-- Node.js 18+
+- Node.js 18+ (o ambiente de referência usa Node 26 e npm 11)
 - npm, yarn, pnpm ou bun
+- Acesso ao backend (`API_URL`): o ambiente de desenvolvimento é `https://dev.atrupe.com.br`
+
+Para rodar o mapeamento automatizado e a documentação, veja também
+[Ferramentas de apoio](#-ferramentas-de-apoio-mapeamento-e-documentação).
 
 ### 1. Clonar o Repositório
 
@@ -54,19 +58,37 @@ bun install
 
 ### 3. Configurar Variáveis de Ambiente
 
-Crie um arquivo `.env.local` na raiz do projeto com as seguintes variáveis:
+O jeito mais rápido é copiar o exemplo versionado, que já traz todas as chaves:
+
+```bash
+cp .env.example .env.local
+```
+
+Variáveis mínimas para o ambiente local:
 
 ```env
-# URL da aplicação
+# App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_ENV=development
 
-# Configurações de autenticação
-NEXTAUTH_SECRET=your-secret-key-here
-NEXTAUTH_URL=http://localhost:3000
+# Autenticação (Auth.js v5)
+AUTH_SECRET=uma-chave-qualquer-para-desenvolvimento
 
-# Outras configurações necessárias
-# (Consulte a equipe de desenvolvimento para valores específicos)
+# Backend
+API_URL=https://dev.atrupe.com.br
+
+# Logs das chamadas à API
+SHOW_API_REQUEST_LOG=true
+SHOW_API_RESPONSE_LOG=false
+SHOW_API_ERROR_LOG=true
 ```
+
+O `.env.example` traz ainda as variáveis opcionais de rastreamento (GTM, GA4 e
+pixel) e as de testes automatizados. O arquivo `.env.local` está no
+`.gitignore` e **não deve ser commitado**.
+
+> **Rodando o build de produção em localhost:** o Auth.js recusa o host e
+> devolve `UntrustedHost`. Inicie com `AUTH_TRUST_HOST=true npm run start`.
 
 ### 4. Executar o Servidor de Desenvolvimento
 
@@ -125,6 +147,79 @@ npm run lint            # Executa ESLint com correções automáticas
 npm run shadcn          # Adiciona novos componentes ShadCN UI
 ```
 
+## 🧰 Ferramentas de apoio (mapeamento e documentação)
+
+Ferramentas usadas no mapeamento do sistema e na documentação em
+[`openspec/`](openspec/). Não são necessárias para rodar o app, só para
+reproduzir ou continuar esse trabalho.
+
+### Playwright (navegação automatizada)
+
+Já está em `devDependencies` (`@playwright/test`), mas os navegadores são
+baixados à parte, uma vez por máquina:
+
+```bash
+npx playwright install chromium
+```
+
+Os scripts de análise em [`openspec/analise/ferramentas/`](openspec/analise/ferramentas/)
+abrem o navegador com `channel: 'chromium'` e leem as credenciais do
+`.env.local`:
+
+```env
+# Conta de teste da empresa (usada pelos scripts de mapeamento)
+E2E_USER_EMAIL=
+E2E_USER_PASSWORD=
+
+# Conta de administrador do sistema (apenas para a área /admin)
+E2E_ADMIN_EMAIL=
+E2E_ADMIN_PASSWORD=
+```
+
+Use sempre contas do ambiente de desenvolvimento, nunca de produção.
+
+Exemplo de uso do crawler somente-leitura, com o servidor rodando em
+`http://localhost:3000`:
+
+```bash
+node openspec/analise/ferramentas/crawl.js
+```
+
+> Se o download do navegador falhar (proxy ou rede), baixe o pacote do Chromium
+> manualmente e extraia em `~/Library/Caches/ms-playwright/chromium-<build>`
+> (no macOS). A versão usada na referência é a `chromium-1217`.
+
+Opcional: a extensão **Playwright Test for VSCode** (`ms-playwright.playwright`)
+permite rodar e depurar os testes pelo editor.
+
+### OpenSpec (documentação de specs e mudanças)
+
+A documentação do sistema fica em `openspec/` e é validada pela CLI:
+
+```bash
+npm install -g @fission-ai/openspec   # versão de referência: 1.13.1
+openspec validate --all --strict      # valida specs e propostas
+openspec list                         # lista as propostas de mudança
+```
+
+A configuração do projeto está em [`openspec/config.yaml`](openspec/config.yaml):
+os artefatos são escritos em português, mantendo em inglês os títulos estruturais
+do OpenSpec e as palavras SHALL e MUST.
+
+### Python (opcional, só para os relatórios em PDF)
+
+Os PDFs da análise (`openspec/analise/*.pdf`) foram gerados a partir dos
+arquivos Markdown. Para regerá-los ou para ler planilhas e PDFs de evidência:
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate
+pip install markdown pypdf openpyxl pillow
+```
+
+A conversão para PDF usa o próprio Chromium do Playwright, pela API de
+impressão; os HTML de origem estão em
+[`openspec/analise/ferramentas/`](openspec/analise/ferramentas/).
+
 ## 🎨 Padrões de Desenvolvimento
 
 O projeto segue rigorosos padrões de código estabelecidos pela equipe:
@@ -141,6 +236,16 @@ O projeto segue rigorosos padrões de código estabelecidos pela equipe:
 2. Use commits convencionais: `feat:`, `fix:`, `refactor:`, etc.
 3. Mantenha a tipagem TypeScript rigorosa
 4. Teste suas alterações localmente antes de commitar
+
+## 📚 Documentação do sistema
+
+O mapeamento do sistema está em [`openspec/`](openspec/):
+
+- [`openspec/specs/`](openspec/specs/) — comportamento e regras de cada módulo
+- [`openspec/changes/`](openspec/changes/) — propostas de mudança em aberto
+- [`openspec/analise/README.md`](openspec/analise/README.md) — índice da análise:
+  erros confirmados, dúvidas, mapa de rotas, mapa de permissões, revisão em
+  celular e pendências
 
 ## 📚 Recursos Úteis
 
