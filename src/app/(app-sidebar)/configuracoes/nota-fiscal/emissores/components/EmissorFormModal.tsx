@@ -281,7 +281,7 @@ export function EmissorFormModal({
             numeracao?.nfe?.nextNumber ?? emissor.proximoNumeroNfe ?? 1,
           nfeNumberingEnvironment: numeracao?.nfe?.environment ?? 'HOMOLOGACAO',
           serieNfse: String(
-            numeracao?.nfse?.series ?? emissor.serieNfse ?? 'A1',
+            numeracao?.nfse?.series ?? emissor.serieNfse ?? '1',
           ),
           proximoRpsNfse:
             numeracao?.nfse?.nextNumber ?? emissor.proximoRpsNfse ?? 1,
