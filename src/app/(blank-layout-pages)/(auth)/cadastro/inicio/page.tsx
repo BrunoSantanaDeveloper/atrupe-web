@@ -17,7 +17,11 @@ export const metadata: Metadata = {
   description: 'Crie sua conta',
 }
 
-export default function SignupPage() {
+export default function SignupPage({
+  searchParams,
+}: {
+  searchParams: { to?: string }
+}) {
   return (
     <>
       <CardHeader className="p-0 mb-8 text-center">
@@ -27,7 +31,7 @@ export default function SignupPage() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <SignupForm />
+        <SignupForm redirectTo={searchParams?.to} />
       </CardContent>
     </>
   )

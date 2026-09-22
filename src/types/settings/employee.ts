@@ -14,6 +14,8 @@ export type EmployeeType = {
   isActive: boolean
   name: string
   avatarUrl: string
+  /** O usuário deste colaborador é o titular da conta. */
+  isOwner?: boolean
   signatureUrl: string
   sallary: number
   companyId: string

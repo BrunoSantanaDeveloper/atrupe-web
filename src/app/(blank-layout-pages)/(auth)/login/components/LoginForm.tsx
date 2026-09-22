@@ -20,6 +20,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 // Types
 import { type LoginType, loginSchema } from './schema'
+import { safeRedirectPath } from '@/lib/safeRedirect'
 
 // Icons
 import { IconArrowRight } from '@tabler/icons-react'
@@ -32,7 +33,9 @@ export function LoginForm() {
 
   const searchParams = useSearchParams()
 
-  const redirectUrl = searchParams.get('to')
+  // Só destinos internos: um ?to=https://… levaria a pessoa para fora logo
+  // depois de ela digitar a senha.
+  const redirectUrl = safeRedirectPath(searchParams.get('to'))
 
   useEffect(() => {
     if (redirectUrl !== '/') router.refresh()
@@ -152,7 +155,11 @@ export function LoginForm() {
           Não tem uma conta?
         </span>
         <Link
-          href="/cadastro/inicio"
+          href={
+            redirectUrl
+              ? `/cadastro/inicio?to=${encodeURIComponent(redirectUrl)}`
+              : '/cadastro/inicio'
+          }
           className="text-sm font-semibold text-success hover:underline"
         >
           Experimente grátis!

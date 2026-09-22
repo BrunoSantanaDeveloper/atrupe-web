@@ -16,8 +16,11 @@ import { ProgressCircle } from '@/components/ui/progress-circle'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
+import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 
 type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
+
+const ACTIVATED = ['activated', 'already_active', 'unblocked']
 
 interface PlanFeature {
   isActive: boolean
@@ -62,6 +65,69 @@ export default function FinishSubscriptionPage() {
   const searchParams = useSearchParams()
   const { update } = useSession()
 
+  const { refresh } = useRefreshCompanySession()
+
+  /**
+   * Leva à sessão o que o servidor diz agora. Na contratação em três etapas a
+   * assinatura já nasce ativa (contratação registrada libera o acesso), então
+   * "ativa" não significa "paga": se a primeira cobrança ainda está pendente, a
+   * tela diz isso em vez de anunciar sucesso.
+   */
+  const finishActivated = async (checkResult: { subscription?: unknown }) => {
+    const block = await refresh().catch(() => null)
+    // Backend sem a rota de sessão: monta a sessão como antes.
+    if (!block) await legacySessionUpdate(checkResult)
+
+    if (block?.billing?.paymentPending) {
+      setStatus('waiting_payment')
+      setErrorMessage(
+        'Contratação registrada: seu acesso já está liberado. O pagamento ainda está em confirmação — você recebe um e-mail quando ele for confirmado.',
+      )
+      setCountdown(30)
+      return
+    }
+
+    setStatus('success')
+    toast.success('Assinatura realizada com sucesso!')
+    setTimeout(() => {
+      router.replace('/dashboard')
+    }, 3000)
+  }
+
+  /** A montagem da sessão anterior à rota /subscriptions/session. */
+  const legacySessionUpdate = async (checkResult: {
+    subscription?: unknown
+  }) => {
+    const subscription = checkResult.subscription as Subscription | undefined
+    const plan = subscription?.plan
+    if (!plan || !subscription) return
+    const planFeatureKeys =
+      plan.planFeatures
+        ?.filter((pf) => pf.isActive && pf.feature)
+        .map((pf) => pf.feature.key) || []
+    const subFeatureKeys =
+      subscription.subscriptionFeatures
+        ?.filter((sf) => sf.isActive !== false && sf.feature)
+        .map((sf) => sf.feature.key) || []
+    const features = Array.from(
+      new Set([...planFeatureKeys, ...subFeatureKeys]),
+    )
+    const limits: { [key: string]: number } = {}
+    plan.planLimits?.forEach((pl) => {
+      if (pl.limit?.key) limits[pl.limit.key] = pl.value || 0
+    })
+    await update({
+      company: {
+        plan: {
+          name: plan.planType,
+          active: subscription.status === 'ACTIVE',
+          features,
+          limits,
+        },
+      },
+    })
+  }
+
   // Countdown para redirecionamento automático
   useEffect(() => {
     if (status === 'waiting_payment' && countdown > 0) {
@@ -94,59 +160,8 @@ export default function FinishSubscriptionPage() {
 
       setProgress(100)
 
-      if (
-        checkResult.status === 'activated' ||
-        checkResult.status === 'already_active'
-      ) {
-        setStatus('success')
-        toast.success('Assinatura realizada com sucesso!')
-
-        // Atualizar sessão com os dados do plano contratado
-        const subscription = checkResult.subscription as
-          | Subscription
-          | undefined
-        const plan = subscription?.plan
-        let features: string[] = []
-        if (plan && subscription) {
-          // Construir features array dos planFeatures ativos
-          const planFeatureKeys =
-            plan.planFeatures
-              ?.filter((pf) => pf.isActive && pf.feature)
-              .map((pf) => pf.feature.key) || []
-
-          // Incluir módulos adicionais contratados (subscriptionFeatures)
-          const subFeatureKeys =
-            subscription.subscriptionFeatures
-              ?.filter((sf) => sf.isActive !== false && sf.feature)
-              .map((sf) => sf.feature.key) || []
-
-          features = Array.from(
-            new Set([...planFeatureKeys, ...subFeatureKeys]),
-          )
-
-          // Construir limits object dos planLimits
-          const limits: { [key: string]: number } = {}
-          plan.planLimits?.forEach((pl) => {
-            if (pl.limit?.key) {
-              limits[pl.limit.key] = pl.value || 0
-            }
-          })
-
-          await update({
-            company: {
-              plan: {
-                name: plan.planType,
-                active: subscription.status === 'ACTIVE',
-                features,
-                limits,
-              },
-            },
-          })
-        }
-
-        setTimeout(() => {
-          router.replace('/dashboard')
-        }, 3000)
+      if (ACTIVATED.includes(checkResult.status)) {
+        await finishActivated(checkResult)
       } else {
         setStatus('waiting_payment')
         setErrorMessage(
@@ -189,60 +204,8 @@ export default function FinishSubscriptionPage() {
         setProgress(100)
 
         // Verificar o resultado da sincronização
-        if (
-          checkResult.status === 'activated' ||
-          checkResult.status === 'already_active'
-        ) {
-          setStatus('success')
-          toast.success('Assinatura realizada com sucesso!')
-
-          // Atualizar sessão com os dados do plano contratado
-          const subscription = checkResult.subscription as
-            | Subscription
-            | undefined
-          const plan = subscription?.plan
-          let features: string[] = []
-          if (plan && subscription) {
-            // Construir features array dos planFeatures ativos
-            const planFeatureKeys =
-              plan.planFeatures
-                ?.filter((pf) => pf.isActive && pf.feature)
-                .map((pf) => pf.feature.key) || []
-
-            // Incluir módulos adicionais contratados (subscriptionFeatures)
-            const subFeatureKeys =
-              subscription.subscriptionFeatures
-                ?.filter((sf) => sf.isActive !== false && sf.feature)
-                .map((sf) => sf.feature.key) || []
-
-            features = Array.from(
-              new Set([...planFeatureKeys, ...subFeatureKeys]),
-            )
-
-            // Construir limits object dos planLimits
-            const limits: { [key: string]: number } = {}
-            plan.planLimits?.forEach((pl) => {
-              if (pl.limit?.key) {
-                limits[pl.limit.key] = pl.value || 0
-              }
-            })
-
-            await update({
-              company: {
-                plan: {
-                  name: plan.planType,
-                  active: subscription.status === 'ACTIVE',
-                  features,
-                  limits,
-                },
-              },
-            })
-          }
-
-          // Redirecionar após 3 segundos
-          setTimeout(() => {
-            router.replace('/dashboard')
-          }, 3000)
+        if (ACTIVATED.includes(checkResult.status)) {
+          await finishActivated(checkResult)
         } else if (checkResult.status === 'payment_pending') {
           // Pagamento ainda pendente (PIX ou Boleto)
           setStatus('waiting_payment')
@@ -267,6 +230,9 @@ export default function FinishSubscriptionPage() {
     }
 
     processSubscription()
+    // Roda uma vez por retorno do pagamento: incluir finishActivated (recriada
+    // a cada render) repetiria a verificação sem parar.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, router, update])
 
   if (status === 'processing') {

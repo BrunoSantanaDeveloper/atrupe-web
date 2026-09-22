@@ -7,6 +7,7 @@ import type { Session } from 'next-auth'
 // Types Imports
 import type { PropsWithChildren } from 'react'
 import { useEffect, useRef, useCallback } from 'react'
+import { fetchCompanySession } from '@/actions/checkout'
 
 interface Props {
   basePath?: string
@@ -19,6 +20,30 @@ interface Props {
 function SessionActivityHandler({ children }: PropsWithChildren) {
   const { data: session, status, update } = useSession()
   const lastActivityRef = useRef<number>(Date.now())
+  const lastCompanyRefreshRef = useRef<number>(0)
+
+  /**
+   * Busca no servidor o estado da empresa — plano, bloqueio e situação da
+   * cobrança — e o leva à sessão. `update()` sem argumentos só reassinava o
+   * token, sem consultar nada: bloqueio e pagamento confirmado só apareciam
+   * no login seguinte.
+   */
+  const refreshCompanyState = useCallback(async () => {
+    if (!session?.company?.id) return
+    if (Date.now() - lastCompanyRefreshRef.current < 60 * 1000) return
+    lastCompanyRefreshRef.current = Date.now()
+    const res = await fetchCompanySession().catch(() => null)
+    if (res?.success && res.data) {
+      await update({
+        company: {
+          plan: res.data.plan,
+          blockLevel: res.data.blockLevel,
+          billing: res.data.billing,
+          isOwner: res.data.isOwner,
+        },
+      })
+    }
+  }, [session?.company?.id, update])
   const initialRefreshDoneRef = useRef(false)
   const refreshInFlightRef = useRef(false)
 
@@ -176,6 +201,8 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
         if (timeSinceLastActivity < 10 * 60 * 1000) {
           await update()
           await refreshUserData()
+          // Quem volta à aba depois de pagar vê a cobrança já confirmada.
+          await refreshCompanyState()
         }
       }
     }
@@ -185,7 +212,7 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
     }
-  }, [update, refreshUserData, status])
+  }, [update, refreshUserData, refreshCompanyState, status])
 
   // Periodic session refresh to detect blockLevel changes (every 5 minutes)
   useEffect(() => {
@@ -194,12 +221,11 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     const BLOCK_CHECK_INTERVAL = 5 * 60 * 1000 // 5 minutes
 
     const interval = setInterval(async () => {
-      // Silently refresh session to get updated blockLevel from server
-      await update()
+      await refreshCompanyState()
     }, BLOCK_CHECK_INTERVAL)
 
     return () => clearInterval(interval)
-  }, [update, status])
+  }, [refreshCompanyState, status])
 
   return <>{children}</>
 }

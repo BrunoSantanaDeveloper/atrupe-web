@@ -3,6 +3,7 @@ import axios from 'axios'
 import NextAuth, { type User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { UAParser } from 'ua-parser-js'
+import type { BillingSituation } from '@/types/checkout'
 
 interface LoginResponse {
   id: string
@@ -28,6 +29,8 @@ interface LoginResponse {
     blockLevel: string
     features: string[]
     limits: Record<string, number>
+    billing?: BillingSituation | null
+    isOwner?: boolean
   } | null
 }
 
@@ -57,6 +60,10 @@ declare module 'next-auth' {
         features: string[]
         limits: { [key: string]: number }
       }
+      /** Situação da cobrança: alimenta a faixa de pagamento pendente/atrasado. */
+      billing: BillingSituation | null
+      /** Quem está logado é o titular da conta. */
+      isOwner: boolean
     }
     accessToken: string
     sessionId: string
@@ -124,6 +131,8 @@ export const {
             permissions: authData.permissions ?? [],
             features: company?.features ?? [],
             limits: company?.limits ?? {},
+            billing: company?.billing ?? null,
+            isOwner: company?.isOwner ?? false,
           }
         }
 
@@ -235,6 +244,12 @@ export const {
             if (typeof session.company.blockLevel !== 'undefined') {
               token.blockLevel = session.company.blockLevel
             }
+            if (typeof session.company.billing !== 'undefined') {
+              token.billing = session.company.billing
+            }
+            if (typeof session.company.isOwner !== 'undefined') {
+              token.isOwner = session.company.isOwner
+            }
           }
 
           if (session.user) {
@@ -285,6 +300,8 @@ export const {
             features: token.features || [],
             limits: token.limits || {},
           },
+          billing: (token.billing as BillingSituation | null) ?? null,
+          isOwner: !!token.isOwner,
         },
         expires: session.expires,
         accessToken: token.accessToken || '',

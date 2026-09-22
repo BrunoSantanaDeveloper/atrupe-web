@@ -29,12 +29,18 @@ import { createItemNew } from '@/actions/_cruds'
 import { useSignupStore } from '@/store/signupStore'
 
 // import recaptcha from '@public/temp/recaptcha-v2.jpg'
-import { MaskPhoneNumber, maskCpf } from '@/lib/utils'
+import { MaskPhoneNumber } from '@/lib/utils'
+import { safeRedirectPath } from '@/lib/safeRedirect'
 
-export function SignupForm() {
+export function SignupForm({ redirectTo }: { redirectTo?: string }) {
   const router = useRouter()
-  const { signupData, setSignupData, setCountdown, setVerificationToken } =
-    useSignupStore()
+  const {
+    signupData,
+    setSignupData,
+    setCountdown,
+    setVerificationToken,
+    setRedirectTo,
+  } = useSignupStore()
 
   const form = useForm<SignupType>({
     resolver: zodResolver(signupSchema),
@@ -43,8 +49,11 @@ export function SignupForm() {
       email: signupData?.email || '',
       company: signupData?.company || '',
       mobile: signupData?.mobile || '',
-      cpf: signupData?.cpf || '',
     },
+    // Valida ao sair do campo e, depois do primeiro erro, a cada tecla: o
+    // erro some assim que o valor fica válido.
+    mode: 'onTouched',
+    reValidateMode: 'onChange',
   })
 
   const {
@@ -75,6 +84,8 @@ export function SignupForm() {
 
     // Armazenar dados do formulário no store (com email normalizado)
     setSignupData({ ...data, email: normalizedEmail })
+    // Quem veio de um endereço protegido volta para ele depois do cadastro.
+    setRedirectTo(safeRedirectPath(redirectTo))
 
     // Usar o tempo retornado pela API ou 120 como fallback
     const countdownTime = res.data?.canResendIn || 120
@@ -97,7 +108,7 @@ export function SignupForm() {
       >
         <FormInput
           name="name"
-          label="Nome completo"
+          label="Nome completo *"
           placeholder="Digite aqui"
           width="w-full"
           autoFocus
@@ -106,21 +117,21 @@ export function SignupForm() {
         <FormInput
           name="email"
           type="email"
-          label="E-mail"
+          label="E-mail *"
           placeholder="Digite aqui"
           width="w-full"
         />
 
         <FormInput
           name="company"
-          label="Nome fantasia"
+          label="Nome fantasia *"
           placeholder="Digite aqui"
           width="w-full"
         />
 
         <FormInput
           name="mobile"
-          label="Celular"
+          label="Celular *"
           inputMode="tel"
           placeholder="Digite aqui"
           additionalOnChange={(value) => {
@@ -130,22 +141,9 @@ export function SignupForm() {
           maxLength={15}
         />
 
-        <div className="flex flex-col gap-1">
-          <FormInput
-            name="cpf"
-            label="CPF do responsável principal"
-            inputMode="numeric"
-            placeholder="000.000.000-00"
-            additionalOnChange={(value) => {
-              setValue('cpf', maskCpf(String(value)) || '')
-            }}
-            width="w-full"
-            maxLength={14}
-          />
-          <p className="text-xs text-muted-foreground">
-            CPF de quem será o administrador principal desta conta.
-          </p>
-        </div>
+        <p className="text-xs text-gray-500 -mt-2">
+          Campos com * são obrigatórios.
+        </p>
 
         {/* <div className="flex justify-center">
           <Image src={recaptcha} alt="ReCAPTCHA" width={302} height={76} />

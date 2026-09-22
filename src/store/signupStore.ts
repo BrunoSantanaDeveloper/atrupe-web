@@ -18,6 +18,9 @@ interface SignupState {
   verificationToken: string | null
   // Countdown para reenvio de código
   countdown: number
+  // Endereço que a pessoa pediu antes de criar a conta
+  redirectTo: string | null
+  setRedirectTo: (path: string | null) => void
   // Ações
   setSignupData: (data: Partial<SignupType>) => void
   setVerifyEmailData: (data: Partial<VerifyEmailType>) => void
@@ -39,8 +42,10 @@ export const useSignupStore = create<SignupState>()(
       newPasswordData: null,
       verificationToken: null,
       countdown: 3,
+      redirectTo: null,
 
       // Ações
+      setRedirectTo: (path) => set({ redirectTo: path }),
       setSignupData: (data) => set({ signupData: data }),
       setVerifyEmailData: (data) => set({ verifyEmailData: data }),
       setNewPasswordData: (data) => set({ newPasswordData: data }),
@@ -55,6 +60,7 @@ export const useSignupStore = create<SignupState>()(
           newPasswordData: null,
           verificationToken: null,
           countdown: 0,
+          redirectTo: null,
         }),
     }),
     {

@@ -32,10 +32,10 @@ export async function PartialBlockAlert() {
         <IconCashBanknote className="size-8 stroke-1 flex-shrink-0 text-warning-600" />
         <div className="flex flex-col flex-shrink-0">
           <span className="text-sm font-semibold text-warning-600">
-            Mensalidade atrasada
+            Conta bloqueada
           </span>
           <span className="text-sm text-gray">
-            Regularize o pagamento para manter sua conta ativa.
+            Regularize o pagamento para desbloquear sua conta.
           </span>
         </div>
         <Button

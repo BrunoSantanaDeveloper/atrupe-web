@@ -23,6 +23,7 @@ import { createItemNew } from '@/actions/_cruds'
 
 // Analytics
 import { trackRegistrationCompleted, hashString } from '@/lib/analytics'
+import { safeRedirectPath } from '@/lib/safeRedirect'
 
 // Components
 import { toast } from 'sonner'
@@ -31,7 +32,8 @@ import { Logo } from '@/components/Logo'
 export default function ValidationPage() {
   const router = useRouter()
   const [progress, setProgress] = useState(0)
-  const { signupData, newPasswordData, clearSignupData } = useSignupStore()
+  const { signupData, newPasswordData, clearSignupData, redirectTo } =
+    useSignupStore()
   const processStarted = useRef(false)
 
   useEffect(() => {
@@ -65,7 +67,6 @@ export default function ValidationPage() {
           company: signupData?.company,
           mobile: signupData?.mobile,
           password: newPasswordData?.password,
-          cpf: signupData?.cpf,
           oppref: oppref ?? undefined,
           gclid: gclid ?? undefined,
           utm: hasUtm ? utm : undefined,
@@ -137,6 +138,8 @@ export default function ValidationPage() {
           clearSignupData()
           router.replace('/login')
         } else {
+          // Lido antes de limpar o store: é onde o destino está guardado.
+          const destination = safeRedirectPath(redirectTo)
           clearSignupData()
           setProgress(100)
 
@@ -155,7 +158,9 @@ export default function ValidationPage() {
             )
           }
 
-          router.replace('/academy/start')
+          // Quem veio de um endereço protegido volta para ele; os demais
+          // começam pelo Academy.
+          router.replace(destination ?? '/academy/start')
         }
       } catch (error) {
         setProgress(0)

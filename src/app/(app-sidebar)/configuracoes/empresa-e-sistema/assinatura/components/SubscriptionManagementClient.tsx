@@ -154,7 +154,7 @@ export function SubscriptionManagementClient({
                   ? 'Recontratar plano'
                   : isTrial
                     ? 'Contratar plano'
-                    : 'Adicionar módulo'}
+                    : 'Alterar assinatura'}
               </Link>
             </Button>
           ) : undefined

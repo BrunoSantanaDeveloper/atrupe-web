@@ -3,6 +3,7 @@ import { Sidebar } from '@/components/layout/Sidebar'
 import { MobileHeader } from '@/components/layout/MobileHeader'
 import { TrialExpiredAlert } from '@/components/TrialExpiredAlert'
 import { PartialBlockAlert } from '@/components/PartialBlockAlert'
+import { BillingPendingAlert } from '@/components/BillingPendingAlert'
 import { AiChatWidget } from '@/components/ai/AiChatWidget'
 
 // Types
@@ -13,6 +14,7 @@ export default async function AppLayout({ children }: PropsWithChildren) {
     <div className="flex flex-col h-screen">
       <TrialExpiredAlert />
       <PartialBlockAlert />
+      <BillingPendingAlert />
       <MobileHeader />
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />

@@ -169,6 +169,10 @@ export function TableData({ tabs, searchParams }: Props) {
                                   description={item?.role?.name || ''}
                                   imageUrl={item?.avatarUrl || ''}
                                 />
+                                {/* Quem responde pela conta perante a Atrupe. */}
+                                {item?.isOwner && (
+                                  <Badge variant="light">Titular</Badge>
+                                )}
                               </TableCell>
                               <TableCell
                                 className={cn(

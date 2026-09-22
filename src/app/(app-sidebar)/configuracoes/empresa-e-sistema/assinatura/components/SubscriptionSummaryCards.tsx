@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 // Next
 import Image, { StaticImageData } from 'next/image'
+import Link from 'next/link'
 
 // UI
 import { Card, CardContent } from '@/components/ui/card'
@@ -83,7 +84,6 @@ export function SubscriptionSummaryCards({
   }
 
   const isTrial = subscription.plan.planType === 'TRIAL'
-  const isStart = subscription.plan.planType === 'START'
   const isCanceled = subscription.status !== 'ACTIVE'
 
   return (
@@ -172,14 +172,17 @@ export function SubscriptionSummaryCards({
                 )}
               </p>
             </div>
-            {!isTrial && !isStart && !isCanceled && (
+            {!isTrial && !isCanceled && (
               <Button
-                type="button"
+                asChild
                 variant="light"
                 size="iconSm"
-                RightIcon={IconPlus}
                 className="absolute top-3 right-3"
-              />
+              >
+                <Link href="/assinatura" aria-label="Adicionar usuários">
+                  <IconPlus size={16} />
+                </Link>
+              </Button>
             )}
           </CardContent>
         </Card>

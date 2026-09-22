@@ -1,0 +1,336 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useForm, useWatch } from 'react-hook-form'
+import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { IconArrowRight, IconLock } from '@tabler/icons-react'
+
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Form } from '@/components/ui/form'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Spinner } from '@/components/ui/spinner'
+import { generateIdempotencyKey } from '@/lib/idempotency'
+import {
+  fetchContractingCurrent,
+  fetchContractTerms,
+  fetchQuote,
+  submitEvolution,
+} from '@/actions/checkout'
+import { useCheckoutStore } from '@/store/checkoutStore'
+import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
+import type { CheckoutBillingType } from '@/types/checkout'
+
+import { CheckoutHeader } from '../../components/checkout/CheckoutHeader'
+import { OrderSummary } from '../../components/checkout/OrderSummary'
+import { ContractorReadOnly } from './ContractorReadOnly'
+import { PaymentStep } from './PaymentStep'
+import { TermsDialog } from './TermsDialog'
+
+type Step = 'contrato' | 'pagamento'
+
+/**
+ * Evolução para o próximo plano: contrato e pagamento.
+ *
+ * O contratante é o da assinatura em curso, em leitura. O resumo mostra o
+ * crédito dos dias não usados do plano atual, abatido da primeira cobrança; a
+ * renovação é o valor cheio do plano novo.
+ */
+export function EvolutionFlow() {
+  const router = useRouter()
+  const { selection, clear } = useCheckoutStore()
+  const { apply } = useRefreshCompanySession()
+
+  const [step, setStep] = useState<Step>('contrato')
+  const [accepted, setAccepted] = useState(false)
+  const [termsOpen, setTermsOpen] = useState(false)
+  const [termsError, setTermsError] = useState<string | null>(null)
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  const form = useForm<{ billingType: CheckoutBillingType }>({
+    defaultValues: { billingType: 'CREDIT_CARD' },
+  })
+  const billingType = useWatch({ control: form.control, name: 'billingType' })
+
+  // Sem evolução escolhida, a evolução começa pela página de planos.
+  const ready = selection.mode === 'EVOLUTION' && !!selection.planId
+  useEffect(() => {
+    if (!ready) router.replace('/assinatura')
+  }, [ready, router])
+
+  const { data: current } = useQuery({
+    queryKey: ['contracting-current'],
+    queryFn: async () => {
+      const res = await fetchContractingCurrent()
+      if (!res.success || !res.data) throw new Error(res.message)
+      return res.data
+    },
+    enabled: ready,
+    refetchOnWindowFocus: false,
+  })
+  const { data: terms, refetch: refetchTerms } = useQuery({
+    queryKey: ['contract-terms'],
+    queryFn: async () => {
+      const res = await fetchContractTerms()
+      if (!res.success || !res.data) throw new Error(res.message)
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+
+  const quoteQuery = useQuery({
+    queryKey: [
+      'evolution-checkout-quote',
+      selection,
+      billingType,
+      appliedCoupon,
+    ],
+    queryFn: async () => {
+      const res = await fetchQuote({
+        planId: selection.planId!,
+        modules: selection.modules,
+        additionalUsers: selection.additionalUsers,
+        billingType,
+        couponCode: appliedCoupon ?? undefined,
+      })
+      if (!res.success || !res.data) throw new Error(res.message)
+      return res.data
+    },
+    enabled: ready,
+    placeholderData: (previous) => previous,
+  })
+  const quoteResponse = quoteQuery.data
+  const quote = quoteResponse?.quote ?? null
+
+  // A situação mudou: cobrança em aberto, ou a evolução deixou de valer.
+  useEffect(() => {
+    if (!quoteResponse) return
+    if (quoteResponse.intent === 'REGULARIZATION') {
+      router.replace('/assinatura/contratacao?modo=regularizacao')
+    } else if (
+      quoteResponse.intent !== 'EVOLUTION' ||
+      !quoteResponse.eligible
+    ) {
+      toast.warning('Esta evolução não está disponível agora.')
+      router.replace('/assinatura')
+    }
+  }, [quoteResponse, router])
+
+  const goToPayment = () => {
+    if (!accepted) {
+      setTermsError('Leia e aceite os Termos de Contratação para continuar.')
+      return
+    }
+    setStep('pagamento')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const submit = async () => {
+    if (!quote || !terms || !selection.planId) return
+    setSubmitting(true)
+
+    // Chave nova a cada tentativa: reenviar a mesma chave depois de um erro
+    // devolveria o erro guardado, não uma nova tentativa.
+    const res = await submitEvolution(
+      {
+        planId: selection.planId,
+        modules: selection.modules,
+        additionalUsers: selection.additionalUsers,
+        billingType,
+        couponCode: appliedCoupon ?? undefined,
+        expectedTotalCents: quote.totalCents,
+        termsAcceptance: {
+          contractId: terms.contractId,
+          version: terms.version,
+          accepted: true,
+        },
+      },
+      generateIdempotencyKey(),
+    )
+
+    if (res.success && res.data) {
+      if (res.data.session) await apply(res.data.session)
+      clear()
+      if (res.data.paymentUrl) {
+        window.location.href = res.data.paymentUrl
+        return
+      }
+      toast.success(
+        'Evolução concluída. O crédito do plano anterior cobriu a primeira mensalidade.',
+      )
+      router.replace('/dashboard')
+      return
+    }
+
+    setSubmitting(false)
+    switch (res.code) {
+      case 'PRICE_CHANGED':
+        toast.warning(
+          'O valor mudou desde que o resumo foi exibido. Confira o novo total.',
+        )
+        quoteQuery.refetch()
+        break
+      case 'TERMS_OUTDATED':
+        toast.warning(res.message)
+        setAccepted(false)
+        refetchTerms()
+        setStep('contrato')
+        break
+      case 'REGULARIZATION_REQUIRED':
+        router.replace('/assinatura/contratacao?modo=regularizacao')
+        break
+      case 'COUPON_NOT_APPLIED':
+        toast.error(res.message)
+        setAppliedCoupon(null)
+        break
+      case 'SUBSCRIPTION_CHANGED':
+      case 'PLAN_NOT_AVAILABLE':
+        toast.warning(res.message)
+        router.replace('/assinatura')
+        break
+      default:
+        toast.error(res.message)
+    }
+  }
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <Spinner />
+      </div>
+    )
+  }
+
+  const contractor = current?.contractor ?? null
+  const nothingToPay = !!quote && quote.totalCents === 0
+
+  return (
+    <div className="w-full min-h-screen bg-gray-100">
+      <CheckoutHeader
+        title="Evolução de plano"
+        backHref="/assinatura"
+        onBack={step === 'pagamento' ? () => setStep('contrato') : undefined}
+      />
+
+      <Form {...form}>
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="container mx-auto px-4 py-8"
+          noValidate
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div hidden={step !== 'contrato'}>
+                {contractor ? (
+                  <ContractorReadOnly contractor={contractor} />
+                ) : (
+                  <Skeleton className="h-40 w-full" />
+                )}
+              </div>
+              <div hidden={step !== 'pagamento'}>
+                <PaymentStep
+                  appliedCoupon={appliedCoupon}
+                  couponStatus={quote?.coupon}
+                  onApplyCoupon={setAppliedCoupon}
+                />
+              </div>
+            </div>
+
+            <div>
+              <OrderSummary
+                quote={quote}
+                isLoading={quoteQuery.isLoading}
+                billingType={step === 'pagamento' ? billingType : undefined}
+              >
+                {step === 'contrato' ? (
+                  <div className="space-y-4 pt-2">
+                    <label className="flex items-start gap-2 text-sm text-gray-700">
+                      <Checkbox
+                        checked={accepted}
+                        onCheckedChange={(checked) => {
+                          setAccepted(!!checked)
+                          if (checked) setTermsError(null)
+                        }}
+                        className="mt-0.5"
+                      />
+                      <span>
+                        Li e estou de acordo com os{' '}
+                        <button
+                          type="button"
+                          className="text-brand-700 underline"
+                          onClick={() => setTermsOpen(true)}
+                        >
+                          Termos de Contratação
+                        </button>{' '}
+                        da Atrupe.
+                      </span>
+                    </label>
+                    {termsError && (
+                      <p className="text-sm text-error-600" role="alert">
+                        {termsError}
+                      </p>
+                    )}
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={goToPayment}
+                      RightIcon={IconArrowRight}
+                    >
+                      Contratar
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 pt-2">
+                    <Button
+                      type="button"
+                      className="w-full"
+                      onClick={submit}
+                      isLoading={submitting}
+                      disabled={submitting || !quote}
+                    >
+                      {nothingToPay
+                        ? 'Concluir evolução'
+                        : 'Realizar pagamento'}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full"
+                      disabled={submitting}
+                      onClick={() => setStep('contrato')}
+                    >
+                      Voltar
+                    </Button>
+                    <p className="flex items-center justify-center gap-1 text-xs text-gray-500">
+                      <IconLock size={14} /> Pagamento processado com segurança
+                    </p>
+                  </div>
+                )}
+              </OrderSummary>
+            </div>
+          </div>
+        </form>
+      </Form>
+
+      <TermsDialog
+        open={termsOpen}
+        onOpenChange={setTermsOpen}
+        html={terms?.html}
+        version={terms?.version}
+        parties={{
+          contractorType: contractor?.type ?? 'PJ',
+          contractorName: contractor?.name ?? '',
+          contractorDocument: contractor?.document ?? '',
+          representativeName: contractor?.representativeName,
+        }}
+        onAccept={() => {
+          setAccepted(true)
+          setTermsError(null)
+        }}
+      />
+    </div>
+  )
+}

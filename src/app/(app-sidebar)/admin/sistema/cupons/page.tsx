@@ -598,6 +598,12 @@ export default function AdminCouponsPage() {
                     <option value="RECURRING">Recorrente (Sempre)</option>
                     <option value="MONTHS">Meses específicos</option>
                   </select>
+                  <p className="text-xs text-gray-500">
+                    A contratação nova aplica todo cupom só na primeira
+                    cobrança, e o cupom de valor fixo no plano anual abate doze
+                    vezes. A duração acima vale apenas para assinaturas
+                    contratadas antes dela.
+                  </p>
                 </div>
 
                 {durationType === 'MONTHS' && (
