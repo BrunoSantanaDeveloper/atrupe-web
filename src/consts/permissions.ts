@@ -71,6 +71,16 @@ export const permissionsData = [
     ],
   },
   {
+    section: 'Base de custos',
+    key: 'cost',
+    items: [
+      {
+        name: 'Base de custos',
+        key: 'base',
+      },
+    ],
+  },
+  {
     section: 'Relatorios',
     key: 'reports',
     items: [

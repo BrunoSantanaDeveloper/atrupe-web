@@ -1,0 +1,60 @@
+'use client'
+
+// React / Next
+import Link from 'next/link'
+import { useSelectedLayoutSegment } from 'next/navigation'
+
+// UI
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+// Components
+import { Topbar } from '@/components/common/Topbar'
+import { PermissionGate } from '@/components/common/PermissionGate'
+
+// Hooks / Store / Consts
+import { usePermissions } from '@/hooks/usePermissions'
+import { costBaseTabs } from '@/consts/cost-base'
+
+interface Props {
+  children: React.ReactNode
+}
+
+export default function CostBaseLayout({ children }: Props) {
+  const segment = useSelectedLayoutSegment()
+  const { hasAllPermissions } = usePermissions()
+
+  // Cada aba só aparece se o usuário tiver a permissão do seu conteúdo,
+  // somada à de valores, porque todas mostram dinheiro (design.md §9).
+  const tabs = costBaseTabs.filter((tab) =>
+    hasAllPermissions([tab.permission, 'values:values:view']),
+  )
+
+  return (
+    <PermissionGate
+      requireAll
+      permissions={['cost:base:view', 'values:values:view']}
+      fallback={
+        <div className="p-4">
+          Você não tem permissão para visualizar a base de custos.
+        </div>
+      }
+    >
+      <div className="space-y-5">
+        <Topbar
+          title="Base de custos"
+          supportText="Custo mensal de referência da empresa"
+        />
+        <Tabs value={segment || 'resumo'} className="overflow-x-auto">
+          <TabsList>
+            {tabs.map((tab) => (
+              <TabsTrigger key={tab.tab} value={tab.tab} asChild>
+                <Link href={`/base-de-custos/${tab.tab}`}>{tab.label}</Link>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+        {children}
+      </div>
+    </PermissionGate>
+  )
+}
