@@ -120,3 +120,25 @@ export type CostSummary = {
   distributedCost: number
   bySector: { id: string; name: string; value: number }[]
 }
+
+// --- Aba Mão de obra ----------------------------------------------------
+// A carga do setor é a soma das horas por colaborador (F-11), e a coluna de
+// resultado é a margem, não o markup (PR-3).
+
+export type LaborCollaborator = {
+  id: string
+  name: string
+  role: string
+  hours: number
+}
+
+export type LaborSector = {
+  id: string
+  name: string
+  distributedCost: number | null
+  hours: number | null
+  costPerHour: number | null
+  salePrice: number | null
+  margin: number | null
+  collaborators: LaborCollaborator[]
+}

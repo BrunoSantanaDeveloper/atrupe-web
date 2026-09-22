@@ -20,6 +20,8 @@ import type {
   SectorCostOrigin,
   SectorCostsResponse,
   CostSummary,
+  LaborSector,
+  LaborCollaborator,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -660,4 +662,76 @@ export const getCostSummary = async () => {
   }
 
   return { success: true, data, message: '' }
+}
+
+// --- Aba Mão de obra ----------------------------------------------------
+
+const collaborators: { [key: string]: LaborCollaborator[] } = {
+  producao: [
+    { id: 'joao', name: 'João', role: 'Aplicação', hours: 100 },
+    { id: 'marcos', name: 'Marcos', role: 'Gerente de produção', hours: 146 },
+  ],
+  criacao: [{ id: 'allan', name: 'Allan', role: 'Designer', hours: 100 }],
+}
+
+const salePrices: { [key: string]: number } = {
+  producao: 6000,
+  criacao: 3000,
+  confeccao: 3000,
+  instalacao: 3000,
+  marcenaria: 3500,
+}
+
+export const getLaborSectors = async () => {
+  const response = await getSectorCosts()
+
+  const data: LaborSector[] = (response.data?.sectors || [])
+    .filter((sector) => sector.nature === 'PRODUCTIVE')
+    .map((sector) => {
+      const team = collaborators[sector.id] || []
+      const hours = team.reduce((sum, person) => sum + person.hours, 0) || null
+      const distributedCost = sector.totalCost
+      const costPerHour =
+        hours && distributedCost ? Math.round(distributedCost / hours) : null
+      const salePrice = salePrices[sector.id] ?? null
+      const margin =
+        costPerHour && salePrice
+          ? Math.round(((salePrice - costPerHour) / salePrice) * 1000) / 10
+          : null
+
+      return {
+        id: sector.id,
+        name: sector.name,
+        distributedCost,
+        hours,
+        costPerHour,
+        salePrice,
+        margin,
+        collaborators: team,
+      }
+    })
+
+  return { success: true, data, message: '' }
+}
+
+export const updateLaborHours = async ({
+  sectorId,
+  hours,
+}: {
+  sectorId: string
+  hours: { id: string; hours: number }[]
+}) => {
+  const team = collaborators[sectorId]
+
+  if (!team) {
+    return { success: false, data: null, message: 'Setor sem colaboradores' }
+  }
+
+  hours.forEach(({ id, hours: value }) => {
+    const person = team.find((item) => item.id === id)
+
+    if (person) person.hours = Math.max(Math.round(value) || 0, 0)
+  })
+
+  return { success: true, data: null, message: '' }
 }

@@ -1,9 +1,9 @@
-import { TabNotDesigned } from '../components/TabNotDesigned'
+import { LaborCosts } from './components/LaborCosts'
 
 export function metadata() {
   return { title: 'Base de custos' }
 }
 
-export default function Page() {
-  return <TabNotDesigned title="Mão de obra" />
+export default function LaborCostsPage() {
+  return <LaborCosts />
 }
