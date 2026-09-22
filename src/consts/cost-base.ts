@@ -1,6 +1,8 @@
 // Types
 import type { BadgeType } from '@/types/coreTypes'
 import type {
+  AssetGroup,
+  AssetStatus,
   CostCriterion,
   SectorCostOrigin,
 } from '@/app/(app-sidebar)/base-de-custos/types'
@@ -45,3 +47,26 @@ export const sectorAllocationObj = {
   ACQUISITION_VALUE: 'valor de aquisição',
   ACTIVITY_TIME: 'tempo de atividade',
 }
+
+// Situação do patrimônio (P-9 e P-26). Inconsistência é erro de cadastro que
+// impede o custo de ser confiável, por isso vermelho.
+export const assetStatusObj: { [key in AssetStatus]: BadgeType } = {
+  DEPRECIATING: { text: 'Em depreciação', variant: 'successLight' },
+  REVIEW_NEEDED: { text: 'Revisão necessária', variant: 'warningLight' },
+  DEPRECIATED: { text: 'Depreciado', variant: 'blueLight' },
+  INCONSISTENT: { text: 'Inconsistência', variant: 'errorLight' },
+  INACTIVE: { text: 'Inativo', variant: 'neutralLight' },
+}
+
+export const assetGroupObj: { [key in AssetGroup]: string } = {
+  MACHINES: 'Máquinas e equipamentos',
+  FURNITURE: 'Móveis e utensílios',
+  VEHICLES: 'Veículos e frota',
+}
+
+export const assetStatusTabs = [
+  { tab: 'ativos', label: 'Ativos' },
+  { tab: 'em-revisao', label: 'Em revisão' },
+  { tab: 'inconsistencias', label: 'Inconsistências' },
+  { tab: 'inativos', label: 'Inativos' },
+]

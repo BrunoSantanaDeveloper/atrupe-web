@@ -22,6 +22,9 @@ import type {
   CostSummary,
   LaborSector,
   LaborCollaborator,
+  AssetStatus,
+  DepreciationAsset,
+  DepreciationTotals,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -734,4 +737,187 @@ export const updateLaborHours = async ({
   })
 
   return { success: true, data: null, message: '' }
+}
+
+// --- Aba Patrimônios ----------------------------------------------------
+
+type AssetSeed = Omit<
+  DepreciationAsset,
+  'depreciableValue' | 'depreciatedValue' | 'remainingValue'
+> & { residualValue: number }
+
+const assetSeeds: AssetSeed[] = [
+  {
+    id: '1',
+    name: 'Impressora Solvente',
+    group: 'MACHINES',
+    sector: 'Impressão',
+    acquisitionValue: 7000000,
+    residualValue: 2100000,
+    monthlyDepreciation: 64167,
+    usefulLifeMonths: 76,
+    elapsedMonths: 19,
+    status: 'DEPRECIATING',
+  },
+  {
+    id: '2',
+    name: 'Impressora Sublimática',
+    group: 'MACHINES',
+    sector: 'Impressão',
+    acquisitionValue: 4000000,
+    residualValue: 1200000,
+    monthlyDepreciation: 23333,
+    usefulLifeMonths: 120,
+    elapsedMonths: 52,
+    status: 'DEPRECIATING',
+  },
+  {
+    id: '3',
+    name: 'Plotter de recorte',
+    group: 'MACHINES',
+    sector: 'Impressão',
+    acquisitionValue: 2000000,
+    residualValue: 600000,
+    monthlyDepreciation: 11667,
+    usefulLifeMonths: 120,
+    elapsedMonths: 96,
+    status: 'REVIEW_NEEDED',
+  },
+  {
+    id: '4',
+    name: 'Router',
+    group: 'MACHINES',
+    sector: 'CNC',
+    acquisitionValue: 8000000,
+    residualValue: 2400000,
+    monthlyDepreciation: 58333,
+    usefulLifeMonths: 96,
+    elapsedMonths: 96,
+    status: 'DEPRECIATED',
+  },
+  {
+    id: '5',
+    name: 'Ilhoseira',
+    group: 'MACHINES',
+    sector: 'Produção',
+    acquisitionValue: 600000,
+    residualValue: 600000,
+    monthlyDepreciation: null,
+    usefulLifeMonths: 60,
+    elapsedMonths: 4,
+    status: 'INCONSISTENT',
+  },
+  {
+    id: '6',
+    name: 'Móveis administrativo',
+    group: 'FURNITURE',
+    sector: 'Administração',
+    acquisitionValue: 1200000,
+    residualValue: 200000,
+    monthlyDepreciation: 16667,
+    usefulLifeMonths: 60,
+    elapsedMonths: 24,
+    status: 'DEPRECIATING',
+  },
+  {
+    id: '7',
+    name: 'Veículo de entrega',
+    group: 'VEHICLES',
+    sector: 'Frota',
+    acquisitionValue: 9000000,
+    residualValue: 3000000,
+    monthlyDepreciation: 20000,
+    usefulLifeMonths: 72,
+    elapsedMonths: 18,
+    status: 'DEPRECIATING',
+  },
+  {
+    id: '8',
+    name: 'Impressora antiga',
+    group: 'MACHINES',
+    sector: 'Impressão',
+    acquisitionValue: 3000000,
+    residualValue: 900000,
+    monthlyDepreciation: null,
+    usefulLifeMonths: 60,
+    elapsedMonths: 60,
+    status: 'INACTIVE',
+  },
+]
+
+const withDepreciation = (asset: AssetSeed): DepreciationAsset => {
+  const depreciableValue = asset.acquisitionValue - asset.residualValue
+  const depreciatedValue = Math.min(
+    (asset.monthlyDepreciation || 0) * asset.elapsedMonths,
+    depreciableValue,
+  )
+
+  return {
+    id: asset.id,
+    name: asset.name,
+    group: asset.group,
+    sector: asset.sector,
+    acquisitionValue: asset.acquisitionValue,
+    depreciableValue,
+    monthlyDepreciation: asset.monthlyDepreciation,
+    depreciatedValue,
+    remainingValue: depreciableValue - depreciatedValue,
+    usefulLifeMonths: asset.usefulLifeMonths,
+    elapsedMonths: asset.elapsedMonths,
+    status: asset.status,
+  }
+}
+
+const statusByTab: { [key: string]: AssetStatus[] } = {
+  ativos: ['DEPRECIATING', 'DEPRECIATED'],
+  'em-revisao': ['REVIEW_NEEDED'],
+  inconsistencias: ['INCONSISTENT'],
+  inativos: ['INACTIVE'],
+}
+
+export const getDepreciationAssets = async ({
+  filters,
+}: {
+  filters?: { [key: string]: string | undefined }
+}) => {
+  const tab = filters?.status || 'ativos'
+  const search = filters?.search?.trim().toLowerCase()
+
+  const data = assetSeeds
+    .map(withDepreciation)
+    .filter((asset) => statusByTab[tab]?.includes(asset.status))
+    .filter((asset) => !search || asset.name.toLowerCase().includes(search))
+
+  return { success: true, data, message: '' }
+}
+
+export const getDepreciationTotals = async () => {
+  const all = assetSeeds.map(withDepreciation)
+  const active = all.filter((asset) => asset.status !== 'INACTIVE')
+
+  const data: DepreciationTotals = {
+    invested: active.reduce((sum, asset) => sum + asset.acquisitionValue, 0),
+    depreciated: active.reduce((sum, asset) => sum + asset.depreciatedValue, 0),
+    remaining: active.reduce((sum, asset) => sum + asset.remainingValue, 0),
+    monthlyDepreciation: active.reduce(
+      (sum, asset) => sum + (asset.monthlyDepreciation || 0),
+      0,
+    ),
+    activeAssets: active.length,
+  }
+
+  return { success: true, data, message: '' }
+}
+
+export const getDepreciationCounts = async () => {
+  const all = assetSeeds.map(withDepreciation)
+
+  const data = Object.fromEntries(
+    Object.entries(statusByTab).map(([tab, statuses]) => [
+      tab,
+      all.filter((asset) => statuses.includes(asset.status)).length,
+    ]),
+  )
+
+  return { success: true, data, message: '' }
 }

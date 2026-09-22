@@ -142,3 +142,39 @@ export type LaborSector = {
   margin: number | null
   collaborators: LaborCollaborator[]
 }
+
+// --- Aba Patrimônios ----------------------------------------------------
+// Relatório de depreciação, com as quatro situações da P-9 e a inconsistência
+// definida na P-26 (areas/01-patrimonios.md).
+
+export type AssetStatus =
+  | 'DEPRECIATING'
+  | 'REVIEW_NEEDED'
+  | 'DEPRECIATED'
+  | 'INCONSISTENT'
+  | 'INACTIVE'
+
+export type AssetGroup = 'MACHINES' | 'FURNITURE' | 'VEHICLES'
+
+export type DepreciationAsset = {
+  id: string
+  name: string
+  group: AssetGroup
+  sector: string
+  acquisitionValue: number
+  depreciableValue: number
+  monthlyDepreciation: number | null
+  depreciatedValue: number
+  remainingValue: number
+  usefulLifeMonths: number
+  elapsedMonths: number
+  status: AssetStatus
+}
+
+export type DepreciationTotals = {
+  invested: number
+  depreciated: number
+  remaining: number
+  monthlyDepreciation: number
+  activeAssets: number
+}
