@@ -1,9 +1,9 @@
-import { TabNotDesigned } from '../components/TabNotDesigned'
+import { SectorCosts } from './components/SectorCosts'
 
 export function metadata() {
   return { title: 'Base de custos' }
 }
 
-export default function Page() {
-  return <TabNotDesigned title="Por setor" />
+export default function SectorCostsPage() {
+  return <SectorCosts />
 }

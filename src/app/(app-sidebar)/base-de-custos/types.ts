@@ -64,3 +64,40 @@ export type DistributionTotals = {
   notDistributedCost: number
   receivingSectors: number
 }
+
+// --- Aba Por setor ------------------------------------------------------
+// A tela para no custo: produtividade e custo unitário são da Precificação
+// (regras-de-negocio/areas/05-base-de-custos.md §9).
+
+export type SectorCostOrigin = 'LABOR' | 'ASSETS' | 'DEPRECIATION' | 'OTHER'
+
+export type SectorCostItem = {
+  id: string
+  name: string
+  origin: SectorCostOrigin
+  detail: string
+  value: number
+}
+
+export type SectorCost = {
+  id: string
+  name: string
+  nature: SectorNature
+  labor: number | null
+  assets: number | null
+  depreciation: number | null
+  other: number | null
+  ownCost: number | null
+  // Só existe quando a empresa distribui o administrativo (BC-5)
+  receivedCost: number | null
+  totalCost: number | null
+  // Critério do rateio interno do setor entre as máquinas (BC-4)
+  allocationCriterion: 'ACQUISITION_VALUE' | 'ACTIVITY_TIME'
+  items: SectorCostItem[]
+}
+
+export type SectorCostsResponse = {
+  referenceMonth: string
+  isDistributing: boolean
+  sectors: SectorCost[]
+}

@@ -16,6 +16,9 @@ import type {
   DistributionSector,
   DistributionResponse,
   DistributionTotals,
+  SectorCostItem,
+  SectorCostOrigin,
+  SectorCostsResponse,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -411,4 +414,207 @@ export const updateDistribution = async ({
   })
 
   return { success: true, data: null, message: '' }
+}
+
+// --- Aba Por setor ------------------------------------------------------
+
+const sectorCostItems: { [key: string]: SectorCostItem[] } = {
+  impressao: [
+    {
+      id: 'imp-1',
+      name: 'Impressora Solvente',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 64167,
+    },
+    {
+      id: 'imp-2',
+      name: 'Impressora Solvente',
+      origin: 'ASSETS',
+      detail: 'Manutenção — a cada 6 meses',
+      value: 41667,
+    },
+    {
+      id: 'imp-3',
+      name: 'Impressora Sublimática',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 23333,
+    },
+    {
+      id: 'imp-4',
+      name: 'Plotter de recorte',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 11667,
+    },
+    {
+      id: 'imp-5',
+      name: 'Impressora Offset',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 35000,
+    },
+    {
+      id: 'imp-6',
+      name: 'Móveis do setor',
+      origin: 'DEPRECIATION',
+      detail: 'Cadastro simplificado',
+      value: 7583,
+    },
+  ],
+  producao: [
+    {
+      id: 'prod-1',
+      name: 'Marcos — Gerente de produção',
+      origin: 'LABOR',
+      detail: 'Salário, encargos e benefícios',
+      value: 405750,
+    },
+  ],
+  criacao: [
+    {
+      id: 'cri-1',
+      name: 'Allan — Designer',
+      origin: 'LABOR',
+      detail: 'Salário, encargos e benefícios',
+      value: 362250,
+    },
+  ],
+  cnc: [
+    {
+      id: 'cnc-1',
+      name: 'Router',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 58333,
+    },
+    {
+      id: 'cnc-2',
+      name: 'Router',
+      origin: 'ASSETS',
+      detail: 'Manutenção e consumíveis',
+      value: 60500,
+    },
+    {
+      id: 'cnc-3',
+      name: 'Laser CO2',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 32083,
+    },
+    {
+      id: 'cnc-4',
+      name: 'Fiber',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 29167,
+    },
+  ],
+  grafica: [
+    {
+      id: 'gra-1',
+      name: 'Laser Color',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 30333,
+    },
+  ],
+  frota: [
+    {
+      id: 'fro-1',
+      name: 'Veículo',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 20000,
+    },
+  ],
+  administracao: [
+    {
+      id: 'adm-1',
+      name: 'Natihely — Administrativo',
+      origin: 'LABOR',
+      detail: 'Salário, encargos e benefícios',
+      value: 716833,
+    },
+    {
+      id: 'adm-2',
+      name: 'Despesas administrativas',
+      origin: 'OTHER',
+      detail: 'Aluguel, energia, contabilidade e outras contas',
+      value: 875099,
+    },
+    {
+      id: 'adm-3',
+      name: 'Móveis administrativo',
+      origin: 'DEPRECIATION',
+      detail: 'Depreciação mensal',
+      value: 16667,
+    },
+    {
+      id: 'adm-4',
+      name: 'Material de limpeza',
+      origin: 'OTHER',
+      detail: 'Lançamento direto no setor',
+      value: 10500,
+    },
+  ],
+  comercial: [
+    {
+      id: 'com-1',
+      name: 'Equipe comercial',
+      origin: 'LABOR',
+      detail: 'Salário, encargos e benefícios',
+      value: 480000,
+    },
+  ],
+}
+
+const sumOrigin = (items: SectorCostItem[], origin: SectorCostOrigin) => {
+  const total = items
+    .filter((item) => item.origin === origin)
+    .reduce((sum, item) => sum + item.value, 0)
+
+  // Sem lançamento na origem devolve null: a tela mostra `-` (design.md §7)
+  return total || null
+}
+
+export const getSectorCosts = async () => {
+  const distributed = distributedCost()
+
+  const data: SectorCostsResponse = {
+    referenceMonth: REFERENCE_MONTH,
+    isDistributing: distributed > 0,
+    sectors: sectors.map((sector) => {
+      const items = sectorCostItems[sector.id] || []
+      const ownCost = items.reduce((sum, item) => sum + item.value, 0) || null
+      const receivedCost =
+        sector.nature === 'PRODUCTIVE' && sector.percentage > 0
+          ? Math.round((administrativeCost() * sector.percentage) / 100)
+          : null
+
+      return {
+        id: sector.id,
+        name: sector.name,
+        nature: sector.nature,
+        labor: sumOrigin(items, 'LABOR'),
+        assets: sumOrigin(items, 'ASSETS'),
+        depreciation: sumOrigin(items, 'DEPRECIATION'),
+        other: sumOrigin(items, 'OTHER'),
+        ownCost,
+        receivedCost,
+        totalCost:
+          ownCost === null && receivedCost === null
+            ? null
+            : (ownCost || 0) + (receivedCost || 0),
+        allocationCriterion:
+          sector.id === 'impressao'
+            ? ('ACTIVITY_TIME' as const)
+            : ('ACQUISITION_VALUE' as const),
+        items,
+      }
+    }),
+  }
+
+  return { success: true, data, message: '' }
 }
