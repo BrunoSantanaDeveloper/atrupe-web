@@ -13,6 +13,9 @@ import type {
   AdminExpenseGroup,
   AdminExpensesResponse,
   AdminExpensesTotals,
+  DistributionSector,
+  DistributionResponse,
+  DistributionTotals,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -267,4 +270,143 @@ export const updateAdminExpenseCriterion = async ({
   account.manualValue = criterion === 'MANUAL' ? (manualValue ?? null) : null
 
   return { success: true, data: withReference(account), message: '' }
+}
+
+// --- Aba Distribuição ---------------------------------------------------
+// Também provisória. O padrão nasce sem distribuição, como manda o método do
+// custo puro (openspec/regras-de-negocio/metodo-custo-puro.md).
+
+const sectors: DistributionSector[] = [
+  {
+    id: 'administracao',
+    name: 'Administração',
+    nature: 'ADMINISTRATIVE',
+    percentage: 0,
+    directCost: 1619099,
+  },
+  {
+    id: 'comercial',
+    name: 'Comercial',
+    nature: 'ADMINISTRATIVE',
+    percentage: 0,
+    directCost: 480000,
+  },
+  {
+    id: 'impressao',
+    name: 'Impressão',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 183417,
+  },
+  {
+    id: 'cnc',
+    name: 'CNC',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 119583,
+  },
+  {
+    id: 'producao',
+    name: 'Produção',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 405750,
+  },
+  {
+    id: 'criacao',
+    name: 'Criação',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 362250,
+  },
+  {
+    id: 'grafica',
+    name: 'Gráfica',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 30333,
+  },
+  {
+    id: 'frota',
+    name: 'Frota',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: 20000,
+  },
+  {
+    id: 'marcenaria',
+    name: 'Marcenaria',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: null,
+  },
+  {
+    id: 'instalacao',
+    name: 'Instalação',
+    nature: 'PRODUCTIVE',
+    percentage: 0,
+    directCost: null,
+  },
+]
+
+const distributedCost = () =>
+  sectors
+    .filter((sector) => sector.nature === 'ADMINISTRATIVE')
+    .reduce(
+      (sum, sector) =>
+        sum + Math.round(((sector.directCost || 0) * sector.percentage) / 100),
+      0,
+    )
+
+export const getDistribution = async () => {
+  const data: DistributionResponse = {
+    referenceMonth: REFERENCE_MONTH,
+    sectors,
+  }
+
+  return { success: true, data, message: '' }
+}
+
+export const getDistributionTotals = async () => {
+  const administrativeCost = sectors
+    .filter((sector) => sector.nature === 'ADMINISTRATIVE')
+    .reduce((sum, sector) => sum + (sector.directCost || 0), 0)
+
+  const data: DistributionTotals = {
+    administrativeCost,
+    distributedCost: distributedCost(),
+    notDistributedCost: administrativeCost - distributedCost(),
+    receivingSectors: sectors.filter(
+      (sector) => sector.nature === 'PRODUCTIVE' && sector.percentage > 0,
+    ).length,
+  }
+
+  return { success: true, data, message: '' }
+}
+
+export const updateDistribution = async ({
+  percentages,
+}: {
+  percentages: { id: string; percentage: number }[]
+}) => {
+  const received = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
+  const total = percentages
+    .filter((item) => received.some((sector) => sector.id === item.id))
+    .reduce((sum, item) => sum + item.percentage, 0)
+
+  if (total > 100) {
+    return {
+      success: false,
+      data: null,
+      message: 'A soma dos setores produtivos não pode passar de 100%.',
+    }
+  }
+
+  percentages.forEach(({ id, percentage }) => {
+    const sector = sectors.find((item) => item.id === id)
+
+    if (sector) sector.percentage = Math.min(Math.max(percentage, 0), 100)
+  })
+
+  return { success: true, data: null, message: '' }
 }

@@ -38,3 +38,29 @@ export type AdminExpensesTotals = {
   manual: number
   referenceValue: number
 }
+
+// A natureza vem do cadastro do setor (regras-de-negocio/areas/05-base-de-custos.md, BC-7)
+export type SectorNature = 'ADMINISTRATIVE' | 'PRODUCTIVE'
+
+// Valores em centavos. `percentage` é inteiro de 0 a 100:
+// no setor administrativo é quanto do custo dele é distribuído;
+// no setor produtivo é quanto do total administrativo ele recebe (BC-5 e BC-6).
+export type DistributionSector = {
+  id: string
+  name: string
+  nature: SectorNature
+  percentage: number
+  directCost: number | null
+}
+
+export type DistributionResponse = {
+  referenceMonth: string
+  sectors: DistributionSector[]
+}
+
+export type DistributionTotals = {
+  administrativeCost: number
+  distributedCost: number
+  notDistributedCost: number
+  receivingSectors: number
+}

@@ -1,9 +1,9 @@
-import { TabNotDesigned } from '../components/TabNotDesigned'
+import { Distribution } from './components/Distribution'
 
 export function metadata() {
   return { title: 'Base de custos' }
 }
 
-export default function Page() {
-  return <TabNotDesigned title="Distribuição" />
+export default function DistributionPage() {
+  return <Distribution />
 }
