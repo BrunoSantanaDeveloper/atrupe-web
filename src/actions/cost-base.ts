@@ -19,6 +19,7 @@ import type {
   SectorCostItem,
   SectorCostOrigin,
   SectorCostsResponse,
+  CostSummary,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -614,6 +615,48 @@ export const getSectorCosts = async () => {
         items,
       }
     }),
+  }
+
+  return { success: true, data, message: '' }
+}
+
+// --- Aba Resumo ---------------------------------------------------------
+
+export const getCostSummary = async () => {
+  const response = await getSectorCosts()
+  const all = response.data?.sectors || []
+
+  const sumOf = (key: 'labor' | 'assets' | 'depreciation' | 'other') =>
+    all.reduce((total, sector) => total + (sector[key] || 0), 0)
+
+  const productiveCost = all
+    .filter((sector) => sector.nature === 'PRODUCTIVE')
+    .reduce((total, sector) => total + (sector.ownCost || 0), 0)
+
+  const administrative = all
+    .filter((sector) => sector.nature === 'ADMINISTRATIVE')
+    .reduce((total, sector) => total + (sector.ownCost || 0), 0)
+
+  const data: CostSummary = {
+    referenceMonth: REFERENCE_MONTH,
+    total: productiveCost + administrative,
+    byOrigin: {
+      adminExpenses: sumOf('other'),
+      labor: sumOf('labor'),
+      assets: sumOf('assets'),
+      depreciation: sumOf('depreciation'),
+    },
+    productiveCost,
+    administrativeCost: administrative,
+    distributedCost: distributedCost(),
+    bySector: all
+      .filter((sector) => sector.ownCost)
+      .map((sector) => ({
+        id: sector.id,
+        name: sector.name,
+        value: sector.ownCost || 0,
+      }))
+      .sort((a, b) => b.value - a.value),
   }
 
   return { success: true, data, message: '' }

@@ -1,9 +1,9 @@
-import { TabNotDesigned } from '../components/TabNotDesigned'
+import { CostSummaryView } from './components/CostSummaryView'
 
 export function metadata() {
   return { title: 'Base de custos' }
 }
 
-export default function Page() {
-  return <TabNotDesigned title="Resumo" />
+export default function CostSummaryPage() {
+  return <CostSummaryView />
 }

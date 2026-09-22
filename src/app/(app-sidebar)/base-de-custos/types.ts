@@ -101,3 +101,22 @@ export type SectorCostsResponse = {
   isDistributing: boolean
   sectors: SectorCost[]
 }
+
+// --- Aba Resumo ---------------------------------------------------------
+// Primeira tela da Base de custos: visual, de leitura, com links para as
+// abas que definem cada número (areas/05-base-de-custos.md §8).
+
+export type CostSummary = {
+  referenceMonth: string
+  total: number
+  byOrigin: {
+    adminExpenses: number
+    labor: number
+    assets: number
+    depreciation: number
+  }
+  productiveCost: number
+  administrativeCost: number
+  distributedCost: number
+  bySector: { id: string; name: string; value: number }[]
+}
