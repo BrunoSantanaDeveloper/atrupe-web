@@ -17,6 +17,7 @@ import {
 
 // Components
 import { DistributionData } from './DistributionData'
+import { AdministrativeCostTable } from './AdministrativeCostTable'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -90,13 +91,10 @@ export function Distribution() {
   )
   const productive = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
 
-  // O que sai dos administrativos é o que os produtivos repartem entre si (BC-5)
-  const distributedCost = administrative.reduce(
-    (sum, sector) =>
-      sum +
-      Math.round(
-        ((sector.directCost || 0) * (percentages[sector.id] ?? 0)) / 100,
-      ),
+  // Todos os administrativos formam um total único, que é o que pode ser
+  // rateado entre os produtivos (BC-7)
+  const administrativeCost = administrative.reduce(
+    (sum, sector) => sum + (sector.directCost || 0),
     0,
   )
 
@@ -140,18 +138,14 @@ export function Distribution() {
         ) : (
           <>
             <CardContent className="space-y-8">
-              <DistributionData
-                isAdministrative
+              <AdministrativeCostTable
                 sectors={administrative}
-                percentages={percentages}
-                distributedCost={distributedCost}
-                onChange={handleChange}
+                total={administrativeCost}
               />
               <DistributionData
-                isAdministrative={false}
                 sectors={productive}
                 percentages={percentages}
-                distributedCost={distributedCost}
+                administrativeCost={administrativeCost}
                 onChange={handleChange}
               />
             </CardContent>

@@ -20,9 +20,12 @@ async function openDistribution(page: Page) {
 const productiveRow = (page: Page, name: string) =>
   page.getByRole('table').nth(1).getByRole('row').filter({ hasText: name })
 
-const percentInput = (page: Page, label: string, sector: string) =>
+const adminRow = (page: Page, name: string) =>
+  page.getByRole('table').first().getByRole('row').filter({ hasText: name })
+
+const percentInput = (page: Page, sector: string) =>
   page.getByRole('spinbutton', {
-    name: `${label} em porcentagem — ${sector}`,
+    name: `Quanto recebe em porcentagem — ${sector}`,
   })
 
 test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
@@ -50,14 +53,30 @@ test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
     await openDistribution(page)
 
     await expect(
-      page.getByRole('columnheader', { name: 'Quanto distribuir' }),
-    ).toBeVisible()
-    await expect(
       page.getByRole('columnheader', { name: 'Quanto recebe' }),
     ).toBeVisible()
 
     // "Balanceamento" era o nome do legado e não deve aparecer
     await expect(page.getByText('Balanceamento')).toHaveCount(0)
+  })
+
+  test('os administrativos formam um total único, sem percentual (BC-7)', async ({
+    page,
+  }) => {
+    await openDistribution(page)
+
+    // Administração R$ 16.190,99 + Comercial R$ 4.800,00
+    await expect(
+      adminRow(page, 'Total administrativo a distribuir'),
+    ).toContainText('R$ 20.990,99')
+
+    // nenhum controle de percentual do lado administrativo
+    await expect(
+      page.getByRole('columnheader', { name: 'Quanto distribuir' }),
+    ).toHaveCount(0)
+    await expect(
+      page.getByRole('spinbutton', { name: /Administração/ }),
+    ).toHaveCount(0)
   })
 })
 
@@ -78,31 +97,29 @@ test.describe('Distribuição — regras de cálculo (BC-5)', () => {
   }) => {
     await openDistribution(page)
 
-    // Administração distribui 100% do seu custo (R$ 16.190,99)
-    await percentInput(page, 'Quanto distribuir', 'Administração').fill('100')
-    // Impressão recebe metade
-    await percentInput(page, 'Quanto recebe', 'Impressão').fill('50')
+    // Impressão recebe metade do total administrativo (R$ 20.990,99)
+    await percentInput(page, 'Impressão').fill('50')
 
-    await expect(productiveRow(page, 'Impressão')).toContainText('R$ 8.095,50')
-    // custo direto R$ 1.834,17 + recebido R$ 8.095,50
-    await expect(productiveRow(page, 'Impressão')).toContainText('R$ 9.929,67')
+    await expect(productiveRow(page, 'Impressão')).toContainText('R$ 10.495,50')
+    // custo direto R$ 1.834,17 + recebido R$ 10.495,50
+    await expect(productiveRow(page, 'Impressão')).toContainText('R$ 12.329,67')
   })
 
   test('o rodapé acompanha o total distribuído', async ({ page }) => {
     await openDistribution(page)
 
-    await percentInput(page, 'Quanto recebe', 'Impressão').fill('60')
+    await percentInput(page, 'Impressão').fill('60')
     await expect(page.getByText('Faltam 40%')).toBeVisible()
 
-    await percentInput(page, 'Quanto recebe', 'Produção').fill('40')
+    await percentInput(page, 'Produção').fill('40')
     await expect(page.getByText('100% distribuído')).toBeVisible()
   })
 
   test('passar de 100% bloqueia o salvamento', async ({ page }) => {
     await openDistribution(page)
 
-    await percentInput(page, 'Quanto recebe', 'Impressão').fill('70')
-    await percentInput(page, 'Quanto recebe', 'Produção').fill('50')
+    await percentInput(page, 'Impressão').fill('70')
+    await percentInput(page, 'Produção').fill('50')
 
     await expect(page.getByText('Excede em 20%')).toBeVisible()
     await expect(
@@ -127,8 +144,7 @@ test.describe('Distribuição — padrões da interface (design.md)', () => {
     const save = page.getByRole('button', { name: 'Salvar distribuição' })
     await expect(save).toHaveCSS('background-color', BRAND_500)
 
-    await percentInput(page, 'Quanto distribuir', 'Administração').fill('100')
-    await percentInput(page, 'Quanto recebe', 'Impressão').fill('100')
+    await percentInput(page, 'Impressão').fill('100')
     await save.click()
 
     await expect(page.getByText('Distribuição salva')).toBeVisible()

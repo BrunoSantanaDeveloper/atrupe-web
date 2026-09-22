@@ -349,12 +349,18 @@ const sectors: DistributionSector[] = [
   },
 ]
 
-const distributedCost = () =>
+// Os administrativos formam um total único; o percentual vive nos produtivos (BC-7)
+const administrativeCost = () =>
   sectors
     .filter((sector) => sector.nature === 'ADMINISTRATIVE')
+    .reduce((sum, sector) => sum + (sector.directCost || 0), 0)
+
+const distributedCost = () =>
+  sectors
+    .filter((sector) => sector.nature === 'PRODUCTIVE')
     .reduce(
       (sum, sector) =>
-        sum + Math.round(((sector.directCost || 0) * sector.percentage) / 100),
+        sum + Math.round((administrativeCost() * sector.percentage) / 100),
       0,
     )
 
@@ -368,14 +374,10 @@ export const getDistribution = async () => {
 }
 
 export const getDistributionTotals = async () => {
-  const administrativeCost = sectors
-    .filter((sector) => sector.nature === 'ADMINISTRATIVE')
-    .reduce((sum, sector) => sum + (sector.directCost || 0), 0)
-
   const data: DistributionTotals = {
-    administrativeCost,
+    administrativeCost: administrativeCost(),
     distributedCost: distributedCost(),
-    notDistributedCost: administrativeCost - distributedCost(),
+    notDistributedCost: administrativeCost() - distributedCost(),
     receivingSectors: sectors.filter(
       (sector) => sector.nature === 'PRODUCTIVE' && sector.percentage > 0,
     ).length,
