@@ -38,7 +38,7 @@ import { getCostComparison } from '@/actions/cost-base'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { comparisonPeriods } from '@/consts/cost-base'
+import { comparisonPeriods, comparisonStatuses } from '@/consts/cost-base'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -57,6 +57,12 @@ const formatValue = (value: number | null) =>
 export function Comparison({ searchParams }: SearchParamsType) {
   const [expanded, setExpanded] = useState<string[]>([])
   const period = (searchParams?.period as string) || '12'
+  const status = (searchParams?.status as string) || 'todas'
+
+  const link = (next: { period?: string; status?: string }) =>
+    `/base-de-custos/comparativo?period=${next.period || period}&status=${
+      next.status || status
+    }`
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -65,6 +71,7 @@ export function Comparison({ searchParams }: SearchParamsType) {
   })
 
   const accounts = data?.data?.accounts || []
+  const coverage = data?.data?.coverage
 
   const toggle = (id: string) =>
     setExpanded((current) =>
@@ -79,31 +86,55 @@ export function Comparison({ searchParams }: SearchParamsType) {
         <CardHeader>
           <CardTitle>Previsto e realizado</CardTitle>
           <CardDescription>
-            O previsto é a estimativa dos cadastros multiplicada pelo volume do
-            período. A diferença é informação, não erro: a mesma conta pode ter
-            quebra, manutenção corretiva ou gasto extraordinário.
+            As contas do plano de contas que não são despesa administrativa —
+            essas já entram na aba própria, com custo mensal de referência. Aqui
+            a empresa vê o que está previsto no sistema, o que ainda não está, e
+            se o previsto está acontecendo.
           </CardDescription>
-          <Tabs value={period} className="overflow-x-auto pt-4">
-            <TabsList>
-              {comparisonPeriods.map((item) => (
-                <TabsTrigger key={item.value} value={item.value} asChild>
-                  <Link
-                    href={`/base-de-custos/comparativo?period=${item.value}`}
-                  >
-                    {item.label}
-                  </Link>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <div className="flex flex-wrap items-center gap-3 pt-4">
+            <Tabs value={status} className="overflow-x-auto">
+              <TabsList>
+                {comparisonStatuses.map((item) => (
+                  <TabsTrigger key={item.value} value={item.value} asChild>
+                    <Link href={link({ status: item.value })}>
+                      {item.label}
+                      {item.value === 'sem-previsao' &&
+                      coverage?.withoutEstimate
+                        ? ` (${coverage.withoutEstimate})`
+                        : ''}
+                    </Link>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+            <Tabs value={period} className="overflow-x-auto">
+              <TabsList>
+                {comparisonPeriods.map((item) => (
+                  <TabsTrigger key={item.value} value={item.value} asChild>
+                    <Link href={link({ period: item.value })}>
+                      {item.label}
+                    </Link>
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
         </CardHeader>
         {isLoading ? (
           <TableSkeleton cols={5} rows={6} />
         ) : !accounts.length ? (
           <ListDataTotalEmpty
             icon={IconScale}
-            title="Nada para comparar ainda"
-            description="As contas aparecem aqui quando houver estimativa nos cadastros ou lançamento no financeiro."
+            title={
+              status === 'sem-previsao'
+                ? 'Todas as contas têm previsão'
+                : 'Nada para comparar ainda'
+            }
+            description={
+              status === 'sem-previsao'
+                ? 'Todo o resto do plano de contas já tem estimativa vinda dos cadastros.'
+                : 'As contas vêm do plano de contas, fora as despesas administrativas, que ficam na aba própria.'
+            }
           />
         ) : (
           <>
@@ -147,7 +178,14 @@ export function Comparison({ searchParams }: SearchParamsType) {
                             />
                           </TableCell>
                           <TableCell>
-                            <p className="font-medium">{account.name}</p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="font-medium">{account.name}</p>
+                              {account.estimated === null && (
+                                <Badge variant="warningLight">
+                                  sem previsão
+                                </Badge>
+                              )}
+                            </div>
                             <p className="text-sm text-gray">
                               {account.chartAccount}
                             </p>
@@ -222,6 +260,9 @@ export function Comparison({ searchParams }: SearchParamsType) {
             </CardContent>
             <CardFooter>
               <p className="text-sm text-gray">
+                {coverage
+                  ? `${coverage.withEstimate} de ${coverage.total} contas já têm previsão no sistema. `
+                  : ''}
                 Períodos maiores são mais precisos: a compra não acontece no
                 mesmo mês do consumo. A depreciação não aparece aqui, porque não
                 tem lançamento financeiro correspondente.

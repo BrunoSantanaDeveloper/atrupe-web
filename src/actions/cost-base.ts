@@ -1027,10 +1027,29 @@ export const getCostComparison = async ({
 }) => {
   const period = filters?.period || '12'
   const months = monthsByPeriod[period] || 12
+  const status = filters?.status || 'todas'
+
+  // O comparativo trabalha o resto do plano de contas: o que é despesa
+  // administrativa já entrou na aba própria, com custo mensal de referência
+  const visible = comparisonSeeds.filter((seed) => {
+    if (status === 'com-previsao') return seed.monthlyEstimated !== null
+    if (status === 'sem-previsao') return seed.monthlyEstimated === null
+
+    return true
+  })
 
   const data: ComparisonResponse = {
     period,
-    accounts: comparisonSeeds.map((seed) => {
+    coverage: {
+      total: comparisonSeeds.length,
+      withEstimate: comparisonSeeds.filter(
+        (seed) => seed.monthlyEstimated !== null,
+      ).length,
+      withoutEstimate: comparisonSeeds.filter(
+        (seed) => seed.monthlyEstimated === null,
+      ).length,
+    },
+    accounts: visible.map((seed) => {
       const estimated =
         seed.monthlyEstimated === null ? null : seed.monthlyEstimated * months
       const actual =

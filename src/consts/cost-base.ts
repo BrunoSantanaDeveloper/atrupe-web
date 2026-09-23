@@ -72,6 +72,14 @@ export const assetStatusTabs = [
 ]
 
 // O comparativo compara período contra período, sem médias (§10 e §10.1)
+// O comparativo mostra o resto do plano de contas: nem toda conta tem
+// estimativa no sistema, e ver quais não têm é metade do valor da tela
+export const comparisonStatuses = [
+  { value: 'todas', label: 'Todas as contas' },
+  { value: 'com-previsao', label: 'Com previsão' },
+  { value: 'sem-previsao', label: 'Sem previsão' },
+]
+
 export const comparisonPeriods = [
   { value: '1', label: 'Último mês' },
   { value: '3', label: '3 meses' },

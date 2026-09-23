@@ -204,4 +204,11 @@ export type ComparisonAccount = {
 export type ComparisonResponse = {
   period: string
   accounts: ComparisonAccount[]
+  // O comparativo cobre o plano de contas que sobra depois das despesas
+  // administrativas: a cobertura diz quanto desse resto já tem previsão
+  coverage: {
+    total: number
+    withEstimate: number
+    withoutEstimate: number
+  }
 }
