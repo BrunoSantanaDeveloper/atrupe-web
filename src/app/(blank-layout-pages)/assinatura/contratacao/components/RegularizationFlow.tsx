@@ -176,6 +176,7 @@ export function RegularizationFlow() {
                 couponStatus={null}
                 onApplyCoupon={() => undefined}
                 showCoupon={false}
+                allowedMethods={view.allowedBillingTypes}
               />
             </div>
 

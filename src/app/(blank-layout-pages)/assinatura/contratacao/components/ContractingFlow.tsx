@@ -54,13 +54,16 @@ type Step = 'contrato' | 'pagamento'
 export function ContractingFlow() {
   const router = useRouter()
   const { data: session } = useSession()
-  const { selection, clear } = useCheckoutStore()
+  const { selection, setSelection, clear } = useCheckoutStore()
   const { apply } = useRefreshCompanySession()
 
   const [step, setStep] = useState<Step>('contrato')
   const [termsOpen, setTermsOpen] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
+  // Começa à vista: parcelar é decisão de quem contrata.
+  const [installmentCount, setInstallmentCount] = useState(1)
+  const cycle = selection.cycle ?? 'MONTHLY'
   const [registry, setRegistry] = useState<RegistryState>({ status: 'idle' })
   const [representative, setRepresentative] = useState<RepresentativeState>({
     status: 'idle',
@@ -109,13 +112,21 @@ export function ContractingFlow() {
   })
 
   const quoteQuery = useQuery({
-    queryKey: ['checkout-quote', selection, billingType, appliedCoupon],
+    queryKey: [
+      'checkout-quote',
+      selection,
+      billingType,
+      installmentCount,
+      appliedCoupon,
+    ],
     queryFn: async () => {
       const res = await fetchQuote({
         planId: selection.planId!,
         modules: selection.modules,
         additionalUsers: selection.additionalUsers,
+        cycle,
         billingType,
+        installmentCount,
         couponCode: appliedCoupon ?? undefined,
       })
       if (!res.success || !res.data) throw new Error(res.message)
@@ -126,6 +137,17 @@ export function ContractingFlow() {
   })
   const quoteResponse = quoteQuery.data
   const quote = quoteResponse?.quote ?? null
+  const annualAvailable = !!quoteResponse?.annualCycleAvailable
+
+  // O anual foi escolhido, mas não está disponível agora: segue no mensal.
+  useEffect(() => {
+    if (
+      quoteResponse &&
+      !quoteResponse.annualCycleAvailable &&
+      cycle === 'YEARLY'
+    )
+      setSelection({ cycle: 'MONTHLY' })
+  }, [quoteResponse, cycle, setSelection])
 
   // A situação mudou (cobrança em aberto, plano já contratado) ou o plano
   // deixou de ser elegível.
@@ -282,6 +304,11 @@ export function ContractingFlow() {
       modules: selection.modules,
       additionalUsers: selection.additionalUsers,
       billingType: v.billingType,
+      cycle,
+      // O parcelamento que o orçamento confirmou: só existe no anual no cartão.
+      installmentCount: quote.installments.allowed
+        ? quote.installments.selected
+        : undefined,
       couponCode: appliedCoupon ?? undefined,
       expectedTotalCents: quote.totalCents,
       contractor:
@@ -427,6 +454,14 @@ export function ContractingFlow() {
                   appliedCoupon={appliedCoupon}
                   couponStatus={quote?.coupon}
                   onApplyCoupon={setAppliedCoupon}
+                  cycle={cycle}
+                  cycleOptions={
+                    annualAvailable ? ['MONTHLY', 'YEARLY'] : undefined
+                  }
+                  onCycleChange={(next) => setSelection({ cycle: next })}
+                  installments={quote?.installments}
+                  installmentCount={quote?.installments.selected ?? 1}
+                  onInstallmentCountChange={setInstallmentCount}
                 />
               </div>
             </div>

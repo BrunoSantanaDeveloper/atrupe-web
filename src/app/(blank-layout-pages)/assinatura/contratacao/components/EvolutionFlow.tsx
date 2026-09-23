@@ -40,7 +40,7 @@ type Step = 'contrato' | 'pagamento'
  */
 export function EvolutionFlow() {
   const router = useRouter()
-  const { selection, clear } = useCheckoutStore()
+  const { selection, setSelection, clear } = useCheckoutStore()
   const { apply } = useRefreshCompanySession()
 
   const [step, setStep] = useState<Step>('contrato')
@@ -48,6 +48,9 @@ export function EvolutionFlow() {
   const [termsOpen, setTermsOpen] = useState(false)
   const [termsError, setTermsError] = useState<string | null>(null)
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
+  // Começa à vista: parcelar é decisão de quem contrata.
+  const [installmentCount, setInstallmentCount] = useState(1)
+  const cycle = selection.cycle ?? 'MONTHLY'
   const [submitting, setSubmitting] = useState(false)
 
   const form = useForm<{ billingType: CheckoutBillingType }>({
@@ -86,6 +89,7 @@ export function EvolutionFlow() {
       'evolution-checkout-quote',
       selection,
       billingType,
+      installmentCount,
       appliedCoupon,
     ],
     queryFn: async () => {
@@ -93,7 +97,9 @@ export function EvolutionFlow() {
         planId: selection.planId!,
         modules: selection.modules,
         additionalUsers: selection.additionalUsers,
+        cycle,
         billingType,
+        installmentCount,
         couponCode: appliedCoupon ?? undefined,
       })
       if (!res.success || !res.data) throw new Error(res.message)
@@ -104,6 +110,29 @@ export function EvolutionFlow() {
   })
   const quoteResponse = quoteQuery.data
   const quote = quoteResponse?.quote ?? null
+
+  // Do anual só se evolui para o anual; do mensal, para qualquer um dos dois
+  // — se o anual estiver disponível.
+  const currentCycle = current?.subscription?.cycle
+  const cycleOptions: ('MONTHLY' | 'YEARLY')[] | undefined =
+    currentCycle === 'YEARLY'
+      ? ['YEARLY']
+      : quoteResponse?.annualCycleAvailable
+        ? ['MONTHLY', 'YEARLY']
+        : undefined
+
+  // Numa evolução, a forma de pagamento da assinatura em curso chega
+  // selecionada, e continua trocável.
+  const currentBillingType = current?.subscription?.billingType
+  useEffect(() => {
+    if (
+      currentBillingType === 'CREDIT_CARD' ||
+      currentBillingType === 'PIX' ||
+      currentBillingType === 'BOLETO'
+    ) {
+      form.setValue('billingType', currentBillingType)
+    }
+  }, [currentBillingType, form])
 
   // A situação mudou: cobrança em aberto, ou a evolução deixou de valer.
   useEffect(() => {
@@ -140,6 +169,10 @@ export function EvolutionFlow() {
         modules: selection.modules,
         additionalUsers: selection.additionalUsers,
         billingType,
+        cycle,
+        installmentCount: quote.installments.allowed
+          ? quote.installments.selected
+          : undefined,
         couponCode: appliedCoupon ?? undefined,
         expectedTotalCents: quote.totalCents,
         termsAcceptance: {
@@ -235,6 +268,12 @@ export function EvolutionFlow() {
                   appliedCoupon={appliedCoupon}
                   couponStatus={quote?.coupon}
                   onApplyCoupon={setAppliedCoupon}
+                  cycle={cycle}
+                  cycleOptions={cycleOptions}
+                  onCycleChange={(next) => setSelection({ cycle: next })}
+                  installments={quote?.installments}
+                  installmentCount={quote?.installments.selected ?? 1}
+                  onInstallmentCountChange={setInstallmentCount}
                 />
               </div>
             </div>

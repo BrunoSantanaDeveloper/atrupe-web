@@ -66,6 +66,8 @@ export interface PlanTrailItem {
 export interface PlanStatesResponse {
   intent: ContractingIntent
   hasOpenCharge: boolean
+  /** O ciclo anual pode ser contratado agora (chave no servidor). */
+  annualCycleAvailable?: boolean
   currentPlanId: string | null
   currentCycle: string | null
   plans: PlanTrailItem[]
@@ -118,6 +120,7 @@ export interface QuoteResult {
 export interface QuoteResponse {
   intent: ContractingIntent
   eligible: boolean
+  annualCycleAvailable?: boolean
   ineligibilityReason?: string
   plan: { id: string; name: string; planType: string }
   quote: QuoteResult | null
@@ -127,6 +130,8 @@ export interface QuoteRequest {
   planId: string
   cycle?: 'MONTHLY' | 'YEARLY'
   billingType?: CheckoutBillingType
+  /** Só no anual, no cartão: 1 é à vista. */
+  installmentCount?: number
   modules?: string[]
   additionalUsers?: number
   couponCode?: string
@@ -167,7 +172,13 @@ export interface CheckoutRequest extends QuoteRequest {
 }
 
 export interface CheckoutResult {
-  subscription: { id: string; planName: string; nextDueDate: string }
+  subscription: {
+    id: string
+    planName: string
+    cycle?: 'MONTHLY' | 'YEARLY'
+    installmentCount?: number | null
+    nextDueDate: string
+  }
   payment: { invoiceUrl: string | null; valueCents: number; dueDate: string }
   paymentUrl: string | null
   session: CompanySessionBlock | null
@@ -194,9 +205,12 @@ export interface RegularizationView {
     cycle: string
     billingType: string
     valueCents: number
+    installmentCount?: number | null
   }
   contractor?: ContractorOnFile | null
   chargeInFocus?: ChargeInFocus | null
+  /** No anual parcelado, só o cartão. */
+  allowedBillingTypes?: CheckoutBillingType[]
   terms?: { id: string; version: number }
 }
 
@@ -264,6 +278,8 @@ export interface ComplementsResult extends ComplementsQuote {
 /** Evolução: o contratante é o da assinatura em curso, não vem no pedido. */
 export interface EvolutionRequest {
   planId: string
+  cycle?: 'MONTHLY' | 'YEARLY'
+  installmentCount?: number
   billingType: CheckoutBillingType
   modules?: string[]
   additionalUsers?: number

@@ -31,6 +31,7 @@ import type { VisualPlanType } from '@/types/plans'
 
 import { CheckoutHeader } from '../checkout/CheckoutHeader'
 import { ComparisonTable } from './ComparisonTable'
+import { CycleToggle, monthlyEquivalentCents, type Cycle } from './CycleToggle'
 
 import pro from '@/assets/images/pro-logo.png'
 import lite from '@/assets/images/lite-logo.png'
@@ -73,6 +74,10 @@ export function PlanTrail({ planStates }: Props) {
   const [additionalUsers, setAdditionalUsers] = useState(
     resumed ? selection.additionalUsers : 0,
   )
+  // O ciclo é preferência: o escolhido aqui ou no pagamento volta marcado.
+  const annualAvailable = !!planStates.annualCycleAvailable
+  const cycle: Cycle =
+    annualAvailable && selection.cycle === 'YEARLY' ? 'YEARLY' : 'MONTHLY'
   const [video, setVideo] = useState<{ url: string; title: string } | null>(
     null,
   )
@@ -99,12 +104,13 @@ export function PlanTrail({ planStates }: Props) {
 
   const debounced = useDebouncedValue({ modules, additionalUsers }, 300)
   const { data: quote, isFetching: isQuoting } = useQuery({
-    queryKey: ['trail-quote', offer?.planId, debounced],
+    queryKey: ['trail-quote', offer?.planId, debounced, cycle],
     queryFn: async () => {
       const res = await fetchQuote({
         planId: offer!.planId,
         modules: debounced.modules,
         additionalUsers: debounced.additionalUsers,
+        cycle,
       })
       return res.success ? res.data : null
     },
@@ -136,6 +142,7 @@ export function PlanTrail({ planStates }: Props) {
       planId: offer.planId,
       modules,
       additionalUsers,
+      cycle,
     })
     router.push('/assinatura/contratacao')
   }
@@ -164,12 +171,22 @@ export function PlanTrail({ planStates }: Props) {
           </Alert>
         )}
 
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">Método Atrupe</h2>
-          <p className="text-gray-600">
-            Cada etapa organiza uma parte do negócio. Você começa pela primeira
-            e evolui quando ela estiver em operação.
-          </p>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Método Atrupe
+            </h2>
+            <p className="text-gray-600">
+              Cada etapa organiza uma parte do negócio. Você começa pela
+              primeira e evolui quando ela estiver em operação.
+            </p>
+          </div>
+          {annualAvailable && (
+            <CycleToggle
+              value={cycle}
+              onChange={(next) => setSelection({ cycle: next })}
+            />
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -208,7 +225,12 @@ export function PlanTrail({ planStates }: Props) {
                   <div>
                     {quote?.quote ? (
                       <p className="text-3xl font-bold text-gray-900">
-                        {formatCurrencyToBrl(quote.quote.totalCents)}
+                        {formatCurrencyToBrl(
+                          monthlyEquivalentCents(
+                            quote.quote.recurringCents,
+                            cycle,
+                          ),
+                        )}
                         <span className="text-base font-normal text-gray-600">
                           /mês
                         </span>
@@ -217,7 +239,9 @@ export function PlanTrail({ planStates }: Props) {
                       <Skeleton className="h-9 w-40" />
                     )}
                     <p className="text-sm text-gray-500">
-                      Cobrança mensal
+                      {cycle === 'YEARLY' && quote?.quote
+                        ? `Cobrança anual de ${formatCurrencyToBrl(quote.quote.recurringCents)}, com 1 mês grátis`
+                        : 'Cobrança mensal'}
                       {isQuoting ? ' · atualizando…' : ''}
                     </p>
                   </div>

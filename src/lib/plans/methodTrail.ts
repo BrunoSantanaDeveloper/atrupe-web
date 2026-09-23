@@ -111,9 +111,3 @@ export const PAYMENT_METHOD_OPTIONS = [
     hint: 'Emitido a cada ciclo, com vencimento em até 3 dias úteis.',
   },
 ] as const
-
-/**
- * O anual (11 mensalidades, parcelável em 12x no cartão) chega junto com o
- * suporte do backend ao ciclo anual. Até lá a opção não aparece.
- */
-export const ANNUAL_CYCLE_ENABLED = false

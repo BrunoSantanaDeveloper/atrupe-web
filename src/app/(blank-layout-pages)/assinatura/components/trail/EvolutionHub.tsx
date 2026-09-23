@@ -37,6 +37,7 @@ import type { VisualPlanType } from '@/types/plans'
 
 import { CheckoutHeader } from '../checkout/CheckoutHeader'
 import { ComparisonTable } from './ComparisonTable'
+import { CycleToggle, monthlyEquivalentCents, type Cycle } from './CycleToggle'
 
 import pro from '@/assets/images/pro-logo.png'
 import lite from '@/assets/images/lite-logo.png'
@@ -88,6 +89,13 @@ export function EvolutionHub({ planStates, current }: Props) {
 
   const [added, setAdded] = useState<string[]>([])
   const [users, setUsers] = useState(sub.additionalUsers)
+  // Do anual só se evolui para o anual; do mensal, o anual aparece quando
+  // está disponível.
+  const currentAnnual = sub.cycle === 'YEARLY'
+  const annualAvailable = !!planStates.annualCycleAvailable
+  const [evolutionCycle, setEvolutionCycle] = useState<Cycle>(
+    currentAnnual ? 'YEARLY' : 'MONTHLY',
+  )
   const [video, setVideo] = useState<{ url: string; title: string } | null>(
     null,
   )
@@ -116,12 +124,13 @@ export function EvolutionHub({ planStates, current }: Props) {
   })
 
   const { data: evolution } = useQuery({
-    queryKey: ['evolution-quote', next?.planId, debounced],
+    queryKey: ['evolution-quote', next?.planId, debounced, evolutionCycle],
     queryFn: async () => {
       const res = await fetchQuote({
         planId: next!.planId,
         modules: [...contractedKeys, ...debounced.added],
         additionalUsers: debounced.users,
+        cycle: evolutionCycle,
       })
       return res.success ? res.data : null
     },
@@ -173,7 +182,7 @@ export function EvolutionHub({ planStates, current }: Props) {
       planId: next.planId,
       modules: [...contractedKeys, ...added],
       additionalUsers: users,
-      cycle: 'MONTHLY',
+      cycle: evolutionCycle,
     })
     router.push('/assinatura/contratacao?modo=evolucao')
   }
@@ -211,11 +220,13 @@ export function EvolutionHub({ planStates, current }: Props) {
                   className="h-10 w-auto"
                 />
                 <div className="text-right">
-                  <p className="text-sm text-gray-500">Mensalidade atual</p>
+                  <p className="text-sm text-gray-500">
+                    {currentAnnual ? 'Anuidade atual' : 'Mensalidade atual'}
+                  </p>
                   <p className="text-2xl font-bold text-gray-900">
                     {formatCurrencyToBrl(sub.recurringCents)}
                     <span className="text-base font-normal text-gray-600">
-                      /mês
+                      {currentAnnual ? '/ano' : '/mês'}
                     </span>
                   </p>
                   <p className="text-sm text-gray-500">
@@ -404,14 +415,34 @@ export function EvolutionHub({ planStates, current }: Props) {
                       <p className="text-gray-700">{concept.description}</p>
                     )}
 
+                    {(annualAvailable || currentAnnual) && (
+                      <CycleToggle
+                        value={evolutionCycle}
+                        onChange={setEvolutionCycle}
+                        only={currentAnnual ? 'YEARLY' : undefined}
+                      />
+                    )}
+
                     {evolutionQuote ? (
                       <div>
                         <p className="text-3xl font-bold text-gray-900">
-                          {formatCurrencyToBrl(evolutionQuote.recurringCents)}
+                          {formatCurrencyToBrl(
+                            monthlyEquivalentCents(
+                              evolutionQuote.recurringCents,
+                              evolutionCycle,
+                            ),
+                          )}
                           <span className="text-base font-normal text-gray-600">
                             /mês
                           </span>
                         </p>
+                        {evolutionCycle === 'YEARLY' && (
+                          <p className="text-sm text-gray-500">
+                            Cobrança anual de{' '}
+                            {formatCurrencyToBrl(evolutionQuote.recurringCents)}
+                            , com 1 mês grátis
+                          </p>
+                        )}
                         {evolutionQuote.creditCents > 0 && (
                           <p className="text-sm text-gray-600">
                             Primeira cobrança de{' '}
