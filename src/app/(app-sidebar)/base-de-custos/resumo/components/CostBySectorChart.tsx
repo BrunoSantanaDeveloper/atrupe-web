@@ -41,7 +41,7 @@ export function CostBySectorChart({ sectors }: Props) {
           </Link>
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-6 pb-6">
         {sectors.map((sector) => (
           <div key={sector.id} className="space-y-1.5">
             <div className="flex items-center justify-between gap-4">

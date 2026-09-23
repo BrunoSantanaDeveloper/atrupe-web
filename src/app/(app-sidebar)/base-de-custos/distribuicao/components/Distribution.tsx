@@ -137,7 +137,7 @@ export function Distribution() {
           />
         ) : (
           <>
-            <CardContent className="space-y-8">
+            <CardContent className="space-y-8 px-6 pb-6">
               <AdministrativeCostTable
                 sectors={administrative}
                 total={administrativeCost}

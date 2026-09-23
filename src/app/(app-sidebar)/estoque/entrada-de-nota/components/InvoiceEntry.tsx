@@ -210,7 +210,7 @@ export function InvoiceEntry() {
 
         {!invoices.length && (
           <Card>
-            <CardContent className="py-8">
+            <CardContent className="py-8 px-6">
               <p className="text-sm text-gray text-center">
                 Nenhuma nota aguardando entrada.
               </p>

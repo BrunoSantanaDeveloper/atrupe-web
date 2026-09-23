@@ -160,7 +160,7 @@ export function CostSummaryView() {
               setores produtivos e é coberto pelo resultado das vendas.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 px-6 pb-6">
             <div className="flex items-center gap-3">
               <FeaturedIcon
                 size="md"

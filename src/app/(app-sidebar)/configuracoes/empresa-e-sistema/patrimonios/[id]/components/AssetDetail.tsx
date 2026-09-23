@@ -148,7 +148,7 @@ export function AssetDetail({ id }: Props) {
                 ' Preencha vida útil e residual para calcular.'}
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {summary.map((item) => (
                 <div key={item.label}>
@@ -177,7 +177,7 @@ export function AssetDetail({ id }: Props) {
                   <NewCostModal asset={asset} />
                 </PermissionGate>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-6 px-6 pb-6">
                 {costsByNature.map(({ nature, costs }) => (
                   <div key={nature} className="space-y-2">
                     <p className="text-sm font-medium">
@@ -339,7 +339,7 @@ export function AssetDetail({ id }: Props) {
                   composição, não aqui.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-6 pb-6">
                 {asset.processes.length ? (
                   <ul className="space-y-2">
                     {asset.processes.map((process) => (

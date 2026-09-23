@@ -119,7 +119,7 @@ export function CompositionDetail({ id }: Props) {
               margem mostra o resultado do preço sobre o custo.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <p className="text-xs text-gray">Custo da composição</p>
@@ -261,7 +261,7 @@ export function CompositionDetail({ id }: Props) {
               </CardFooter>
             </>
           ) : (
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               <p className="text-sm text-gray">
                 Este produto ainda não tem composição. Ele continua sendo
                 vendido normalmente pelo preço cadastrado; sem composição, o

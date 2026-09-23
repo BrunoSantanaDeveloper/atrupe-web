@@ -246,7 +246,7 @@ export function ProductionBoard({ searchParams }: SearchParamsType) {
                     })
                   ) : (
                     <Card>
-                      <CardContent className="py-6">
+                      <CardContent className="py-6 px-6">
                         <p className="text-sm text-gray text-center">
                           Nenhuma etapa
                         </p>

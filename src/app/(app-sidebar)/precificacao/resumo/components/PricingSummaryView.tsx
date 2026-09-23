@@ -140,7 +140,7 @@ export function PricingSummaryView() {
             {formatReferenceMonth(summary.referenceMonth)}.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             {parameterCards.map((card) => (
               <Card key={card.label} className="p-4 rounded-xl">
@@ -217,7 +217,7 @@ export function PricingSummaryView() {
             </Link>
           )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {summary.groups.map((group) => (
               <Link key={group.group} href={pricingGroupPath[group.group]}>

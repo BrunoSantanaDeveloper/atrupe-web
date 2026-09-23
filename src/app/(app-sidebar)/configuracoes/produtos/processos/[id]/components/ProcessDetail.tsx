@@ -128,7 +128,7 @@ export function ProcessDetail({ id }: Props) {
               usá-lo num produto. A simulação não altera nada.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-1.5">
                 <label htmlFor="sim-width" className="text-sm font-medium">
@@ -311,7 +311,7 @@ export function ProcessDetail({ id }: Props) {
               </CardFooter>
             </>
           ) : (
-            <CardContent>
+            <CardContent className="px-6 pb-6">
               <p className="text-sm text-gray">
                 Nenhum recurso no processo. Acrescente máquina, material, mão de
                 obra ou terceirizado para o custo ser calculado.
