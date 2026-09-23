@@ -25,7 +25,9 @@ export function ProductAreaTabs() {
       ? 'processos'
       : pathname.includes('/composicoes')
         ? 'composicoes'
-        : 'produtos'
+        : pathname.includes('/terceirizados')
+          ? 'terceirizados'
+          : 'produtos'
 
   return (
     <Tabs value={current} className="overflow-x-auto">
@@ -41,6 +43,11 @@ export function ProductAreaTabs() {
         </TabsTrigger>
         <TabsTrigger value="composicoes" asChild>
           <Link href="/configuracoes/produtos/composicoes">Composições</Link>
+        </TabsTrigger>
+        <TabsTrigger value="terceirizados" asChild>
+          <Link href="/configuracoes/produtos/terceirizados">
+            Terceirizados
+          </Link>
         </TabsTrigger>
       </TabsList>
     </Tabs>
