@@ -335,9 +335,11 @@ export const createAsset = async ({
   acquisitionDate,
   acquisitionValue,
   groupId,
+  imageUrl,
 }: Pick<
   Asset,
   | 'name'
+  | 'imageUrl'
   | 'kind'
   | 'sector'
   | 'detailed'
@@ -357,6 +359,7 @@ export const createAsset = async ({
   const asset: Asset = {
     id: `asset-${assets.length + 1}`,
     name,
+    imageUrl: imageUrl || null,
     kind,
     sector,
     groupId,

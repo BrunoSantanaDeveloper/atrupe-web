@@ -1,6 +1,9 @@
 'use client'
 
 // React / Next
+import Image from 'next/image'
+
+// React / Next
 import { useState } from 'react'
 
 // UI
@@ -149,6 +152,17 @@ export function AssetDetail({ id }: Props) {
             </CardDescription>
           </CardHeader>
           <CardContent className="px-6 pb-6">
+            {asset.imageUrl && (
+              <div className="relative mb-5 h-40 w-full max-w-[280px] overflow-hidden rounded-lg border border-gray-200">
+                <Image
+                  fill
+                  unoptimized
+                  src={asset.imageUrl}
+                  alt={asset.name}
+                  className="object-cover"
+                />
+              </div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               {summary.map((item) => (
                 <div key={item.label}>

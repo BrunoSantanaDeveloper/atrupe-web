@@ -1,7 +1,8 @@
 'use client'
 
 // React / Next
-import { useState } from 'react'
+import Image from 'next/image'
+import { useRef, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -23,10 +24,10 @@ import {
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { AssetKind, AssetUnit } from '../../types'
+import type { Asset, AssetKind, AssetUnit } from '../../types'
 
 // Actions
-import { createAsset } from '@/actions/assets'
+import { createAsset, updateAsset } from '@/actions/assets'
 
 // Hooks / Store / Consts
 import {
@@ -39,73 +40,126 @@ import {
 import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+// Components
+import { ActionButton } from '@/components/common/ActionButton'
+
 // Icons
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
 
 interface Props {
   sectors: { value: string; label: string }[]
   groups: { value: string; label: string }[]
+  // Com o bem informado, o mesmo formulário edita em vez de cadastrar (P-12)
+  asset?: Asset
 }
 
 // Cadastro rápido em duas etapas (P-12): aqui só o essencial; vida útil,
 // residual, custos e configurações ficam na página do bem.
-export function NewAssetModal({ sectors, groups }: Props) {
+export function NewAssetModal({ sectors, groups, asset }: Props) {
   const queryClient = useQueryClient()
+  const isEdit = Boolean(asset)
+  const fileInput = useRef<HTMLInputElement>(null)
   const [open, setOpen] = useState(false)
-  const [detailed, setDetailed] = useState(true)
-  const [name, setName] = useState('')
-  const [kind, setKind] = useState<AssetKind>('MACHINES')
-  const [sector, setSector] = useState('')
-  const [groupId, setGroupId] = useState('none')
-  const [unit, setUnit] = useState<AssetUnit>('HR')
-  const [productivity, setProductivity] = useState('')
-  const [acquisitionDate, setAcquisitionDate] = useState('')
-  const [acquisitionValue, setAcquisitionValue] = useState('')
+  const [detailed, setDetailed] = useState(asset?.detailed ?? true)
+  const [name, setName] = useState(asset?.name || '')
+  const [kind, setKind] = useState<AssetKind>(asset?.kind || 'MACHINES')
+  const [sector, setSector] = useState(asset?.sector || '')
+  const [groupId, setGroupId] = useState(asset?.groupId || 'none')
+  const [unit, setUnit] = useState<AssetUnit>(asset?.unit || 'HR')
+  const [imageUrl, setImageUrl] = useState(asset?.imageUrl || '')
+  const [productivity, setProductivity] = useState(
+    asset?.monthlyProductivity ? String(asset.monthlyProductivity) : '',
+  )
+  const [acquisitionDate, setAcquisitionDate] = useState(
+    asset?.acquisitionDate || '',
+  )
+  const [acquisitionValue, setAcquisitionValue] = useState(
+    asset ? String(asset.acquisitionValue / 100) : '',
+  )
 
   const reset = () => {
+    if (isEdit) return
+
     setName('')
     setSector('')
     setGroupId('none')
     setProductivity('')
     setAcquisitionDate('')
     setAcquisitionValue('')
+    setImageUrl('')
     setDetailed(true)
   }
 
+  // Sem API de upload ainda: a imagem fica como data URL, e o endpoint real
+  // vai receber o arquivo (registrado em alteracoes-pendentes.md)
+  const pickImage = (file?: File | null) => {
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onload = () => setImageUrl(String(reader.result))
+    reader.readAsDataURL(file)
+  }
+
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createAsset({
+    mutationFn: () => {
+      const values = {
         name,
         kind,
         sector,
         detailed,
+        imageUrl: imageUrl || null,
         groupId: groupId === 'none' ? null : groupId,
         unit: detailed ? unit : null,
         monthlyProductivity: detailed ? Number(productivity) || null : null,
         acquisitionDate,
         acquisitionValue: Math.round(Number(acquisitionValue || 0) * 100),
-      }),
+      }
+
+      return asset
+        ? updateAsset({ id: asset.id, ...values })
+        : createAsset(values)
+    },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Patrimônio cadastrado')
+      toast.success(isEdit ? 'Patrimônio atualizado' : 'Patrimônio cadastrado')
       queryClient.invalidateQueries({ queryKey: ['assets'] })
+      queryClient.invalidateQueries({ queryKey: ['asset'] })
       reset()
       setOpen(false)
     },
-    onError: () => toast.error('Erro ao cadastrar o patrimônio'),
+    onError: () =>
+      toast.error(
+        isEdit
+          ? 'Erro ao atualizar o patrimônio'
+          : 'Erro ao cadastrar o patrimônio',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-        Novo patrimônio
-      </Button>
+      {isEdit ? (
+        <ActionButton
+          Icon={IconPencil}
+          tooltip={`Editar ${asset?.name}`}
+          onClick={() => setOpen(true)}
+        />
+      ) : (
+        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+          Novo patrimônio
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
-            <DialogTitle>Novo patrimônio</DialogTitle>
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={isEdit ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {isEdit ? 'Editar patrimônio' : 'Novo patrimônio'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Cadastro rápido do bem. Depreciação e custos são detalhados na
               página do patrimônio.
@@ -126,6 +180,58 @@ export function NewAssetModal({ sectors, groups }: Props) {
               onCheckedChange={setDetailed}
               aria-label="Detalhar custos deste bem"
             />
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              {imageUrl ? (
+                <Image
+                  fill
+                  unoptimized
+                  src={imageUrl}
+                  alt={name || 'Foto do patrimônio'}
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-gray-400">
+                  <IconPhoto size={24} />
+                </div>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm font-medium">Foto do patrimônio</p>
+              <p className="text-sm text-gray">
+                Ajuda a reconhecer o equipamento na lista e na produção.
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInput.current?.click()}
+                >
+                  {imageUrl ? 'Trocar foto' : 'Adicionar foto'}
+                </Button>
+                {imageUrl && (
+                  <Button
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                    LeftIcon={IconX}
+                    onClick={() => setImageUrl('')}
+                  >
+                    Remover
+                  </Button>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInput}
+                  onChange={(event) => pickImage(event.target.files?.[0])}
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -216,10 +322,12 @@ export function NewAssetModal({ sectors, groups }: Props) {
             )}
           </div>
 
-          <p className="text-sm text-gray">
-            Vida útil e valor residual entram com os padrões do sistema (60
-            meses e 30%) e podem ser revisados na página do patrimônio.
-          </p>
+          {!isEdit && (
+            <p className="text-sm text-gray">
+              Vida útil e valor residual entram com os padrões do sistema (60
+              meses e 30%) e podem ser revisados na página do patrimônio.
+            </p>
+          )}
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
@@ -232,7 +340,7 @@ export function NewAssetModal({ sectors, groups }: Props) {
             disabled={!name || !sector || !acquisitionValue}
             onClick={() => mutate()}
           >
-            {isPending ? 'Cadastrando...' : 'Cadastrar patrimônio'}
+            {isEdit ? 'Salvar alterações' : 'Cadastrar patrimônio'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -44,6 +44,9 @@ export type AssetSetup = {
 export type Asset = {
   id: string
   name: string
+  // Foto do bem: ajuda a reconhecer o equipamento na lista e na produção.
+  // Provisório: enquanto a API não existe, guarda a imagem como data URL
+  imageUrl?: string | null
   kind: AssetKind
   sector: string
   groupId: string | null

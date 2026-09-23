@@ -1,7 +1,8 @@
 'use client'
 
 // React / Next
-import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { useEffect, useRef, useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -37,7 +38,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil } from '@tabler/icons-react'
+import { IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
 
 interface Props {
   asset: Asset
@@ -55,6 +56,18 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
   const [residualPercent, setResidualPercent] = useState('')
   const [unit, setUnit] = useState<AssetUnit>(asset.unit || 'HR')
   const [productivity, setProductivity] = useState('')
+  const [imageUrl, setImageUrl] = useState(asset.imageUrl || '')
+  const fileInput = useRef<HTMLInputElement>(null)
+
+  // Sem API de upload ainda: a imagem fica como data URL (ALT-16)
+  const pickImage = (file?: File | null) => {
+    if (!file) return
+
+    const reader = new FileReader()
+
+    reader.onload = () => setImageUrl(String(reader.result))
+    reader.readAsDataURL(file)
+  }
 
   useEffect(() => {
     setDetailed(asset.detailed)
@@ -63,6 +76,7 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
     setResidualPercent(String(asset.residualPercent ?? ''))
     setUnit(asset.unit || 'HR')
     setProductivity(String(asset.monthlyProductivity ?? ''))
+    setImageUrl(asset.imageUrl || '')
   }, [asset])
 
   const residualValue = Math.round(
@@ -79,6 +93,7 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
         id: asset.id,
         name,
         detailed,
+        imageUrl: imageUrl || null,
         unit: detailed ? unit : null,
         monthlyProductivity: detailed ? Number(productivity) || null : null,
         usefulLifeMonths: months || null,
@@ -108,6 +123,55 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
           </div>
         </DialogHeader>
         <DialogBody className="space-y-5">
+          <div className="flex items-center gap-4">
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
+              {imageUrl ? (
+                <Image
+                  fill
+                  unoptimized
+                  src={imageUrl}
+                  alt={name}
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center text-gray-400">
+                  <IconPhoto size={24} />
+                </div>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <p className="text-sm font-medium">Foto do patrimônio</p>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInput.current?.click()}
+                >
+                  {imageUrl ? 'Trocar foto' : 'Adicionar foto'}
+                </Button>
+                {imageUrl && (
+                  <Button
+                    size="sm"
+                    type="button"
+                    variant="outline"
+                    LeftIcon={IconX}
+                    onClick={() => setImageUrl('')}
+                  >
+                    Remover
+                  </Button>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={fileInput}
+                  onChange={(event) => pickImage(event.target.files?.[0])}
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
             <div>
               <p className="text-sm font-medium">Detalhar custos deste bem</p>

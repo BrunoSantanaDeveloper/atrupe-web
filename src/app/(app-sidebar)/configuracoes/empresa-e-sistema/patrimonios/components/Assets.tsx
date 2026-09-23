@@ -20,6 +20,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import Image from 'next/image'
 import { NewAssetModal } from './NewAsset'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
@@ -173,12 +174,27 @@ export function Assets({ searchParams }: SearchParamsType) {
                         {kindAssets.map((asset) => (
                           <TableRow key={asset.id}>
                             <TableCell>
-                              <p className="font-medium">{asset.name}</p>
-                              <p className="text-sm text-gray">
-                                {asset.detailed
-                                  ? 'Cadastro detalhado'
-                                  : 'Cadastro simplificado'}
-                              </p>
+                              <div className="flex items-center gap-3">
+                                {asset.imageUrl && (
+                                  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                    <Image
+                                      fill
+                                      unoptimized
+                                      src={asset.imageUrl}
+                                      alt={asset.name}
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="font-medium">{asset.name}</p>
+                                  <p className="text-sm text-gray">
+                                    {asset.detailed
+                                      ? 'Cadastro detalhado'
+                                      : 'Cadastro simplificado'}
+                                  </p>
+                                </div>
+                              </div>
                             </TableCell>
                             <TableCell>{asset.sector}</TableCell>
                             <TableCell>
@@ -208,6 +224,11 @@ export function Assets({ searchParams }: SearchParamsType) {
                                   Icon={IconEye}
                                   tooltip={`Abrir ${asset.name}`}
                                   link={`/configuracoes/empresa-e-sistema/patrimonios/${asset.id}`}
+                                />
+                                <NewAssetModal
+                                  asset={asset}
+                                  sectors={sectors}
+                                  groups={groups}
                                 />
                               </div>
                             </TableCell>
