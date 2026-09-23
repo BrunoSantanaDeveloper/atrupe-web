@@ -14,14 +14,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Logo } from '@/components/Logo'
 
 // Actions
-import { auth } from '@/lib/auth'
-import { getData } from '@/actions/_cruds'
 import { getPendingPaymentUrl } from '@/actions/subscription'
 import { TryAgainButton } from './components/TryAgainButton'
-import {
-  ChangePlanButton,
-  type PlanOption,
-} from './components/ChangePlanButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,15 +27,6 @@ export const metadata: Metadata = {
 export default async function BlockedPage() {
   // Get dynamic payment URL
   const { paymentUrl } = await getPendingPaymentUrl()
-
-  // Planos disponíveis para troca (a rota é pública, acessível mesmo bloqueado)
-  const [session, plansRes] = await Promise.all([
-    auth(),
-    getData({ route: '/plan/public/subscription' }),
-  ])
-
-  const plans: PlanOption[] = plansRes?.success ? plansRes.data : []
-  const currentPlanName = session?.company?.plan?.name
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-gray-100 py-8 overflow-y-auto">
@@ -95,10 +80,14 @@ export default async function BlockedPage() {
                   </Link>
                 </Button>
 
-                <ChangePlanButton
-                  plans={plans}
-                  currentPlanName={currentPlanName}
-                />
+                {/* A troca livre de plano saiu daqui: com a conta suspensa, o
+                    caminho é pagar a cobrança em aberto — por outra forma de
+                    pagamento, se a da fatura não servir. */}
+                <Button asChild variant="neutralOutline" className="w-full">
+                  <Link href="/assinatura/contratacao?modo=regularizacao">
+                    Pagar de outra forma
+                  </Link>
+                </Button>
 
                 <TryAgainButton />
               </div>
