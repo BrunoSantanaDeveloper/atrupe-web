@@ -20,13 +20,14 @@ import {
 } from '@/components/ui/dialog'
 
 // Components
+import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { MaterialUnit } from '../types'
+import type { Material, MaterialUnit } from '../types'
 
 // Actions
-import { createMaterial } from '@/actions/materials'
+import { createMaterial, updateMaterial } from '@/actions/materials'
 
 // Hooks / Store / Consts
 import { assetUnitOptions } from '@/consts/assets'
@@ -36,7 +37,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil } from '@tabler/icons-react'
 
 const sectors = [
   'Impressão',
@@ -56,22 +57,34 @@ const subcategories = [
   'Brindes',
 ].map((item) => ({ value: item, label: item }))
 
+interface Props {
+  // Com o material informado, o mesmo formulário edita em vez de cadastrar
+  material?: Material
+}
+
 // Marca e cor entram depois, como variações (MT-2); espessura e tamanho viram
 // materiais diferentes.
-export function NewMaterialModal() {
+export function NewMaterialModal({ material }: Props) {
   const queryClient = useQueryClient()
+  const isEdit = Boolean(material)
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [sector, setSector] = useState(sectors[0].value)
-  const [subcategory, setSubcategory] = useState(subcategories[0].value)
-  const [unit, setUnit] = useState<MaterialUnit>('M2')
-  const [cost, setCost] = useState('')
-  const [directSale, setDirectSale] = useState(false)
-  const [productionMaterial, setProductionMaterial] = useState(true)
+  const [name, setName] = useState(material?.name || '')
+  const [sector, setSector] = useState(material?.sector || sectors[0].value)
+  const [subcategory, setSubcategory] = useState(
+    material?.subcategory || subcategories[0].value,
+  )
+  const [unit, setUnit] = useState<MaterialUnit>(material?.unit || 'M2')
+  const [cost, setCost] = useState(
+    material?.cost ? String(material.cost / 100) : '',
+  )
+  const [directSale, setDirectSale] = useState(material?.directSale ?? false)
+  const [productionMaterial, setProductionMaterial] = useState(
+    material?.productionMaterial ?? true,
+  )
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createMaterial({
+    mutationFn: () => {
+      const values = {
         name,
         sector,
         subcategory,
@@ -79,29 +92,56 @@ export function NewMaterialModal() {
         directSale,
         productionMaterial,
         cost: Math.round(Number(cost || 0) * 100),
-      }),
+      }
+
+      return material
+        ? updateMaterial({ id: material.id, ...values })
+        : createMaterial(values)
+    },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Material cadastrado')
+      toast.success(isEdit ? 'Material atualizado' : 'Material cadastrado')
       queryClient.invalidateQueries({ queryKey: ['materials'] })
-      setName('')
-      setCost('')
+
+      if (!isEdit) {
+        setName('')
+        setCost('')
+      }
+
       setOpen(false)
     },
-    onError: () => toast.error('Erro ao cadastrar o material'),
+    onError: () =>
+      toast.error(
+        isEdit
+          ? 'Erro ao atualizar o material'
+          : 'Erro ao cadastrar o material',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-        Novo material
-      </Button>
+      {isEdit ? (
+        <ActionButton
+          Icon={IconPencil}
+          tooltip={`Editar ${material?.name}`}
+          onClick={() => setOpen(true)}
+        />
+      ) : (
+        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+          Novo material
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
-            <DialogTitle>Novo material</DialogTitle>
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={isEdit ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {isEdit ? 'Editar material' : 'Novo material'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Cadastre o insumo usado na composição dos produtos.
             </DialogDescription>
@@ -202,7 +242,7 @@ export function NewMaterialModal() {
             disabled={!name}
             onClick={() => mutate()}
           >
-            {isPending ? 'Cadastrando...' : 'Cadastrar material'}
+            {isEdit ? 'Salvar alterações' : 'Cadastrar material'}
           </Button>
         </DialogFooter>
       </DialogContent>

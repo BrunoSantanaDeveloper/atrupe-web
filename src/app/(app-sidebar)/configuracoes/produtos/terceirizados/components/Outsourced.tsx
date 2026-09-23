@@ -86,6 +86,7 @@ export function Outsourced({ searchParams }: SearchParamsType) {
                       <TableHead className="w-[10%] text-right">
                         Margem
                       </TableHead>
+                      <TableHead className="w-[6%]" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -108,6 +109,15 @@ export function Outsourced({ searchParams }: SearchParamsType) {
                           {service.margin === null
                             ? '-'
                             : `${service.margin.toString().replace('.', ',')}%`}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-end gap-1">
+                            <PermissionGate
+                              permissions={['product_settings:products:edit']}
+                            >
+                              <NewOutsourcedModal service={service} />
+                            </PermissionGate>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

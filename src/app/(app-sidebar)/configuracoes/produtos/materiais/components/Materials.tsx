@@ -206,6 +206,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           'product_settings:products:edit',
                                         ]}
                                       >
+                                        <NewMaterialModal material={material} />
                                         <ActionButton
                                           Icon={IconPalette}
                                           tooltip={`Variações de ${material.name}`}

@@ -180,6 +180,25 @@ export const createMaterial = async ({
   return { success: true, data: material, message: '' }
 }
 
+export const updateMaterial = async ({
+  id,
+  ...values
+}: Partial<Material> & { id: string }) => {
+  const material = materials.find((item) => item.id === id)
+
+  if (!material) {
+    return { success: false, data: null, message: 'Material não encontrado' }
+  }
+
+  if (values.name !== undefined && !values.name.trim()) {
+    return { success: false, data: null, message: 'Informe o nome do material' }
+  }
+
+  Object.assign(material, values)
+
+  return { success: true, data: material, message: '' }
+}
+
 // Ao criar variações, o preço do material deixa de valer: a venda passa a exigir
 // a escolha da variação (MT-3). O valor nasce repetido e pode ser alterado
 // linha a linha (MT-4).

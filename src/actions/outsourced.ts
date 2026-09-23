@@ -101,6 +101,32 @@ export const createOutsourcedService = async ({
   return { success: true, data: withMargin(seed), message: '' }
 }
 
+export const updateOutsourcedService = async ({
+  id,
+  ...values
+}: {
+  id: string
+  name?: string
+  supplier?: string
+  unit?: string
+  cost?: number
+  price?: number | null
+}) => {
+  const seed = seeds.find((item) => item.id === id)
+
+  if (!seed) {
+    return { success: false, data: null, message: 'Serviço não encontrado' }
+  }
+
+  if (values.name !== undefined && !values.name.trim()) {
+    return { success: false, data: null, message: 'Informe o serviço' }
+  }
+
+  Object.assign(seed, values)
+
+  return { success: true, data: withMargin(seed), message: '' }
+}
+
 export const updateOutsourcedPrice = async ({
   id,
   price,

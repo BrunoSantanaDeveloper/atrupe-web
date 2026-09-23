@@ -21,12 +21,13 @@ import {
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { ActionButton } from '@/components/common/ActionButton'
 
 // Types
-import type { DimensionRule } from '../types'
+import type { DimensionRule, Process } from '../types'
 
 // Actions
-import { createProcess } from '@/actions/processes'
+import { createProcess, updateProcess } from '@/actions/processes'
 
 // Hooks / Store / Consts
 import { dimensionRuleOptions } from '@/consts/processes'
@@ -36,7 +37,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil } from '@tabler/icons-react'
 
 const sectors = [
   'Impressão',
@@ -50,41 +51,72 @@ const sectors = [
 
 // Cada processo pertence a um setor (D3 §9). Os recursos entram na página do
 // processo, depois de criado.
-export function NewProcessModal() {
+interface Props {
+  // Com o processo informado, o mesmo formulário edita em vez de criar
+  process?: Process
+}
+
+export function NewProcessModal({ process }: Props) {
   const router = useRouter()
   const queryClient = useQueryClient()
+  const isEdit = Boolean(process)
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [sector, setSector] = useState(sectors[0].value)
-  const [dimensionRule, setDimensionRule] = useState<DimensionRule>('FREE_SIZE')
+  const [name, setName] = useState(process?.name || '')
+  const [sector, setSector] = useState(process?.sector || sectors[0].value)
+  const [dimensionRule, setDimensionRule] = useState<DimensionRule>(
+    process?.dimensionRule || 'FREE_SIZE',
+  )
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () => createProcess({ name, sector, dimensionRule }),
+    mutationFn: () =>
+      process
+        ? updateProcess({ id: process.id, name, sector, dimensionRule })
+        : createProcess({ name, sector, dimensionRule }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Processo criado')
+      toast.success(isEdit ? 'Processo atualizado' : 'Processo criado')
       queryClient.invalidateQueries({ queryKey: ['processes'] })
+      queryClient.invalidateQueries({ queryKey: ['process'] })
       setOpen(false)
+
+      if (isEdit) return
+
       setName('')
 
       if (response.data) {
         router.push(`/configuracoes/produtos/processos/${response.data.id}`)
       }
     },
-    onError: () => toast.error('Erro ao criar o processo'),
+    onError: () =>
+      toast.error(
+        isEdit ? 'Erro ao atualizar o processo' : 'Erro ao criar o processo',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-        Novo processo
-      </Button>
+      {isEdit ? (
+        <ActionButton
+          Icon={IconPencil}
+          tooltip={`Editar ${process?.name}`}
+          onClick={() => setOpen(true)}
+        />
+      ) : (
+        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+          Novo processo
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
-            <DialogTitle>Novo processo</DialogTitle>
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={isEdit ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {isEdit ? 'Editar processo' : 'Novo processo'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Crie a etapa produtiva e escolha o setor responsável.
             </DialogDescription>
@@ -132,7 +164,7 @@ export function NewProcessModal() {
             disabled={!name}
             onClick={() => mutate()}
           >
-            {isPending ? 'Criando...' : 'Criar processo'}
+            {isEdit ? 'Salvar alterações' : 'Criar processo'}
           </Button>
         </DialogFooter>
       </DialogContent>

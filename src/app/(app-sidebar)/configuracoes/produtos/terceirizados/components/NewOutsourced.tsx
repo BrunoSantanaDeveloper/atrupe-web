@@ -20,9 +20,13 @@ import {
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { ActionButton } from '@/components/common/ActionButton'
 
 // Actions
-import { createOutsourcedService } from '@/actions/outsourced'
+import {
+  createOutsourcedService,
+  updateOutsourcedService,
+} from '@/actions/outsourced'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -30,23 +34,36 @@ import { assetUnitShort, assetUnitOptions } from '@/consts/assets'
 
 // Types
 import type { AssetUnit } from '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/patrimonios/types'
+import type { OutsourcedService } from '../types'
 
 // Third-party
 import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil } from '@tabler/icons-react'
 
 // Cadastro prévio por fornecedor, serviço, unidade, custo e preço (D3 §11)
-export function NewOutsourcedModal() {
+interface Props {
+  // Com o serviço informado, o mesmo formulário edita em vez de cadastrar
+  service?: OutsourcedService
+}
+
+export function NewOutsourcedModal({ service }: Props) {
   const queryClient = useQueryClient()
+  const isEdit = Boolean(service)
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState('')
-  const [supplier, setSupplier] = useState('')
-  const [unit, setUnit] = useState<AssetUnit>('UN')
-  const [cost, setCost] = useState('')
-  const [price, setPrice] = useState('')
+  const [name, setName] = useState(service?.name || '')
+  const [supplier, setSupplier] = useState(service?.supplier || '')
+  const [unit, setUnit] = useState<AssetUnit>(
+    (Object.keys(assetUnitShort) as AssetUnit[]).find(
+      (key) => assetUnitShort[key] === service?.unit,
+    ) || 'UN',
+  )
+  const [cost, setCost] = useState(service ? String(service.cost / 100) : '')
+  const [price, setPrice] = useState(
+    service?.price ? String(service.price / 100) : '',
+  )
 
   const costValue = Math.round(Number(cost || 0) * 100)
   const priceValue = price ? Math.round(Number(price) * 100) : null
@@ -56,38 +73,65 @@ export function NewOutsourcedModal() {
       : null
 
   const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createOutsourcedService({
+    mutationFn: () => {
+      const values = {
         name,
         supplier,
         unit: assetUnitShort[unit],
         cost: costValue,
         price: priceValue,
-      }),
+      }
+
+      return service
+        ? updateOutsourcedService({ id: service.id, ...values })
+        : createOutsourcedService(values)
+    },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success('Serviço cadastrado')
+      toast.success(isEdit ? 'Serviço atualizado' : 'Serviço cadastrado')
       queryClient.invalidateQueries({ queryKey: ['outsourced'] })
-      setName('')
-      setSupplier('')
-      setCost('')
-      setPrice('')
+
+      if (!isEdit) {
+        setName('')
+        setSupplier('')
+        setCost('')
+        setPrice('')
+      }
+
       setOpen(false)
     },
-    onError: () => toast.error('Erro ao cadastrar o serviço'),
+    onError: () =>
+      toast.error(
+        isEdit ? 'Erro ao atualizar o serviço' : 'Erro ao cadastrar o serviço',
+      ),
   })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-        Novo terceirizado
-      </Button>
+      {isEdit ? (
+        <ActionButton
+          Icon={IconPencil}
+          tooltip={`Editar ${service?.name}`}
+          onClick={() => setOpen(true)}
+        />
+      ) : (
+        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+          Novo terceirizado
+        </Button>
+      )}
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
-            <DialogTitle>Novo serviço terceirizado</DialogTitle>
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={isEdit ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {isEdit
+                ? 'Editar serviço terceirizado'
+                : 'Novo serviço terceirizado'}
+            </DialogTitle>
             <DialogDescription className="sr-only">
               Cadastre o serviço contratado de terceiros.
             </DialogDescription>
@@ -181,7 +225,7 @@ export function NewOutsourcedModal() {
             disabled={!name || !supplier || !cost}
             onClick={() => mutate()}
           >
-            {isPending ? 'Cadastrando...' : 'Cadastrar serviço'}
+            {isEdit ? 'Salvar alterações' : 'Cadastrar serviço'}
           </Button>
         </DialogFooter>
       </DialogContent>

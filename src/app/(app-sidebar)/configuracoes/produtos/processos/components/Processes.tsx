@@ -153,6 +153,7 @@ export function Processes({ searchParams }: SearchParamsType) {
                                       tooltip={`Abrir ${process.name}`}
                                       link={`/configuracoes/produtos/processos/${process.id}`}
                                     />
+                                    <NewProcessModal process={process} />
                                   </div>
                                 </TableCell>
                               </TableRow>

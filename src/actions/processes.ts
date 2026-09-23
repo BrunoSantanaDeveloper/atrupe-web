@@ -150,6 +150,25 @@ export const createProcess = async ({
   return { success: true, data: process, message: '' }
 }
 
+export const updateProcess = async ({
+  id,
+  ...values
+}: Partial<Process> & { id: string }) => {
+  const process = processes.find((item) => item.id === id)
+
+  if (!process) {
+    return { success: false, data: null, message: 'Processo não encontrado' }
+  }
+
+  if (values.name !== undefined && !values.name.trim()) {
+    return { success: false, data: null, message: 'Informe o nome do processo' }
+  }
+
+  Object.assign(process, values)
+
+  return { success: true, data: process, message: '' }
+}
+
 export const addProcessResource = async ({
   processId,
   resource,
