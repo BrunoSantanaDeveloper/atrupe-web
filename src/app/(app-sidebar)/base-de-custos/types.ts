@@ -178,3 +178,30 @@ export type DepreciationTotals = {
   monthlyDepreciation: number
   activeAssets: number
 }
+
+// --- Aba Comparativo ----------------------------------------------------
+// Previsto (estimativa unitária × volume do período) contra o realizado no
+// financeiro, sem médias (areas/05-base-de-custos.md §10).
+
+export type ComparisonSource = {
+  id: string
+  name: string
+  detail: string
+  value: number
+}
+
+export type ComparisonAccount = {
+  id: string
+  chartAccount: string
+  name: string
+  estimated: number | null
+  actual: number | null
+  difference: number | null
+  differencePercent: number | null
+  sources: ComparisonSource[]
+}
+
+export type ComparisonResponse = {
+  period: string
+  accounts: ComparisonAccount[]
+}

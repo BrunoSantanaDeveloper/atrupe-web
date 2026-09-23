@@ -70,3 +70,11 @@ export const assetStatusTabs = [
   { tab: 'inconsistencias', label: 'Inconsistências' },
   { tab: 'inativos', label: 'Inativos' },
 ]
+
+// O comparativo compara período contra período, sem médias (§10 e §10.1)
+export const comparisonPeriods = [
+  { value: '1', label: 'Último mês' },
+  { value: '3', label: '3 meses' },
+  { value: '6', label: '6 meses' },
+  { value: '12', label: '12 meses' },
+]

@@ -25,6 +25,8 @@ import type {
   AssetStatus,
   DepreciationAsset,
   DepreciationTotals,
+  ComparisonSource,
+  ComparisonResponse,
 } from '@/app/(app-sidebar)/base-de-custos/types'
 
 const REFERENCE_MONTH = '2026-08'
@@ -918,6 +920,142 @@ export const getDepreciationCounts = async () => {
       all.filter((asset) => statuses.includes(asset.status)).length,
     ]),
   )
+
+  return { success: true, data, message: '' }
+}
+
+// --- Aba Comparativo ----------------------------------------------------
+
+type ComparisonSeed = {
+  id: string
+  chartAccount: string
+  name: string
+  // Por mês; a tela multiplica pelo número de meses do período escolhido
+  monthlyEstimated: number | null
+  monthlyActual: number | null
+  sources: ComparisonSource[]
+}
+
+const comparisonSeeds: ComparisonSeed[] = [
+  {
+    id: '1',
+    chartAccount: '02.01.03.03',
+    name: 'Manutenção de máquina',
+    monthlyEstimated: 41831,
+    monthlyActual: 78000,
+    sources: [
+      {
+        id: '1-1',
+        name: 'Impressora Solvente',
+        detail: 'Manutenção — a cada 6 meses',
+        value: 41667,
+      },
+      {
+        id: '1-2',
+        name: 'Impressora Sublimática',
+        detail: 'Tinta — R$ 0,01 por m² × 164 m²',
+        value: 164,
+      },
+    ],
+  },
+  {
+    id: '2',
+    chartAccount: '02.01.04.01',
+    name: 'Combustível',
+    monthlyEstimated: 120000,
+    monthlyActual: 98500,
+    sources: [
+      {
+        id: '2-1',
+        name: 'Veículo de entrega',
+        detail: 'R$ 1,20 por km × 1.000 km',
+        value: 120000,
+      },
+    ],
+  },
+  {
+    id: '3',
+    chartAccount: '02.01.02.09',
+    name: 'Taxas bancárias',
+    monthlyEstimated: 56000,
+    monthlyActual: 61200,
+    sources: [
+      {
+        id: '3-1',
+        name: 'Custo financeiro de referência',
+        detail: '1,5% sobre o valor recebido',
+        value: 56000,
+      },
+    ],
+  },
+  {
+    id: '4',
+    chartAccount: '02.02.04.02',
+    name: 'Matéria-prima',
+    monthlyEstimated: 240000,
+    monthlyActual: 318000,
+    sources: [
+      {
+        id: '4-1',
+        name: 'Composições vendidas no período',
+        detail: 'Material estimado nas vendas',
+        value: 240000,
+      },
+    ],
+  },
+  {
+    id: '5',
+    chartAccount: '02.01.03.07',
+    name: 'Ferramentas e consumíveis',
+    monthlyEstimated: null,
+    monthlyActual: 43000,
+    sources: [],
+  },
+]
+
+const monthsByPeriod: { [key: string]: number } = {
+  '1': 1,
+  '3': 3,
+  '6': 6,
+  '12': 12,
+}
+
+export const getCostComparison = async ({
+  filters,
+}: {
+  filters?: { [key: string]: string | undefined }
+}) => {
+  const period = filters?.period || '12'
+  const months = monthsByPeriod[period] || 12
+
+  const data: ComparisonResponse = {
+    period,
+    accounts: comparisonSeeds.map((seed) => {
+      const estimated =
+        seed.monthlyEstimated === null ? null : seed.monthlyEstimated * months
+      const actual =
+        seed.monthlyActual === null ? null : seed.monthlyActual * months
+      const difference =
+        estimated === null || actual === null ? null : estimated - actual
+
+      return {
+        id: seed.id,
+        chartAccount: seed.chartAccount,
+        name: seed.name,
+        estimated,
+        actual,
+        difference,
+        differencePercent:
+          difference === null || !estimated
+            ? null
+            : Math.round((difference / estimated) * 1000) / 10,
+        sources: seed.sources.map((source) => ({
+          ...source,
+          value: source.value * months,
+        })),
+      }
+    }),
+  }
 
   return { success: true, data, message: '' }
 }
