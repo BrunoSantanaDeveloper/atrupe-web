@@ -92,7 +92,16 @@ export function CompanySettingsList({
                       RightIcon={IconArrowRight}
                       className="w-full sm:w-auto"
                     >
-                      <Link href={`/configuracoes/${item.link}`}>
+                      {/* O link costuma ser relativo a /configuracoes, mas
+                          alguns itens apontam para telas fora dela (Base de
+                          custos, Precificação): aí vem com a barra na frente */}
+                      <Link
+                        href={
+                          item.link.startsWith('/')
+                            ? item.link
+                            : `/configuracoes/${item.link}`
+                        }
+                      >
                         Configurar
                       </Link>
                     </Button>
