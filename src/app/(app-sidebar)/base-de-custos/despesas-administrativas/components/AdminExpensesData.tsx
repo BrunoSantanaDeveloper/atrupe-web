@@ -1,8 +1,5 @@
 'use client'
 
-// React / Next
-import { Fragment } from 'react'
-
 // UI
 import {
   Table,
@@ -25,11 +22,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
-import type {
-  CostCriterion,
-  AdminExpenseGroup,
-  AdminExpenseAccount,
-} from '../../types'
+import type { CostCriterion, AdminExpenseAccount } from '../../types'
 
 // Hooks / Store / Consts
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -39,7 +32,6 @@ import { costCriterionObj } from '@/consts/cost-base'
 import { IconInfoCircle, IconPencil } from '@tabler/icons-react'
 
 interface Props {
-  groups: AdminExpenseGroup[]
   accounts: AdminExpenseAccount[]
   onEdit: (account: AdminExpenseAccount) => void
 }
@@ -62,14 +54,9 @@ const formatValue = (value: number | null) =>
 const sumReference = (accounts: AdminExpenseAccount[]) =>
   accounts.reduce((sum, account) => sum + (account.referenceValue || 0), 0)
 
-export function AdminExpensesData({ groups, accounts, onEdit }: Props) {
-  const grouped = groups
-    .map((group) => ({
-      ...group,
-      accounts: accounts.filter((account) => account.groupId === group.id),
-    }))
-    .filter((group) => group.accounts.length)
-
+// Lista plana, sem divisão por grupo: a divisão repetia a hierarquia do plano
+// de contas, que já aparece na própria linha (decisão do time em 22/09/2026)
+export function AdminExpensesData({ accounts, onEdit }: Props) {
   return (
     <>
       <CardContent>
@@ -113,79 +100,61 @@ export function AdminExpensesData({ groups, accounts, onEdit }: Props) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {grouped.map((group) => (
-              <Fragment key={group.id}>
-                <TableRow className="bg-gray-50 hover:bg-gray-50">
-                  <TableCell colSpan={6} className="font-medium">
-                    <div className="flex items-center gap-2">
-                      {group.name}
-                      <Badge variant="neutralLight">
-                        {group.accounts.length}
-                      </Badge>
-                    </div>
+            {accounts.map((account) => (
+              <TableRow key={account.id}>
+                <TableCell>
+                  <div className="flex flex-col">
+                    <span className="font-medium">{account.name}</span>
+                    <span className="text-sm text-gray">
+                      {account.chartAccount}
+                    </span>
+                  </div>
+                </TableCell>
+                {valueColumns.map((column) => (
+                  <TableCell
+                    key={column.key}
+                    className={cn(
+                      'px-3 text-right whitespace-nowrap',
+                      account.criterion === column.criterion
+                        ? 'text-gray-900 font-medium'
+                        : 'text-gray',
+                    )}
+                  >
+                    {formatValue(account[column.key])}
                   </TableCell>
-                  <TableCell className="text-right font-semibold">
-                    {formatCurrencyToBrl(sumReference(group.accounts))}
-                  </TableCell>
-                  <TableCell />
-                </TableRow>
-                {group.accounts.map((account) => (
-                  <TableRow key={account.id}>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{account.name}</span>
-                        <span className="text-sm text-gray">
-                          {account.chartAccount}
-                        </span>
-                      </div>
-                    </TableCell>
-                    {valueColumns.map((column) => (
-                      <TableCell
-                        key={column.key}
-                        className={cn(
-                          'px-3 text-right whitespace-nowrap',
-                          account.criterion === column.criterion
-                            ? 'text-gray-900 font-medium'
-                            : 'text-gray',
-                        )}
-                      >
-                        {formatValue(account[column.key])}
-                      </TableCell>
-                    ))}
-                    <TableCell>
-                      <Badge
-                        variant={costCriterionObj[account.criterion].variant}
-                        className="whitespace-nowrap"
-                      >
-                        {costCriterionObj[account.criterion].text}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex flex-col">
-                        <span className="font-semibold text-gray-900">
-                          {formatValue(account.referenceValue)}
-                        </span>
-                        {account.criterion === 'MANUAL' ? (
-                          <span className="text-xs text-gray">
-                            Informado manualmente
-                          </span>
-                        ) : null}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <PermissionGate permissions={['cost:base:edit']}>
-                          <ActionButton
-                            tooltip="Editar critério"
-                            Icon={IconPencil}
-                            onClick={() => onEdit(account)}
-                          />
-                        </PermissionGate>
-                      </div>
-                    </TableCell>
-                  </TableRow>
                 ))}
-              </Fragment>
+                <TableCell>
+                  <Badge
+                    variant={costCriterionObj[account.criterion].variant}
+                    className="whitespace-nowrap"
+                  >
+                    {costCriterionObj[account.criterion].text}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-gray-900">
+                      {formatValue(account.referenceValue)}
+                    </span>
+                    {account.criterion === 'MANUAL' ? (
+                      <span className="text-xs text-gray">
+                        Informado manualmente
+                      </span>
+                    ) : null}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="flex justify-end gap-1">
+                    <PermissionGate permissions={['cost:base:edit']}>
+                      <ActionButton
+                        tooltip="Editar critério"
+                        Icon={IconPencil}
+                        onClick={() => onEdit(account)}
+                      />
+                    </PermissionGate>
+                  </div>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

@@ -8,16 +8,11 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { AdminExpenseGroup } from '../../types'
 
 // Hooks / Store / Consts
 import { costCriterionOptions } from '@/consts/cost-base'
 
-interface Props extends SearchParamsType {
-  groups: AdminExpenseGroup[]
-}
-
-export function AdminExpensesFilter({ searchParams, groups }: Props) {
+export function AdminExpensesFilter({ searchParams }: SearchParamsType) {
   const router = useRouter()
 
   const params = new URLSearchParams(
@@ -36,17 +31,6 @@ export function AdminExpensesFilter({ searchParams, groups }: Props) {
 
   return (
     <>
-      <SelectBasic
-        name="groupId"
-        label="Grupo"
-        className="w-full sm:w-[220px]"
-        value={searchParams?.groupId || 'all'}
-        onChange={(value) => handleFilter('groupId', value)}
-        options={[
-          { value: 'all', label: 'Todos' },
-          ...groups.map((group) => ({ value: group.id, label: group.name })),
-        ]}
-      />
       <SelectBasic
         name="criterion"
         label="Critério"

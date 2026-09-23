@@ -59,7 +59,6 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
   })
 
   const accounts = data?.data?.accounts || []
-  const groups = data?.data?.groups || []
   const hasAnyAccount = (totals?.data?.total ?? 0) > 0
 
   return (
@@ -78,21 +77,14 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
           ) : (
             <>
               <TableFiltersHeader searchParams={searchParams}>
-                <AdminExpensesFilter
-                  searchParams={searchParams}
-                  groups={groups}
-                />
+                <AdminExpensesFilter searchParams={searchParams} />
                 <p className="text-sm text-gray pb-3">
                   Médias calculadas até{' '}
                   {formatReferenceMonth(data?.data?.referenceMonth)}
                 </p>
               </TableFiltersHeader>
               {accounts.length ? (
-                <AdminExpensesData
-                  groups={groups}
-                  accounts={accounts}
-                  onEdit={setEditing}
-                />
+                <AdminExpensesData accounts={accounts} onEdit={setEditing} />
               ) : (
                 <FilteredDataEmpty description="Nenhuma conta atende aos filtros escolhidos." />
               )}

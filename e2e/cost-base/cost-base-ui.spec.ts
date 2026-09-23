@@ -163,17 +163,15 @@ test.describe('Despesas administrativas — listagem (design.md §5.1, §6, §7)
     await expect(badge).toHaveClass(/bg-gray-100/)
   })
 
-  test('linhas de grupo com quantidade e subtotal, sem paginação', async ({
+  test('lista plana, sem divisão por grupo e sem paginação', async ({
     page,
   }) => {
     await openAdminExpenses(page)
 
-    const group = row(page, 'Ocupação')
-    await expect(group).toHaveClass(/bg-gray-50/)
-    await expect(group.getByRole('cell').first()).toContainText('3')
-    await expect(group.getByRole('cell').nth(1)).toHaveText(
-      /^R\$\s?[\d.]+,\d{2}$/,
-    )
+    // A divisão por grupo saiu: ela repetia a hierarquia do plano de contas
+    // (decisão do time em 22/09/2026)
+    await expect(page.getByText('Ocupação')).toHaveCount(0)
+    await expect(page.getByLabel('Grupo')).toHaveCount(0)
 
     await expect(page.getByRole('navigation', { name: /pagina/i })).toHaveCount(
       0,
