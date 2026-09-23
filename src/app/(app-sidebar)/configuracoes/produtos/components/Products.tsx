@@ -14,6 +14,7 @@ import {
 } from '@/components/common/TableEmptyState'
 import { ProductsData } from './ProductsTable/ProductsData'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
+import { ProductAreaTabs } from './ProductAreaTabs'
 import { ProductsFilter } from './ProductsTable/ProductsFilter'
 import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { ProductFiscalDataDialog } from './ProductFiscalData'
@@ -195,6 +196,7 @@ export function Products({ searchParams }: SearchParamsType) {
   return (
     <PermissionGate permissions={['product_settings:products:view']}>
       <div className="space-y-5">
+        <ProductAreaTabs />
         <Topbar
           title="Produtos"
           tabs={tabs}
