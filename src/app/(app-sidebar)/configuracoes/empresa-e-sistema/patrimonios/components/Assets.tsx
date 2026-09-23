@@ -1,6 +1,7 @@
 'use client'
 
 // React / Next
+import Link from 'next/link'
 import { Fragment } from 'react'
 
 // UI
@@ -13,6 +14,7 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
@@ -46,7 +48,11 @@ import {
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconEye, IconBuildingWarehouse } from '@tabler/icons-react'
+import {
+  IconEye,
+  IconLayersLinked,
+  IconBuildingWarehouse,
+} from '@tabler/icons-react'
 
 const sectors = [
   'Administração',
@@ -99,9 +105,20 @@ export function Assets({ searchParams }: SearchParamsType) {
           previousPage="/configuracoes/empresa-e-sistema"
           supportText="Máquinas, equipamentos, móveis e veículos da empresa"
           primaryCta={
-            <PermissionGate permissions={['cost:base:edit']}>
-              <NewAssetModal sectors={sectors} groups={groups} />
-            </PermissionGate>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                variant="neutralOutline"
+                LeftIcon={IconLayersLinked}
+                asChild
+              >
+                <Link href="/configuracoes/empresa-e-sistema/patrimonios/grupos">
+                  Grupos de bens
+                </Link>
+              </Button>
+              <PermissionGate permissions={['cost:base:edit']}>
+                <NewAssetModal sectors={sectors} groups={groups} />
+              </PermissionGate>
+            </div>
           }
         />
         <Card>

@@ -245,11 +245,76 @@ export const getAsset = async ({ id }: { id: string }) => {
   return { success: true, data: asset, message: '' }
 }
 
-export const getAssetGroups = async () => ({
-  success: true,
-  data: groups,
-  message: '',
-})
+export const getAssetGroups = async () => {
+  // Custo pela média e capacidade pela soma dos bens do grupo (P-28)
+  const data = groups.map((group) => {
+    const members = assets.filter(
+      (asset) => asset.groupId === group.id && asset.status !== 'INACTIVE',
+    )
+
+    const costs = members
+      .map((asset) => asset.monthlyDepreciation)
+      .filter((cost): cost is number => cost !== null)
+
+    return {
+      ...group,
+      assetCount: members.length,
+      averageCost: costs.length
+        ? Math.round(costs.reduce((sum, cost) => sum + cost, 0) / costs.length)
+        : null,
+      totalProductivity: members.reduce(
+        (sum, asset) => sum + (asset.monthlyProductivity || 0),
+        0,
+      ),
+    }
+  })
+
+  return { success: true, data, message: '' }
+}
+
+export const createAssetGroup = async ({
+  name,
+  unit,
+  sector,
+}: {
+  name: string
+  unit: AssetGroupItem['unit']
+  sector: string
+}) => {
+  if (!name?.trim()) {
+    return { success: false, data: null, message: 'Informe o nome do grupo' }
+  }
+
+  const group: AssetGroupItem = {
+    id: name.toLowerCase().replace(/\s+/g, '-'),
+    name,
+    unit,
+    sector,
+    assetCount: 0,
+  }
+
+  groups.push(group)
+
+  return { success: true, data: group, message: '' }
+}
+
+export const renameAssetGroup = async ({
+  id,
+  name,
+}: {
+  id: string
+  name: string
+}) => {
+  const group = groups.find((item) => item.id === id)
+
+  if (!group) {
+    return { success: false, data: null, message: 'Grupo não encontrado' }
+  }
+
+  group.name = name
+
+  return { success: true, data: group, message: '' }
+}
 
 // Depreciação = (aquisição − residual) ÷ vida útil (D3 §6.6)
 const monthlyDepreciationOf = (asset: Asset) => {

@@ -150,3 +150,67 @@ test.describe('Patrimônio — página do bem', () => {
     await expect(dialog.getByText('R$ 280,00')).toBeVisible()
   })
 })
+
+test.describe('Patrimônio — custos e configurações (P-6, P-31)', () => {
+  test('o custo fixo é diluído pela periodicidade', async ({ page }) => {
+    await page.goto(`${ROUTE}/sublimatica`)
+
+    await page.getByRole('button', { name: 'Novo custo' }).click()
+
+    const dialog = page.getByRole('dialog')
+    await dialog.getByLabel('Nome do custo').fill('Seguro anual')
+    await dialog.getByLabel('Valor').fill('1200')
+    await dialog.getByLabel('A cada quantos meses').fill('12')
+
+    await expect(dialog.getByText('R$ 100,00')).toBeVisible()
+  })
+
+  test('a configuração calcula o tempo em atividade', async ({ page }) => {
+    await page.goto(`${ROUTE}/sublimatica`)
+
+    await page.getByRole('button', { name: 'Nova configuração' }).click()
+
+    const dialog = page.getByRole('dialog')
+    await dialog.getByLabel('Nome').fill('6 passes')
+    await dialog.getByLabel(/Tempo por/).fill('10')
+    await dialog.getByLabel(/Produtividade de referência/).fill('120')
+
+    // 10 min × 120 m² = 1.200 min = 20 h
+    await expect(dialog.getByText('20 h/mês')).toBeVisible()
+  })
+})
+
+test.describe('Grupos de bens equivalentes (P-28)', () => {
+  test('custo pela média e produtividade pela soma', async ({ page }) => {
+    await page.goto(`${ROUTE}/grupos`)
+
+    await expect(
+      page.getByRole('heading', { name: 'Grupos de bens equivalentes' }),
+    ).toBeVisible()
+
+    const motos = page.getByRole('row').filter({ hasText: 'Motos' })
+    await expect(motos).toContainText('R$ 210,00')
+    await expect(motos).toContainText('1000 km/mês')
+  })
+
+  test('grupo vazio não inventa custo', async ({ page }) => {
+    await page.goto(`${ROUTE}/grupos`)
+
+    const carros = page.getByRole('row').filter({ hasText: 'Carros' })
+    await expect(carros).toContainText('-')
+    await expect(carros).not.toContainText('R$ 0,00')
+  })
+
+  test('os grupos de veículo vêm pré-cadastrados e são editáveis', async ({
+    page,
+  }) => {
+    await page.goto(`${ROUTE}/grupos`)
+
+    for (const name of ['Carros', 'Motos', 'Caminhões']) {
+      await expect(page.getByText(name, { exact: true })).toBeVisible()
+    }
+
+    await page.getByRole('button', { name: 'Renomear Motos' }).click()
+    await expect(page.getByLabel('Novo nome de Motos')).toBeVisible()
+  })
+})

@@ -25,6 +25,8 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { NewCostModal } from './NewCostModal'
+import { NewSetupModal } from './NewSetupModal'
 import { SellAssetModal } from './SellAssetModal'
 import { EditAssetModal } from './EditAssetModal'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -163,12 +165,17 @@ export function AssetDetail({ id }: Props) {
         {asset.detailed ? (
           <>
             <Card>
-              <CardHeader>
-                <CardTitle>Centro de custos</CardTitle>
-                <CardDescription>
-                  Cada custo aponta para uma conta do plano de contas, o que
-                  permite comparar o estimado com o realizado.
-                </CardDescription>
+              <CardHeader className="flex-row items-start justify-between gap-4">
+                <div>
+                  <CardTitle>Centro de custos</CardTitle>
+                  <CardDescription>
+                    Cada custo aponta para uma conta do plano de contas, o que
+                    permite comparar o estimado com o realizado.
+                  </CardDescription>
+                </div>
+                <PermissionGate permissions={['cost:base:edit']}>
+                  <NewCostModal asset={asset} />
+                </PermissionGate>
               </CardHeader>
               <CardContent className="space-y-6">
                 {costsByNature.map(({ nature, costs }) => (
@@ -232,13 +239,18 @@ export function AssetDetail({ id }: Props) {
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>Configurações produtivas</CardTitle>
-                <CardDescription>
-                  A produtividade de referência do bem é a soma das
-                  configurações. O custo da máquina é repartido entre elas pelo
-                  tempo de atividade.
-                </CardDescription>
+              <CardHeader className="flex-row items-start justify-between gap-4">
+                <div>
+                  <CardTitle>Configurações produtivas</CardTitle>
+                  <CardDescription>
+                    A produtividade de referência do bem é a soma das
+                    configurações. O custo da máquina é repartido entre elas
+                    pelo tempo de atividade.
+                  </CardDescription>
+                </div>
+                <PermissionGate permissions={['cost:base:edit']}>
+                  <NewSetupModal asset={asset} />
+                </PermissionGate>
               </CardHeader>
               <CardContent>
                 {asset.setups.length ? (
