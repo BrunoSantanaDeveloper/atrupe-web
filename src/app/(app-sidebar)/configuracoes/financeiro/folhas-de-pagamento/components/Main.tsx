@@ -47,6 +47,21 @@ import { IconMinus, IconPencil, IconPlus } from '@tabler/icons-react'
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { toast } from 'sonner'
 
+// O custo final do item é o acréscimo menos o desconto, como na tela
+// "Custos Funcionários" do legado: item que só desconta do colaborador não
+// custa para a empresa
+const itemFinalCost = (item: PayrollSetupItemType) => {
+  if (!item?.isSet) return 0
+
+  return item.type === 'INCREASE' ? item.amount : 0
+}
+
+const employeeCost = (employee: ListPayrollSetupType) =>
+  (employee?.items || []).reduce(
+    (total, item) => total + itemFinalCost(item),
+    0,
+  )
+
 export function Main({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<PayrollSetupItemType>()
@@ -125,9 +140,12 @@ export function Main({ searchParams }: SearchParamsType) {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50">
-                      <TableHead className="w-full">Referência</TableHead>
+                      <TableHead className="w-full">
+                        Referência do custo
+                      </TableHead>
                       <TableHead>Acréscimo</TableHead>
                       <TableHead>Desconto</TableHead>
+                      <TableHead className="text-right">Custo final</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -135,13 +153,17 @@ export function Main({ searchParams }: SearchParamsType) {
                     {payrollData.map((employee) => (
                       <Fragment key={employee?.id}>
                         <TableRow className="bg-gray-100">
-                          <TableCell colSpan={4}>
+                          <TableCell colSpan={3}>
                             <UserInfo
                               name={employee?.name}
                               description={employee?.roleName}
                               imageUrl={employee?.avatarUrl}
                             />
                           </TableCell>
+                          <TableCell className="text-right font-semibold">
+                            {formatCurrencyToBrl(employeeCost(employee))}
+                          </TableCell>
+                          <TableCell />
                         </TableRow>
                         {employee?.items.map((item) => (
                           <TableRow key={item?.id}>
@@ -156,6 +178,11 @@ export function Main({ searchParams }: SearchParamsType) {
                             <TableCell className="text-error-600">
                               {item?.type === 'DISCOUNT' && item?.isSet
                                 ? formatCurrencyToBrl(item?.amount)
+                                : '-'}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {item?.isSet
+                                ? formatCurrencyToBrl(itemFinalCost(item))
                                 : '-'}
                             </TableCell>
                             <TableCell>
