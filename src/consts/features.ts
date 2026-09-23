@@ -36,6 +36,12 @@ export const FEATURES = {
     DELIVERY_STAGE_STATUS_CHANGE: 'delivery_stage_status_change',
   },
 
+  // Custos e precificação (PRO)
+  COSTS: {
+    COST_BASE: 'cost_base',
+    PRICING_CENTER: 'pricing_center',
+  },
+
   // Configurações Gerais
   SYSTEM: {
     SECTORS_CONFIGURATION: 'sectors_configuration',
@@ -57,6 +63,7 @@ export type FeatureKey =
   | keyof typeof FEATURES.FINANCIAL
   | keyof typeof FEATURES.SALES
   | keyof typeof FEATURES.PRODUCTS
+  | keyof typeof FEATURES.COSTS
   | keyof typeof FEATURES.SYSTEM
   | keyof typeof FEATURES.CONTACTS
 

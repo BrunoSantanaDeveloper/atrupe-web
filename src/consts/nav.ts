@@ -1,4 +1,5 @@
 import {
+  IconTag,
   IconCoin,
   IconNews,
   IconBook,
@@ -204,6 +205,32 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '#',
         action: true,
       }, */
+    ],
+  },
+  {
+    icon: IconCoins,
+    title: 'Custos e precificação',
+    path: '/base-de-custos',
+    permission: ['cost:base:view', 'values:values:view'],
+    requireAllPermissions: true,
+    requiredModule: 'cost_base',
+    children: [
+      {
+        icon: IconCoins,
+        title: 'Base de custos',
+        path: '/base-de-custos',
+        permission: ['cost:base:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredModule: 'cost_base',
+      },
+      {
+        icon: IconTag,
+        title: 'Precificação',
+        path: '/precificacao',
+        permission: ['cost:pricing:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredModule: 'pricing_center',
+      },
     ],
   },
   {

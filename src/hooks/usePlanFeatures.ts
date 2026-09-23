@@ -1,12 +1,30 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
+
+// Desenvolvimento: recursos do PRO/ELITE/FULL ainda não existem no backend, que
+// é quem monta `company.plan.features` no login. Enquanto isso, o ambiente local
+// pode simular a contratação pela variável NEXT_PUBLIC_DEV_FEATURES
+// (ex.: NEXT_PUBLIC_DEV_FEATURES=cost_base,pricing_center). Sem a variável, nada
+// muda. Remover quando o backend criar as features do PRO.
+const devFeatures = (process.env.NEXT_PUBLIC_DEV_FEATURES || '')
+  .split(',')
+  .map((feature) => feature.trim())
+  .filter(Boolean)
 
 export function usePlanFeatures() {
   const { data: session } = useSession()
 
-  const features = session?.company?.plan?.features
+  const planFeatures = session?.company?.plan?.features
+
+  const features = useMemo(
+    () =>
+      devFeatures.length
+        ? [...(planFeatures || []), ...devFeatures]
+        : planFeatures,
+    [planFeatures],
+  )
 
   const hasFeature = useCallback(
     (feature: string) => {
