@@ -42,6 +42,12 @@ export const FEATURES = {
     PRICING_CENTER: 'pricing_center',
   },
 
+  // Produção (ELITE)
+  PRODUCTION: {
+    PRODUCTION_MANAGER: 'production_manager',
+    PRODUCTIVITY: 'productivity_tracking',
+  },
+
   // Configurações Gerais
   SYSTEM: {
     SECTORS_CONFIGURATION: 'sectors_configuration',
@@ -64,6 +70,7 @@ export type FeatureKey =
   | keyof typeof FEATURES.SALES
   | keyof typeof FEATURES.PRODUCTS
   | keyof typeof FEATURES.COSTS
+  | keyof typeof FEATURES.PRODUCTION
   | keyof typeof FEATURES.SYSTEM
   | keyof typeof FEATURES.CONTACTS
 

@@ -1,5 +1,6 @@
 import {
   IconCoin,
+  IconListCheck,
   IconNews,
   IconBook,
   IconCoins,
@@ -170,6 +171,20 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Agenda de Entrega',
         path: '/producao/agenda-de-entrega',
         permission: 'production:delivery_schedule:view',
+      },
+      {
+        icon: IconListCheck,
+        title: 'Gerenciador de produção',
+        path: '/producao/gerenciador',
+        permission: 'production:production:view',
+        requiredModule: 'production_manager',
+      },
+      {
+        icon: IconChartBar,
+        title: 'Produtividade',
+        path: '/producao/produtividade',
+        permission: 'production:production:view',
+        requiredModule: 'productivity_tracking',
       },
     ],
   },

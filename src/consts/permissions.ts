@@ -85,6 +85,20 @@ export const permissionsData = [
     ],
   },
   {
+    section: 'Produção',
+    key: 'production',
+    items: [
+      {
+        name: 'Gerenciador de produção',
+        key: 'production',
+      },
+      {
+        name: 'Agenda de entrega',
+        key: 'delivery_schedule',
+      },
+    ],
+  },
+  {
     section: 'Relatorios',
     key: 'reports',
     items: [
