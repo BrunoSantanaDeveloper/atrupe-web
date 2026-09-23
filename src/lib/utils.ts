@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import { type ClassValue, clsx } from 'clsx'
 
 // Consts Imports
+import { currentCountry } from '@/consts/country'
 import { SecondaryNavigationType, secondaryNavRoutes } from '@/consts/nav'
 
 export function cn(...inputs: ClassValue[]) {
@@ -370,14 +371,27 @@ export function parseCurrencyToBrl(cents: number): string {
 
 // Retorna string formatada em BRL com valor dividido por 100 (ex: 10000 -> R$ 100,00)
 export function formatCurrencyToBrl(value?: number | null) {
-  if (!value || isNaN(Number(value)) || typeof value === 'boolean') {
-    return 'R$ 0,00'
-  }
+  return formatMoney(value)
+}
 
-  return new Intl.NumberFormat('pt-BR', {
+/**
+ * Formata um valor em centavos na moeda da empresa.
+ *
+ * Telas novas usam esta função em vez de escrever "R$" ou 'pt-BR': a moeda e o
+ * formato vêm da configuração de país (src/consts/country.ts), então atender
+ * outro país não exige mexer em tela
+ * (regras-de-negocio/areas/10-idioma-e-pais.md).
+ */
+export function formatMoney(value?: number | null) {
+  const { locale, currency } = currentCountry()
+
+  const amount =
+    !value || isNaN(Number(value)) || typeof value === 'boolean' ? 0 : value
+
+  return new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: 'BRL',
-  }).format(value / 100)
+    currency,
+  }).format(amount / 100)
 }
 
 declare global {
