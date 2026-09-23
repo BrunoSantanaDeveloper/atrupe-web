@@ -67,6 +67,8 @@ import {
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
 import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
 import { NfseActionsDropdown } from '@/components/common/fiscal/NfseActionsDropdown'
+import { HistoricalDocumentNotice } from '@/components/common/fiscal/HistoricalDocumentNotice'
+import { useFiscalHistoryLock } from '@/hooks/queries/useFiscalHistoryLock'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -107,6 +109,9 @@ interface FiscalRecordWithRejection {
   ambiente?: number
   pdfUrl?: string | null
   motivoRejeicao?: string | null
+  // Identificam a nota do CNPJ anterior a uma transferência de titularidade.
+  createdAt?: string | null
+  invoicyConfigId?: string | null
 }
 
 interface UnifiedInvoiceItem {
@@ -134,6 +139,8 @@ interface UnifiedInvoiceItem {
     urlConsulta?: string | null
     dataEmissao?: string | null
     motivoRejeicao?: string | null
+    createdAt?: string | null
+    invoicyConfigId?: string | null
   }
   originalData: {
     motivoRejeicao?: string | null
@@ -523,6 +530,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
     numero: number
     serie: number
   } | null>(null)
+
+  // Notas do CNPJ anterior a uma transferência de titularidade: só consulta.
+  const { isHistorical, reason: historicalReason } = useFiscalHistoryLock()
 
   const currentPage = parseInt(activeParams.page || '1', 10)
   const currentSearch = activeParams.search
@@ -1172,6 +1182,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         serie: String(nfse.serie ?? ''),
                                         status: nfse.status ?? item.status,
                                         pdfUrl: nfse.pdfUrl,
+                                        createdAt: nfse.createdAt,
+                                        invoicyConfigId: nfse.invoicyConfigId,
                                       }}
                                       onRefetch={fetchOrders}
                                     />
@@ -1180,13 +1192,18 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                 if (item.type === 'NFCE_AVULSA') {
                                   const nfce = item.nfce
+                                  // Do CNPJ anterior a uma transferência:
+                                  // ver e baixar, sem imprimir no nome novo,
+                                  // consultar, reprocessar nem cancelar.
+                                  const historical = isHistorical(nfce)
                                   const isAuthorized =
                                     nfce?.status === 'AUTHORIZED'
                                   const isContingency =
                                     nfce?.status === 'CONTINGENCY'
                                   const canReprocess =
-                                    nfce?.status === 'UNKNOWN' ||
-                                    nfce?.status === 'PROCESSING'
+                                    !historical &&
+                                    (nfce?.status === 'UNKNOWN' ||
+                                      nfce?.status === 'PROCESSING')
 
                                   const handleReprocess = async () => {
                                     if (!nfce?.id) return
@@ -1305,6 +1322,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         )}
 
                                         {(isAuthorized || isContingency) &&
+                                          !historical &&
                                           nfce?.id && (
                                             <DropdownMenuItem
                                               onClick={() =>
@@ -1344,20 +1362,30 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                           </DropdownMenuItem>
                                         )}
 
-                                        {(isAuthorized ||
-                                          isContingency ||
-                                          nfce?.status === 'REJECTED' ||
-                                          nfce?.status === 'UNKNOWN') && (
+                                        {historical && historicalReason && (
                                           <>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem
-                                              onClick={handleConsultarStatus}
-                                            >
-                                              <IconRefresh className="mr-2 h-4 w-4" />
-                                              <span>Consultar SEFAZ</span>
-                                            </DropdownMenuItem>
+                                            <HistoricalDocumentNotice
+                                              reason={historicalReason}
+                                            />
                                           </>
                                         )}
+
+                                        {!historical &&
+                                          (isAuthorized ||
+                                            isContingency ||
+                                            nfce?.status === 'REJECTED' ||
+                                            nfce?.status === 'UNKNOWN') && (
+                                            <>
+                                              <DropdownMenuSeparator />
+                                              <DropdownMenuItem
+                                                onClick={handleConsultarStatus}
+                                              >
+                                                <IconRefresh className="mr-2 h-4 w-4" />
+                                                <span>Consultar SEFAZ</span>
+                                              </DropdownMenuItem>
+                                            </>
+                                          )}
 
                                         {canReprocess && (
                                           <>
@@ -1371,7 +1399,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                           </>
                                         )}
 
-                                        {isAuthorized && (
+                                        {isAuthorized && !historical && (
                                           <>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
@@ -1465,6 +1493,9 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                         status:
                                           authorizedNfse.status ?? 'AUTHORIZED',
                                         pdfUrl: authorizedNfse.pdfUrl,
+                                        createdAt: authorizedNfse.createdAt,
+                                        invoicyConfigId:
+                                          authorizedNfse.invoicyConfigId,
                                       }}
                                       onRefetch={fetchOrders}
                                     />

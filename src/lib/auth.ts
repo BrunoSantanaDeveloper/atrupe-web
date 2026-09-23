@@ -1,9 +1,17 @@
 // Third-party Imports
 import axios from 'axios'
-import NextAuth, { type User } from 'next-auth'
+import NextAuth, { CredentialsSignin, type User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import { UAParser } from 'ua-parser-js'
 import type { BillingSituation } from '@/types/checkout'
+
+/**
+ * Login de quem transferiu o ambiente. O código chega à tela de login no
+ * resultado do signIn, que mostra o motivo no lugar de "dados inválidos".
+ */
+class AccessTransferred extends CredentialsSignin {
+  code = 'access_transferred'
+}
 
 interface LoginResponse {
   id: string
@@ -144,12 +152,26 @@ export const {
           return buildUser(res.data)
         } catch (firstError: unknown) {
           const axiosError = firstError as {
-            response?: { status?: number }
+            response?: {
+              status?: number
+              data?: { userMessage?: { code?: string } }
+            }
             code?: string
             message?: string
           }
           const status = axiosError?.response?.status
           const code = axiosError?.code
+
+          // Quem transferiu o ambiente é informado do motivo, e não recebe
+          // o mesmo "dados inválidos" de uma senha errada. O backend só diz
+          // isso com a senha certa.
+          if (
+            status === 401 &&
+            axiosError?.response?.data?.userMessage?.code ===
+              'ACCESS_TRANSFERRED'
+          ) {
+            throw new AccessTransferred()
+          }
 
           // Credenciais inválidas: retorna null imediatamente
           if (status === 401 || status === 403) {

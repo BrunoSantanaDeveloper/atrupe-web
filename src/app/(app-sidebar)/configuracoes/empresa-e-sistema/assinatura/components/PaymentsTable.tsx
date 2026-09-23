@@ -39,12 +39,19 @@ interface Payment {
   subscription?: {
     additionalUsers: number
     plan: { name: string; basePrice: number }
+    /** Em nome de quem a cobrança foi gerada. */
+    customer?: { name: string; document: string } | null
   }
 }
 
 interface PaymentsTableProps extends SearchParamsType {
   payments: Payment[]
   lastPage: number
+  /**
+   * O ambiente já foi transferido: cada cobrança mostra o titular que a gerou
+   * — as de antes da transferência continuam no nome dele.
+   */
+  showHolder?: boolean
 }
 
 const paymentStatusMap: Record<
@@ -64,6 +71,7 @@ export function PaymentsTable({
   payments,
   lastPage,
   searchParams,
+  showHolder = false,
 }: PaymentsTableProps) {
   if (!payments.length) {
     return (
@@ -87,6 +95,7 @@ export function PaymentsTable({
             <TableRow className="bg-gray-50">
               <TableHead>Vencimento</TableHead>
               <TableHead>Plano</TableHead>
+              {showHolder && <TableHead>Titular</TableHead>}
               <TableHead>Usuários</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Data de pagamento</TableHead>
@@ -112,6 +121,11 @@ export function PaymentsTable({
                   <TableCell>
                     {payment.subscription?.plan?.name || '-'}
                   </TableCell>
+                  {showHolder && (
+                    <TableCell className="max-w-[220px] truncate">
+                      {payment.subscription?.customer?.name || '-'}
+                    </TableCell>
+                  )}
                   <TableCell>
                     {payment.subscription?.additionalUsers || 0}
                   </TableCell>

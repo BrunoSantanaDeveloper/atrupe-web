@@ -72,10 +72,16 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL(redirectPage, req.url).toString())
   }
 
+  // Rota compartilhada (o convite de transferência) não é da empresa de quem
+  // está logado: nem teste vencido nem bloqueio a desviam.
+  const isSharedRoute = SHARED_ROUTES.some((route) => pathname.endsWith(route))
+
   // If the user is logged in but the trial has expired, redirect to the subscription page
-  const isAllowedRouteWhenTrialExpired = ALLOWED_WHEN_TRIAL_EXPIRED.some(
-    (route) => pathname.endsWith('logout') || pathname.startsWith(route),
-  )
+  const isAllowedRouteWhenTrialExpired =
+    isSharedRoute ||
+    ALLOWED_WHEN_TRIAL_EXPIRED.some(
+      (route) => pathname.endsWith('logout') || pathname.startsWith(route),
+    )
 
   if (isUserLoggedIn && isTrialExpired && !isAllowedRouteWhenTrialExpired) {
     return NextResponse.redirect(new URL(SUBSCRIPTION_PAGE, req.url).toString())
@@ -83,6 +89,7 @@ export async function middleware(req: NextRequest) {
 
   // If the company is fully blocked, redirect to the blocked page
   const isAllowedRouteWhenBlocked =
+    isSharedRoute ||
     pathname.endsWith('logout') ||
     pathname.startsWith(BLOCKED_PAGE) ||
     pathname.startsWith(SUBSCRIPTION_PAGE)

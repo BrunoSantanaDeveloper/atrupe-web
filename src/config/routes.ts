@@ -19,8 +19,14 @@ export const GUEST_ROUTES = [
   'redefinindo-senha',
 ] as const
 
-/** Rotas compartilhadas (acessíveis por todos) */
-export const SHARED_ROUTES = ['shared-route'] as const
+/**
+ * Rotas compartilhadas (acessíveis por todos, com ou sem sessão). O convite de
+ * transferência é aberto por quem ainda não tem conta.
+ */
+export const SHARED_ROUTES = [
+  'shared-route',
+  'convite-de-transferencia',
+] as const
 
 /** Rotas permitidas quando a empresa está bloqueada (FULL ou PARTIAL) */
 export const ALLOWED_WHEN_BLOCKED = [

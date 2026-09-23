@@ -14,6 +14,7 @@ import { SubscriptionSummaryCards } from './SubscriptionSummaryCards'
 import { PaymentsTable } from './PaymentsTable'
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog'
 import { ContractModal } from './ContractModal'
+import { OwnershipSection } from './OwnershipSection'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -27,6 +28,7 @@ import { IconPrinter, IconFileText, IconPlus } from '@tabler/icons-react'
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
 import { refreshPlanFeatures } from '@/actions/subscription'
+import { fetchOwnership } from '@/actions/ownership'
 
 // Types
 import type { BadgeType, SearchParamsType } from '@/types/coreTypes'
@@ -66,6 +68,20 @@ export function SubscriptionManagementClient({
         filters: { page: String(page), limit: '10' },
       }),
   })
+
+  // A mesma consulta da seção de titularidade (mesma chave): diz se o
+  // ambiente já foi transferido, para a tabela mostrar o titular de cada
+  // cobrança.
+  const { data: ownershipRes } = useQuery({
+    queryKey: ['ownership'],
+    queryFn: () => fetchOwnership(),
+  })
+  const ownership = ownershipRes?.success ? ownershipRes.data : undefined
+  const transferred = ownership?.previous.length ?? 0
+
+  // Cancelar a assinatura é ato do titular. A resposta da API vale mais que a
+  // sessão, que pode ser de antes de o titular ser registrado.
+  const isOwner = ownership ? ownership.isOwner : !!session?.company?.isOwner
 
   const subscription = subscriptionRes?.data
   const payments = paymentsRes?.data || []
@@ -135,7 +151,7 @@ export function SubscriptionManagementClient({
                   onClick={() => setContractOpen(true)}
                 />
               )}
-              {subscription.status === 'ACTIVE' && !isTrial && (
+              {subscription.status === 'ACTIVE' && !isTrial && isOwner && (
                 <Button
                   variant="neutralOutline"
                   onClick={() => setCancelOpen(true)}
@@ -179,6 +195,7 @@ export function SubscriptionManagementClient({
             payments={payments}
             lastPage={paymentsLastPage}
             searchParams={searchParams}
+            showHolder={transferred > 0}
           />
 
           <CancelSubscriptionDialog
@@ -190,6 +207,8 @@ export function SubscriptionManagementClient({
           <ContractModal open={contractOpen} onOpenChange={setContractOpen} />
         </div>
       )}
+
+      {!isLoading && <OwnershipSection />}
     </div>
   )
 }

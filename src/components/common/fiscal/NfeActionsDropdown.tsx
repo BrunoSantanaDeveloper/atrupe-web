@@ -42,6 +42,10 @@ import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/g
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
 
+// Hooks
+import { useFiscalHistoryLock } from '@/hooks/queries/useFiscalHistoryLock'
+import { HistoricalDocumentNotice } from './HistoricalDocumentNotice'
+
 interface NfeActionsDropdownProps {
   nfe: {
     id: string
@@ -53,6 +57,8 @@ interface NfeActionsDropdownProps {
     xmlAutorizado?: string | null
     dataEmissao?: string | null
     dataAutorizacao?: string | null
+    createdAt?: string | null
+    invoicyConfigId?: string | null
   }
   onRefetch: () => void
 }
@@ -67,6 +73,10 @@ export function NfeActionsDropdown({
   const [isConsulting, setIsConsulting] = useState(false)
   const [isSendingEmail, setIsSendingEmail] = useState(false)
   const [isOpeningDanfe, setIsOpeningDanfe] = useState(false)
+
+  // Nota do CNPJ anterior a uma transferência de titularidade: só consulta.
+  const { isHistorical, reason: historicalReason } = useFiscalHistoryLock()
+  const historical = isHistorical(nfe)
 
   // Os dois prazos correm da autorização de uso, não da emissão.
   const baseDoPrazo = nfe.dataAutorizacao || nfe.dataEmissao
@@ -204,14 +214,15 @@ export function NfeActionsDropdown({
     }
   }
 
-  const showCce =
-    nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
   const isAuthorized =
     nfe.status === 'AUTHORIZED' || nfe.status === 'CORRECTION_SENT'
   // A DANFE e o XML de uma nota cancelada continuam existindo e precisam ficar
   // acessiveis: o documento e o evento de cancelamento sao guardados pelo mesmo
   // prazo. Sem isso o menu de uma nota cancelada fica vazio.
   const hasFiscalDocument = isAuthorized || nfe.status === 'CANCELLED'
+  // Ver e baixar seguem valendo para a nota historica; o que a manipula, nao.
+  const canManipulate = !historical
+  const showCce = isAuthorized && canManipulate
 
   return (
     <>
@@ -251,9 +262,18 @@ export function NfeActionsDropdown({
             </DropdownMenuItem>
           )}
 
-          {(showCce || hasFiscalDocument) && <DropdownMenuSeparator />}
+          {historical && historicalReason && (
+            <>
+              <DropdownMenuSeparator />
+              <HistoricalDocumentNotice reason={historicalReason} />
+            </>
+          )}
 
-          {isAuthorized && (
+          {(showCce || hasFiscalDocument) && canManipulate && (
+            <DropdownMenuSeparator />
+          )}
+
+          {isAuthorized && canManipulate && (
             <DropdownMenuItem
               disabled={isSendingEmail}
               onClick={(e) => {
@@ -296,7 +316,7 @@ export function NfeActionsDropdown({
             </TooltipProvider>
           )}
 
-          {isAuthorized && (
+          {isAuthorized && canManipulate && (
             <>
               <DropdownMenuItem
                 onClick={() =>
@@ -322,7 +342,7 @@ export function NfeActionsDropdown({
             </>
           )}
 
-          {nfe.status === 'REJECTED' && (
+          {nfe.status === 'REJECTED' && canManipulate && (
             <DropdownMenuItem
               onClick={() =>
                 router.push(
@@ -335,27 +355,28 @@ export function NfeActionsDropdown({
             </DropdownMenuItem>
           )}
 
-          {(nfe.status === 'AUTHORIZED' ||
-            nfe.status === 'PENDING' ||
-            nfe.status === 'REJECTED' ||
-            nfe.status === 'CANCELLED') && (
-            <DropdownMenuItem
-              disabled={isConsulting}
-              onClick={(e) => {
-                e.preventDefault() // Keep dropdown open while consulting
-                handleConsultarStatus()
-              }}
-            >
-              {isConsulting ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <IconRefresh className="mr-2 h-4 w-4" />
-              )}
-              <span>Consultar SEFAZ</span>
-            </DropdownMenuItem>
-          )}
+          {canManipulate &&
+            (nfe.status === 'AUTHORIZED' ||
+              nfe.status === 'PENDING' ||
+              nfe.status === 'REJECTED' ||
+              nfe.status === 'CANCELLED') && (
+              <DropdownMenuItem
+                disabled={isConsulting}
+                onClick={(e) => {
+                  e.preventDefault() // Keep dropdown open while consulting
+                  handleConsultarStatus()
+                }}
+              >
+                {isConsulting ? (
+                  <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <IconRefresh className="mr-2 h-4 w-4" />
+                )}
+                <span>Consultar SEFAZ</span>
+              </DropdownMenuItem>
+            )}
 
-          {isAuthorized && (
+          {isAuthorized && canManipulate && (
             <>
               <DropdownMenuSeparator />
               <TooltipProvider>

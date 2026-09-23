@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
-import { headers } from 'next/headers'
-import apiInstance from '@/lib/api'
+import { clientMeta, domainCall } from './domain-call'
 import type {
-  CheckoutActionResult,
   CheckoutRequest,
   CheckoutResult,
   CompanyRegistryView,
@@ -34,46 +32,7 @@ import type {
  * o aceite registraria o IP do servidor do frontend.
  */
 
-async function clientMeta(): Promise<Record<string, string>> {
-  const h = headers()
-  const forwarded = h.get('x-forwarded-for')
-  const ip = forwarded?.split(',')[0]?.trim() || h.get('x-real-ip') || ''
-  const userAgent = h.get('user-agent') || ''
-  return {
-    ...(ip ? { 'x-user-ip': ip } : {}),
-    ...(userAgent ? { 'x-user-agent': userAgent } : {}),
-  }
-}
-
-async function call<T>(
-  request: (
-    api: Awaited<ReturnType<typeof apiInstance>>,
-  ) => Promise<{ data: T }>,
-): Promise<CheckoutActionResult<T>> {
-  try {
-    const res = await request(await apiInstance())
-    return { success: true, data: res.data }
-  } catch (error: any) {
-    if (error?.digest?.startsWith?.('NEXT_REDIRECT')) throw error
-    const payload = error?.response?.data
-    const userMessage = payload?.userMessage
-    const body =
-      userMessage && typeof userMessage === 'object' ? userMessage : {}
-    const rawMessage =
-      typeof userMessage === 'string' ? userMessage : body.message
-    const message = Array.isArray(rawMessage) ? rawMessage[0] : rawMessage
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { code, message: _ignored, statusCode, error: _e, ...details } = body
-
-    return {
-      success: false,
-      status: error?.response?.status,
-      code,
-      message: message || 'Não foi possível concluir agora. Tente novamente.',
-      details,
-    }
-  }
-}
+const call = domainCall
 
 export async function fetchPlanStates() {
   return call<PlanStatesResponse>((api) =>

@@ -31,6 +31,10 @@ import { CancelNfeDialog } from '@/app/(app-sidebar)/configuracoes/nota-fiscal/g
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
 
+// Hooks
+import { useFiscalHistoryLock } from '@/hooks/queries/useFiscalHistoryLock'
+import { HistoricalDocumentNotice } from './HistoricalDocumentNotice'
+
 interface NfseActionsDropdownProps {
   nfse: {
     id: string
@@ -39,6 +43,8 @@ interface NfseActionsDropdownProps {
     status: string
     pdfUrl?: string | null
     codigoVerificacao?: string | null
+    createdAt?: string | null
+    invoicyConfigId?: string | null
   }
   onRefetch: () => void
 }
@@ -54,6 +60,10 @@ export function NfseActionsDropdown({
   const [isDownloadingXml, setIsDownloadingXml] = useState(false)
 
   const isAuthorized = nfse.status === 'AUTHORIZED'
+
+  // Nota do CNPJ anterior a uma transferência de titularidade: só consulta.
+  const { isHistorical, reason: historicalReason } = useFiscalHistoryLock()
+  const historical = isHistorical(nfse)
 
   const handleVerPdf = async () => {
     const previewWindow = window.open('', '_blank')
@@ -214,9 +224,16 @@ export function NfseActionsDropdown({
             </DropdownMenuItem>
           )}
 
-          {isAuthorized && <DropdownMenuSeparator />}
+          {historical && historicalReason && (
+            <>
+              <DropdownMenuSeparator />
+              <HistoricalDocumentNotice reason={historicalReason} />
+            </>
+          )}
 
-          {isAuthorized && (
+          {isAuthorized && !historical && <DropdownMenuSeparator />}
+
+          {isAuthorized && !historical && (
             <DropdownMenuItem
               disabled={isSendingEmail}
               onClick={(event) => {
@@ -233,22 +250,24 @@ export function NfseActionsDropdown({
             </DropdownMenuItem>
           )}
 
-          <DropdownMenuItem
-            disabled={isConsulting}
-            onClick={(event) => {
-              event.preventDefault()
-              handleConsultarStatus()
-            }}
-          >
-            {isConsulting ? (
-              <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <IconRefresh className="mr-2 h-4 w-4" />
-            )}
-            <span>Consultar status</span>
-          </DropdownMenuItem>
+          {!historical && (
+            <DropdownMenuItem
+              disabled={isConsulting}
+              onClick={(event) => {
+                event.preventDefault()
+                handleConsultarStatus()
+              }}
+            >
+              {isConsulting ? (
+                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <IconRefresh className="mr-2 h-4 w-4" />
+              )}
+              <span>Consultar status</span>
+            </DropdownMenuItem>
+          )}
 
-          {isAuthorized && (
+          {isAuthorized && !historical && (
             <>
               <DropdownMenuSeparator />
               <DropdownMenuItem

@@ -65,7 +65,11 @@ export function LoginForm() {
     })
 
     if (res?.error) {
-      setErrorState('Dados de acesso inválidos')
+      setErrorState(
+        res.code === 'access_transferred'
+          ? 'O ambiente desta conta foi transferido para outra empresa, e ela não tem mais acesso a ele. Seu histórico continua lá, no seu nome.'
+          : 'Dados de acesso inválidos',
+      )
       return
     }
 
