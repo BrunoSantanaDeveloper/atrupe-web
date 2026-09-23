@@ -100,8 +100,10 @@ export function CompositionDetail({ id }: Props) {
       <div className="space-y-5">
         <Topbar
           title={product.name}
-          previousPage="/configuracoes/produtos/composicoes"
-          supportText={`${product.code} · vendido por ${product.unit}`}
+          previousPage="/configuracoes/produtos"
+          supportText={[product.code, `vendido por ${product.unit}`]
+            .filter(Boolean)
+            .join(' · ')}
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
               <AddStepModal productId={product.id} />

@@ -7,7 +7,7 @@
 import type {
   CompositionStep,
   ProductComposition,
-} from '@/app/(app-sidebar)/configuracoes/produtos/composicoes/types'
+} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/types'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
@@ -87,37 +87,31 @@ const withCost = (seed: Seed): ProductComposition => {
   }
 }
 
-export const getCompositions = async ({
-  filters,
-}: {
-  filters?: { [key: string]: string | undefined }
-}) => {
-  const search = filters?.search?.trim().toLowerCase()
-  const status = filters?.status
+// O produto vem do cadastro que a empresa já usa (CP-16): qualquer produto
+// pode ser aberto, mesmo sem composição nenhuma. Enquanto a API não existe,
+// um produto desconhecido ganha uma composição vazia em memória.
+const findOrCreate = (id: string): Seed => {
+  const seed = seeds.find((item) => item.id === id)
 
-  const data = seeds
-    .map(withCost)
-    .filter((product) => {
-      if (status === 'sem-composicao') return !product.steps.length
-      if (status === 'com-composicao') return product.steps.length > 0
-      if (status === 'abaixo-do-custo')
-        return product.margin !== null && product.margin < 0
+  if (seed) return seed
 
-      return true
-    })
-    .filter((product) => !search || product.name.toLowerCase().includes(search))
+  const created: Seed = {
+    id,
+    name: 'Produto',
+    code: '',
+    unit: 'un',
+    price: null,
+    priceRule: 'FIXED',
+    steps: [],
+  }
 
-  return { success: true, data, message: '' }
+  seeds.push(created)
+
+  return created
 }
 
 export const getComposition = async ({ id }: { id: string }) => {
-  const seed = seeds.find((item) => item.id === id)
-
-  if (!seed) {
-    return { success: false, data: null, message: 'Produto não encontrado' }
-  }
-
-  return { success: true, data: withCost(seed), message: '' }
+  return { success: true, data: withCost(findOrCreate(id)), message: '' }
 }
 
 export const addCompositionStep = async ({
@@ -127,11 +121,7 @@ export const addCompositionStep = async ({
   productId: string
   step: Omit<CompositionStep, 'id'>
 }) => {
-  const seed = seeds.find((item) => item.id === productId)
-
-  if (!seed) {
-    return { success: false, data: null, message: 'Produto não encontrado' }
-  }
+  const seed = findOrCreate(productId)
 
   seed.steps.push({ ...step, id: `step-${Date.now()}` })
 
@@ -145,11 +135,7 @@ export const removeCompositionStep = async ({
   productId: string
   stepId: string
 }) => {
-  const seed = seeds.find((item) => item.id === productId)
-
-  if (!seed) {
-    return { success: false, data: null, message: 'Produto não encontrado' }
-  }
+  const seed = findOrCreate(productId)
 
   seed.steps = seed.steps.filter((step) => step.id !== stepId)
 
@@ -159,10 +145,10 @@ export const removeCompositionStep = async ({
 // A decisão de preço é produto a produto: manter o praticado ou adotar o
 // sugerido (DC-14). O preço praticado continua livre.
 export const applySuggestedPrice = async ({ id }: { id: string }) => {
-  const seed = seeds.find((item) => item.id === id)
-  const product = seed ? withCost(seed) : null
+  const seed = findOrCreate(id)
+  const product = withCost(seed)
 
-  if (!seed || !product?.suggestedPrice) {
+  if (!product.suggestedPrice) {
     return {
       success: false,
       data: null,

@@ -45,7 +45,13 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import { IconReceiptTax } from '@tabler/icons-react'
+import { IconReceiptTax, IconStack2 } from '@tabler/icons-react'
+
+// Components
+import { ActionButton } from '@/components/common/ActionButton'
+
+// Consts
+import { FEATURES } from '@/consts/features'
 
 interface Props extends SearchParamsType {
   tabs?: TabNavType[]
@@ -62,7 +68,11 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const [selecionouTodos, setSelecionouTodos] = useState(false)
 
   const { hasAllPermissions } = usePermissions()
-  const { hasFiscalModule } = usePlanFeatures()
+  const { hasFiscalModule, hasFeature } = usePlanFeatures()
+
+  // A composição é recurso do PRO e vive dentro do produto, sem cadastro
+  // paralelo: o mesmo produto do START ganha custo e margem (CP-16, CP-17).
+  const showComposition = hasFeature(FEATURES.COSTS.COST_BASE)
 
   const showNcmColumn = hasFiscalModule()
   const canConfigureFiscalData =
@@ -277,6 +287,13 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
+                        {showComposition && (
+                          <ActionButton
+                            Icon={IconStack2}
+                            tooltip={`Composição de ${product?.name}`}
+                            link={`/configuracoes/produtos/${product?.id}/composicao`}
+                          />
+                        )}
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >

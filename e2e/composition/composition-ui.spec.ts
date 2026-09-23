@@ -4,7 +4,9 @@ import { test, expect, type Page } from '@playwright/test'
 // DC-2, DC-14, DC-15, P-16, P-18 e MT-5.
 
 const PROCESSES = '/configuracoes/produtos/processos'
-const COMPOSITIONS = '/configuracoes/produtos/composicoes'
+const PRODUCTS = '/configuracoes/produtos'
+// A composição vive dentro do produto, sem cadastro paralelo (CP-17)
+const composition = (id: string) => `${PRODUCTS}/${id}/composicao`
 
 const row = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
@@ -62,37 +64,22 @@ test.describe('Processos — etapa produtiva de um setor (§9)', () => {
 })
 
 test.describe('Composições — produto do START com custo (DC-2, DC-15)', () => {
-  test('produto sem composição mostra custo não calculado', async ({
+  test('a lista de produtos abre a composição de cada produto', async ({
     page,
   }) => {
-    await page.goto(COMPOSITIONS)
+    await page.goto(PRODUCTS)
 
-    const product = row(page, 'Adesivo recortado')
-    await expect(product).toContainText('sem composição')
-    await expect(product).toContainText('custo não calculado')
-    await expect(product).not.toContainText('R$ 0,00')
-  })
-
-  test('produto composto mostra custo, preço e margem', async ({ page }) => {
-    await page.goto(COMPOSITIONS)
-
-    const product = row(page, 'Banner 440 com bastão')
-    // impressão R$ 15,39 + acabamento R$ 4,36 = R$ 19,75
-    await expect(product).toContainText('R$ 19,75')
-    await expect(product).toContainText('R$ 45,00')
-    await expect(product).toContainText('%')
-  })
-
-  test('margem negativa aparece destacada', async ({ page }) => {
-    await page.goto(`${COMPOSITIONS}?status=abaixo-do-custo`)
-
-    await expect(row(page, 'Placa PVC 3 mm')).toBeVisible()
+    // Não existe mais aba "Composições": a composição é ação da linha (CP-17)
+    await expect(page.getByRole('tab', { name: 'Composições' })).toHaveCount(0)
+    await expect(
+      page.getByRole('link', { name: /Composição de/ }).first(),
+    ).toBeVisible()
   })
 
   test('a página mostra as etapas e permite adotar o preço sugerido', async ({
     page,
   }) => {
-    await page.goto(`${COMPOSITIONS}/banner`)
+    await page.goto(composition('banner'))
 
     await expect(page.getByText('Etapas de produção')).toBeVisible()
     await expect(page.getByText('Impressão em lona')).toBeVisible()
@@ -105,7 +92,7 @@ test.describe('Composições — produto do START com custo (DC-2, DC-15)', () =
   test('produto sem composição explica que continua sendo vendido', async ({
     page,
   }) => {
-    await page.goto(`${COMPOSITIONS}/adesivo`)
+    await page.goto(composition('adesivo'))
 
     await expect(
       page.getByText(/continua sendo\s+vendido normalmente/),
