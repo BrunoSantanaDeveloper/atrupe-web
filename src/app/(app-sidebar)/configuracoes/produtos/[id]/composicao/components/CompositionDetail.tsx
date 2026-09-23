@@ -25,6 +25,7 @@ import {
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { AddStepModal } from './AddStepModal'
+import { ProductFields } from './ProductFields'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -92,6 +93,12 @@ export function CompositionDetail({ id }: Props) {
 
   const totalMinutes = product.steps.reduce(
     (sum, step) => sum + step.estimatedMinutes,
+    0,
+  )
+
+  // O preparo entra uma vez por pedido e por isso é contado à parte (CP-15)
+  const setupMinutes = product.steps.reduce(
+    (sum, step) => sum + step.setupMinutes,
     0,
   )
 
@@ -183,6 +190,8 @@ export function CompositionDetail({ id }: Props) {
           </CardFooter>
         </Card>
 
+        <ProductFields productId={product.id} fields={product.fields} />
+
         <Card>
           <CardHeader>
             <CardTitle>Etapas de produção</CardTitle>
@@ -225,6 +234,11 @@ export function CompositionDetail({ id }: Props) {
                         </TableCell>
                         <TableCell className="text-right text-sm text-gray">
                           {step.estimatedMinutes} min
+                          {step.setupMinutes ? (
+                            <span className="block text-sm text-gray">
+                              + {step.setupMinutes} min de preparo
+                            </span>
+                          ) : null}
                         </TableCell>
                         <TableCell className="text-right">
                           {formatCurrencyToBrl(step.cost)}
@@ -250,7 +264,8 @@ export function CompositionDetail({ id }: Props) {
               </CardContent>
               <CardFooter className="justify-between">
                 <p className="text-sm text-gray">
-                  Tempo total previsto: {totalMinutes} min
+                  Tempo total previsto: {totalMinutes} min de produção
+                  {setupMinutes ? ` + ${setupMinutes} min de preparo` : ''}
                 </p>
                 <p className="text-sm">
                   Custo técnico:{' '}

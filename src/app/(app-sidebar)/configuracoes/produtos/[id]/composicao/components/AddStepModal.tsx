@@ -61,9 +61,16 @@ export function AddStepModal({ productId }: Props) {
           name: selected?.name || 'Etapa',
           sector: selected?.sector || '',
           processId: processId || null,
+          setupMinutes: selected?.setupMinutes || 0,
           estimatedMinutes: Number(minutes || 0),
           cost: Math.round(Number(cost || 0) * 100),
         },
+        // As variáveis que o processo consome viram campos do produto, sem
+        // repetir nome nem valor (IP-4)
+        fields: (selected?.extraFields || []).map((field) => ({
+          name: field.name,
+          defaultValue: field.defaultValue,
+        })),
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)

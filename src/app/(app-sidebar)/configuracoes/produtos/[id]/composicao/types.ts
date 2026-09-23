@@ -6,10 +6,23 @@ export type CompositionStep = {
   id: string
   name: string
   sector: string
+  // Minutos de preparo herdados do processo (CP-15)
+  setupMinutes: number
   // O processo pode ser um cadastro pronto ou composição direta da etapa
   processId: string | null
   estimatedMinutes: number
   cost: number
+}
+
+// Variável do produto, declarada UMA vez e consumida por quantas etapas
+// precisarem (IP-4). No legado cada processo tinha o seu campo extra, e o
+// mesmo número aparecia com três nomes e três valores diferentes
+export type ProductField = {
+  id: string
+  name: string
+  defaultValue: number
+  // Etapas que usam esta variável: é o que mostra que ela não está solta
+  usedBy: string[]
 }
 
 export type ProductComposition = {
@@ -21,6 +34,9 @@ export type ProductComposition = {
   price: number | null
   priceRule: 'FIXED' | 'VARIABLE'
   steps: CompositionStep[]
+  // Os campos que o vendedor preenche no orçamento, além de largura, altura e
+  // quantidade (IP-6)
+  fields: ProductField[]
   // null quando ainda não há composição: a tela mostra "custo não calculado"
   cost: number | null
   margin: number | null
