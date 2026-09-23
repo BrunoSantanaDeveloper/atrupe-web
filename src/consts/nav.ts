@@ -1,5 +1,6 @@
 import {
   IconCoin,
+  IconFileInvoice,
   IconListCheck,
   IconNews,
   IconBook,
@@ -219,6 +220,29 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '#',
         action: true,
       }, */
+    ],
+  },
+  {
+    icon: IconBoxSeam,
+    title: 'Estoque',
+    path: '/estoque',
+    permission: 'stock:stock:view',
+    requiredModule: 'stock_control',
+    children: [
+      {
+        icon: IconBoxSeam,
+        title: 'Saldo do estoque',
+        path: '/estoque',
+        permission: 'stock:stock:view',
+        requiredModule: 'stock_control',
+      },
+      {
+        icon: IconFileInvoice,
+        title: 'Entrada de nota',
+        path: '/estoque/entrada-de-nota',
+        permission: 'stock:invoice_entry:view',
+        requiredModule: 'invoice_entry',
+      },
     ],
   },
   {

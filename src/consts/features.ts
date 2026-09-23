@@ -48,6 +48,12 @@ export const FEATURES = {
     PRODUCTIVITY: 'productivity_tracking',
   },
 
+  // Estoque e compras (FULL)
+  STOCK: {
+    STOCK_CONTROL: 'stock_control',
+    INVOICE_ENTRY: 'invoice_entry',
+  },
+
   // Configurações Gerais
   SYSTEM: {
     SECTORS_CONFIGURATION: 'sectors_configuration',
@@ -71,6 +77,7 @@ export type FeatureKey =
   | keyof typeof FEATURES.PRODUCTS
   | keyof typeof FEATURES.COSTS
   | keyof typeof FEATURES.PRODUCTION
+  | keyof typeof FEATURES.STOCK
   | keyof typeof FEATURES.SYSTEM
   | keyof typeof FEATURES.CONTACTS
 

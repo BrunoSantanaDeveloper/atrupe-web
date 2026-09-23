@@ -99,6 +99,20 @@ export const permissionsData = [
     ],
   },
   {
+    section: 'Estoque',
+    key: 'stock',
+    items: [
+      {
+        name: 'Estoque',
+        key: 'stock',
+      },
+      {
+        name: 'Entrada de nota',
+        key: 'invoice_entry',
+      },
+    ],
+  },
+  {
     section: 'Relatorios',
     key: 'reports',
     items: [
