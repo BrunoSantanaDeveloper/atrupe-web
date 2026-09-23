@@ -20,6 +20,7 @@ import { NewItemDialog } from './NewItem'
 import { TableFilter } from './TableFilter'
 import { ManageItemsDialog } from './ManageItems'
 import { Topbar } from '@/components/common/Topbar'
+import { PayrollCostsLink } from './PayrollCostsLink'
 import { UserInfo } from '@/components/common/UserInfo'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
@@ -107,7 +108,12 @@ export function Main({ searchParams }: SearchParamsType) {
       <Topbar
         title="Folha de pagamento"
         previousPage="/configuracoes/financeiro"
-        secondaryCta={<ManageItemsDialog />}
+        secondaryCta={
+          <div className="flex gap-2">
+            <PayrollCostsLink />
+            <ManageItemsDialog />
+          </div>
+        }
         primaryCta={<NewItemDialog />}
       />
       <div className="space-y-2">
