@@ -120,7 +120,15 @@ type FormType = z.infer<typeof schema>
 
 const ADDITIONAL_USER_PRICE = 1500
 
-export default function SubscriptionPage() {
+/**
+ * A página de assinatura anterior à contratação em três etapas.
+ *
+ * Fica de reserva: só aparece quando o servidor não informa a situação da
+ * empresa — por exemplo, com o frontend no ar antes do backend novo. A
+ * contratação, a evolução, os complementos e a regularização já passam pelo
+ * fluxo novo.
+ */
+export function LegacySubscriptionPage() {
   const { data: session, update: updateSession } = useSession()
   const router = useRouter()
 
