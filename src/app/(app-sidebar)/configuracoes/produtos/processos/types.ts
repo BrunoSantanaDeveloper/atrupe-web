@@ -39,6 +39,8 @@ export type ProcessResource = {
   extraFieldId: string | null
 }
 
+// Variável que o processo consome. Ela é declarada uma vez no produto e o
+// processo diz de qual precisa (IP-4): nº de letras, perímetro, nº de folhas
 export type ExtraField = {
   id: string
   name: string
@@ -49,6 +51,11 @@ export type Process = {
   id: string
   name: string
   sector: string
+  // Tempo de preparo em minutos (CP-15): entra uma vez por pedido, não
+  // multiplica pela quantidade. Zero quando o processo não tem preparo
+  setupMinutes: number
+  // Custo-hora do setor, usado para custear o preparo. Vem da Base de custos
+  sectorHourCost: number | null
   dimensionRule: DimensionRule
   multipliesParent: boolean
   extraFields: ExtraField[]

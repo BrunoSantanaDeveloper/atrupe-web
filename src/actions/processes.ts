@@ -14,6 +14,8 @@ const processes: Process[] = [
     id: 'impressao-lona',
     name: 'Impressão em lona',
     sector: 'Impressão',
+    setupMinutes: 10,
+    sectorHourCost: 2890,
     dimensionRule: 'FREE_SIZE',
     multipliesParent: true,
     extraFields: [],
@@ -47,6 +49,8 @@ const processes: Process[] = [
     id: 'acabamento-banner',
     name: 'Acabamento de banner',
     sector: 'Produção',
+    setupMinutes: 10,
+    sectorHourCost: 1649,
     dimensionRule: 'SAME_AS_PARENT',
     multipliesParent: true,
     extraFields: [{ id: 'e1', name: 'Ilhoses por metro', defaultValue: 2 }],
@@ -80,6 +84,8 @@ const processes: Process[] = [
     id: 'instalacao',
     name: 'Instalação em obra',
     sector: 'Instalação',
+    setupMinutes: 0,
+    sectorHourCost: 2100,
     dimensionRule: 'NONE',
     multipliesParent: false,
     extraFields: [],
@@ -125,11 +131,25 @@ export const getProcess = async ({ id }: { id: string }) => {
   return { success: true, data: process, message: '' }
 }
 
+// Custo-hora de referência por setor, até a Base de custos entregar o valor
+const sectorHourCosts: { [key: string]: number } = {
+  Impressão: 2890,
+  Produção: 1649,
+  Criação: 2210,
+  CNC: 3120,
+  Marcenaria: 1820,
+  Instalação: 2100,
+  Gráfica: 1740,
+}
+
 export const createProcess = async ({
   name,
   sector,
   dimensionRule,
-}: Pick<Process, 'name' | 'sector' | 'dimensionRule'>) => {
+  setupMinutes,
+}: Pick<Process, 'name' | 'sector' | 'dimensionRule'> & {
+  setupMinutes?: number
+}) => {
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do processo' }
   }
@@ -138,6 +158,9 @@ export const createProcess = async ({
     id: `process-${processes.length + 1}`,
     name,
     sector,
+    // Tempo padrão de preparo: quem não tem preparo informa zero (CP-15)
+    setupMinutes: setupMinutes ?? 10,
+    sectorHourCost: sectorHourCosts[sector] ?? null,
     dimensionRule,
     multipliesParent: true,
     extraFields: [],
@@ -165,6 +188,10 @@ export const updateProcess = async ({
   }
 
   Object.assign(process, values)
+
+  if (values.sector) {
+    process.sectorHourCost = sectorHourCosts[values.sector] ?? null
+  }
 
   return { success: true, data: process, message: '' }
 }

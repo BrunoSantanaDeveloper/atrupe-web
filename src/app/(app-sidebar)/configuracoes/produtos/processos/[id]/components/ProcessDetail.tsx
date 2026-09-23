@@ -101,10 +101,19 @@ export function ProcessDetail({ id }: Props) {
     return resource ? resourceCost(resource, simulation, extras) : null
   }
 
-  const total = process.resources.reduce(
+  const production = process.resources.reduce(
     (sum, resource) => sum + (resourceCost(resource, simulation, extras) || 0),
     0,
   )
+
+  // O preparo entra UMA vez por pedido, custeado pelo custo-hora do setor, e
+  // não multiplica pela quantidade (CP-15)
+  const setupCost =
+    process.sectorHourCost === null
+      ? 0
+      : Math.round((process.sectorHourCost * process.setupMinutes) / 60)
+
+  const total = setupCost + production
 
   return (
     <TooltipProvider>
@@ -112,7 +121,11 @@ export function ProcessDetail({ id }: Props) {
         <Topbar
           title={process.name}
           previousPage="/configuracoes/produtos/processos"
-          supportText={`${process.sector} · ${dimensionRuleObj[process.dimensionRule]}`}
+          supportText={`${process.sector} · ${dimensionRuleObj[process.dimensionRule]}${
+            process.setupMinutes
+              ? ` · preparo de ${process.setupMinutes} min`
+              : ' · sem preparo'
+          }`}
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
               <AddResourceModal processId={process.id} />
@@ -302,12 +315,19 @@ export function ProcessDetail({ id }: Props) {
                   Custo técnico do processo, sem rateio administrativo — o
                   método do custo puro.
                 </p>
-                <p className="text-sm">
-                  Custo na simulação:{' '}
-                  <span className="text-lg font-semibold text-gray-900">
-                    {formatCurrencyToBrl(total)}
-                  </span>
-                </p>
+                <div className="text-sm text-right">
+                  <p className="text-gray">
+                    Preparo {formatCurrencyToBrl(setupCost)} ({' '}
+                    {process.setupMinutes} min ) + produção{' '}
+                    {formatCurrencyToBrl(production)}
+                  </p>
+                  <p>
+                    Custo na simulação:{' '}
+                    <span className="text-lg font-semibold text-gray-900">
+                      {formatCurrencyToBrl(total)}
+                    </span>
+                  </p>
+                </div>
               </CardFooter>
             </>
           ) : (

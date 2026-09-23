@@ -66,12 +66,27 @@ export function NewProcessModal({ process }: Props) {
   const [dimensionRule, setDimensionRule] = useState<DimensionRule>(
     process?.dimensionRule || 'FREE_SIZE',
   )
+  // Tempo de preparo vem preenchido com um padrão; sem preparo, informa zero
+  const [setupMinutes, setSetupMinutes] = useState(
+    process ? String(process.setupMinutes) : '10',
+  )
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       process
-        ? updateProcess({ id: process.id, name, sector, dimensionRule })
-        : createProcess({ name, sector, dimensionRule }),
+        ? updateProcess({
+            id: process.id,
+            name,
+            sector,
+            dimensionRule,
+            setupMinutes: Number(setupMinutes) || 0,
+          })
+        : createProcess({
+            name,
+            sector,
+            dimensionRule,
+            setupMinutes: Number(setupMinutes) || 0,
+          }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
@@ -148,6 +163,23 @@ export function NewProcessModal({ process }: Props) {
             onChange={(value) => setDimensionRule(value as DimensionRule)}
             options={dimensionRuleOptions}
           />
+          <div className="space-y-1.5">
+            <label htmlFor="process-setup" className="text-sm font-medium">
+              Tempo de preparo (minutos)
+            </label>
+            <Input
+              id="process-setup"
+              type="number"
+              min={0}
+              value={setupMinutes}
+              onChange={(event) => setSetupMinutes(event.target.value)}
+            />
+            <p className="text-sm text-gray">
+              O preparo acontece uma vez por pedido, não por peça: acerto de
+              máquina, separação de material, montagem de gabarito. Sem preparo,
+              informe zero.
+            </p>
+          </div>
           <p className="text-sm text-gray">
             Os recursos — máquina, material, mão de obra e terceirizado — entram
             na página do processo, com a fórmula de cada um.
