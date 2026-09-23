@@ -71,12 +71,16 @@ export const permissionsData = [
     ],
   },
   {
-    section: 'Base de custos',
+    section: 'Custos e precificação',
     key: 'cost',
     items: [
       {
         name: 'Base de custos',
         key: 'base',
+      },
+      {
+        name: 'Precificação',
+        key: 'pricing',
       },
     ],
   },
