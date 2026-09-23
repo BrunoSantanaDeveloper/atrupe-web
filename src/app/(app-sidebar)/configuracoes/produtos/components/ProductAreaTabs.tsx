@@ -19,7 +19,13 @@ export function ProductAreaTabs() {
 
   if (!hasFeature(FEATURES.COSTS.COST_BASE)) return null
 
-  const current = pathname.includes('/materiais') ? 'materiais' : 'produtos'
+  const current = pathname.includes('/materiais')
+    ? 'materiais'
+    : pathname.includes('/processos')
+      ? 'processos'
+      : pathname.includes('/composicoes')
+        ? 'composicoes'
+        : 'produtos'
 
   return (
     <Tabs value={current} className="overflow-x-auto">
@@ -29,6 +35,12 @@ export function ProductAreaTabs() {
         </TabsTrigger>
         <TabsTrigger value="materiais" asChild>
           <Link href="/configuracoes/produtos/materiais">Materiais</Link>
+        </TabsTrigger>
+        <TabsTrigger value="processos" asChild>
+          <Link href="/configuracoes/produtos/processos">Processos</Link>
+        </TabsTrigger>
+        <TabsTrigger value="composicoes" asChild>
+          <Link href="/configuracoes/produtos/composicoes">Composições</Link>
         </TabsTrigger>
       </TabsList>
     </Tabs>

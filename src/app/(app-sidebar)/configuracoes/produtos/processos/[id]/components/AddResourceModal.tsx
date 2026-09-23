@@ -1,0 +1,169 @@
+'use client'
+
+// React / Next
+import { useState } from 'react'
+
+// UI
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Dialog,
+  DialogBody,
+  DialogClose,
+  DialogTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
+
+// Components
+import { SelectBasic } from '@/components/common/form/FormSelect'
+
+// Types
+import type { FormulaKey, ResourceKind } from '../../types'
+
+// Actions
+import { addProcessResource, getAvailableResources } from '@/actions/processes'
+
+// Hooks / Store / Consts
+import { formatCurrencyToBrl } from '@/lib/utils'
+import {
+  formulaObj,
+  formulaOptions,
+  resourceKindOptions,
+} from '@/consts/processes'
+
+// Third-party
+import { toast } from 'sonner'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+
+// Icons
+import { IconPlus } from '@tabler/icons-react'
+
+interface Props {
+  processId: string
+}
+
+// Só patrimônio detalhado entra como máquina (P-16) e o material entra pela
+// variação (MT-5): a lista já chega assim da action.
+export function AddResourceModal({ processId }: Props) {
+  const queryClient = useQueryClient()
+  const [open, setOpen] = useState(false)
+  const [kind, setKind] = useState<ResourceKind>('MATERIAL')
+  const [resourceId, setResourceId] = useState('')
+  const [formula, setFormula] = useState<FormulaKey>('PER_AREA')
+  const [quantity, setQuantity] = useState('1')
+
+  const { data } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['process-resources'],
+    queryFn: () => getAvailableResources(),
+  })
+
+  const options = data?.data?.[kind] || []
+  const selected = options.find((option) => option.id === resourceId)
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () =>
+      addProcessResource({
+        processId,
+        resource: {
+          kind,
+          name: selected?.name || '',
+          origin: selected?.origin || '',
+          unit: selected?.unit || '',
+          unitCost: selected?.unitCost ?? null,
+          formula,
+          quantity: Number(quantity || 1),
+          extraFieldId: null,
+        },
+      }),
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+
+      toast.success('Recurso acrescentado')
+      queryClient.invalidateQueries({ queryKey: ['process', processId] })
+      setResourceId('')
+      setOpen(false)
+    },
+    onError: () => toast.error('Erro ao acrescentar o recurso'),
+  })
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
+        Novo recurso
+      </Button>
+      <DialogContent className="sm:max-w-[560px]">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+            <DialogTitle>Novo recurso no processo</DialogTitle>
+            <DialogDescription className="sr-only">
+              Escolha o recurso e como ele é consumido.
+            </DialogDescription>
+          </div>
+        </DialogHeader>
+        <DialogBody className="space-y-4">
+          <SelectBasic
+            name="kind"
+            label="Tipo de recurso"
+            value={kind}
+            onChange={(value) => {
+              setKind(value as ResourceKind)
+              setResourceId('')
+            }}
+            options={resourceKindOptions}
+          />
+          <SelectBasic
+            name="resource"
+            label="Recurso"
+            value={resourceId}
+            onChange={setResourceId}
+            options={options.map((option) => ({
+              value: option.id,
+              label: `${option.name} — ${formatCurrencyToBrl(option.unitCost)}/${option.unit}`,
+            }))}
+          />
+          <SelectBasic
+            name="formula"
+            label="Como é consumido"
+            value={formula}
+            onChange={(value) => setFormula(value as FormulaKey)}
+            options={formulaOptions}
+          />
+          <p className="text-sm text-gray">{formulaObj[formula].help}</p>
+          <div className="space-y-1.5">
+            <label htmlFor="quantity" className="text-sm font-medium">
+              Consumo por {selected?.unit || 'unidade'}
+            </label>
+            <Input
+              id="quantity"
+              type="number"
+              min={0}
+              step="0.01"
+              value={quantity}
+              onChange={(event) => setQuantity(event.target.value)}
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Cancelar
+            </Button>
+          </DialogClose>
+          <Button
+            isLoading={isPending}
+            disabled={!resourceId}
+            onClick={() => mutate()}
+          >
+            {isPending ? 'Acrescentando...' : 'Acrescentar recurso'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
