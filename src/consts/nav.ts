@@ -15,6 +15,7 @@ import {
   IconChartBar,
   IconBrandAsana,
   IconCalculator,
+  IconTag,
   IconListSearch,
   IconDatabaseImport,
   IconLayoutGrid,
@@ -150,6 +151,35 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/folha-de-pagamento',
         permission: ['financial:payroll:view', 'values:values:view'],
         requireAllPermissions: true,
+      },
+    ],
+  },
+  // Custo e preço são o método do PRO: telas onde se define quanto custa e
+  // por quanto se vende. Ficavam sem entrada no menu, alcançáveis só por
+  // dentro de Configurações — que é onde se ajusta o sistema, não onde se
+  // trabalha (revisao-telas.md §1)
+  {
+    icon: IconCalculator,
+    title: 'Custos e preços',
+    path: '/base-de-custos',
+    permission: 'values:values:view',
+    requiredModule: 'cost_base',
+    children: [
+      {
+        icon: IconCalculator,
+        title: 'Base de custos',
+        path: '/base-de-custos',
+        permission: ['cost:base:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredModule: 'cost_base',
+      },
+      {
+        icon: IconTag,
+        title: 'Precificação',
+        path: '/precificacao',
+        permission: ['cost:pricing:view', 'values:values:view'],
+        requireAllPermissions: true,
+        requiredModule: 'pricing_center',
       },
     ],
   },
