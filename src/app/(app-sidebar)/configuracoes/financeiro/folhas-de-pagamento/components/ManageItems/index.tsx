@@ -29,6 +29,7 @@ import {
 import { EditItemDialog } from './EditItem'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
 import { IconPencil, IconSettings, IconTrash } from '@tabler/icons-react'
@@ -156,19 +157,26 @@ export function ManageItemsDialog() {
                               setOpenEdit(true)
                             }}
                           />
-                          <ActionButton
-                            tooltip={
-                              item.isBase
-                                ? 'Item base da folha, não pode ser excluído'
-                                : item.linkedEmployees
-                                  ? 'Remova o item de todos os colaboradores para excluir'
-                                  : 'Excluir'
-                            }
-                            variant="errorGhost"
-                            Icon={IconTrash}
-                            disabled={!item.canDelete}
-                            onClick={() => handleDelete(item)}
-                          />
+                          {/* EC-21: excluir exige :delete. O diálogo inteiro
+                              é aberto com :edit, e sem isto quem só edita
+                              também excluía item de custo */}
+                          <PermissionGate
+                            permissions={['financial_settings:payroll:delete']}
+                          >
+                            <ActionButton
+                              tooltip={
+                                item.isBase
+                                  ? 'Item base da folha, não pode ser excluído'
+                                  : item.linkedEmployees
+                                    ? 'Remova o item de todos os colaboradores para excluir'
+                                    : 'Excluir'
+                              }
+                              variant="errorGhost"
+                              Icon={IconTrash}
+                              disabled={!item.canDelete}
+                              onClick={() => handleDelete(item)}
+                            />
+                          </PermissionGate>
                         </TooltipProvider>
                       </div>
                     </TableCell>

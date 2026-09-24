@@ -200,6 +200,10 @@ export function AssetGroups() {
                                   setName(group.name)
                                 }}
                               />
+                            </PermissionGate>
+                            {/* EC-21: excluir um cadastro próprio exige
+                                :delete, não basta :edit */}
+                            <PermissionGate permissions={['cost:base:delete']}>
                               <ActionButton
                                 Icon={IconTrash}
                                 tooltip={`Excluir ${group.name}`}
