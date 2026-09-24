@@ -271,3 +271,23 @@ export const updateMaterialVariation = async ({
 
   return { success: true, data: variation, message: '' }
 }
+
+// Material usado em composição ou venda tem histórico: é INATIVADO, não
+// excluído. Inativo, some das listas de escolha e continua nos registros
+export const setMaterialActive = async ({
+  id,
+  active,
+}: {
+  id: string
+  active: boolean
+}) => {
+  const material = materials.find((item) => item.id === id)
+
+  if (!material) {
+    return { success: false, data: null, message: 'Material não encontrado' }
+  }
+
+  material.active = active
+
+  return { success: true, data: material, message: '' }
+}

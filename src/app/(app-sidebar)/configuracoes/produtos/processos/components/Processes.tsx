@@ -28,18 +28,30 @@ import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
-import { getProcesses } from '@/actions/processes'
+import { getProcesses, setProcessActive } from '@/actions/processes'
 
 // Hooks / Store / Consts
+import { useAlertDialog } from '@/store/useAlertDialog'
 import { dimensionRuleObj, resourceKindObj } from '@/consts/processes'
 
+// Types
+import type { Process } from '../types'
+
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconEye, IconListCheck } from '@tabler/icons-react'
+import {
+  IconBan,
+  IconEye,
+  IconListCheck,
+  IconPlayerPlay,
+} from '@tabler/icons-react'
 
 export function Processes({ searchParams }: SearchParamsType) {
+  const queryClient = useQueryClient()
+  const alertDialog = useAlertDialog()
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
     queryKey: ['processes', searchParams],
@@ -47,6 +59,35 @@ export function Processes({ searchParams }: SearchParamsType) {
   })
 
   const processes = data?.data || []
+
+  // Processo usado em composição é inativado, não excluído
+  const toggleActive = (process: Process) =>
+    alertDialog.open({
+      title: process.active
+        ? `Inativar ${process.name}?`
+        : `Reativar ${process.name}?`,
+      description: process.active
+        ? 'Ele deixa de aparecer para escolher nas composições. Os produtos que já o usam continuam como estão.'
+        : 'Ele volta a aparecer nas listas de escolha.',
+      confirmLabel: process.active ? 'Inativar' : 'Reativar',
+      onConfirm: async () => {
+        const response = await setProcessActive({
+          id: process.id,
+          active: !process.active,
+        })
+
+        if (!response.success) {
+          toast.error(response.message)
+
+          return
+        }
+
+        toast.success(
+          process.active ? 'Processo inativado' : 'Processo reativado',
+        )
+        queryClient.invalidateQueries({ queryKey: ['processes'] })
+      },
+    })
   const sectors = Array.from(
     new Set(processes.map((process) => process.sector)),
   )
@@ -152,6 +193,19 @@ export function Processes({ searchParams }: SearchParamsType) {
                                       link={`/configuracoes/produtos/processos/${process.id}`}
                                     />
                                     <NewProcessModal process={process} />
+                                    <ActionButton
+                                      Icon={
+                                        process.active
+                                          ? IconBan
+                                          : IconPlayerPlay
+                                      }
+                                      tooltip={
+                                        process.active
+                                          ? `Inativar ${process.name}`
+                                          : `Reativar ${process.name}`
+                                      }
+                                      onClick={() => toggleActive(process)}
+                                    />
                                   </div>
                                 </TableCell>
                               </TableRow>

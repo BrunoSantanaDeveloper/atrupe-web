@@ -327,3 +327,22 @@ export const getAvailableResources = async () => ({
   },
   message: '',
 })
+
+// Mesma regra do material: processo usado em composição é inativado
+export const setProcessActive = async ({
+  id,
+  active,
+}: {
+  id: string
+  active: boolean
+}) => {
+  const process = processes.find((item) => item.id === id)
+
+  if (!process) {
+    return { success: false, data: null, message: 'Processo não encontrado' }
+  }
+
+  process.active = active
+
+  return { success: true, data: process, message: '' }
+}

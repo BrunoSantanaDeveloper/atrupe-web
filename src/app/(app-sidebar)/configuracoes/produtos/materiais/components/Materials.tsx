@@ -16,6 +16,9 @@ import { Badge } from '@/components/ui/badge'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
+// Hooks / Store
+import { useAlertDialog } from '@/store/useAlertDialog'
+
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { NewMaterialModal } from './NewMaterial'
@@ -30,19 +33,22 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { Material } from '../types'
 
 // Actions
-import { getMaterials } from '@/actions/materials'
+import { getMaterials, setMaterialActive } from '@/actions/materials'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
 import { assetUnitShort } from '@/consts/assets'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconBan,
   IconBoxSeam,
   IconPalette,
+  IconPlayerPlay,
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react'
@@ -52,6 +58,8 @@ const formatValue = (value: number | null) =>
   value === null ? '-' : formatCurrencyToBrl(value)
 
 export function Materials({ searchParams }: SearchParamsType) {
+  const queryClient = useQueryClient()
+  const alertDialog = useAlertDialog()
   const [expanded, setExpanded] = useState<string[]>([])
   const [variations, setVariations] = useState<Material>()
 
@@ -62,6 +70,36 @@ export function Materials({ searchParams }: SearchParamsType) {
   })
 
   const materials = data?.data || []
+
+  // Material com histórico é inativado, não excluído: continua nas
+  // composições e vendas antigas, só some das listas de escolha
+  const toggleActive = (material: Material) =>
+    alertDialog.open({
+      title: material.active
+        ? `Inativar ${material.name}?`
+        : `Reativar ${material.name}?`,
+      description: material.active
+        ? 'Ele deixa de aparecer para escolher em composições e vendas. O que já o usa continua como está.'
+        : 'Ele volta a aparecer nas listas de escolha.',
+      confirmLabel: material.active ? 'Inativar' : 'Reativar',
+      onConfirm: async () => {
+        const response = await setMaterialActive({
+          id: material.id,
+          active: !material.active,
+        })
+
+        if (!response.success) {
+          toast.error(response.message)
+
+          return
+        }
+
+        toast.success(
+          material.active ? 'Material inativado' : 'Material reativado',
+        )
+        queryClient.invalidateQueries({ queryKey: ['materials'] })
+      },
+    })
 
   const sectors = Array.from(
     new Set(materials.map((material) => material.sector)),
@@ -205,6 +243,19 @@ export function Materials({ searchParams }: SearchParamsType) {
                                         ]}
                                       >
                                         <NewMaterialModal material={material} />
+                                        <ActionButton
+                                          Icon={
+                                            material.active
+                                              ? IconBan
+                                              : IconPlayerPlay
+                                          }
+                                          tooltip={
+                                            material.active
+                                              ? `Inativar ${material.name}`
+                                              : `Reativar ${material.name}`
+                                          }
+                                          onClick={() => toggleActive(material)}
+                                        />
                                         <ActionButton
                                           Icon={IconPalette}
                                           tooltip={`Variações de ${material.name}`}
