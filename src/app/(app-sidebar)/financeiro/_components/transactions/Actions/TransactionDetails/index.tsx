@@ -46,7 +46,7 @@ import {
 } from '@/types/financial/financialFlow'
 
 // Lib
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Consts
@@ -172,7 +172,7 @@ export function TransactionDetailsDialog({
             />
             <TextSupportingText
               supporting="Competência"
-              text={formatToLocaleDate(data?.referenceDate)}
+              text={formatDateOnly(data?.referenceDate)}
             />
           </DetailCardRowItem>
           <div className=" rounded-xl border border-gray-300 max-h-[338px] overflow-auto">
@@ -224,7 +224,7 @@ export function TransactionDetailsDialog({
                               {formatCurrencyToBrl(item?.amount)}
                             </p>
                             <p className="text-gray">
-                              {formatToLocaleDate(item?.dueDate)}
+                              {formatDateOnly(item?.dueDate)}
                             </p>
                           </div>
                         </TableCell>
@@ -236,7 +236,7 @@ export function TransactionDetailsDialog({
                               )}
                             </p>
                             <p className="text-gray">
-                              {formatToLocaleDate(
+                              {formatDateOnly(
                                 item?.paymentDate || item?.paidDate,
                               )}
                             </p>

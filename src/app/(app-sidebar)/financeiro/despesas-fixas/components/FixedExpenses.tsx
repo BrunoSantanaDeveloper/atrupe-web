@@ -40,7 +40,7 @@ import { toast } from 'sonner'
 
 // Libs
 import { formatCurrencyToBrl, truncateString } from '@/lib/utils'
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 
 // Third-party
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -400,7 +400,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                 : '-'}
                             </p>
                             <p className="text-gray">
-                              {formatToLocaleDate(realDueDate)}
+                              {formatDateOnly(realDueDate)}
                             </p>
                           </div>
                         </TableCell>

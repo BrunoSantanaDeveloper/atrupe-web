@@ -21,7 +21,7 @@ import {
 import { IconReceipt, IconExternalLink } from '@tabler/icons-react'
 
 // Utils
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
@@ -107,7 +107,7 @@ export function PaymentsTable({
               return (
                 <TableRow key={payment.id}>
                   <TableCell className="font-medium">
-                    {formatToLocaleDate(payment.dueDate)}
+                    {formatDateOnly(payment.dueDate)}
                   </TableCell>
                   <TableCell>
                     {payment.subscription?.plan?.name || '-'}
@@ -121,7 +121,7 @@ export function PaymentsTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {formatToLocaleDate(
+                    {formatDateOnly(
                       payment.confirmedDate || payment.paymentDate || undefined,
                     )}
                   </TableCell>

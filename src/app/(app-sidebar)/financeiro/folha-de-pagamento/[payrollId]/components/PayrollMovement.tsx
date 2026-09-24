@@ -38,7 +38,7 @@ import type { PayrollDetailType } from '@/types/financial/payroll'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatDateOnly } from '@/lib/formatDate'
 
 // Consts
 import { transactionStatus } from '@/consts/receivables'
@@ -109,7 +109,7 @@ export function PayrollMovement({ data }: Props) {
                           {formatCurrencyToBrl(item.currentInstallment?.value)}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {formatToLocaleDate(item.currentInstallment?.dueDate)}
+                          {formatDateOnly(item.currentInstallment?.dueDate)}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -121,9 +121,7 @@ export function PayrollMovement({ data }: Props) {
                             : '-'}
                         </div>
                         <div className="text-sm text-gray-600">
-                          {formatToLocaleDate(
-                            item.currentInstallment?.paymentDate,
-                          )}
+                          {formatDateOnly(item.currentInstallment?.paymentDate)}
                         </div>
                       </TableCell>
                       <TableCell>

@@ -27,6 +27,28 @@ export function parseDateFromISO(dateString: string): Date {
 // ============================================
 
 // Returns 12/03/2024
+/**
+ * Formata uma data "só dia" — vencimento, competência, data de referência.
+ *
+ * EC-1: essas datas chegam do backend à meia-noite UTC (2026-09-15T00:00:00Z).
+ * Formatar em America/Sao_Paulo (UTC-3) faz a data recuar para as 21h do dia
+ * anterior, e o dia 15 vira 14. Aqui a leitura é em UTC, sem conversão de
+ * fuso, então o dia exibido é o dia que o backend gravou.
+ *
+ * Para data E hora reais (criado em, atualizado em), use
+ * formatToLocaleDateTime, que deve mesmo converter para o fuso local.
+ */
+export function formatDateOnly(date: string | Date | undefined) {
+  if (!date) return '-'
+
+  return new Date(date).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+}
+
 export function formatToLocaleDate(date: string | Date | undefined) {
   if (!date) return '-'
 

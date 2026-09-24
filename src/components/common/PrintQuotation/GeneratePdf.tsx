@@ -22,7 +22,7 @@ import {
   calculateDisplayUnitValue,
   generateFormattedQuantityDetails,
 } from '@/lib/quotation-display-utils'
-import { formatToLocaleDate } from '@/lib/formatDate'
+import { formatToLocaleDate, formatDateOnly } from '@/lib/formatDate'
 import { addDays } from 'date-fns'
 import { getPdfImageSrc } from '@/lib/image-proxy'
 
@@ -694,7 +694,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     Emissão: {formatToLocaleDate(data.quotation?.createdAt)}
                   </Text>
                   {type === 'quotation' && validityDate && (
-                    <Text>Validade: {formatToLocaleDate(validityDate)}</Text>
+                    <Text>Validade: {formatDateOnly(validityDate)}</Text>
                   )}
                 </>
               )}
@@ -1588,7 +1588,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                     return (
                       <Text>
                         Entrega em:{' '}
-                        {formatToLocaleDate(data.delivery.estimatedDate)}
+                        {formatDateOnly(data.delivery.estimatedDate)}
                         {timePart}
                       </Text>
                     )
@@ -1657,9 +1657,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             {data.payment.downPayment.paymentCondition?.name ||
                               data.payment.method}{' '}
                             em{' '}
-                            {formatToLocaleDate(
-                              data.payment.downPayment.dueDate,
-                            )}
+                            {formatDateOnly(data.payment.downPayment.dueDate)}
                           </Text>
                         )}
                         {paymentInstallments.map((installment, index) => (
@@ -1669,7 +1667,7 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             {installment.paymentMethod ||
                               installment.paymentCondition ||
                               data.payment.method}{' '}
-                            em {formatToLocaleDate(installment.dueDate)}
+                            em {formatDateOnly(installment.dueDate)}
                           </Text>
                         ))}
                       </>
