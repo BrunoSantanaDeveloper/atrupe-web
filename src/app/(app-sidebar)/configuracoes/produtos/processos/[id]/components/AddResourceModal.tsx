@@ -55,6 +55,11 @@ export function AddResourceModal({ processId }: Props) {
   const [resourceId, setResourceId] = useState('')
   const [formula, setFormula] = useState<FormulaKey>('PER_AREA')
   const [quantity, setQuantity] = useState('1')
+  // Terceirizado avulso: o que não tem valor fixo e não vale cadastrar
+  // (T-4). Fornecedor e custo ficam no próprio recurso
+  const [supplier, setSupplier] = useState('')
+  const [description, setDescription] = useState('')
+  const [unitCost, setUnitCost] = useState('')
 
   const { data } = useQuery({
     staleTime: Infinity,
@@ -64,6 +69,7 @@ export function AddResourceModal({ processId }: Props) {
 
   const options = data?.data?.[kind] || []
   const selected = options.find((option) => option.id === resourceId)
+  const isLoose = kind === 'OUTSOURCED' && resourceId === 'loose'
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
@@ -71,10 +77,12 @@ export function AddResourceModal({ processId }: Props) {
         processId,
         resource: {
           kind,
-          name: selected?.name || '',
-          origin: selected?.origin || '',
-          unit: selected?.unit || '',
-          unitCost: selected?.unitCost ?? null,
+          name: isLoose ? description : selected?.name || '',
+          origin: isLoose ? supplier : selected?.origin || '',
+          unit: isLoose ? 'un' : selected?.unit || '',
+          unitCost: isLoose
+            ? Math.round(Number(unitCost || 0) * 100)
+            : (selected?.unitCost ?? null),
           formula,
           quantity: Number(quantity || 1),
           extraFieldId: null,
@@ -86,6 +94,9 @@ export function AddResourceModal({ processId }: Props) {
       toast.success('Recurso acrescentado')
       queryClient.invalidateQueries({ queryKey: ['process', processId] })
       setResourceId('')
+      setSupplier('')
+      setDescription('')
+      setUnitCost('')
       setOpen(false)
     },
     onError: () => toast.error('Erro ao acrescentar o recurso'),
@@ -122,11 +133,55 @@ export function AddResourceModal({ processId }: Props) {
             label="Recurso"
             value={resourceId}
             onChange={setResourceId}
-            options={options.map((option) => ({
-              value: option.id,
-              label: `${option.name} — ${formatCurrencyToBrl(option.unitCost)}/${option.unit}`,
-            }))}
+            options={[
+              ...options.map((option) => ({
+                value: option.id,
+                label: `${option.name} — ${formatCurrencyToBrl(option.unitCost)}/${option.unit}`,
+              })),
+              ...(kind === 'OUTSOURCED'
+                ? [{ value: 'loose', label: 'Terceirizado avulso' }]
+                : []),
+            ]}
           />
+          {isLoose && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label htmlFor="loose-supplier" className="text-sm font-medium">
+                  Fornecedor
+                </label>
+                <Input
+                  id="loose-supplier"
+                  value={supplier}
+                  onChange={(event) => setSupplier(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="loose-desc" className="text-sm font-medium">
+                  O que está sendo terceirizado
+                </label>
+                <Input
+                  id="loose-desc"
+                  value={description}
+                  placeholder="Ex.: dobra de chapa"
+                  onChange={(event) => setDescription(event.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="loose-cost" className="text-sm font-medium">
+                  Custo
+                </label>
+                <Input
+                  id="loose-cost"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={unitCost}
+                  startAdornment={<span className="text-sm">R$</span>}
+                  onChange={(event) => setUnitCost(event.target.value)}
+                />
+              </div>
+            </div>
+          )}
           <SelectBasic
             name="formula"
             label="Como é consumido"
@@ -157,7 +212,7 @@ export function AddResourceModal({ processId }: Props) {
           </DialogClose>
           <Button
             isLoading={isPending}
-            disabled={!resourceId}
+            disabled={!resourceId || (isLoose && (!description || !unitCost))}
             onClick={() => mutate()}
           >
             {isPending ? 'Acrescentando...' : 'Acrescentar recurso'}

@@ -13,7 +13,9 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Produtos e materiais convivem na mesma tela, em abas (MT-9). A aba de
 // materiais é recurso do PRO. A composição não tem aba própria: ela é um
-// recurso do produto, aberto pela linha da lista (CP-17).
+// recurso do produto, aberto pela linha da lista (CP-17). Terceirizado
+// também não: com valor fixo é produto do setor, e avulso entra na
+// composição (T-3 e T-4).
 export function ProductAreaTabs() {
   const pathname = usePathname()
   const { hasFeature } = usePlanFeatures()
@@ -24,9 +26,7 @@ export function ProductAreaTabs() {
     ? 'materiais'
     : pathname.includes('/processos')
       ? 'processos'
-      : pathname.includes('/terceirizados')
-        ? 'terceirizados'
-        : 'produtos'
+      : 'produtos'
 
   return (
     <Tabs value={current} className="overflow-x-auto">
@@ -39,11 +39,6 @@ export function ProductAreaTabs() {
         </TabsTrigger>
         <TabsTrigger value="processos" asChild>
           <Link href="/configuracoes/produtos/processos">Processos</Link>
-        </TabsTrigger>
-        <TabsTrigger value="terceirizados" asChild>
-          <Link href="/configuracoes/produtos/terceirizados">
-            Terceirizados
-          </Link>
         </TabsTrigger>
       </TabsList>
     </Tabs>
