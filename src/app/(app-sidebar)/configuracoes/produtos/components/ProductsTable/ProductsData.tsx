@@ -74,6 +74,10 @@ export function ProductsData({ searchParams, tabs }: Props) {
   // paralelo: o mesmo produto do START ganha custo e margem (CP-16, CP-17).
   const showComposition = hasFeature(FEATURES.COSTS.COST_BASE)
 
+  // EC-26: a permissão "Valores" também vale aqui — quem não pode ver preço
+  // não vê a tabela de preços da empresa
+  const canSeeValues = hasAllPermissions(['values:values:view'])
+
   const showNcmColumn = hasFiscalModule()
   const canConfigureFiscalData =
     showNcmColumn && hasAllPermissions(['nota_fiscal:config:edit'])
@@ -242,7 +246,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
                 <TableHead>Produto</TableHead>
                 <TableHead>Setor</TableHead>
                 {showNcmColumn && <TableHead>NCM</TableHead>}
-                <TableHead>P.V.</TableHead>
+                {canSeeValues && <TableHead>P.V.</TableHead>}
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -274,16 +278,19 @@ export function ProductsData({ searchParams, tabs }: Props) {
                       )}
                     </TableCell>
                   )}
-                  <TableCell className="text-success-700">
-                    {(() => {
-                      const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
-                      const visualUnitCost = convertRawToUnitCost(
-                        unitKind,
-                        product?.unitCost || 0,
-                      )
-                      return formatCurrencyToBrl(visualUnitCost)
-                    })()}
-                  </TableCell>
+                  {canSeeValues && (
+                    <TableCell className="text-success-700">
+                      {(() => {
+                        const unitKind =
+                          product?.items?.[0]?.unitKind || 'UNITY'
+                        const visualUnitCost = convertRawToUnitCost(
+                          unitKind,
+                          product?.unitCost || 0,
+                        )
+                        return formatCurrencyToBrl(visualUnitCost)
+                      })()}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>

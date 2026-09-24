@@ -19,6 +19,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { usePermissions } from '@/hooks/usePermissions'
 import { AddSellerDialog } from './Actions/AddSeller'
 import { DeleteSellerDialog } from './Actions/DeleteSeller'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -55,6 +56,10 @@ import { UserInfo } from '@/components/common/UserInfo'
 import { DeleteProfileDialog } from './Actions/DeleteProfile'
 
 export function Main({ searchParams }: SearchParamsType) {
+  // EC-26: o valor mínimo de venda é valor — respeita a permissão
+  const { hasAllPermissions } = usePermissions()
+  const canSeeValues = hasAllPermissions(['values:values:view'])
+
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<SellerProfileType>()
   const [employeeData, setEmployeeData] = useState<SellerProfileEmployeesType>()
@@ -122,7 +127,9 @@ export function Main({ searchParams }: SearchParamsType) {
                             {group?.profile?.maxDiscount} %
                           </TableCell>
                           <TableCell className="py-0">
-                            {formatCurrencyToBrl(group?.profile?.minValue)}
+                            {canSeeValues
+                              ? formatCurrencyToBrl(group?.profile?.minValue)
+                              : '••••••'}
                           </TableCell>
                           <TableCell className="py-0">
                             {group?.profile?.commission} %

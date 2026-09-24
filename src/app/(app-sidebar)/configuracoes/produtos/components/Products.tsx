@@ -145,9 +145,16 @@ export function Products({ searchParams }: SearchParamsType) {
   const canConfigureProductFiscalData =
     hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
 
+  // EC-26: sem a permissão "Valores", a planilha sai sem as colunas de preço
+  const canSeeValues = hasAllPermissions(['values:values:view'])
+
+  const baseColumns = canSeeValues
+    ? PRODUCT_EXPORT_COLUMNS
+    : PRODUCT_EXPORT_COLUMNS.filter((column) => column.type !== 'currency')
+
   const exportColumns = hasFiscalModule()
-    ? [...PRODUCT_EXPORT_COLUMNS, ...PRODUCT_FISCAL_EXPORT_COLUMNS]
-    : PRODUCT_EXPORT_COLUMNS
+    ? [...baseColumns, ...PRODUCT_FISCAL_EXPORT_COLUMNS]
+    : baseColumns
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
