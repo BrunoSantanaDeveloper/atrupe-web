@@ -7,18 +7,13 @@ import { CompanySettingsList } from '../components/CompanySettingsList'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
-// Consts
-import { FEATURES } from '@/consts/features'
-
 // Types
 import type { CompanySettingsType } from '../components/CompanySettingsList'
 
 // Icons
 import {
-  IconTag,
   IconCoins,
   IconFoldUp,
-  IconCalculator,
   IconFileDollar,
   IconBuildingBank,
   IconCreditCardPay,
@@ -28,7 +23,7 @@ import {
 const defaultPath = 'financeiro'
 
 export function FinanceSettingsClient() {
-  const { hasFeature, hasFinancialModule } = usePlanFeatures()
+  const { hasFinancialModule } = usePlanFeatures()
 
   const settings: CompanySettingsType[] = [
     {
@@ -88,31 +83,11 @@ export function FinanceSettingsClient() {
           link: `${defaultPath}/folhas-de-pagamento`,
           permission: ['financial_settings:payroll:view', 'values:values:view'],
         },
-        // Recursos do PRO: aparecem só quando o plano tiver a chave
-        ...(hasFeature(FEATURES.COSTS.COST_BASE)
-          ? [
-              {
-                title: 'Base de custos',
-                icon: IconCalculator,
-                description:
-                  'Forme o custo mensal de referência da empresa e veja quanto custa cada setor',
-                link: '/base-de-custos',
-                permission: ['cost:base:view', 'values:values:view'],
-              },
-            ]
-          : []),
-        ...(hasFeature(FEATURES.COSTS.PRICING_CENTER)
-          ? [
-              {
-                title: 'Precificação',
-                icon: IconTag,
-                description:
-                  'Reúna o preço de mão de obra, máquinas, materiais e produtos num lugar só',
-                link: '/precificacao',
-                permission: ['cost:pricing:view', 'values:values:view'],
-              },
-            ]
-          : []),
+        // Base de custos e Precificação saíram daqui em 24/09/2026: elas têm
+        // menu próprio, "Custos e preços". Não são configuração — é onde a
+        // empresa descobre quanto custa e decide por quanto vende, trabalho
+        // de uso frequente. Mantê-las nos dois lugares dividia a entrada e
+        // sugeria que fossem ajuste de sistema
       ],
     },
   ]
