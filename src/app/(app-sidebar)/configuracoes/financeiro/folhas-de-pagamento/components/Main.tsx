@@ -17,6 +17,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 
 // Components
 import { NewItemDialog } from './NewItem'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFilter } from './TableFilter'
 import { ManageItemsDialog } from './ManageItems'
 import { Topbar } from '@/components/common/Topbar'
@@ -122,8 +123,16 @@ export function Main({ searchParams }: SearchParamsType) {
       <Topbar
         title="Folha de pagamento"
         previousPage="/configuracoes/financeiro"
-        secondaryCta={<ManageItemsDialog />}
-        primaryCta={<NewItemDialog />}
+        secondaryCta={
+          <PermissionGate permissions={['financial_settings:payroll:edit']}>
+            <ManageItemsDialog />
+          </PermissionGate>
+        }
+        primaryCta={
+          <PermissionGate permissions={['financial_settings:payroll:create']}>
+            <NewItemDialog />
+          </PermissionGate>
+        }
       />
       <div className="space-y-2">
         <Card>
@@ -133,7 +142,15 @@ export function Main({ searchParams }: SearchParamsType) {
           {isLoading ? (
             <TableSkeleton cols={5} />
           ) : !hasData ? (
-            <FilteredDataEmpty cta={<NewItemDialog />} />
+            <FilteredDataEmpty
+              cta={
+                <PermissionGate
+                  permissions={['financial_settings:payroll:create']}
+                >
+                  <NewItemDialog />
+                </PermissionGate>
+              }
+            />
           ) : (
             <>
               <CardContent>
@@ -188,29 +205,35 @@ export function Main({ searchParams }: SearchParamsType) {
                             <TableCell>
                               <div className="flex justify-end gap-1">
                                 <TooltipProvider>
-                                  {item?.isSet && (
+                                  <PermissionGate
+                                    permissions={[
+                                      'financial_settings:payroll:edit',
+                                    ]}
+                                  >
+                                    {item?.isSet && (
+                                      <ActionButton
+                                        tooltip="Editar"
+                                        variant="neutralGhost"
+                                        Icon={IconPencil}
+                                        disabled={isLoadingAction === item?.id}
+                                        onClick={() => {
+                                          setRowData(item)
+                                          setOpenDialog('edit')
+                                        }}
+                                      />
+                                    )}
                                     <ActionButton
-                                      tooltip="Editar"
+                                      tooltip={
+                                        item?.isSet ? 'Remover' : 'Adicionar'
+                                      }
                                       variant="neutralGhost"
-                                      Icon={IconPencil}
-                                      disabled={isLoadingAction === item?.id}
+                                      Icon={item?.isSet ? IconMinus : IconPlus}
+                                      isLoading={isLoadingAction === item?.id}
                                       onClick={() => {
-                                        setRowData(item)
-                                        setOpenDialog('edit')
+                                        handleToggleSetItem(item)
                                       }}
                                     />
-                                  )}
-                                  <ActionButton
-                                    tooltip={
-                                      item?.isSet ? 'Remover' : 'Adicionar'
-                                    }
-                                    variant="neutralGhost"
-                                    Icon={item?.isSet ? IconMinus : IconPlus}
-                                    isLoading={isLoadingAction === item?.id}
-                                    onClick={() => {
-                                      handleToggleSetItem(item)
-                                    }}
-                                  />
+                                  </PermissionGate>
                                 </TooltipProvider>
                               </div>
                             </TableCell>
