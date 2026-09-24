@@ -337,12 +337,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: false,
       },
       {
-        icon: IconBoxSeam,
-        title: 'Grupos de produtos',
-        path: '/configuracoes/produtos/grupo-de-produtos',
-        permission: 'product_settings:products:view',
-      },
-      {
         icon: IconCalculator,
         title: 'Financeiro',
         path: '/configuracoes/financeiro',
