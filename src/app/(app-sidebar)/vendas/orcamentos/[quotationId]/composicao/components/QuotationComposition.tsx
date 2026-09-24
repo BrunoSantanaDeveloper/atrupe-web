@@ -1,6 +1,7 @@
 'use client'
 
-// React
+// React / Next
+import Link from 'next/link'
 import { Fragment, useState } from 'react'
 
 // UI
@@ -139,6 +140,21 @@ export function QuotationComposition({ quotationId }: Props) {
           // exibido nesta tela (ORC-7)
           cost: Math.round(option.price * 0.6),
           price: option.price,
+          // Retrato do cálculo no momento da venda (ORC-10)
+          resolvedAt: new Date().toISOString(),
+          resolved: [
+            {
+              id: `res-${option.id}`,
+              kind: 'MATERIAL',
+              name: option.name,
+              unit: option.unit,
+              quantity: 1,
+              unitCost: Math.round(option.price * 0.6),
+              cost: Math.round(option.price * 0.6),
+              actualQuantity: null,
+              actualCost: null,
+            },
+          ],
         },
       }),
     onSuccess: () => {
@@ -170,6 +186,20 @@ export function QuotationComposition({ quotationId }: Props) {
           tags: ['avulso'],
           cost: Math.round(price * 0.6),
           price,
+          resolvedAt: new Date().toISOString(),
+          resolved: [
+            {
+              id: `res-loose-${Date.now()}`,
+              kind: 'OUTSOURCED',
+              name: supplier ? `${description} · ${supplier}` : description,
+              unit: 'un',
+              quantity: 1,
+              unitCost: Math.round(price * 0.6),
+              cost: Math.round(price * 0.6),
+              actualQuantity: null,
+              actualCost: null,
+            },
+          ],
         },
       }),
     onSuccess: () => {
@@ -238,14 +268,27 @@ export function QuotationComposition({ quotationId }: Props) {
           previousPage="/vendas/orcamentos"
           supportText={quotation.client}
           primaryCta={
-            <PermissionGate permissions={['sale:quotation:edit']}>
-              <Button
-                LeftIcon={IconShoppingCartPlus}
-                onClick={() => setAddingToQuotation((current) => !current)}
+            <div className="flex flex-wrap gap-2">
+              {/* Tela de método: só aparece para quem tem a permissão (ORC-8) */}
+              <PermissionGate
+                requireAll
+                permissions={['cost:pricing:view', 'values:values:view']}
               >
-                Acrescentar item
-              </Button>
-            </PermissionGate>
+                <Button variant="neutralOutline" asChild>
+                  <Link href={`/vendas/orcamentos/${quotationId}/resultado`}>
+                    Resultado previsto
+                  </Link>
+                </Button>
+              </PermissionGate>
+              <PermissionGate permissions={['sale:quotation:edit']}>
+                <Button
+                  LeftIcon={IconShoppingCartPlus}
+                  onClick={() => setAddingToQuotation((current) => !current)}
+                >
+                  Acrescentar item
+                </Button>
+              </PermissionGate>
+            </div>
           }
         />
 

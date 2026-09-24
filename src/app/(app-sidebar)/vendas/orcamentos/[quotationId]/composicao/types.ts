@@ -6,6 +6,24 @@
 
 export type QuotationLineKind = 'PROCESS' | 'PART' | 'LOOSE'
 
+// O retrato do cálculo no momento da venda (ORC-10). Sem ele não há contra o
+// que comparar depois: refazer a conta no futuro dá outro número, porque
+// custo de material e custo-hora mudam todo mês.
+export type ResolvedResource = {
+  id: string
+  kind: 'MACHINE' | 'MATERIAL' | 'LABOR' | 'OUTSOURCED'
+  name: string
+  unit: string
+  // Consumo previsto pela composição
+  quantity: number
+  unitCost: number
+  cost: number
+  // Consumo apurado na produção. Fica vazio até existir apontamento:
+  // tempo no ELITE, material no FULL (ORC-9)
+  actualQuantity: number | null
+  actualCost: number | null
+}
+
 // Uma linha de dentro do item: o processo, a parte ou o terceirizado avulso
 // que compõem o que está sendo vendido
 export type QuotationLine = {
@@ -18,6 +36,9 @@ export type QuotationLine = {
   tags: string[]
   cost: number
   price: number
+  // Data em que o cálculo foi resolvido, e o retrato dele
+  resolvedAt: string
+  resolved: ResolvedResource[]
 }
 
 export type QuotationItem = {
