@@ -10,12 +10,16 @@ import {
 } from 'react'
 
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { usePermissions } from '@/hooks/usePermissions'
 
 const STORAGE_KEY = 'dashboard:show-values'
 const MASK = '••••••'
 
 interface DashboardValuesContextValue {
   showValues: boolean
+  // EC-24: sem a permissão "Valores", o dashboard não mostra número nenhum e
+  // o botão de olho nem aparece
+  canSeeValues: boolean
   toggleValues: () => void
   formatValue: (value: number) => string
   maskText: (text: string) => string
@@ -23,6 +27,7 @@ interface DashboardValuesContextValue {
 
 const DashboardValuesContext = createContext<DashboardValuesContextValue>({
   showValues: false,
+  canSeeValues: false,
   toggleValues: () => {},
   formatValue: () => MASK,
   maskText: () => MASK,
@@ -34,6 +39,11 @@ export function DashboardValuesProvider({
   children: React.ReactNode
 }) {
   const [showValues, setShowValues] = useState(false)
+  const { hasPermission } = usePermissions()
+
+  // A permissão manda: sem ela, não há o que alternar (EC-24)
+  const canSeeValues = hasPermission('values:values:view')
+  const visible = canSeeValues && showValues
 
   useEffect(() => {
     if (window.localStorage.getItem(STORAGE_KEY) === 'true') {
@@ -50,13 +60,14 @@ export function DashboardValuesProvider({
 
   const value = useMemo<DashboardValuesContextValue>(
     () => ({
-      showValues,
+      showValues: visible,
+      canSeeValues,
       toggleValues,
       formatValue: (amount: number) =>
-        showValues ? formatCurrencyToBrl(amount) : MASK,
-      maskText: (text: string) => (showValues ? text : MASK),
+        visible ? formatCurrencyToBrl(amount) : MASK,
+      maskText: (text: string) => (visible ? text : MASK),
     }),
-    [showValues, toggleValues],
+    [visible, canSeeValues, toggleValues],
   )
 
   return (

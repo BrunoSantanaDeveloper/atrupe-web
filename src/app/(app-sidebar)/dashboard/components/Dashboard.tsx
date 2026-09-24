@@ -54,7 +54,10 @@ function getDashboardDateRange(period: DashboardPeriod) {
 }
 
 function ToggleValuesButton() {
-  const { showValues, toggleValues } = useDashboardValues()
+  const { showValues, canSeeValues, toggleValues } = useDashboardValues()
+
+  // EC-24: sem a permissão "Valores" não há o que mostrar
+  if (!canSeeValues) return null
 
   return (
     <TooltipProvider>
