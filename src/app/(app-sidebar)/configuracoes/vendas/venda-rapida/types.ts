@@ -11,7 +11,10 @@ export type QuickSaleSettings = {
   // Meios aceitos quando a cobrança é na hora
   cashMethods: string[]
   enabled: boolean
-  // Nome que identifica a venda de balcão quando não há cliente cadastrado
+  // O cliente padrão da venda de balcão. Precisa ser um cliente de verdade,
+  // com id: criar o orçamento exige `clientId`, não um nome digitado. Pode ser
+  // a própria empresa ou um cliente final genérico, tipo "Consumidor" (ALT-22)
+  clientId: string
   clientName: string
   description: string
   seriesId: string

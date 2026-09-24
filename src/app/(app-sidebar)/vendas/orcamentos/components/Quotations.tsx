@@ -27,9 +27,12 @@ import type { ExportColumn } from '@/lib/export-excel'
 import type { QuotationType } from '@/types/sales/quotation'
 
 // Actions
-import { getData, getDataOld } from '@/actions/_cruds'
+import { createItemNew, getData, getDataOld } from '@/actions/_cruds'
+import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
+import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
@@ -153,13 +156,61 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
 
 export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
-  // O menu leva para cá com ?novo=venda-rapida, e a tela abre o orçamento já
-  // marcado como venda rápida
+  const { data: session } = useSession()
+  // ALT-22 / VR-1: a venda rápida pula o modal de novo orçamento. Ela existe
+  // para a venda de balcão — uma cópia de RG, um par de impressões —, em que
+  // preencher seis campos custa mais que a venda. O menu leva para cá com
+  // ?novo=venda-rapida e o orçamento nasce direto, com os padrões da
+  // configuração, abrindo na tela dos itens, que é onde a venda acontece
   const isQuickSale = searchParams?.novo === 'venda-rapida'
+  const [creatingQuickSale, setCreatingQuickSale] = useState(false)
 
   useEffect(() => {
-    if (isQuickSale) setOpenDialog('new-quotation')
-  }, [isQuickSale])
+    if (!isQuickSale || creatingQuickSale) return
+
+    const createQuickSale = async () => {
+      setCreatingQuickSale(true)
+
+      const config = await getQuickSaleSettings()
+      const settings = config?.data
+
+      // Sem configuração completa não há como criar sozinho. Em vez de falhar
+      // calado, a venda rápida cai no modal de sempre, já marcada, e diz o que
+      // falta — o vendedor termina a venda e alguém ajusta a configuração
+      // depois
+      if (!settings?.enabled || !settings?.clientId || !settings?.seriesId) {
+        toast.info(
+          'Venda rápida ainda não configurada: escolha o cliente padrão e a série em Configurações › Vendas › Venda rápida',
+        )
+        setOpenDialog('new-quotation')
+        return
+      }
+
+      const res = await createItemNew({
+        route: '/sale/quotation',
+        data: {
+          companyId: session?.company?.id,
+          clientId: settings.clientId,
+          contactId: '',
+          description: settings.description,
+          contactSourceId: settings.serviceTypeId,
+          seriesId: settings.seriesId,
+          sellerId: session?.user?.employeeId,
+          quickSale: true,
+        },
+      })
+
+      if (!res.success || !res.data?.id) {
+        toast.error(res.message || 'Erro ao abrir a venda rápida')
+        setOpenDialog('new-quotation')
+        return
+      }
+
+      window.location.href = `/vendas/orcamentos/${res.data.id}`
+    }
+
+    createQuickSale()
+  }, [isQuickSale, creatingQuickSale, session])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
@@ -228,6 +279,17 @@ export function Quotations({ searchParams }: SearchParamsType) {
     }
 
     return (result.data || []) as QuotationExportType[]
+  }
+
+  // Enquanto a venda rápida cria o orçamento, não faz sentido piscar a lista:
+  // o destino é a tela dos itens, não esta
+  if (isQuickSale && openDialog !== 'new-quotation') {
+    return (
+      <div className="space-y-5">
+        <Topbar title="Venda rápida" />
+        <Skeleton className="h-[calc(100vh-150px)]" />
+      </div>
+    )
   }
 
   return (

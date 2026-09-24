@@ -20,6 +20,7 @@ import {
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
@@ -60,7 +61,11 @@ export function QuickSaleSettingsForm() {
   const options = optionsData?.data
 
   const [enabled, setEnabled] = useState(true)
-  const [clientName, setClientName] = useState('')
+  // O cliente padrão é um cliente de verdade, não um nome digitado: criar o
+  // orçamento exige clientId (ALT-22)
+  const [client, setClient] = useState<{ value: string; label: string } | null>(
+    null,
+  )
   const [description, setDescription] = useState('')
   const [seriesId, setSeriesId] = useState('')
   const [serviceTypeId, setServiceTypeId] = useState('')
@@ -72,7 +77,11 @@ export function QuickSaleSettingsForm() {
     if (!settings) return
 
     setEnabled(settings.enabled)
-    setClientName(settings.clientName)
+    setClient(
+      settings.clientId
+        ? { value: settings.clientId, label: settings.clientName }
+        : null,
+    )
     setDescription(settings.description)
     setSeriesId(settings.seriesId)
     setServiceTypeId(settings.serviceTypeId)
@@ -92,7 +101,8 @@ export function QuickSaleSettingsForm() {
     mutationFn: () =>
       updateQuickSaleSettings({
         enabled,
-        clientName,
+        clientId: client?.value || '',
+        clientName: client?.label || '',
         description,
         seriesId,
         serviceTypeId,
@@ -152,19 +162,22 @@ export function QuickSaleSettingsForm() {
         <CardContent className="px-6 pb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="quick-client" className="text-sm font-medium">
-                Nome do cliente
-              </label>
-              <Input
-                id="quick-client"
-                value={clientName}
-                placeholder="Ex.: Consumidor"
-                onChange={(event) => setClientName(event.target.value)}
+              <AsyncSelectBasic
+                route="/client"
+                width="w-full"
+                value={client}
+                onChange={setClient}
+                minChars={1}
+                label="Cliente padrão"
+                placeholder="Busque o cliente da venda de balcão"
               />
               <p className="text-sm text-gray">
-                Identifica a venda de balcão. Se o cliente quiser nota ou
-                parcelar, o pré-cadastro continua disponível dentro do
-                orçamento.
+                Toda venda rápida nasce neste cliente. Costuma ser a própria
+                empresa ou um cliente final genérico, tipo
+                &quot;Consumidor&quot; — crie uma vez em Cadastros e escolha
+                aqui. Se a venda precisar de nota ou parcelamento, o vendedor
+                troca o cliente dentro do orçamento, e o pré-cadastro continua
+                disponível ali.
               </p>
             </div>
 

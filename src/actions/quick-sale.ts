@@ -10,7 +10,8 @@ let settings: QuickSaleSettings = {
   enabled: true,
   payment: 'CASH_ONLY',
   cashMethods: ['dinheiro', 'pix', 'cartao'],
-  clientName: 'Consumidor',
+  clientId: '',
+  clientName: '',
   description: '',
   seriesId: 't1',
   serviceTypeId: 'venda-direta',
@@ -26,15 +27,13 @@ export const getQuickSaleSettings = async () => ({
 export const updateQuickSaleSettings = async (
   values: Partial<QuickSaleSettings>,
 ) => {
-  if (
-    values.enabled &&
-    values.clientName !== undefined &&
-    !values.clientName.trim()
-  ) {
+  // Sem cliente padrão a venda rápida não consegue criar o orçamento, que é
+  // justamente o que ela existe para fazer (ALT-22)
+  if (values.enabled && values.clientId !== undefined && !values.clientId) {
     return {
       success: false,
       data: null,
-      message: 'Informe o nome que identifica a venda de balcão',
+      message: 'Escolha o cliente padrão da venda rápida',
     }
   }
 
