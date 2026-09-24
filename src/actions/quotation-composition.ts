@@ -278,6 +278,13 @@ export const getQuotationProducts = async () => {
       unit: 'un',
       price: 12000,
       releasedForSale: true,
+      // A variação também serve para as cores de impressão (PV-7): 4x4 é
+      // frente e verso, então cada folha passa duas vezes pela máquina
+      variations: [
+        { id: '4x0', name: '4x0', price: null },
+        { id: '4x1', name: '4x1', price: 13500 },
+        { id: '4x4', name: '4x4', price: 15800 },
+      ],
     },
     {
       id: 'placa-pvc',
