@@ -13,9 +13,11 @@ import {
   IconBuilding,
   IconSettings,
   IconChartBar,
+  IconChartPie,
   IconBrandAsana,
   IconCalculator,
   IconTag,
+  IconTargetArrow,
   IconListSearch,
   IconDatabaseImport,
   IconLayoutGrid,
@@ -159,14 +161,14 @@ export const defaultMainNavigation: MainNavigationType[] = [
   // dentro de Configurações — que é onde se ajusta o sistema, não onde se
   // trabalha (revisao-telas.md §1)
   {
-    icon: IconCalculator,
+    icon: IconTargetArrow,
     title: 'Custos e preços',
     path: '/base-de-custos',
     permission: 'values:values:view',
     requiredModule: 'cost_base',
     children: [
       {
-        icon: IconCalculator,
+        icon: IconChartPie,
         title: 'Base de custos',
         path: '/base-de-custos',
         permission: ['cost:base:view', 'values:values:view'],
