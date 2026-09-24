@@ -67,6 +67,12 @@ export function Categories({ context }: Props) {
   const hasData = categories.length > 0
 
   const categoryLabel = context === 'client' ? 'clientes' : 'fornecedores'
+  // O grupo faz parte do cadastro de cliente/fornecedor, e não é um cadastro
+  // à parte (decisão do time, 24/09/2026). Antes daqui a tela pedia
+  // 'register:client_categories', chave que a matriz de cargos não concede:
+  // fora o administrador, ninguém conseguia criar, editar nem excluir grupo.
+  const permissionBase =
+    context === 'client' ? 'register:client' : 'register:supplier'
   const previousPage =
     context === 'client' ? '/cadastros/clientes' : '/cadastros/fornecedores'
 
@@ -98,7 +104,11 @@ export function Categories({ context }: Props) {
       <Topbar
         title={`Grupos de ${categoryLabel}`}
         previousPage={previousPage}
-        primaryCta={<NewItemDialog context={context} />}
+        primaryCta={
+          <PermissionGate permissions={[`${permissionBase}:create`]}>
+            <NewItemDialog context={context} />
+          </PermissionGate>
+        }
       />
       <div className="space-y-2">
         <Card>
@@ -109,7 +119,11 @@ export function Categories({ context }: Props) {
               icon={IconAlertSquareRoundedOff}
               title="Nenhuma categoria cadastrada"
               description="Crie a primeira categoria"
-              cta={<NewItemDialog context={context} />}
+              cta={
+                <PermissionGate permissions={[`${permissionBase}:create`]}>
+                  <NewItemDialog context={context} />
+                </PermissionGate>
+              }
             />
           ) : (
             <>
@@ -132,11 +146,7 @@ export function Categories({ context }: Props) {
                             <div className="flex justify-end gap-1">
                               <TooltipProvider>
                                 <PermissionGate
-                                  permissions={[
-                                    context === 'client'
-                                      ? 'register:client_categories:edit'
-                                      : 'register:supplier_categories:edit',
-                                  ]}
+                                  permissions={[`${permissionBase}:edit`]}
                                 >
                                   <ActionButton
                                     Icon={IconPencil}
@@ -146,6 +156,10 @@ export function Categories({ context }: Props) {
                                       setRowData(item)
                                     }}
                                   />
+                                </PermissionGate>
+                                <PermissionGate
+                                  permissions={[`${permissionBase}:delete`]}
+                                >
                                   <ActionButton
                                     Icon={IconTrash}
                                     tooltip="Excluir grupo"

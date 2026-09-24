@@ -190,14 +190,18 @@ export function Suppliers({ searchParams }: SearchParamsType) {
                 emptyMessage="Nenhum fornecedor disponivel para exportacao"
               />
             </PermissionGate>
-            <ActionButton
-              tooltip="Grupos de fornecedores"
-              size="iconMd"
-              variant="neutralOutline"
-              Icon={IconFolders}
-              className="bg-transparent"
-              link="/cadastros/fornecedores/categorias"
-            />
+            {/* O grupo faz parte do cadastro de fornecedor: mesma
+                permissão, como já era em Clientes */}
+            <PermissionGate permissions={['register:supplier:edit']}>
+              <ActionButton
+                tooltip="Grupos de fornecedores"
+                size="iconMd"
+                variant="neutralOutline"
+                Icon={IconFolders}
+                className="bg-transparent"
+                link="/cadastros/fornecedores/categorias"
+              />
+            </PermissionGate>
             <PermissionGate permissions={['register:supplier:create']}>
               <NewSupplierTriggerButton
                 onOpenChange={() => {
