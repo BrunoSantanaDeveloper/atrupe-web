@@ -28,11 +28,22 @@ export interface ExportColumn<T> {
   format?: (value: ExportCellValue, row: T, index: number) => string | number
 }
 
+// SEG-3: todo arquivo exportado sai identificado com a conta, o usuário e a
+// data. É o que dá rastro quando uma base sai da empresa — sem isso, uma
+// planilha de clientes ou de custos circula sem dizer de onde veio nem quem a
+// tirou. Preenchido pelo ExportDataButton, por onde toda exportação passa
+export interface ExportSignature {
+  company: string
+  user: string
+  date: Date
+}
+
 export interface ExportSheetConfig<T> {
   columns: ExportColumn<T>[]
   data: T[]
   fileName: string
   sheetName?: string
+  signature?: ExportSignature
 }
 
 interface BuildFileNameOptions {
@@ -180,7 +191,28 @@ function getColumnValue<T>(row: T, column: ExportColumn<T>, index: number) {
   return row[column.key] as ExportCellValue
 }
 
-export function buildExportRows<T>({ columns, data }: ExportSheetConfig<T>) {
+// A identificação vai no rodapé, depois de uma linha em branco: assim a
+// tabela continua sendo lida normalmente por quem abre a planilha, e por
+// qualquer coisa que a processe, sem deslocar o cabeçalho
+function buildSignatureRows(signature?: ExportSignature) {
+  if (!signature) return []
+
+  const quando = signature.date.toLocaleString('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  })
+
+  return [
+    [],
+    [`Exportado de ${signature.company} por ${signature.user} em ${quando}`],
+  ]
+}
+
+export function buildExportRows<T>({
+  columns,
+  data,
+  signature,
+}: ExportSheetConfig<T>) {
   const headers = columns.map((column) => column.header)
   const rows = data.map((row, rowIndex) =>
     columns.map((column) =>
@@ -193,7 +225,7 @@ export function buildExportRows<T>({ columns, data }: ExportSheetConfig<T>) {
     ),
   )
 
-  return [headers, ...rows]
+  return [headers, ...rows, ...buildSignatureRows(signature)]
 }
 
 export function exportToXlsx<T>(config: ExportSheetConfig<T>) {
