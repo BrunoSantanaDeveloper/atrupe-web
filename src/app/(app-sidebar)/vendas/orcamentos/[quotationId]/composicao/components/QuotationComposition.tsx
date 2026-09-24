@@ -43,12 +43,7 @@ import {
 
 // Hooks / Store / Consts
 import { formatMoney } from '@/lib/utils'
-import {
-  itemCost,
-  itemTotal,
-  itemUnitPrice,
-  quotationTotal,
-} from '@/lib/quotation-calc'
+import { itemTotal, itemUnitPrice, quotationTotal } from '@/lib/quotation-calc'
 
 // Third-party
 import { toast } from 'sonner'
@@ -75,6 +70,9 @@ const measure = (item: QuotationItem) =>
 
 // Tela completa da composição no orçamento (ORC-1 a ORC-6). A versão do LITE
 // é um recorte desta: sem processos, sem partes e sem campos do produto.
+//
+// O CUSTO NÃO APARECE AQUI (ORC-7). A tela do orçamento mostra preço; custo e
+// margem ficam nas telas de método, com permissão própria (SEG-6).
 export function QuotationComposition({ quotationId }: Props) {
   const queryClient = useQueryClient()
   const [expanded, setExpanded] = useState<string[]>([])
@@ -137,6 +135,8 @@ export function QuotationComposition({ quotationId }: Props) {
           name: option.name,
           sector: option.sector,
           tags: [],
+          // O custo é gravado para o resultado e a produção, mas não é
+          // exibido nesta tela (ORC-7)
           cost: Math.round(option.price * 0.6),
           price: option.price,
         },
@@ -298,7 +298,6 @@ export function QuotationComposition({ quotationId }: Props) {
                   <TableBody>
                     {quotation.items.map((item) => {
                       const isExpanded = expanded.includes(item.id)
-                      const cost = itemCost(item)
 
                       return (
                         <Fragment key={item.id}>
@@ -343,15 +342,8 @@ export function QuotationComposition({ quotationId }: Props) {
                                 ? `- ${formatMoney(item.discount)}`
                                 : '--'}
                             </TableCell>
-                            <TableCell className="text-right">
-                              <p className="font-semibold">
-                                {formatMoney(itemTotal(item))}
-                              </p>
-                              {cost ? (
-                                <p className="text-sm text-gray">
-                                  custo {formatMoney(cost)}
-                                </p>
-                              ) : null}
+                            <TableCell className="text-right font-semibold">
+                              {formatMoney(itemTotal(item))}
                             </TableCell>
                             <TableCell>
                               <div className="flex justify-end gap-1">
