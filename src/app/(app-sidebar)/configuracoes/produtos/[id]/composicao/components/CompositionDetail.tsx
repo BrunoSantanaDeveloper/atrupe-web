@@ -27,6 +27,7 @@ import {
 import { Topbar } from '@/components/common/Topbar'
 import { AddStepModal } from './AddStepModal'
 import { ProductFields } from './ProductFields'
+import { VariationTabs } from './VariationTabs'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -233,6 +234,19 @@ export function CompositionDetail({ id }: Props) {
         </Card>
 
         <ProductFields productId={product.id} fields={product.fields} />
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Variações</CardTitle>
+            <CardDescription>
+              O mesmo produto em tamanhos ou modelos diferentes. A variação
+              nasce igual à base e só o que for alterado nela passa a ser dela.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-6 pb-6">
+            <VariationTabs product={product} />
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

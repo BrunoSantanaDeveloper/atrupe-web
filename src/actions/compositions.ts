@@ -27,6 +27,7 @@ const seeds: Seed[] = [
     price: 4500,
     priceRule: 'FIXED',
     releasedForSale: true,
+    variations: [],
     fields: [
       {
         id: 'f1',
@@ -61,6 +62,57 @@ const seeds: Seed[] = [
     ],
   },
   {
+    id: 'camiseta',
+    name: 'Camiseta em malha',
+    code: 'PRD-04',
+    unit: 'un',
+    price: 4900,
+    priceRule: 'FIXED',
+    releasedForSale: true,
+    // A composição muda com o tamanho: mais malha, mais tempo (PV-1)
+    variations: [
+      { id: 'v-p', name: 'P', price: null, overrides: [] },
+      { id: 'v-m', name: 'M', price: null, overrides: [] },
+      {
+        id: 'v-g',
+        name: 'G',
+        price: 5200,
+        overrides: [{ stepId: 'st5', cost: 2100, estimatedMinutes: 12 }],
+      },
+      {
+        id: 'v-gg',
+        name: 'GG',
+        price: 5600,
+        overrides: [{ stepId: 'st5', cost: 2400, estimatedMinutes: 14 }],
+      },
+    ],
+    fields: [],
+    steps: [
+      {
+        id: 'st5',
+        kind: 'PROCESS',
+        partId: null,
+        name: 'Corte e costura',
+        sector: 'Confecção',
+        processId: null,
+        setupMinutes: 10,
+        estimatedMinutes: 10,
+        cost: 1800,
+      },
+      {
+        id: 'st6',
+        kind: 'PROCESS',
+        partId: null,
+        name: 'Estampa em sublimação',
+        sector: 'Impressão',
+        processId: null,
+        setupMinutes: 5,
+        estimatedMinutes: 6,
+        cost: 900,
+      },
+    ],
+  },
+  {
     id: 'estrutura-metalon',
     name: 'Estrutura em metalon',
     code: 'PRT-01',
@@ -69,6 +121,7 @@ const seeds: Seed[] = [
     priceRule: 'FIXED',
     // Parte: compõe outros produtos e não aparece no orçamento (CP-17)
     releasedForSale: false,
+    variations: [],
     fields: [],
     steps: [
       {
@@ -92,6 +145,7 @@ const seeds: Seed[] = [
     price: 3500,
     priceRule: 'FIXED',
     releasedForSale: true,
+    variations: [],
     fields: [],
     steps: [],
   },
@@ -103,6 +157,7 @@ const seeds: Seed[] = [
     price: 3900,
     priceRule: 'FIXED',
     releasedForSale: true,
+    variations: [],
     fields: [],
     steps: [
       {
@@ -153,6 +208,7 @@ const findOrCreate = (id: string): Seed => {
     price: null,
     priceRule: 'FIXED',
     releasedForSale: true,
+    variations: [],
     fields: [],
     steps: [],
   }
@@ -374,6 +430,138 @@ export const setReleasedForSale = async ({
   const seed = findOrCreate(productId)
 
   seed.releasedForSale = released
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+export const addProductVariation = async ({
+  productId,
+  name,
+}: {
+  productId: string
+  name: string
+}) => {
+  if (!name?.trim()) {
+    return { success: false, data: null, message: 'Informe o nome da variação' }
+  }
+
+  const seed = findOrCreate(productId)
+
+  const repeated = seed.variations.some(
+    (variation) =>
+      variation.name.trim().toLowerCase() === name.trim().toLowerCase(),
+  )
+
+  if (repeated) {
+    return {
+      success: false,
+      data: null,
+      message: 'Já existe uma variação com esse nome',
+    }
+  }
+
+  // A variação nasce herdando tudo: nenhuma exceção registrada (PV-2)
+  seed.variations.push({
+    id: nextFieldId(),
+    name: name.trim(),
+    price: null,
+    overrides: [],
+  })
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+export const removeProductVariation = async ({
+  productId,
+  variationId,
+}: {
+  productId: string
+  variationId: string
+}) => {
+  const seed = findOrCreate(productId)
+
+  seed.variations = seed.variations.filter(
+    (variation) => variation.id !== variationId,
+  )
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+// Alterar um valor na variação cria a exceção; o que não for alterado
+// continua acompanhando a base (PV-2)
+export const setVariationOverride = async ({
+  productId,
+  variationId,
+  stepId,
+  cost,
+  estimatedMinutes,
+}: {
+  productId: string
+  variationId: string
+  stepId: string
+  cost: number
+  estimatedMinutes: number
+}) => {
+  const seed = findOrCreate(productId)
+  const variation = seed.variations.find((item) => item.id === variationId)
+
+  if (!variation) {
+    return { success: false, data: null, message: 'Variação não encontrada' }
+  }
+
+  const existing = variation.overrides.find((item) => item.stepId === stepId)
+
+  if (existing) {
+    existing.cost = cost
+    existing.estimatedMinutes = estimatedMinutes
+  } else {
+    variation.overrides.push({ stepId, cost, estimatedMinutes })
+  }
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+// Desfaz a exceção: a etapa volta a acompanhar a base (PV-2)
+export const clearVariationOverride = async ({
+  productId,
+  variationId,
+  stepId,
+}: {
+  productId: string
+  variationId: string
+  stepId: string
+}) => {
+  const seed = findOrCreate(productId)
+  const variation = seed.variations.find((item) => item.id === variationId)
+
+  if (!variation) {
+    return { success: false, data: null, message: 'Variação não encontrada' }
+  }
+
+  variation.overrides = variation.overrides.filter(
+    (item) => item.stepId !== stepId,
+  )
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+export const setVariationPrice = async ({
+  productId,
+  variationId,
+  price,
+}: {
+  productId: string
+  variationId: string
+  price: number | null
+}) => {
+  const seed = findOrCreate(productId)
+  const variation = seed.variations.find((item) => item.id === variationId)
+
+  if (!variation) {
+    return { success: false, data: null, message: 'Variação não encontrada' }
+  }
+
+  variation.price = price
 
   return { success: true, data: withCost(seed), message: '' }
 }

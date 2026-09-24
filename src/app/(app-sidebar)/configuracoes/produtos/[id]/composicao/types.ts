@@ -32,6 +32,19 @@ export type ProductField = {
   usedBy: string[]
 }
 
+// Variação do produto composto: a camiseta em P, M, G e GG (PV-1). A
+// variação NASCE herdando a composição base e só o que for alterado passa a
+// ser dela, para não criar divergência silenciosa (PV-2)
+export type ProductVariation = {
+  id: string
+  name: string
+  // Preço próprio; sem ele vale o do produto (PV-4)
+  price: number | null
+  // Etapas cujo valor foi alterado nesta variação. O que não estiver aqui
+  // continua acompanhando a base
+  overrides: { stepId: string; cost: number; estimatedMinutes: number }[]
+}
+
 export type ProductComposition = {
   id: string
   name: string
@@ -41,6 +54,7 @@ export type ProductComposition = {
   price: number | null
   priceRule: 'FIXED' | 'VARIABLE'
   steps: CompositionStep[]
+  variations: ProductVariation[]
   // Produto não liberado para venda é uma PARTE: serve para compor outros
   // produtos e não aparece para o vendedor no orçamento (CP-17)
   releasedForSale: boolean
