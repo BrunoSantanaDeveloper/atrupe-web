@@ -31,8 +31,15 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
+// Hooks / Store
+import { useAlertDialog } from '@/store/useAlertDialog'
+
 // Actions
-import { getAssetGroups, renameAssetGroup } from '@/actions/assets'
+import {
+  getAssetGroups,
+  renameAssetGroup,
+  deleteAssetGroup,
+} from '@/actions/assets'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -43,12 +50,13 @@ import { toast } from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCheck, IconPencil } from '@tabler/icons-react'
+import { IconCheck, IconPencil, IconTrash } from '@tabler/icons-react'
 
 // Grupo de bens equivalentes: custo pela média, capacidade pela soma (P-28).
 // Os de veículo vêm pré-cadastrados e são editáveis (P-13).
 export function AssetGroups() {
   const queryClient = useQueryClient()
+  const alertDialog = useAlertDialog()
   const [editing, setEditing] = useState<string>()
   const [name, setName] = useState('')
 
@@ -57,6 +65,29 @@ export function AssetGroups() {
     queryKey: ['asset-groups'],
     queryFn: () => getAssetGroups(),
   })
+
+  // O grupo só agrupa: não tem histórico próprio, então pode ser excluído —
+  // desde que nenhum bem esteja nele
+  const remove = (group: { id: string; name: string }) =>
+    alertDialog.open({
+      title: `Excluir o grupo ${group.name}?`,
+      description:
+        'O grupo só reúne bens equivalentes e não guarda histórico. Os bens não são afetados.',
+      confirmLabel: 'Excluir',
+      confirmVariant: 'destructive',
+      onConfirm: async () => {
+        const response = await deleteAssetGroup({ id: group.id })
+
+        if (!response.success) {
+          toast.error(response.message)
+
+          return
+        }
+
+        toast.success('Grupo excluído')
+        queryClient.invalidateQueries({ queryKey: ['asset-groups'] })
+      },
+    })
 
   const { mutate: rename } = useMutation({
     mutationFn: () => renameAssetGroup({ id: editing || '', name }),
@@ -167,6 +198,11 @@ export function AssetGroups() {
                                   setEditing(group.id)
                                   setName(group.name)
                                 }}
+                              />
+                              <ActionButton
+                                Icon={IconTrash}
+                                tooltip={`Excluir ${group.name}`}
+                                onClick={() => remove(group)}
                               />
                             </PermissionGate>
                           </div>
