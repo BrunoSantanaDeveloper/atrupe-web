@@ -92,7 +92,10 @@ export function QuotationsData({
   const isAllTab = searchParams?.status === 'todos'
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value
-  const filters = { ...searchParams, status }
+  // `novo` é da tela, não da consulta: ele liga a venda rápida (ALT-22). A API
+  // recusa propriedade que não conhece e devolve 400, derrubando a lista
+  const { novo: _novo, ...listParams } = searchParams
+  const filters = { ...listParams, status }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,

@@ -271,7 +271,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
 
   const getExportQuotations = async () => {
     const exportStatus = tabs.find((tab) => tab.tab === status)?.value || ''
-    const filters = { ...searchParams, status: exportStatus }
+    // mesmo cuidado da listagem: `novo` é da tela, a API recusa
+    const { novo: _novo, ...exportParams } = searchParams
+    const filters = { ...exportParams, status: exportStatus }
     const result = await getData({ route: '/sale/quotation/export', filters })
 
     if (!result.success) {
