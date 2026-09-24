@@ -8,6 +8,7 @@ import type { CompanySettingsType } from '../../components/CompanySettingsList'
 
 // Icon Imports
 import {
+  IconBolt,
   IconUserCircle,
   IconStatusChange,
   IconTransactionDollar,
@@ -15,18 +16,33 @@ import {
   IconRoute,
 } from '@tabler/icons-react'
 
-// Hooks
+// Hooks / Consts
+import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 const defaultPath = 'vendas'
 
 export function SalesSettingsClient() {
-  const { canManageRejectionReasons, canManageBudgetStatus } = usePlanFeatures()
+  const { canManageRejectionReasons, canManageBudgetStatus, hasFeature } =
+    usePlanFeatures()
 
   const allSettings: CompanySettingsType[] = [
     {
       category: 'Vendas',
       items: [
+        // Recurso do LITE: a venda de balcão, sem cadastro (área 12, VR-4)
+        ...(hasFeature(FEATURES.SALES.QUOTATION_QUICK_SALE)
+          ? [
+              {
+                title: 'Venda rápida',
+                icon: IconBolt,
+                description:
+                  'Pule o cadastro do orçamento e caia direto na escolha do item.',
+                link: `${defaultPath}/venda-rapida`,
+                permission: 'sales_settings:series:view',
+              },
+            ]
+          : []),
         {
           title: 'Séries de venda',
           icon: IconTransactionDollar,

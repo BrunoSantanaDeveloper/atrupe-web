@@ -79,6 +79,17 @@ export const defaultMainNavigation: MainNavigationType[] = [
     title: 'Vendas',
     path: '/vendas',
     children: [
+      // Venda rápida é o mesmo orçamento, nascendo com menos perguntas: vem
+      // primeiro porque é o caminho do balcão, e só aparece quando ligada em
+      // Configurações › Vendas (VR-4)
+      {
+        icon: IconBolt,
+        title: 'Venda rápida',
+        path: '/vendas/orcamentos?novo=venda-rapida',
+        permission: 'sale:quotation:create',
+        requiredModule: 'quotation_quick_sale',
+        action: true,
+      },
       {
         icon: IconReportMoney,
         title: 'Orçamentos',
@@ -90,15 +101,6 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Ordens de Serviço',
         path: '/vendas/ordens-de-servico',
         permission: 'sale:order:view',
-      },
-      // Venda rápida é o mesmo orçamento, já marcado: atalho, não outra tela
-      {
-        icon: IconBolt,
-        title: 'Venda rápida',
-        path: '/vendas/orcamentos?novo=venda-rapida',
-        permission: 'sale:quotation:create',
-        requiredModule: 'quotation_quick_sale',
-        action: true,
       },
     ],
   },
