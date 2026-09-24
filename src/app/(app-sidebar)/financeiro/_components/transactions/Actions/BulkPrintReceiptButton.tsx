@@ -23,7 +23,6 @@ import {
 import { IconCircleCheck, IconPrinter } from '@tabler/icons-react'
 
 // Components
-import { ReceiptPdf } from './Payment/ReceiptPdf'
 
 // Types
 import type { ReceiptPdfType } from '@/types/financial/receipt'
@@ -32,7 +31,10 @@ import type { ReceiptPdfType } from '@/types/financial/receipt'
 import { getItem } from '@/actions/_cruds'
 
 // Lib
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 
 interface Props {
   installmentIds: string[]
@@ -61,6 +63,11 @@ export function BulkPrintReceiptButton({ installmentIds, onSuccess }: Props) {
       }
 
       const pdfData: ReceiptPdfType = result.data
+      const [{ pdf }, { ReceiptPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./Payment/ReceiptPdf'),
+      ])
+
       const blob = await pdf(
         <ReceiptPdf data={pdfData} showSignature={showSignature} />,
       ).toBlob()

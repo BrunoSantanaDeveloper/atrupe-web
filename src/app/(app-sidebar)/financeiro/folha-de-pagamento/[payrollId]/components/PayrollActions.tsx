@@ -2,11 +2,13 @@
 
 // Libs
 import { useState } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 
 // Components
 import { toast } from 'sonner'
-import { PayrollPdf } from './PayrollPdf'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -102,6 +104,11 @@ export function PayrollActions({ data }: Props) {
       }
 
       const pdfData: PayrollPdfType = result.data
+
+      const [{ pdf }, { PayrollPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./PayrollPdf'),
+      ])
 
       const blob = await pdf(
         <PayrollPdf data={pdfData} showSignature={withSignature} />,

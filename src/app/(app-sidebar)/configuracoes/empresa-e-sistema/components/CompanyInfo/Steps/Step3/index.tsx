@@ -1,7 +1,6 @@
 'use client'
 
 import { FormTextarea } from '@/components/common/form/FormTextarea'
-import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 
 import { CompanyFormType } from '../../schema'
 
@@ -11,7 +10,10 @@ import Image from 'next/image'
 import { IconExternalLink, IconTrash } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { useState } from 'react'
 import { formData, quotationExampleData } from './previewData'
 import { maskCnpj } from '@/lib/utils'
@@ -57,6 +59,12 @@ export function Step3() {
       ...quotationExampleData,
       ...customData,
     }
+
+    const [{ pdf }, { GeneratePdf }] = await Promise.all([
+      import('@react-pdf/renderer'),
+
+      import('@/components/common/PrintQuotation/GeneratePdf'),
+    ])
 
     const blob = await pdf(
       <GeneratePdf data={pdfData} printOptions={formData} type="quotation" />,

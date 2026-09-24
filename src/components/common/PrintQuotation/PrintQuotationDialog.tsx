@@ -25,8 +25,10 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
 } from '@/components/ui/alert-dialog'
-import { pdf } from '@react-pdf/renderer'
-import { GeneratePdf } from './GeneratePdf'
+// EC-3: o @react-pdf/renderer NÃO entra aqui no topo. Os componentes dele
+// chegam como undefined na renderização do servidor e derrubam a página
+// inteira com "Element type is invalid". A biblioteca e o documento são
+// carregados dentro do clique, em generatePDF
 import { buildPdfFileName } from './buildPdfFileName'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
@@ -121,6 +123,11 @@ export function PrintQuotationDialog({
     quotationData: Record<string, any>,
     formData: PrintOptionsType,
   ) => {
+    const [{ pdf }, { GeneratePdf }] = await Promise.all([
+      import('@react-pdf/renderer'),
+      import('./GeneratePdf'),
+    ])
+
     const blob = await pdf(
       <GeneratePdf
         data={quotationData as any}

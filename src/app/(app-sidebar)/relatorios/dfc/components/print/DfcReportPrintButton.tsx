@@ -2,7 +2,10 @@
 
 import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { toast } from 'sonner'
 
 // UI
@@ -18,7 +21,6 @@ import {
 import { IconPrinter, IconLoader2 } from '@tabler/icons-react'
 
 // Components
-import { DfcReportPdf } from './DfcReportPdf'
 
 // Actions
 import { getDfcReportPdfData } from '@/actions/dfc-report-pdf'
@@ -47,6 +49,11 @@ export function DfcReportPrintButton() {
       setIsLoading(true)
       const filters = getFilters(searchParams)
       const data: DfcReportPdfData = await getDfcReportPdfData(filters)
+      const [{ pdf }, { DfcReportPdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+        import('./DfcReportPdf'),
+      ])
+
       const blob = await pdf(<DfcReportPdf data={data} />).toBlob()
       const url = URL.createObjectURL(blob)
       window.open(url, '_blank')

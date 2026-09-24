@@ -5,12 +5,14 @@ import { useState } from 'react'
 
 // Components
 import { toast } from 'sonner'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo. Os componentes
+// dele chegam como undefined na renderização do servidor e derrubam a página
+// com "Element type is invalid". Biblioteca e documento são carregados dentro
+// do clique que gera o PDF
 import { CancelOrder } from './CancelOrder'
 import { EmitNfe } from './EmitNfe'
 import { CustomButton } from '@/components/common/CustomButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { GeneratePdf } from '@/components/common/PrintQuotation/GeneratePdf'
 import { buildPdfFileName } from '@/components/common/PrintQuotation/buildPdfFileName'
 // Icons
 import { IconPrinter } from '@tabler/icons-react'
@@ -58,6 +60,12 @@ export function OrderActions({ data }: Props) {
       }
 
       const pdfData = result.data
+
+      const [{ pdf }, { GeneratePdf }] = await Promise.all([
+        import('@react-pdf/renderer'),
+
+        import('@/components/common/PrintQuotation/GeneratePdf'),
+      ])
 
       const blob = await pdf(
         <GeneratePdf

@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, type ReactElement } from 'react'
-import { pdf } from '@react-pdf/renderer'
+// EC-3: o @react-pdf/renderer não entra no topo do arquivo — só o tipo, que
+// some na compilação. A biblioteca é carregada dentro do clique
 import type { DocumentProps } from '@react-pdf/renderer'
 import { toast } from 'sonner'
 import {
@@ -72,6 +73,7 @@ export function FiscalPreviewDialog({
   const abrirPdf = async () => {
     setGerandoPdf(true)
     try {
+      const { pdf } = await import('@react-pdf/renderer')
       const blob = await pdf(documentoPdf()).toBlob()
       const url = URL.createObjectURL(blob)
       if (!window.open(url, '_blank')) {
