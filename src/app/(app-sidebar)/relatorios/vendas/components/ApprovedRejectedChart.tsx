@@ -121,17 +121,16 @@ export function ApprovedRejectedChart({
               />
               <YAxis tickLine={false} axisLine={false} domain={[0, 'auto']} />
               <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              {/* ALT-13: a venda cancelada não é aprovada. Ela estava
+                  empilhada junto das aprovadas, o que somava no gráfico um
+                  dinheiro que não entrou. Agora as três situações que não
+                  viraram venda ficam na mesma barra, cada uma com sua cor:
+                  rejeitada, vencida e cancelada. O arredondamento fica na
+                  última de cada pilha, que é o topo da barra */}
               <Bar
                 dataKey="approved"
                 stackId="aprovadas"
                 fill="var(--color-approved)"
-                radius={[0, 0, 0, 0]}
-                barSize={12}
-              />
-              <Bar
-                dataKey="canceled"
-                stackId="aprovadas"
-                fill="var(--color-canceled)"
                 radius={[4, 4, 0, 0]}
                 barSize={12}
               />
@@ -146,6 +145,13 @@ export function ApprovedRejectedChart({
                 dataKey="expired"
                 stackId="naoAprovadas"
                 fill="var(--color-expired)"
+                radius={[0, 0, 0, 0]}
+                barSize={12}
+              />
+              <Bar
+                dataKey="canceled"
+                stackId="naoAprovadas"
+                fill="var(--color-canceled)"
                 radius={[4, 4, 0, 0]}
                 barSize={12}
               />

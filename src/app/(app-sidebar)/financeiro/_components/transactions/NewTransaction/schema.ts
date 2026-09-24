@@ -28,12 +28,15 @@ export const schema = z.object({
       `Permitido até ${MAX_INSTALLMENTS_ALLOWED} parcelas`,
     ),
   referenceDate: z.date(),
-  dueDate: z.date(), // TODO : Colocar como obrigatório
+  // ALT-9: a data de vencimento é obrigatória. z.date() sem .optional() já
+  // garante isso — o TODO que ficava aqui não refletia mais o comportamento
+  dueDate: z.date({ required_error: 'Campo obrigatório' }),
   notes: z.string(),
   paid: z.boolean().optional(),
   installments: z.array(
     z.object({
-      dueDate: z.date(),
+      // ALT-9: vale para o vencimento de cada parcela também
+      dueDate: z.date({ required_error: 'Campo obrigatório' }),
       paymentConditionId: z.string().min(1, 'Campo obrigatório'),
       amount: z.number(),
       status: z.string().optional(),
