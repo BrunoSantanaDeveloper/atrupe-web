@@ -2,10 +2,17 @@
 // O produto nasce no START e ganha composição no PRO, sem recadastro.
 // Valores em centavos.
 
+// A etapa é um processo de um setor OU outro produto usado como parte
+// (IP-9): o totem tem base, estrutura e letreiro, cada um com composição
+export type StepKind = 'PROCESS' | 'PART'
+
 export type CompositionStep = {
   id: string
+  kind: StepKind
   name: string
   sector: string
+  // Preenchido quando a etapa é uma parte: o produto usado dentro deste
+  partId: string | null
   // Minutos de preparo herdados do processo (CP-15)
   setupMinutes: number
   // O processo pode ser um cadastro pronto ou composição direta da etapa
@@ -34,6 +41,9 @@ export type ProductComposition = {
   price: number | null
   priceRule: 'FIXED' | 'VARIABLE'
   steps: CompositionStep[]
+  // Produto não liberado para venda é uma PARTE: serve para compor outros
+  // produtos e não aparece para o vendedor no orçamento (CP-17)
+  releasedForSale: boolean
   // Os campos que o vendedor preenche no orçamento, além de largura, altura e
   // quantidade (IP-6)
   fields: ProductField[]

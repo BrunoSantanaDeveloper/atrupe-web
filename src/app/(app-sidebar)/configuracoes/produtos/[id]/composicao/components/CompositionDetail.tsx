@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import {
@@ -32,6 +33,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 // Actions
 import {
   getComposition,
+  setReleasedForSale,
   applySuggestedPrice,
   removeCompositionStep,
 } from '@/actions/compositions'
@@ -72,6 +74,22 @@ export function CompositionDetail({ id }: Props) {
       invalidate()
     },
     onError: () => toast.error('Erro ao remover a etapa'),
+  })
+
+  const { mutate: toggleRelease } = useMutation({
+    mutationFn: (released: boolean) =>
+      setReleasedForSale({ productId: id, released }),
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+
+      toast.success(
+        response.data?.releasedForSale
+          ? 'Produto liberado para venda'
+          : 'Produto marcado como parte',
+      )
+      invalidate()
+    },
+    onError: () => toast.error('Erro ao alterar a liberação'),
   })
 
   const { mutate: applyPrice, isPending: isApplying } = useMutation({
@@ -190,6 +208,30 @@ export function CompositionDetail({ id }: Props) {
           </CardFooter>
         </Card>
 
+        <Card>
+          <CardContent className="flex flex-wrap items-center justify-between gap-4 px-6 py-5">
+            <div>
+              <p className="font-medium">
+                {product.releasedForSale
+                  ? 'Produto liberado para venda'
+                  : 'Parte: não aparece no orçamento'}
+              </p>
+              <p className="text-sm text-gray">
+                A parte existe para compor outros produtos — a base, a estrutura
+                e o letreiro de um totem. O vendedor só encontra no orçamento o
+                que está liberado para venda.
+              </p>
+            </div>
+            <PermissionGate permissions={['product_settings:products:edit']}>
+              <Switch
+                checked={product.releasedForSale}
+                aria-label="Liberado para venda"
+                onCheckedChange={(checked) => toggleRelease(checked)}
+              />
+            </PermissionGate>
+          </CardContent>
+        </Card>
+
         <ProductFields productId={product.id} fields={product.fields} />
 
         <Card>
@@ -228,8 +270,18 @@ export function CompositionDetail({ id }: Props) {
                         </TableCell>
                         <TableCell>{step.sector}</TableCell>
                         <TableCell>
-                          <Badge variant="neutralLight">
-                            {step.processId ? 'Processo' : 'Composição própria'}
+                          <Badge
+                            variant={
+                              step.kind === 'PART'
+                                ? 'blueLight'
+                                : 'neutralLight'
+                            }
+                          >
+                            {step.kind === 'PART'
+                              ? 'Parte'
+                              : step.processId
+                                ? 'Processo'
+                                : 'Composição própria'}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right text-sm text-gray">

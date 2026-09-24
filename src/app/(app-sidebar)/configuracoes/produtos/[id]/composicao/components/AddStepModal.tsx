@@ -21,9 +21,12 @@ import {
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
+// Types
+import type { StepKind } from '../types'
+
 // Actions
 import { getProcesses } from '@/actions/processes'
-import { addCompositionStep } from '@/actions/compositions'
+import { getAvailableParts, addCompositionStep } from '@/actions/compositions'
 
 // Third-party
 import { toast } from 'sonner'
@@ -36,11 +39,15 @@ interface Props {
   productId: string
 }
 
-// A etapa usa um processo pronto ou composição própria (D3 §10)
+// A etapa é um processo de um setor ou outro produto usado como parte
+// (D3 §10 e IP-9): a fachada tem painel, forro e telhado, cada um com a sua
+// composição
 export function AddStepModal({ productId }: Props) {
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [kind, setKind] = useState<StepKind>('PROCESS')
   const [processId, setProcessId] = useState('')
+  const [partId, setPartId] = useState('')
   const [minutes, setMinutes] = useState('10')
   const [cost, setCost] = useState('')
 
@@ -50,27 +57,42 @@ export function AddStepModal({ productId }: Props) {
     queryFn: () => getProcesses({}),
   })
 
+  const { data: partsData } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['available-parts', productId],
+    queryFn: () => getAvailableParts({ productId }),
+  })
+
   const processes = data?.data || []
+  const parts = partsData?.data || []
   const selected = processes.find((process) => process.id === processId)
+  const selectedPart = parts.find((part) => part.id === partId)
+  const isPart = kind === 'PART'
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
       addCompositionStep({
         productId,
         step: {
-          name: selected?.name || 'Etapa',
-          sector: selected?.sector || '',
-          processId: processId || null,
-          setupMinutes: selected?.setupMinutes || 0,
+          kind,
+          name: (isPart ? selectedPart?.name : selected?.name) || 'Etapa',
+          sector: isPart ? 'Parte do produto' : selected?.sector || '',
+          partId: isPart ? partId : null,
+          processId: isPart ? null : processId || null,
+          setupMinutes: isPart
+            ? selectedPart?.setupMinutes || 0
+            : selected?.setupMinutes || 0,
           estimatedMinutes: Number(minutes || 0),
           cost: Math.round(Number(cost || 0) * 100),
         },
         // As variáveis que o processo consome viram campos do produto, sem
         // repetir nome nem valor (IP-4)
-        fields: (selected?.extraFields || []).map((field) => ({
-          name: field.name,
-          defaultValue: field.defaultValue,
-        })),
+        fields: isPart
+          ? []
+          : (selected?.extraFields || []).map((field) => ({
+              name: field.name,
+              defaultValue: field.defaultValue,
+            })),
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
@@ -79,6 +101,7 @@ export function AddStepModal({ productId }: Props) {
       queryClient.invalidateQueries({ queryKey: ['composition', productId] })
       queryClient.invalidateQueries({ queryKey: ['compositions'] })
       setProcessId('')
+      setPartId('')
       setCost('')
       setOpen(false)
     },
@@ -102,15 +125,46 @@ export function AddStepModal({ productId }: Props) {
         </DialogHeader>
         <DialogBody className="space-y-4">
           <SelectBasic
-            name="process"
-            label="Processo"
-            value={processId}
-            onChange={setProcessId}
-            options={processes.map((process) => ({
-              value: process.id,
-              label: `${process.name} — ${process.sector}`,
-            }))}
+            name="kind"
+            label="O que forma esta etapa"
+            value={kind}
+            onChange={(value) => setKind(value as StepKind)}
+            options={[
+              { value: 'PROCESS', label: 'Um processo de um setor' },
+              { value: 'PART', label: 'Outro produto, como parte' },
+            ]}
           />
+          {isPart ? (
+            <>
+              <SelectBasic
+                name="part"
+                label="Produto usado como parte"
+                value={partId}
+                onChange={setPartId}
+                options={parts.map((part) => ({
+                  value: part.id,
+                  label: part.releasedForSale
+                    ? part.name
+                    : `${part.name} — parte`,
+                }))}
+              />
+              <p className="text-sm text-gray">
+                A parte entra com as medidas dela, não com as do produto: a
+                largura da calha é a do telhado, não a da fachada.
+              </p>
+            </>
+          ) : (
+            <SelectBasic
+              name="process"
+              label="Processo"
+              value={processId}
+              onChange={setProcessId}
+              options={processes.map((process) => ({
+                value: process.id,
+                label: `${process.name} — ${process.sector}`,
+              }))}
+            />
+          )}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label htmlFor="step-minutes" className="text-sm font-medium">
@@ -153,7 +207,7 @@ export function AddStepModal({ productId }: Props) {
           </DialogClose>
           <Button
             isLoading={isPending}
-            disabled={!processId || !cost}
+            disabled={(isPart ? !partId : !processId) || !cost}
             onClick={() => mutate()}
           >
             {isPending ? 'Acrescentando...' : 'Acrescentar etapa'}

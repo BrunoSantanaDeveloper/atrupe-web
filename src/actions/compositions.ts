@@ -26,6 +26,7 @@ const seeds: Seed[] = [
     unit: 'm²',
     price: 4500,
     priceRule: 'FIXED',
+    releasedForSale: true,
     fields: [
       {
         id: 'f1',
@@ -37,6 +38,8 @@ const seeds: Seed[] = [
     steps: [
       {
         id: 'st1',
+        kind: 'PROCESS',
+        partId: null,
         name: 'Impressão em lona',
         sector: 'Impressão',
         processId: 'impressao-lona',
@@ -46,6 +49,8 @@ const seeds: Seed[] = [
       },
       {
         id: 'st2',
+        kind: 'PROCESS',
+        partId: null,
         name: 'Acabamento de banner',
         sector: 'Produção',
         processId: 'acabamento-banner',
@@ -56,12 +61,37 @@ const seeds: Seed[] = [
     ],
   },
   {
+    id: 'estrutura-metalon',
+    name: 'Estrutura em metalon',
+    code: 'PRT-01',
+    unit: 'm²',
+    price: null,
+    priceRule: 'FIXED',
+    // Parte: compõe outros produtos e não aparece no orçamento (CP-17)
+    releasedForSale: false,
+    fields: [],
+    steps: [
+      {
+        id: 'st4',
+        kind: 'PROCESS',
+        partId: null,
+        name: 'Soldagem',
+        sector: 'Serralheria',
+        processId: null,
+        setupMinutes: 15,
+        estimatedMinutes: 40,
+        cost: 6200,
+      },
+    ],
+  },
+  {
     id: 'adesivo',
     name: 'Adesivo recortado',
     code: 'PRD-02',
     unit: 'm²',
     price: 3500,
     priceRule: 'FIXED',
+    releasedForSale: true,
     fields: [],
     steps: [],
   },
@@ -72,10 +102,13 @@ const seeds: Seed[] = [
     unit: 'un',
     price: 3900,
     priceRule: 'FIXED',
+    releasedForSale: true,
     fields: [],
     steps: [
       {
         id: 'st3',
+        kind: 'PROCESS',
+        partId: null,
         name: 'Corte e acabamento',
         sector: 'Marcenaria',
         processId: null,
@@ -119,6 +152,7 @@ const findOrCreate = (id: string): Seed => {
     unit: 'un',
     price: null,
     priceRule: 'FIXED',
+    releasedForSale: true,
     fields: [],
     steps: [],
   }
@@ -297,6 +331,49 @@ export const removeProductField = async ({
   }
 
   seed.fields = seed.fields.filter((item) => item.id !== fieldId)
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+// Produtos que podem ser usados como PARTE de outro: todos, menos o próprio,
+// para não haver produto contendo a si mesmo (IP-9)
+export const getAvailableParts = async ({
+  productId,
+}: {
+  productId: string
+}) => {
+  const data = seeds
+    .filter((seed) => seed.id !== productId)
+    .map((seed) => ({
+      id: seed.id,
+      name: seed.name,
+      releasedForSale: seed.releasedForSale,
+      cost: withCost(seed).cost,
+      setupMinutes: seed.steps.reduce(
+        (sum, step) => sum + step.setupMinutes,
+        0,
+      ),
+      estimatedMinutes: seed.steps.reduce(
+        (sum, step) => sum + step.estimatedMinutes,
+        0,
+      ),
+    }))
+
+  return { success: true, data, message: '' }
+}
+
+// A marcação de "liberado para venda" separa o que o vendedor encontra no
+// orçamento das partes que só servem para compor (CP-17)
+export const setReleasedForSale = async ({
+  productId,
+  released,
+}: {
+  productId: string
+  released: boolean
+}) => {
+  const seed = findOrCreate(productId)
+
+  seed.releasedForSale = released
 
   return { success: true, data: withCost(seed), message: '' }
 }
