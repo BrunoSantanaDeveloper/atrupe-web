@@ -1,5 +1,8 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
+
 import { Fragment, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
@@ -39,6 +42,18 @@ import type {
 interface CommissionTableProps extends SearchParamsType {}
 
 export function CommissionTable({ searchParams }: CommissionTableProps) {
+  // EC-25: sem a permissão de ver vendas de outros vendedores, o relatório
+  // vai preso ao vendedor da sessão — o de Vendas já faz isso
+  const { data: session } = useSession()
+  const { hasAnyPermission } = usePermissions()
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
+  const restrictedSellerId = canSeeOtherSellers
+    ? undefined
+    : session?.user?.employeeId
+
   const [groupBy, setGroupBy] = useState<CommissionGroupBy>('none')
   const [orderBy, setOrderBy] = useState<CommissionOrderBy>('saleDate')
 
@@ -53,6 +68,7 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       searchParams?.receivedStartDate,
       searchParams?.receivedEndDate,
       searchParams?.sellerId,
+      restrictedSellerId,
       groupBy,
       orderBy,
       page,
@@ -64,7 +80,7 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
         endDate: searchParams?.endDate as string,
         receivedStartDate: searchParams?.receivedStartDate as string,
         receivedEndDate: searchParams?.receivedEndDate as string,
-        sellerId: searchParams?.sellerId as string,
+        sellerId: restrictedSellerId || (searchParams?.sellerId as string),
         groupBy,
         orderBy,
         page,

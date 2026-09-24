@@ -1,5 +1,8 @@
 'use client'
 
+import { useSession } from 'next-auth/react'
+import { usePermissions } from '@/hooks/usePermissions'
+
 import { useQuery } from '@tanstack/react-query'
 
 // UI
@@ -21,6 +24,18 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { CommissionType } from '../types'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
+  // EC-25: sem a permissão de ver vendas de outros vendedores, o relatório
+  // vai preso ao vendedor da sessão — o de Vendas já faz isso
+  const { data: session } = useSession()
+  const { hasAnyPermission } = usePermissions()
+  const canSeeOtherSellers = hasAnyPermission([
+    'sale:other_quotation:view',
+    'sale:other_sellers:view',
+  ])
+  const restrictedSellerId = canSeeOtherSellers
+    ? undefined
+    : session?.user?.employeeId
+
   const { data, isLoading } = useQuery({
     queryKey: [
       'commission-summary',
@@ -30,6 +45,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       searchParams?.receivedStartDate,
       searchParams?.receivedEndDate,
       searchParams?.sellerId,
+      restrictedSellerId,
     ],
     queryFn: () =>
       getCommissionSummary({
@@ -38,7 +54,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
         endDate: searchParams?.endDate as string,
         receivedStartDate: searchParams?.receivedStartDate as string,
         receivedEndDate: searchParams?.receivedEndDate as string,
-        sellerId: searchParams?.sellerId as string,
+        sellerId: restrictedSellerId || (searchParams?.sellerId as string),
       }),
   })
 
