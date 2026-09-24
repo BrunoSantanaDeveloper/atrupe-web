@@ -75,11 +75,16 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return 0
   }, [discount, discountType, baseValue])
 
-  // Calcular o valor original total sem nenhum desconto (soma dos totalValue dos produtos)
+  // EC-2: a referência do limite de desconto é o PREÇO BASE do cadastro, não
+  // o preço já editado pelo vendedor. Editar o item para menos passa a contar
+  // como desconto; editar para mais não gera desconto negativo. Quando o
+  // originalValue não vier preenchido, vale o totalValue — o comportamento
+  // antigo, para não quebrar orçamentos existentes.
   const originalValue = useMemo(() => {
     return (
       quotationData?.quotationItems?.reduce(
-        (sum, item) => sum + (item?.totalValue || 0),
+        (sum, item) =>
+          sum + Math.max(item?.originalValue || 0, item?.totalValue || 0),
         0,
       ) || 0
     )
@@ -102,9 +107,22 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     return quotationData?.paymentConditions?.discount?.discountTotal || 0
   }, [quotationData?.paymentConditions?.discount?.discountTotal])
 
-  // Desconto total combinado (item atual + outros itens + desconto geral)
+  // Redução do preço editado abaixo do preço base, somada ao desconto (EC-2)
+  const priceReduction = useMemo(() => {
+    return (
+      quotationData?.quotationItems?.reduce(
+        (sum, item) =>
+          sum +
+          Math.max((item?.originalValue || 0) - (item?.totalValue || 0), 0),
+        0,
+      ) || 0
+    )
+  }, [quotationData?.quotationItems])
+
+  // Desconto total combinado (item atual + outros itens + desconto geral +
+  // a redução do preço editado)
   const combinedDiscountTotal =
-    currentItemDiscount + otherItemsDiscount + generalDiscount
+    currentItemDiscount + otherItemsDiscount + generalDiscount + priceReduction
 
   // Calcular o percentual de desconto total
   const totalDiscountPercentage =
