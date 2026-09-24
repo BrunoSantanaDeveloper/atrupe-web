@@ -260,6 +260,72 @@ export const addCompositionStep = async ({
   return { success: true, data: withCost(seed), message: '' }
 }
 
+export const updateCompositionStep = async ({
+  productId,
+  stepId,
+  ...values
+}: {
+  productId: string
+  stepId: string
+  name?: string
+  sector?: string
+  estimatedMinutes?: number
+  setupMinutes?: number
+  cost?: number
+}) => {
+  const seed = findOrCreate(productId)
+  const step = seed.steps.find((item) => item.id === stepId)
+
+  if (!step) {
+    return { success: false, data: null, message: 'Etapa não encontrada' }
+  }
+
+  if (values.name !== undefined && !values.name.trim()) {
+    return { success: false, data: null, message: 'Informe o nome da etapa' }
+  }
+
+  const previousName = step.name
+
+  Object.assign(step, values)
+
+  // O campo do produto aponta para a etapa pelo nome: renomear não pode
+  // quebrar esse vínculo (IP-4)
+  if (values.name && values.name !== previousName) {
+    seed.fields.forEach((field) => {
+      field.usedBy = field.usedBy.map((name) =>
+        name === previousName ? step.name : name,
+      )
+    })
+  }
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
+// A ordem das etapas é a ordem de produção (MS-2): subir e descer importa
+export const moveCompositionStep = async ({
+  productId,
+  stepId,
+  direction,
+}: {
+  productId: string
+  stepId: string
+  direction: 'UP' | 'DOWN'
+}) => {
+  const seed = findOrCreate(productId)
+  const index = seed.steps.findIndex((item) => item.id === stepId)
+  const target = direction === 'UP' ? index - 1 : index + 1
+
+  if (index < 0 || target < 0 || target >= seed.steps.length) {
+    return { success: true, data: withCost(seed), message: '' }
+  }
+
+  const [step] = seed.steps.splice(index, 1)
+
+  seed.steps.splice(target, 0, step)
+
+  return { success: true, data: withCost(seed), message: '' }
+}
+
 export const removeCompositionStep = async ({
   productId,
   stepId,

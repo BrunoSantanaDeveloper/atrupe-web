@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useState } from 'react'
+
 // UI
 import {
   Table,
@@ -9,6 +12,7 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
@@ -36,8 +40,10 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   getComposition,
   setReleasedForSale,
+  moveCompositionStep,
   applySuggestedPrice,
   removeCompositionStep,
+  updateCompositionStep,
 } from '@/actions/compositions'
 
 // Hooks / Store / Consts
@@ -49,7 +55,12 @@ import { toast } from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconTrash } from '@tabler/icons-react'
+import {
+  IconTrash,
+  IconPencil,
+  IconArrowUp,
+  IconArrowDown,
+} from '@tabler/icons-react'
 
 interface Props {
   id: string
@@ -68,6 +79,33 @@ export function CompositionDetail({ id }: Props) {
     queryClient.invalidateQueries({ queryKey: ['composition', id] })
     queryClient.invalidateQueries({ queryKey: ['compositions'] })
   }
+
+  const [editingStep, setEditingStep] = useState('')
+
+  const { mutate: updateStep } = useMutation({
+    mutationFn: (values: {
+      stepId: string
+      name: string
+      estimatedMinutes: number
+      setupMinutes: number
+      cost: number
+    }) => updateCompositionStep({ productId: id, ...values }),
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+
+      toast.success('Etapa atualizada')
+      setEditingStep('')
+      invalidate()
+    },
+    onError: () => toast.error('Erro ao atualizar a etapa'),
+  })
+
+  const { mutate: moveStep } = useMutation({
+    mutationFn: (values: { stepId: string; direction: 'UP' | 'DOWN' }) =>
+      moveCompositionStep({ productId: id, ...values }),
+    onSuccess: invalidate,
+    onError: () => toast.error('Erro ao mover a etapa'),
+  })
 
   const { mutate: removeStep } = useMutation({
     mutationFn: (stepId: string) =>
@@ -285,7 +323,24 @@ export function CompositionDetail({ id }: Props) {
                       {product.steps.map((step) => (
                         <TableRow key={step.id}>
                           <TableCell className="font-medium">
-                            {step.name}
+                            {editingStep === step.id ? (
+                              <Input
+                                autoFocus
+                                defaultValue={step.name}
+                                aria-label={`Nome da etapa ${step.name}`}
+                                onBlur={(event) =>
+                                  updateStep({
+                                    stepId: step.id,
+                                    name: event.target.value,
+                                    estimatedMinutes: step.estimatedMinutes,
+                                    setupMinutes: step.setupMinutes,
+                                    cost: step.cost,
+                                  })
+                                }
+                              />
+                            ) : (
+                              step.name
+                            )}
                           </TableCell>
                           <TableCell>{step.sector}</TableCell>
                           <TableCell>
@@ -304,21 +359,90 @@ export function CompositionDetail({ id }: Props) {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right text-sm text-gray">
-                            {step.estimatedMinutes} min
-                            {step.setupMinutes ? (
-                              <span className="block text-sm text-gray">
-                                + {step.setupMinutes} min de preparo
-                              </span>
-                            ) : null}
+                            {editingStep === step.id ? (
+                              <Input
+                                type="number"
+                                min={0}
+                                className="w-[90px]"
+                                defaultValue={step.estimatedMinutes}
+                                aria-label={`Tempo de ${step.name}`}
+                                onBlur={(event) =>
+                                  updateStep({
+                                    stepId: step.id,
+                                    name: step.name,
+                                    estimatedMinutes:
+                                      Number(event.target.value) || 0,
+                                    setupMinutes: step.setupMinutes,
+                                    cost: step.cost,
+                                  })
+                                }
+                              />
+                            ) : (
+                              <>
+                                {step.estimatedMinutes} min
+                                {step.setupMinutes ? (
+                                  <span className="block text-sm text-gray">
+                                    + {step.setupMinutes} min de preparo
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
                           </TableCell>
                           <TableCell className="text-right">
-                            {formatCurrencyToBrl(step.cost)}
+                            {editingStep === step.id ? (
+                              <Input
+                                type="number"
+                                min={0}
+                                step="0.01"
+                                className="w-[120px]"
+                                defaultValue={step.cost / 100}
+                                aria-label={`Custo de ${step.name}`}
+                                onBlur={(event) =>
+                                  updateStep({
+                                    stepId: step.id,
+                                    name: step.name,
+                                    estimatedMinutes: step.estimatedMinutes,
+                                    setupMinutes: step.setupMinutes,
+                                    cost: Math.round(
+                                      Number(event.target.value || 0) * 100,
+                                    ),
+                                  })
+                                }
+                              />
+                            ) : (
+                              formatCurrencyToBrl(step.cost)
+                            )}
                           </TableCell>
                           <TableCell>
                             <div className="flex justify-end gap-1">
                               <PermissionGate
                                 permissions={['product_settings:products:edit']}
                               >
+                                <ActionButton
+                                  Icon={IconArrowUp}
+                                  tooltip={`Subir ${step.name}`}
+                                  onClick={() =>
+                                    moveStep({
+                                      stepId: step.id,
+                                      direction: 'UP',
+                                    })
+                                  }
+                                />
+                                <ActionButton
+                                  Icon={IconArrowDown}
+                                  tooltip={`Descer ${step.name}`}
+                                  onClick={() =>
+                                    moveStep({
+                                      stepId: step.id,
+                                      direction: 'DOWN',
+                                    })
+                                  }
+                                />
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  tooltip={`Editar ${step.name}`}
+                                  onClick={() => setEditingStep(step.id)}
+                                />
                                 <ActionButton
                                   Icon={IconTrash}
                                   variant="errorGhost"
