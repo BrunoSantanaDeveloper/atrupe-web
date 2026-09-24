@@ -35,8 +35,11 @@ import { EditAssetModal } from './EditAssetModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
+// Hooks / Store
+import { useAlertDialog } from '@/store/useAlertDialog'
+
 // Actions
-import { getAsset } from '@/actions/assets'
+import { getAsset, setAssetActive } from '@/actions/assets'
 
 // Hooks / Store / Consts
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -47,10 +50,17 @@ import {
 } from '@/consts/assets'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconChartPie, IconCurrencyReal } from '@tabler/icons-react'
+import {
+  IconBan,
+  IconPlayerPlay,
+  IconPencil,
+  IconChartPie,
+  IconCurrencyReal,
+} from '@tabler/icons-react'
 
 interface Props {
   id: string
@@ -71,6 +81,37 @@ const formatTime = (minutes: number) => {
 
 export function AssetDetail({ id }: Props) {
   const [editing, setEditing] = useState(false)
+  const alertDialog = useAlertDialog()
+  const queryClient = useQueryClient()
+
+  // Registro com histórico é inativado, não excluído: o patrimônio tem
+  // depreciação, custos e configurações usadas em composições
+  const toggleActive = () => {
+    const isInactive = asset?.status === 'INACTIVE'
+
+    alertDialog.open({
+      title: isInactive ? 'Reativar patrimônio' : 'Inativar patrimônio',
+      description: isInactive
+        ? 'O bem volta a depreciar e a aparecer nas listas e composições.'
+        : 'O bem para de depreciar e deixa de aparecer nas composições. O histórico é preservado, e ele pode ser reativado depois.',
+      confirmLabel: isInactive ? 'Reativar' : 'Inativar',
+      onConfirm: async () => {
+        const response = await setAssetActive({ id, active: isInactive })
+
+        if (!response.success) {
+          toast.error(response.message)
+
+          return
+        }
+
+        toast.success(
+          isInactive ? 'Patrimônio reativado' : 'Patrimônio inativado',
+        )
+        queryClient.invalidateQueries({ queryKey: ['asset', id] })
+        queryClient.invalidateQueries({ queryKey: ['assets'] })
+      },
+    })
+  }
   const [selling, setSelling] = useState(false)
 
   const { data, isLoading } = useQuery({
@@ -136,6 +177,15 @@ export function AssetDetail({ id }: Props) {
                   Icon={IconPencil}
                   tooltip="Editar patrimônio"
                   onClick={() => setEditing(true)}
+                />
+                <ActionButton
+                  Icon={asset.status === 'INACTIVE' ? IconPlayerPlay : IconBan}
+                  tooltip={
+                    asset.status === 'INACTIVE'
+                      ? 'Reativar patrimônio'
+                      : 'Inativar patrimônio'
+                  }
+                  onClick={() => toggleActive()}
                 />
               </div>
             </PermissionGate>

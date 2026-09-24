@@ -499,3 +499,59 @@ export const sellAsset = async ({
     message: '',
   }
 }
+
+// Regra geral do sistema: só se exclui o que não compromete nada nem depende
+// de histórico. O patrimônio tem depreciação, custos e configurações usadas em
+// composições, então ele é INATIVADO, nunca excluído.
+export const setAssetActive = async ({
+  id,
+  active,
+}: {
+  id: string
+  active: boolean
+}) => {
+  const asset = assets.find((item) => item.id === id)
+
+  if (!asset) {
+    return { success: false, data: null, message: 'Patrimônio não encontrado' }
+  }
+
+  if (!active) {
+    asset.status = 'INACTIVE'
+    asset.monthlyDepreciation = null
+
+    return { success: true, data: asset, message: '' }
+  }
+
+  asset.monthlyDepreciation = monthlyDepreciationOf(asset)
+  asset.status =
+    asset.monthlyDepreciation === null ? 'INCONSISTENT' : 'DEPRECIATING'
+
+  return { success: true, data: asset, message: '' }
+}
+
+// O grupo de bens equivalentes não tem histórico próprio: ele agrupa. Pode ser
+// excluído, desde que nenhum bem esteja nele
+export const deleteAssetGroup = async ({ id }: { id: string }) => {
+  const group = groups.find((item) => item.id === id)
+
+  if (!group) {
+    return { success: false, data: null, message: 'Grupo não encontrado' }
+  }
+
+  const used = assets.filter((asset) => asset.groupId === id)
+
+  if (used.length) {
+    return {
+      success: false,
+      data: null,
+      message: `Este grupo tem ${used.length} bem(ns). Tire os bens do grupo antes de excluir`,
+    }
+  }
+
+  const index = groups.findIndex((item) => item.id === id)
+
+  groups.splice(index, 1)
+
+  return { success: true, data: null, message: '' }
+}
