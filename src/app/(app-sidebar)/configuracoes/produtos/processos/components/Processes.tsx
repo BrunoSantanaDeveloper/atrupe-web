@@ -22,7 +22,6 @@ import { NewProcessModal } from './NewProcess'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { ProductAreaTabs } from '../../components/ProductAreaTabs'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -55,7 +54,6 @@ export function Processes({ searchParams }: SearchParamsType) {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <ProductAreaTabs />
         <Topbar
           title="Processos"
           supportText="Etapas produtivas com máquina, material, mão de obra e terceirizado"

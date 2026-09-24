@@ -9,6 +9,7 @@ import {
   IconUsers,
   IconUpload,
   IconBoxSeam,
+  IconPackages,
   IconBuilding,
   IconSettings,
   IconChartBar,
@@ -214,6 +215,28 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/cadastros/fornecedores',
         permission: 'register:supplier:view',
       },
+      // Produtos, materiais e processos são cadastros do dia a dia, não
+      // configuração: ficavam escondidos em abas dentro de Configurações
+      {
+        icon: IconBoxSeam,
+        title: 'Produtos',
+        path: '/configuracoes/produtos',
+        permission: 'product_settings:products:view',
+      },
+      {
+        icon: IconPackages,
+        title: 'Materiais',
+        path: '/configuracoes/produtos/materiais',
+        permission: 'product_settings:products:view',
+        requiredModule: 'cost_base',
+      },
+      {
+        icon: IconListCheck,
+        title: 'Processos',
+        path: '/configuracoes/produtos/processos',
+        permission: 'product_settings:products:view',
+        requiredModule: 'cost_base',
+      },
       /* {
         icon: IconSquareRoundedPlusFilled,
         title: 'Novo cliente',
@@ -315,8 +338,8 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconBoxSeam,
-        title: 'Produtos',
-        path: '/configuracoes/produtos',
+        title: 'Grupos de produtos',
+        path: '/configuracoes/produtos/grupo-de-produtos',
         permission: 'product_settings:products:view',
       },
       {

@@ -23,7 +23,6 @@ import { VariationsModal } from './VariationsModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { ProductAreaTabs } from '../../components/ProductAreaTabs'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -78,7 +77,6 @@ export function Materials({ searchParams }: SearchParamsType) {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <ProductAreaTabs />
         <Topbar
           title="Materiais"
           supportText="Insumos usados na composição dos produtos e na revenda"
