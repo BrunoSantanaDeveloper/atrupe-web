@@ -2,16 +2,15 @@
 import { Main } from './components/Main'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
-// Types
-import type { SearchParamsType } from '@/types/coreTypes'
-
 export function metadata() {
   return {
     title: 'Folha de pagamento - Config.',
   }
 }
 
-export default function Page({ searchParams }: SearchParamsType) {
+// A folha filtra por setor e por colaborador dentro da própria tela, sem
+// parâmetros na URL: escolher uma pessoa não é navegação
+export default function Page() {
   return (
     <PermissionGate
       requireAll
@@ -23,7 +22,7 @@ export default function Page({ searchParams }: SearchParamsType) {
         </div>
       }
     >
-      <Main searchParams={searchParams} />
+      <Main />
     </PermissionGate>
   )
 }

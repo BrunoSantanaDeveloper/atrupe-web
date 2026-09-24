@@ -1,14 +1,14 @@
 'use client'
 
-// PROVISÓRIO no que toca aos valores: a API ainda devolve um tipo só por item
-// (acréscimo OU desconto) e não devolve o comportamento. Esta tela mostra a
-// estrutura decidida em ALT-18 e ALT-19, na organização do legado, lendo o
-// mock `src/actions/payroll-structure.ts`. Os diálogos de item de custo
-// continuam falando com a API, porque tratam do cadastro do item, não do
-// valor por colaborador.
+// PROVISÓRIO nos valores: a API ainda devolve um tipo só por item (acréscimo
+// OU desconto) e não devolve o comportamento. A tela mostra a estrutura
+// decidida em ALT-18 e ALT-19, no layout do Figma "Atrupe Pro, ELite e Full"
+// (nó 23825-34010), lendo o mock `src/actions/payroll-structure.ts`. Os
+// diálogos de item de custo continuam falando com a API, porque tratam do
+// cadastro do item, não do valor por colaborador.
 
 // React
-import { Fragment } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 
 // UI
 import {
@@ -20,26 +20,33 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
 // Components
 import { NewItemDialog } from './NewItem'
 import { ManageItemsDialog } from './ManageItems'
 import { Topbar } from '@/components/common/Topbar'
-import { UserInfo } from '@/components/common/UserInfo'
+import { Avatar } from '@/components/AvatarComponent'
+import { ActionButton } from '@/components/common/ActionButton'
+import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Types
 import {
   employeeCost,
   itemFinalCost,
+  totalDiscount,
+  totalIncrease,
   employeePayroll,
   payrollBehaviorLabel,
   payrollContractLabel,
+  type PayrollBehavior,
+  type PayrollStructureItem,
   type PayrollStructureEmployee,
 } from '../types'
-import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
 import { getPayrollStructure } from '@/actions/payroll-structure'
@@ -47,191 +54,404 @@ import { getPayrollStructure } from '@/actions/payroll-structure'
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
+// Icons
+import {
+  IconPlus,
+  IconMinus,
+  IconPencil,
+  IconChevronDown,
+  IconChevronRight,
+} from '@tabler/icons-react'
+
 // Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl, getFirstAndLastName } from '@/lib/utils'
 
 const money = (value: number) => formatCurrencyToBrl(value / 100)
 
-export function Main({ searchParams }: SearchParamsType) {
+const TODOS = 'todos'
+
+const tiposDeCusto: { value: string; label: string }[] = [
+  { value: TODOS, label: 'Todos' },
+  { value: 'ONLY_INCREASE', label: payrollBehaviorLabel.ONLY_INCREASE },
+  { value: 'ONLY_DISCOUNT', label: payrollBehaviorLabel.ONLY_DISCOUNT },
+  {
+    value: 'INCREASE_AND_DISCOUNT',
+    label: payrollBehaviorLabel.INCREASE_AND_DISCOUNT,
+  },
+  { value: 'PROVISION', label: payrollBehaviorLabel.PROVISION },
+]
+
+// Valor vazio aparece como traço, não como R$ 0,00: o traço diz "não se
+// aplica", o zero diria "calculado e deu zero", que é outra coisa
+const value = (amount: number, className?: string) =>
+  amount ? (
+    <span className={className}>{money(amount)}</span>
+  ) : (
+    <span className="text-gray">—</span>
+  )
+
+// A folha mostra um colaborador por vez (decisão do time, 24/09/2026), com
+// filtro de setor e de colaborador acima.
+export function Main() {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['payroll-structure', searchParams],
+    queryKey: ['payroll-structure'],
     queryFn: () => getPayrollStructure(),
   })
 
-  const employees: PayrollStructureEmployee[] = data?.data || []
-
-  const totalCost = employees.reduce(
-    (total, employee) => total + employeeCost(employee),
-    0,
+  const employees = useMemo<PayrollStructureEmployee[]>(
+    () => data?.data || [],
+    [data],
   )
-  const totalPayroll = employees.reduce(
-    (total, employee) => total + employeePayroll(employee),
-    0,
+
+  const [sector, setSector] = useState(TODOS)
+  const [employeeId, setEmployeeId] = useState('')
+  const [costType, setCostType] = useState(TODOS)
+  const [search, setSearch] = useState('')
+  const [collapsed, setCollapsed] = useState(false)
+
+  const sectors = useMemo(() => {
+    const names = Array.from(new Set(employees.map((item) => item.sectorName)))
+
+    return [
+      { value: TODOS, label: 'Todos os setores' },
+      ...names.sort().map((name) => ({ value: name, label: name })),
+    ]
+  }, [employees])
+
+  const visible = useMemo(
+    () =>
+      sector === TODOS
+        ? employees
+        : employees.filter((item) => item.sectorName === sector),
+    [employees, sector],
+  )
+
+  // Trocar de setor pode deixar de fora quem estava selecionado: nesse caso a
+  // tela cai no primeiro do setor, em vez de ficar vazia sem explicação
+  useEffect(() => {
+    if (visible.some((item) => item.id === employeeId)) return
+
+    setEmployeeId(visible[0]?.id || '')
+  }, [visible, employeeId])
+
+  const employee = visible.find((item) => item.id === employeeId)
+
+  const matches = (item: PayrollStructureItem) => {
+    const byType = costType === TODOS || item.behavior === costType
+    const byName = item.name.toLowerCase().includes(search.trim().toLowerCase())
+
+    return byType && byName
+  }
+
+  const items = (employee?.items || []).filter(matches)
+  const salary = items.find((item) => !item.derivedFromSalary && item.isSet)
+  const derived = items.filter((item) => item.derivedFromSalary)
+  const others = items.filter(
+    (item) => !item.derivedFromSalary && item.id !== salary?.id,
+  )
+
+  const cost = employee ? employeeCost(employee) : 0
+  const payroll = employee ? employeePayroll(employee) : 0
+  const provision = cost - payroll
+
+  const itemRow = (item: PayrollStructureItem, child = false) => (
+    <TableRow key={item.id} className={cn(!item.isSet && 'text-gray')}>
+      <TableCell>
+        <div className={cn('flex items-center gap-2', child && 'pl-6')}>
+          {child && (
+            <span
+              aria-hidden
+              className="h-4 w-3 rounded-bl border-b border-l border-gray-300"
+            />
+          )}
+          <div>
+            <p className={cn(item.isSet ? 'text-gray-700' : 'text-gray')}>
+              {item.name}
+            </p>
+            <p className="text-xs text-gray">
+              {payrollBehaviorLabel[item.behavior]}
+              {item.fixedByLaw ? ' · percentual definido em lei' : ''}
+            </p>
+          </div>
+        </div>
+      </TableCell>
+      <TableCell className="text-right">
+        {item.isSet ? value(item.increase, 'text-success-600') : '—'}
+      </TableCell>
+      <TableCell className="text-right">
+        {item.isSet ? value(item.discount, 'text-error-600') : '—'}
+      </TableCell>
+      <TableCell className="text-right font-medium">
+        {item.isSet ? value(itemFinalCost(item), 'text-gray-900') : '—'}
+      </TableCell>
+      <TableCell>
+        <div className="flex justify-end gap-1">
+          <PermissionGate permissions={['financial_settings:payroll:edit']}>
+            {item.isSet ? (
+              <>
+                <ActionButton
+                  Icon={IconPencil}
+                  variant="neutralGhost"
+                  tooltip={
+                    item.fixedByLaw
+                      ? 'Férias e 13º não têm percentual editável'
+                      : `Editar ${item.name}`
+                  }
+                  disabled={item.fixedByLaw}
+                />
+                <ActionButton
+                  Icon={IconMinus}
+                  variant="neutralGhost"
+                  tooltip={`Tirar ${item.name} deste colaborador`}
+                />
+              </>
+            ) : (
+              <ActionButton
+                Icon={IconPlus}
+                variant="neutralGhost"
+                tooltip={`Acrescentar ${item.name}`}
+              />
+            )}
+          </PermissionGate>
+        </div>
+      </TableCell>
+    </TableRow>
   )
 
   return (
-    <div className="space-y-5">
-      <Topbar
-        review="new"
-        title="Folha de pagamento"
-        previousPage="/configuracoes/financeiro"
-        supportText="O custo de cada colaborador, item a item"
-        secondaryCta={
-          <PermissionGate permissions={['financial_settings:payroll:edit']}>
-            <ManageItemsDialog />
-          </PermissionGate>
-        }
-        primaryCta={
-          <PermissionGate permissions={['financial_settings:payroll:create']}>
-            <NewItemDialog />
-          </PermissionGate>
-        }
-      />
+    <TooltipProvider>
+      <div className="space-y-5">
+        <Topbar
+          review="new"
+          title="Folha de pagamento"
+          previousPage="/configuracoes/financeiro"
+          secondaryCta={
+            <PermissionGate permissions={['financial_settings:payroll:edit']}>
+              <ManageItemsDialog />
+            </PermissionGate>
+          }
+          primaryCta={
+            <PermissionGate permissions={['financial_settings:payroll:create']}>
+              <NewItemDialog />
+            </PermissionGate>
+          }
+        />
 
-      <Card>
-        <CardContent className="px-6 py-5">
-          <p className="text-sm text-gray">
-            Cada item de custo diz <strong>como se comporta na folha</strong>.
-            São quatro comportamentos, e é o último que permite férias, 13º e
-            FGTS entrarem no custo do mês sem aparecer na folha a pagar.
-          </p>
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-4">
-            {(
-              [
-                ['ONLY_INCREASE', 'Salário base, insalubridade, hora extra'],
-                ['ONLY_DISCOUNT', 'Hora falta'],
-                [
-                  'INCREASE_AND_DISCOUNT',
-                  'INSS, vale transporte, ajuda de custo',
-                ],
-                ['PROVISION', 'FGTS, 13º salário, férias'],
-              ] as const
-            ).map(([behavior, exemplos]) => (
-              <div
-                key={behavior}
-                className="rounded-lg border border-gray-200 p-3"
-              >
-                <p className="text-sm font-medium">
-                  {payrollBehaviorLabel[behavior]}
-                </p>
-                <p className="mt-1 text-sm text-gray">{exemplos}</p>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
         {isLoading ? (
-          <TableSkeleton cols={6} />
+          <Skeleton className="h-[calc(100vh-150px)]" />
         ) : (
-          <>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-full">
-                      Referência do custo
-                    </TableHead>
-                    <TableHead>Comportamento</TableHead>
-                    <TableHead className="text-right">Acréscimo</TableHead>
-                    <TableHead className="text-right">Desconto</TableHead>
-                    <TableHead className="text-right">Custo final</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {employees.map((employee) => (
-                    <Fragment key={employee.id}>
-                      <TableRow className="bg-gray-100">
-                        <TableCell colSpan={2}>
-                          <div className="flex flex-wrap items-center gap-3">
-                            <UserInfo
-                              name={employee.name}
-                              description={`${employee.roleName} · ${employee.sectorName}`}
-                            />
-                            <Badge variant="neutralLight">
-                              {payrollContractLabel[employee.contract]}
-                            </Badge>
-                          </div>
-                        </TableCell>
-                        <TableCell colSpan={2} className="text-sm text-gray">
-                          Salário base {money(employee.baseSalary)} ·{' '}
-                          {employee.monthlyHours} h/mês
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <p className="text-xs text-gray">
-                            Custo do colaborador
-                          </p>
-                          <p className="font-semibold text-gray-900">
-                            {money(employeeCost(employee))}
-                          </p>
-                        </TableCell>
-                      </TableRow>
+          <Card>
+            {/* Cabeçalho: quem é a pessoa, à esquerda, e como chegar até ela,
+                à direita */}
+            <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-5">
+              <div className="flex items-center gap-4">
+                <Avatar
+                  size="lg"
+                  url={employee?.avatarUrl || ''}
+                  name={employee ? getFirstAndLastName(employee.name) : ''}
+                />
+                <div>
+                  <p className="text-xl font-semibold text-gray-900">
+                    {employee?.name || 'Nenhum colaborador neste setor'}
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-gray">
+                      {employee
+                        ? `${employee.code} · ${employee.roleName} · ${employee.sectorName}`
+                        : 'Troque o setor para ver outra pessoa'}
+                    </p>
+                    {employee && (
+                      <Badge variant="neutralLight">
+                        {payrollContractLabel[employee.contract]}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-                      {employee.items.map((item) => (
-                        <TableRow key={`${employee.id}-${item.id}`}>
-                          <TableCell className="text-gray-600">
-                            {item.name}
+              <div className="flex flex-wrap items-end gap-3">
+                <SelectBasic
+                  name="sector"
+                  label="Setor"
+                  value={sector}
+                  options={sectors}
+                  onChange={setSector}
+                  className="flex-[1_0_180px]"
+                />
+                <SelectBasic
+                  name="employee"
+                  label="Colaborador"
+                  value={employeeId}
+                  onChange={setEmployeeId}
+                  className="flex-[1_0_220px]"
+                  emptyMessage="Nenhum colaborador neste setor"
+                  options={visible.map((item) => ({
+                    value: item.id,
+                    label: item.name,
+                  }))}
+                />
+                <SelectBasic
+                  name="costType"
+                  label="Tipos de custos"
+                  value={costType}
+                  options={tiposDeCusto}
+                  onChange={setCostType}
+                  className="flex-[1_0_200px]"
+                />
+                <div className="flex flex-[1_0_200px] flex-col">
+                  <label
+                    htmlFor="payroll-search"
+                    className="mb-2 text-sm font-medium text-gray-700"
+                  >
+                    Buscar
+                  </label>
+                  <Input
+                    id="payroll-search"
+                    value={search}
+                    placeholder="Buscar por..."
+                    onChange={(event) => setSearch(event.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+
+            {!employee ? (
+              <CardContent className="px-6 pb-10 text-center text-sm text-gray">
+                Escolha um setor que tenha colaboradores para ver a folha.
+              </CardContent>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-full">Referência</TableHead>
+                      <TableHead className="text-right">Acréscimo</TableHead>
+                      <TableHead className="text-right">Desconto</TableHead>
+                      <TableHead className="text-right">Custo final</TableHead>
+                      <TableHead />
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {salary && (
+                      <Fragment key={salary.id}>
+                        {/* O salário base é o pai dos encargos: eles são
+                            calculados a partir dele (ALT-18), e vê-los
+                            aninhados mostra de onde saem */}
+                        <TableRow>
+                          <TableCell>
+                            <div className="flex items-center gap-2">
+                              <ActionButton
+                                variant="neutralGhost"
+                                Icon={
+                                  collapsed ? IconChevronRight : IconChevronDown
+                                }
+                                tooltip={
+                                  collapsed
+                                    ? 'Mostrar os encargos'
+                                    : 'Esconder os encargos'
+                                }
+                                onClick={() => setCollapsed(!collapsed)}
+                              />
+                              <p className="font-medium text-gray-800">
+                                {salary.name}
+                              </p>
+                              {derived.length > 0 && (
+                                <Badge variant="neutralLight">
+                                  {derived.length}{' '}
+                                  {derived.length === 1
+                                    ? 'encargo'
+                                    : 'encargos'}
+                                </Badge>
+                              )}
+                            </div>
                           </TableCell>
-                          <TableCell className="text-sm text-gray">
-                            {payrollBehaviorLabel[item.behavior]}
+                          <TableCell className="text-right">
+                            {value(salary.increase, 'text-success-600')}
                           </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right',
-                              item.increase ? 'text-success-600' : 'text-gray',
-                            )}
-                          >
-                            {item.increase ? money(item.increase) : '—'}
-                          </TableCell>
-                          <TableCell
-                            className={cn(
-                              'text-right',
-                              item.discount ? 'text-error-600' : 'text-gray',
-                            )}
-                          >
-                            {item.discount ? money(item.discount) : '—'}
+                          <TableCell className="text-right">
+                            {value(salary.discount, 'text-error-600')}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {money(itemFinalCost(item))}
+                            {value(itemFinalCost(salary), 'text-gray-900')}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <PermissionGate
+                                permissions={[
+                                  'financial_settings:payroll:edit',
+                                ]}
+                              >
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  variant="neutralGhost"
+                                  tooltip="Editar o salário base"
+                                />
+                              </PermissionGate>
+                            </div>
                           </TableCell>
                         </TableRow>
-                      ))}
+                        {!collapsed &&
+                          derived.map((item) => itemRow(item, true))}
+                      </Fragment>
+                    )}
 
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-sm text-gray">
-                          Sai na folha a pagar de {employee.name.split(' ')[0]},
-                          sem as provisões
+                    {others.map((item) => itemRow(item))}
+                  </TableBody>
+                </Table>
+
+                {/* Total das colunas, como no Figma */}
+                <div className="border-t border-gray-200 bg-gray-50">
+                  <Table>
+                    <TableBody>
+                      <TableRow className="hover:bg-transparent">
+                        <TableCell className="w-full font-semibold text-gray-800">
+                          Total
                         </TableCell>
-                        <TableCell className="text-right text-sm font-medium">
-                          {money(employeePayroll(employee))}
+                        <TableCell className="text-right font-semibold text-success-600">
+                          {money(totalIncrease(employee))}
                         </TableCell>
+                        <TableCell className="text-right font-semibold text-error-600">
+                          {money(totalDiscount(employee))}
+                        </TableCell>
+                        <TableCell className="text-right text-lg font-semibold text-gray-900">
+                          {money(cost)}
+                        </TableCell>
+                        <TableCell className="w-20" />
                       </TableRow>
-                    </Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter className="flex-wrap justify-between gap-3">
-              <p className="text-sm text-gray">
-                O custo do colaborador é a soma dos custos finais, e é ele que
-                alimenta o custo do setor na Base de custos. A folha a pagar é
-                menor porque as provisões não são pagas neste mês.
-              </p>
-              <div className="text-right text-sm">
-                <p className="text-gray">Folha a pagar {money(totalPayroll)}</p>
-                <p>
-                  Custo total da mão de obra:{' '}
-                  <span className="text-lg font-semibold text-gray-900">
-                    {money(totalCost)}
-                  </span>
-                </p>
-              </div>
-            </CardFooter>
-          </>
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <CardFooter className="flex-wrap justify-between gap-3">
+                  <p className="max-w-xl text-sm text-gray">
+                    O <strong>custo do colaborador</strong> é o que alimenta o
+                    custo do setor na Base de custos. A folha a pagar é menor
+                    porque a provisão de férias, 13º e FGTS custa agora e é paga
+                    depois.
+                  </p>
+                  <div className="flex flex-wrap gap-6 text-sm">
+                    <div>
+                      <p className="text-gray">Sai na folha a pagar</p>
+                      <p className="font-semibold text-gray-900">
+                        {money(payroll)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray">Provisão do mês</p>
+                      <p className="font-semibold text-gray-900">
+                        {money(provision)}
+                      </p>
+                    </div>
+                  </div>
+                </CardFooter>
+              </>
+            )}
+          </Card>
         )}
-      </Card>
-    </div>
+      </div>
+    </TooltipProvider>
   )
 }
+
+export type { PayrollBehavior }
