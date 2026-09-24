@@ -26,6 +26,8 @@ import {
 
 // Hooks / Store / Consts
 import { cn, formatMoney } from '@/lib/utils'
+import { FEATURES } from '@/consts/features'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Third-party
 import { toast } from 'sonner'
@@ -43,6 +45,12 @@ interface Props {
 // acompanhando — é o que evita a cópia que envelhece sozinha.
 export function VariationTabs({ product }: Props) {
   const queryClient = useQueryClient()
+  const { hasFeature } = usePlanFeatures()
+
+  // No LITE a variação é só nome e preço — campos digitáveis, sem composição.
+  // No PRO ela também altera as etapas (ORC-6: o completo primeiro, o
+  // reduzido depois)
+  const hasComposition = hasFeature(FEATURES.COSTS.COST_BASE)
   const [current, setCurrent] = useState('base')
   const [name, setName] = useState('')
 
@@ -107,18 +115,20 @@ export function VariationTabs({ product }: Props) {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={() => setCurrent('base')}
-          className={cn(
-            'rounded-lg border px-4 py-2 text-sm',
-            current === 'base'
-              ? 'border-brand-500 bg-white font-medium text-brand-700'
-              : 'border-gray-200 bg-white text-gray-600',
-          )}
-        >
-          Composição base
-        </button>
+        {hasComposition && (
+          <button
+            type="button"
+            onClick={() => setCurrent('base')}
+            className={cn(
+              'rounded-lg border px-4 py-2 text-sm',
+              current === 'base'
+                ? 'border-brand-500 bg-white font-medium text-brand-700'
+                : 'border-gray-200 bg-white text-gray-600',
+            )}
+          >
+            Composição base
+          </button>
+        )}
         {product.variations.map((item) => (
           <button
             key={item.id}
@@ -210,90 +220,100 @@ export function VariationTabs({ product }: Props) {
             </div>
           </div>
 
-          {product.steps.map((step) => {
-            const changed = variation.overrides.find(
-              (item) => item.stepId === step.id,
-            )
+          {hasComposition &&
+            product.steps.map((step) => {
+              const changed = variation.overrides.find(
+                (item) => item.stepId === step.id,
+              )
 
-            return (
-              <div
-                key={step.id}
-                className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 p-3"
-              >
-                <div className="min-w-[180px] flex-1">
-                  <p className="font-medium">{step.name}</p>
-                  <p className="text-sm text-gray">{step.sector}</p>
+              return (
+                <div
+                  key={step.id}
+                  className="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 p-3"
+                >
+                  <div className="min-w-[180px] flex-1">
+                    <p className="font-medium">{step.name}</p>
+                    <p className="text-sm text-gray">{step.sector}</p>
+                  </div>
+                  {changed ? (
+                    <Badge variant="blueLight">alterado nesta variação</Badge>
+                  ) : (
+                    <Badge variant="neutralLight">acompanha a base</Badge>
+                  )}
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={`minutes-${variation.id}-${step.id}`}
+                      className="text-sm font-medium"
+                    >
+                      Tempo (min)
+                    </label>
+                    <Input
+                      id={`minutes-${variation.id}-${step.id}`}
+                      type="number"
+                      min={0}
+                      className="w-[110px]"
+                      defaultValue={
+                        changed?.estimatedMinutes ?? step.estimatedMinutes
+                      }
+                      onBlur={(event) =>
+                        override({
+                          variationId: variation.id,
+                          stepId: step.id,
+                          estimatedMinutes: Number(event.target.value) || 0,
+                          cost: changed?.cost ?? step.cost,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor={`cost-${variation.id}-${step.id}`}
+                      className="text-sm font-medium"
+                    >
+                      Custo
+                    </label>
+                    <Input
+                      id={`cost-${variation.id}-${step.id}`}
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      className="w-[140px]"
+                      startAdornment={<span className="text-sm">R$</span>}
+                      defaultValue={(changed?.cost ?? step.cost) / 100}
+                      onBlur={(event) =>
+                        override({
+                          variationId: variation.id,
+                          stepId: step.id,
+                          cost: Math.round(
+                            Number(event.target.value || 0) * 100,
+                          ),
+                          estimatedMinutes:
+                            changed?.estimatedMinutes ?? step.estimatedMinutes,
+                        })
+                      }
+                    />
+                  </div>
+                  {changed && (
+                    <ActionButton
+                      Icon={IconArrowBackUp}
+                      tooltip="Voltar a acompanhar a base"
+                      onClick={() =>
+                        clear({ variationId: variation.id, stepId: step.id })
+                      }
+                    />
+                  )}
                 </div>
-                {changed ? (
-                  <Badge variant="blueLight">alterado nesta variação</Badge>
-                ) : (
-                  <Badge variant="neutralLight">acompanha a base</Badge>
-                )}
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor={`minutes-${variation.id}-${step.id}`}
-                    className="text-sm font-medium"
-                  >
-                    Tempo (min)
-                  </label>
-                  <Input
-                    id={`minutes-${variation.id}-${step.id}`}
-                    type="number"
-                    min={0}
-                    className="w-[110px]"
-                    defaultValue={
-                      changed?.estimatedMinutes ?? step.estimatedMinutes
-                    }
-                    onBlur={(event) =>
-                      override({
-                        variationId: variation.id,
-                        stepId: step.id,
-                        estimatedMinutes: Number(event.target.value) || 0,
-                        cost: changed?.cost ?? step.cost,
-                      })
-                    }
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label
-                    htmlFor={`cost-${variation.id}-${step.id}`}
-                    className="text-sm font-medium"
-                  >
-                    Custo
-                  </label>
-                  <Input
-                    id={`cost-${variation.id}-${step.id}`}
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    className="w-[140px]"
-                    startAdornment={<span className="text-sm">R$</span>}
-                    defaultValue={(changed?.cost ?? step.cost) / 100}
-                    onBlur={(event) =>
-                      override({
-                        variationId: variation.id,
-                        stepId: step.id,
-                        cost: Math.round(Number(event.target.value || 0) * 100),
-                        estimatedMinutes:
-                          changed?.estimatedMinutes ?? step.estimatedMinutes,
-                      })
-                    }
-                  />
-                </div>
-                {changed && (
-                  <ActionButton
-                    Icon={IconArrowBackUp}
-                    tooltip="Voltar a acompanhar a base"
-                    onClick={() =>
-                      clear({ variationId: variation.id, stepId: step.id })
-                    }
-                  />
-                )}
-              </div>
-            )
-          })}
+              )
+            })}
 
-          {!product.steps.length && (
+          {!hasComposition && (
+            <p className="text-sm text-gray">
+              Neste plano a variação define o nome e o preço. A composição —
+              materiais, tempos e setores por tamanho — faz parte do PRO.
+            </p>
+          )}
+
+          {hasComposition && !product.steps.length && (
             <p className="text-sm text-gray">
               A composição base ainda não tem etapas. Monte a base primeiro: a
               variação só altera o que já existe nela.

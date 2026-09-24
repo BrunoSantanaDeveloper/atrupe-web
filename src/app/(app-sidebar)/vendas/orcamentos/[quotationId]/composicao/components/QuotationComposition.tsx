@@ -24,6 +24,7 @@ import { AddPanel } from './AddPanel'
 import { ItemForm, type ItemFormValues } from './ItemForm'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
+import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
@@ -43,6 +44,7 @@ import {
 } from '@/actions/quotation-composition'
 
 // Hooks / Store / Consts
+import { FEATURES } from '@/consts/features'
 import { formatMoney } from '@/lib/utils'
 import { itemTotal, itemUnitPrice, quotationTotal } from '@/lib/quotation-calc'
 
@@ -412,15 +414,19 @@ export function QuotationComposition({ quotationId }: Props) {
                                       if (!isExpanded) toggle(item.id)
                                     }}
                                   />
-                                  <ActionButton
-                                    Icon={IconPlus}
-                                    tooltip={`Acrescentar a ${item.name}`}
-                                    onClick={() => {
-                                      setAddingToItem(item.id)
+                                  <FeatureGate
+                                    features={[FEATURES.COSTS.COST_BASE]}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPlus}
+                                      tooltip={`Acrescentar a ${item.name}`}
+                                      onClick={() => {
+                                        setAddingToItem(item.id)
 
-                                      if (!isExpanded) toggle(item.id)
-                                    }}
-                                  />
+                                        if (!isExpanded) toggle(item.id)
+                                      }}
+                                    />
+                                  </FeatureGate>
                                   <ActionButton
                                     Icon={IconTrash}
                                     tooltip={`Remover ${item.name}`}

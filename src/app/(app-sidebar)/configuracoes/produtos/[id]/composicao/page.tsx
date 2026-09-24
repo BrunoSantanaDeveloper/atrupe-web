@@ -24,8 +24,13 @@ export default function CompositionPage({
         </div>
       }
     >
+      {/* No LITE a tela abre só com as variações; no PRO, com a composição
+          inteira (ORC-6) */}
       <FeatureGate
-        features={[FEATURES.COSTS.COST_BASE]}
+        features={[
+          FEATURES.COSTS.COST_BASE,
+          FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+        ]}
         fallback={<UpgradeFallback title="Composições" />}
       >
         <CompositionDetail id={params.id} />

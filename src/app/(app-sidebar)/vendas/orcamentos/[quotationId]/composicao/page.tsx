@@ -24,12 +24,17 @@ export default function QuotationCompositionPage({
         </div>
       }
     >
+      {/* No LITE a tela serve para acrescentar produtos e escolher a
+          variação; montar o item por processos e partes é do PRO */}
       <FeatureGate
-        features={[FEATURES.COSTS.COST_BASE]}
+        features={[
+          FEATURES.COSTS.COST_BASE,
+          FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+        ]}
         fallback={
           <UpgradeFallback
             title="Composição no orçamento"
-            description="Montar o item por processos, partes e terceirizados faz parte do plano PRO. No START e no LITE o item é vendido pelo preço do cadastro."
+            description="Montar o item por processos, partes e terceirizados faz parte do plano PRO. No START o item é vendido pelo preço do cadastro."
           />
         }
       >

@@ -29,6 +29,7 @@ import { AddStepModal } from './AddStepModal'
 import { ProductFields } from './ProductFields'
 import { VariationTabs } from './VariationTabs'
 import { ActionButton } from '@/components/common/ActionButton'
+import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Actions
@@ -40,6 +41,7 @@ import {
 } from '@/actions/compositions'
 
 // Hooks / Store / Consts
+import { FEATURES } from '@/consts/features'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
@@ -233,7 +235,9 @@ export function CompositionDetail({ id }: Props) {
           </CardContent>
         </Card>
 
-        <ProductFields productId={product.id} fields={product.fields} />
+        <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
+          <ProductFields productId={product.id} fields={product.fields} />
+        </FeatureGate>
 
         <Card>
           <CardHeader>
@@ -248,109 +252,111 @@ export function CompositionDetail({ id }: Props) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Etapas de produção</CardTitle>
-            <CardDescription>
-              Cada etapa pertence a um setor e usa um processo pronto ou
-              composição própria. O tempo previsto alimenta a produção.
-            </CardDescription>
-          </CardHeader>
-          {product.steps.length ? (
-            <>
-              <CardContent>
-                <Table className="min-w-[760px]">
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="w-[34%] min-w-[200px]">
-                        Etapa
-                      </TableHead>
-                      <TableHead className="w-[18%]">Setor</TableHead>
-                      <TableHead className="w-[18%]">Origem</TableHead>
-                      <TableHead className="w-[12%] text-right">
-                        Tempo previsto
-                      </TableHead>
-                      <TableHead className="w-[12%] text-right">
-                        Custo
-                      </TableHead>
-                      <TableHead className="w-[6%]" />
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {product.steps.map((step) => (
-                      <TableRow key={step.id}>
-                        <TableCell className="font-medium">
-                          {step.name}
-                        </TableCell>
-                        <TableCell>{step.sector}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              step.kind === 'PART'
-                                ? 'blueLight'
-                                : 'neutralLight'
-                            }
-                          >
-                            {step.kind === 'PART'
-                              ? 'Parte'
-                              : step.processId
-                                ? 'Processo'
-                                : 'Composição própria'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right text-sm text-gray">
-                          {step.estimatedMinutes} min
-                          {step.setupMinutes ? (
-                            <span className="block text-sm text-gray">
-                              + {step.setupMinutes} min de preparo
-                            </span>
-                          ) : null}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrencyToBrl(step.cost)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <PermissionGate
-                              permissions={['product_settings:products:edit']}
-                            >
-                              <ActionButton
-                                Icon={IconTrash}
-                                variant="errorGhost"
-                                tooltip={`Remover ${step.name}`}
-                                onClick={() => removeStep(step.id)}
-                              />
-                            </PermissionGate>
-                          </div>
-                        </TableCell>
+        <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Etapas de produção</CardTitle>
+              <CardDescription>
+                Cada etapa pertence a um setor e usa um processo pronto ou
+                composição própria. O tempo previsto alimenta a produção.
+              </CardDescription>
+            </CardHeader>
+            {product.steps.length ? (
+              <>
+                <CardContent>
+                  <Table className="min-w-[760px]">
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="w-[34%] min-w-[200px]">
+                          Etapa
+                        </TableHead>
+                        <TableHead className="w-[18%]">Setor</TableHead>
+                        <TableHead className="w-[18%]">Origem</TableHead>
+                        <TableHead className="w-[12%] text-right">
+                          Tempo previsto
+                        </TableHead>
+                        <TableHead className="w-[12%] text-right">
+                          Custo
+                        </TableHead>
+                        <TableHead className="w-[6%]" />
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter className="justify-between">
+                    </TableHeader>
+                    <TableBody>
+                      {product.steps.map((step) => (
+                        <TableRow key={step.id}>
+                          <TableCell className="font-medium">
+                            {step.name}
+                          </TableCell>
+                          <TableCell>{step.sector}</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant={
+                                step.kind === 'PART'
+                                  ? 'blueLight'
+                                  : 'neutralLight'
+                              }
+                            >
+                              {step.kind === 'PART'
+                                ? 'Parte'
+                                : step.processId
+                                  ? 'Processo'
+                                  : 'Composição própria'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right text-sm text-gray">
+                            {step.estimatedMinutes} min
+                            {step.setupMinutes ? (
+                              <span className="block text-sm text-gray">
+                                + {step.setupMinutes} min de preparo
+                              </span>
+                            ) : null}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatCurrencyToBrl(step.cost)}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <PermissionGate
+                                permissions={['product_settings:products:edit']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrash}
+                                  variant="errorGhost"
+                                  tooltip={`Remover ${step.name}`}
+                                  onClick={() => removeStep(step.id)}
+                                />
+                              </PermissionGate>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+                <CardFooter className="justify-between">
+                  <p className="text-sm text-gray">
+                    Tempo total previsto: {totalMinutes} min de produção
+                    {setupMinutes ? ` + ${setupMinutes} min de preparo` : ''}
+                  </p>
+                  <p className="text-sm">
+                    Custo técnico:{' '}
+                    <span className="text-lg font-semibold text-gray-900">
+                      {formatCurrencyToBrl(product.cost || 0)}
+                    </span>
+                  </p>
+                </CardFooter>
+              </>
+            ) : (
+              <CardContent className="px-6 pb-6">
                 <p className="text-sm text-gray">
-                  Tempo total previsto: {totalMinutes} min de produção
-                  {setupMinutes ? ` + ${setupMinutes} min de preparo` : ''}
+                  Este produto ainda não tem composição. Ele continua sendo
+                  vendido normalmente pelo preço cadastrado; sem composição, o
+                  custo não é calculado e a margem não aparece.
                 </p>
-                <p className="text-sm">
-                  Custo técnico:{' '}
-                  <span className="text-lg font-semibold text-gray-900">
-                    {formatCurrencyToBrl(product.cost || 0)}
-                  </span>
-                </p>
-              </CardFooter>
-            </>
-          ) : (
-            <CardContent className="px-6 pb-6">
-              <p className="text-sm text-gray">
-                Este produto ainda não tem composição. Ele continua sendo
-                vendido normalmente pelo preço cadastrado; sem composição, o
-                custo não é calculado e a margem não aparece.
-              </p>
-            </CardContent>
-          )}
-        </Card>
+              </CardContent>
+            )}
+          </Card>
+        </FeatureGate>
       </div>
     </TooltipProvider>
   )
