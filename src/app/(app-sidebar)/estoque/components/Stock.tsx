@@ -77,6 +77,7 @@ export function Stock({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Estoque"
           supportText="Saldo por material, com entrada pela nota e baixa pela produção"
           primaryCta={

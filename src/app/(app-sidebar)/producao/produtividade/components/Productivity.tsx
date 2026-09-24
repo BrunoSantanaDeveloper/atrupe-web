@@ -59,6 +59,7 @@ export function Productivity() {
   return (
     <div className="space-y-5">
       <Topbar
+        review="new"
         title="Produtividade"
         supportText="Tempo previsto pela composição contra o tempo realizado na produção"
       />

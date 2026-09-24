@@ -29,6 +29,7 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { AddStepModal } from './AddStepModal'
 import { ProductFields } from './ProductFields'
 import { VariationTabs } from './VariationTabs'
@@ -165,6 +166,7 @@ export function CompositionDetail({ id }: Props) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title={product.name}
           previousPage="/configuracoes/produtos"
           supportText={[product.code, `vendido por ${product.unit}`]
@@ -481,6 +483,18 @@ export function CompositionDetail({ id }: Props) {
             )}
           </Card>
         </FeatureGate>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ReviewTodo rule="AP-1" title="Aproveitamento de folha e chapa">
+            Informada a medida da peça e a da folha, o sistema diz quantas cabem
+            — testando as duas orientações — e cobra o material pelo que foi
+            consumido. Vale para papel, PVC e ACM. É cálculo, não IA.
+          </ReviewTodo>
+          <ReviewTodo rule="FQ-1" title="Preço por faixa de quantidade">
+            O desconto progressivo da gráfica: até 100 um preço, de 101 a 500
+            outro. A faixa é do produto e entra sozinha no orçamento.
+          </ReviewTodo>
+        </div>
       </div>
     </TooltipProvider>
   )

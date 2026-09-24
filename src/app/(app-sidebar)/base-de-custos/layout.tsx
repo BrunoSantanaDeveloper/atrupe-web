@@ -53,6 +53,7 @@ export default function CostBaseLayout({ children }: Props) {
       >
         <div className="space-y-5">
           <Topbar
+            review="new"
             title="Base de custos"
             supportText="Custo mensal de referência da empresa"
           />

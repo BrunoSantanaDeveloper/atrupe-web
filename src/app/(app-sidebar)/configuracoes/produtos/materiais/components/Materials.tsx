@@ -21,6 +21,7 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -116,6 +117,7 @@ export function Materials({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Materiais"
           supportText="Insumos usados na composição dos produtos e na revenda"
           primaryCta={
@@ -305,6 +307,18 @@ export function Materials({ searchParams }: SearchParamsType) {
             </>
           )}
         </Card>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ReviewTodo rule="IMP-1" title="Importar lista de materiais">
+            A planilha que vem do SketchUp ou da marcenaria entra aqui, e cada
+            linha é conciliada com o material cadastrado. O de-para fica salvo:
+            da segunda vez o sistema já sabe.
+          </ReviewTodo>
+          <ReviewTodo rule="ALT-20" title="Entrada automática de notas">
+            A nota do fornecedor chega pela Migrate e vira entrada de material,
+            fornecedor e conta a pagar, sem digitação.
+          </ReviewTodo>
+        </div>
+
         <VariationsModal
           material={variations}
           open={!!variations}

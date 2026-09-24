@@ -107,6 +107,7 @@ export function ProductionBoard({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Gerenciador de produção"
           supportText="Etapas por setor, com tempo previsto e dependências"
         />

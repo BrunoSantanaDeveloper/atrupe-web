@@ -27,6 +27,7 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { AddResourceModal } from './AddResourceModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -119,6 +120,7 @@ export function ProcessDetail({ id }: Props) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title={process.name}
           previousPage="/configuracoes/produtos/processos"
           supportText={`${process.sector} · ${dimensionRuleObj[process.dimensionRule]}${
@@ -339,6 +341,22 @@ export function ProcessDetail({ id }: Props) {
             </CardContent>
           )}
         </Card>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <ReviewTodo rule="CP-13" title="Instruções para o vendedor">
+            Texto que o processo mostra na hora da venda — o que perguntar ao
+            cliente, o que conferir antes de fechar. Decidido em 23/09, não
+            construído.
+          </ReviewTodo>
+          <ReviewTodo rule="CP-8" title="Quantidade mínima por linha">
+            Cada recurso do processo passa a ter um mínimo cobrado, para o
+            pedido pequeno não sair abaixo do custo.
+          </ReviewTodo>
+          <ReviewTodo rule="CP-14" title="Fórmulas que faltam">
+            As fórmulas abertas, entre elas ilhós (perímetro ÷ campo extra), que
+            hoje não têm como ser escritas.
+          </ReviewTodo>
+        </div>
       </div>
     </TooltipProvider>
   )

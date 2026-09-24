@@ -14,6 +14,7 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
+import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { CashControlData } from './CashControlTable/CashControlData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { CashControlFilter } from './CashControlTable/CashControlFilter'
@@ -93,6 +94,11 @@ export function CashControl({ searchParams }: SearchParamsType) {
             </PermissionGate>
           }
         />
+        <ReviewTodo rule="LITE" title="Controle de caixa em desenvolvimento">
+          Depende das contas bancárias, do provisionamento e da compensação de
+          parcelas, que são recursos da LITE ainda não concluídos. No START a
+          empresa usa só a conta Caixa Empresa.
+        </ReviewTodo>
         <div className="space-y-2">
           <CashControlActions searchParams={searchParams} />
           <Card>

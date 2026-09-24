@@ -22,6 +22,10 @@ import { HelpButton } from './HelpButton'
 // Hooks
 import { useHelpData } from '@/hooks/queries/useHelpData'
 
+// Revisão (temporário)
+import { reviewTextClass, REVIEW_LEGEND } from '@/consts/revisao'
+import type { ReviewMarkKind } from '@/consts/revisao'
+
 export type TabNavType = {
   value: string
   tab: string
@@ -41,6 +45,9 @@ interface Props {
   badge?: BadgeType
   supportText?: string
   classNames?: { title?: string; label?: string }
+  // Marcação temporária da revisão: 'new' pinta o título de azul,
+  // 'todo' de vermelho. Sai junto com src/consts/revisao.ts
+  review?: ReviewMarkKind
 }
 
 export function Topbar({
@@ -55,6 +62,7 @@ export function Topbar({
   badge,
   supportText,
   classNames,
+  review,
 }: Props) {
   const { helpData } = useHelpData()
   const hasHelpContent =
@@ -86,9 +94,11 @@ export function Topbar({
             ) : null}
             {title ? (
               <h1
+                title={review ? REVIEW_LEGEND[review] : undefined}
                 className={cn(
                   'text-gray-800 font-semibold text-lg',
                   classNames?.title,
+                  reviewTextClass(review),
                 )}
               >
                 {title}

@@ -161,6 +161,7 @@ export function AssetDetail({ id }: Props) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title={asset.name}
           previousPage="/configuracoes/empresa-e-sistema/patrimonios"
           badge={assetLifeStatusObj[asset.status]}

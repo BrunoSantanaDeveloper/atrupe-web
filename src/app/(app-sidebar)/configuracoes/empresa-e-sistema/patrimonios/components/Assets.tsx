@@ -102,6 +102,7 @@ export function Assets({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Patrimônios"
           previousPage="/configuracoes/empresa-e-sistema"
           supportText="Máquinas, equipamentos, móveis e veículos da empresa"

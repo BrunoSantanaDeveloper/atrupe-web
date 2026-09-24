@@ -114,6 +114,7 @@ export function QuickSaleSettingsForm() {
   return (
     <div className="space-y-5">
       <Topbar
+        review="new"
         title="Venda rápida"
         previousPage="/configuracoes/vendas"
         supportText="A venda de balcão, sem cadastro e sem perguntas"

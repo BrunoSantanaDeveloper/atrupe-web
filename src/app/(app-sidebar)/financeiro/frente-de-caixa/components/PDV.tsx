@@ -11,6 +11,7 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
+import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { PDVData } from './PDVTable/PDVData'
 import { PDVFilter } from './PDVTable/PDVFilter'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
@@ -76,6 +77,13 @@ export function PDV({ searchParams }: SearchParamsType) {
         paramName="status"
       />
       <div className="space-y-2">
+        <ReviewTodo rule="FC-1 a FC-20" title="As regras da frente de caixa">
+          A tela lista os caixas, mas o atendimento decidido em 24/09 ainda não
+          existe: venda aprovada caindo no caixa, conferência de abertura e
+          fechamento, sangria e suprimento, troco e pagamento misto, entrada
+          mínima dispensada por responsável, comprovante e NFC-e ligada ao
+          caixa.
+        </ReviewTodo>
         <PDVActions />
         <Card>
           {isLoading ? (

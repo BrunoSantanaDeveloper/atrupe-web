@@ -37,6 +37,7 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
+import { reviewTextClass, REVIEW_LEGEND } from '@/consts/revisao'
 
 // Third-party
 import { setCookie } from 'cookies-next'
@@ -350,6 +351,7 @@ export function SidebarComponent(props: Props) {
                                     pathname.includes(`${item?.path}`) &&
                                       'text-brand',
                                     collapsed && 'opacity-0',
+                                    reviewTextClass(item?.review),
                                   )}
                                 >
                                   {item?.title}
@@ -422,6 +424,7 @@ export function SidebarComponent(props: Props) {
                                 className={cn(
                                   'text-gray-700 text-sm font-semibold transition-all ease-in-out duration-500',
                                   collapsed && 'opacity-0',
+                                  reviewTextClass(item?.review),
                                 )}
                               >
                                 {item?.title}
@@ -487,6 +490,7 @@ export function SidebarComponent(props: Props) {
                                                 : 'mr-0',
                                               navChild?.action &&
                                                 'font-semibold text-gray-600',
+                                              reviewTextClass(navChild?.review),
                                             )}
                                           >
                                             {navChild?.title}
@@ -549,6 +553,17 @@ export function SidebarComponent(props: Props) {
               <p className="text-xs text-gray-500">
                 Plano: {session.company.plan?.name}
               </p>
+              {/* Legenda da revisão — some junto com src/consts/revisao.ts */}
+              {!collapsed && (
+                <div className="mt-2 space-y-0.5">
+                  <p className="text-xs text-blue-600">
+                    azul · {REVIEW_LEGEND.new}
+                  </p>
+                  <p className="text-xs text-error-600">
+                    vermelho · {REVIEW_LEGEND.todo}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

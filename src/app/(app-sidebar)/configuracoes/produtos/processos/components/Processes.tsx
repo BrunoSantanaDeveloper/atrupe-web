@@ -96,6 +96,7 @@ export function Processes({ searchParams }: SearchParamsType) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Processos"
           supportText="Etapas produtivas com máquina, material, mão de obra e terceirizado"
           primaryCta={

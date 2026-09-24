@@ -44,6 +44,7 @@ import {
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
 import type { IconProps } from '@tabler/icons-react'
+import type { ReviewMarkKind } from './revisao'
 
 export interface MainNavigationType {
   icon:
@@ -58,6 +59,7 @@ export interface MainNavigationType {
   permission?: string | string[] // Nova propriedade para permissões (string ou array para múltiplas permissões)
   requireAllPermissions?: boolean // Se true, requer todas as permissões (AND), senão requer qualquer uma (OR)
   requiredModule?: string // Módulo contratado necessário para exibir o item
+  review?: ReviewMarkKind // Marcação temporária da revisão: azul = novo, vermelho = a desenvolver
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
 
@@ -86,6 +88,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconBolt,
         title: 'Venda rápida',
         path: '/vendas/orcamentos?novo=venda-rapida',
+        review: 'new',
         permission: 'sale:quotation:create',
         requiredModule: 'quotation_quick_sale',
         action: true,
@@ -135,6 +138,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconCoins,
         title: 'Controle de caixa',
         path: '/financeiro/controle-de-caixa',
+        review: 'todo',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
       },
@@ -142,6 +146,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconDeviceDesktopDollar,
         title: 'Frente de caixa (PDV)',
         path: '/financeiro/frente-de-caixa',
+        review: 'todo',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
       },
@@ -168,6 +173,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
   {
     icon: IconTargetArrow,
     title: 'Custos e preços',
+    review: 'new',
     path: '/base-de-custos',
     permission: 'values:values:view',
     requiredModule: 'cost_base',
@@ -177,6 +183,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         title: 'Base de custos',
         path: '/base-de-custos',
         permission: ['cost:base:view', 'values:values:view'],
+        review: 'new',
         requireAllPermissions: true,
         requiredModule: 'cost_base',
       },
@@ -184,6 +191,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconTag,
         title: 'Precificação',
         path: '/precificacao',
+        review: 'new',
         permission: ['cost:pricing:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredModule: 'pricing_center',
@@ -209,12 +217,14 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconTruckLoading,
         title: 'Agenda de Entrega',
         path: '/producao/agenda-de-entrega',
+        review: 'todo',
         permission: 'production:delivery_schedule:view',
       },
       {
         icon: IconListCheck,
         title: 'Gerenciador de produção',
         path: '/producao/gerenciador',
+        review: 'new',
         permission: 'production:production:view',
         requiredModule: 'production_manager',
       },
@@ -222,6 +232,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconChartBar,
         title: 'Produtividade',
         path: '/producao/produtividade',
+        review: 'new',
         permission: 'production:production:view',
         requiredModule: 'productivity_tracking',
       },
@@ -264,6 +275,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconPackages,
         title: 'Materiais',
         path: '/configuracoes/produtos/materiais',
+        review: 'new',
         permission: 'product_settings:products:view',
         requiredModule: 'cost_base',
       },
@@ -271,6 +283,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         icon: IconListCheck,
         title: 'Processos',
         path: '/configuracoes/produtos/processos',
+        review: 'new',
         permission: 'product_settings:products:view',
         requiredModule: 'cost_base',
       },
@@ -295,11 +308,13 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/estoque',
         permission: 'stock:stock:view',
         requiredModule: 'stock_control',
+        review: 'new',
       },
       {
         icon: IconFileInvoice,
         title: 'Entrada de nota',
         path: '/estoque/entrada-de-nota',
+        review: 'new',
         permission: 'stock:invoice_entry:view',
         requiredModule: 'invoice_entry',
       },

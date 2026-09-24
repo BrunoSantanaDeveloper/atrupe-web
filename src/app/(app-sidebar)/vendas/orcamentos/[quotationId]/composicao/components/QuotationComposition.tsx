@@ -266,6 +266,7 @@ export function QuotationComposition({ quotationId }: Props) {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title={`Itens do orçamento ${quotation.reference}`}
           previousPage="/vendas/orcamentos"
           supportText={quotation.client}

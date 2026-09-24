@@ -107,6 +107,7 @@ export function AssetGroups() {
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
+          review="new"
           title="Grupos de bens equivalentes"
           previousPage="/configuracoes/empresa-e-sistema/patrimonios"
           supportText="Usados na composição quando não se sabe qual exemplar fará o serviço"
