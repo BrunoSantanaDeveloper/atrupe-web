@@ -56,7 +56,7 @@ const PRODUCT_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     key: 'name',
   },
   {
-    header: 'Codigo',
+    header: 'Código',
     key: 'code',
   },
   {
@@ -76,14 +76,17 @@ const PRODUCT_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     getValue: (product) => getProductUnitKind(product),
   },
   {
-    header: 'Preco de venda',
+    // EC-28: era "Preco de venda", mas o valor vem de unitCost — é o custo
+    header: 'Custo unitário',
     type: 'currency',
     getValue: (product) => getVisualCurrencyValue(product, product.unitCost),
   },
   {
-    header: 'Valor total',
+    // EC-28: salePrice já está na unidade exibida (R$/m², R$/hora), então não
+    // passa pela conversão — aplicá-la multiplicava o valor por 1.000.000
+    header: 'Preço de venda',
     type: 'currency',
-    getValue: (product) => getVisualCurrencyValue(product, product.salePrice),
+    getValue: (product) => (product.salePrice || 0) / 100,
   },
 ]
 
@@ -210,7 +213,7 @@ export function Products({ searchParams }: SearchParamsType) {
                   fileName="produtos"
                   getData={getExportProducts}
                   sheetName="Produtos"
-                  emptyMessage="Nenhum produto disponivel para exportacao"
+                  emptyMessage="Nenhum produto disponível para exportação"
                 />
               </PermissionGate>
               <ActionButton
