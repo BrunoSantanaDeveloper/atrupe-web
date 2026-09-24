@@ -18,6 +18,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 // Components
 import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { AddSellerDialog } from './Actions/AddSeller'
 import { DeleteSellerDialog } from './Actions/DeleteSeller'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -72,7 +73,13 @@ export function Main({ searchParams }: SearchParamsType) {
       <Topbar
         title="Perfil de vendedor"
         previousPage="/configuracoes/vendas"
-        primaryCta={<NewItemDialog />}
+        primaryCta={
+          <PermissionGate
+            permissions={['sales_settings:seller_profile:create']}
+          >
+            <NewItemDialog />
+          </PermissionGate>
+        }
       />
       <div className="space-y-2">
         <Card>
@@ -83,7 +90,13 @@ export function Main({ searchParams }: SearchParamsType) {
               icon={IconUserCircle}
               title="Nenhum perfil cadastrado"
               description="Crie o primeiro perfil"
-              cta={<NewItemDialog />}
+              cta={
+                <PermissionGate
+                  permissions={['sales_settings:seller_profile:create']}
+                >
+                  <NewItemDialog />
+                </PermissionGate>
+              }
             />
           ) : (
             <>
@@ -117,30 +130,42 @@ export function Main({ searchParams }: SearchParamsType) {
                           <TableCell className="py-0">
                             <div className="flex justify-end gap-1">
                               <TooltipProvider>
-                                <ActionButton
-                                  Icon={IconUserPlus}
-                                  tooltip="Adicionar vendedor"
-                                  onClick={() => {
-                                    setOpenDialog('addSeller')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
-                                <ActionButton
-                                  Icon={IconSettings}
-                                  tooltip="Configurar perfil do vendedor"
-                                  onClick={() => {
-                                    setOpenDialog('configure')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
-                                <ActionButton
-                                  Icon={IconTrash}
-                                  tooltip="Remover perfil"
-                                  onClick={() => {
-                                    setOpenDialog('removeProfile')
-                                    setRowData(group?.profile)
-                                  }}
-                                />
+                                <PermissionGate
+                                  permissions={[
+                                    'sales_settings:seller_profile:edit',
+                                  ]}
+                                >
+                                  <ActionButton
+                                    Icon={IconUserPlus}
+                                    tooltip="Adicionar vendedor"
+                                    onClick={() => {
+                                      setOpenDialog('addSeller')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                  <ActionButton
+                                    Icon={IconSettings}
+                                    tooltip="Configurar perfil do vendedor"
+                                    onClick={() => {
+                                      setOpenDialog('configure')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                </PermissionGate>
+                                <PermissionGate
+                                  permissions={[
+                                    'sales_settings:seller_profile:delete',
+                                  ]}
+                                >
+                                  <ActionButton
+                                    Icon={IconTrash}
+                                    tooltip="Remover perfil"
+                                    onClick={() => {
+                                      setOpenDialog('removeProfile')
+                                      setRowData(group?.profile)
+                                    }}
+                                  />
+                                </PermissionGate>
                               </TooltipProvider>
                             </div>
                           </TableCell>
@@ -162,14 +187,20 @@ export function Main({ searchParams }: SearchParamsType) {
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
                                     <TooltipProvider>
-                                      <ActionButton
-                                        Icon={IconTrash}
-                                        tooltip="Remover vendedor"
-                                        onClick={() => {
-                                          setOpenDialog('removeSeller')
-                                          setEmployeeData(item)
-                                        }}
-                                      />
+                                      <PermissionGate
+                                        permissions={[
+                                          'sales_settings:seller_profile:delete',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          tooltip="Remover vendedor"
+                                          onClick={() => {
+                                            setOpenDialog('removeSeller')
+                                            setEmployeeData(item)
+                                          }}
+                                        />
+                                      </PermissionGate>
                                     </TooltipProvider>
                                   </div>
                                 </TableCell>
