@@ -132,6 +132,8 @@ export const getQuotationProducts = async () => {
       unit: 'm²',
       price: 4500,
       releasedForSale: true,
+      measured: true,
+      fields: [{ name: 'Ilhoses por metro', defaultValue: 2 }],
     },
     {
       id: 'adesivo',
@@ -140,6 +142,7 @@ export const getQuotationProducts = async () => {
       unit: 'm²',
       price: 3500,
       releasedForSale: true,
+      measured: true,
     },
     {
       id: 'cartao',
@@ -156,6 +159,8 @@ export const getQuotationProducts = async () => {
       unit: 'un',
       price: 3900,
       releasedForSale: true,
+      measured: true,
+      fields: [{ name: 'Número de furos', defaultValue: 4 }],
     },
     {
       id: 'instalacao-dia',
@@ -225,12 +230,16 @@ export const addQuotationItem = async ({
   width,
   height,
   quantity,
+  discount = 0,
+  fields = [],
 }: {
   quotationId: string
   option: AddOption
   width: number
   height: number
   quantity: number
+  discount?: number
+  fields?: { name: string; value: number }[]
 }) => {
   const quotation = find(quotationId)
 
@@ -242,8 +251,8 @@ export const addQuotationItem = async ({
     quantity,
     width,
     height,
-    fields: [],
-    discount: 0,
+    fields,
+    discount,
     price: option.price,
     lines: [],
   }

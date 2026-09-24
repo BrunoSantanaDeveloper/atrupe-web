@@ -54,4 +54,8 @@ export type AddOption = {
   price: number
   // Produto não liberado para venda é parte: só aparece dentro do item
   releasedForSale?: boolean
+  // Campos que o produto declara e o vendedor preenche na venda (IP-6)
+  fields?: { name: string; defaultValue: number }[]
+  // Produto vendido por medida pede largura e altura; por unidade, não
+  measured?: boolean
 }

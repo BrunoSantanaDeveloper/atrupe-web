@@ -12,7 +12,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -21,6 +20,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 
 // Components
 import { AddPanel } from './AddPanel'
+import { ItemForm, type ItemFormValues } from './ItemForm'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -57,6 +57,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconPlus,
+  IconPencil,
   IconTrash,
   IconChevronDown,
   IconChevronRight,
@@ -79,6 +80,10 @@ export function QuotationComposition({ quotationId }: Props) {
   const [expanded, setExpanded] = useState<string[]>([])
   const [addingToQuotation, setAddingToQuotation] = useState(false)
   const [addingToItem, setAddingToItem] = useState('')
+  // Produto escolhido, aguardando os dados do item; e item em edição. Os dois
+  // usam o mesmo formulário (ORC-4)
+  const [picked, setPicked] = useState<AddOption | null>(null)
+  const [editing, setEditing] = useState('')
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -106,17 +111,17 @@ export function QuotationComposition({ quotationId }: Props) {
   const onError = () => toast.error('Não foi possível concluir')
 
   const { mutate: addItem } = useMutation({
-    mutationFn: (option: AddOption) =>
-      addQuotationItem({
-        quotationId,
-        option,
-        width: 1,
-        height: 1,
-        quantity: 1,
-      }),
+    mutationFn: ({
+      option,
+      values,
+    }: {
+      option: AddOption
+      values: ItemFormValues
+    }) => addQuotationItem({ quotationId, option, ...values }),
     onSuccess: () => {
       toast.success('Item acrescentado')
       setAddingToQuotation(false)
+      setPicked(null)
       invalidate()
     },
     onError,
@@ -195,13 +200,13 @@ export function QuotationComposition({ quotationId }: Props) {
   })
 
   const { mutate: updateItem } = useMutation({
-    mutationFn: (values: {
-      itemId: string
-      width?: number
-      height?: number
-      quantity?: number
-    }) => updateQuotationItem({ quotationId, ...values }),
-    onSuccess: invalidate,
+    mutationFn: ({ itemId, ...values }: ItemFormValues & { itemId: string }) =>
+      updateQuotationItem({ quotationId, itemId, ...values }),
+    onSuccess: () => {
+      toast.success('Item atualizado')
+      setEditing('')
+      invalidate()
+    },
     onError,
   })
 
@@ -244,14 +249,21 @@ export function QuotationComposition({ quotationId }: Props) {
           }
         />
 
-        {addingToQuotation && (
-          <AddPanel
-            context={`orçamento ${quotation.reference}`}
-            options={products}
-            onClose={() => setAddingToQuotation(false)}
-            onPick={(option) => addItem(option)}
-          />
-        )}
+        {addingToQuotation &&
+          (picked ? (
+            <ItemForm
+              option={picked}
+              onCancel={() => setPicked(null)}
+              onConfirm={(values) => addItem({ option: picked, values })}
+            />
+          ) : (
+            <AddPanel
+              context={`orçamento ${quotation.reference}`}
+              options={products}
+              onClose={() => setAddingToQuotation(false)}
+              onPick={(option) => setPicked(option)}
+            />
+          ))}
 
         <Card>
           {!quotation.items.length ? (
@@ -319,25 +331,9 @@ export function QuotationComposition({ quotationId }: Props) {
                                   : ''}
                               </p>
                             </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Input
-                                  type="number"
-                                  min={1}
-                                  className="w-[70px]"
-                                  aria-label={`Quantidade de ${item.name}`}
-                                  defaultValue={item.quantity}
-                                  onBlur={(event) =>
-                                    updateItem({
-                                      itemId: item.id,
-                                      quantity: Number(event.target.value) || 1,
-                                    })
-                                  }
-                                />
-                                <span className="text-sm text-gray">
-                                  {measure(item) || 'un'}
-                                </span>
-                              </div>
+                            <TableCell className="text-gray-600">
+                              {item.quantity} un
+                              {measure(item) ? ` · ${measure(item)}` : ''}
                             </TableCell>
                             <TableCell className="text-right">
                               {formatMoney(itemUnitPrice(item))}
@@ -362,6 +358,15 @@ export function QuotationComposition({ quotationId }: Props) {
                                 <PermissionGate
                                   permissions={['sale:quotation:edit']}
                                 >
+                                  <ActionButton
+                                    Icon={IconPencil}
+                                    tooltip={`Editar ${item.name}`}
+                                    onClick={() => {
+                                      setEditing(item.id)
+
+                                      if (!isExpanded) toggle(item.id)
+                                    }}
+                                  />
                                   <ActionButton
                                     Icon={IconPlus}
                                     tooltip={`Acrescentar a ${item.name}`}
@@ -452,6 +457,19 @@ export function QuotationComposition({ quotationId }: Props) {
                                       cadastro. Acrescente processos ou partes
                                       para formar o preço pela composição.
                                     </p>
+                                  )}
+
+                                  {editing === item.id && (
+                                    <ItemForm
+                                      item={item}
+                                      onCancel={() => setEditing('')}
+                                      onConfirm={(values) =>
+                                        updateItem({
+                                          itemId: item.id,
+                                          ...values,
+                                        })
+                                      }
+                                    />
                                   )}
 
                                   {addingToItem === item.id && (
