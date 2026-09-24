@@ -40,6 +40,7 @@ export function FinanceSettingsClient() {
           description: 'Cadastre as contas bancárias da sua empresa',
           link: `${defaultPath}/contas-bancarias`,
           permission: 'financial_settings:bank_accounts:view',
+          review: 'todo',
         },
         {
           title: 'Configuração de Pagamentos',

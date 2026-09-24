@@ -15,6 +15,8 @@ import type { IconProps } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { reviewTextClass } from '@/consts/revisao'
+import type { ReviewMarkKind } from '@/consts/revisao'
 
 export type CompanySettingsType = {
   category?: string
@@ -28,6 +30,8 @@ export type CompanySettingsType = {
     showPrimaryElement?: boolean
     isInactive?: boolean
     permission?: string | string[]
+    // Marcação temporária da revisão (src/consts/revisao.ts)
+    review?: ReviewMarkKind
   }[]
 }
 
@@ -74,7 +78,12 @@ export function CompanySettingsList({
                     <FeaturedIcon variant="neutralOutline" Icon={item.icon} />
                   )}
                   <div className="w-full sm:w-auto">
-                    <p className="font-semibold mb-2 relative pr-20 sm:pr-0">
+                    <p
+                      className={cn(
+                        'font-semibold mb-2 relative pr-20 sm:pr-0',
+                        reviewTextClass(item.review),
+                      )}
+                    >
                       {item.title}
                     </p>
                     <p className="text-sm text-gray">{item.description}</p>
