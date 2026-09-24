@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // UI
 import { Card } from '@/components/ui/card'
@@ -153,6 +153,13 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
 
 export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
+  // O menu leva para cá com ?novo=venda-rapida, e a tela abre o orçamento já
+  // marcado como venda rápida
+  const isQuickSale = searchParams?.novo === 'venda-rapida'
+
+  useEffect(() => {
+    if (isQuickSale) setOpenDialog('new-quotation')
+  }, [isQuickSale])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
@@ -284,6 +291,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
             />
           )}
           <NewQuotationModal
+            quickSale={isQuickSale}
             open={openDialog === 'new-quotation'}
             onOpenChange={() => setOpenDialog('')}
           />

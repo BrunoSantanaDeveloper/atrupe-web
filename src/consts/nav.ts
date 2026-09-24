@@ -8,6 +8,7 @@ import {
   IconGraph,
   IconUsers,
   IconUpload,
+  IconBolt,
   IconBoxSeam,
   IconPackages,
   IconBuilding,
@@ -90,13 +91,15 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/vendas/ordens-de-servico',
         permission: 'sale:order:view',
       },
-      // {
-      //   icon: IconSquareRoundedPlusFilled,
-      //   title: 'Nova venda rápida',
-      //   path: '#',
-      //   action: true,
-      //   permission: 'sale:quick:view',
-      // },
+      // Venda rápida é o mesmo orçamento, já marcado: atalho, não outra tela
+      {
+        icon: IconBolt,
+        title: 'Venda rápida',
+        path: '/vendas/orcamentos?novo=venda-rapida',
+        permission: 'sale:quotation:create',
+        requiredModule: 'quotation_quick_sale',
+        action: true,
+      },
     ],
   },
   {
@@ -135,7 +138,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
       },
       {
         icon: IconDeviceDesktopDollar,
-        title: 'PDV',
+        title: 'Frente de caixa (PDV)',
         path: '/financeiro/frente-de-caixa',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,

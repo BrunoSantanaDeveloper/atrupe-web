@@ -54,12 +54,15 @@ import { type QuotationFormType, quotationSchema } from './schema'
 import { QUOTATION_DATA_QUERY_KEY } from '../[quotationId]/components/Quotation'
 
 interface Props {
+  // Venda rápida: o mesmo orçamento, já marcado — é atalho, não outra tela
+  quickSale?: boolean
   editMode?: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
   data?: QuotationType
 }
 export function NewQuotationModal({
+  quickSale,
   editMode = false,
   open,
   onOpenChange,
@@ -84,7 +87,7 @@ export function NewQuotationModal({
       contactSourceId: '',
       seriesId: '',
       sellerId: '',
-      quickSale: false,
+      quickSale: Boolean(quickSale),
     },
   })
 
