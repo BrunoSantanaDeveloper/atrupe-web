@@ -53,6 +53,9 @@ export type QuotationItem = {
   height: number
   // Campos do produto preenchidos nesta venda (IP-6)
   fields: { name: string; value: number }[]
+  // Variação vendida. Sem ela a produção não sabe o que cortar e o estoque
+  // não sabe o que baixar (PV-3)
+  variation: string | null
   lines: QuotationLine[]
   discount: number
   // Preço praticado do item; quando vazio, vale a soma das linhas
@@ -77,6 +80,9 @@ export type AddOption = {
   releasedForSale?: boolean
   // Campos que o produto declara e o vendedor preenche na venda (IP-6)
   fields?: { name: string; defaultValue: number }[]
+  // Variações do produto (tamanho, modelo): mudam a composição e podem ter
+  // preço próprio (PV-1 a PV-5)
+  variations?: { id: string; name: string; price: number | null }[]
   // Produto vendido por medida pede largura e altura; por unidade, não
   measured?: boolean
 }

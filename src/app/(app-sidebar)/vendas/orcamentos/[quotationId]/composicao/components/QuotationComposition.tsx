@@ -361,7 +361,17 @@ export function QuotationComposition({ quotationId }: Props) {
                               />
                             </TableCell>
                             <TableCell>
-                              <p className="font-medium">{item.name}</p>
+                              <p className="font-medium">
+                                {item.name}
+                                {item.variation ? (
+                                  <Badge
+                                    variant="neutralLight"
+                                    className="ml-2 align-middle"
+                                  >
+                                    {item.variation}
+                                  </Badge>
+                                ) : null}
+                              </p>
                               <p className="text-sm text-gray">
                                 {item.sector}
                                 {item.lines.length
@@ -497,6 +507,12 @@ export function QuotationComposition({ quotationId }: Props) {
                                   {editing === item.id && (
                                     <ItemForm
                                       item={item}
+                                      variations={
+                                        products.find(
+                                          (product) =>
+                                            product.name === item.name,
+                                        )?.variations
+                                      }
                                       onCancel={() => setEditing('')}
                                       onConfirm={(values) =>
                                         updateItem({

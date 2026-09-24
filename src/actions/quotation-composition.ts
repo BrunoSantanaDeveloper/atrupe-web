@@ -29,6 +29,7 @@ const quotations: Quotation[] = [
         width: 3,
         height: 1,
         fields: [{ name: 'Distância entre ilhoses', value: 0.5 }],
+        variation: null,
         discount: 0,
         price: null,
         lines: [
@@ -114,6 +115,7 @@ const quotations: Quotation[] = [
           { name: 'Número de letras', value: 8 },
           { name: 'Perímetro', value: 12 },
         ],
+        variation: null,
         discount: 5000,
         price: null,
         lines: [
@@ -288,6 +290,21 @@ export const getQuotationProducts = async () => {
       fields: [{ name: 'Número de furos', defaultValue: 4 }],
     },
     {
+      id: 'camiseta',
+      name: 'Camiseta em malha',
+      sector: 'Confecção',
+      unit: 'un',
+      price: 4900,
+      releasedForSale: true,
+      // O tamanho é escolhido ao acrescentar e muda a composição (PV-5)
+      variations: [
+        { id: 'p', name: 'P', price: null },
+        { id: 'm', name: 'M', price: null },
+        { id: 'g', name: 'G', price: 5200 },
+        { id: 'gg', name: 'GG', price: 5600 },
+      ],
+    },
+    {
       id: 'instalacao-dia',
       name: 'Instalação · diária',
       sector: 'Instalação',
@@ -357,6 +374,7 @@ export const addQuotationItem = async ({
   quantity,
   discount = 0,
   fields = [],
+  variation = null,
 }: {
   quotationId: string
   option: AddOption
@@ -365,6 +383,7 @@ export const addQuotationItem = async ({
   quantity: number
   discount?: number
   fields?: { name: string; value: number }[]
+  variation?: string | null
 }) => {
   const quotation = find(quotationId)
 
@@ -377,8 +396,12 @@ export const addQuotationItem = async ({
     width,
     height,
     fields,
+    variation,
     discount,
-    price: option.price,
+    // A variação pode ter preço próprio; sem ele, vale o do produto (PV-4)
+    price:
+      option.variations?.find((item) => item.name === variation)?.price ??
+      option.price,
     lines: [],
   }
 
@@ -422,6 +445,7 @@ export const updateQuotationItem = async ({
   quantity?: number
   discount?: number
   fields?: { name: string; value: number }[]
+  variation?: string | null
 }) => {
   const quotation = find(quotationId)
   const item = quotation.items.find((current) => current.id === itemId)

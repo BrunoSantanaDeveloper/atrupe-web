@@ -10,6 +10,9 @@ import { Button } from '@/components/ui/button'
 // Types
 import type { AddOption, QuotationItem } from '../types'
 
+// Hooks / Store / Consts
+import { cn } from '@/lib/utils'
+
 // Icons
 import { IconX } from '@tabler/icons-react'
 
@@ -19,6 +22,7 @@ export type ItemFormValues = {
   height: number
   discount: number
   fields: { name: string; value: number }[]
+  variation: string | null
 }
 
 interface Props {
@@ -27,15 +31,27 @@ interface Props {
   // igual a criar
   option?: AddOption
   item?: QuotationItem
+  // Ao editar não existe `option`, então as variações do produto vêm à parte
+  variations?: { id: string; name: string; price: number | null }[]
   onCancel: () => void
   onConfirm: (values: ItemFormValues) => void
 }
 
-export function ItemForm({ option, item, onCancel, onConfirm }: Props) {
+export function ItemForm({
+  option,
+  item,
+  variations: variationsProp,
+  onCancel,
+  onConfirm,
+}: Props) {
   const isEdit = Boolean(item)
   const name = item?.name || option?.name || ''
   const measured = item ? Boolean(item.width || item.height) : option?.measured
 
+  const variations = option?.variations || variationsProp || []
+  const [variation, setVariation] = useState(
+    item?.variation || variations[0]?.name || '',
+  )
   const [quantity, setQuantity] = useState(String(item?.quantity ?? 1))
   const [width, setWidth] = useState(String(item?.width ?? 1))
   const [height, setHeight] = useState(String(item?.height ?? 1))
@@ -76,6 +92,32 @@ export function ItemForm({ option, item, onCancel, onConfirm }: Props) {
           Cancelar
         </Button>
       </div>
+
+      {variations.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-sm font-medium">Tamanho</p>
+          <div className="flex flex-wrap gap-2">
+            {variations.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => setVariation(option.name)}
+                className={cn(
+                  'rounded-lg border px-4 py-2 text-sm',
+                  variation === option.name
+                    ? 'border-brand-500 bg-white font-medium text-brand-700'
+                    : 'border-gray-200 bg-white text-gray-600',
+                )}
+              >
+                {option.name}
+              </button>
+            ))}
+          </div>
+          <p className="text-sm text-gray">
+            O tamanho muda a composição e pode ter preço próprio.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="space-y-1.5">
@@ -173,6 +215,7 @@ export function ItemForm({ option, item, onCancel, onConfirm }: Props) {
               height: measured ? Number(height) || 0 : 0,
               discount: Math.round(Number(discount || 0) * 100),
               fields,
+              variation: variation || null,
             })
           }
         >
