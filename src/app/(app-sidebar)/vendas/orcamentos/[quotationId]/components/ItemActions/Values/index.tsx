@@ -297,7 +297,8 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                 {exceedsMaxDiscount && (
                   <p className="mt-1 text-xs text-error">
                     Desconto total ({totalDiscountPercentage.toFixed(1)}%)
-                    excede o limite do vendedor ({maxDiscount}%)
+                    excede o limite do vendedor ({maxDiscount}%). Reduza o
+                    desconto para salvar.
                   </p>
                 )}
               </div>
@@ -324,11 +325,14 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
             >
               Cancelar
             </Button>
+            {/* EC-17: o limite do perfil de vendedor passa a valer de fato —
+                o aviso continua, e o salvamento fica bloqueado */}
             <Button
               type="submit"
               form="quotation-values"
               RightIcon={IconCircleCheck}
               isLoading={mutation.isPending}
+              disabled={exceedsMaxDiscount}
             >
               Salvar
             </Button>

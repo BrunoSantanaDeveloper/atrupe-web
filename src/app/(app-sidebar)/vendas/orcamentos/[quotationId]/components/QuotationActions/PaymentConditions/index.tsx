@@ -83,6 +83,9 @@ export function PaymentConditionsDialog({
   actionIconVariant = 'lightBlueBorderedLight',
   submitLabel,
 }: Props) {
+  // EC-17: desconto acima do limite do vendedor não salva
+  const [exceedsDiscountLimit, setExceedsDiscountLimit] = useState(false)
+
   const [open, setOpen] = useState(false)
 
   // const isFetching = useIsFetching()
@@ -302,6 +305,7 @@ export function PaymentConditionsDialog({
               <DiscountAndTotal
                 addComissionValue={addComissionValue}
                 quotationData={quotationData}
+                onDiscountLimitChange={setExceedsDiscountLimit}
               />
 
               <FormTextarea
@@ -351,7 +355,7 @@ export function PaymentConditionsDialog({
               type="submit"
               form="quotation-payment-conditions"
               RightIcon={IconCircleCheck}
-              disabled={isBusy}
+              disabled={isBusy || exceedsDiscountLimit}
               isLoading={isSubmitting}
             >
               {saveButtonLabel}

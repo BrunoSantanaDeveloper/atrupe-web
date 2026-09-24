@@ -1,3 +1,6 @@
+// React
+import { useEffect } from 'react'
+
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -15,9 +18,15 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 interface Props {
   addComissionValue: number
   quotationData: QuotationType
+  // EC-17: o pai precisa saber do estouro para bloquear o salvamento
+  onDiscountLimitChange?: (exceeds: boolean) => void
 }
 
-export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
+export function DiscountAndTotal({
+  addComissionValue,
+  quotationData,
+  onDiscountLimitChange,
+}: Props) {
   const form = useFormContext<QuotationPaymentConditionsType>()
 
   const { watch, setValue } = form
@@ -244,6 +253,10 @@ export function DiscountAndTotal({ addComissionValue, quotationData }: Props) {
     // Atualizar as parcelas com o novo valor total
     updateInstallments(totalValue)
   }
+
+  useEffect(() => {
+    onDiscountLimitChange?.(Boolean(exceedsMaxDiscount))
+  }, [exceedsMaxDiscount, onDiscountLimitChange])
 
   // Mensagem de erro do desconto
   const discountErrorMessage = exceedsMaxDiscount
