@@ -6,6 +6,7 @@ import { Fragment, useEffect, useState } from 'react'
 // Components
 import { NewCategoryDialog } from './NewCategoryDialog'
 import { ActionButton } from '@/components/common/ActionButton'
+import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewSubcategoryDialog } from './Actions/NewSubcategoryDialog'
 import { EditSubcategoryDialog } from './Actions/EditSubcategoryDialog'
@@ -134,24 +135,36 @@ export function TableData({ tabs, searchParams }: Props) {
                                       <div className="flex justify-end gap-0.5">
                                         <TooltipProvider>
                                           {!isInactiveTab ? (
+                                            <PermissionGate
+                                              permissions={[
+                                                'financial_settings:chart_accounts:create',
+                                              ]}
+                                            >
+                                              <ActionButton
+                                                Icon={IconSquarePlus}
+                                                tooltip="Adicionar subcategoria"
+                                                onClick={() => {
+                                                  setOpenDialog('create')
+                                                  setCategoryRowData(nature)
+                                                  setCombinedCode(combinedCode)
+                                                }}
+                                              />
+                                            </PermissionGate>
+                                          ) : null}
+                                          <PermissionGate
+                                            permissions={[
+                                              'financial_settings:chart_accounts:edit',
+                                            ]}
+                                          >
                                             <ActionButton
-                                              Icon={IconSquarePlus}
-                                              tooltip="Adicionar subcategoria"
+                                              Icon={IconPencil}
+                                              tooltip="Editar categoria"
                                               onClick={() => {
-                                                setOpenDialog('create')
+                                                setOpenDialog('editCategory')
                                                 setCategoryRowData(nature)
-                                                setCombinedCode(combinedCode)
                                               }}
                                             />
-                                          ) : null}
-                                          <ActionButton
-                                            Icon={IconPencil}
-                                            tooltip="Editar categoria"
-                                            onClick={() => {
-                                              setOpenDialog('editCategory')
-                                              setCategoryRowData(nature)
-                                            }}
-                                          />
+                                          </PermissionGate>
                                         </TooltipProvider>
                                       </div>
                                     </TableCell>
@@ -176,17 +189,25 @@ export function TableData({ tabs, searchParams }: Props) {
                                         <TableCell>
                                           <div className="flex justify-end gap-1">
                                             <TooltipProvider>
-                                              <ActionButton
-                                                Icon={IconPencil}
-                                                tooltip="Editar subcategoria"
-                                                onClick={() => {
-                                                  setOpenDialog('edit')
-                                                  setSubCategoryRowData(
-                                                    subCategory,
-                                                  )
-                                                  setCombinedCode(combinedCode)
-                                                }}
-                                              />
+                                              <PermissionGate
+                                                permissions={[
+                                                  'financial_settings:chart_accounts:edit',
+                                                ]}
+                                              >
+                                                <ActionButton
+                                                  Icon={IconPencil}
+                                                  tooltip="Editar subcategoria"
+                                                  onClick={() => {
+                                                    setOpenDialog('edit')
+                                                    setSubCategoryRowData(
+                                                      subCategory,
+                                                    )
+                                                    setCombinedCode(
+                                                      combinedCode,
+                                                    )
+                                                  }}
+                                                />
+                                              </PermissionGate>
                                             </TooltipProvider>
                                           </div>
                                         </TableCell>
