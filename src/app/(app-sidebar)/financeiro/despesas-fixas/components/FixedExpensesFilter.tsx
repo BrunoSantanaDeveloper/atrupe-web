@@ -191,7 +191,10 @@ export function FixedExpensesFilter({
         />
       </div>
       <div className="flex items-end w-full sm:w-auto">
-        <PermissionGate permissions={['financial:fixed_expenses:edit']}>
+        {/* EC-22: a chave era 'fixed_expenses' (plural), que pertence às
+            configurações. A linha da matriz "Lançamento de despesas fixas" é
+            'fixed_expense', então nenhum cargo recebia este botão */}
+        <PermissionGate permissions={['financial:fixed_expense:edit']}>
           <Button
             LeftIcon={IconPlus}
             onClick={handlePostSelectedExpenses}

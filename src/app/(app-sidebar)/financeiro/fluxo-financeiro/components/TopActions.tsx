@@ -50,7 +50,9 @@ export function TopActions({ showTotals, setShowTotals, searchParams }: Props) {
   return (
     <div className="flex flex-wrap items-center gap-3">
       <TooltipProvider>
-        <PermissionGate permissions={['financial:flow:edit']}>
+        {/* EC-23: estes três só mudam a forma de ver a lista — não alteram
+            dado nenhum, então bastam a permissão de visualizar */}
+        <PermissionGate permissions={['financial:flow:view']}>
           <ActionButton
             tooltip={
               searchParams.sort === 'asc'
