@@ -1,26 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Image, { StaticImageData } from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import {
-  IconArrowRight,
-  IconMinus,
-  IconPlayerPlayFilled,
-  IconPlus,
-} from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Separator } from '@/components/ui/separator'
-import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
 import {
   fetchComplementsQuote,
   fetchPublicPlans,
@@ -28,6 +16,10 @@ import {
 } from '@/actions/checkout'
 import { useCheckoutStore } from '@/store/checkoutStore'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import {
+  PLAN_PRESENTATION,
+  type SequencePlanType,
+} from '@/lib/plans/methodTrail'
 import type {
   ComplementsRestriction,
   ContractingCurrent,
@@ -35,24 +27,17 @@ import type {
 } from '@/types/checkout'
 import type { VisualPlanType } from '@/types/plans'
 
-import { CheckoutHeader } from '../checkout/CheckoutHeader'
-import { ComparisonTable } from './ComparisonTable'
-import { CycleToggle, monthlyEquivalentCents, type Cycle } from './CycleToggle'
-
-import pro from '@/assets/images/pro-logo.png'
-import lite from '@/assets/images/lite-logo.png'
-import full from '@/assets/images/full-logo.png'
-import elite from '@/assets/images/elite-logo.png'
-import start from '@/assets/images/start-logo.png'
-import atrupe from '@/assets/images/atrupe-logo.png'
-
-const LOGOS: Record<string, StaticImageData> = {
-  START: start,
-  LITE: lite,
-  PRO: pro,
-  ELITE: elite,
-  FULL: full,
-}
+import { CheckoutShell } from '../checkout/CheckoutLayout'
+import { ComparisonTable, allPlansReleased } from './ComparisonTable'
+import { monthlyEquivalentCents, type Cycle } from './CycleToggle'
+import {
+  AddonCard,
+  AddonsSection,
+  CycleSwitch,
+  PlanLogo,
+  PlanOfferCard,
+  UsersAddonCard,
+} from './PlanOffer'
 
 const RESTRICTION_TEXT: Record<ComplementsRestriction, string> = {
   OPEN_CHARGE:
@@ -96,10 +81,6 @@ export function EvolutionHub({ planStates, current }: Props) {
   const [evolutionCycle, setEvolutionCycle] = useState<Cycle>(
     currentAnnual ? 'YEARLY' : 'MONTHLY',
   )
-  const [video, setVideo] = useState<{ url: string; title: string } | null>(
-    null,
-  )
-
   const next = planStates.plans.find((p) => p.state === 'ELEGIVEL') ?? null
   const upcoming = planStates.plans.find((p) => p.state === 'EM_BREVE') ?? null
   const hasChanges = added.length > 0 || users > sub.additionalUsers
@@ -189,322 +170,182 @@ export function EvolutionHub({ planStates, current }: Props) {
 
   const complements = complementsQuery.data
   const evolutionQuote = evolution?.quote ?? null
-  const concept = nextDetails?.sections?.concept
+  const nextPresentation = next
+    ? PLAN_PRESENTATION[next.planType as SequencePlanType]
+    : null
+  const nextVideo = nextPresentation?.video
+    ? {
+        url: nextPresentation.video.src,
+        poster: nextPresentation.video.poster,
+      }
+    : nextDetails?.videoUrl
+      ? { url: nextDetails.videoUrl }
+      : null
 
   return (
-    <div className="w-full bg-gray-100 min-h-screen">
-      <CheckoutHeader
-        title="Plano e complementos"
-        backHref="/configuracoes/empresa-e-sistema/assinatura"
-      />
-
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-800">
-            Sua assinatura
-          </h2>
-          <p className="text-gray-600">
-            Inclua complementos no plano atual ou evolua para a próxima etapa do
-            Método.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardContent className="p-6 flex flex-wrap items-center justify-between gap-4">
-                <Image
-                  src={LOGOS[sub.planType] ?? atrupe}
-                  alt={sub.planName}
-                  height={40}
-                  className="h-10 w-auto"
-                />
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">
-                    {currentAnnual ? 'Anuidade atual' : 'Mensalidade atual'}
-                  </p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatCurrencyToBrl(sub.recurringCents)}
-                    <span className="text-base font-normal text-gray-600">
-                      {currentAnnual ? '/ano' : '/mês'}
-                    </span>
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Próxima cobrança em {formatDay(sub.nextChargeDate)}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <section className="space-y-3">
-              <h2 className="text-xl font-semibold text-gray-700">
-                Complementos
-              </h2>
-              <Card>
-                <CardContent className="p-6 space-y-5">
-                  {restriction && (
-                    <Alert
-                      variant="warning"
-                      className="border-warning-200 bg-warning-50"
-                    >
-                      <AlertDescription className="text-warning-700">
-                        {RESTRICTION_TEXT[restriction]}
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
-                  {sub.modules.map((m) => (
-                    <div key={m.key} className="flex items-start gap-3">
-                      <Checkbox checked disabled aria-label={m.name} />
-                      <span className="flex-1 font-medium text-gray-800">
-                        {m.name}
-                      </span>
-                      <Badge variant="light">Contratado</Badge>
-                      <span className="text-gray-800 whitespace-nowrap">
-                        {formatCurrencyToBrl(m.priceCents)}/mês
-                      </span>
-                    </div>
-                  ))}
-
-                  {(current.availableModules ?? []).map((m) => (
-                    <label
-                      key={m.key}
-                      className="flex items-start gap-3 cursor-pointer"
-                    >
-                      <Checkbox
-                        checked={added.includes(m.key)}
-                        disabled={!!restriction}
-                        onCheckedChange={(v) => toggleModule(m.key, !!v)}
-                      />
-                      <span className="flex-1">
-                        <span className="block font-medium text-gray-800">
-                          {m.name}
-                        </span>
-                        {m.description && (
-                          <span className="block text-sm text-gray-600 whitespace-pre-line">
-                            {m.description}
-                          </span>
-                        )}
-                      </span>
-                      <span className="text-gray-800 whitespace-nowrap">
-                        {formatCurrencyToBrl(m.priceCents)}/mês
-                      </span>
-                    </label>
-                  ))}
-
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-gray-800">
-                        Usuários adicionais
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {formatCurrencyToBrl(sub.additionalUserPriceCents)}/mês
-                        por usuário · hoje você tem {sub.additionalUsers}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="neutralLight"
-                        aria-label="Remover usuário"
-                        disabled={!!restriction || users <= sub.additionalUsers}
-                        onClick={() =>
-                          setUsers((n) => Math.max(sub.additionalUsers, n - 1))
-                        }
-                      >
-                        <IconMinus size={16} />
-                      </Button>
-                      <span
-                        className="w-8 text-center font-semibold"
-                        aria-live="polite"
-                      >
-                        {users}
-                      </span>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="neutralLight"
-                        aria-label="Adicionar usuário"
-                        disabled={
-                          !!restriction || users >= sub.maxAdditionalUsers
-                        }
-                        onClick={() =>
-                          setUsers((n) =>
-                            Math.min(sub.maxAdditionalUsers, n + 1),
-                          )
-                        }
-                      >
-                        <IconPlus size={16} />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-3">
-                    {hasChanges && complements ? (
-                      <p className="text-sm text-gray-700">
-                        Nada é cobrado agora. A partir da mensalidade de{' '}
-                        <strong>{formatDay(complements.nextChargeDate)}</strong>
-                        , o valor passa de{' '}
-                        {formatCurrencyToBrl(complements.currentRecurringCents)}{' '}
-                        para{' '}
-                        <strong>
-                          {formatCurrencyToBrl(complements.recurringCents)}/mês
-                        </strong>
-                        .
-                      </p>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        O complemento é liberado na hora e cobrado a partir da
-                        próxima mensalidade. Nada é cobrado agora.
-                      </p>
-                    )}
-                    {hasChanges && complementsQuery.isError && (
-                      <p className="text-sm text-error-600" role="alert">
-                        {complementsQuery.error.message}
-                      </p>
-                    )}
-                    <Button
-                      type="button"
-                      onClick={contractComplements}
-                      disabled={!!restriction}
-                      RightIcon={IconArrowRight}
-                      className="w-full sm:w-auto"
-                    >
-                      Contratar complementos
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
-
-            {next ? (
-              <section className="space-y-3">
-                <h2 className="text-xl font-semibold text-gray-700">
-                  Próxima etapa do Método
-                </h2>
-                <Card className="border-brand-200">
-                  <CardContent className="p-6 space-y-5">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <Image
-                        src={LOGOS[next.planType] ?? atrupe}
-                        alt={next.name}
-                        height={40}
-                        className="h-10 w-auto"
-                      />
-                      {nextDetails?.videoUrl && (
-                        <Button
-                          type="button"
-                          variant="neutralLight"
-                          LeftIcon={IconPlayerPlayFilled}
-                          onClick={() =>
-                            setVideo({
-                              url: nextDetails.videoUrl!,
-                              title: `Entenda o ${next.name}`,
-                            })
-                          }
-                        >
-                          Entenda o {next.name}
-                        </Button>
-                      )}
-                    </div>
-
-                    {concept?.description && (
-                      <p className="text-gray-700">{concept.description}</p>
-                    )}
-
-                    {(annualAvailable || currentAnnual) && (
-                      <CycleToggle
-                        value={evolutionCycle}
-                        onChange={setEvolutionCycle}
-                        only={currentAnnual ? 'YEARLY' : undefined}
-                      />
-                    )}
-
-                    {evolutionQuote ? (
-                      <div>
-                        <p className="text-3xl font-bold text-gray-900">
-                          {formatCurrencyToBrl(
-                            monthlyEquivalentCents(
-                              evolutionQuote.recurringCents,
-                              evolutionCycle,
-                            ),
-                          )}
-                          <span className="text-base font-normal text-gray-600">
-                            /mês
-                          </span>
-                        </p>
-                        {evolutionCycle === 'YEARLY' && (
-                          <p className="text-sm text-gray-500">
-                            Cobrança anual de{' '}
-                            {formatCurrencyToBrl(evolutionQuote.recurringCents)}
-                            , com 1 mês grátis
-                          </p>
-                        )}
-                        {evolutionQuote.creditCents > 0 && (
-                          <p className="text-sm text-gray-600">
-                            Primeira cobrança de{' '}
-                            {formatCurrencyToBrl(evolutionQuote.totalCents)}: os
-                            dias não usados do {sub.planName} viram{' '}
-                            {formatCurrencyToBrl(evolutionQuote.creditCents)} de
-                            crédito.
-                          </p>
-                        )}
-                      </div>
-                    ) : evolution === null ? (
-                      <p className="text-sm text-error-600" role="alert">
-                        Não foi possível calcular o valor da evolução agora.
-                        Tente de novo em instantes.
-                      </p>
-                    ) : (
-                      <Skeleton className="h-9 w-40" />
-                    )}
-
-                    <p className="text-sm text-gray-500">
-                      Os complementos contratados e os marcados acima vão junto.
-                      O ciclo recomeça na data da evolução.
-                    </p>
-
-                    <Button
-                      type="button"
-                      onClick={evolve}
-                      disabled={restriction === 'OPEN_CHARGE'}
-                      RightIcon={IconArrowRight}
-                      className="w-full sm:w-auto"
-                    >
-                      Evoluir para o {next.name}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </section>
-            ) : upcoming ? (
-              <Alert>
-                <AlertTitle>{upcoming.name}: em breve</AlertTitle>
-                <AlertDescription>
-                  A próxima etapa do Método ainda não foi liberada. Enquanto
-                  isso, você pode incluir complementos no plano atual.
-                </AlertDescription>
-              </Alert>
-            ) : null}
-
-            <ComparisonTable
-              plans={planStates.plans}
-              currentPlanType={sub.planType}
+    <CheckoutShell
+      title="Planos"
+      backHref="/configuracoes/empresa-e-sistema/assinatura"
+    >
+      <div className="flex flex-col gap-7">
+        {next && (annualAvailable || currentAnnual) && (
+          <div className="flex flex-col items-center gap-4 text-center">
+            <CycleSwitch
+              value={evolutionCycle}
+              onChange={setEvolutionCycle}
+              only={currentAnnual ? 'YEARLY' : undefined}
             />
           </div>
-        </div>
-      </div>
+        )}
 
-      {video && (
-        <VideoDialog
-          open={!!video}
-          onOpenChange={(open) => !open && setVideo(null)}
-          video={video.url}
-          title={video.title}
-        />
-      )}
-    </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-gray-200 bg-white px-5 py-4">
+          <PlanLogo planType={sub.planType} name={sub.planName} />
+          <span className="text-sm text-gray-600">
+            Seu plano hoje:{' '}
+            <strong className="font-semibold text-gray-900">
+              {formatCurrencyToBrl(sub.recurringCents)}
+              {currentAnnual ? '/ano' : '/mês'}
+            </strong>
+            , próxima cobrança em {formatDay(sub.nextChargeDate)}.
+          </span>
+        </div>
+
+        {next && nextPresentation ? (
+          <PlanOfferCard
+            planType={next.planType}
+            name={next.name}
+            pitch={nextPresentation.pitch}
+            actions={nextPresentation.actions}
+            previousName={sub.planName}
+            video={nextVideo}
+            monthlyCents={
+              evolutionQuote
+                ? monthlyEquivalentCents(
+                    evolutionQuote.recurringCents,
+                    evolutionCycle,
+                  )
+                : null
+            }
+            priceNote={
+              evolutionCycle === 'YEARLY' && evolutionQuote
+                ? `Cobrança anual de ${formatCurrencyToBrl(evolutionQuote.recurringCents)}`
+                : 'Cobrança mensal'
+            }
+            priceExtra={
+              evolution === null ? (
+                <p className="text-xs text-error-700" role="alert">
+                  Não foi possível calcular o valor da evolução agora. Tente de
+                  novo em instantes.
+                </p>
+              ) : evolutionQuote && evolutionQuote.creditCents > 0 ? (
+                <p className="text-xs leading-[1.4] text-brand-600">
+                  Primeira cobrança de{' '}
+                  {formatCurrencyToBrl(evolutionQuote.totalCents)}: os dias não
+                  usados do {sub.planName} viram{' '}
+                  {formatCurrencyToBrl(evolutionQuote.creditCents)} de crédito.
+                </p>
+              ) : null
+            }
+            ctaLabel="Evoluir"
+            onCta={evolve}
+            ctaDisabled={restriction === 'OPEN_CHARGE'}
+          />
+        ) : upcoming ? (
+          <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600">
+            <strong className="block font-semibold text-gray-900">
+              {upcoming.name}: em breve
+            </strong>
+            A próxima etapa do Método ainda não foi liberada. Enquanto isso,
+            você pode incluir complementos no plano atual.
+          </div>
+        ) : null}
+
+        <AddonsSection
+          footer={
+            <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="text-sm text-gray-600">
+                {restriction ? (
+                  <span className="text-warning-700">
+                    {RESTRICTION_TEXT[restriction]}
+                  </span>
+                ) : hasChanges && complements ? (
+                  <>
+                    Nada é cobrado agora. A partir da mensalidade de{' '}
+                    <strong>{formatDay(complements.nextChargeDate)}</strong>, o
+                    valor passa de{' '}
+                    {formatCurrencyToBrl(complements.currentRecurringCents)}{' '}
+                    para{' '}
+                    <strong>
+                      {formatCurrencyToBrl(complements.recurringCents)}/mês
+                    </strong>
+                    .
+                  </>
+                ) : (
+                  <>
+                    Os complementos marcados seguem com a evolução. Para
+                    incluí-los no plano atual: liberados na hora e cobrados a
+                    partir da próxima mensalidade.
+                  </>
+                )}
+                {hasChanges && complementsQuery.isError && (
+                  <span className="mt-1 block text-error-700" role="alert">
+                    {complementsQuery.error.message}
+                  </span>
+                )}
+              </div>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                className="flex-none"
+                onClick={contractComplements}
+                disabled={!!restriction}
+                RightIcon={IconArrowRight}
+              >
+                Incluir no plano atual
+              </Button>
+            </div>
+          }
+        >
+          {sub.modules.map((m) => (
+            <AddonCard
+              key={m.key}
+              name={m.name}
+              priceCents={m.priceCents}
+              checked
+              disabled
+              onCheckedChange={() => undefined}
+              badge={<Badge variant="light">Contratado</Badge>}
+            />
+          ))}
+          {(current.availableModules ?? []).map((m) => (
+            <AddonCard
+              key={m.key}
+              name={m.name}
+              description={m.description}
+              priceCents={m.priceCents}
+              checked={added.includes(m.key)}
+              disabled={!!restriction}
+              onCheckedChange={(checked) => toggleModule(m.key, checked)}
+            />
+          ))}
+          <UsersAddonCard
+            value={users}
+            min={sub.additionalUsers}
+            max={sub.maxAdditionalUsers}
+            disabled={!!restriction}
+            onChange={setUsers}
+            priceCents={sub.additionalUserPriceCents}
+            hint={`Hoje você tem ${sub.additionalUsers}`}
+          />
+        </AddonsSection>
+
+        {allPlansReleased(planStates.plans) && (
+          <ComparisonTable
+            plans={planStates.plans}
+            currentPlanType={sub.planType}
+          />
+        )}
+      </div>
+    </CheckoutShell>
   )
 }

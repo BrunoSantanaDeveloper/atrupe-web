@@ -1,30 +1,59 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
+import { IconCircleCheck, IconCoin } from '@tabler/icons-react'
+
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import type { QuoteResult } from '@/types/checkout'
 import { PAYMENT_METHOD_OPTIONS } from '@/lib/plans/methodTrail'
+import type { QuoteResult } from '@/types/checkout'
 
 interface Props {
   quote: QuoteResult | null | undefined
   isLoading?: boolean
+  /** A forma de pagamento escolhida; sem ela, a linha não aparece. */
   billingType?: string
-  children?: React.ReactNode
+}
+
+const Divider = () => <div className="h-px bg-gray-200" />
+
+function Row({
+  label,
+  value,
+  accent,
+}: {
+  label: string
+  value: React.ReactNode
+  accent?: boolean
+}) {
+  return (
+    <div className="flex items-center justify-between gap-2.5">
+      <span
+        className={cn(
+          'flex items-center gap-2 text-sm',
+          accent ? 'text-brand-600' : 'text-gray-500',
+        )}
+      >
+        <IconCircleCheck className="size-4 flex-none text-brand-500" />
+        <span>{label}</span>
+      </span>
+      <span
+        className={cn(
+          'flex-none whitespace-nowrap text-sm font-semibold',
+          accent ? 'text-brand-600' : 'text-gray-600',
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
 }
 
 /**
- * Resumo do pedido. Só EXIBE o orçamento calculado no servidor — nenhum valor
- * é somado aqui. Com qualquer desconto, o subtotal aparece riscado.
+ * Resumo da assinatura, no desenho do protótipo. Só EXIBE o orçamento
+ * calculado no servidor — nenhum valor é somado aqui. Com desconto, o
+ * subtotal aparece riscado e os descontos logo abaixo, na cor da marca.
  */
-export function OrderSummary({
-  quote,
-  isLoading,
-  billingType,
-  children,
-}: Props) {
-  const hasDiscount = !!quote && quote.discounts.length > 0
+export function OrderSummary({ quote, isLoading, billingType }: Props) {
   const methodLabel = PAYMENT_METHOD_OPTIONS.find(
     (m) => m.value === billingType,
   )?.label
@@ -33,107 +62,118 @@ export function OrderSummary({
     installments?.allowed && installments.selected > 1
       ? installments.options.find((o) => o.count === installments.selected)
       : null
+  const hasDiscount = !!quote && quote.discounts.length > 0
 
   return (
-    <Card className="lg:sticky lg:top-6">
-      <CardHeader>
-        <CardTitle className="text-lg">Resumo da assinatura</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {isLoading || !quote ? (
-          <div className="space-y-2">
-            <Skeleton className="h-5 w-full" />
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-8 w-1/2" />
-          </div>
-        ) : (
-          <>
-            <ul className="space-y-2 text-sm">
-              {quote.lines.map((line) => (
-                <li
-                  key={`${line.kind}-${line.label}`}
-                  className="flex justify-between gap-4"
-                >
-                  <span className="text-gray-700">
-                    {line.label}
-                    {line.quantity ? ` (${line.quantity})` : ''}
-                  </span>
-                  <span className="text-gray-900 whitespace-nowrap">
-                    {formatCurrencyToBrl(line.monthlyCents)}/mês
-                  </span>
-                </li>
-              ))}
-            </ul>
+    <div className="flex flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6">
+      <p className="text-lg font-semibold leading-7 text-gray-700">
+        Resumo da assinatura
+      </p>
+      <Divider />
 
-            <Separator />
-
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-700">Subtotal</span>
-              <span
-                className={cn(
-                  'text-gray-900',
-                  hasDiscount && 'line-through text-gray-500',
-                )}
-              >
-                {formatCurrencyToBrl(quote.subtotalCents)}
-                {quote.totalSuffix}
-              </span>
-            </div>
-
-            {quote.discounts.map((d) => (
-              <div
-                key={d.kind}
-                className="flex justify-between gap-4 text-sm text-brand-700"
-              >
-                <span>{d.label}</span>
-                <span className="whitespace-nowrap">
-                  − {formatCurrencyToBrl(d.amountCents)}
-                </span>
-              </div>
+      {isLoading || !quote ? (
+        <div className="flex flex-col gap-3">
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-8 w-1/2" />
+        </div>
+      ) : (
+        <>
+          <div className="flex flex-col gap-6">
+            {quote.lines.map((line) => (
+              <Row
+                key={`${line.kind}-${line.label}`}
+                label={
+                  line.kind === 'ADDITIONAL_USERS' && line.quantity
+                    ? line.quantity === 1
+                      ? '1 usuário adicional'
+                      : `${line.quantity} usuários adicionais`
+                    : line.label
+                }
+                value={
+                  <>
+                    {formatCurrencyToBrl(line.monthlyCents)}
+                    <small className="ml-0.5 font-normal text-gray-500">
+                      /mês
+                    </small>
+                  </>
+                }
+              />
             ))}
+          </div>
+          <Divider />
 
-            <Separator />
+          <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
+            <span>Subtotal</span>
+            <span
+              className={cn(
+                'flex-none whitespace-nowrap text-sm font-semibold text-gray-600',
+                hasDiscount && 'text-gray-400 line-through',
+              )}
+            >
+              {formatCurrencyToBrl(quote.subtotalCents)}
+              <small className="ml-0.5 font-normal">{quote.totalSuffix}</small>
+            </span>
+          </div>
 
-            <div className="flex items-end justify-between">
-              <span className="text-gray-700 font-medium">Total</span>
-              <span className="text-2xl font-bold text-gray-900">
-                {formatCurrencyToBrl(quote.totalCents)}
-                <span className="text-sm font-normal text-gray-600">
-                  {quote.totalSuffix}
-                </span>
-              </span>
+          {hasDiscount && (
+            <div className="flex flex-col gap-6">
+              {quote.discounts.map((d) => (
+                <Row
+                  key={d.kind}
+                  label={d.label}
+                  value={`-${formatCurrencyToBrl(d.amountCents)}`}
+                  accent
+                />
+              ))}
             </div>
+          )}
+          <Divider />
 
-            {selectedInstallment && (
-              <p className="text-sm text-gray-600 text-right">
-                em {selectedInstallment.count}x de{' '}
-                {formatCurrencyToBrl(selectedInstallment.amountCents)} sem juros
-                no cartão
-              </p>
-            )}
+          <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
+            <span>Total</span>
+            <span className="flex items-center gap-1 text-xl font-bold text-gray-700">
+              <IconCoin className="size-6 flex-none text-brand-500" />
+              {formatCurrencyToBrl(quote.totalCents)}
+              <small className="ml-0.5 text-sm font-normal text-gray-500">
+                {quote.totalSuffix}
+              </small>
+            </span>
+          </div>
 
-            {(quote.couponDiscountCents > 0 || quote.creditCents > 0) && (
-              <p className="text-xs text-gray-500">
-                {quote.creditCents > 0 && quote.couponDiscountCents > 0
-                  ? 'O cupom e o crédito valem só para esta primeira cobrança.'
-                  : quote.creditCents > 0
-                    ? 'O crédito vale só para esta primeira cobrança.'
-                    : 'O cupom vale só para esta primeira cobrança.'}{' '}
-                A renovação é de {formatCurrencyToBrl(quote.recurringCents)}
-                {quote.totalSuffix}.
-              </p>
-            )}
+          {selectedInstallment && (
+            <p className="-mt-2 text-xs text-gray-500">
+              em{' '}
+              <strong className="font-semibold text-brand-600">
+                {selectedInstallment.count}x de{' '}
+                {formatCurrencyToBrl(selectedInstallment.amountCents)}
+              </strong>{' '}
+              sem juros no cartão
+            </p>
+          )}
 
-            {methodLabel && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-700">Forma de pagamento</span>
-                <span className="text-gray-900">{methodLabel}</span>
-              </div>
-            )}
-          </>
-        )}
-        {children}
-      </CardContent>
-    </Card>
+          {(quote.couponDiscountCents > 0 || quote.creditCents > 0) && (
+            <p className="-mt-2 text-xs text-gray-500">
+              {quote.creditCents > 0 && quote.couponDiscountCents > 0
+                ? 'O cupom e o crédito valem só para esta primeira cobrança.'
+                : quote.creditCents > 0
+                  ? 'O crédito vale só para esta primeira cobrança.'
+                  : 'O cupom vale só para esta primeira cobrança.'}{' '}
+              A renovação é de {formatCurrencyToBrl(quote.recurringCents)}
+              {quote.totalSuffix}.
+            </p>
+          )}
+
+          {methodLabel && (
+            <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 text-[13px] text-gray-700">
+              <span>Forma de pagamento</span>
+              <strong className="font-semibold text-gray-900">
+                {methodLabel}
+              </strong>
+            </div>
+          )}
+        </>
+      )}
+    </div>
   )
 }

@@ -2,13 +2,11 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { IconCoin } from '@tabler/icons-react'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -22,7 +20,14 @@ import {
 import { useCheckoutStore } from '@/store/checkoutStore'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 
-import { CheckoutHeader } from '../../components/checkout/CheckoutHeader'
+import {
+  CheckLine,
+  CheckoutColumns,
+  CheckoutShell,
+  ConfirmCard,
+  ProceedButton,
+  TermsCheckbox,
+} from '../../components/checkout/CheckoutLayout'
 import { ContractorReadOnly } from './ContractorReadOnly'
 import { TermsDialog } from './TermsDialog'
 
@@ -47,6 +52,7 @@ const BACK_TO_CHOICE = new Set([
  */
 export function ComplementsFlow() {
   const router = useRouter()
+  const { data: session } = useSession()
   const { selection, clear } = useCheckoutStore()
   const { apply } = useRefreshCompanySession()
 
@@ -167,118 +173,102 @@ export function ComplementsFlow() {
   const contractor = current?.contractor ?? null
 
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <CheckoutHeader title="Complementos" backHref="/assinatura" />
-
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {contractor ? (
-              <ContractorReadOnly contractor={contractor} />
-            ) : (
-              <Skeleton className="h-40 w-full" />
-            )}
-          </div>
-
-          <div>
-            <Card className="lg:sticky lg:top-6">
-              <CardHeader>
-                <CardTitle className="text-lg">Resumo</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-sm">
-                {!quote ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-8 w-1/2" />
+    <CheckoutShell title="Complementos" backHref="/assinatura">
+      <CheckoutColumns
+        aside={
+          <>
+            <div className="flex flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6">
+              <p className="text-lg font-semibold leading-7 text-gray-700">
+                Resumo da assinatura
+              </p>
+              <div className="h-px bg-gray-200" />
+              {!quote ? (
+                <div className="flex flex-col gap-3">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-8 w-1/2" />
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-6">
+                    {quote.lines.map((line) => (
+                      <div
+                        key={`${line.kind}-${line.label}`}
+                        className="flex items-center justify-between gap-2.5"
+                      >
+                        <CheckLine className="text-gray-500">
+                          {line.label}
+                          {line.quantity ? ` (${line.quantity})` : ''}
+                        </CheckLine>
+                        <span className="flex-none whitespace-nowrap text-sm font-semibold text-gray-600">
+                          {formatCurrencyToBrl(line.monthlyCents)}
+                          <small className="ml-0.5 font-normal text-gray-500">
+                            /mês
+                          </small>
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <>
-                    <ul className="space-y-2">
-                      {quote.lines.map((line) => (
-                        <li
-                          key={`${line.kind}-${line.label}`}
-                          className="flex justify-between gap-4"
-                        >
-                          <span className="text-gray-700">
-                            {line.label}
-                            {line.quantity ? ` (${line.quantity})` : ''}
-                          </span>
-                          <span className="text-gray-900 whitespace-nowrap">
-                            {formatCurrencyToBrl(line.monthlyCents)}/mês
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Separator />
-
-                    <div className="flex items-end justify-between">
-                      <span className="text-gray-700 font-medium">
-                        Cobrado agora
-                      </span>
-                      <span className="text-2xl font-bold text-gray-900">
-                        {formatCurrencyToBrl(quote.chargedNowCents)}
-                      </span>
-                    </div>
-                    <p className="text-gray-600">
-                      A partir da mensalidade de{' '}
-                      <strong>{formatDay(quote.nextChargeDate)}</strong>, o
-                      valor passa de{' '}
-                      {formatCurrencyToBrl(quote.currentRecurringCents)} para{' '}
-                      <strong>
-                        {formatCurrencyToBrl(quote.recurringCents)}/mês
-                      </strong>
-                      .
-                    </p>
-                  </>
-                )}
-
-                <label className="flex items-start gap-2 text-gray-700">
-                  <Checkbox
-                    checked={accepted}
-                    onCheckedChange={(checked) => {
-                      setAccepted(!!checked)
-                      if (checked) setTermsError(null)
-                    }}
-                    className="mt-0.5"
-                  />
-                  <span>
-                    Li e estou de acordo com os{' '}
-                    <button
-                      type="button"
-                      className="text-brand-700 underline"
-                      onClick={() => setTermsOpen(true)}
-                    >
-                      Termos de Contratação
-                    </button>{' '}
-                    da Atrupe.
-                  </span>
-                </label>
-                {termsError && (
-                  <p className="text-error-600" role="alert">
-                    {termsError}
+                  <div className="h-px bg-gray-200" />
+                  <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
+                    <span>Cobrado agora</span>
+                    <span className="flex items-center gap-1 text-xl font-bold text-gray-700">
+                      <IconCoin className="size-6 flex-none text-brand-500" />
+                      {formatCurrencyToBrl(quote.chargedNowCents)}
+                    </span>
+                  </div>
+                  <p className="-mt-2 text-xs text-gray-500">
+                    A partir da mensalidade de{' '}
+                    <strong className="font-semibold text-gray-700">
+                      {formatDay(quote.nextChargeDate)}
+                    </strong>
+                    , o valor passa de{' '}
+                    {formatCurrencyToBrl(quote.currentRecurringCents)} para{' '}
+                    <strong className="font-semibold text-brand-600">
+                      {formatCurrencyToBrl(quote.recurringCents)}/mês
+                    </strong>
+                    .
                   </p>
-                )}
-
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={submit}
-                  isLoading={submitting}
-                  disabled={submitting || !quote}
-                >
-                  Contratar complementos
-                </Button>
-                <p className="text-xs text-gray-500 text-center">
-                  Os complementos ficam disponíveis assim que a contratação é
-                  registrada.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
+                </>
+              )}
+            </div>
+            <ConfirmCard>
+              <TermsCheckbox
+                checked={accepted}
+                onCheckedChange={(checked) => {
+                  setAccepted(checked)
+                  if (checked) setTermsError(null)
+                }}
+                onOpenTerms={() => setTermsOpen(true)}
+                error={termsError}
+              />
+              <ProceedButton
+                onClick={submit}
+                isLoading={submitting}
+                disabled={submitting || !quote}
+              >
+                Contratar complementos
+              </ProceedButton>
+              <p className="text-[11px] text-gray-500">
+                Os complementos ficam disponíveis assim que a contratação é
+                registrada.
+              </p>
+            </ConfirmCard>
+          </>
+        }
+      >
+        {contractor ? (
+          <ContractorReadOnly
+            contractor={contractor}
+            account={{
+              name: session?.user?.name ?? '',
+              email: session?.user?.email ?? '',
+            }}
+          />
+        ) : (
+          <Skeleton className="h-64 w-full rounded-xl" />
+        )}
+      </CheckoutColumns>
 
       <TermsDialog
         open={termsOpen}
@@ -296,6 +286,6 @@ export function ComplementsFlow() {
           setTermsError(null)
         }}
       />
-    </div>
+    </CheckoutShell>
   )
 }

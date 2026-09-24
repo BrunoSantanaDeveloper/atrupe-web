@@ -111,3 +111,93 @@ export const PAYMENT_METHOD_OPTIONS = [
     hint: 'Emitido a cada ciclo, com vencimento em até 3 dias úteis.',
   },
 ] as const
+
+/**
+ * Como cada etapa se apresenta no card da trilha: a frase de "para quem é" e
+ * o que ela entrega, como no protótipo (prototype/packages/dominio/src/planos.ts).
+ *
+ * O vídeo é o do site institucional, servido do próprio app (public/metodo):
+ * player externo depende de licença por domínio ou de embed liberado. Só as
+ * etapas que se contratam hoje têm o arquivo aqui; para as outras vale o
+ * `videoUrl` cadastrado no plano, no servidor.
+ */
+export const PLAN_PRESENTATION: Record<
+  SequencePlanType,
+  {
+    pitch: string
+    actions: string[]
+    video?: { src: string; poster: string; minutes: number }
+  }
+> = {
+  START: {
+    pitch: 'Para quem precisa sair do improviso.',
+    actions: [
+      'Cadastro inicial de clientes, fornecedores, colaboradores e produtos',
+      'Organização financeira básica',
+      'Criação do plano de contas',
+      'Controle de despesas, folha de pagamento e receitas',
+      'Vendas realizadas',
+      'Orçamentos enviados',
+      'Pagamentos recebidos/pendências financeiras',
+    ],
+    video: {
+      src: '/metodo/plan-start.mp4',
+      poster: '/metodo/plan-start.jpg',
+      minutes: 5,
+    },
+  },
+  LITE: {
+    pitch: 'Para quem quer previsibilidade financeira.',
+    actions: [
+      'Cadastro de produtos com composições básicas',
+      'Controle financeiro avançado',
+      'Separação por contas bancárias',
+      'Definição de limites de crédito para clientes',
+      'Opção para repasse automático das taxas financeiras',
+      'Introdução ao CRM (Gestão Comercial)',
+      'Status das negociações em andamento',
+      'Motivos dos cancelamentos registrados no sistema',
+      'Gerenciador de Produção e Entrega',
+      'Histórico completo dos clientes',
+    ],
+    video: {
+      src: '/metodo/plan-lite.mp4',
+      poster: '/metodo/plan-lite.jpg',
+      minutes: 5,
+    },
+  },
+  PRO: {
+    pitch: 'Para quem precisa conhecer os custos.',
+    actions: [
+      'Cadastro detalhado de custos: mão de obra, materiais e equipamentos',
+      'Identificação de trabalhos mais lucrativos e eliminação de serviços deficitários',
+      'Padronização de processos de trabalho, criando fluxos claros para orçamentos e produção',
+      'Delegação de funções antes centralizadas no dono da empresa baseada nesses processos',
+    ],
+  },
+  ELITE: {
+    pitch: 'Para quem precisa integrar a produção.',
+    actions: [
+      'Implementação do gerenciador de produção, adaptável à estrutura específica da empresa',
+      'Gerenciador baseado nas composições detalhadas dos produtos criadas na Etapa 3',
+      'Treinamento direcionado: cada setor aprende como usar o sistema dentro das suas funções específicas',
+      'Análise avançada da produtividade, com medição precisa por setor',
+      'Avaliação individual dos colaboradores com base nos tempos estimados versus realizados',
+    ],
+  },
+  FULL: {
+    pitch: 'Para quem quer controlar o estoque.',
+    actions: [
+      'Entrada de materiais correta no sistema',
+      'Composição detalhada dos trabalhos, considerando aproveitamento e substituição de materiais na produção',
+      'Integração com o gerenciamento de produção para rastrear o uso real de materiais',
+      'Análise de custos estimados versus realizados, com ajustes nos processos para melhorias futuras',
+    ],
+  },
+}
+
+/** A etapa anterior na trilha, para o "Tudo do Start, mais:" do card. */
+export const previousPlanType = (planType: string) => {
+  const index = PLAN_SEQUENCE.indexOf(planType as SequencePlanType)
+  return index > 0 ? PLAN_SEQUENCE[index - 1] : null
+}

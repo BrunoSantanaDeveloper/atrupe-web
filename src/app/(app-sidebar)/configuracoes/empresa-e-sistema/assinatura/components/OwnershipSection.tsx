@@ -94,7 +94,7 @@ export function OwnershipSection() {
         <CardHeader>
           <CardTitle className="text-base">Titularidade</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-6 pb-6">
           {view.current ? (
             <ul className="flex flex-col">
               <PeriodItem period={view.current} />
@@ -128,7 +128,7 @@ export function OwnershipSection() {
             Transferência de titularidade
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-3 px-6 pb-6">
           {view.pending ? (
             <>
               <p className="text-sm text-gray-600">

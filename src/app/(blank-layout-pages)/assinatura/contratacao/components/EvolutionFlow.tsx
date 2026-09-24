@@ -2,13 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconArrowRight, IconLock } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Spinner } from '@/components/ui/spinner'
@@ -23,7 +22,15 @@ import { useCheckoutStore } from '@/store/checkoutStore'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 import type { CheckoutBillingType } from '@/types/checkout'
 
-import { CheckoutHeader } from '../../components/checkout/CheckoutHeader'
+import {
+  CheckoutColumns,
+  CheckoutShell,
+  ConfirmCard,
+  ProceedButton,
+  SecureNote,
+  TermsCheckbox,
+} from '../../components/checkout/CheckoutLayout'
+import { CouponCard } from '../../components/checkout/CouponCard'
 import { OrderSummary } from '../../components/checkout/OrderSummary'
 import { ContractorReadOnly } from './ContractorReadOnly'
 import { PaymentStep } from './PaymentStep'
@@ -40,6 +47,7 @@ type Step = 'contrato' | 'pagamento'
  */
 export function EvolutionFlow() {
   const router = useRouter()
+  const { data: session } = useSession()
   const { selection, setSelection, clear } = useCheckoutStore()
   const { apply } = useRefreshCompanySession()
 
@@ -241,91 +249,67 @@ export function EvolutionFlow() {
   const nothingToPay = !!quote && quote.totalCents === 0
 
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <CheckoutHeader
-        title="Evolução de plano"
-        backHref="/assinatura"
-        onBack={step === 'pagamento' ? () => setStep('contrato') : undefined}
-      />
-
+    <CheckoutShell
+      title="Plano"
+      backHref="/assinatura"
+      onBack={step === 'pagamento' ? () => setStep('contrato') : undefined}
+    >
       <Form {...form}>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="container mx-auto px-4 py-8"
-          noValidate
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <div hidden={step !== 'contrato'}>
-                {contractor ? (
-                  <ContractorReadOnly contractor={contractor} />
-                ) : (
-                  <Skeleton className="h-40 w-full" />
-                )}
-              </div>
-              <div hidden={step !== 'pagamento'}>
-                <PaymentStep
-                  appliedCoupon={appliedCoupon}
-                  couponStatus={quote?.coupon}
-                  onApplyCoupon={setAppliedCoupon}
-                  cycle={cycle}
-                  cycleOptions={cycleOptions}
-                  onCycleChange={(next) => setSelection({ cycle: next })}
-                  installments={quote?.installments}
-                  installmentCount={quote?.installments.selected ?? 1}
-                  onInstallmentCountChange={setInstallmentCount}
-                />
-              </div>
-            </div>
-
-            <div>
-              <OrderSummary
-                quote={quote}
-                isLoading={quoteQuery.isLoading}
-                billingType={step === 'pagamento' ? billingType : undefined}
-              >
-                {step === 'contrato' ? (
-                  <div className="space-y-4 pt-2">
-                    <label className="flex items-start gap-2 text-sm text-gray-700">
-                      <Checkbox
-                        checked={accepted}
-                        onCheckedChange={(checked) => {
-                          setAccepted(!!checked)
-                          if (checked) setTermsError(null)
-                        }}
-                        className="mt-0.5"
-                      />
-                      <span>
-                        Li e estou de acordo com os{' '}
-                        <button
-                          type="button"
-                          className="text-brand-700 underline"
-                          onClick={() => setTermsOpen(true)}
-                        >
-                          Termos de Contratação
-                        </button>{' '}
-                        da Atrupe.
-                      </span>
-                    </label>
-                    {termsError && (
-                      <p className="text-sm text-error-600" role="alert">
-                        {termsError}
-                      </p>
-                    )}
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={goToPayment}
-                      RightIcon={IconArrowRight}
-                    >
+        <form onSubmit={(e) => e.preventDefault()} noValidate>
+          {step === 'contrato' ? (
+            <CheckoutColumns
+              aside={
+                <>
+                  <OrderSummary
+                    quote={quote}
+                    isLoading={quoteQuery.isLoading}
+                    billingType={billingType}
+                  />
+                  <ConfirmCard>
+                    <TermsCheckbox
+                      checked={accepted}
+                      onCheckedChange={(checked) => {
+                        setAccepted(checked)
+                        if (checked) setTermsError(null)
+                      }}
+                      onOpenTerms={() => setTermsOpen(true)}
+                      error={termsError}
+                    />
+                    <ProceedButton onClick={goToPayment}>
                       Contratar
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 pt-2">
-                    <Button
-                      type="button"
-                      className="w-full"
+                    </ProceedButton>
+                  </ConfirmCard>
+                </>
+              }
+            >
+              {contractor ? (
+                <ContractorReadOnly
+                  contractor={contractor}
+                  account={{
+                    name: session?.user?.name ?? '',
+                    email: session?.user?.email ?? '',
+                  }}
+                />
+              ) : (
+                <Skeleton className="h-64 w-full rounded-xl" />
+              )}
+            </CheckoutColumns>
+          ) : (
+            <CheckoutColumns
+              aside={
+                <>
+                  <OrderSummary
+                    quote={quote}
+                    isLoading={quoteQuery.isLoading}
+                    billingType={billingType}
+                  />
+                  <CouponCard
+                    appliedCoupon={appliedCoupon}
+                    couponStatus={quote?.coupon}
+                    onApply={setAppliedCoupon}
+                  />
+                  <ConfirmCard>
+                    <ProceedButton
                       onClick={submit}
                       isLoading={submitting}
                       disabled={submitting || !quote}
@@ -333,24 +317,31 @@ export function EvolutionFlow() {
                       {nothingToPay
                         ? 'Concluir evolução'
                         : 'Realizar pagamento'}
-                    </Button>
+                    </ProceedButton>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="neutralOutline"
                       className="w-full"
                       disabled={submitting}
                       onClick={() => setStep('contrato')}
                     >
                       Voltar
                     </Button>
-                    <p className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                      <IconLock size={14} /> Pagamento processado com segurança
-                    </p>
-                  </div>
-                )}
-              </OrderSummary>
-            </div>
-          </div>
+                    <SecureNote />
+                  </ConfirmCard>
+                </>
+              }
+            >
+              <PaymentStep
+                cycle={cycle}
+                cycleOptions={cycleOptions}
+                onCycleChange={(next) => setSelection({ cycle: next })}
+                installments={quote?.installments}
+                installmentCount={quote?.installments.selected ?? 1}
+                onInstallmentCountChange={setInstallmentCount}
+              />
+            </CheckoutColumns>
+          )}
         </form>
       </Form>
 
@@ -370,6 +361,6 @@ export function EvolutionFlow() {
           setTermsError(null)
         }}
       />
-    </div>
+    </CheckoutShell>
   )
 }

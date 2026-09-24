@@ -1,24 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Image, { StaticImageData } from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
-import {
-  IconArrowRight,
-  IconMinus,
-  IconPlayerPlayFilled,
-  IconPlus,
-} from '@tabler/icons-react'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
 import {
   fetchPublicModules,
   fetchPublicPlans,
@@ -26,27 +14,24 @@ import {
 } from '@/actions/checkout'
 import { useCheckoutStore } from '@/store/checkoutStore'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import {
+  PLAN_PRESENTATION,
+  previousPlanType,
+  type SequencePlanType,
+} from '@/lib/plans/methodTrail'
 import type { PlanStatesResponse } from '@/types/checkout'
 import type { VisualPlanType } from '@/types/plans'
 
-import { CheckoutHeader } from '../checkout/CheckoutHeader'
-import { ComparisonTable } from './ComparisonTable'
-import { CycleToggle, monthlyEquivalentCents, type Cycle } from './CycleToggle'
-
-import pro from '@/assets/images/pro-logo.png'
-import lite from '@/assets/images/lite-logo.png'
-import full from '@/assets/images/full-logo.png'
-import elite from '@/assets/images/elite-logo.png'
-import start from '@/assets/images/start-logo.png'
-import atrupe from '@/assets/images/atrupe-logo.png'
-
-const LOGOS: Record<string, StaticImageData> = {
-  START: start,
-  LITE: lite,
-  PRO: pro,
-  ELITE: elite,
-  FULL: full,
-}
+import { ArrivalNotice, CheckoutShell } from '../checkout/CheckoutLayout'
+import { ComparisonTable, allPlansReleased } from './ComparisonTable'
+import { monthlyEquivalentCents, type Cycle } from './CycleToggle'
+import {
+  AddonCard,
+  AddonsSection,
+  CycleSwitch,
+  PlanOfferCard,
+  UsersAddonCard,
+} from './PlanOffer'
 
 const MAX_ADDITIONAL_USERS = 20
 
@@ -55,11 +40,13 @@ interface Props {
 }
 
 /**
- * Etapa 1 — o plano.
+ * Etapa 1 — o plano, no desenho do protótipo.
  *
- * Mostra só o que é contratável agora (o card é oferta, não catálogo): sem
- * contratação, o Atrupe Start. Os complementos entram no preço do card, que
- * vem do orçamento calculado no servidor. A tabela comparativa fica recolhida.
+ * O ciclo no topo; a etapa contratável agora num card com o vídeo ao lado (o
+ * card é oferta, não catálogo: sem contratação, o Atrupe Start); os
+ * complementos logo abaixo, somados ao preço do card, que vem do orçamento do
+ * servidor; e a comparação recolhida, só quando todas as etapas estiverem
+ * liberadas.
  */
 export function PlanTrail({ planStates }: Props) {
   const router = useRouter()
@@ -78,12 +65,11 @@ export function PlanTrail({ planStates }: Props) {
   const annualAvailable = !!planStates.annualCycleAvailable
   const cycle: Cycle =
     annualAvailable && selection.cycle === 'YEARLY' ? 'YEARLY' : 'MONTHLY'
-  const [video, setVideo] = useState<{ url: string; title: string } | null>(
-    null,
-  )
 
-  const offers = planStates.plans.filter((p) => p.state === 'ELEGIVEL')
-  const offer = offers[0] ?? null
+  const offer = planStates.plans.find((p) => p.state === 'ELEGIVEL') ?? null
+  const presentation = offer
+    ? PLAN_PRESENTATION[offer.planType as SequencePlanType]
+    : null
 
   const trialEndsAt = session?.company?.plan?.trialEndsAt
   const trialExpired =
@@ -103,7 +89,7 @@ export function PlanTrail({ planStates }: Props) {
   })
 
   const debounced = useDebouncedValue({ modules, additionalUsers }, 300)
-  const { data: quote, isFetching: isQuoting } = useQuery({
+  const { data: quote } = useQuery({
     queryKey: ['trail-quote', offer?.planId, debounced, cycle],
     queryFn: async () => {
       const res = await fetchQuote({
@@ -147,243 +133,104 @@ export function PlanTrail({ planStates }: Props) {
     router.push('/assinatura/contratacao')
   }
 
-  const concept = offerDetails?.sections?.concept
-  // Só o rótulo; o valor cobrado vem do orçamento do servidor.
-  const userPrice = offerDetails?.additionalUserPrice
+  const recurringCents = quote?.quote?.recurringCents
+  const previous = offer ? previousPlanType(offer.planType) : null
+  const previousName = previous
+    ? planStates.plans.find((p) => p.planType === previous)?.name
+    : null
+  const video = presentation?.video
+    ? { url: presentation.video.src, poster: presentation.video.poster }
+    : offerDetails?.videoUrl
+      ? { url: offerDetails.videoUrl }
+      : null
 
   return (
-    <div className="w-full bg-gray-100 min-h-screen">
-      <CheckoutHeader
-        title="Planos"
-        backHref={trialExpired ? '/logout' : '/dashboard'}
-      />
+    <CheckoutShell
+      title="Planos"
+      backHref={trialExpired ? '/logout' : '/dashboard'}
+    >
+      {trialExpired && (
+        <ArrivalNotice
+          tone="warning"
+          title="Seu teste gratuito terminou"
+          text="Contrate para voltar a usar a Atrupe. O que você cadastrou durante o teste continua guardado."
+        />
+      )}
 
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        {trialExpired && (
-          <Alert variant="warning" className="border-warning-200 bg-warning-50">
-            <AlertTitle className="text-warning-800 font-semibold">
-              Seu teste gratuito terminou
-            </AlertTitle>
-            <AlertDescription className="text-warning-700">
-              Contrate para voltar a usar a Atrupe. O que você cadastrou durante
-              o teste continua guardado.
-            </AlertDescription>
-          </Alert>
-        )}
-
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-800">
-              Método Atrupe
-            </h2>
-            <p className="text-gray-600">
-              Cada etapa organiza uma parte do negócio. Você começa pela
-              primeira e evolui quando ela estiver em operação.
-            </p>
-          </div>
-          {annualAvailable && (
-            <CycleToggle
+      <div className="flex flex-col gap-7">
+        {annualAvailable && (
+          <div className="flex flex-col items-center gap-4 text-center">
+            <CycleSwitch
               value={cycle}
               onChange={(next) => setSelection({ cycle: next })}
             />
-          )}
-        </div>
+          </div>
+        )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {offer ? (
-              <Card className="border-brand-200">
-                <CardContent className="p-6 space-y-5">
-                  <div className="flex flex-wrap items-center justify-between gap-4">
-                    <Image
-                      src={LOGOS[offer.planType] ?? atrupe}
-                      alt={offer.name}
-                      height={40}
-                      className="h-10 w-auto"
-                    />
-                    {offerDetails?.videoUrl && (
-                      <Button
-                        type="button"
-                        variant="neutralLight"
-                        LeftIcon={IconPlayerPlayFilled}
-                        onClick={() =>
-                          setVideo({
-                            url: offerDetails.videoUrl!,
-                            title: `Entenda o ${offer.name}`,
-                          })
-                        }
-                      >
-                        Entenda o {offer.name}
-                      </Button>
-                    )}
-                  </div>
-
-                  {concept?.description && (
-                    <p className="text-gray-700">{concept.description}</p>
-                  )}
-
-                  <div>
-                    {quote?.quote ? (
-                      <p className="text-3xl font-bold text-gray-900">
-                        {formatCurrencyToBrl(
-                          monthlyEquivalentCents(
-                            quote.quote.recurringCents,
-                            cycle,
-                          ),
-                        )}
-                        <span className="text-base font-normal text-gray-600">
-                          /mês
-                        </span>
-                      </p>
-                    ) : (
-                      <Skeleton className="h-9 w-40" />
-                    )}
-                    <p className="text-sm text-gray-500">
-                      {cycle === 'YEARLY' && quote?.quote
-                        ? `Cobrança anual de ${formatCurrencyToBrl(quote.quote.recurringCents)}, com 1 mês grátis`
-                        : 'Cobrança mensal'}
-                      {isQuoting ? ' · atualizando…' : ''}
-                    </p>
-                  </div>
-
-                  <Button
-                    type="button"
-                    onClick={beginContracting}
-                    RightIcon={IconArrowRight}
-                    className="w-full sm:w-auto"
-                  >
-                    Começar
-                  </Button>
-
-                  {concept?.mainActions?.length ? (
-                    <div>
-                      <p className="font-medium text-gray-800 mb-2">
-                        Principais ações
-                      </p>
-                      <ul className="list-disc pl-5 space-y-1 text-gray-700">
-                        {concept.mainActions.map((action) => (
-                          <li key={action}>{action}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </CardContent>
-              </Card>
-            ) : (
-              <Alert>
-                <AlertTitle>
-                  Nenhum plano disponível para contratação agora
-                </AlertTitle>
-                <AlertDescription>
-                  Fale com a Atrupe para saber quando a próxima etapa estará
-                  liberada.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            <section className="space-y-3">
-              <h2 className="text-xl font-semibold text-gray-700">
-                Complementos
-              </h2>
-              <Card>
-                <CardContent className="p-6 space-y-5">
-                  {isLoadingModules ? (
-                    <Skeleton className="h-6 w-2/3" />
-                  ) : (
-                    (publicModules ?? []).map((m) => (
-                      <label
-                        key={m.key}
-                        className="flex items-start gap-3 cursor-pointer"
-                      >
-                        <Checkbox
-                          checked={modules.includes(m.key)}
-                          onCheckedChange={(v) => toggleModule(m.key, !!v)}
-                        />
-                        <span className="flex-1">
-                          <span className="block font-medium text-gray-800">
-                            {m.name}
-                          </span>
-                          {m.description && (
-                            <span className="block text-sm text-gray-600">
-                              {m.description}
-                            </span>
-                          )}
-                        </span>
-                        <span className="text-gray-800 whitespace-nowrap">
-                          {formatCurrencyToBrl(m.price)}/mês
-                        </span>
-                      </label>
-                    ))
-                  )}
-
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-gray-800">
-                        Usuários adicionais
-                      </p>
-                      {userPrice != null && (
-                        <p className="text-sm text-gray-600">
-                          {formatCurrencyToBrl(userPrice)}/mês por usuário
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="neutralLight"
-                        aria-label="Remover usuário"
-                        disabled={additionalUsers <= 0}
-                        onClick={() =>
-                          setAdditionalUsers((n) => Math.max(0, n - 1))
-                        }
-                      >
-                        <IconMinus size={16} />
-                      </Button>
-                      <span
-                        className="w-8 text-center font-semibold"
-                        aria-live="polite"
-                      >
-                        {additionalUsers}
-                      </span>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="neutralLight"
-                        aria-label="Adicionar usuário"
-                        disabled={additionalUsers >= MAX_ADDITIONAL_USERS}
-                        onClick={() =>
-                          setAdditionalUsers((n) =>
-                            Math.min(MAX_ADDITIONAL_USERS, n + 1),
-                          )
-                        }
-                      >
-                        <IconPlus size={16} />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </section>
-
-            <ComparisonTable
-              plans={planStates.plans}
-              currentPlanType={
-                planStates.plans.find((p) => p.state === 'ATUAL')?.planType
+        {offer && presentation ? (
+          <div className="pt-3">
+            <PlanOfferCard
+              planType={offer.planType}
+              name={offer.name}
+              pitch={presentation.pitch}
+              actions={presentation.actions}
+              previousName={previousName}
+              video={video}
+              monthlyCents={
+                recurringCents != null
+                  ? monthlyEquivalentCents(recurringCents, cycle)
+                  : null
               }
+              priceNote={
+                cycle === 'YEARLY' && recurringCents != null
+                  ? `Cobrança anual de ${formatCurrencyToBrl(recurringCents)}`
+                  : 'Cobrança mensal'
+              }
+              ctaLabel="Começar"
+              onCta={beginContracting}
             />
           </div>
-        </div>
-      </div>
+        ) : (
+          <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600">
+            <strong className="block font-semibold text-gray-900">
+              Nenhum plano disponível para contratação agora
+            </strong>
+            Fale com a Atrupe para saber quando a próxima etapa estará liberada.
+          </div>
+        )}
 
-      {video && (
-        <VideoDialog
-          open={!!video}
-          onOpenChange={(open) => !open && setVideo(null)}
-          video={video.url}
-          title={video.title}
-        />
-      )}
-    </div>
+        <AddonsSection>
+          {isLoadingModules ? (
+            <Skeleton className="h-14 w-full rounded-lg" />
+          ) : (
+            (publicModules ?? []).map((m) => (
+              <AddonCard
+                key={m.key}
+                name={m.name}
+                description={m.description}
+                priceCents={m.price}
+                checked={modules.includes(m.key)}
+                onCheckedChange={(checked) => toggleModule(m.key, checked)}
+              />
+            ))
+          )}
+          <UsersAddonCard
+            value={additionalUsers}
+            max={MAX_ADDITIONAL_USERS}
+            onChange={setAdditionalUsers}
+            priceCents={offerDetails?.additionalUserPrice}
+          />
+        </AddonsSection>
+
+        {allPlansReleased(planStates.plans) && (
+          <ComparisonTable
+            plans={planStates.plans}
+            currentPlanType={
+              planStates.plans.find((p) => p.state === 'ATUAL')?.planType
+            }
+          />
+        )}
+      </div>
+    </CheckoutShell>
   )
 }

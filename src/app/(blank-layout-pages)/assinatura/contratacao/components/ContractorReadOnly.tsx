@@ -1,55 +1,66 @@
 'use client'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { maskCnpj, maskCpf } from '@/lib/utils'
 import type { ContractorOnFile } from '@/types/checkout'
 
+import {
+  AccountStatus,
+  CheckoutSection,
+  SectionNote,
+} from '../../components/checkout/CheckoutLayout'
+
 interface Props {
   contractor: ContractorOnFile
+  account: { name: string; email: string }
+}
+
+function Line({ label, value }: { label: string; value?: string | null }) {
+  if (!value) return null
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-gray-200 py-2 last:border-0">
+      <span className="text-[13px] text-gray-500">{label}</span>
+      <strong className="text-right text-[13px] font-medium text-gray-800">
+        {value}
+      </strong>
+    </div>
+  )
 }
 
 /**
- * O contratante da assinatura em curso, em leitura. Na evolução, nos
- * complementos e na regularização ele não é pedido de novo nem editado ali:
- * a troca de titular é assunto da transferência de titularidade.
+ * "Quem contrata" em leitura, como no protótipo: na evolução, nos
+ * complementos e na regularização o contratante é o da assinatura em curso e
+ * não se pergunta de novo — trocá-lo é assunto da transferência de
+ * titularidade.
  */
-export function ContractorReadOnly({ contractor }: Props) {
+export function ContractorReadOnly({ contractor, account }: Props) {
+  const company = contractor.type === 'PJ'
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">Contratante</CardTitle>
-        <p className="text-sm text-gray-600">
-          Para mudar o contratante, use a transferência de titularidade.
-        </p>
-      </CardHeader>
-      <CardContent className="grid gap-2 text-sm sm:grid-cols-2">
-        <p>
-          <span className="text-gray-500">Contratante</span>
-          <br />
-          {contractor.name}
-        </p>
-        <p>
-          <span className="text-gray-500">
-            {contractor.type === 'PJ' ? 'CNPJ' : 'CPF'}
-          </span>
-          <br />
-          {contractor.type === 'PJ'
-            ? maskCnpj(contractor.document)
-            : maskCpf(contractor.document)}
-        </p>
-        <p>
-          <span className="text-gray-500">Contato de cobrança</span>
-          <br />
-          {contractor.email}
-        </p>
-        {contractor.representativeName && (
-          <p>
-            <span className="text-gray-500">Representante legal</span>
-            <br />
-            {contractor.representativeName}
-          </p>
-        )}
-      </CardContent>
-    </Card>
+    <CheckoutSection title="Quem contrata" id="section-contratante">
+      <SectionNote>
+        A titularidade poderá ser transferida posteriormente.
+      </SectionNote>
+      <AccountStatus name={account.name} email={account.email} />
+      <div className="flex flex-col rounded-lg border border-gray-200 bg-gray-50 px-4 py-1">
+        <Line label="Contratante" value={contractor.name} />
+        <Line
+          label={company ? 'CNPJ' : 'CPF'}
+          value={
+            company
+              ? maskCnpj(contractor.document)
+              : maskCpf(contractor.document)
+          }
+        />
+        <Line label="Contato de cobrança" value={contractor.email} />
+        <Line
+          label="Representante legal"
+          value={contractor.representativeName}
+        />
+      </div>
+      <p className="text-xs text-gray-500">
+        Para transferir a titularidade da assinatura para outra pessoa ou
+        empresa, use a transferência de titularidade em Configurações ›
+        Assinatura.
+      </p>
+    </CheckoutSection>
   )
 }

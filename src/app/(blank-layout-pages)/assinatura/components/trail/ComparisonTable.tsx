@@ -23,6 +23,15 @@ const LABEL: Record<string, string> = {
 }
 
 /**
+ * A comparação só aparece com todas as etapas liberadas: enquanto houver
+ * etapa "em breve", a tabela mostraria recursos de planos que ninguém consegue
+ * contratar. O servidor manda o plano não liberado sem preço.
+ */
+export function allPlansReleased(plans: PlanTrailItem[]) {
+  return plans.length > 0 && plans.every((p) => p.priceMonthlyCents !== null)
+}
+
+/**
  * A "escada" do Método: cada recurso entra na etapa que o introduz e
  * permanece nas seguintes. Recolhida por padrão, para não competir com a
  * oferta; rola dentro do próprio contêiner em tela estreita.

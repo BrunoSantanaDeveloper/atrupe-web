@@ -7,11 +7,8 @@ import { Controller, useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconArrowRight, IconLock } from '@tabler/icons-react'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
 import { HandleValidateCnpj, HandleValidateCpf } from '@/lib/validateDocs'
@@ -27,7 +24,16 @@ import { useCheckoutStore } from '@/store/checkoutStore'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 import type { CheckoutRequest } from '@/types/checkout'
 
-import { CheckoutHeader } from '../../components/checkout/CheckoutHeader'
+import {
+  ArrivalNotice,
+  CheckoutColumns,
+  CheckoutShell,
+  ConfirmCard,
+  ProceedButton,
+  SecureNote,
+  TermsCheckbox,
+} from '../../components/checkout/CheckoutLayout'
+import { CouponCard } from '../../components/checkout/CouponCard'
 import { OrderSummary } from '../../components/checkout/OrderSummary'
 import {
   ContractorStep,
@@ -211,13 +217,13 @@ export function ContractingFlow() {
         setRegistry({
           status: 'manual',
           message:
-            'Não encontramos esse CNPJ na base pública. Confira o número ou preencha os dados da empresa.',
+            'Não encontramos esse CNPJ. Você pode preencher os dados abaixo manualmente.',
         })
       } else {
         setRegistry({
           status: 'manual',
           message:
-            'Não foi possível consultar o CNPJ agora. Preencha os dados da empresa.',
+            'Não foi possível consultar o CNPJ agora. Preencha os dados abaixo manualmente.',
         })
       }
       const cpf = form.getValues('representativeCpf')
@@ -410,139 +416,112 @@ export function ContractingFlow() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <CheckoutHeader
-        title="Contratação"
-        backHref="/assinatura"
-        onBack={step === 'pagamento' ? () => setStep('contrato') : undefined}
-      />
+    <CheckoutShell
+      title="Plano"
+      backHref="/assinatura"
+      onBack={step === 'pagamento' ? () => setStep('contrato') : undefined}
+    >
+      {trialExpired && (
+        <ArrivalNotice
+          tone="warning"
+          title="Seu teste gratuito terminou"
+          text="Contrate para voltar a usar a Atrupe. O que você cadastrou durante o teste continua guardado."
+        />
+      )}
 
       <Form {...form}>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="container mx-auto px-4 py-8"
-          noValidate
-        >
-          {trialExpired && (
-            <Alert
-              variant="warning"
-              className="mb-6 border-warning-200 bg-warning-50"
-            >
-              <AlertTitle className="text-warning-800 font-semibold">
-                Seu teste gratuito terminou
-              </AlertTitle>
-              <AlertDescription className="text-warning-700">
-                Contrate para voltar a usar a Atrupe. O que você cadastrou
-                durante o teste continua guardado.
-              </AlertDescription>
-            </Alert>
-          )}
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              <div hidden={step !== 'contrato'}>
-                <ContractorStep
-                  signedInAs={session?.user?.name ?? ''}
-                  registry={registry}
-                  representative={representative}
-                  onCnpjChange={handleCnpjChange}
-                  onRepresentativeCpfChange={handleRepresentativeCpfChange}
-                />
-              </div>
-              <div hidden={step !== 'pagamento'}>
-                <PaymentStep
-                  appliedCoupon={appliedCoupon}
-                  couponStatus={quote?.coupon}
-                  onApplyCoupon={setAppliedCoupon}
-                  cycle={cycle}
-                  cycleOptions={
-                    annualAvailable ? ['MONTHLY', 'YEARLY'] : undefined
-                  }
-                  onCycleChange={(next) => setSelection({ cycle: next })}
-                  installments={quote?.installments}
-                  installmentCount={quote?.installments.selected ?? 1}
-                  onInstallmentCountChange={setInstallmentCount}
-                />
-              </div>
-            </div>
-
-            <div>
-              <OrderSummary
-                quote={quote}
-                isLoading={quoteQuery.isLoading}
-                billingType={step === 'pagamento' ? billingType : undefined}
-              >
-                {step === 'contrato' ? (
-                  <div className="space-y-4 pt-2">
+        <form onSubmit={(e) => e.preventDefault()} noValidate>
+          {step === 'contrato' ? (
+            <CheckoutColumns
+              aside={
+                <>
+                  <OrderSummary
+                    quote={quote}
+                    isLoading={quoteQuery.isLoading}
+                    billingType={billingType}
+                  />
+                  <ConfirmCard>
                     <Controller
                       control={form.control}
                       name="termsAccepted"
                       render={({ field }) => (
-                        <label className="flex items-start gap-2 text-sm text-gray-700">
-                          <Checkbox
-                            checked={!!field.value}
-                            onCheckedChange={(checked) => {
-                              field.onChange(!!checked)
-                              if (checked) setTermsError(null)
-                            }}
-                            className="mt-0.5"
-                          />
-                          <span>
-                            Li e estou de acordo com os{' '}
-                            <button
-                              type="button"
-                              className="text-brand-700 underline"
-                              onClick={() => setTermsOpen(true)}
-                            >
-                              Termos de Contratação
-                            </button>{' '}
-                            da Atrupe.
-                          </span>
-                        </label>
+                        <TermsCheckbox
+                          checked={!!field.value}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked)
+                            if (checked) setTermsError(null)
+                          }}
+                          onOpenTerms={() => setTermsOpen(true)}
+                          error={termsError}
+                        />
                       )}
                     />
-                    {termsError && (
-                      <p className="text-sm text-error-600" role="alert">
-                        {termsError}
-                      </p>
-                    )}
-                    <Button
-                      type="button"
-                      className="w-full"
-                      onClick={goToPayment}
-                      RightIcon={IconArrowRight}
-                    >
+                    <ProceedButton onClick={goToPayment}>
                       Contratar
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-3 pt-2">
-                    <Button
-                      type="button"
-                      className="w-full"
+                    </ProceedButton>
+                  </ConfirmCard>
+                </>
+              }
+            >
+              <ContractorStep
+                account={{
+                  name: session?.user?.name ?? '',
+                  email: session?.user?.email ?? '',
+                }}
+                registry={registry}
+                representative={representative}
+                onCnpjChange={handleCnpjChange}
+                onRepresentativeCpfChange={handleRepresentativeCpfChange}
+              />
+            </CheckoutColumns>
+          ) : (
+            <CheckoutColumns
+              aside={
+                <>
+                  <OrderSummary
+                    quote={quote}
+                    isLoading={quoteQuery.isLoading}
+                    billingType={billingType}
+                  />
+                  <CouponCard
+                    appliedCoupon={appliedCoupon}
+                    couponStatus={quote?.coupon}
+                    onApply={setAppliedCoupon}
+                  />
+                  <ConfirmCard>
+                    <ProceedButton
                       onClick={submit}
                       isLoading={submitting}
                       disabled={submitting || !quote}
                     >
                       Realizar pagamento
-                    </Button>
+                    </ProceedButton>
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="neutralOutline"
                       className="w-full"
                       disabled={submitting}
                       onClick={() => setStep('contrato')}
                     >
                       Voltar
                     </Button>
-                    <p className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                      <IconLock size={14} /> Pagamento processado com segurança
-                    </p>
-                  </div>
-                )}
-              </OrderSummary>
-            </div>
-          </div>
+                    <SecureNote />
+                  </ConfirmCard>
+                </>
+              }
+            >
+              <PaymentStep
+                cycle={cycle}
+                cycleOptions={
+                  annualAvailable ? ['MONTHLY', 'YEARLY'] : undefined
+                }
+                onCycleChange={(next) => setSelection({ cycle: next })}
+                installments={quote?.installments}
+                installmentCount={quote?.installments.selected ?? 1}
+                onInstallmentCountChange={setInstallmentCount}
+              />
+            </CheckoutColumns>
+          )}
         </form>
       </Form>
 
@@ -557,6 +536,6 @@ export function ContractingFlow() {
           setTermsError(null)
         }}
       />
-    </div>
+    </CheckoutShell>
   )
 }

@@ -2,18 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useForm, useWatch } from 'react-hook-form'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { IconLock } from '@tabler/icons-react'
+import { IconCoin } from '@tabler/icons-react'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 import { Spinner } from '@/components/ui/spinner'
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { PAYMENT_METHOD_OPTIONS } from '@/lib/plans/methodTrail'
 import { generateIdempotencyKey } from '@/lib/idempotency'
 import {
   fetchContractTerms,
@@ -23,7 +21,16 @@ import {
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
 import type { CheckoutBillingType, RegularizationView } from '@/types/checkout'
 
-import { CheckoutHeader } from '../../components/checkout/CheckoutHeader'
+import {
+  ArrivalNotice,
+  CheckLine,
+  CheckoutColumns,
+  CheckoutShell,
+  ConfirmCard,
+  ProceedButton,
+  SecureNote,
+  TermsCheckbox,
+} from '../../components/checkout/CheckoutLayout'
 import { ContractorReadOnly } from './ContractorReadOnly'
 import { PaymentStep } from './PaymentStep'
 import { TermsDialog } from './TermsDialog'
@@ -34,7 +41,7 @@ function reasonOf(view: RegularizationView) {
     return {
       tone: 'error' as const,
       title: 'Conta inativa por falta de pagamento',
-      text: 'A mensalidade está em atraso há mais de 7 dias. Seus dados continuam guardados: regularize para voltar a usar a Atrupe.',
+      text: 'A mensalidade está em atraso há mais de 7 dias, e o acesso ao sistema foi suspenso. Seus dados continuam guardados: regularize o pagamento para voltar a usá-los.',
     }
   }
   if (view.reason === 'OVERDUE') {
@@ -58,6 +65,7 @@ function reasonOf(view: RegularizationView) {
  */
 export function RegularizationFlow() {
   const router = useRouter()
+  const { data: session } = useSession()
   const { apply } = useRefreshCompanySession()
   const [termsOpen, setTermsOpen] = useState(false)
   const [accepted, setAccepted] = useState(false)
@@ -144,59 +152,38 @@ export function RegularizationFlow() {
   const reason = reasonOf(view)
   const contractor = view.contractor
   const charge = view.chargeInFocus
+  const methodLabel = PAYMENT_METHOD_OPTIONS.find(
+    (m) => m.value === billingType,
+  )?.label
 
   return (
-    <div className="w-full min-h-screen bg-gray-100">
-      <CheckoutHeader title="Regularizar cobrança" backHref="/dashboard" />
+    <CheckoutShell title="Regularizar cobrança" backHref="/dashboard">
+      <ArrivalNotice
+        tone={reason.tone}
+        title={reason.title}
+        text={reason.text}
+      />
 
       <Form {...form}>
-        <form
-          onSubmit={(e) => e.preventDefault()}
-          className="container mx-auto px-4 py-8 space-y-6"
-          noValidate
-        >
-          <Alert
-            variant={reason.tone === 'error' ? 'destructive' : 'warning'}
-            className={
-              reason.tone === 'error'
-                ? 'border-error-200 bg-error-50'
-                : 'border-warning-200 bg-warning-50'
-            }
-          >
-            <AlertTitle className="font-semibold">{reason.title}</AlertTitle>
-            <AlertDescription>{reason.text}</AlertDescription>
-          </Alert>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 space-y-6">
-              {contractor && <ContractorReadOnly contractor={contractor} />}
-
-              <PaymentStep
-                appliedCoupon={null}
-                couponStatus={null}
-                onApplyCoupon={() => undefined}
-                showCoupon={false}
-                allowedMethods={view.allowedBillingTypes}
-              />
-            </div>
-
-            <div>
-              <Card className="lg:sticky lg:top-6">
-                <CardHeader>
-                  <CardTitle className="text-lg">Cobrança em aberto</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Plano</span>
-                    <span className="text-gray-900">
+        <form onSubmit={(e) => e.preventDefault()} noValidate>
+          <CheckoutColumns
+            aside={
+              <>
+                <div className="flex flex-col gap-6 rounded-lg border border-gray-200 bg-white p-6">
+                  <p className="text-lg font-semibold leading-7 text-gray-700">
+                    Cobrança em aberto
+                  </p>
+                  <div className="h-px bg-gray-200" />
+                  <div className="flex items-center justify-between gap-2.5">
+                    <CheckLine className="text-gray-500">
                       {view.subscription?.planName}
-                    </span>
+                    </CheckLine>
                   </div>
                   {charge && (
                     <>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Vencimento</span>
-                        <span className="text-gray-900">
+                      <div className="flex items-center justify-between gap-3 text-sm text-gray-600">
+                        <span>Vencimento</span>
+                        <span className="font-semibold">
                           {new Date(charge.dueDate).toLocaleDateString(
                             'pt-BR',
                             {
@@ -205,58 +192,58 @@ export function RegularizationFlow() {
                           )}
                         </span>
                       </div>
-                      <div className="flex items-end justify-between">
-                        <span className="text-gray-700 font-medium">Total</span>
-                        <span className="text-2xl font-bold text-gray-900">
+                      <div className="h-px bg-gray-200" />
+                      <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
+                        <span>Total</span>
+                        <span className="flex items-center gap-1 text-xl font-bold text-gray-700">
+                          <IconCoin className="size-6 flex-none text-brand-500" />
                           {formatCurrencyToBrl(Math.round(charge.value * 100))}
                         </span>
                       </div>
                     </>
                   )}
-
-                  <label className="flex items-start gap-2 text-gray-700">
-                    <Checkbox
-                      checked={accepted}
-                      onCheckedChange={(c) => {
-                        setAccepted(!!c)
-                        if (c) setTermsError(null)
-                      }}
-                      className="mt-0.5"
-                    />
-                    <span>
-                      Li e estou de acordo com os{' '}
-                      <button
-                        type="button"
-                        className="text-brand-700 underline"
-                        onClick={() => setTermsOpen(true)}
-                      >
-                        Termos de Contratação
-                      </button>{' '}
-                      da Atrupe.
-                    </span>
-                  </label>
-                  {termsError && (
-                    <p className="text-error-600" role="alert">
-                      {termsError}
-                    </p>
+                  {methodLabel && (
+                    <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 text-[13px] text-gray-700">
+                      <span>Forma de pagamento</span>
+                      <strong className="font-semibold text-gray-900">
+                        {methodLabel}
+                      </strong>
+                    </div>
                   )}
-
-                  <Button
-                    type="button"
-                    className="w-full"
+                </div>
+                <ConfirmCard>
+                  <TermsCheckbox
+                    checked={accepted}
+                    onCheckedChange={(checked) => {
+                      setAccepted(checked)
+                      if (checked) setTermsError(null)
+                    }}
+                    onOpenTerms={() => setTermsOpen(true)}
+                    error={termsError}
+                  />
+                  <ProceedButton
                     onClick={pay}
                     isLoading={submitting}
                     disabled={submitting}
                   >
-                    Pagar agora
-                  </Button>
-                  <p className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                    <IconLock size={14} /> Pagamento processado com segurança
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+                    Realizar pagamento
+                  </ProceedButton>
+                  <SecureNote />
+                </ConfirmCard>
+              </>
+            }
+          >
+            {contractor && (
+              <ContractorReadOnly
+                contractor={contractor}
+                account={{
+                  name: session?.user?.name ?? '',
+                  email: session?.user?.email ?? '',
+                }}
+              />
+            )}
+            <PaymentStep allowedMethods={view.allowedBillingTypes} />
+          </CheckoutColumns>
         </form>
       </Form>
 
@@ -276,6 +263,6 @@ export function RegularizationFlow() {
           setTermsError(null)
         }}
       />
-    </div>
+    </CheckoutShell>
   )
 }

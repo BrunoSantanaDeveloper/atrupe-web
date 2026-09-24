@@ -4,16 +4,17 @@ import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
-import { Logo } from '@/components/Logo'
 import { ProgressCircle } from '@/components/ui/progress-circle'
-import { IconCheck, IconX } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconCircleCheck,
+  IconClock,
+} from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
+import {
+  CheckoutShell,
+  ProceedButton,
+} from '../components/checkout/CheckoutLayout'
 import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
 import { useRefreshCompanySession } from '@/hooks/useRefreshCompanySession'
@@ -81,14 +82,14 @@ export default function FinishSubscriptionPage() {
     if (block?.billing?.paymentPending) {
       setStatus('waiting_payment')
       setErrorMessage(
-        'Contratação registrada: seu acesso já está liberado. O pagamento ainda está em confirmação — você recebe um e-mail quando ele for confirmado.',
+        'Seu acesso já está liberado. Assim que a confirmação do pagamento chegar, o aviso de cobrança pendente some sozinho.',
       )
       setCountdown(30)
       return
     }
 
     setStatus('success')
-    toast.success('Assinatura realizada com sucesso!')
+    toast.success('Contratação confirmada!')
     setTimeout(() => {
       router.replace('/dashboard')
     }, 3000)
@@ -235,144 +236,125 @@ export default function FinishSubscriptionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, router, update])
 
+  const goToDashboard = (
+    <ProceedButton onClick={() => router.replace('/dashboard')}>
+      Ir para o dashboard
+    </ProceedButton>
+  )
+
   if (status === 'processing') {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
-            <CardHeader className="p-0 mb-8 text-center">
-              <CardTitle className="text-xl font-bold">
-                Validando dados
-              </CardTitle>
-              <CardDescription>
-                Estamos atualizando as informações da sua assinatura.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4">
-              <ProgressCircle value={progress} size={180} />
-            </CardContent>
-          </Card>
-          <Logo text width={154} />
+      <ResultCard title="Validando dados">
+        <p>Estamos atualizando as informações da sua assinatura.</p>
+        <div className="flex justify-center py-2">
+          <ProgressCircle value={progress} size={160} />
         </div>
-      </div>
+      </ResultCard>
     )
   }
 
   if (status === 'success') {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
-            <CardHeader className="p-0 mb-8 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-green-100 p-3">
-                  <IconCheck size={48} className="text-green-600" />
-                </div>
-              </div>
-              <CardTitle className="text-xl font-bold text-green-600">
-                Assinatura realizada com sucesso!
-              </CardTitle>
-              <CardDescription>
-                Sua assinatura foi ativada. Você será redirecionado em
-                instantes.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4">
-              <Button
-                onClick={() => router.replace('/dashboard')}
-                className="w-full"
-              >
-                Ir para o Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-          <Logo text width={154} />
-        </div>
-      </div>
+      <ResultCard
+        tone="ok"
+        icon={<IconCircleCheck className="size-6" />}
+        title="Contratação confirmada!"
+        actions={goToDashboard}
+      >
+        <p>
+          O pagamento foi confirmado e a sua assinatura está ativa. Você será
+          levado ao dashboard em instantes.
+        </p>
+      </ResultCard>
     )
   }
 
   if (status === 'waiting_payment') {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
-            <CardHeader className="p-0 mb-8 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-blue-100 p-3">
-                  <IconCheck size={48} className="text-blue-600" />
-                </div>
-              </div>
-              <CardTitle className="text-xl font-bold text-blue-600">
-                Aguardando pagamento
-              </CardTitle>
-              <CardDescription className="text-gray-600 mt-2">
-                {errorMessage}
-              </CardDescription>
-              <CardDescription className="text-gray-500 mt-4">
-                Redirecionando para o dashboard em{' '}
-                <span className="font-semibold text-blue-600">
-                  {countdown}s
-                </span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-3">
-              <Button
-                onClick={checkPaymentStatus}
-                disabled={isChecking}
-                className="w-full"
-                variant="default"
-              >
-                {isChecking ? 'Verificando...' : 'Verificar novamente'}
-              </Button>
-              <Button
-                onClick={() => router.replace('/dashboard')}
-                className="w-full"
-                variant="outline"
-              >
-                Ir para o Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-          <Logo text width={154} />
-        </div>
-      </div>
+      <ResultCard
+        tone="ok"
+        icon={<IconClock className="size-6" />}
+        title="Processando pagamento…"
+        actions={
+          <div className="flex w-full flex-col gap-3">
+            <Button
+              onClick={checkPaymentStatus}
+              disabled={isChecking}
+              variant="neutralOutline"
+              className="w-full"
+            >
+              {isChecking ? 'Verificando…' : 'Verificar novamente'}
+            </Button>
+            {goToDashboard}
+          </div>
+        }
+      >
+        <p>{errorMessage}</p>
+        <p className="text-[11px] text-gray-400">
+          Indo para o dashboard em{' '}
+          <span className="font-semibold text-gray-600">{countdown}s</span>
+        </p>
+      </ResultCard>
     )
   }
 
   if (status === 'error') {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
-        <div className="flex flex-col items-center justify-center gap-8 w-full">
-          <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
-            <CardHeader className="p-0 mb-8 text-center">
-              <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-red-100 p-3">
-                  <IconX size={48} className="text-red-600" />
-                </div>
-              </div>
-              <CardTitle className="text-xl font-bold text-red-600">
-                Erro ao processar assinatura
-              </CardTitle>
-              <CardDescription className="text-gray-600 mt-2">
-                {errorMessage ||
-                  'Ocorreu um erro ao processar sua assinatura. Por favor, tente novamente.'}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col items-center gap-4">
-              <Button
-                onClick={() => router.replace('/dashboard')}
-                className="w-full"
-              >
-                Ir para o Dashboard
-              </Button>
-            </CardContent>
-          </Card>
-          <Logo text width={154} />
-        </div>
-      </div>
+      <ResultCard
+        tone="warning"
+        icon={<IconAlertCircle className="size-6" />}
+        title="Não foi possível confirmar agora"
+        actions={goToDashboard}
+      >
+        <p>
+          {errorMessage ||
+            'Ocorreu um erro ao verificar sua assinatura. Tente novamente em instantes.'}
+        </p>
+      </ResultCard>
     )
   }
 
   return null
+}
+
+/**
+ * O desfecho da contratação, no cartão de confirmação do protótipo: o
+ * cabeçalho da contratação e, abaixo, o resultado com a ação seguinte.
+ */
+function ResultCard({
+  tone,
+  icon,
+  title,
+  actions,
+  children,
+}: {
+  tone?: 'ok' | 'warning'
+  icon?: React.ReactNode
+  title: string
+  actions?: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <CheckoutShell title="Plano" backHref="/dashboard">
+      <div className="mx-auto flex w-full max-w-[464px] flex-col items-center gap-3 rounded-2xl border border-gray-200 bg-white px-8 py-10 text-center">
+        {icon && (
+          <div
+            className={cn(
+              'grid size-12 place-items-center rounded-full',
+              tone === 'warning'
+                ? 'bg-warning-50 text-warning-700'
+                : 'bg-brand-50 text-brand-700',
+            )}
+          >
+            {icon}
+          </div>
+        )}
+        <h1 className="text-lg font-bold text-gray-900">{title}</h1>
+        <div className="flex flex-col gap-3 text-[13px] text-gray-600">
+          {children}
+        </div>
+        {actions && <div className="mt-2 w-full">{actions}</div>}
+      </div>
+    </CheckoutShell>
+  )
 }
