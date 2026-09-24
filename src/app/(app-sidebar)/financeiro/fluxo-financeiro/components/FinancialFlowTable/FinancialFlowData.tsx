@@ -46,6 +46,7 @@ import { getData } from '@/actions/_cruds'
 // Libs
 import { formatToWeekDate } from '@/lib/formatDate'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { dayTotalsWithoutCanceled } from '@/lib/dayTotals'
 
 // Third-party
 import { toast } from 'sonner'
@@ -169,303 +170,313 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactionData.map((group) => (
-                  <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100 max-h-11">
-                      <TableCell colSpan={7} className="py-1 pr-1">
-                        <div className="flex justify-between items-center">
-                          <p className="font-medium text-gray text-xs">
-                            {formatToWeekDate(group?.date)}
-                          </p>
-                          <div
-                            className={cn(
-                              'flex gap-1 transition-all duration-500',
-                              showTotals
-                                ? 'opacity-100 max-h-14'
-                                : 'opacity-0 max-h-9',
-                            )}
-                          >
-                            <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-success-25">
-                              <div className="flex items-center gap-2">
-                                <FeaturedIcon
-                                  variant="successLight"
-                                  Icon={IconTrendingUp}
-                                />
-                                <div className="flex gap-4">
-                                  <div>
-                                    <p className="text-xs text-gray">
-                                      Receita prevista
-                                    </p>
-                                    <p className="text-sm font-semibold ">
-                                      {formatCurrencyToBrl(
-                                        group?.expectedRevenue,
-                                      )}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray">
-                                      Receita realizada
-                                    </p>
-                                    <p className="text-sm font-semibold text-success-700">
-                                      {formatCurrencyToBrl(
-                                        group?.realizedRevenue,
-                                      )}
-                                    </p>
+                {transactionData.map((group) => {
+                  // EC-12: a API ainda soma movimentação cancelada nos
+                  // totais do dia. Ver src/lib/dayTotals.ts
+                  const totals = dayTotalsWithoutCanceled(group)
+
+                  return (
+                    <Fragment key={group.date}>
+                      <TableRow className="bg-gray-100 max-h-11">
+                        <TableCell colSpan={7} className="py-1 pr-1">
+                          <div className="flex justify-between items-center">
+                            <p className="font-medium text-gray text-xs">
+                              {formatToWeekDate(group?.date)}
+                            </p>
+                            <div
+                              className={cn(
+                                'flex gap-1 transition-all duration-500',
+                                showTotals
+                                  ? 'opacity-100 max-h-14'
+                                  : 'opacity-0 max-h-9',
+                              )}
+                            >
+                              <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-success-25">
+                                <div className="flex items-center gap-2">
+                                  <FeaturedIcon
+                                    variant="successLight"
+                                    Icon={IconTrendingUp}
+                                  />
+                                  <div className="flex gap-4">
+                                    <div>
+                                      <p className="text-xs text-gray">
+                                        Receita prevista
+                                      </p>
+                                      <p className="text-sm font-semibold ">
+                                        {formatCurrencyToBrl(
+                                          totals.expectedRevenue,
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray">
+                                        Receita realizada
+                                      </p>
+                                      <p className="text-sm font-semibold text-success-700">
+                                        {formatCurrencyToBrl(
+                                          totals.realizedRevenue,
+                                        )}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-error-25">
-                              <div className="flex items-center gap-2">
-                                <FeaturedIcon
-                                  variant="errorLight"
-                                  Icon={IconTrendingDown}
-                                />
-                                <div className="flex gap-4">
-                                  <div>
-                                    <p className="text-xs text-gray">
-                                      Despesa prevista
-                                    </p>
-                                    <p className="text-sm font-semibold ">
-                                      {formatCurrencyToBrl(
-                                        group?.expectedExpense,
-                                      )}
-                                    </p>
-                                  </div>
-                                  <div>
-                                    <p className="text-xs text-gray">
-                                      Despesa realizada
-                                    </p>
-                                    <p className="text-sm font-semibold text-error-700">
-                                      {formatCurrencyToBrl(
-                                        group?.realizedExpense,
-                                      )}
-                                    </p>
+                              <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-error-25">
+                                <div className="flex items-center gap-2">
+                                  <FeaturedIcon
+                                    variant="errorLight"
+                                    Icon={IconTrendingDown}
+                                  />
+                                  <div className="flex gap-4">
+                                    <div>
+                                      <p className="text-xs text-gray">
+                                        Despesa prevista
+                                      </p>
+                                      <p className="text-sm font-semibold ">
+                                        {formatCurrencyToBrl(
+                                          totals.expectedExpense,
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray">
+                                        Despesa realizada
+                                      </p>
+                                      <p className="text-sm font-semibold text-error-700">
+                                        {formatCurrencyToBrl(
+                                          totals.realizedExpense,
+                                        )}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                    {group?.transactions?.length
-                      ? group?.transactions.map((item) => {
-                          const currentInstallment = item?.currentInstallment
-                          const editDisabled =
-                            item?.expenseSource === 'EMPLOYEE' // TODO: incluir na página de receitas e despesas
+                        </TableCell>
+                      </TableRow>
+                      {group?.transactions?.length
+                        ? group?.transactions.map((item) => {
+                            const currentInstallment = item?.currentInstallment
+                            const editDisabled =
+                              item?.expenseSource === 'EMPLOYEE' // TODO: incluir na página de receitas e despesas
 
-                          return (
-                            <TableRow key={item?.id} className="text-nowrap">
-                              <TableCell className="w-10">
-                                {item?.type === 'receivable' ? (
-                                  <Checkbox
-                                    checked={selectedInstallments.some(
-                                      (selected) =>
-                                        selected.installmentId ===
-                                        currentInstallment?.id,
-                                    )}
-                                    onCheckedChange={() =>
-                                      toggleInstallment(item)
-                                    }
-                                    disabled={item?.status === 'CANCELED'}
-                                  />
-                                ) : null}
-                              </TableCell>
-                              <TableCell className="max-w-96">
-                                <p className="font-medium">
-                                  {item?.client?.name ||
-                                    item?.supplier?.name ||
-                                    item?.employee?.name}
-                                </p>
-                                <div className="flex gap-2 flex-wrap items-center">
-                                  {item?.status === 'CANCELED' && (
-                                    <Badge size="sm" variant="errorLight">
-                                      Cancelado
-                                    </Badge>
-                                  )}
-                                  {item?.invoiceType &&
-                                    item.invoiceType !== 'OTHER' && (
-                                      <Badge size="sm" variant="blueLight">
-                                        {item.invoiceType === 'NFE'
-                                          ? 'NF-e'
-                                          : 'NFS-e'}
+                            return (
+                              <TableRow key={item?.id} className="text-nowrap">
+                                <TableCell className="w-10">
+                                  {item?.type === 'receivable' ? (
+                                    <Checkbox
+                                      checked={selectedInstallments.some(
+                                        (selected) =>
+                                          selected.installmentId ===
+                                          currentInstallment?.id,
+                                      )}
+                                      onCheckedChange={() =>
+                                        toggleInstallment(item)
+                                      }
+                                      disabled={item?.status === 'CANCELED'}
+                                    />
+                                  ) : null}
+                                </TableCell>
+                                <TableCell className="max-w-96">
+                                  <p className="font-medium">
+                                    {item?.client?.name ||
+                                      item?.supplier?.name ||
+                                      item?.employee?.name}
+                                  </p>
+                                  <div className="flex gap-2 flex-wrap items-center">
+                                    {item?.status === 'CANCELED' && (
+                                      <Badge size="sm" variant="errorLight">
+                                        Cancelado
                                       </Badge>
                                     )}
-                                  <p className="text-gray truncate">
-                                    {item?.description}
+                                    {item?.invoiceType &&
+                                      item.invoiceType !== 'OTHER' && (
+                                        <Badge size="sm" variant="blueLight">
+                                          {item.invoiceType === 'NFE'
+                                            ? 'NF-e'
+                                            : 'NFS-e'}
+                                        </Badge>
+                                      )}
+                                    <p className="text-gray truncate">
+                                      {item?.description}
+                                    </p>
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-gray-600">
+                                  {`${currentInstallment?.installmentNumber} / ${item?.installmentsQuantity}`}
+                                </TableCell>
+                                <TableCell
+                                  className={cn(
+                                    item?.type === 'receivable'
+                                      ? 'text-success-700'
+                                      : 'text-error-700',
+                                  )}
+                                >
+                                  {formatCurrencyToBrl(
+                                    currentInstallment?.value,
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  {formatCurrencyToBrl(
+                                    currentInstallment?.paidValue,
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  <p className="font-medium">
+                                    {currentInstallment?.bankAccount?.name}
                                   </p>
-                                </div>
-                              </TableCell>
-                              <TableCell className="text-gray-600">
-                                {`${currentInstallment?.installmentNumber} / ${item?.installmentsQuantity}`}
-                              </TableCell>
-                              <TableCell
-                                className={cn(
-                                  item?.type === 'receivable'
-                                    ? 'text-success-700'
-                                    : 'text-error-700',
-                                )}
-                              >
-                                {formatCurrencyToBrl(currentInstallment?.value)}
-                              </TableCell>
-                              <TableCell>
-                                {formatCurrencyToBrl(
-                                  currentInstallment?.paidValue,
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <p className="font-medium">
-                                  {currentInstallment?.bankAccount?.name}
-                                </p>
-                                <p className="text-gray">
-                                  {currentInstallment?.paymentCondition?.name ||
-                                    '-'}
-                                </p>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={['financial:flow:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconSearch}
-                                        tooltip={
-                                          item?.status === 'CANCELED'
-                                            ? 'Movimentação cancelada'
-                                            : 'Detalhes da movimentação'
-                                        }
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('transaction')
-                                        }}
-                                        badge={
-                                          item?.status === 'CANCELED'
-                                            ? 'errorLight'
-                                            : undefined
-                                        }
-                                      />
-                                    </PermissionGate>
-
-                                    <PermissionGate
-                                      permissions={[
-                                        'financial:flow:edit',
-                                        item?.type === 'receivable'
-                                          ? 'financial:receivable:edit'
-                                          : 'financial:payable:edit',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={IconRefreshDot}
-                                        tooltip="Editar parcelas"
-                                        onClick={() => {
-                                          if (editDisabled) return
-                                          setRowData(item)
-                                          setOpenDialog('edit-installments')
-                                        }}
-                                        disabled={editDisabled}
-                                      />
-                                    </PermissionGate>
-
-                                    <PermissionGate
-                                      permissions={['financial:flow:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconMessage}
-                                        tooltip={
-                                          item?.notes
-                                            ? 'Possui observação'
-                                            : 'Observações'
-                                        }
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('notes')
-                                        }}
-                                        badge={
-                                          item?.notes
-                                            ? 'warningLight'
-                                            : undefined
-                                        }
-                                      />
-                                      <ActionButton
-                                        Icon={IconHistory}
-                                        tooltip="Histórico"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setOpenDialog('history')
-                                        }}
-                                      />
-                                    </PermissionGate>
-
-                                    <PermissionGate
-                                      permissions={[
-                                        'financial:flow:edit',
-                                        item?.type === 'receivable'
-                                          ? 'financial:receivable:edit'
-                                          : 'financial:payable:edit',
-                                      ]}
-                                    >
-                                      <ActionButton
-                                        Icon={
-                                          transactionStatus[
-                                            currentInstallment?.status ||
-                                              'UNKNOWN'
-                                          ]?.icon
-                                        }
-                                        tooltip={
-                                          transactionStatus[
-                                            currentInstallment?.status ||
-                                              'UNKNOWN'
-                                          ]?.tooltip
-                                        }
-                                        variant={
-                                          transactionStatus[
-                                            currentInstallment?.status ||
-                                              'UNKNOWN'
-                                          ]?.button
-                                        }
-                                        onClick={() => {
-                                          if (
-                                            currentInstallment?.status ===
-                                            'CANCELED'
-                                          )
-                                            return
-
-                                          setRowData(item)
-                                          setInstallment(currentInstallment)
-
-                                          switch (currentInstallment?.status) {
-                                            case 'PENDING':
-                                              setOpenDialog('payment')
-                                              break
-                                            case 'PROVISIONED':
-                                              setOpenDialog('compensate')
-                                              break
-                                            case 'PAID':
-                                              setOpenDialog('view')
-                                              break
-                                            case 'OVERDUE':
-                                              setOpenDialog('payment')
-                                              break
-                                            default:
-                                              setOpenDialog('')
-                                              break
+                                  <p className="text-gray">
+                                    {currentInstallment?.paymentCondition
+                                      ?.name || '-'}
+                                  </p>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex justify-end gap-1">
+                                    <TooltipProvider>
+                                      <PermissionGate
+                                        permissions={['financial:flow:view']}
+                                      >
+                                        <ActionButton
+                                          Icon={IconSearch}
+                                          tooltip={
+                                            item?.status === 'CANCELED'
+                                              ? 'Movimentação cancelada'
+                                              : 'Detalhes da movimentação'
                                           }
-                                        }}
-                                        disabled={item?.status === 'CANCELED'}
-                                        isLoading={isLoadingPayment}
-                                      />
-                                    </PermissionGate>
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setOpenDialog('transaction')
+                                          }}
+                                          badge={
+                                            item?.status === 'CANCELED'
+                                              ? 'errorLight'
+                                              : undefined
+                                          }
+                                        />
+                                      </PermissionGate>
+
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:flow:edit',
+                                          item?.type === 'receivable'
+                                            ? 'financial:receivable:edit'
+                                            : 'financial:payable:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconRefreshDot}
+                                          tooltip="Editar parcelas"
+                                          onClick={() => {
+                                            if (editDisabled) return
+                                            setRowData(item)
+                                            setOpenDialog('edit-installments')
+                                          }}
+                                          disabled={editDisabled}
+                                        />
+                                      </PermissionGate>
+
+                                      <PermissionGate
+                                        permissions={['financial:flow:view']}
+                                      >
+                                        <ActionButton
+                                          Icon={IconMessage}
+                                          tooltip={
+                                            item?.notes
+                                              ? 'Possui observação'
+                                              : 'Observações'
+                                          }
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setOpenDialog('notes')
+                                          }}
+                                          badge={
+                                            item?.notes
+                                              ? 'warningLight'
+                                              : undefined
+                                          }
+                                        />
+                                        <ActionButton
+                                          Icon={IconHistory}
+                                          tooltip="Histórico"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setOpenDialog('history')
+                                          }}
+                                        />
+                                      </PermissionGate>
+
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:flow:edit',
+                                          item?.type === 'receivable'
+                                            ? 'financial:receivable:edit'
+                                            : 'financial:payable:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={
+                                            transactionStatus[
+                                              currentInstallment?.status ||
+                                                'UNKNOWN'
+                                            ]?.icon
+                                          }
+                                          tooltip={
+                                            transactionStatus[
+                                              currentInstallment?.status ||
+                                                'UNKNOWN'
+                                            ]?.tooltip
+                                          }
+                                          variant={
+                                            transactionStatus[
+                                              currentInstallment?.status ||
+                                                'UNKNOWN'
+                                            ]?.button
+                                          }
+                                          onClick={() => {
+                                            if (
+                                              currentInstallment?.status ===
+                                              'CANCELED'
+                                            )
+                                              return
+
+                                            setRowData(item)
+                                            setInstallment(currentInstallment)
+
+                                            switch (
+                                              currentInstallment?.status
+                                            ) {
+                                              case 'PENDING':
+                                                setOpenDialog('payment')
+                                                break
+                                              case 'PROVISIONED':
+                                                setOpenDialog('compensate')
+                                                break
+                                              case 'PAID':
+                                                setOpenDialog('view')
+                                                break
+                                              case 'OVERDUE':
+                                                setOpenDialog('payment')
+                                                break
+                                              default:
+                                                setOpenDialog('')
+                                                break
+                                            }
+                                          }}
+                                          disabled={item?.status === 'CANCELED'}
+                                          isLoading={isLoadingPayment}
+                                        />
+                                      </PermissionGate>
+                                    </TooltipProvider>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )
+                          })
+                        : null}
+                    </Fragment>
+                  )
+                })}
               </TableBody>
             </Table>
             {selectedInstallments.length > 0 && (
