@@ -71,6 +71,7 @@ export function PDV({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
+        review="todo"
         title="Frente de caixa"
         tabs={totals?.todos > 0 ? tabs : undefined}
         activeTab={searchParams?.status || 'todos'}

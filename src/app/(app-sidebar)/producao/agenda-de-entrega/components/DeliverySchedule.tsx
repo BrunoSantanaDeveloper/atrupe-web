@@ -103,6 +103,7 @@ export function DeliverySchedule({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
+        review="todo"
         title="Agenda de entrega"
         tabs={filteredTabs}
         activeTab={activeTab}

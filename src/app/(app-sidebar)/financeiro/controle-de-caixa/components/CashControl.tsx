@@ -79,6 +79,7 @@ export function CashControl({ searchParams }: SearchParamsType) {
     >
       <div className="space-y-5">
         <Topbar
+          review="todo"
           title="Controle de caixa"
           tabs={tabs}
           activeTab={searchParams?.status || 'todos'}
@@ -94,10 +95,13 @@ export function CashControl({ searchParams }: SearchParamsType) {
             </PermissionGate>
           }
         />
-        <ReviewTodo rule="LITE" title="Controle de caixa em desenvolvimento">
-          Depende das contas bancárias, do provisionamento e da compensação de
-          parcelas, que são recursos da LITE ainda não concluídos. No START a
-          empresa usa só a conta Caixa Empresa.
+        <ReviewTodo rule="LITE" title="Tela sem desenvolvimento">
+          O controle de caixa ainda não foi desenvolvido: o que está abaixo é a
+          casca da tela. As regras também não foram definidas — diferente da
+          frente de caixa, que já tem FC-1 a FC-20. Depende ainda das contas
+          bancárias, do provisionamento e da compensação de parcelas, recursos
+          da LITE não concluídos. No START a empresa usa só a conta Caixa
+          Empresa.
         </ReviewTodo>
         <div className="space-y-2">
           <CashControlActions searchParams={searchParams} />
