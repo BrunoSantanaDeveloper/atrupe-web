@@ -123,3 +123,63 @@ export const getPayrollStructure = async () => ({
   data: employees,
   message: '',
 })
+
+const find = (employeeId: string, itemId: string) =>
+  employees
+    .find((employee) => employee.id === employeeId)
+    ?.items.find((current) => current.id === itemId)
+
+export const updatePayrollItem = async (
+  employeeId: string,
+  itemId: string,
+  values: Partial<
+    Pick<PayrollStructureItem, 'behavior' | 'increase' | 'discount'>
+  >,
+) => {
+  const current = find(employeeId, itemId)
+
+  if (!current) {
+    return { success: false, data: null, message: 'Item não encontrado' }
+  }
+
+  // Férias e 13º são definidos em lei: o valor vem do cálculo, não da digitação
+  if (current.fixedByLaw) {
+    return {
+      success: false,
+      data: null,
+      message: 'Férias e 13º são calculados por lei e não podem ser editados',
+    }
+  }
+
+  Object.assign(current, values)
+
+  // O comportamento manda no que pode ter valor: quem só acrescenta não
+  // desconta, e quem só desconta não acrescenta
+  if (current.behavior === 'ONLY_INCREASE') current.discount = 0
+  if (current.behavior === 'ONLY_DISCOUNT') current.increase = 0
+
+  return { success: true, data: current, message: '' }
+}
+
+// Acrescentar ou tirar o item do colaborador. Tirar não apaga o item da
+// empresa: ele volta para a lista como disponível, com os valores zerados
+export const setPayrollItem = async (
+  employeeId: string,
+  itemId: string,
+  isSet: boolean,
+) => {
+  const current = find(employeeId, itemId)
+
+  if (!current) {
+    return { success: false, data: null, message: 'Item não encontrado' }
+  }
+
+  current.isSet = isSet
+
+  if (!isSet) {
+    current.increase = 0
+    current.discount = 0
+  }
+
+  return { success: true, data: current, message: '' }
+}

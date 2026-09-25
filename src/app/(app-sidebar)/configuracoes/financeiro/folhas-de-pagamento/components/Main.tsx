@@ -28,6 +28,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 // Components
 import { NewItemDialog } from './NewItem'
 import { ManageItemsDialog } from './ManageItems'
+import { EditPayrollItem } from './EditPayrollItem'
 import { Topbar } from '@/components/common/Topbar'
 import { Avatar } from '@/components/AvatarComponent'
 import { ActionButton } from '@/components/common/ActionButton'
@@ -49,10 +50,15 @@ import {
 } from '../types'
 
 // Actions
-import { getPayrollStructure } from '@/actions/payroll-structure'
+import {
+  setPayrollItem,
+  getPayrollStructure,
+} from '@/actions/payroll-structure'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import { useAlertDialog } from '@/store/useAlertDialog'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
@@ -109,6 +115,47 @@ export function Main() {
   const [costType, setCostType] = useState(TODOS)
   const [search, setSearch] = useState('')
   const [collapsed, setCollapsed] = useState(false)
+  const [editing, setEditing] = useState<PayrollStructureItem>()
+
+  const alertDialog = useAlertDialog()
+  const queryClient = useQueryClient()
+
+  const refresh = () =>
+    queryClient.invalidateQueries({ queryKey: ['payroll-structure'] })
+
+  const addItem = async (item: PayrollStructureItem) => {
+    const res = await setPayrollItem(employeeId, item.id, true)
+
+    if (!res.success) return toast.error(res.message)
+
+    await refresh()
+    // Acrescentar sem informar valor deixaria a linha zerada: o diálogo abre
+    // em seguida para a pessoa terminar o que começou
+    setEditing({ ...item, isSet: true })
+  }
+
+  // Tirar o item não apaga o item da empresa — ele volta para a lista como
+  // disponível. Por isso o texto fala em "tirar", não em "excluir"
+  const removeItem = (item: PayrollStructureItem) =>
+    alertDialog.open({
+      title: `Tirar ${item.name} deste colaborador?`,
+      description:
+        'O item continua cadastrado na empresa e pode ser acrescentado de novo. O valor informado aqui é perdido.',
+      confirmLabel: 'Tirar',
+      cancelLabel: 'Voltar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await setPayrollItem(employeeId, item.id, false)
+
+        if (!res.success) throw new Error(res.message)
+
+        await refresh()
+      },
+      toastMsg: {
+        success: 'Item tirado do colaborador',
+        error: 'Erro ao tirar o item',
+      },
+    })
 
   const sectors = useMemo(() => {
     const names = Array.from(new Set(employees.map((item) => item.sectorName)))
@@ -199,11 +246,13 @@ export function Main() {
                       : `Editar ${item.name}`
                   }
                   disabled={item.fixedByLaw}
+                  onClick={() => setEditing(item)}
                 />
                 <ActionButton
                   Icon={IconMinus}
                   variant="neutralGhost"
                   tooltip={`Tirar ${item.name} deste colaborador`}
+                  onClick={() => removeItem(item)}
                 />
               </>
             ) : (
@@ -211,6 +260,7 @@ export function Main() {
                 Icon={IconPlus}
                 variant="neutralGhost"
                 tooltip={`Acrescentar ${item.name}`}
+                onClick={() => addItem(item)}
               />
             )}
           </PermissionGate>
@@ -386,6 +436,7 @@ export function Main() {
                                   Icon={IconPencil}
                                   variant="neutralGhost"
                                   tooltip="Editar o salário base"
+                                  onClick={() => setEditing(salary)}
                                 />
                               </PermissionGate>
                             </div>
@@ -449,6 +500,12 @@ export function Main() {
             )}
           </Card>
         )}
+
+        <EditPayrollItem
+          item={editing}
+          employeeId={employeeId}
+          onOpenChange={(open) => !open && setEditing(undefined)}
+        />
       </div>
     </TooltipProvider>
   )
