@@ -1,0 +1,277 @@
+'use server'
+
+// PROVISÓRIO: a API ainda não tem os endpoints da frente de caixa (FC-1 a
+// FC-20). Dados de exemplo em memória, no formato das actions reais, para a
+// tela poder ser conferida antes de o backend existir.
+
+// Types
+import type {
+  CashSession,
+  PaymentPart,
+  PendingSale,
+  CashMovement,
+  AwaitingPickup,
+} from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
+
+const hoje = (hora: string) =>
+  `${new Date().toISOString().slice(0, 10)}T${hora}`
+
+let session: CashSession | null = {
+  id: 'c1',
+  name: 'Caixa 1',
+  operator: 'Renata Alves',
+  openedAt: hoje('08:12:00'),
+  openingBalance: 20000,
+  status: 'OPEN',
+  movements: [
+    {
+      id: 'm1',
+      kind: 'SALE',
+      description: 'VR-2026-0311 · Consumidor · 2 cópias autenticadas',
+      createdAt: hoje('08:47:00'),
+      parts: [{ method: 'CASH', amount: 1200, netAmount: 1200 }],
+    },
+    {
+      id: 'm2',
+      kind: 'SALE',
+      description: 'VR-2026-0312 · Consumidor · Banner 1,00 × 0,50 m',
+      createdAt: hoje('09:30:00'),
+      parts: [{ method: 'CARD', amount: 8500, netAmount: 8160 }],
+    },
+    {
+      id: 'm3',
+      kind: 'SUPPLY',
+      description: 'Troco para o dia',
+      reason: 'Reforço de troco, notas pequenas',
+      responsible: 'Renata Alves',
+      createdAt: hoje('10:05:00'),
+      parts: [{ method: 'CASH', amount: 10000, netAmount: 10000 }],
+    },
+    {
+      id: 'm4',
+      kind: 'SALE',
+      description: 'VR-2026-0315 · Consumidor · 500 cartões de visita',
+      createdAt: hoje('11:18:00'),
+      parts: [
+        { method: 'PIX', amount: 10000, netAmount: 10000 },
+        { method: 'CASH', amount: 5000, netAmount: 5000 },
+      ],
+    },
+    {
+      id: 'm5',
+      kind: 'WITHDRAWAL',
+      description: 'Sangria',
+      reason: 'Acima do limite de dinheiro em gaveta',
+      responsible: 'Renata Alves',
+      createdAt: hoje('14:00:00'),
+      parts: [{ method: 'CASH', amount: 15000, netAmount: 15000 }],
+    },
+  ],
+}
+
+let sales: PendingSale[] = [
+  {
+    id: 's1',
+    reference: 'VR-2026-0318',
+    client: 'Consumidor',
+    seller: 'Tiago Nunes',
+    kind: 'QUICK',
+    total: 4500,
+    paid: 0,
+    delivered: false,
+    approvedAt: hoje('15:02:00'),
+    goesToCash: true,
+  },
+  {
+    id: 's2',
+    reference: 'VR-2026-0319',
+    client: 'Marcelo Dias',
+    seller: 'Tiago Nunes',
+    kind: 'QUICK',
+    // Sinal de 50% pago; o restante é cobrado na retirada (FC-17)
+    total: 68000,
+    paid: 34000,
+    delivered: false,
+    approvedAt: hoje('15:40:00'),
+    goesToCash: true,
+  },
+  {
+    id: 's3',
+    reference: 'ORC-2026-0184',
+    client: 'Supermercado Bom Preço',
+    seller: 'Ana Prado',
+    kind: 'QUOTATION',
+    total: 320000,
+    paid: 0,
+    delivered: false,
+    approvedAt: hoje('16:10:00'),
+    // Cliente com faturamento mensal: foi para o fluxo financeiro e aqui
+    // aparece só como registro do dia (FC-12.1)
+    goesToCash: false,
+  },
+]
+
+const pickups: AwaitingPickup[] = [
+  {
+    id: 'p1',
+    reference: 'VR-2026-0244',
+    client: 'Juliana Prado',
+    phone: '(48) 99911-4420',
+    finishedAt: '2026-09-02',
+    remaining: 12000,
+    deadlineDays: 30,
+    daysWaiting: 22,
+  },
+  {
+    id: 'p2',
+    reference: 'VR-2026-0198',
+    client: 'Oficina do Léo',
+    phone: '(48) 98812-7701',
+    finishedAt: '2026-08-14',
+    remaining: 45000,
+    deadlineDays: 30,
+    daysWaiting: 41,
+  },
+]
+
+export const getCashFront = async () => ({
+  success: true,
+  data: { session, sales, pickups },
+  message: '',
+})
+
+export const openCashSession = async (openingBalance: number) => {
+  session = {
+    id: `c${Date.now()}`,
+    name: 'Caixa 1',
+    operator: 'Renata Alves',
+    openedAt: new Date().toISOString(),
+    openingBalance,
+    status: 'OPEN',
+    movements: [],
+  }
+
+  return { success: true, data: session, message: '' }
+}
+
+const push = (movement: Omit<CashMovement, 'id' | 'createdAt'>) => {
+  if (!session) return false
+
+  session.movements.push({
+    ...movement,
+    id: `m${Date.now()}`,
+    createdAt: new Date().toISOString(),
+  })
+
+  return true
+}
+
+export const addCashMovement = async (
+  kind: 'WITHDRAWAL' | 'SUPPLY',
+  amount: number,
+  reason: string,
+) => {
+  if (!session) {
+    return { success: false, data: null, message: 'Nenhum caixa aberto' }
+  }
+
+  if (!reason.trim()) {
+    return {
+      success: false,
+      data: null,
+      message:
+        'Informe o motivo: sangria e suprimento registram motivo e responsável',
+    }
+  }
+
+  push({
+    kind,
+    description: kind === 'WITHDRAWAL' ? 'Sangria' : 'Suprimento',
+    reason,
+    responsible: session.operator,
+    parts: [{ method: 'CASH', amount, netAmount: amount }],
+  })
+
+  return { success: true, data: session, message: '' }
+}
+
+// Receber a venda: o pagamento pode vir dividido em várias formas (FC-9), e a
+// entrega é um gesto à parte porque no sinal o cliente paga e leva depois
+export const receiveSale = async (
+  saleId: string,
+  parts: PaymentPart[],
+  deliver: boolean,
+) => {
+  const sale = sales.find((item) => item.id === saleId)
+
+  if (!sale) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+
+  if (!session || session.status !== 'OPEN') {
+    return {
+      success: false,
+      data: null,
+      message: 'Abra o caixa antes de receber',
+    }
+  }
+
+  const amount = parts.reduce((total, part) => total + part.amount, 0)
+
+  push({
+    kind: 'SALE',
+    description: `${sale.reference} · ${sale.client}`,
+    parts,
+  })
+
+  sale.paid += amount
+  sale.delivered = deliver || sale.delivered
+
+  // Venda paga e entregue sai da fila
+  if (sale.paid >= sale.total && sale.delivered) {
+    sales = sales.filter((item) => item.id !== saleId)
+  }
+
+  return { success: true, data: sale, message: '' }
+}
+
+// O estorno acontece pelo cancelamento da venda, com justificativa (FC-13)
+export const reverseSale = async (saleId: string, reason: string) => {
+  const sale = sales.find((item) => item.id === saleId)
+
+  if (!sale || !session) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+
+  if (!reason.trim()) {
+    return {
+      success: false,
+      data: null,
+      message: 'O estorno exige justificativa',
+    }
+  }
+
+  push({
+    kind: 'REVERSAL',
+    description: `Cancelamento de ${sale.reference}`,
+    reason,
+    responsible: session.operator,
+    parts: [{ method: 'CASH', amount: sale.paid, netAmount: sale.paid }],
+  })
+
+  sales = sales.filter((item) => item.id !== saleId)
+
+  return { success: true, data: null, message: '' }
+}
+
+// Fechamento com conferência às cegas (FC-7): o operador informa o que contou
+// e só então vê o esperado, e a diferença fica registrada
+export const closeCashSession = async (countedCash: number) => {
+  if (!session) {
+    return { success: false, data: null, message: 'Nenhum caixa aberto' }
+  }
+
+  session.status = 'CLOSED'
+
+  return { success: true, data: { countedCash }, message: '' }
+}

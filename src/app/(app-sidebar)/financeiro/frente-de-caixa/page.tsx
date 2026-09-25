@@ -4,9 +4,6 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
-// Type Imports
-import type { SearchParamsType } from '@/types/coreTypes'
-
 // Constants
 import { FEATURES } from '@/consts/features'
 
@@ -16,7 +13,9 @@ export function metadata() {
   }
 }
 
-export default function PDVsPage({ searchParams }: SearchParamsType) {
+// A frente de caixa troca de aba dentro da própria tela: o caixa do dia não
+// é navegação, é o mesmo posto de trabalho
+export default function PDVsPage() {
   return (
     <FeatureGate
       features={[FEATURES.FINANCIAL.PDV_SCREEN]}
@@ -35,7 +34,7 @@ export default function PDVsPage({ searchParams }: SearchParamsType) {
           </div>
         }
       >
-        <PDV searchParams={searchParams} />
+        <PDV />
       </PermissionGate>
     </FeatureGate>
   )
