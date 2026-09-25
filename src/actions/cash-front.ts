@@ -30,14 +30,14 @@ let session: CashSession | null = {
       kind: 'SALE',
       description: 'VR-2026-0311 · Consumidor · 2 cópias autenticadas',
       createdAt: hoje('08:47:00'),
-      parts: [{ method: 'CASH', amount: 1200, netAmount: 1200 }],
+      parts: [{ method: 'CASH', amount: 1200 }],
     },
     {
       id: 'm2',
       kind: 'SALE',
       description: 'VR-2026-0312 · Consumidor · Banner 1,00 × 0,50 m',
       createdAt: hoje('09:30:00'),
-      parts: [{ method: 'CARD', amount: 8500, netAmount: 8160 }],
+      parts: [{ method: 'CARD', amount: 8500 }],
     },
     {
       id: 'm3',
@@ -46,7 +46,7 @@ let session: CashSession | null = {
       reason: 'Reforço de troco, notas pequenas',
       responsible: 'Renata Alves',
       createdAt: hoje('10:05:00'),
-      parts: [{ method: 'CASH', amount: 10000, netAmount: 10000 }],
+      parts: [{ method: 'CASH', amount: 10000 }],
     },
     {
       id: 'm4',
@@ -54,8 +54,8 @@ let session: CashSession | null = {
       description: 'VR-2026-0315 · Consumidor · 500 cartões de visita',
       createdAt: hoje('11:18:00'),
       parts: [
-        { method: 'PIX', amount: 10000, netAmount: 10000 },
-        { method: 'CASH', amount: 5000, netAmount: 5000 },
+        { method: 'PIX', amount: 10000 },
+        { method: 'CASH', amount: 5000 },
       ],
     },
     {
@@ -65,7 +65,7 @@ let session: CashSession | null = {
       reason: 'Acima do limite de dinheiro em gaveta',
       responsible: 'Renata Alves',
       createdAt: hoje('14:00:00'),
-      parts: [{ method: 'CASH', amount: 15000, netAmount: 15000 }],
+      parts: [{ method: 'CASH', amount: 15000 }],
     },
   ],
 }
@@ -193,7 +193,7 @@ export const addCashMovement = async (
     description: kind === 'WITHDRAWAL' ? 'Sangria' : 'Suprimento',
     reason,
     responsible: session.operator,
-    parts: [{ method: 'CASH', amount, netAmount: amount }],
+    parts: [{ method: 'CASH', amount }],
   })
 
   return { success: true, data: session, message: '' }
@@ -267,7 +267,7 @@ export const reverseSale = async (saleId: string, reason: string) => {
     description: `Cancelamento de ${sale.reference}`,
     reason,
     responsible: session.operator,
-    parts: [{ method: 'CASH', amount: sale.paid, netAmount: sale.paid }],
+    parts: [{ method: 'CASH', amount: sale.paid }],
   })
 
   sales = sales.filter((item) => item.id !== saleId)

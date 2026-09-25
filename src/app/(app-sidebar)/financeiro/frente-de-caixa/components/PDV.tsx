@@ -371,7 +371,6 @@ export function PDV() {
                       <TableHead className="w-full">Movimento</TableHead>
                       <TableHead>Forma</TableHead>
                       <TableHead className="text-right">Valor</TableHead>
-                      <TableHead className="text-right">Líquido</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -385,7 +384,6 @@ export function PDV() {
                       <TableCell className="text-right text-sm text-gray">
                         {money(session.openingBalance)}
                       </TableCell>
-                      <TableCell />
                     </TableRow>
                     {session.movements.map((movement) => (
                       <TableRow key={movement.id}>
@@ -429,23 +427,15 @@ export function PDV() {
                             ),
                           )}
                         </TableCell>
-                        <TableCell className="text-right text-sm text-gray">
-                          {money(
-                            movement.parts.reduce(
-                              (total, part) => total + part.netAmount,
-                              0,
-                            ),
-                          )}
-                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
                 <CardFooter className="flex-wrap justify-between gap-3">
                   <p className="max-w-xl text-sm text-gray">
-                    O <strong>líquido</strong> é o que entra na conta: no
-                    cartão, a taxa já sai do valor recebido, pela mesma regra
-                    que o financeiro usa hoje.
+                    O cartão entra pelo <strong>valor cheio</strong>. A taxa
+                    aparece na previsão do caixa principal, com o líquido entre
+                    parênteses, e é confirmada na baixa.
                   </p>
                   <p className="text-sm">
                     Dinheiro em caixa:{' '}

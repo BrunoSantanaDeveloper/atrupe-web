@@ -12,22 +12,24 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
   CARD: 'Cartão',
 }
 
-// Para onde o dinheiro vai no fechamento (FC-3): dinheiro fica no caixa
-// principal, cartão e PIX vão para os bancos, cada um com o seu prazo
+// Para onde o dinheiro vai no fechamento (FC-3): dinheiro entra no caixa
+// principal; cartão e PIX viram previsão de recebimento no caixa principal,
+// pelo valor cheio, e a baixa acontece quando o dinheiro cai (FC-10)
 export const paymentMethodDestination: Record<PaymentMethod, string> = {
   CASH: 'Caixa Empresa',
-  PIX: 'Banco · no mesmo dia',
-  CARD: 'Banco · conforme o prazo da operadora',
+  PIX: 'Previsão no caixa principal',
+  CARD: 'Previsão no caixa principal · taxa na baixa',
 }
 
 // Uma parte do recebimento. O pagamento misto (FC-9) é simplesmente mais de
 // uma parte, reaproveitando a divisão de parcela que o Fluxo financeiro já tem
 export type PaymentPart = {
   method: PaymentMethod
-  // O que o cliente pagou
+  // O que o cliente pagou. Entra sempre pelo valor cheio, inclusive no
+  // cartão: a taxa não é descontada no caixa. Ela aparece na previsão do
+  // caixa principal, com o líquido entre parênteses, e é confirmada na baixa,
+  // quando se informa o recebido e a taxa (FC-10)
   amount: number
-  // O que entra na conta: no cartão, já deduzida a taxa (FC-10)
-  netAmount: number
 }
 
 export type CashMovementKind = 'SALE' | 'WITHDRAWAL' | 'SUPPLY' | 'REVERSAL'
