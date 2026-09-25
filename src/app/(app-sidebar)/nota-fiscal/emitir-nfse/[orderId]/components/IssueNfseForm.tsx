@@ -945,6 +945,9 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         <NfseCamposAdicionaisSection
           valores={camposAdicionais}
           onChange={setCamposAdicionais}
+          servicoSemIbsCbs={
+            !servicoEscolhido?.cstIbsCbs || !servicoEscolhido?.codClassificacao
+          }
         />
 
         <NfseTotaisSection

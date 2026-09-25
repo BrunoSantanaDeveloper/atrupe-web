@@ -765,6 +765,9 @@ export function StandaloneNfseForm() {
         <NfseCamposAdicionaisSection
           valores={camposAdicionais}
           onChange={setCamposAdicionais}
+          servicoSemIbsCbs={
+            !servicoEscolhido?.cstIbsCbs || !servicoEscolhido?.codClassificacao
+          }
         />
 
         {/* Totals */}

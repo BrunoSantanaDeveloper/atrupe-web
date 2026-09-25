@@ -90,9 +90,35 @@ const TP_OPER_OPTIONS = [
 interface Props {
   valores: NfseCamposAdicionais
   onChange: (valores: NfseCamposAdicionais) => void
+  /**
+   * Serviço escolhido sem CST ou sem Classificação Tributária IBS/CBS. O
+   * grupo IBSCBS da DPS é tudo ou nada: sem os dois, o backend descarta os
+   * indicadores abaixo em vez de gerar um grupo incompleto, que a prefeitura
+   * recusa (E1235). O descarte é silencioso no payload, então quem preencheu
+   * precisa ver aqui que aquilo não vai sair na nota.
+   */
+  servicoSemIbsCbs?: boolean
 }
 
-export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
+// Só os campos que moram no grupo IBSCBS. Tributos aproximados e INSS saem
+// em Valores e não dependem do CST.
+const CAMPOS_DO_GRUPO_IBSCBS: (keyof NfseCamposAdicionais)[] = [
+  'cIndOp',
+  'indFinal',
+  'indDest',
+  'tpEnteGov',
+  'tpOper',
+]
+
+export function NfseCamposAdicionaisSection({
+  valores,
+  onChange,
+  servicoSemIbsCbs = false,
+}: Props) {
+  const indicadoresPreenchidos = CAMPOS_DO_GRUPO_IBSCBS.some(
+    (campo) => valores[campo] !== undefined && valores[campo] !== '',
+  )
+  const avisarDescarte = servicoSemIbsCbs && indicadoresPreenchidos
   const setCampo = <K extends keyof NfseCamposAdicionais>(
     campo: K,
     valor: NfseCamposAdicionais[K],
@@ -133,6 +159,17 @@ export function NfseCamposAdicionaisSection({ valores, onChange }: Props) {
               )}
             />
           </CardHeader>
+          {avisarDescarte && (
+            <div className="px-6 py-3 bg-amber-50 border-b border-amber-200">
+              <p className="text-xs text-amber-800">
+                Os indicadores da Reforma preenchidos aqui{' '}
+                <strong>não serão enviados</strong>: o serviço escolhido não tem
+                CST e Classificação Tributária IBS/CBS. Cadastre os dois em
+                Configurações &gt; Lista de Serviços para que eles saiam na
+                nota.
+              </p>
+            </div>
+          )}
           <AccordionContent>
             <CardContent className="p-6 space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
