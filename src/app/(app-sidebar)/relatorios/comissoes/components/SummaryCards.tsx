@@ -21,7 +21,9 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
-import type { CommissionType } from '../types'
+
+// Mode
+import { commissionFilters, commissionModeOf } from '../mode'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
   // EC-25: sem a permissão de ver vendas de outros vendedores, o relatório
@@ -42,42 +44,80 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       searchParams?.commissionType,
       searchParams?.startDate,
       searchParams?.endDate,
-      searchParams?.receivedStartDate,
-      searchParams?.receivedEndDate,
+      searchParams?.period,
       searchParams?.sellerId,
       restrictedSellerId,
     ],
     queryFn: () =>
-      getCommissionSummary({
-        commissionType: searchParams?.commissionType as CommissionType,
-        startDate: searchParams?.startDate as string,
-        endDate: searchParams?.endDate as string,
-        receivedStartDate: searchParams?.receivedStartDate as string,
-        receivedEndDate: searchParams?.receivedEndDate as string,
-        sellerId: restrictedSellerId || (searchParams?.sellerId as string),
-      }),
+      getCommissionSummary(
+        commissionFilters(
+          {
+            commissionType: searchParams?.commissionType as string,
+            period: searchParams?.period as string,
+            startDate: searchParams?.startDate as string,
+            endDate: searchParams?.endDate as string,
+            sellerId: searchParams?.sellerId as string,
+          },
+          restrictedSellerId,
+        ),
+      ),
   })
 
-  const cards = [
-    {
-      icon: IconCircleCheck,
-      variant: 'successLight',
-      label: 'Vendas do período',
-      value: formatCurrencyToBrl(data?.salesTotal || 0),
-    },
-    {
-      icon: IconCoin,
-      variant: 'neutralLight',
-      label: 'Recebido',
-      value: formatCurrencyToBrl(data?.receivedTotal || 0),
-    },
-    {
-      icon: IconReceipt,
-      variant: 'neutralLight',
-      label: 'Comissão',
-      value: formatCurrencyToBrl(data?.commissionTotal || 0),
-    },
-  ]
+  const mode = commissionModeOf(searchParams?.commissionType as string)
+  const plural = (count: number | undefined, one: string, many: string) =>
+    `${count ?? 0} ${count === 1 ? one : many}`
+
+  // A comissão vem primeiro, porque é a pergunta do relatório; ao lado, a
+  // base sobre a qual ela foi calculada, e por último o outro valor, só como
+  // referência
+  const cards =
+    mode === 'received_value'
+      ? [
+          {
+            icon: IconReceipt,
+            variant: 'successLight',
+            label: 'Comissão a pagar',
+            value: formatCurrencyToBrl(data?.commissionTotal || 0),
+            support: 'sobre o recebido no período',
+          },
+          {
+            icon: IconCoin,
+            variant: 'neutralLight',
+            label: 'Recebido no período',
+            value: formatCurrencyToBrl(data?.receivedTotal || 0),
+            support: plural(data?.receivedCount, 'recebimento', 'recebimentos'),
+          },
+          {
+            icon: IconCircleCheck,
+            variant: 'neutralLight',
+            label: 'Vendido no período',
+            value: formatCurrencyToBrl(data?.salesTotal || 0),
+            support: 'só referência — não é a base',
+          },
+        ]
+      : [
+          {
+            icon: IconReceipt,
+            variant: 'successLight',
+            label: 'Comissão a pagar',
+            value: formatCurrencyToBrl(data?.commissionTotal || 0),
+            support: 'sobre o vendido no período',
+          },
+          {
+            icon: IconCircleCheck,
+            variant: 'neutralLight',
+            label: 'Vendido no período',
+            value: formatCurrencyToBrl(data?.salesTotal || 0),
+            support: plural(data?.salesCount, 'venda', 'vendas'),
+          },
+          {
+            icon: IconCoin,
+            variant: 'neutralLight',
+            label: 'Já recebido dessas vendas',
+            value: formatCurrencyToBrl(data?.receivedTotal || 0),
+            support: 'só referência — não é a base',
+          },
+        ]
 
   if (isLoading) {
     return (
@@ -109,6 +149,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
             <span className="text-lg font-semibold text-gray-900">
               {card.value}
             </span>
+            <span className="text-xs text-gray truncate">{card.support}</span>
           </div>
         </Card>
       ))}

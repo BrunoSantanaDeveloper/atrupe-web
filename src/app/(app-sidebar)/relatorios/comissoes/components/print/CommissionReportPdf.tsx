@@ -14,6 +14,11 @@ import type {
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import {
+  commissionOf,
+  commissionModeCopy,
+  type CommissionMode,
+} from '../../mode'
 
 const styles = StyleSheet.create({
   page: {
@@ -56,12 +61,13 @@ const styles = StyleSheet.create({
     color: '#667085',
     textTransform: 'uppercase',
   },
-  colServices: { width: '30%' },
-  colSaleDate: { width: '14%' },
-  colReceivedDate: { width: '14%' },
-  colSaleValue: { width: '16%', textAlign: 'right' },
-  colReceivedValue: { width: '16%', textAlign: 'right' },
-  colPercent: { width: '10%', textAlign: 'right' },
+  colServices: { width: '28%' },
+  colSaleDate: { width: '12%' },
+  colReceivedDate: { width: '12%' },
+  colSaleValue: { width: '14%', textAlign: 'right' },
+  colReceivedValue: { width: '14%', textAlign: 'right' },
+  colPercent: { width: '6%', textAlign: 'right' },
+  colCommission: { width: '14%', textAlign: 'right' },
   // Group Header Row
   groupHeader: {
     flexDirection: 'row',
@@ -129,9 +135,17 @@ const styles = StyleSheet.create({
 
 interface Props {
   data: CommissionPdfData
+  mode: CommissionMode
 }
 
-export function CommissionReportPdf({ data }: Props) {
+export function CommissionReportPdf({ data, mode }: Props) {
+  const groupCommission = (group: CommissionPdfGroup) =>
+    group.records.reduce((sum, r) => sum + commissionOf(r, mode), 0)
+  const totalCommission = data.groups.reduce(
+    (sum, group) => sum + groupCommission(group),
+    0,
+  )
+
   const renderRecord = (record: CommissionPdfRecord) => (
     <View key={record.id} style={styles.tableRow} wrap={false}>
       <View style={styles.colServices}>
@@ -157,6 +171,11 @@ export function CommissionReportPdf({ data }: Props) {
       <View style={styles.colPercent}>
         <Text style={styles.cellPercent}>{record.percentage}%</Text>
       </View>
+      <View style={styles.colCommission}>
+        <Text style={styles.cellReceivedValue}>
+          {formatCurrencyToBrl(commissionOf(record, mode))}
+        </Text>
+      </View>
     </View>
   )
 
@@ -180,6 +199,11 @@ export function CommissionReportPdf({ data }: Props) {
           </Text>
         </View>
         <View style={styles.colPercent} />
+        <View style={styles.colCommission}>
+          <Text style={styles.groupValue}>
+            {formatCurrencyToBrl(groupCommission(group))}
+          </Text>
+        </View>
       </View>
       {/* Group Records */}
       {group.records.map(renderRecord)}
@@ -194,7 +218,9 @@ export function CommissionReportPdf({ data }: Props) {
         <View style={styles.container}>
           {/* Title */}
           <Text style={styles.title}>Relatório</Text>
-          <Text style={styles.subtitle}>Comissões</Text>
+          <Text style={styles.subtitle}>
+            Comissões · {commissionModeCopy[mode].label.toLowerCase()}
+          </Text>
 
           {/* Table Header */}
           <View style={styles.tableHeader} fixed>
@@ -219,6 +245,11 @@ export function CommissionReportPdf({ data }: Props) {
             </View>
             <View style={styles.colPercent}>
               <Text style={styles.tableHeaderCell}>%</Text>
+            </View>
+            <View style={styles.colCommission}>
+              <Text style={styles.tableHeaderCell}>
+                {formatCurrencyToBrl(totalCommission)}
+              </Text>
             </View>
           </View>
 

@@ -8,6 +8,9 @@ interface CommissionPdfFilters {
   commissionType?: CommissionType
   startDate?: string
   endDate?: string
+  receivedStartDate?: string
+  receivedEndDate?: string
+  sellerId?: string
 }
 
 export async function getCommissionPdfData(
@@ -27,8 +30,8 @@ export async function getCommissionPdfData(
     // Fetch company info from sales pdf-data (reuse same endpoint for company data)
     const companyRes = await api.get('/report/sales/pdf-data', {
       params: {
-        startDate: filters?.startDate,
-        endDate: filters?.endDate,
+        startDate: filters?.startDate ?? filters?.receivedStartDate,
+        endDate: filters?.endDate ?? filters?.receivedEndDate,
       },
     })
 
