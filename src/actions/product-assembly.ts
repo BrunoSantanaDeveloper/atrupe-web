@@ -425,9 +425,12 @@ const assemblies: ProductAssembly[] = [
     code: 'PRD-01',
     status: 'RELEASED',
     dimension: 'SALE',
-    billing: 'PER_AREA',
-    price: 4500,
+    unitKind: 'AREA',
+    unitPrice: 4500,
     measure: { quantity: 1, width: 0.9, height: 1.2 },
+    unitAmount: 1,
+    allowEditValues: true,
+    allowEditDescription: true,
     technicalDescription:
       'Lona 440 g impressa em solvente, com bastão de madeira, ponteiras e cordão.',
     blocks: [
@@ -446,9 +449,12 @@ const findOrCreate = (productId: string) => {
       code: '',
       status: 'DRAFT',
       dimension: 'SALE',
-      billing: 'SUGGESTED',
-      price: null,
+      unitKind: 'UNITY',
+      unitPrice: null,
       measure: { quantity: 1, width: 1, height: 1 },
+      unitAmount: 1,
+      allowEditValues: true,
+      allowEditDescription: true,
       technicalDescription: '',
       blocks: [],
     }
@@ -582,14 +588,18 @@ const compute = (assembly: ProductAssembly): ComputedAssembly => {
   const cost = blocks.reduce((sum, block) => sum + block.cost, 0)
   const suggestedPrice = Math.round(cost * REFERENCE_MARKUP)
 
+  // Quanto de unidade comercial a medida tem, como o "Valor" do START
+  const saleAmount =
+    assembly.unitKind === 'AREA'
+      ? area * measure.quantity
+      : assembly.unitKind === 'UNITY'
+        ? measure.quantity
+        : assembly.unitAmount * measure.quantity
+
   const priceForMeasure =
-    assembly.billing === 'SUGGESTED'
-      ? suggestedPrice
-      : assembly.price === null
-        ? null
-        : assembly.billing === 'PER_AREA'
-          ? Math.round(assembly.price * area * measure.quantity)
-          : assembly.price * measure.quantity
+    assembly.unitPrice === null
+      ? null
+      : Math.round(assembly.unitPrice * saleAmount)
 
   return {
     ...assembly,
@@ -597,7 +607,11 @@ const compute = (assembly: ProductAssembly): ComputedAssembly => {
     blocks,
     cost,
     suggestedPrice,
+    saleAmount: round(saleAmount, 4),
     priceForMeasure,
+    suggestedUnitPrice: Math.round(
+      suggestedPrice / Math.max(saleAmount, 0.0001),
+    ),
     // Produto sem composição nunca aparece com margem zero (DC-15)
     margin:
       priceForMeasure && cost
@@ -649,9 +663,12 @@ export const updateAssembly = async ({
       ProductAssembly,
       | 'status'
       | 'dimension'
-      | 'billing'
-      | 'price'
+      | 'unitKind'
+      | 'unitPrice'
       | 'measure'
+      | 'unitAmount'
+      | 'allowEditValues'
+      | 'allowEditDescription'
       | 'technicalDescription'
     >
   >

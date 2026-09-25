@@ -23,6 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -48,10 +49,13 @@ import {
 
 // Types
 import {
-  billingModeObj,
+  unitKindObj,
+  unitSymbol,
+  unitSaleLabel,
+  unitAmountLabel,
   assemblyStatusObj,
   productDimensionObj,
-  type BillingMode,
+  type UnitKind,
   type ComputedLine,
   type ComputedBlock,
   type AssemblyStatus,
@@ -181,22 +185,16 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       (item) => item.role === 'FINISHING' && item.finishingOf === block.sector,
     )
 
-  const adoptSuggested = () => {
-    const price =
-      assembly.billing === 'PER_AREA'
-        ? Math.round(
-            assembly.suggestedPrice /
-              Math.max(assembly.area * measure.quantity, 0.0001),
-          )
-        : assembly.billing === 'PER_UNIT'
-          ? Math.round(assembly.suggestedPrice / Math.max(measure.quantity, 1))
-          : null
-
+  // O sugerido já vem na unidade comercial: adotar é gravar como valor de
+  // venda, o mesmo campo do cadastro do START
+  const adoptSuggested = () =>
     run(
-      updateAssembly({ productId, values: { price } }),
+      updateAssembly({
+        productId,
+        values: { unitPrice: assembly.suggestedUnitPrice },
+      }),
       'Preço sugerido adotado',
     )
-  }
 
   const removeBlock = (block: ComputedBlock) =>
     alertDialog.open({
@@ -493,14 +491,15 @@ export function AssemblyEditor({ productId }: { productId: string }) {
 
   return (
     <div className="space-y-5">
-      {/* 1. O produto: situação, medida da simulação e como se cobra */}
+      {/* 1. O produto: a cobrança é a do cadastro do START (IP-17) —
+          unidade comercial, valor de venda e padrão de medidas */}
       <Card>
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div>
             <CardTitle>Produto</CardTitle>
             <CardDescription>
-              A medida abaixo simula o custo. Ela só vira a medida padrão do
-              produto quando for salva.
+              Os mesmos campos do cadastro do produto. A composição acrescenta o
+              custo e o preço sugerido.
             </CardDescription>
           </div>
           <PermissionGate permissions={EDIT}>
@@ -531,111 +530,218 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             </div>
           </PermissionGate>
         </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-6">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {(
-              [
-                ['quantity', 'Quantidade', '1'],
-                ['width', 'Largura (m)', '0.01'],
-                ['height', 'Altura (m)', '0.01'],
-              ] as const
-            ).map(([key, label, step]) => (
-              <div key={key} className="space-y-2">
-                <Label htmlFor={`measure-${key}`}>{label}</Label>
+        <CardContent className="space-y-6 px-6 pb-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <SelectBasic
+              name="assembly-unit"
+              label="Unidade comercial"
+              options={toOptions(unitKindObj)}
+              value={assembly.unitKind}
+              onChange={(value) =>
+                run(
+                  updateAssembly({
+                    productId,
+                    values: { unitKind: value as UnitKind },
+                  }),
+                )
+              }
+            />
+            <PermissionGate permissions={['values:values:view']}>
+              <div className="space-y-2">
+                <Label htmlFor="assembly-unit-price">
+                  {unitSaleLabel[assembly.unitKind]}
+                </Label>
                 <Input
-                  id={`measure-${key}`}
+                  key={`${assembly.unitKind}-${assembly.unitPrice}`}
+                  id="assembly-unit-price"
                   type="number"
                   min={0}
-                  step={step}
-                  value={measure[key]}
+                  step="0.01"
+                  startAdornment={<span className="text-sm">R$</span>}
+                  defaultValue={
+                    assembly.unitPrice === null ? '' : assembly.unitPrice / 100
+                  }
+                  onBlur={(event) =>
+                    run(
+                      updateAssembly({
+                        productId,
+                        values: {
+                          unitPrice:
+                            event.target.value === ''
+                              ? null
+                              : Math.round(Number(event.target.value) * 100),
+                        },
+                      }),
+                    )
+                  }
+                />
+              </div>
+            </PermissionGate>
+            <SelectBasic
+              name="assembly-dimension"
+              label="Medida no orçamento"
+              options={toOptions(productDimensionObj)}
+              value={assembly.dimension}
+              onChange={(value) =>
+                run(
+                  updateAssembly({
+                    productId,
+                    values: { dimension: value as ProductDimension },
+                  }),
+                )
+              }
+            />
+          </div>
+
+          <div>
+            <h4 className="mb-2 text-base font-semibold text-gray-700">
+              Padrão de medidas do produto
+            </h4>
+            <div className="grid grid-cols-2 gap-4 rounded-xl border border-blue-light-300 bg-blue-light-50 p-6 md:grid-cols-5">
+              <div className="space-y-2">
+                <Label htmlFor="measure-quantity">Quantidade</Label>
+                <Input
+                  id="measure-quantity"
+                  type="number"
+                  min={0}
+                  step="1"
+                  value={measure.quantity}
                   onChange={(event) =>
                     setMeasure((current) =>
                       current
-                        ? { ...current, [key]: Number(event.target.value) || 0 }
+                        ? {
+                            ...current,
+                            quantity: Number(event.target.value) || 0,
+                          }
                         : current,
                     )
                   }
                 />
               </div>
-            ))}
-            <div className="space-y-2">
-              <Label>Área</Label>
-              <p className="flex h-11 items-center text-sm text-gray-800">
-                {num(assembly.area)} m²
-              </p>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-              <SelectBasic
-                name="assembly-dimension"
-                label="Medida no orçamento"
-                options={toOptions(productDimensionObj)}
-                value={assembly.dimension}
-                onChange={(value) =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { dimension: value as ProductDimension },
-                    }),
-                  )
-                }
-              />
-            </div>
-            <div>
-              <SelectBasic
-                name="assembly-billing"
-                label="Cobrança"
-                options={toOptions(billingModeObj)}
-                value={assembly.billing}
-                onChange={(value) =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { billing: value as BillingMode },
-                    }),
-                  )
-                }
-              />
-            </div>
-            {assembly.billing !== 'SUGGESTED' && (
-              <PermissionGate permissions={['values:values:view']}>
-                <div className="space-y-2">
-                  <Label htmlFor="assembly-price">
-                    {assembly.billing === 'PER_AREA' ? 'Preço por m²' : 'Preço'}
-                  </Label>
+              {assembly.unitKind !== 'AREA' &&
+                assembly.unitKind !== 'UNITY' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="assembly-unit-amount">
+                      {unitAmountLabel[assembly.unitKind]} (
+                      {unitSymbol[assembly.unitKind]})
+                    </Label>
+                    <Input
+                      key={`amount-${assembly.unitAmount}`}
+                      id="assembly-unit-amount"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      defaultValue={assembly.unitAmount}
+                      onBlur={(event) =>
+                        run(
+                          updateAssembly({
+                            productId,
+                            values: {
+                              unitAmount: Number(event.target.value) || 0,
+                            },
+                          }),
+                        )
+                      }
+                    />
+                  </div>
+                )}
+              {(
+                [
+                  [
+                    'width',
+                    assembly.unitKind === 'AREA'
+                      ? 'Largura (m)'
+                      : 'Largura da peça (m)',
+                  ],
+                  [
+                    'height',
+                    assembly.unitKind === 'AREA'
+                      ? 'Altura (m)'
+                      : 'Altura da peça (m)',
+                  ],
+                ] as const
+              ).map(([key, label]) => (
+                <div key={key} className="space-y-2">
+                  <Label htmlFor={`measure-${key}`}>{label}</Label>
                   <Input
-                    id="assembly-price"
+                    id={`measure-${key}`}
                     type="number"
                     min={0}
                     step="0.01"
-                    defaultValue={
-                      assembly.price === null ? '' : assembly.price / 100
-                    }
-                    onBlur={(event) =>
-                      run(
-                        updateAssembly({
-                          productId,
-                          values: {
-                            price:
-                              event.target.value === ''
-                                ? null
-                                : Math.round(Number(event.target.value) * 100),
-                          },
-                        }),
+                    value={measure[key]}
+                    onChange={(event) =>
+                      setMeasure((current) =>
+                        current
+                          ? {
+                              ...current,
+                              [key]: Number(event.target.value) || 0,
+                            }
+                          : current,
                       )
                     }
                   />
                 </div>
+              ))}
+              {assembly.unitKind === 'AREA' && (
+                <div className="space-y-2">
+                  <Label>Área total</Label>
+                  <p className="flex h-11 items-center text-sm text-gray-800">
+                    {num(assembly.saleAmount)} m²
+                  </p>
+                </div>
+              )}
+              <PermissionGate permissions={['values:values:view']}>
+                <div className="space-y-2">
+                  <Label>Valor</Label>
+                  <p className="flex h-11 items-center text-base font-semibold text-gray-900">
+                    {money(assembly.priceForMeasure)}
+                  </p>
+                </div>
               </PermissionGate>
+            </div>
+            {assembly.unitKind !== 'AREA' && (
+              <p className="mt-2 text-sm text-gray">
+                Largura e altura da peça não mudam o valor de venda: servem para
+                calcular a composição.
+              </p>
             )}
           </div>
+
+          <PermissionGate permissions={EDIT}>
+            <div className="flex flex-wrap gap-6">
+              {(
+                [
+                  ['allowEditValues', 'Permitir editar valor'],
+                  ['allowEditDescription', 'Permitir editar descrição'],
+                ] as const
+              ).map(([key, label]) => (
+                <label
+                  key={key}
+                  className="flex items-center gap-3 text-sm font-medium"
+                >
+                  <Switch
+                    checked={assembly[key]}
+                    onCheckedChange={(checked) =>
+                      run(
+                        updateAssembly({
+                          productId,
+                          values: { [key]: checked },
+                        }),
+                      )
+                    }
+                    aria-label={label}
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          </PermissionGate>
         </CardContent>
         {measureChanged && (
           <CardFooter className="flex-wrap justify-between gap-3">
             <p className="text-sm text-gray">
               Simulando {num(measure.quantity)} × {num(measure.width)} ×{' '}
-              {num(measure.height)} m. A medida padrão é {num(saved.quantity)} ×{' '}
+              {num(measure.height)} m. O padrão é {num(saved.quantity)} ×{' '}
               {num(saved.width)} × {num(saved.height)} m.
             </p>
             <div className="flex gap-2">
@@ -644,7 +750,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 variant="neutralOutline"
                 onClick={() => setMeasure(saved)}
               >
-                Voltar à medida padrão
+                Voltar ao padrão
               </Button>
               <PermissionGate permissions={EDIT}>
                 <Button
@@ -653,11 +759,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                   onClick={() =>
                     run(
                       updateAssembly({ productId, values: { measure } }),
-                      'Medida padrão salva',
+                      'Padrão de medidas salvo',
                     )
                   }
                 >
-                  Salvar como medida padrão
+                  Salvar como padrão
                 </Button>
               </PermissionGate>
             </div>
@@ -678,18 +784,25 @@ export function AssemblyEditor({ productId }: { productId: string }) {
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray">
-                Preço cobrado · {billingModeObj[assembly.billing].toLowerCase()}
-              </p>
+              <p className="text-xs text-gray">Valor de venda nesta medida</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {money(assembly.priceForMeasure)}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray">Preço sugerido pelo markup</p>
-              <p className="text-2xl font-semibold text-gray-900">
-                {assembly.blocks.length ? money(assembly.suggestedPrice) : '-'}
+              <p className="text-xs text-gray">
+                Sugerido pela composição · por {unitSymbol[assembly.unitKind]}
               </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {assembly.blocks.length
+                  ? money(assembly.suggestedUnitPrice)
+                  : '-'}
+              </p>
+              {assembly.blocks.length > 0 && (
+                <p className="text-xs text-gray">
+                  {money(assembly.suggestedPrice)} nesta medida
+                </p>
+              )}
             </div>
             <div>
               <p className="text-xs text-gray">Margem</p>
@@ -705,17 +818,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
               </p>
             </div>
           </CardContent>
-          {assembly.billing !== 'SUGGESTED' && assembly.blocks.length > 0 && (
+          {assembly.blocks.length > 0 && (
             <CardFooter className="flex-wrap justify-between gap-3">
               <p className="text-sm text-gray">
                 {assembly.margin !== null && assembly.margin < 0
                   ? 'Nesta medida, o produto está sendo vendido abaixo do custo.'
-                  : 'Ter custo não muda o preço: adotar o sugerido é uma decisão sua.'}
+                  : 'Ter custo não muda o valor de venda: adotar o sugerido é uma decisão sua.'}
               </p>
               <PermissionGate permissions={EDIT}>
                 <Button
                   type="button"
                   variant="neutralOutline"
+                  disabled={assembly.unitPrice === assembly.suggestedUnitPrice}
                   onClick={adoptSuggested}
                 >
                   Adotar preço sugerido

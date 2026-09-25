@@ -40,13 +40,59 @@ export const assemblyStatusObj: {
   },
 }
 
-// Como o preço do produto é formado (IP-17)
-export type BillingMode = 'SUGGESTED' | 'PER_UNIT' | 'PER_AREA'
+// A cobrança segue o cadastro de produtos do START (IP-17): a unidade
+// comercial, o valor de venda por essa unidade e o padrão de medidas. A
+// composição só acrescenta o custo e o preço sugerido, na mesma unidade
+export type UnitKind =
+  | 'AREA'
+  | 'LENGTH'
+  | 'WEIGHT'
+  | 'CAPACITY'
+  | 'DISTANCE'
+  | 'DURATION'
+  | 'UNITY'
 
-export const billingModeObj: { [key in BillingMode]: string } = {
-  SUGGESTED: 'Preço sugerido pela composição',
-  PER_UNIT: 'Preço por unidade',
-  PER_AREA: 'Preço por m²',
+// Os mesmos rótulos do cadastro do START (UnitOfMeasureField)
+export const unitKindObj: { [key in UnitKind]: string } = {
+  LENGTH: 'Metro Linear (m)',
+  WEIGHT: 'Peso (kg)',
+  CAPACITY: 'Litro (l)',
+  DISTANCE: 'Distância (km)',
+  DURATION: 'Tempo (h)',
+  UNITY: 'Unidade (un)',
+  AREA: 'Metro Quadrado (m²)',
+}
+
+// "Valor de venda m²", como no START (UnitCostInput)
+export const unitSaleLabel: { [key in UnitKind]: string } = {
+  AREA: 'Valor de venda m²',
+  LENGTH: 'Valor de venda metro',
+  CAPACITY: 'Valor de venda litro',
+  WEIGHT: 'Valor de venda kg',
+  DISTANCE: 'Valor de venda km',
+  DURATION: 'Valor de venda hora',
+  UNITY: 'Valor de venda unitário',
+}
+
+export const unitSymbol: { [key in UnitKind]: string } = {
+  AREA: 'm²',
+  LENGTH: 'm',
+  CAPACITY: 'l',
+  WEIGHT: 'kg',
+  DISTANCE: 'km',
+  DURATION: 'h',
+  UNITY: 'un',
+}
+
+// O campo do padrão de medidas quando a unidade não é m² nem unidade
+export const unitAmountLabel: { [key in UnitKind]: string } = {
+  AREA: 'Área total',
+  LENGTH: 'Medida',
+  CAPACITY: 'Quantidade',
+  WEIGHT: 'Peso',
+  DISTANCE: 'Distância',
+  DURATION: 'Tempo',
+  UNITY: '',
 }
 
 // A medida do produto no orçamento (IP-16)
@@ -154,10 +200,16 @@ export type ProductAssembly = {
   code: string
   status: AssemblyStatus
   dimension: ProductDimension
-  billing: BillingMode
-  // Preço praticado: por unidade ou por m², conforme a cobrança
-  price: number | null
+  unitKind: UnitKind
+  // Valor de venda por unidade comercial, como no START
+  unitPrice: number | null
+  // Padrão de medidas: no m², largura × altura; nas outras unidades, a
+  // quantidade nelas (3 m, 2 kg). Largura e altura também alimentam a
+  // composição, mesmo quando o produto é vendido por unidade
   measure: AssemblyMeasure
+  unitAmount: number
+  allowEditValues: boolean
+  allowEditDescription: boolean
   technicalDescription: string
   blocks: AssemblyBlock[]
 }
@@ -182,8 +234,12 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   blocks: ComputedBlock[]
   cost: number
   suggestedPrice: number
-  // O preço cobrado para a medida padrão, pela regra de cobrança
+  // Quanto de unidade comercial há na medida (1,08 m², 3 m, 1 un)
+  saleAmount: number
+  // O valor de venda aplicado à medida: é o "Valor" do START
   priceForMeasure: number | null
+  // O sugerido pela composição, na unidade comercial (por m², por metro…)
+  suggestedUnitPrice: number
   margin: number | null
 }
 
