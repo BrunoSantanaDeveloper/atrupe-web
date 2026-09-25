@@ -72,7 +72,8 @@ import {
 // Utils
 import { cn, formatCurrencyToBrl, getFirstAndLastName } from '@/lib/utils'
 
-const money = (value: number) => formatCurrencyToBrl(value / 100)
+// Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
+const money = (value: number) => formatCurrencyToBrl(value)
 
 const TODOS = 'todos'
 

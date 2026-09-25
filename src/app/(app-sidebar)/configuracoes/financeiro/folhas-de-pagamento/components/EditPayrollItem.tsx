@@ -156,7 +156,7 @@ export function EditPayrollItem({ employeeId, item, onOpenChange }: Props) {
           <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
             <p className="text-sm text-gray">Custo final para a empresa</p>
             <p className="text-lg font-semibold text-gray-900">
-              {formatCurrencyToBrl(final / 100)}
+              {formatCurrencyToBrl(final)}
             </p>
             {behavior === 'INCREASE_AND_DISCOUNT' && discount >= increase && (
               <p className="mt-1 text-sm text-gray">
