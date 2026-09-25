@@ -16,6 +16,7 @@ import { QuotationDelivery } from './Delivery'
 import { QuotationItems } from './QuotationItems'
 import { Topbar } from '@/components/common/Topbar'
 import { QuotationActions } from './QuotationActions'
+import { QuickSaleQuotation } from './QuickSaleQuotation'
 import { QuotationPaymentConditions } from './PaymentConditions'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -113,6 +114,12 @@ export function Quotation({ id }: Props) {
   }
 
   if (error || !data) notFound()
+
+  // A venda rápida tem arranjo próprio: recebimento no lugar das condições de
+  // pagamento, e a situação no caixa depois que ela sai
+  if (data.quickSale) {
+    return <QuickSaleQuotation data={data} previousUrl={previousUrl} />
+  }
 
   if (data.status === 'APPROVED' && !isAdmin) {
     return (

@@ -64,7 +64,8 @@ import {
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
-const money = (value: number) => formatCurrencyToBrl(value / 100)
+// Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
+const money = (value: number) => formatCurrencyToBrl(value)
 
 const hora = (iso: string) =>
   new Date(iso).toLocaleTimeString('pt-BR', {

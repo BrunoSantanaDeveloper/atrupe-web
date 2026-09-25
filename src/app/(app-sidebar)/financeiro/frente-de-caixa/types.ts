@@ -57,6 +57,8 @@ export type SaleKind = 'QUICK' | 'QUOTATION'
 
 export type PendingSale = {
   id: string
+  // O orçamento de origem, para o vendedor acompanhar a venda (FC-11)
+  quotationId?: string
   reference: string
   client: string
   seller: string
@@ -69,6 +71,23 @@ export type PendingSale = {
   // false = foi para o fluxo financeiro; entra no relatório do dia, mas não
   // no saldo do caixa
   goesToCash: boolean
+}
+
+// A venda rápida vista do lado do vendedor, depois de sair do orçamento.
+// Os dois caminhos da VR-5: cobrada na hora, pelo próprio vendedor, ou
+// enviada à frente de caixa, onde quem recebe é o caixa
+export type QuickSalePath = 'CASH_ONLY' | 'POS'
+
+export type QuickSaleCheckout = {
+  quotationId: string
+  path: QuickSalePath
+  sentAt: string
+  total: number
+  paid: number
+  delivered: boolean
+  // Cancelada no caixa, com estorno (FC-13)
+  cancelled: boolean
+  parts: PaymentPart[]
 }
 
 // Trabalho pronto e não retirado (FC-19)

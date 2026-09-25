@@ -11,6 +11,7 @@ import type {
   PendingSale,
   CashMovement,
   AwaitingPickup,
+  QuickSaleCheckout,
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
 
 const hoje = (hora: string) =>
@@ -134,6 +135,9 @@ const pickups: AwaitingPickup[] = [
   },
 ]
 
+// A venda rápida do ponto de vista do orçamento, por id do orçamento
+const checkouts: Record<string, QuickSaleCheckout> = {}
+
 export const getCashFront = async () => ({
   success: true,
   data: { session, sales, pickups },
@@ -227,6 +231,13 @@ export const receiveSale = async (
   sale.paid += amount
   sale.delivered = deliver || sale.delivered
 
+  const checkout = sale.quotationId && checkouts[sale.quotationId]
+  if (checkout) {
+    checkout.paid = sale.paid
+    checkout.delivered = sale.delivered
+    checkout.parts = [...checkout.parts, ...parts]
+  }
+
   // Venda paga e entregue sai da fila
   if (sale.paid >= sale.total && sale.delivered) {
     sales = sales.filter((item) => item.id !== saleId)
@@ -261,6 +272,9 @@ export const reverseSale = async (saleId: string, reason: string) => {
 
   sales = sales.filter((item) => item.id !== saleId)
 
+  const checkout = sale.quotationId && checkouts[sale.quotationId]
+  if (checkout) checkout.cancelled = true
+
   return { success: true, data: null, message: '' }
 }
 
@@ -274,4 +288,91 @@ export const closeCashSession = async (countedCash: number) => {
   session.status = 'CLOSED'
 
   return { success: true, data: { countedCash }, message: '' }
+}
+
+export const getQuickSaleCheckout = async (quotationId: string) => ({
+  success: true,
+  data: checkouts[quotationId] ?? null,
+  message: '',
+})
+
+type QuickSaleOrigin = {
+  quotationId: string
+  reference: string
+  client: string
+  seller: string
+  total: number
+}
+
+// Enviar a venda rápida ao caixa. Não é um gesto além da aprovação: aprovar
+// a venda rápida já a coloca na fila (FC-12), e a partir daí ela trava (FC-11)
+export const sendQuickSaleToCash = async (origin: QuickSaleOrigin) => {
+  if (checkouts[origin.quotationId]) {
+    return {
+      success: false,
+      data: null,
+      message: 'Esta venda já foi enviada ao caixa',
+    }
+  }
+
+  const approvedAt = new Date().toISOString()
+
+  sales.push({
+    id: `s${Date.now()}`,
+    quotationId: origin.quotationId,
+    reference: origin.reference,
+    client: origin.client,
+    seller: origin.seller,
+    kind: 'QUICK',
+    total: origin.total,
+    paid: 0,
+    delivered: false,
+    approvedAt,
+    goesToCash: true,
+  })
+
+  checkouts[origin.quotationId] = {
+    quotationId: origin.quotationId,
+    path: 'POS',
+    sentAt: approvedAt,
+    total: origin.total,
+    paid: 0,
+    delivered: false,
+    cancelled: false,
+    parts: [],
+  }
+
+  return { success: true, data: checkouts[origin.quotationId], message: '' }
+}
+
+// Cobrar na hora (VR-5): só à vista, pelo total, sem parcela e sem cobrança
+// futura. A venda se encerra no atendimento e o dinheiro entra na conta
+// Caixa Empresa, como qualquer baixa do START
+export const chargeQuickSaleNow = async (
+  origin: QuickSaleOrigin,
+  parts: PaymentPart[],
+) => {
+  const paid = parts.reduce((total, part) => total + part.amount, 0)
+
+  if (paid < origin.total) {
+    return {
+      success: false,
+      data: null,
+      message:
+        'A venda rápida é cobrada pelo total. Para parcelar ou cobrar depois, use um orçamento comum',
+    }
+  }
+
+  checkouts[origin.quotationId] = {
+    quotationId: origin.quotationId,
+    path: 'CASH_ONLY',
+    sentAt: new Date().toISOString(),
+    total: origin.total,
+    paid,
+    delivered: true,
+    cancelled: false,
+    parts,
+  }
+
+  return { success: true, data: checkouts[origin.quotationId], message: '' }
 }

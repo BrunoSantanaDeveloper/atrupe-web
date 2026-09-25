@@ -40,7 +40,8 @@ import { toast } from 'sonner'
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
 
-const money = (value: number) => formatCurrencyToBrl(value / 100)
+// Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
+const money = (value: number) => formatCurrencyToBrl(value)
 
 // Campo de dinheiro em reais, guardando centavos
 function MoneyInput({
