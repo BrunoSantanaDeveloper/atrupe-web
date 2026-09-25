@@ -17,6 +17,7 @@ export type FormulaKey =
   | 'PER_HEIGHT' // 8 — insumo × altura × quantidade
   | 'PER_EXTRA' // 9 — insumo × campo extra × quantidade
   | 'PER_TIME' // 13 — campo tempo × quantidade
+  | 'PER_PERIMETER_DIV_EXTRA' // 10 — insumo × perímetro × quantidade ÷ campo extra (o ilhós)
 
 export type DimensionRule =
   | 'NONE'

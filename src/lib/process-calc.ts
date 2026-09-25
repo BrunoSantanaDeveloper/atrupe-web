@@ -28,6 +28,9 @@ export const resourceAmount = (
     PER_HEIGHT: simulation.height * resource.quantity,
     PER_EXTRA: extra * resource.quantity,
     PER_TIME: resource.quantity,
+    // Quantos cabem no perímetro: nunca fração (o ilhós a cada 50 cm)
+    PER_PERIMETER_DIV_EXTRA:
+      extra > 0 ? Math.ceil(perimeter / extra) * resource.quantity : 0,
   }
 
   return bases[resource.formula] * simulation.quantity

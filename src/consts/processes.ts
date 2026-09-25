@@ -56,6 +56,11 @@ export const formulaObj: {
     label: 'Por tempo',
     help: 'Tempo informado × quantidade.',
   },
+  // A conta do ilhós: perímetro ÷ espaçamento = quantas peças (CP-14)
+  PER_PERIMETER_DIV_EXTRA: {
+    label: 'Por perímetro ÷ campo extra',
+    help: 'Perímetro do item ÷ valor do campo extra × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
+  },
 }
 
 export const formulaOptions = (Object.keys(formulaObj) as FormulaKey[]).map(
