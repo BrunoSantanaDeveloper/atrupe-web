@@ -67,7 +67,8 @@ export const dimensionRuleObj: { [key in DimensionRule]: string } = {
   FREE_SIZE: 'Largura e altura livres',
   FREE_AREA: 'Área livre',
   FIXED_SIZE: 'Dimensão fixa',
-  SAME_AS_PARENT: 'Igual à dimensão do item',
+  // "Base" é o que recebe o acabamento; o legado chamava de "item pai"
+  SAME_AS_PARENT: 'Mesma medida da base',
 }
 
 export const dimensionRuleOptions = (

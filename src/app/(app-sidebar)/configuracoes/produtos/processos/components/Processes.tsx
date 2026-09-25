@@ -154,8 +154,8 @@ export function Processes({ searchParams }: SearchParamsType) {
                                   <p className="font-medium">{process.name}</p>
                                   <p className="text-sm text-gray">
                                     {process.multipliesParent
-                                      ? 'Multiplica pelo item'
-                                      : 'Não multiplica pelo item'}
+                                      ? 'Acompanha a quantidade da base'
+                                      : 'Uma vez por pedido'}
                                   </p>
                                 </TableCell>
                                 <TableCell className="text-sm">
