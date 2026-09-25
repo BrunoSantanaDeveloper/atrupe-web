@@ -25,6 +25,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { AccountDialog } from './AccountDialog'
+import { AccountIcon } from '@/app/(app-sidebar)/financeiro/controle-de-caixa/components/AccountIcon'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -48,11 +49,9 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
 import {
-  IconCash,
   IconPencil,
   IconTrash,
   IconRestore,
-  IconBuildingBank,
   IconArrowRight,
 } from '@tabler/icons-react'
 
@@ -123,7 +122,6 @@ export function BankAccounts(_: SearchParamsType) {
   }
 
   const row = (account: BankAccount) => {
-    const Icon = account.kind === 'CASH' ? IconCash : IconBuildingBank
     const receives = account.rules.filter((rule) => rule.acceptIncomes)
 
     return (
@@ -135,9 +133,7 @@ export function BankAccounts(_: SearchParamsType) {
         )}
       >
         <div className="flex min-w-0 flex-1 items-start gap-4">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-600">
-            <Icon size={22} />
-          </span>
+          <AccountIcon icon={account.bankIcon} />
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <p className="font-semibold text-gray-800">{account.name}</p>
@@ -223,7 +219,9 @@ export function BankAccounts(_: SearchParamsType) {
                   <ActionButton
                     Icon={IconTrash}
                     variant="errorGhost"
-                    tooltip={account.hasHistory ? 'Inativar' : 'Excluir'}
+                    tooltip={
+                      account.hasHistory ? 'Inativar conta' : 'Excluir conta'
+                    }
                     onClick={() => remove(account)}
                   />
                 </PermissionGate>

@@ -44,6 +44,9 @@ export type BankAccount = {
   kind: AccountKind
   bankName: string
   bankCode: string
+  // Chave do logo em `bankIcons` (src/consts/cashControl.ts), como no resto
+  // do sistema
+  bankIcon: string
   // Ligado, a conta segue as regras que exigem disciplina: abrir, contar,
   // fechar, justificar (CX-1, por conta)
   cashControl: boolean

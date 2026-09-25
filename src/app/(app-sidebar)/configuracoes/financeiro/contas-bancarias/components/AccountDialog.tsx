@@ -87,7 +87,10 @@ const kinds: {
   },
 ]
 
-type Draft = Omit<BankAccount, 'id' | 'balance' | 'hasHistory' | 'isActive'> & {
+type Draft = Omit<
+  BankAccount,
+  'id' | 'balance' | 'hasHistory' | 'isActive' | 'bankIcon'
+> & {
   id?: string
 }
 

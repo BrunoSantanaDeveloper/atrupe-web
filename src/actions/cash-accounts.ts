@@ -59,6 +59,7 @@ let accounts: BankAccount[] = [
     kind: 'CASH',
     bankName: 'Empresa',
     bankCode: '000',
+    bankIcon: 'company',
     cashControl: true,
     isActive: true,
     hasHistory: true,
@@ -79,6 +80,7 @@ let accounts: BankAccount[] = [
     kind: 'BANK',
     bankName: 'Banco Bradesco',
     bankCode: '237',
+    bankIcon: 'bancoBradesco',
     cashControl: true,
     isActive: true,
     hasHistory: true,
@@ -113,6 +115,7 @@ let accounts: BankAccount[] = [
     kind: 'BANK',
     bankName: 'Banco Inter',
     bankCode: '077',
+    bankIcon: '',
     cashControl: false,
     isActive: true,
     hasHistory: true,
@@ -129,6 +132,7 @@ let accounts: BankAccount[] = [
     kind: 'BANK',
     bankName: 'Itaú Unibanco',
     bankCode: '341',
+    bankIcon: 'bancoItau',
     cashControl: false,
     isActive: false,
     hasHistory: true,
@@ -291,6 +295,16 @@ const days: CashDay[] = [
   },
 ]
 
+// Logos que o sistema já tem, pelo código do banco
+const iconByCode: Record<string, string> = {
+  '000': 'company',
+  '001': 'bancoDoBrasil',
+  '033': 'bancoSantanderBrasil',
+  '104': 'caixaEconomicaFederal',
+  '237': 'bancoBradesco',
+  '341': 'bancoItau',
+}
+
 const balanceOf = (account: BankAccount) => {
   if (!account.cashControl) return account.balance
 
@@ -316,11 +330,19 @@ export const getBankAccounts = async () => ok(withBalance(accounts))
 export const getPaymentMethods = async () => ok(methods)
 
 export const saveBankAccount = async (
-  values: Omit<BankAccount, 'id' | 'balance' | 'hasHistory' | 'isActive'> & {
+  input: Omit<
+    BankAccount,
+    'id' | 'balance' | 'hasHistory' | 'isActive' | 'bankIcon'
+  > & {
     id?: string
   },
 ) => {
-  if (!values.name.trim()) return fail('Dê um nome para a conta')
+  if (!input.name.trim()) return fail('Dê um nome para a conta')
+
+  const values = {
+    ...input,
+    bankIcon: iconByCode[input.kind === 'CASH' ? '000' : input.bankCode] || '',
+  }
 
   // A conta padrão de cada forma é uma só: marcar esta desmarca as outras
   const defaults = values.rules

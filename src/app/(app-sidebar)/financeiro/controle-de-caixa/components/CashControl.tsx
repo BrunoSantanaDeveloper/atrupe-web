@@ -40,6 +40,7 @@ import {
   AdjustmentDialog,
 } from './CashDayDialogs'
 import { CashDayDetail } from './CashDayDetail'
+import { AccountIcon } from './AccountIcon'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -59,14 +60,16 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconEye,
-  IconLock,
-  IconCash,
-  IconLockOpen,
-  IconAdjustments,
+  IconPencil,
+  IconSearch,
+  IconPrinter,
+  IconArrowBackUp,
+  IconCircleCheck,
   IconAlertTriangle,
-  IconBuildingBank,
 } from '@tabler/icons-react'
+
+// Consts
+import { cashControlStatusObj } from '@/consts/cashControl'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -141,7 +144,6 @@ export function CashControl(_: SearchParamsType) {
   const dialogAccount = dialogDay ? accountOf(dialogDay.accountId) : undefined
 
   const todayCard = (account: BankAccount) => {
-    const Icon = account.kind === 'CASH' ? IconCash : IconBuildingBank
     const day = days.find(
       (item) => item.accountId === account.id && item.date === today,
     )
@@ -156,7 +158,7 @@ export function CashControl(_: SearchParamsType) {
         <CardContent className="flex h-full flex-col gap-4 p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Icon size={22} className="text-gray-500" />
+              <AccountIcon icon={account.bankIcon} />
               <div>
                 <p className="font-semibold text-gray-800">{account.name}</p>
                 <p className="text-xs text-gray">
@@ -166,10 +168,10 @@ export function CashControl(_: SearchParamsType) {
             </div>
             {!account.cashControl ? (
               <Badge variant="neutralLight">Livre</Badge>
-            ) : day?.status === 'OPEN' ? (
-              <Badge variant="successLight">Aberto</Badge>
-            ) : day?.status === 'CLOSED' ? (
-              <Badge variant="neutralLight">Fechado</Badge>
+            ) : day ? (
+              <Badge variant={cashControlStatusObj[day.status].variant}>
+                {cashControlStatusObj[day.status].text}
+              </Badge>
             ) : (
               <Badge variant="warningLight">Sem caixa hoje</Badge>
             )}
@@ -407,23 +409,20 @@ export function CashControl(_: SearchParamsType) {
                             <TableRow key={day.id}>
                               <TableCell>
                                 <div className="flex items-center gap-2">
-                                  {day.status === 'CLOSED' ? (
-                                    <IconLock
-                                      size={16}
-                                      className="text-gray-400"
-                                    />
-                                  ) : (
-                                    <IconLockOpen
-                                      size={16}
-                                      className="text-success-600"
-                                    />
-                                  )}
-                                  <span className="font-medium text-gray-800">
+                                  <AccountIcon icon={account?.bankIcon} />
+                                  <span className="whitespace-nowrap font-medium text-gray-800">
                                     {account?.name}
                                   </span>
-                                  <span className="text-xs text-gray">
+                                  <span className="whitespace-nowrap text-xs text-gray">
                                     nº {day.number}
                                   </span>
+                                  <Badge
+                                    variant={
+                                      cashControlStatusObj[day.status].variant
+                                    }
+                                  >
+                                    {cashControlStatusObj[day.status].text}
+                                  </Badge>
                                   {day.reopenings.length > 0 && (
                                     <Badge variant="warningLight">
                                       reaberto
@@ -460,12 +459,22 @@ export function CashControl(_: SearchParamsType) {
                               <TableCell>
                                 <div className="flex justify-end gap-1">
                                   <ActionButton
-                                    Icon={IconEye}
+                                    Icon={IconSearch}
                                     variant="neutralGhost"
-                                    tooltip="Ver o dia"
+                                    tooltip="Visualizar"
                                     onClick={() =>
                                       setDialog({ kind: 'detail', day })
                                     }
+                                  />
+                                  <ActionButton
+                                    Icon={IconPrinter}
+                                    variant="neutralGhost"
+                                    tooltip="Imprimir"
+                                    onClick={() => {
+                                      // Abre o relatório do dia e imprime
+                                      setDialog({ kind: 'detail', day })
+                                      setTimeout(() => window.print(), 400)
+                                    }}
                                   />
                                   {day.status === 'OPEN' ? (
                                     <PermissionGate
@@ -474,15 +483,15 @@ export function CashControl(_: SearchParamsType) {
                                       ]}
                                     >
                                       <ActionButton
-                                        Icon={IconAdjustments}
+                                        Icon={IconPencil}
                                         variant="neutralGhost"
-                                        tooltip="Ajuste"
+                                        tooltip="Lançar ajuste"
                                         onClick={() =>
                                           setDialog({ kind: 'adjust', day })
                                         }
                                       />
                                       <ActionButton
-                                        Icon={IconLock}
+                                        Icon={IconCircleCheck}
                                         variant="neutralGhost"
                                         tooltip="Fechar caixa"
                                         onClick={() =>
@@ -493,9 +502,9 @@ export function CashControl(_: SearchParamsType) {
                                   ) : (
                                     isAdmin && (
                                       <ActionButton
-                                        Icon={IconLockOpen}
+                                        Icon={IconArrowBackUp}
                                         variant="neutralGhost"
-                                        tooltip="Reabrir"
+                                        tooltip="Reabrir caixa"
                                         onClick={() =>
                                           setDialog({ kind: 'reopen', day })
                                         }

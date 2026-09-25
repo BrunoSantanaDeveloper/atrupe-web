@@ -29,6 +29,9 @@ import {
 // Icons
 import { IconPrinter } from '@tabler/icons-react'
 
+// Consts
+import { cashControlStatusObj } from '@/consts/cashControl'
+
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
@@ -129,8 +132,8 @@ export function CashDayDetail({
         <DialogHeader>
           <DialogTitle className="flex flex-wrap items-center gap-2">
             {account.name} · {brDate(day.date)}
-            <Badge variant={isClosed ? 'neutralLight' : 'successLight'}>
-              {isClosed ? 'Fechado' : 'Aberto'}
+            <Badge variant={cashControlStatusObj[day.status].variant}>
+              {cashControlStatusObj[day.status].text}
             </Badge>
           </DialogTitle>
           <DialogDescription>
