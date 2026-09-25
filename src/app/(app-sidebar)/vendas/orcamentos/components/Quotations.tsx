@@ -206,7 +206,8 @@ export function Quotations({ searchParams }: SearchParamsType) {
         return
       }
 
-      window.location.href = `/vendas/orcamentos/${res.data.id}`
+      // Já com o modal "Qual item deseja adicionar?" aberto (VR-4)
+      window.location.href = `/vendas/orcamentos/${res.data.id}?adicionar=1`
     }
 
     createQuickSale()

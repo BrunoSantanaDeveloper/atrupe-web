@@ -1,5 +1,6 @@
 // React
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 // UI
 import {
@@ -87,6 +88,22 @@ export function QuotationItems({ data }: Props) {
   const { openChangeModal, modalType } = useQuotation()
 
   const status = data?.status
+
+  // VR-4: a venda rápida chega aqui com ?adicionar=1 e o primeiro gesto da
+  // venda é escolher o que está sendo vendido — o modal já vem aberto. O
+  // parâmetro sai da URL para o modal não reabrir ao recarregar a página
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const shouldOpenAdd = searchParams?.get('adicionar') === '1'
+
+  useEffect(() => {
+    if (!shouldOpenAdd || actionDisabled('addItem', status)) return
+
+    openChangeModal(true, 'sectorSelector')
+    router.replace(pathname, { scroll: false })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldOpenAdd, status])
 
   const queryClient = useQueryClient()
 
