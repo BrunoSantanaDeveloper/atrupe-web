@@ -116,10 +116,10 @@ function Shell({
         <DialogFooter>
           <Button
             type="button"
-            variant="neutralOutline"
+            variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Voltar
+            Cancelar
           </Button>
           {footer}
         </DialogFooter>

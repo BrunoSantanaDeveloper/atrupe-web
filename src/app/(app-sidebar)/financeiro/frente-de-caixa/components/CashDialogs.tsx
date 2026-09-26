@@ -122,7 +122,7 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
         <DialogFooter>
           <Button
             type="button"
-            variant="neutralOutline"
+            variant="outline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
@@ -214,7 +214,7 @@ export function CashMovementDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="neutralOutline"
+            variant="outline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
@@ -371,10 +371,10 @@ export function CloseCashDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="neutralOutline"
+            variant="outline"
             onClick={() => onOpenChange(false)}
           >
-            Voltar
+            Cancelar
           </Button>
           <Button
             type="button"

@@ -109,7 +109,7 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
         <DialogFooter>
           <Button
             type="button"
-            variant="neutralOutline"
+            variant="outline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
