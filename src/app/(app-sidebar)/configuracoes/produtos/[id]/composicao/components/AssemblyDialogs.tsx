@@ -28,6 +28,7 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import {
+  TASK_TYPES,
   lineModeObj,
   hhmmToMinutes,
   minutesToHhmm,
@@ -509,6 +510,10 @@ export type LineValues = {
   minimum: number | null
   optional: boolean
   optionalDefault: boolean
+  // Aproveitamento de folha (AP-3, AP-4)
+  sheetMargin?: number
+  sheetGap?: number
+  chargeWholeSheets?: boolean
   // Consumo, perda e mínimo próprios de cada opção (IP-26)
   optionValues?: {
     id: string
@@ -554,6 +559,9 @@ export function LineDialog({
         minimum: line.minimum,
         optional: !!line.optional,
         optionalDefault: line.optionalDefault ?? true,
+        sheetMargin: line.sheetMargin,
+        sheetGap: line.sheetGap,
+        chargeWholeSheets: line.chargeWholeSheets,
         optionValues:
           line.mode === 'CHOOSE'
             ? line.options.map((option) => ({
@@ -669,6 +677,76 @@ export function LineDialog({
             A perda é somada ao consumo (a sobra do corte). O mínimo impede que
             a peça pequena saia com custo irreal.
           </p>
+          {!variationName &&
+            line?.formula === 'SHEET_YIELD' &&
+            line.options.some((option) => option.sheet) && (
+              <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+                <p className="text-sm font-medium text-gray-800">
+                  Aproveitamento da folha
+                </p>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="line-sheet-margin">
+                      Margem da folha (mm)
+                    </Label>
+                    <Input
+                      id="line-sheet-margin"
+                      type="number"
+                      min={0}
+                      step="1"
+                      placeholder="0"
+                      value={values.sheetMargin ?? ''}
+                      onChange={(event) =>
+                        setValues((current) => ({
+                          ...current,
+                          sheetMargin: optionalNumber(event.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="line-sheet-gap">
+                      Espaçamento entre peças (mm)
+                    </Label>
+                    <Input
+                      id="line-sheet-gap"
+                      type="number"
+                      min={0}
+                      step="1"
+                      placeholder="0"
+                      value={values.sheetGap ?? ''}
+                      onChange={(event) =>
+                        setValues((current) => ({
+                          ...current,
+                          sheetGap: optionalNumber(event.target.value),
+                        }))
+                      }
+                    />
+                  </div>
+                </div>
+                <label className="flex items-start justify-between gap-6">
+                  <span>
+                    <span className="block text-sm font-medium text-gray-800">
+                      Cobrar a folha inteira
+                    </span>
+                    <span className="block text-sm text-gray">
+                      Desligado, cobra só a fração aproveitada — quando a sobra
+                      volta para o estoque.
+                    </span>
+                  </span>
+                  <Switch
+                    checked={values.chargeWholeSheets !== false}
+                    onCheckedChange={(checked) =>
+                      setValues((current) => ({
+                        ...current,
+                        chargeWholeSheets: checked,
+                      }))
+                    }
+                    aria-label="Cobrar a folha inteira"
+                  />
+                </label>
+              </div>
+            )}
           {!variationName && line?.mode === 'CHOOSE' && values.optionValues && (
             <div className="space-y-2">
               <p className="text-sm font-medium text-gray-800">
@@ -831,11 +909,12 @@ export function RulesDialog({
 }: {
   block?: ComputedBlock
   onOpenChange: (open: boolean) => void
-  onSave: (rules: SaleRules | null, name: string) => void
+  onSave: (rules: SaleRules | null, name: string, taskType: string) => void
 }) {
   const [useLocal, setUseLocal] = useState(false)
   const [rules, setRules] = useState<SaleRules | null>(null)
   const [name, setName] = useState('')
+  const [taskType, setTaskType] = useState('')
 
   // Na etapa montada no produto, as regras são dela: não há o que sobrescrever
   const own = block?.processId === null
@@ -845,6 +924,7 @@ export function RulesDialog({
       setUseLocal(block.processId === null || !!block.localRules)
       setRules(block.localRules ?? block.originalRules)
       setName(block.name)
+      setTaskType(block.taskType)
     }
   }, [block])
 
@@ -883,6 +963,16 @@ export function RulesDialog({
               </p>
             )}
           </div>
+
+          <SelectBasic
+            name="rules-task-type"
+            label="Tipo de tarefa na produção"
+            options={Array.from(new Set([...TASK_TYPES, taskType]))
+              .filter(Boolean)
+              .map((item) => ({ value: item, label: item }))}
+            value={taskType}
+            onChange={(value) => value && setTaskType(String(value))}
+          />
 
           {!own && (
             <>
@@ -1036,7 +1126,7 @@ export function RulesDialog({
           <Button
             type="button"
             disabled={!name.trim()}
-            onClick={() => onSave(useLocal ? rules : null, name)}
+            onClick={() => onSave(useLocal ? rules : null, name, taskType)}
           >
             Salvar
           </Button>

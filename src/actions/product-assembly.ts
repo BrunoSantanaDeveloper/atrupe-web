@@ -907,26 +907,39 @@ const lineQuantity = (
 
 // Quantas peças cabem na folha, testando as duas posições (AP-1). Margem e
 // espaçamento ficam em zero por padrão (AP-3), como no exemplo da regra
+// Com margem na borda e espaçamento entre peças (AP-3), em metros
 const fitCount = (
   sheetW: number,
   sheetH: number,
   pieceW: number,
   pieceH: number,
-) =>
-  pieceW > 0 && pieceH > 0
-    ? Math.floor(sheetW / pieceW + 1e-9) * Math.floor(sheetH / pieceH + 1e-9)
-    : 0
+  margin = 0,
+  gap = 0,
+) => {
+  const usableW = sheetW - 2 * margin
+  const usableH = sheetH - 2 * margin
+  if (pieceW <= 0 || pieceH <= 0 || usableW <= 0 || usableH <= 0) return 0
+  return (
+    Math.floor((usableW + gap) / (pieceW + gap) + 1e-9) *
+    Math.floor((usableH + gap) / (pieceH + gap) + 1e-9)
+  )
+}
 
 const sheetYieldOf = (
   option: ResourceOption,
   pieceW: number,
   pieceH: number,
   pieces: number,
+  settings: { marginMm?: number; gapMm?: number; wholeSheets?: boolean } = {},
 ): SheetYield | null => {
   if (!option.sheet) return null
   const { width, height } = option.sheet
-  const firstFit = fitCount(width, height, pieceW, pieceH)
-  const secondFit = fitCount(width, height, pieceH, pieceW)
+  const marginMm = settings.marginMm || 0
+  const gapMm = settings.gapMm || 0
+  const margin = marginMm / 1000
+  const gap = gapMm / 1000
+  const firstFit = fitCount(width, height, pieceW, pieceH, margin, gap)
+  const secondFit = fitCount(width, height, pieceH, pieceW, margin, gap)
   const perSheet = Math.max(firstFit, secondFit)
   const sheets = perSheet ? Math.ceil(pieces / perSheet) : 0
   return {
@@ -936,6 +949,13 @@ const sheetYieldOf = (
     perSheet,
     sheets,
     leftover: sheets * perSheet - pieces,
+    // Padrão: cobra a folha inteira, porque a sobra raramente se aproveita
+    charged:
+      settings.wholeSheets === false && perSheet
+        ? round(pieces / perSheet, 3)
+        : sheets,
+    marginMm,
+    gapMm,
   }
 }
 
@@ -1053,12 +1073,25 @@ const compute = (
                     ),
                 ) || null
           : null
+      // As regras da folha ficam na linha que escolhe a folha (AP-3, AP-4)
+      const sheetLine = referenceSheet
+        ? block.lines.find(
+            (item) =>
+              item.formula === 'SHEET_YIELD' &&
+              item.options.some((option) => option.id === referenceSheet.id),
+          ) || line
+        : null
       const sheetYield = referenceSheet
         ? sheetYieldOf(
             referenceSheet,
             blockMeasure.width,
             blockMeasure.height,
             blockMeasure.quantity,
+            {
+              marginMm: sheetLine?.sheetMargin,
+              gapMm: sheetLine?.sheetGap,
+              wholeSheets: sheetLine?.chargeWholeSheets,
+            },
           )
         : null
 
@@ -1084,7 +1117,7 @@ const compute = (
           ? null
           : line.formula === 'SHEET_YIELD'
             ? sheetYield
-              ? sheetYield.sheets * calcLine.perUnit
+              ? sheetYield.charged * calcLine.perUnit
               : null
             : lineQuantity(calcLine, blockMeasure, extra, time)
 
@@ -1579,6 +1612,9 @@ export const updateAssemblyLine = async ({
       | 'minimum'
       | 'optional'
       | 'optionalDefault'
+      | 'sheetMargin'
+      | 'sheetGap'
+      | 'chargeWholeSheets'
     >
   > & {
     // Consumo, perda e mínimo por opção (IP-26); vazio volta ao da linha
@@ -1653,17 +1689,21 @@ export const setBlockLocalRules = async ({
   blockId,
   rules,
   name,
+  taskType,
 }: {
   productId: string
   blockId: string
   rules: SaleRules | null
   // Nome da etapa; na que veio de processo, vale só neste produto (IP-30)
   name?: string
+  // Tipo de tarefa que a etapa gera na produção (IP-23)
+  taskType?: string
 }) => {
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
+  if (taskType) block.taskType = taskType
   if (name !== undefined) {
     if (!name.trim()) return fail('Informe o nome da etapa')
     if (block.processId === null) block.name = name.trim()

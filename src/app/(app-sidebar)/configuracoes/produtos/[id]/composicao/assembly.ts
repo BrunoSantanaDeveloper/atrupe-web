@@ -155,6 +155,10 @@ export type SheetYield = {
   perSheet: number
   sheets: number
   leftover: number
+  // Folhas cobradas: inteiras, ou só a fração aproveitada (AP-4)
+  charged: number
+  marginMm: number
+  gapMm: number
 }
 
 // Preço por faixa de quantidade (FQ-1): tabela, não desconto. A faixa vale
@@ -187,6 +191,12 @@ export type AssemblyLine = {
   // Se a opcional já vem marcada no orçamento; é também o que o custo e o
   // sugerido da composição consideram
   optionalDefault?: boolean
+  // Aproveitamento de folha (AP-3, AP-4), na linha que escolhe a folha:
+  // margem da borda e espaçamento entre peças, em milímetros; e se cobra a
+  // folha inteira ou só o que foi aproveitado
+  sheetMargin?: number
+  sheetGap?: number
+  chargeWholeSheets?: boolean
 }
 
 export type BlockRole = 'BASE' | 'FINISHING'
@@ -517,3 +527,12 @@ export type LibraryEntry = {
   stages: { name: string; sector: string; role: BlockRole }[]
   resources: number
 }
+
+// Os tipos de tarefa que a etapa gera na produção (IP-23, MS-8)
+export const TASK_TYPES = [
+  'Criação',
+  'Impressão',
+  'Produção',
+  'Acabamento',
+  'Instalação',
+]

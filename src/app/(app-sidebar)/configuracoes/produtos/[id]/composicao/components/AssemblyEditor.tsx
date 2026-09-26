@@ -383,6 +383,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             <CardTitle className="text-base">{item.name}</CardTitle>
             <CardDescription>
               {measureText(item)}
+              {` · tarefa: ${item.taskType.toLowerCase()}`}
               {item.rules.extraField !== 'NONE'
                 ? ` · ${item.rules.extraFieldName}: ${num(item.rules.extraFieldDefault)}`
                 : ''}
@@ -658,6 +659,12 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                             {line.sheetYield.sheets} folhas
                             {line.sheetYield.leftover
                               ? ` · sobram ${line.sheetYield.leftover}`
+                              : ''}
+                            {line.sheetYield.charged !== line.sheetYield.sheets
+                              ? ` · cobra ${num(line.sheetYield.charged)}`
+                              : ''}
+                            {line.sheetYield.marginMm || line.sheetYield.gapMm
+                              ? ` · margem ${line.sheetYield.marginMm} mm, espaço ${line.sheetYield.gapMm} mm`
                               : ''}
                           </span>
                         )}
@@ -1664,12 +1671,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       <RulesDialog
         block={dialog?.kind === 'rules' ? dialog.block : undefined}
         onOpenChange={() => setDialog(null)}
-        onSave={(rules, name) => {
+        onSave={(rules, name, taskType) => {
           if (dialog?.kind !== 'rules') return
           const target = dialog.block
           setDialog(null)
           run(
-            setBlockLocalRules({ productId, blockId: target.id, rules, name }),
+            setBlockLocalRules({
+              productId,
+              blockId: target.id,
+              rules,
+              name,
+              taskType,
+            }),
             'Etapa configurada',
           )
         }}
