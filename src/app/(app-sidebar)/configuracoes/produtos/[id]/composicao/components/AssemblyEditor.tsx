@@ -47,6 +47,7 @@ import {
   AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
+import { PriceTiersCard } from './PriceTiersCard'
 
 // Types
 import {
@@ -471,6 +472,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       {line.mode === 'LIST'
                         ? 'Informado na venda'
                         : formulaObj[line.formula]?.label}
+                      {line.sheetYield && (
+                        <span
+                          className="mt-0.5 block text-xs"
+                          title={`Na outra posição cabem ${Math.min(line.sheetYield.firstFit, line.sheetYield.secondFit)}`}
+                        >
+                          {line.sheetYield.perSheet} por folha ·{' '}
+                          {line.sheetYield.sheets} folhas
+                          {line.sheetYield.leftover
+                            ? ` · sobram ${line.sheetYield.leftover}`
+                            : ''}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-right text-sm">
                       {line.quantity === null
@@ -924,6 +937,9 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           )}
         </Card>
       </PermissionGate>
+
+      {/* A tabela comercial ao lado do custo técnico (FQ-1 a FQ-3) */}
+      <PriceTiersCard assembly={assembly} onSaved={refresh} />
 
       {/* 3. As variações: a mesma composição com exceções (PV-1 a PV-7) */}
       <Card>

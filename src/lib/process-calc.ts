@@ -48,6 +48,9 @@ export const resourceAmount = (
     DIV_EXTRA: extra > 0 ? k / extra : 0,
     AREA_EXTRA: area * extra * k,
     PER_AREA_EXTRA: area * extra * k * n,
+    // Sem a medida da folha, o processo não sabe o aproveitamento: conta
+    // uma folha por peça. A conta de verdade acontece na composição (AP-1)
+    SHEET_YIELD: k * n,
   }
 
   // Perda e mínimo do recurso (CP-8)

@@ -29,6 +29,8 @@ export type FormulaKey =
   | 'DIV_EXTRA' // 19 — insumo ÷ campo extra
   | 'AREA_EXTRA' // 20 — insumo × m² × campo extra
   | 'PER_AREA_EXTRA' // 21 — insumo × m² × quantidade × campo extra
+  // Novo (AP-1): folhas necessárias pelas peças que cabem em cada folha
+  | 'SHEET_YIELD'
 
 export type DimensionRule =
   | 'NONE'

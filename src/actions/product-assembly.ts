@@ -20,6 +20,9 @@ import type {
   ComputedAssembly,
   ProductVariation,
   ProcessCatalogItem,
+  PriceTier,
+  SheetYield,
+  ResourceOption,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
@@ -34,6 +37,7 @@ const HOUR: { [sector: string]: number } = {
   Impressão: 2890,
   Produção: 1649,
   Instalação: 4200,
+  Gráfica: 2500,
 }
 const perMinute = (sector: string) => (HOUR[sector] || 1800) / 60
 
@@ -81,6 +85,89 @@ const substrates = [
 ]
 
 const catalog: Template[] = [
+  {
+    processId: 'impressao-digital',
+    name: 'Impressão digital',
+    sector: 'Gráfica',
+    role: 'BASE',
+    finishingOf: null,
+    setupMinutes: 10,
+    sectorHourCost: HOUR['Gráfica'],
+    taskType: 'Impressão',
+    originalRules: baseRules,
+    lines: [
+      {
+        name: 'Papel',
+        kind: 'MATERIAL',
+        mode: 'CHOOSE',
+        options: [
+          {
+            id: 'couche300a3',
+            name: 'Couchê 300 g · A3',
+            unit: 'folha',
+            unitCost: 150,
+            sheet: { width: 0.297, height: 0.42 },
+          },
+          {
+            id: 'couche300a4',
+            name: 'Couchê 300 g · A4',
+            unit: 'folha',
+            unitCost: 90,
+            sheet: { width: 0.21, height: 0.297 },
+          },
+        ],
+        selectedId: 'couche300a3',
+        perUnit: 1,
+        formula: 'SHEET_YIELD',
+        lossPercent: 0,
+        minimum: null,
+      },
+      {
+        // Cada passada na impressora é uma impressão: no 4x4 são duas por
+        // folha (PV-7)
+        name: 'Impressão colorida',
+        kind: 'MACHINE',
+        mode: 'SINGLE',
+        options: [
+          {
+            id: 'clique',
+            name: 'Impressora digital · clique colorido',
+            unit: 'impressão',
+            unitCost: 60,
+          },
+        ],
+        selectedId: 'clique',
+        perUnit: 1,
+        formula: 'SHEET_YIELD',
+        lossPercent: 0,
+        minimum: null,
+      },
+    ],
+  },
+  {
+    processId: 'corte-guilhotina',
+    name: 'Corte na guilhotina',
+    sector: 'Produção',
+    role: 'FINISHING',
+    finishingOf: 'Gráfica',
+    setupMinutes: 5,
+    sectorHourCost: HOUR['Produção'],
+    taskType: 'Produção',
+    originalRules: { ...finishingRules, followsBase: false },
+    lines: [
+      {
+        name: 'Tempo de corte',
+        kind: 'LABOR',
+        mode: 'SINGLE',
+        options: [labor('Produção')],
+        selectedId: 'mo-Produção',
+        perUnit: 15,
+        formula: 'FIXED',
+        lossPercent: 0,
+        minimum: null,
+      },
+    ],
+  },
   {
     processId: 'impressao-solvente',
     name: 'Impressão solvente',
@@ -432,6 +519,7 @@ const assemblies: ProductAssembly[] = [
     unitAmount: 1,
     allowEditValues: true,
     allowEditDescription: true,
+    priceTiers: [],
     technicalDescription:
       'Lona 440 g impressa em solvente, com bastão de madeira, ponteiras e cordão.',
     blocks: [
@@ -469,6 +557,45 @@ const assemblies: ProductAssembly[] = [
   },
 ]
 
+// O cartão de visita da regra AP-1: 5 × 9 cm, mil unidades. Na A3 cabem
+// 24 na melhor posição (20 na outra) e são 42 folhas; o 4x4 passa cada
+// folha duas vezes (PV-7). A tabela por faixa é a da gráfica (FQ-1)
+const cartaoBase = fromTemplate(templateOf('impressao-digital')!, null)
+assemblies.push({
+  productId: 'cartao',
+  name: 'Cartão de visita',
+  code: 'PRD-02',
+  status: 'RELEASED',
+  dimension: 'SALE',
+  unitKind: 'UNITY',
+  unitPrice: 30,
+  measure: { quantity: 1000, width: 0.05, height: 0.09 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [
+    { from: 1, unitPrice: 35 },
+    { from: 101, unitPrice: 28 },
+    { from: 501, unitPrice: 22 },
+    { from: 2001, unitPrice: 18 },
+  ],
+  technicalDescription: 'Cartão 5 × 9 cm em couchê 300 g, impressão colorida.',
+  blocks: [
+    cartaoBase,
+    fromTemplate(templateOf('corte-guilhotina')!, cartaoBase.id),
+  ],
+  variations: [
+    {
+      id: 'v-4x4',
+      name: '4x4 · frente e verso',
+      unitPrice: null,
+      overrides: [
+        { blockId: cartaoBase.id, lineId: cartaoBase.lines[1].id, perUnit: 2 },
+      ],
+    },
+  ],
+})
+
 const findOrCreate = (productId: string) => {
   let found = assemblies.find((item) => item.productId === productId)
   if (!found) {
@@ -484,6 +611,7 @@ const findOrCreate = (productId: string) => {
       unitAmount: 1,
       allowEditValues: true,
       allowEditDescription: true,
+      priceTiers: [],
       technicalDescription: '',
       blocks: [],
       variations: [],
@@ -557,6 +685,46 @@ const lineQuantity = (
   }
 }
 
+// Quantas peças cabem na folha, testando as duas posições (AP-1). Margem e
+// espaçamento ficam em zero por padrão (AP-3), como no exemplo da regra
+const fitCount = (
+  sheetW: number,
+  sheetH: number,
+  pieceW: number,
+  pieceH: number,
+) =>
+  pieceW > 0 && pieceH > 0
+    ? Math.floor(sheetW / pieceW + 1e-9) * Math.floor(sheetH / pieceH + 1e-9)
+    : 0
+
+const sheetYieldOf = (
+  option: ResourceOption,
+  pieceW: number,
+  pieceH: number,
+  pieces: number,
+): SheetYield | null => {
+  if (!option.sheet) return null
+  const { width, height } = option.sheet
+  const firstFit = fitCount(width, height, pieceW, pieceH)
+  const secondFit = fitCount(width, height, pieceH, pieceW)
+  const perSheet = Math.max(firstFit, secondFit)
+  const sheets = perSheet ? Math.ceil(pieces / perSheet) : 0
+  return {
+    sheetName: option.name,
+    firstFit,
+    secondFit,
+    perSheet,
+    sheets,
+    leftover: sheets * perSheet - pieces,
+  }
+}
+
+// A faixa vale para o total da venda (FQ-2): a maior que a quantidade alcança
+const tierFor = (tiers: PriceTier[], quantity: number) =>
+  [...tiers]
+    .sort((a, b) => b.from - a.from)
+    .find((tier) => quantity >= tier.from) || null
+
 const applyVariation = (
   assembly: ProductAssembly,
   variation: ProductVariation | null,
@@ -591,8 +759,11 @@ const compute = (
   variation: ProductVariation | null = null,
 ): ComputedAssembly => {
   const assembly = applyVariation(source, variation)
-  // Sem preço próprio, a variação vale o preço do produto (PV-4)
-  const unitPrice = variation?.unitPrice ?? assembly.unitPrice
+  // Sem preço próprio, a variação vale o preço do produto (PV-4); com
+  // tabela por faixa, vale a faixa da quantidade (FQ-1)
+  const tier = tierFor(assembly.priceTiers, assembly.measure.quantity)
+  const unitPrice =
+    variation?.unitPrice ?? tier?.unitPrice ?? assembly.unitPrice
   const { measure } = assembly
   const area = round(measure.width * measure.height, 4)
   const blocks: ComputedBlock[] = []
@@ -634,9 +805,42 @@ const compute = (
             line.options[0] ||
             null
 
+      // Aproveitamento de folha (AP-1): as peças são a quantidade da etapa,
+      // do tamanho da etapa; a folha vem da opção escolhida
+      const referenceSheet =
+        line.formula === 'SHEET_YIELD'
+          ? selected?.sheet
+            ? selected
+            : block.lines
+                .flatMap((item) => item.options)
+                .find(
+                  (option) =>
+                    option.sheet &&
+                    block.lines.some(
+                      (item) =>
+                        item.formula === 'SHEET_YIELD' &&
+                        item.selectedId === option.id,
+                    ),
+                ) || null
+          : null
+      const sheetYield = referenceSheet
+        ? sheetYieldOf(
+            referenceSheet,
+            blockMeasure.width,
+            blockMeasure.height,
+            blockMeasure.quantity,
+          )
+        : null
+
       // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8)
       const raw =
-        line.mode === 'LIST' ? null : lineQuantity(line, blockMeasure, extra)
+        line.mode === 'LIST'
+          ? null
+          : line.formula === 'SHEET_YIELD'
+            ? sheetYield
+              ? sheetYield.sheets * line.perUnit
+              : null
+            : lineQuantity(line, blockMeasure, extra)
 
       let qty = raw === null ? null : raw * (1 + (line.lossPercent || 0) / 100)
       if (qty !== null && line.minimum !== null) {
@@ -646,6 +850,7 @@ const compute = (
 
       return {
         ...line,
+        sheetYield,
         variationOverride: !!variation?.overrides.some(
           (item) => item.blockId === block.id && item.lineId === line.id,
         ),
@@ -699,6 +904,8 @@ const compute = (
       suggestedPrice / Math.max(saleAmount, 0.0001),
     ),
     activeVariation: variation,
+    activeTier: variation?.unitPrice == null ? tier : null,
+    tierSummary: [],
     variationSummary: [],
     // Produto sem composição nunca aparece com margem zero (DC-15)
     margin:
@@ -744,6 +951,27 @@ export const getAssembly = async ({
       margin: computed.margin,
     }
   })
+
+  // Cada faixa com o custo unitário naquela quantidade: a composição conta a
+  // mesma história por outro caminho, e a diferença aparece (FQ-3)
+  result.tierSummary = [...assembly.priceTiers]
+    .sort((a, b) => a.from - b.from)
+    .map((tier) => {
+      const computed = compute(
+        { ...base, measure: { ...base.measure, quantity: tier.from } },
+        variation,
+      )
+      const unitCost = computed.cost / Math.max(tier.from, 1)
+      return {
+        from: tier.from,
+        unitPrice: tier.unitPrice,
+        unitCost: Math.round(unitCost * 100) / 100,
+        margin: tier.unitPrice
+          ? Math.round(((tier.unitPrice - unitCost) / tier.unitPrice) * 1000) /
+            10
+          : null,
+      }
+    })
 
   return ok(result)
 }
@@ -1039,5 +1267,23 @@ export const clearVariationLine = async ({
   variation.overrides = variation.overrides.filter(
     (item) => !(item.blockId === blockId && item.lineId === lineId),
   )
+  return ok(null)
+}
+
+// Tabela de preço por faixa (FQ-1). Vazia, vale o valor de venda do produto
+export const setPriceTiers = async ({
+  productId,
+  tiers,
+}: {
+  productId: string
+  tiers: PriceTier[]
+}) => {
+  const clean = tiers
+    .filter((tier) => tier.from > 0 && tier.unitPrice >= 0)
+    .sort((a, b) => a.from - b.from)
+  if (new Set(clean.map((tier) => tier.from)).size !== clean.length) {
+    return fail('Duas faixas começam na mesma quantidade')
+  }
+  findOrCreate(productId).priceTiers = clean
   return ok(null)
 }

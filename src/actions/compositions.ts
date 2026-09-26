@@ -173,6 +173,18 @@ const seeds: Seed[] = [
       },
     ],
   },
+  {
+    id: 'cartao',
+    name: 'Cartão de visita',
+    code: 'PRD-02',
+    unit: 'un',
+    price: 25,
+    priceRule: 'FIXED',
+    releasedForSale: true,
+    variations: [],
+    fields: [],
+    steps: [],
+  },
 ]
 
 const withCost = (seed: Seed): ProductComposition => {

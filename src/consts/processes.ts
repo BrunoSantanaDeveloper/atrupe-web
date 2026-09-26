@@ -101,6 +101,10 @@ export const formulaObj: {
     label: 'Por m² × campo extra',
     help: 'Consumo × área × quantidade × campo extra.',
   },
+  SHEET_YIELD: {
+    label: 'Por aproveitamento de folha',
+    help: 'Quantas peças cabem na folha, nas duas posições, e quantas folhas são precisas. A folha tem a medida do material.',
+  },
 }
 
 export const formulaOptions = (Object.keys(formulaObj) as FormulaKey[]).map(

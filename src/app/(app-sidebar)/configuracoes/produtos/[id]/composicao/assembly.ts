@@ -125,6 +125,26 @@ export type ResourceOption = {
   unit: string
   // Custo por unidade do recurso. Mão de obra: por minuto
   unitCost: number
+  // Papel e chapa têm medida (AP-2), em metros: é o que permite o
+  // aproveitamento de folha
+  sheet?: { width: number; height: number }
+}
+
+// O aproveitamento de folha (AP-1): as duas posições da peça na folha
+export type SheetYield = {
+  sheetName: string
+  firstFit: number
+  secondFit: number
+  perSheet: number
+  sheets: number
+  leftover: number
+}
+
+// Preço por faixa de quantidade (FQ-1): tabela, não desconto. A faixa vale
+// para o total da venda, não em degraus (FQ-2)
+export type PriceTier = {
+  from: number
+  unitPrice: number
 }
 
 export type AssemblyLine = {
@@ -203,6 +223,7 @@ export type ProductAssembly = {
   unitAmount: number
   allowEditValues: boolean
   allowEditDescription: boolean
+  priceTiers: PriceTier[]
   technicalDescription: string
   blocks: AssemblyBlock[]
   variations: ProductVariation[]
@@ -212,6 +233,7 @@ export type ProductAssembly = {
 export type ComputedLine = AssemblyLine & {
   // Mudada na variação que está sendo vista (PV-2)
   variationOverride: boolean
+  sheetYield: SheetYield | null
   selected: ResourceOption | null
   quantity: number | null
   cost: number | null
@@ -240,6 +262,15 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   // A variação calculada, quando há uma escolhida
   activeVariation: ProductVariation | null
   // Custo e preço de cada variação na medida padrão, para comparar a margem
+  // A faixa vigente para a quantidade simulada, e cada faixa com o custo
+  // naquela quantidade, para ver se a tabela aperta a margem (FQ-3)
+  activeTier: PriceTier | null
+  tierSummary: {
+    from: number
+    unitPrice: number
+    unitCost: number
+    margin: number | null
+  }[]
   variationSummary: {
     id: string
     name: string

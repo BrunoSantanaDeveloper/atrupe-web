@@ -6,7 +6,6 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { AssemblyEditor } from './AssemblyEditor'
 import { ProductFields } from './ProductFields'
 import { FeatureGate } from '@/components/common/FeatureGate'
@@ -59,18 +58,6 @@ export function CompositionDetail({ id }: Props) {
         <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
           <ProductFields productId={product.id} fields={product.fields} />
         </FeatureGate>
-
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ReviewTodo rule="AP-1" title="Aproveitamento de folha e chapa">
-            Informada a medida da peça e a da folha, o sistema diz quantas cabem
-            — testando as duas orientações — e cobra o material pelo que foi
-            consumido. Vale para papel, PVC e ACM. É cálculo, não IA.
-          </ReviewTodo>
-          <ReviewTodo rule="FQ-1" title="Preço por faixa de quantidade">
-            O desconto progressivo da gráfica: até 100 um preço, de 101 a 500
-            outro. A faixa é do produto e entra sozinha no orçamento.
-          </ReviewTodo>
-        </div>
       </div>
     </TooltipProvider>
   )
