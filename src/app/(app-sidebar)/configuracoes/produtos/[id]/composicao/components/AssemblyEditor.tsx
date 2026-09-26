@@ -295,9 +295,13 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           <div className="flex items-center gap-3">
             <PermissionGate permissions={['values:values:view']}>
               <p className="text-right">
-                <span className="block text-xs text-gray">Custo da etapa</span>
+                <span className="block text-xs text-gray">
+                  Custo · venda da etapa
+                </span>
                 <span className="text-base font-semibold text-gray-900">
                   {money(item.cost)}
+                  <span className="font-normal text-gray"> · </span>
+                  <span className="text-success-700">{money(item.sale)}</span>
                 </span>
               </p>
             </PermissionGate>
@@ -364,12 +368,13 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           <Table className="min-w-[760px]">
             <TableHeader>
               <TableRow className="bg-gray-50">
-                <TableHead className="w-[20%]">Linha</TableHead>
-                <TableHead className="w-[26%]">Recurso</TableHead>
-                <TableHead className="w-[14%]">Consumo</TableHead>
+                <TableHead className="w-[18%]">Linha</TableHead>
+                <TableHead className="w-[24%]">Recurso</TableHead>
+                <TableHead className="w-[12%]">Consumo</TableHead>
                 <TableHead className="w-[16%]">Cálculo</TableHead>
                 <TableHead className="w-[10%] text-right">Quantidade</TableHead>
-                <TableHead className="w-[10%] text-right">Custo</TableHead>
+                <TableHead className="w-[8%] text-right">Custo</TableHead>
+                <TableHead className="w-[8%] text-right">Venda</TableHead>
                 <TableHead className="w-[4%]" />
               </TableRow>
             </TableHeader>
@@ -498,6 +503,14 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                         {money(line.cost)}
                       </PermissionGate>
                     </TableCell>
+                    <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                      <PermissionGate
+                        permissions={['values:values:view']}
+                        fallback={<span>•••</span>}
+                      >
+                        {money(line.sale)}
+                      </PermissionGate>
+                    </TableCell>
                     <TableCell>
                       <PermissionGate permissions={EDIT}>
                         <div className="flex justify-end gap-1">
@@ -560,7 +573,12 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           <CardFooter className="justify-between text-sm text-gray">
             <span>Preparo: {item.setupMinutes} min, uma vez por pedido</span>
             <PermissionGate permissions={['values:values:view']}>
-              <span>{money(item.setupCost)}</span>
+              <span>
+                {money(item.setupCost)} ·{' '}
+                <span className="text-success-700">
+                  {money(item.setupSale)}
+                </span>
+              </span>
             </PermissionGate>
           </CardFooter>
         )}
@@ -898,7 +916,8 @@ export function AssemblyEditor({ productId }: { productId: string }) {
               </p>
               {assembly.blocks.length > 0 && (
                 <p className="text-xs text-gray">
-                  {money(assembly.suggestedPrice)} nesta medida
+                  {money(assembly.suggestedPrice)} nesta medida · soma do preço
+                  de venda de cada recurso
                 </p>
               )}
             </div>

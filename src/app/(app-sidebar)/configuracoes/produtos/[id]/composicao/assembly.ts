@@ -125,6 +125,10 @@ export type ResourceOption = {
   unit: string
   // Custo por unidade do recurso. Mão de obra: por minuto
   unitCost: number
+  // Preço de venda por unidade do recurso, como no legado (IP-25): o do
+  // cadastro do material, ou a hora vendida da mão de obra e da máquina.
+  // Sem ele, vale o custo com o markup de referência da Precificação
+  unitSale?: number
   // Papel e chapa têm medida (AP-2), em metros: é o que permite o
   // aproveitamento de folha
   sheet?: { width: number; height: number }
@@ -237,13 +241,17 @@ export type ComputedLine = AssemblyLine & {
   selected: ResourceOption | null
   quantity: number | null
   cost: number | null
+  // Quantidade × preço de venda do recurso (IP-25)
+  sale: number | null
 }
 
 export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   rules: SaleRules
   measure: AssemblyMeasure
   setupCost: number
+  setupSale: number
   cost: number
+  sale: number
   lines: ComputedLine[]
 }
 
@@ -251,6 +259,8 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   area: number
   blocks: ComputedBlock[]
   cost: number
+  // A soma do preço de venda de cada recurso, como o "valor sugerido" do
+  // legado (IP-25). Não muda o valor de venda: adotá-lo é decisão do usuário
   suggestedPrice: number
   // Quanto de unidade comercial há na medida (1,08 m², 3 m, 1 un)
   saleAmount: number

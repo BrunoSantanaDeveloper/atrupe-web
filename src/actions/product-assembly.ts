@@ -41,6 +41,21 @@ const HOUR: { [sector: string]: number } = {
 }
 const perMinute = (sector: string) => (HOUR[sector] || 1800) / 60
 
+// A hora vendida de cada setor (IP-25), como a do legado: Produção custa
+// R$ 16,49 e é vendida a R$ 60,00
+const HOUR_SALE: { [sector: string]: number } = {
+  Criação: 9000,
+  Impressão: 8000,
+  Produção: 6000,
+  Instalação: 12000,
+  Gráfica: 7000,
+}
+const salePerMinute = (sector: string) => (HOUR_SALE[sector] || 6000) / 60
+
+// O preço de venda do recurso; sem ele, o custo com o markup de referência
+const unitSaleOf = (option: ResourceOption) =>
+  option.unitSale ?? option.unitCost * REFERENCE_MARKUP
+
 const baseRules: SaleRules = {
   quantityMode: 'FREE',
   followsBase: true,
@@ -74,14 +89,45 @@ const labor = (sector: string) => ({
   name: `Mão de obra · ${sector}`,
   unit: 'min',
   unitCost: perMinute(sector),
+  unitSale: salePerMinute(sector),
 })
 
 const substrates = [
-  { id: 'lona440', name: 'Lona 440 g', unit: 'm²', unitCost: 1250 },
-  { id: 'lona380', name: 'Lona 380 g', unit: 'm²', unitCost: 980 },
-  { id: 'adbranco', name: 'Adesivo branco brilho', unit: 'm²', unitCost: 1100 },
-  { id: 'adtransp', name: 'Adesivo transparente', unit: 'm²', unitCost: 1300 },
-  { id: 'perfurado', name: 'Perfurado', unit: 'm²', unitCost: 1500 },
+  {
+    id: 'lona440',
+    name: 'Lona 440 g',
+    unit: 'm²',
+    unitCost: 1250,
+    unitSale: 2500,
+  },
+  {
+    id: 'lona380',
+    name: 'Lona 380 g',
+    unit: 'm²',
+    unitCost: 980,
+    unitSale: 1960,
+  },
+  {
+    id: 'adbranco',
+    name: 'Adesivo branco brilho',
+    unit: 'm²',
+    unitCost: 1100,
+    unitSale: 2500,
+  },
+  {
+    id: 'adtransp',
+    name: 'Adesivo transparente',
+    unit: 'm²',
+    unitCost: 1300,
+    unitSale: 2600,
+  },
+  {
+    id: 'perfurado',
+    name: 'Perfurado',
+    unit: 'm²',
+    unitCost: 1500,
+    unitSale: 3000,
+  },
 ]
 
 const catalog: Template[] = [
@@ -860,6 +906,10 @@ const compute = (
           qty === null || !selected
             ? null
             : Math.round(qty * selected.unitCost),
+        sale:
+          qty === null || !selected
+            ? null
+            : Math.round(qty * unitSaleOf(selected)),
       }
     })
 
@@ -868,18 +918,26 @@ const compute = (
       (block.setupMinutes * block.sectorHourCost) / 60,
     )
 
+    const setupSale = Math.round(
+      block.setupMinutes * salePerMinute(block.sector),
+    )
+
     blocks.push({
       ...block,
       rules,
       measure: blockMeasure,
       setupCost,
+      setupSale,
       lines,
       cost: setupCost + lines.reduce((sum, line) => sum + (line.cost || 0), 0),
+      sale: setupSale + lines.reduce((sum, line) => sum + (line.sale || 0), 0),
     })
   }
 
   const cost = blocks.reduce((sum, block) => sum + block.cost, 0)
-  const suggestedPrice = Math.round(cost * REFERENCE_MARKUP)
+  // O sugerido é a soma do preço de venda de cada recurso, como no legado
+  // (IP-25): cada recurso já traz a margem com que a empresa o vende
+  const suggestedPrice = blocks.reduce((sum, block) => sum + block.sale, 0)
 
   // Quanto de unidade comercial a medida tem, como o "Valor" do START
   const saleAmount =
