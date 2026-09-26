@@ -83,6 +83,7 @@ const toOptions = <K extends string>(obj: { [key in K]: string }) =>
 
 export function AddBlockDialog({
   open,
+  allowOwn = true,
   onOpenChange,
   title,
   description,
@@ -91,6 +92,8 @@ export function AddBlockDialog({
   onPick,
 }: {
   open: boolean
+  // Na variação só entra processo cadastrado: a etapa só dela sai inteira
+  allowOwn?: boolean
   onOpenChange: (open: boolean) => void
   title: string
   description: string
@@ -119,36 +122,45 @@ export function AddBlockDialog({
           </div>
         </DialogHeader>
         <DialogBody className="space-y-5">
-          <form
-            className="space-y-2"
-            onSubmit={(event) => {
-              event.preventDefault()
-              if (name.trim()) onCreate(name)
-            }}
-          >
-            <Label htmlFor="own-block-name">Nome da etapa</Label>
-            <div className="flex gap-2">
-              <Input
-                id="own-block-name"
-                autoFocus
-                placeholder="Ex.: Impressão da lona, Solda da estrutura"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-              />
-              <Button type="submit" disabled={!name.trim()}>
-                Criar
-              </Button>
-            </div>
-            <p className="text-sm text-gray">
-              Depois de criada, acrescente os recursos e o tempo que o setor usa
-              nela.
-            </p>
-          </form>
+          {allowOwn && (
+            <form
+              className="space-y-2"
+              onSubmit={(event) => {
+                event.preventDefault()
+                if (name.trim()) onCreate(name)
+              }}
+            >
+              <Label htmlFor="own-block-name">Nome da etapa</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="own-block-name"
+                  autoFocus
+                  placeholder="Ex.: Impressão da lona, Solda da estrutura"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                />
+                <Button type="submit" disabled={!name.trim()}>
+                  Criar
+                </Button>
+              </div>
+              <p className="text-sm text-gray">
+                Depois de criada, acrescente os recursos e o tempo que o setor
+                usa nela.
+              </p>
+            </form>
+          )}
 
           {processes.length > 0 && (
-            <div className="space-y-2 border-t border-gray-200 pt-4">
+            <div
+              className={cn(
+                'space-y-2',
+                allowOwn && 'border-t border-gray-200 pt-4',
+              )}
+            >
               <p className="text-sm font-medium text-gray-800">
-                Ou inclua um processo já cadastrado
+                {allowOwn
+                  ? 'Ou inclua um processo já cadastrado'
+                  : 'Escolha o processo'}
               </p>
               {processes.map((process) => (
                 <button
@@ -164,6 +176,11 @@ export function AddBlockDialog({
                 </button>
               ))}
             </div>
+          )}
+          {!allowOwn && !processes.length && (
+            <p className="text-sm text-gray">
+              Nenhum processo cadastrado para este setor.
+            </p>
           )}
         </DialogBody>
         <DialogFooter>

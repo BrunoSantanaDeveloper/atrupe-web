@@ -972,30 +972,33 @@ const applyVariation = (
   variation
     ? {
         ...assembly,
-        blocks: assembly.blocks.map((block) => ({
-          ...block,
-          lines: block.lines.map((line) => {
-            const override = variation.overrides.find(
-              (item) => item.blockId === block.id && item.lineId === line.id,
-            )
-            return override
-              ? {
-                  ...line,
-                  ...(override.selectedId !== undefined && {
-                    selectedId: override.selectedId,
-                  }),
-                  // O consumo da variação vale para qualquer opção escolhida
-                  ...(override.perUnit !== undefined && {
-                    perUnit: override.perUnit,
-                    options: line.options.map((option) => ({
-                      ...option,
-                      perUnit: undefined,
-                    })),
-                  }),
-                }
-              : line
+        // As etapas só da variação entram depois das da base (PV-7)
+        blocks: [...assembly.blocks, ...(variation.extraBlocks || [])].map(
+          (block) => ({
+            ...block,
+            lines: block.lines.map((line) => {
+              const override = variation.overrides.find(
+                (item) => item.blockId === block.id && item.lineId === line.id,
+              )
+              return override
+                ? {
+                    ...line,
+                    ...(override.selectedId !== undefined && {
+                      selectedId: override.selectedId,
+                    }),
+                    // O consumo da variação vale para qualquer opção escolhida
+                    ...(override.perUnit !== undefined && {
+                      perUnit: override.perUnit,
+                      options: line.options.map((option) => ({
+                        ...option,
+                        perUnit: undefined,
+                      })),
+                    }),
+                  }
+                : line
+            }),
           }),
-        })),
+        ),
       }
     : assembly
 
@@ -1179,6 +1182,9 @@ const compute = (
 
     blocks.push({
       ...block,
+      variationOnly: !!variation?.extraBlocks?.some(
+        (item) => item.id === block.id,
+      ),
       part: part
         ? {
             productId: part.productId,
@@ -2337,5 +2343,53 @@ export const importFromLibrary = async ({
     insertBlock(assembly, block)
     if (!finishing) base = block
   })
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Etapa só da variação (PV-7): "com laminação" é a mesma composição com uma
+ * etapa a mais. Entra de um processo cadastrado e sai inteira
+ * ------------------------------------------------------------------------- */
+
+export const addVariationBlock = async ({
+  productId,
+  variationId,
+  processId,
+  baseBlockId,
+}: {
+  productId: string
+  variationId: string
+  processId: string
+  baseBlockId: string | null
+}) => {
+  const variation = findOrCreate(productId).variations.find(
+    (item) => item.id === variationId,
+  )
+  if (!variation) return fail('Variação não encontrada')
+  const template = templateOf(processId)
+  if (!template) return fail('Processo não encontrado')
+  variation.extraBlocks = [
+    ...(variation.extraBlocks || []),
+    fromTemplate(template, baseBlockId),
+  ]
+  return ok(null)
+}
+
+export const removeVariationBlock = async ({
+  productId,
+  variationId,
+  blockId,
+}: {
+  productId: string
+  variationId: string
+  blockId: string
+}) => {
+  const variation = findOrCreate(productId).variations.find(
+    (item) => item.id === variationId,
+  )
+  if (!variation) return fail('Variação não encontrada')
+  variation.extraBlocks = (variation.extraBlocks || []).filter(
+    (block) => block.id !== blockId && block.baseBlockId !== blockId,
+  )
   return ok(null)
 }

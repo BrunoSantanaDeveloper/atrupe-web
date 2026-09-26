@@ -251,6 +251,8 @@ export type ProductVariation = {
   unitPrice: number | null
   // Faixas próprias da variação (FQ-4); sem elas, vale a tabela do produto
   priceTiers?: PriceTier[]
+  // Etapas que só esta variação tem (PV-7): a laminação do "com laminação"
+  extraBlocks?: AssemblyBlock[]
   overrides: VariationOverride[]
 }
 
@@ -307,6 +309,8 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   lines: ComputedLine[]
   // A parte calculada: nome e quantas etapas ela tem
   part: { productId: string; name: string; stages: number } | null
+  // Etapa que só a variação vista tem (PV-7)
+  variationOnly: boolean
 }
 
 // Cada recurso uma vez, somado de todas as etapas (IP-34): a lista do que o

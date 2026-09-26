@@ -86,6 +86,8 @@ import {
   removeLineOption,
   addPartBlock,
   getPartCandidates,
+  addVariationBlock,
+  removeVariationBlock,
   getLibrary,
   importFromLibrary,
   moveAssemblyBlock,
@@ -374,6 +376,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 <Badge variant="neutralLight">Processo cadastrado</Badge>
               )}
               {item.part && <Badge variant="blueLight">Parte</Badge>}
+              {item.variationOnly && (
+                <Badge variant={assemblyOverrideObj.VARIATION_CHANGED.variant}>
+                  Só nesta variação
+                </Badge>
+              )}
               {item.localRules && (
                 <Badge variant={assemblyOverrideObj.LOCAL_RULES.variant}>
                   {assemblyOverrideObj.LOCAL_RULES.text}
@@ -402,6 +409,39 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 </span>
               </p>
             </PermissionGate>
+            {/* Na variação: acabamento só dela sobre a base, e a etapa só
+                dela sai inteira (PV-7) */}
+            {inVariation && (
+              <PermissionGate permissions={EDIT}>
+                <div className="flex gap-1">
+                  {!finishing && !item.variationOnly && (
+                    <ActionButton
+                      Icon={IconCirclePlus}
+                      variant="neutralGhost"
+                      tooltip={`Acabamento só em ${variation?.name}`}
+                      onClick={() => setDialog({ kind: 'finish', block: item })}
+                    />
+                  )}
+                  {item.variationOnly && (
+                    <ActionButton
+                      Icon={IconTrash}
+                      variant="errorGhost"
+                      tooltip="Remover desta variação"
+                      onClick={() =>
+                        run(
+                          removeVariationBlock({
+                            productId,
+                            variationId: variation!.id,
+                            blockId: item.id,
+                          }),
+                          'Etapa removida da variação',
+                        )
+                      }
+                    />
+                  )}
+                </div>
+              </PermissionGate>
+            )}
             {/* A estrutura é da base: a variação só muda linhas (PV-2) */}
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
@@ -1355,47 +1395,49 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         <div>
           <p className="text-base font-semibold text-gray-800">Composição</p>
           <p className="text-sm text-gray">
-            Divida o produto nas etapas de produção de cada setor, com os
-            recursos e o tempo de cada uma. Os acabamentos entram embaixo da
-            base.
+            {inVariation
+              ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
+              : 'Divida o produto nas etapas de produção de cada setor, com os recursos e o tempo de cada uma. Os acabamentos entram embaixo da base.'}
           </p>
         </div>
-        {!inVariation && (
-          <PermissionGate permissions={EDIT}>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                size="md"
-                variant="neutralOutline"
-                LeftIcon={IconBooks}
-                onClick={() => setDialog({ kind: 'library' })}
-              >
-                Biblioteca
-              </Button>
-              <Button
-                type="button"
-                size="md"
-                variant="neutralOutline"
-                LeftIcon={IconPuzzle}
-                onClick={() => setDialog({ kind: 'part' })}
-              >
-                Parte
-              </Button>
-              {baseSectors.map((sector) => (
+        <PermissionGate permissions={EDIT}>
+          <div className="flex flex-wrap gap-2">
+            {!inVariation && (
+              <>
                 <Button
-                  key={sector}
                   type="button"
                   size="md"
                   variant="neutralOutline"
-                  LeftIcon={IconCirclePlus}
-                  onClick={() => setDialog({ kind: 'add', sector })}
+                  LeftIcon={IconBooks}
+                  onClick={() => setDialog({ kind: 'library' })}
                 >
-                  {sector}
+                  Biblioteca
                 </Button>
-              ))}
-            </div>
-          </PermissionGate>
-        )}
+                <Button
+                  type="button"
+                  size="md"
+                  variant="neutralOutline"
+                  LeftIcon={IconPuzzle}
+                  onClick={() => setDialog({ kind: 'part' })}
+                >
+                  Parte
+                </Button>
+              </>
+            )}
+            {baseSectors.map((sector) => (
+              <Button
+                key={sector}
+                type="button"
+                size="md"
+                variant="neutralOutline"
+                LeftIcon={IconCirclePlus}
+                onClick={() => setDialog({ kind: 'add', sector })}
+              >
+                {sector}
+              </Button>
+            ))}
+          </div>
+        </PermissionGate>
       </div>
 
       {assembly.blocks.length ? (
@@ -1518,6 +1560,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
 
       <AddBlockDialog
         open={dialog?.kind === 'add' || dialog?.kind === 'finish'}
+        allowOwn={!inVariation}
         onOpenChange={() => setDialog(null)}
         title={
           dialog?.kind === 'finish'
@@ -1552,8 +1595,17 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           const baseBlockId = dialog?.kind === 'finish' ? dialog.block.id : null
           setDialog(null)
           run(
-            addAssemblyBlock({ productId, processId, baseBlockId }),
-            'Etapa adicionada',
+            variation
+              ? addVariationBlock({
+                  productId,
+                  variationId: variation.id,
+                  processId,
+                  baseBlockId,
+                })
+              : addAssemblyBlock({ productId, processId, baseBlockId }),
+            variation
+              ? `Etapa acrescentada só em ${variation.name}`
+              : 'Etapa adicionada',
           )
         }}
       />
