@@ -1,10 +1,7 @@
-import { ProductionBoard } from './components/ProductionBoard'
+import { ManagerBoard } from './components/ManagerBoard'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { UpgradeFallback } from '@/components/common/UpgradeFallback'
-
-// Types
-import type { SearchParamsType } from '@/types/coreTypes'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -13,9 +10,7 @@ export function metadata() {
   return { title: 'Gerenciador de produção' }
 }
 
-export default function ProductionBoardPage({
-  searchParams,
-}: SearchParamsType) {
+export default function ProductionBoardPage() {
   return (
     <PermissionGate
       permissions={['production:production:view']}
@@ -30,11 +25,11 @@ export default function ProductionBoardPage({
         fallback={
           <UpgradeFallback
             title="Gerenciador de produção"
-            description="O gerenciador de produção faz parte do plano ELITE. Ele controla as etapas por setor, com tempo previsto, dependências e produtividade."
+            description="O gerenciador de produção faz parte do plano ELITE: a fila de cada setor, com agenda, quem está trabalhando e o tempo medido."
           />
         }
       >
-        <ProductionBoard searchParams={searchParams} />
+        <ManagerBoard />
       </FeatureGate>
     </PermissionGate>
   )
