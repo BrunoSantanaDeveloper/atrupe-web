@@ -29,6 +29,8 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 // Types
 import {
   lineModeObj,
+  hhmmToMinutes,
+  minutesToHhmm,
   quantityModeObj,
   extraFieldKindObj,
   type LineMode,
@@ -811,7 +813,9 @@ const describe = (rules: SaleRules) =>
     rules.extraField === 'NONE'
       ? null
       : `campo extra "${rules.extraFieldName}"`,
-    rules.timeField ? 'com campo tempo' : null,
+    rules.timeField
+      ? `com campo tempo (${minutesToHhmm(rules.timeFieldDefault || 0)})`
+      : null,
   ]
     .filter(Boolean)
     .join(' · ')
@@ -990,6 +994,19 @@ export function RulesDialog({
                 aria-label="Campo tempo"
               />
             </label>
+            {rules.timeField && (
+              <div className="space-y-2">
+                <Label htmlFor="rules-time-default">Tempo padrão (h:mm)</Label>
+                <Input
+                  id="rules-time-default"
+                  placeholder="1:00"
+                  defaultValue={minutesToHhmm(rules.timeFieldDefault || 0)}
+                  onBlur={(event) =>
+                    set('timeFieldDefault', hhmmToMinutes(event.target.value))
+                  }
+                />
+              </div>
+            )}
             <label className="flex items-center justify-between gap-4 rounded-lg border border-gray-200 px-4 py-3">
               <span className="text-sm font-medium">
                 Vendedor pode renomear

@@ -15,6 +15,10 @@ import type { AddOption, ItemComposition, QuotationItem } from '../types'
 
 // Actions
 import { getSaleForm } from '@/actions/product-assembly'
+import {
+  hhmmToMinutes,
+  minutesToHhmm,
+} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Hooks / Store / Consts
 import { cn } from '@/lib/utils'
@@ -89,12 +93,19 @@ export function ItemForm({
   const saleForm = saleFormRes?.data || null
 
   const [extras, setExtras] = useState(item?.composition?.extras || [])
+  const [times, setTimes] = useState(item?.composition?.times || [])
   const [choices, setChoices] = useState(item?.composition?.choices || [])
   const [lists, setLists] = useState(item?.composition?.lists || [])
   const [optionals, setOptionals] = useState(item?.composition?.optionals || [])
 
   useEffect(() => {
     if (!saleForm || item?.composition) return
+    setTimes(
+      saleForm.times.map((time) => ({
+        blockId: time.blockId,
+        minutes: time.defaultMinutes,
+      })),
+    )
     setExtras(
       saleForm.extras.map((extra) => ({
         blockId: extra.blockId,
@@ -146,6 +157,13 @@ export function ItemForm({
   const summary = () =>
     saleForm
       ? [
+          ...saleForm.times.map(
+            (time) =>
+              `${time.name}: ${minutesToHhmm(
+                times.find((item) => item.blockId === time.blockId)?.minutes ??
+                  time.defaultMinutes,
+              )}`,
+          ),
           ...saleForm.extras.map(
             (extra) => `${extra.name}: ${extraValue(extra.blockId)}`,
           ),
@@ -311,58 +329,93 @@ export function ItemForm({
         </div>
       )}
 
-      {saleForm && saleForm.extras.length + saleForm.choices.length > 0 && (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-          {saleForm.extras.map((extra) => (
-            <div key={extra.blockId} className="space-y-1.5">
-              <label
-                htmlFor={`extra-${extra.blockId}`}
-                className="text-sm font-medium"
-              >
-                {extra.name}
-              </label>
-              <Input
-                id={`extra-${extra.blockId}`}
-                type="number"
-                min={0}
-                step={extra.kind === 'INTEGER' ? '1' : '0.01'}
-                value={String(extraValue(extra.blockId))}
-                onChange={(event) =>
-                  setExtras((current) => [
-                    ...current.filter((item) => item.blockId !== extra.blockId),
+      {saleForm &&
+        saleForm.extras.length +
+          saleForm.choices.length +
+          saleForm.times.length >
+          0 && (
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+            {saleForm.times.map((time) => (
+              <div key={time.blockId} className="space-y-1.5">
+                <label
+                  htmlFor={`time-${time.blockId}`}
+                  className="text-sm font-medium"
+                >
+                  {time.name} (h:mm)
+                </label>
+                <Input
+                  id={`time-${time.blockId}`}
+                  placeholder="1:00"
+                  defaultValue={minutesToHhmm(
+                    times.find((item) => item.blockId === time.blockId)
+                      ?.minutes ?? time.defaultMinutes,
+                  )}
+                  onBlur={(event) =>
+                    setTimes((current) => [
+                      ...current.filter(
+                        (item) => item.blockId !== time.blockId,
+                      ),
+                      {
+                        blockId: time.blockId,
+                        minutes: hhmmToMinutes(event.target.value),
+                      },
+                    ])
+                  }
+                />
+              </div>
+            ))}
+            {saleForm.extras.map((extra) => (
+              <div key={extra.blockId} className="space-y-1.5">
+                <label
+                  htmlFor={`extra-${extra.blockId}`}
+                  className="text-sm font-medium"
+                >
+                  {extra.name}
+                </label>
+                <Input
+                  id={`extra-${extra.blockId}`}
+                  type="number"
+                  min={0}
+                  step={extra.kind === 'INTEGER' ? '1' : '0.01'}
+                  value={String(extraValue(extra.blockId))}
+                  onChange={(event) =>
+                    setExtras((current) => [
+                      ...current.filter(
+                        (item) => item.blockId !== extra.blockId,
+                      ),
+                      {
+                        blockId: extra.blockId,
+                        value: Number(event.target.value || 0),
+                      },
+                    ])
+                  }
+                />
+              </div>
+            ))}
+            {saleForm.choices.map((choice) => (
+              <SelectBasic
+                key={choice.lineId}
+                name={`choice-${choice.lineId}`}
+                label={choice.name}
+                options={choice.options.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+                value={choiceValue(choice.lineId)}
+                onChange={(value) =>
+                  setChoices((current) => [
+                    ...current.filter((item) => item.lineId !== choice.lineId),
                     {
-                      blockId: extra.blockId,
-                      value: Number(event.target.value || 0),
+                      blockId: choice.blockId,
+                      lineId: choice.lineId,
+                      optionId: String(value),
                     },
                   ])
                 }
               />
-            </div>
-          ))}
-          {saleForm.choices.map((choice) => (
-            <SelectBasic
-              key={choice.lineId}
-              name={`choice-${choice.lineId}`}
-              label={choice.name}
-              options={choice.options.map((item) => ({
-                value: item.id,
-                label: item.name,
-              }))}
-              value={choiceValue(choice.lineId)}
-              onChange={(value) =>
-                setChoices((current) => [
-                  ...current.filter((item) => item.lineId !== choice.lineId),
-                  {
-                    blockId: choice.blockId,
-                    lineId: choice.lineId,
-                    optionId: String(value),
-                  },
-                ])
-              }
-            />
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
 
       {!!saleForm?.optionals.length && (
         <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -447,7 +500,14 @@ export function ItemForm({
               fields,
               variation: variation || null,
               composition: saleForm
-                ? { extras, choices, optionals, lists, summary: summary() }
+                ? {
+                    extras,
+                    times,
+                    choices,
+                    optionals,
+                    lists,
+                    summary: summary(),
+                  }
                 : undefined,
             })
           }

@@ -104,6 +104,9 @@ export type SaleRules = {
   followsBase: boolean
   dimension: DimensionRule
   timeField: boolean
+  // Tempo padrão da etapa, em minutos: a criação com 1 h já preenchida
+  // (IP-32). O vendedor ajusta no orçamento, em hh:mm (IP-33)
+  timeFieldDefault: number
   extraField: ExtraFieldKind
   extraFieldName: string
   extraFieldDefault: number
@@ -375,6 +378,7 @@ export type NewLineValues = {
 export type SaleChoice = { blockId: string; lineId: string; optionId: string }
 export type SaleListEntry = SaleChoice & { quantity: number }
 export type SaleExtra = { blockId: string; value: number }
+export type SaleTime = { blockId: string; minutes: number }
 export type SaleOptional = {
   blockId: string
   lineId: string
@@ -388,6 +392,12 @@ export type SaleForm = {
     name: string
     kind: ExtraFieldKind
     defaultValue: number
+  }[]
+  // Campo tempo das etapas que pedem (a criação da arte), em minutos
+  times: {
+    blockId: string
+    name: string
+    defaultMinutes: number
   }[]
   // Linhas de escolha: o vendedor troca o recurso (a lona 380 ou 440)
   choices: {
@@ -439,4 +449,53 @@ export type SaleCompositionReport = {
       entries: { name: string; quantity: number; unit: string }[] | null
     }[]
   }[]
+}
+
+// Tempo digitado em hh:mm, como no legado (IP-33): "1:30" → 90 minutos.
+// Aceita também só minutos ("45")
+export const hhmmToMinutes = (value: string) => {
+  const text = value.trim()
+  if (!text) return 0
+  if (!text.includes(':')) return Math.max(0, Math.round(Number(text) || 0))
+  const [hours, minutes] = text.split(':')
+  return Math.max(0, (Number(hours) || 0) * 60 + (Number(minutes) || 0))
+}
+
+export const minutesToHhmm = (minutes: number) =>
+  `${Math.floor(minutes / 60)}:${String(Math.round(minutes % 60)).padStart(2, '0')}`
+
+// O que cada fórmula consome da etapa (IP-35): é o que a tela destaca, e o
+// que vira alerta quando está zerado
+export type FormulaInput =
+  | 'quantidade'
+  | 'largura'
+  | 'altura'
+  | 'área'
+  | 'perímetro'
+  | 'campo extra'
+  | 'tempo'
+  | 'folha'
+
+export const formulaInputs: { [key in FormulaKey]: FormulaInput[] } = {
+  FIXED: [],
+  SELLER: [],
+  PER_AREA: ['área', 'quantidade'],
+  PER_UNIT: ['quantidade'],
+  PER_PERIMETER: ['perímetro', 'quantidade'],
+  PER_WIDTH: ['largura', 'quantidade'],
+  PER_HEIGHT: ['altura', 'quantidade'],
+  PER_EXTRA: ['campo extra', 'quantidade'],
+  PER_TIME: ['tempo', 'quantidade'],
+  PER_PERIMETER_DIV_EXTRA: ['perímetro', 'campo extra', 'quantidade'],
+  TIME_TIMES_EXTRA: ['tempo', 'campo extra'],
+  EQUAL_TIME: ['tempo'],
+  PER_WIDTH_EXTRA: ['largura', 'campo extra', 'quantidade'],
+  PER_HEIGHT_EXTRA: ['altura', 'campo extra', 'quantidade'],
+  EXTRA_ONLY: ['campo extra'],
+  PER_AREA_DIV_EXTRA: ['área', 'campo extra', 'quantidade'],
+  PER_PERIMETER_EXTRA: ['perímetro', 'campo extra', 'quantidade'],
+  DIV_EXTRA: ['campo extra'],
+  AREA_EXTRA: ['área', 'campo extra'],
+  PER_AREA_EXTRA: ['área', 'campo extra', 'quantidade'],
+  SHEET_YIELD: ['folha', 'largura', 'altura', 'quantidade'],
 }

@@ -45,6 +45,8 @@ export type QuotationLine = {
 // extras, escolhas e listas. O resumo é o que aparece na linha do item
 export type ItemComposition = {
   extras: { blockId: string; value: number }[]
+  // Tempo das etapas que pedem, em minutos (digitado em h:mm, IP-33)
+  times: { blockId: string; minutes: number }[]
   choices: { blockId: string; lineId: string; optionId: string }[]
   // As linhas opcionais e se entraram nesta venda (IP-28)
   optionals: { blockId: string; lineId: string; included: boolean }[]

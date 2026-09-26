@@ -25,6 +25,7 @@ import type {
   ResourceSummary,
   SaleForm,
   SaleExtra,
+  SaleTime,
   SaleOptional,
   SaleChoice,
   SaleListEntry,
@@ -70,6 +71,7 @@ const baseRules: SaleRules = {
   followsBase: true,
   dimension: 'FREE_SIZE',
   timeField: false,
+  timeFieldDefault: 0,
   extraField: 'NONE',
   extraFieldName: '',
   extraFieldDefault: 0,
@@ -478,6 +480,8 @@ const catalog: Template[] = [
       followsBase: false,
       dimension: 'NONE',
       timeField: true,
+      // 1 h de criação já preenchida; o vendedor ajusta (IP-32)
+      timeFieldDefault: 60,
     },
     lines: [
       {
@@ -486,8 +490,8 @@ const catalog: Template[] = [
         mode: 'SINGLE',
         options: [labor('Criação')],
         selectedId: 'mo-Criação',
-        perUnit: 30,
-        formula: 'FIXED',
+        perUnit: 1,
+        formula: 'EQUAL_TIME',
         lossPercent: 0,
         minimum: null,
       },
@@ -694,6 +698,8 @@ const lineQuantity = (
   line: AssemblyLine,
   measure: AssemblyMeasure,
   extra: number,
+  // Campo tempo da etapa, em minutos; sem ele, o consumo faz o papel (IP-32)
+  time: number | null = null,
 ) => {
   const { quantity: n, width: w, height: h } = measure
   const area = w * h
@@ -717,15 +723,16 @@ const lineQuantity = (
       return k * h * n
     case 'PER_EXTRA':
       return k * extra * n
+    // As três do campo tempo, como no legado (11, 12 e 13)
     case 'PER_TIME':
-      return k * n
+      return time === null ? k * n : time * n
     case 'PER_PERIMETER_DIV_EXTRA':
       // Quantos cabem no perímetro: nunca fração de ilhós
       return extra > 0 ? Math.ceil(perimeter / extra) * k * n : null
     case 'TIME_TIMES_EXTRA':
-      return k * extra
+      return time === null ? k * extra : k * time * extra
     case 'EQUAL_TIME':
-      return k
+      return time === null ? k : time
     case 'PER_WIDTH_EXTRA':
       return k * w * extra * n
     case 'PER_HEIGHT_EXTRA':
@@ -863,6 +870,7 @@ const compute = (
 
     const blockMeasure = { quantity, ...size }
     const extra = rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault
+    const time = rules.timeField ? rules.timeFieldDefault || 0 : null
 
     const lines: ComputedLine[] = block.lines.map((line) => {
       const selected =
@@ -923,7 +931,7 @@ const compute = (
             ? sheetYield
               ? sheetYield.sheets * calcLine.perUnit
               : null
-            : lineQuantity(calcLine, blockMeasure, extra)
+            : lineQuantity(calcLine, blockMeasure, extra, time)
 
       let qty =
         raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
@@ -1059,6 +1067,9 @@ const compute = (
         : null,
   }
 }
+
+const minutesText = (minutes: number) =>
+  `${Math.floor(minutes / 60)}h${String(Math.round(minutes % 60)).padStart(2, '0')}`
 
 const ok = <T>(data: T) => ({ success: true, data, message: '' })
 const fail = (message: string) => ({ success: false, data: null, message })
@@ -1619,9 +1630,22 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
 
-  const form: SaleForm = { extras: [], choices: [], optionals: [], lists: [] }
+  const form: SaleForm = {
+    extras: [],
+    times: [],
+    choices: [],
+    optionals: [],
+    lists: [],
+  }
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
+    if (rules.timeField) {
+      form.times.push({
+        blockId: block.id,
+        name: `Tempo · ${block.localName || block.name}`,
+        defaultMinutes: rules.timeFieldDefault || 0,
+      })
+    }
     if (rules.extraField !== 'NONE') {
       form.extras.push({
         blockId: block.id,
@@ -1677,6 +1701,7 @@ export const getSaleComposition = async ({
   measure,
   variationName,
   extras = [],
+  times = [],
   choices = [],
   optionals = [],
   lists = [],
@@ -1685,6 +1710,7 @@ export const getSaleComposition = async ({
   measure: AssemblyMeasure
   variationName?: string | null
   extras?: SaleExtra[]
+  times?: SaleTime[]
   choices?: SaleChoice[]
   optionals?: SaleOptional[]
   lists?: SaleListEntry[]
@@ -1702,6 +1728,13 @@ export const getSaleComposition = async ({
       block.localRules = {
         ...(block.localRules ?? block.originalRules),
         extraFieldDefault: extra.value,
+      }
+    }
+    const time = times.find((item) => item.blockId === block.id)
+    if (time) {
+      block.localRules = {
+        ...(block.localRules ?? block.originalRules),
+        timeFieldDefault: time.minutes,
       }
     }
     block.lines.forEach((line) => {
@@ -1738,9 +1771,16 @@ export const getSaleComposition = async ({
         null,
       measure: block.measure,
       extra:
-        block.rules.extraField === 'NONE'
-          ? null
-          : `${block.rules.extraFieldName}: ${block.rules.extraFieldDefault}`,
+        [
+          block.rules.timeField
+            ? `tempo ${minutesText(block.rules.timeFieldDefault || 0)}`
+            : null,
+          block.rules.extraField === 'NONE'
+            ? null
+            : `${block.rules.extraFieldName}: ${block.rules.extraFieldDefault}`,
+        ]
+          .filter(Boolean)
+          .join(' · ') || null,
       lines: block.lines.map((line) => ({
         id: line.id,
         name: line.name,

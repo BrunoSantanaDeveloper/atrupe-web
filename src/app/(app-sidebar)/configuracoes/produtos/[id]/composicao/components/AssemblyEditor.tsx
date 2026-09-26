@@ -58,6 +58,8 @@ import {
   unitSaleLabel,
   unitAmountLabel,
   productDimensionObj,
+  formulaInputs,
+  type FormulaInput,
   type UnitKind,
   type ComputedLine,
   type ComputedBlock,
@@ -133,6 +135,28 @@ const amount = (value: number, unit: string) => {
   const hours = Math.floor(value / 60)
   const minutes = Math.round(value - hours * 60)
   return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+}
+
+// O campo que a fórmula consome está zerado nesta etapa? (IP-35)
+const zeroInput = (input: FormulaInput, block: ComputedBlock) => {
+  const { measure: m, rules } = block
+  switch (input) {
+    case 'quantidade':
+      return !m.quantity
+    case 'largura':
+      return !m.width
+    case 'altura':
+      return !m.height
+    case 'área':
+    case 'perímetro':
+      return !m.width || !m.height
+    case 'campo extra':
+      return rules.extraField === 'NONE' || !rules.extraFieldDefault
+    case 'tempo':
+      return !rules.timeField || !rules.timeFieldDefault
+    default:
+      return false
+  }
 }
 
 const money = (value: number | null) =>
@@ -515,7 +539,13 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       ) : (
                         <>
                           <p className="text-sm">
-                            {amount(line.effective.perUnit, unit)}
+                            {/* Estas fórmulas usam o tempo da etapa, não o
+                                consumo (IP-32) */}
+                            {item.rules.timeField &&
+                            (line.formula === 'EQUAL_TIME' ||
+                              line.formula === 'PER_TIME')
+                              ? `tempo da etapa (${amount(item.rules.timeFieldDefault || 0, 'min')})`
+                              : amount(line.effective.perUnit, unit)}
                           </p>
                           {(line.effective.lossPercent > 0 ||
                             line.effective.minimum !== null) && (
@@ -544,6 +574,32 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       {line.mode === 'LIST'
                         ? 'Informado na venda'
                         : formulaObj[line.formula]?.label}
+                      {line.mode !== 'LIST' &&
+                        formulaInputs[line.formula]?.length > 0 && (
+                          <span className="mt-1 flex flex-wrap gap-1">
+                            {formulaInputs[line.formula].map((input) => {
+                              const zero = zeroInput(input, item)
+                              return (
+                                <span
+                                  key={input}
+                                  title={
+                                    zero
+                                      ? `A fórmula usa ${input}, e está zerado nesta etapa`
+                                      : `A fórmula usa ${input}`
+                                  }
+                                  className={cn(
+                                    'rounded px-1.5 py-0.5 text-[11px]',
+                                    zero
+                                      ? 'bg-error-50 text-error-700'
+                                      : 'bg-gray-100 text-gray-600',
+                                  )}
+                                >
+                                  {input}
+                                </span>
+                              )
+                            })}
+                          </span>
+                        )}
                       {line.sheetYield && (
                         <span
                           className="mt-0.5 block text-xs"

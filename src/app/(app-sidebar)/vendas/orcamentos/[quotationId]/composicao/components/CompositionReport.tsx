@@ -49,6 +49,14 @@ import { cn } from '@/lib/utils'
 const num = (value: number) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 
+// Tempo em horas a partir de 60 min, como na composição (IP-33)
+const amount = (value: number, unit: string) => {
+  if (unit !== 'min' || value < 60) return `${num(value)} ${unit}`
+  const hours = Math.floor(value / 60)
+  const minutes = Math.round(value - hours * 60)
+  return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+}
+
 interface Props {
   item: QuotationItem | null
   onOpenChange: (open: boolean) => void
@@ -77,6 +85,7 @@ export function CompositionReport({ item, onOpenChange }: Props) {
         },
         variationName: item!.variation,
         extras: item!.composition?.extras,
+        times: item!.composition?.times,
         choices: item!.composition?.choices,
         optionals: item!.composition?.optionals,
         lists: item!.composition?.lists,
@@ -190,12 +199,12 @@ export function CompositionReport({ item, onOpenChange }: Props) {
                           {line.entries
                             ? line.entries.map((entry) => (
                                 <span key={entry.name} className="block">
-                                  {num(entry.quantity)} {entry.unit}
+                                  {amount(entry.quantity, entry.unit)}
                                 </span>
                               ))
                             : line.quantity === null
                               ? '-'
-                              : `${num(line.quantity)} ${line.unit}`}
+                              : amount(line.quantity, line.unit)}
                         </TableCell>
                       </TableRow>
                     ))}
