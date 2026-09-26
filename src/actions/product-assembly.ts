@@ -1269,6 +1269,15 @@ const compute = (
             stages: part.blocks.length,
           }
         : null,
+      partLines: part
+        ? part.blocks.flatMap((item) => [...item.partLines, ...item.lines])
+        : [],
+      partSetupMinutes: part
+        ? part.blocks.reduce(
+            (sum, item) => sum + item.setupMinutes + item.partSetupMinutes,
+            0,
+          )
+        : 0,
       name: block.localName || block.name,
       rules,
       measure: blockMeasure,
@@ -2114,6 +2123,7 @@ export const getSaleComposition = async ({
       measure: block.measure,
       note:
         notes.find((item) => item.blockId === block.id)?.text.trim() || null,
+      setupMinutes: block.setupMinutes + block.partSetupMinutes,
       extra:
         [
           block.rules.timeField
@@ -2125,7 +2135,7 @@ export const getSaleComposition = async ({
         ]
           .filter(Boolean)
           .join(' · ') || null,
-      lines: block.lines.map((line) => ({
+      lines: [...block.partLines, ...block.lines].map((line) => ({
         id: line.id,
         name: line.name,
         kind: line.kind,

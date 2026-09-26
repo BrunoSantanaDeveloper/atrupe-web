@@ -309,6 +309,10 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   lines: ComputedLine[]
   // A parte calculada: nome e quantas etapas ela tem
   part: { productId: string; name: string; stages: number } | null
+  // As linhas e o preparo das etapas da parte, para a produção saber o que
+  // ela consome (GP-16)
+  partLines: ComputedLine[]
+  partSetupMinutes: number
   // Etapa que só a variação vista tem (PV-7)
   variationOnly: boolean
 }
@@ -474,6 +478,8 @@ export type SaleCompositionReport = {
     extra: string | null
     // Observação de produção deixada na venda (MS-13)
     note: string | null
+    // Preparo da etapa, em minutos: entra no tempo estimado da tarefa
+    setupMinutes: number
     lines: {
       id: string
       name: string

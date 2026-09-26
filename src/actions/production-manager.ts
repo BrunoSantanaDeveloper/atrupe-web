@@ -30,6 +30,9 @@ const code = () => Math.random().toString(16).slice(2, 7).toUpperCase()
 const ok = <T>(data: T) => ({ success: true, data, message: '' })
 const fail = (message: string) => ({ success: false, data: null, message })
 
+const br = (value: number) =>
+  value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
+
 const today = () => new Date().toISOString().slice(0, 10)
 const addDays = (days: number) =>
   new Date(Date.now() + days * 86400000).toISOString().slice(0, 10)
@@ -181,6 +184,9 @@ const tasksFromComposition = async ({
   const byBlock = new Map<string, string>()
 
   report.blocks.forEach((block) => {
+    // Etapa que ficou vazia nesta venda (a opcional desmarcada) não vira
+    // tarefa
+    if (!block.lines.length && !block.setupMinutes) return
     // O tipo vem do "tipo de tarefa" da etapa (IP-23); sem correspondente,
     // cai na Produção
     const type =
@@ -194,9 +200,12 @@ const tasksFromComposition = async ({
           report.blocks.find((item) => item.name === block.baseName)?.id || '',
         ) || null
       : null
-    const minutes = block.lines
-      .filter((line) => line.unit === 'min' && line.quantity !== null)
-      .reduce((sum, line) => sum + (line.quantity || 0), 0)
+    // O tempo estimado é a mão de obra das linhas mais o preparo
+    const minutes =
+      block.setupMinutes +
+      block.lines
+        .filter((line) => line.unit === 'min' && line.quantity !== null)
+        .reduce((sum, line) => sum + (line.quantity || 0), 0)
     const task: ProductionTask = {
       id: `tk-${uid()}`,
       code: code(),
@@ -213,7 +222,7 @@ const tasksFromComposition = async ({
       measureText: [
         `${block.measure.quantity} un`,
         block.measure.width && block.measure.height
-          ? `${block.measure.width} × ${block.measure.height} m`
+          ? `${br(block.measure.width)} × ${br(block.measure.height)} m`
           : null,
       ]
         .filter(Boolean)
