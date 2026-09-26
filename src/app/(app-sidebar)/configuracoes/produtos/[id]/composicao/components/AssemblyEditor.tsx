@@ -49,6 +49,7 @@ import {
   NewLineDialog,
   OptionsDialog,
   PartDialog,
+  LibraryDialog,
   AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
@@ -85,6 +86,8 @@ import {
   removeLineOption,
   addPartBlock,
   getPartCandidates,
+  getLibrary,
+  importFromLibrary,
   moveAssemblyBlock,
   resetAssemblyLine,
   setBlockLocalRules,
@@ -125,6 +128,7 @@ import {
   IconListDetails,
   IconSearch,
   IconPuzzle,
+  IconBooks,
 } from '@tabler/icons-react'
 
 // Utils
@@ -180,6 +184,7 @@ type Dialog =
   | { kind: 'newLine'; block: ComputedBlock }
   | { kind: 'options'; blockId: string; lineId: string }
   | { kind: 'part' }
+  | { kind: 'library' }
   | null
 
 export function AssemblyEditor({ productId }: { productId: string }) {
@@ -216,6 +221,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     queryFn: () => getAssemblyResources(),
   })
 
+  const { data: libraryRes } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['assembly-library'],
+    queryFn: () => getLibrary(),
+  })
   const { data: partsRes } = useQuery({
     queryKey: ['assembly-parts', productId],
     queryFn: () => getPartCandidates({ productId }),
@@ -1350,6 +1360,15 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 type="button"
                 size="md"
                 variant="neutralOutline"
+                LeftIcon={IconBooks}
+                onClick={() => setDialog({ kind: 'library' })}
+              >
+                Biblioteca
+              </Button>
+              <Button
+                type="button"
+                size="md"
+                variant="neutralOutline"
                 LeftIcon={IconPuzzle}
                 onClick={() => setDialog({ kind: 'part' })}
               >
@@ -1380,7 +1399,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         <Card>
           <EmptyState
             title="Nenhuma etapa ainda"
-            description="Adicione a etapa onde o produto começa — a impressão, a criação, o corte. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
+            description="Importe uma composição pronta da biblioteca, ou adicione a etapa onde o produto começa — a impressão, a criação, o corte. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
+            action={
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  type="button"
+                  LeftIcon={IconBooks}
+                  onClick={() => setDialog({ kind: 'library' })}
+                >
+                  Importar da biblioteca
+                </Button>
+              </PermissionGate>
+            }
           />
         </Card>
       )}
@@ -1531,6 +1561,19 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           run(
             addAssemblyLine({ productId, blockId: target.id, values }),
             'Linha adicionada',
+          )
+        }}
+      />
+      <LibraryDialog
+        open={dialog?.kind === 'library'}
+        entries={libraryRes?.data || []}
+        hasStages={assembly.blocks.length > 0}
+        onOpenChange={() => setDialog(null)}
+        onImport={(libraryId) => {
+          setDialog(null)
+          run(
+            importFromLibrary({ productId, libraryId }),
+            'Composição importada — ajuste ao seu jeito de produzir',
           )
         }}
       />

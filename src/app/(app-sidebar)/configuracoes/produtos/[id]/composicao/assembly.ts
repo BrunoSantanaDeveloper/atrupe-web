@@ -505,3 +505,15 @@ export const formulaInputs: { [key in FormulaKey]: FormulaInput[] } = {
   PER_AREA_EXTRA: ['área', 'campo extra', 'quantidade'],
   SHEET_YIELD: ['folha', 'largura', 'altura', 'quantidade'],
 }
+
+// Biblioteca de composições prontas (IP-7): curadoria do Atrupe, importada
+// para o produto do cliente já com etapas e materiais. É o passo 2 do
+// caminho do produto até o PRO (CP-16)
+export type LibraryEntry = {
+  id: string
+  name: string
+  segment: string
+  description: string
+  stages: { name: string; sector: string; role: BlockRole }[]
+  resources: number
+}

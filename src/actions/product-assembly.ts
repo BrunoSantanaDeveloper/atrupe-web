@@ -23,6 +23,7 @@ import type {
   AssemblyResource,
   NewLineValues,
   ResourceSummary,
+  LibraryEntry,
   SaleForm,
   SaleExtra,
   SaleTime,
@@ -2172,3 +2173,99 @@ export const getComposedProductIds = async () =>
       .filter((item) => item.blocks.length)
       .map((item) => item.productId),
   )
+
+/* ---------------------------------------------------------------------------
+ * Biblioteca de composições prontas (IP-7)
+ * ------------------------------------------------------------------------- */
+
+// Cada entrada é uma sequência de processos: a base e os acabamentos dela
+const library: (Omit<LibraryEntry, 'stages' | 'resources'> & {
+  processes: string[]
+})[] = [
+  {
+    id: 'lib-banner',
+    name: 'Banner com bastão e cordão',
+    segment: 'Comunicação visual',
+    description: 'Impressão solvente em lona, com madeira, ponteira e cordão.',
+    processes: ['impressao-solvente', 'acabamento-banner'],
+  },
+  {
+    id: 'lib-lona-ilhos',
+    name: 'Lona com bainha e ilhós',
+    segment: 'Comunicação visual',
+    description: 'Impressão em lona com bainha no perímetro e ilhoses.',
+    processes: ['impressao-solvente', 'bainha', 'ilhos'],
+  },
+  {
+    id: 'lib-adesivo-laminado',
+    name: 'Adesivo impresso laminado',
+    segment: 'Comunicação visual',
+    description: 'Impressão em adesivo com laminação brilho ou fosca.',
+    processes: ['impressao-solvente', 'laminacao'],
+  },
+  {
+    id: 'lib-adesivo-instalado',
+    name: 'Adesivo com criação e instalação',
+    segment: 'Comunicação visual',
+    description: 'Arte, impressão e instalação no local do cliente.',
+    processes: ['arte', 'impressao-solvente', 'instalacao'],
+  },
+  {
+    id: 'lib-cartao',
+    name: 'Cartão de visita',
+    segment: 'Gráfica rápida',
+    description: 'Couchê 300 g com aproveitamento de folha e corte.',
+    processes: ['impressao-digital', 'corte-guilhotina'],
+  },
+  {
+    id: 'lib-panfleto-arte',
+    name: 'Panfleto com criação',
+    segment: 'Gráfica rápida',
+    description: 'Arte e impressão digital com corte na guilhotina.',
+    processes: ['arte', 'impressao-digital', 'corte-guilhotina'],
+  },
+]
+
+export const getLibrary = async () =>
+  ok(
+    library.map(({ processes, ...entry }): LibraryEntry => {
+      const templates = processes
+        .map((id) => templateOf(id))
+        .filter((item): item is Template => !!item)
+      return {
+        ...entry,
+        stages: templates.map((item) => ({
+          name: item.name,
+          sector: item.sector,
+          role: item.role,
+        })),
+        resources: templates.reduce((sum, item) => sum + item.lines.length, 0),
+      }
+    }),
+  )
+
+// Importar é copiar: a composição passa a ser do produto e muda sem afetar a
+// biblioteca. Os acabamentos se ligam à base que veio antes deles
+export const importFromLibrary = async ({
+  productId,
+  libraryId,
+}: {
+  productId: string
+  libraryId: string
+}) => {
+  const entry = library.find((item) => item.id === libraryId)
+  if (!entry) return fail('Composição não encontrada na biblioteca')
+  const assembly = findOrCreate(productId)
+
+  let base: AssemblyBlock | null = null
+  entry.processes.forEach((processId) => {
+    const template = templateOf(processId)
+    if (!template) return
+    const finishing = template.role === 'FINISHING'
+    const block = fromTemplate(template, finishing ? base?.id || null : null)
+    if (finishing && !base) block.role = 'BASE'
+    insertBlock(assembly, block)
+    if (!finishing) base = block
+  })
+  return ok(null)
+}
