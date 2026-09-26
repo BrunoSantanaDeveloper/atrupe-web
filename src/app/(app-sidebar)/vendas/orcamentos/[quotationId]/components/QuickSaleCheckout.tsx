@@ -76,6 +76,9 @@ import {
   IconReceiptRefund,
 } from '@tabler/icons-react'
 
+// Consts
+import { quickSaleCheckoutStatusObj } from '@/consts/quickSale'
+
 // Utils
 import { cn } from '@/lib/utils'
 import { useMoney } from '@/hooks/useMoney'
@@ -263,7 +266,7 @@ export function QuickSaleCheckoutButton({
       description:
         'A venda entra na fila da frente de caixa e trava: quem recebe e escolhe a forma de pagamento é o caixa. Se algo mudar depois, lance um item novo ou cancele e faça outra venda.',
       confirmLabel: 'Enviar ao caixa',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       onConfirm: async () => {
         const res = await sendQuickSaleToCash(sale.origin)
 
@@ -425,7 +428,7 @@ function headlineOf(checkout: QuickSaleCheckout, money: Money) {
     return {
       title: 'Venda cancelada no caixa',
       text: 'O estorno ficou registrado no caixa, com a justificativa e quem o fez.',
-      badge: { text: 'Cancelada', variant: 'errorLight' as const },
+      badge: quickSaleCheckoutStatusObj.CANCELLED,
     }
   }
 
@@ -435,7 +438,7 @@ function headlineOf(checkout: QuickSaleCheckout, money: Money) {
     return {
       title: 'Venda encerrada',
       text: 'Paga e entregue. Não há mais nada a fazer por aqui.',
-      badge: { text: 'Concluída', variant: 'successLight' as const },
+      badge: quickSaleCheckoutStatusObj.FINISHED,
     }
   }
 
@@ -443,14 +446,14 @@ function headlineOf(checkout: QuickSaleCheckout, money: Money) {
     return {
       title: 'Aguardando retirada',
       text: `O cliente paga os ${money(remaining)} restantes quando vier buscar.`,
-      badge: { text: 'Sinal pago', variant: 'warningLight' as const },
+      badge: quickSaleCheckoutStatusObj.DOWN_PAYMENT,
     }
   }
 
   return {
     title: 'Na fila do caixa',
     text: 'A venda está travada enquanto espera o recebimento. Se algo mudar, lance um item novo ou cancele e faça outra venda.',
-    badge: { text: 'No caixa', variant: 'blueLight' as const },
+    badge: quickSaleCheckoutStatusObj.AT_CASH,
   }
 }
 

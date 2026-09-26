@@ -2,7 +2,6 @@
 
 // React / Next
 import { useEffect, useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -32,6 +31,9 @@ import { getMaterials } from '@/actions/materials'
 // Hooks / Store / Consts
 
 import { assetUnitShort } from '@/consts/assets'
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
 import { toast } from 'sonner'

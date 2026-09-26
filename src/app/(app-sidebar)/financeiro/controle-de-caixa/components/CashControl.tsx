@@ -71,6 +71,7 @@ import {
 
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
+import { cashTodayStatusObj } from '@/consts/cashAccounts'
 
 // Utils
 import { updateFilterParam } from '@/lib/filter-utils'
@@ -181,13 +182,17 @@ export function CashControl(_: SearchParamsType) {
               </div>
             </div>
             {!account.cashControl ? (
-              <Badge variant="neutralLight">Livre</Badge>
+              <Badge variant={cashTodayStatusObj.FREE.variant}>
+                {cashTodayStatusObj.FREE.text}
+              </Badge>
             ) : day ? (
               <Badge variant={cashControlStatusObj[day.status].variant}>
                 {cashControlStatusObj[day.status].text}
               </Badge>
             ) : (
-              <Badge variant="warningLight">Sem caixa hoje</Badge>
+              <Badge variant={cashTodayStatusObj.NO_DAY.variant}>
+                {cashTodayStatusObj.NO_DAY.text}
+              </Badge>
             )}
           </div>
 
@@ -438,8 +443,12 @@ export function CashControl(_: SearchParamsType) {
                                     {cashControlStatusObj[day.status].text}
                                   </Badge>
                                   {day.reopenings.length > 0 && (
-                                    <Badge variant="warningLight">
-                                      reaberto
+                                    <Badge
+                                      variant={
+                                        cashTodayStatusObj.REOPENED.variant
+                                      }
+                                    >
+                                      {cashTodayStatusObj.REOPENED.text}
                                     </Badge>
                                   )}
                                 </div>

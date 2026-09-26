@@ -53,7 +53,6 @@ import {
   unitSymbol,
   unitSaleLabel,
   unitAmountLabel,
-  assemblyStatusObj,
   productDimensionObj,
   type UnitKind,
   type ComputedLine,
@@ -77,6 +76,10 @@ import {
 } from '@/actions/product-assembly'
 
 // Hooks / Store / Consts
+import {
+  assemblyStatusObj,
+  assemblyOverrideObj,
+} from '@/consts/productAssembly'
 import { formulaObj, resourceKindObj } from '@/consts/processes'
 
 // Third-party
@@ -252,7 +255,9 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 <Badge variant="neutralLight">Base</Badge>
               )}
               {item.localRules && (
-                <Badge variant="warningLight">Regras próprias</Badge>
+                <Badge variant={assemblyOverrideObj.LOCAL_RULES.variant}>
+                  {assemblyOverrideObj.LOCAL_RULES.text}
+                </Badge>
               )}
             </div>
             <CardTitle className="text-base">{item.name}</CardTitle>

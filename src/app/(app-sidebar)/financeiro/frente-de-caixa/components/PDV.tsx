@@ -124,7 +124,7 @@ export function PDV() {
           ? `O cliente já pagou ${money(sale.paid)}. O estorno sai do caixa e fica registrado com a justificativa e com quem o fez.`
           : 'A venda sai da fila do caixa. O cancelamento fica registrado.',
       confirmLabel: 'Cancelar venda',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
         const res = await reverseSale(sale.id, 'Cancelamento pelo caixa')

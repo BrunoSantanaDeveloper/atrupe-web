@@ -5,7 +5,6 @@
 
 // React
 import { useEffect, useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -50,6 +49,9 @@ import { toast } from 'sonner'
 
 // Icons
 import { IconBuildingBank, IconCash } from '@tabler/icons-react'
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Utils
 import { cn } from '@/lib/utils'

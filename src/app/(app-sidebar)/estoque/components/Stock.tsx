@@ -2,7 +2,6 @@
 
 // React / Next
 import Link from 'next/link'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -40,6 +39,9 @@ import { getStockItems, getStockMovements } from '@/actions/stock'
 // Hooks / Store / Consts
 import { cn } from '@/lib/utils'
 import { stockMovementObj } from '@/consts/stock'
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'

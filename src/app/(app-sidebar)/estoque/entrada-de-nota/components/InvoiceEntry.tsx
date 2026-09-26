@@ -2,7 +2,6 @@
 
 // React / Next
 import { useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -39,6 +38,9 @@ import type { InvoiceItem } from '../../types'
 import { getInvoices, confirmInvoiceEntry } from '@/actions/stock'
 
 // Hooks / Store / Consts
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
 import { toast } from 'sonner'

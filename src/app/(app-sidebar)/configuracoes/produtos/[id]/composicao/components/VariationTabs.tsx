@@ -27,6 +27,7 @@ import {
 // Hooks / Store / Consts
 import { cn } from '@/lib/utils'
 import { useMoney } from '@/hooks/useMoney'
+import { assemblyOverrideObj } from '@/consts/productAssembly'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
@@ -239,9 +240,17 @@ export function VariationTabs({ product }: Props) {
                     <p className="text-sm text-gray">{step.sector}</p>
                   </div>
                   {changed ? (
-                    <Badge variant="blueLight">alterado nesta variação</Badge>
+                    <Badge
+                      variant={assemblyOverrideObj.VARIATION_CHANGED.variant}
+                    >
+                      {assemblyOverrideObj.VARIATION_CHANGED.text}
+                    </Badge>
                   ) : (
-                    <Badge variant="neutralLight">acompanha a base</Badge>
+                    <Badge
+                      variant={assemblyOverrideObj.VARIATION_INHERITS.variant}
+                    >
+                      {assemblyOverrideObj.VARIATION_INHERITS.text}
+                    </Badge>
                   )}
                   <div className="space-y-1.5">
                     <label

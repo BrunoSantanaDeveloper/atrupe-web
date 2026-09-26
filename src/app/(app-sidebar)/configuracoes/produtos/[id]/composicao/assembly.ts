@@ -16,30 +16,6 @@ import type {
 // pode pegar no orçamento um produto pela metade
 export type AssemblyStatus = 'DRAFT' | 'RELEASED' | 'PART'
 
-export const assemblyStatusObj: {
-  [key in AssemblyStatus]: {
-    text: string
-    variant: 'neutralLight' | 'successLight' | 'blueLight'
-    help: string
-  }
-} = {
-  DRAFT: {
-    text: 'Em edição',
-    variant: 'neutralLight',
-    help: 'Não aparece no orçamento enquanto a composição é montada.',
-  },
-  RELEASED: {
-    text: 'Liberado para venda',
-    variant: 'successLight',
-    help: 'O vendedor encontra o produto no orçamento.',
-  },
-  PART: {
-    text: 'Parte',
-    variant: 'blueLight',
-    help: 'Serve para compor outros produtos e não aparece no orçamento.',
-  },
-}
-
 // A cobrança segue o cadastro de produtos do START (IP-17): a unidade
 // comercial, o valor de venda por essa unidade e o padrão de medidas. A
 // composição só acrescenta o custo e o preço sugerido, na mesma unidade

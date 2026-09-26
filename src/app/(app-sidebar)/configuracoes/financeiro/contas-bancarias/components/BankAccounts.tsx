@@ -9,7 +9,6 @@
 
 // React
 import { useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // Next
 import Link from 'next/link'
@@ -55,6 +54,12 @@ import {
   IconRestore,
   IconArrowRight,
 } from '@tabler/icons-react'
+
+// Consts
+import { bankAccountStatusObj } from '@/consts/cashAccounts'
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -105,7 +110,7 @@ export function BankAccounts(_: SearchParamsType) {
         ? 'A conta tem lançamentos, então ela não é apagada: fica inativa, com o histórico guardado, e deixa de aparecer para receber e pagar. Dá para reativar depois.'
         : 'A conta não tem nenhum lançamento e será excluída.',
       confirmLabel: account.hasHistory ? 'Inativar' : 'Excluir',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
         const res = await removeBankAccount(account.id)
@@ -126,6 +131,14 @@ export function BankAccounts(_: SearchParamsType) {
 
   const row = (account: BankAccount) => {
     const receives = account.rules.filter((rule) => rule.acceptIncomes)
+    const status =
+      bankAccountStatusObj[
+        !account.isActive
+          ? 'INACTIVE'
+          : account.cashControl
+            ? 'CONTROLLED'
+            : 'FREE'
+      ]
 
     return (
       <div
@@ -143,17 +156,7 @@ export function BankAccounts(_: SearchParamsType) {
               <Badge variant="neutralLight">
                 {accountKindLabel[account.kind]}
               </Badge>
-              {account.isActive ? (
-                <Badge
-                  variant={
-                    account.cashControl ? 'successLight' : 'neutralLight'
-                  }
-                >
-                  {account.cashControl ? 'Com controle de caixa' : 'Livre'}
-                </Badge>
-              ) : (
-                <Badge variant="errorLight">Inativa</Badge>
-              )}
+              <Badge variant={status.variant}>{status.text}</Badge>
             </div>
             <p className="text-sm text-gray">
               {account.kind === 'BANK'

@@ -2,7 +2,6 @@
 
 // React / Next
 import { useEffect, useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -34,6 +33,9 @@ import type { Material } from '../types'
 import { createMaterialVariations } from '@/actions/materials'
 
 // Hooks / Store / Consts
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
 import { toast } from 'sonner'

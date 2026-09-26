@@ -2,7 +2,6 @@
 
 // React / Next
 import { useState } from 'react'
-import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -47,6 +46,9 @@ import {
   resourceKindObj,
   dimensionRuleObj,
 } from '@/consts/processes'
+
+// Hooks
+import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
 import { toast } from 'sonner'
