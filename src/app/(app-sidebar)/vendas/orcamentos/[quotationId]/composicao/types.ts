@@ -56,6 +56,8 @@ export type ItemComposition = {
     optionId: string
     quantity: number
   }[]
+  // Observação de produção por etapa, para quem produz (MS-13)
+  notes?: { blockId: string; text: string }[]
   summary: string[]
 }
 

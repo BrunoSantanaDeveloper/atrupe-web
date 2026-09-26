@@ -411,6 +411,8 @@ export type SaleOptional = {
 }
 
 export type SaleForm = {
+  // As etapas, para a observação de produção de cada uma (MS-13)
+  stages: { blockId: string; name: string; sector: string }[]
   // Campos extras nomeados de cada etapa (nº de letras, distância dos ilhoses)
   extras: {
     blockId: string
@@ -468,6 +470,8 @@ export type SaleCompositionReport = {
     baseName: string | null
     measure: AssemblyMeasure
     extra: string | null
+    // Observação de produção deixada na venda (MS-13)
+    note: string | null
     lines: {
       id: string
       name: string

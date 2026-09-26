@@ -49,6 +49,8 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
   const [choices, setChoices] = useState(initial?.choices || [])
   const [lists, setLists] = useState(initial?.lists || [])
   const [optionals, setOptionals] = useState(initial?.optionals || [])
+  const [notes, setNotes] = useState(initial?.notes || [])
+  const [showNotes, setShowNotes] = useState(!!initial?.notes?.length)
 
   useEffect(() => {
     if (!saleForm || initial) return
@@ -146,11 +148,19 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
   useEffect(() => {
     onChange(
       saleForm
-        ? { extras, times, choices, optionals, lists, summary: summary() }
+        ? {
+            extras,
+            times,
+            choices,
+            optionals,
+            lists,
+            notes: notes.filter((item) => item.text.trim()),
+            summary: summary(),
+          }
         : undefined,
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [saleForm, extras, times, choices, optionals, lists])
+  }, [saleForm, extras, times, choices, optionals, lists, notes])
 
   if (!saleForm) return null
 
@@ -318,6 +328,50 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
           </div>
         </div>
       ))}
+      {/* Observação de produção por etapa (MS-13): vai para quem produz,
+          não para o cliente */}
+      <div className="space-y-2">
+        <button
+          type="button"
+          className="text-sm font-medium text-brand-700 hover:underline"
+          onClick={() => setShowNotes((current) => !current)}
+        >
+          {showNotes
+            ? 'Ocultar observações para a produção'
+            : 'Observações para a produção'}
+        </button>
+        {showNotes && (
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            {saleForm.stages.map((stage) => (
+              <div key={stage.blockId} className="space-y-1.5">
+                <label
+                  htmlFor={`note-${stage.blockId}`}
+                  className="text-sm text-gray-700"
+                >
+                  {stage.name}
+                  <span className="text-gray"> · {stage.sector}</span>
+                </label>
+                <Input
+                  id={`note-${stage.blockId}`}
+                  placeholder="Ex.: cliente leva a arte em PDF"
+                  value={
+                    notes.find((item) => item.blockId === stage.blockId)
+                      ?.text || ''
+                  }
+                  onChange={(event) =>
+                    setNotes((current) => [
+                      ...current.filter(
+                        (item) => item.blockId !== stage.blockId,
+                      ),
+                      { blockId: stage.blockId, text: event.target.value },
+                    ])
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

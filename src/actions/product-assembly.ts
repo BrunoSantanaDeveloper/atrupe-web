@@ -1963,6 +1963,11 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
 
   const form: SaleForm = {
+    stages: assembly.blocks.map((block) => ({
+      blockId: block.id,
+      name: block.localName || block.name,
+      sector: block.sector,
+    })),
     extras: [],
     times: [],
     choices: [],
@@ -2037,10 +2042,12 @@ export const getSaleComposition = async ({
   choices = [],
   optionals = [],
   lists = [],
+  notes = [],
 }: {
   productId: string
   measure: AssemblyMeasure
   variationName?: string | null
+  notes?: { blockId: string; text: string }[]
   extras?: SaleExtra[]
   times?: SaleTime[]
   choices?: SaleChoice[]
@@ -2104,6 +2111,8 @@ export const getSaleComposition = async ({
         computed.blocks.find((item) => item.id === block.baseBlockId)?.name ||
         null,
       measure: block.measure,
+      note:
+        notes.find((item) => item.blockId === block.id)?.text.trim() || null,
       extra:
         [
           block.rules.timeField
