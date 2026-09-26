@@ -265,6 +265,16 @@ export const getQuotationProducts = async () => {
       fields: [{ name: 'Ilhoses por metro', defaultValue: 2 }],
     },
     {
+      id: 'placa-quadro',
+      name: 'Placa em lona com quadro de ferro',
+      sector: 'Impressão',
+      unit: 'm²',
+      price: 18000,
+      releasedForSale: true,
+      measured: true,
+      hasComposition: true,
+    },
+    {
       id: 'adesivo',
       name: 'Adesivo recortado',
       sector: 'Impressão',

@@ -64,6 +64,7 @@ import {
   IconPencil,
   IconSettings,
   IconListDetails,
+  IconPuzzle,
 } from '@tabler/icons-react'
 
 // Utils
@@ -1212,6 +1213,92 @@ export function OptionsDialog({
             onClick={() => onOpenChange(false)}
           >
             Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Parte: outro produto com composição usado como etapa (IP-9)
+ * ------------------------------------------------------------------------- */
+
+export function PartDialog({
+  open,
+  candidates,
+  onOpenChange,
+  onPick,
+}: {
+  open: boolean
+  candidates: {
+    productId: string
+    name: string
+    code: string
+    status: string
+    stages: number
+  }[]
+  onOpenChange: (open: boolean) => void
+  onPick: (productId: string) => void
+}) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[560px]">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconPuzzle} />
+            <div>
+              <DialogTitle>Acrescentar parte</DialogTitle>
+              <DialogDescription>
+                Outro produto com composição, usado dentro deste — o quadro de
+                ferro da placa, a letra caixa da fachada.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogBody className="space-y-2">
+          {candidates.length ? (
+            candidates.map((item) => (
+              <button
+                key={item.productId}
+                type="button"
+                onClick={() => onPick(item.productId)}
+                className="flex w-full items-center justify-between gap-3 rounded-lg border border-gray-200 px-4 py-3 text-left hover:border-brand-300 hover:bg-brand-25"
+              >
+                <span>
+                  <span className="block font-medium text-gray-800">
+                    {item.name}
+                  </span>
+                  <span className="block text-sm text-gray">
+                    {[
+                      item.code,
+                      `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'}`,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                  </span>
+                </span>
+                {item.status === 'PART' && (
+                  <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                    Parte
+                  </span>
+                )}
+              </button>
+            ))
+          ) : (
+            <p className="text-sm text-gray">
+              Nenhum outro produto com composição. Monte a composição da parte
+              no produto dela, com a situação &quot;Parte&quot;.
+            </p>
+          )}
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
           </Button>
         </DialogFooter>
       </DialogContent>

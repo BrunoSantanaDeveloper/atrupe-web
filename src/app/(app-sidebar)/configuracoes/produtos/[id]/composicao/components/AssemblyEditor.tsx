@@ -1,5 +1,7 @@
 'use client'
 
+import Link from 'next/link'
+
 // PROVISÓRIO nos dados: lê `src/actions/product-assembly.ts`, que também faz
 // o cálculo (SEG-1).
 //
@@ -46,6 +48,7 @@ import {
   RulesDialog,
   NewLineDialog,
   OptionsDialog,
+  PartDialog,
   AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
@@ -80,6 +83,8 @@ import {
   getAssemblyResources,
   addLineOption,
   removeLineOption,
+  addPartBlock,
+  getPartCandidates,
   moveAssemblyBlock,
   resetAssemblyLine,
   setBlockLocalRules,
@@ -118,6 +123,8 @@ import {
   IconCirclePlus,
   IconArrowBackUp,
   IconListDetails,
+  IconSearch,
+  IconPuzzle,
 } from '@tabler/icons-react'
 
 // Utils
@@ -172,6 +179,7 @@ type Dialog =
   | { kind: 'rules'; block: ComputedBlock }
   | { kind: 'newLine'; block: ComputedBlock }
   | { kind: 'options'; blockId: string; lineId: string }
+  | { kind: 'part' }
   | null
 
 export function AssemblyEditor({ productId }: { productId: string }) {
@@ -206,6 +214,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     staleTime: Infinity,
     queryKey: ['assembly-resources'],
     queryFn: () => getAssemblyResources(),
+  })
+
+  const { data: partsRes } = useQuery({
+    queryKey: ['assembly-parts', productId],
+    queryFn: () => getPartCandidates({ productId }),
   })
 
   const assembly = data?.data
@@ -350,6 +363,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
               {item.processId && (
                 <Badge variant="neutralLight">Processo cadastrado</Badge>
               )}
+              {item.part && <Badge variant="blueLight">Parte</Badge>}
               {item.localRules && (
                 <Badge variant={assemblyOverrideObj.LOCAL_RULES.variant}>
                   {assemblyOverrideObj.LOCAL_RULES.text}
@@ -437,300 +451,327 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           </div>
         </CardHeader>
         <CardContent>
-          <Table className="min-w-[760px]">
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[18%]">Linha</TableHead>
-                <TableHead className="w-[24%]">Recurso</TableHead>
-                <TableHead className="w-[12%]">Consumo</TableHead>
-                <TableHead className="w-[16%]">Cálculo</TableHead>
-                <TableHead className="w-[10%] text-right">Quantidade</TableHead>
-                <TableHead className="w-[8%] text-right">Custo</TableHead>
-                <TableHead className="w-[8%] text-right">Venda</TableHead>
-                <TableHead className="w-[4%]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {item.lines.map((line) => {
-                const unit = line.selected?.unit || line.options[0]?.unit || ''
+          {item.part ? (
+            <div className="mx-6 mb-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-25 px-4 py-3">
+              <p className="text-sm text-gray-700">
+                Outro produto usado aqui, com a composição dele (
+                {item.part.stages} {item.part.stages === 1 ? 'etapa' : 'etapas'}
+                ) calculada na medida desta etapa. Para mudar o que ele leva,
+                abra a composição dele.
+              </p>
+              <Button
+                size="sm"
+                variant="neutralOutline"
+                LeftIcon={IconSearch}
+                asChild
+              >
+                <Link
+                  href={`/configuracoes/produtos/${item.part.productId}/composicao`}
+                >
+                  Abrir a composição da parte
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <Table className="min-w-[760px]">
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[18%]">Linha</TableHead>
+                  <TableHead className="w-[24%]">Recurso</TableHead>
+                  <TableHead className="w-[12%]">Consumo</TableHead>
+                  <TableHead className="w-[16%]">Cálculo</TableHead>
+                  <TableHead className="w-[10%] text-right">
+                    Quantidade
+                  </TableHead>
+                  <TableHead className="w-[8%] text-right">Custo</TableHead>
+                  <TableHead className="w-[8%] text-right">Venda</TableHead>
+                  <TableHead className="w-[4%]" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {item.lines.map((line) => {
+                  const unit =
+                    line.selected?.unit || line.options[0]?.unit || ''
 
-                return (
-                  <TableRow key={line.id}>
-                    <TableCell>
-                      <p className="font-medium text-gray-800">{line.name}</p>
-                      <p className="text-xs text-gray">
-                        {resourceKindObj[line.kind]}
-                        {line.overridden ? ' · ajustada neste produto' : ''}
-                        {line.addedHere ? ' · só neste produto' : ''}
-                      </p>
-                      {line.optional && (
-                        <Badge className="mt-1" variant="neutralLight">
-                          {line.optionalDefault
-                            ? 'Opcional · vem marcada'
-                            : 'Opcional · fora do custo padrão'}
-                        </Badge>
-                      )}
-                      {!line.options.length && (
-                        <Badge className="mt-1" variant="errorLight">
-                          Sem recurso: complete ou remova
-                        </Badge>
-                      )}
-                      {line.variationOverride && (
-                        <Badge
-                          className="mt-1"
-                          variant={
-                            assemblyOverrideObj.VARIATION_CHANGED.variant
-                          }
-                        >
-                          {assemblyOverrideObj.VARIATION_CHANGED.text}
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {line.mode === 'CHOOSE' ? (
-                        <SelectBasic
-                          name={`choose-${line.id}`}
-                          label=""
-                          className="w-full"
-                          options={line.options.map((option) => ({
-                            value: option.id,
-                            label: option.name,
-                          }))}
-                          value={line.selectedId}
-                          onChange={(value) =>
-                            run(
-                              assembly.activeVariation
-                                ? setVariationLine({
-                                    productId,
-                                    variationId: assembly.activeVariation.id,
-                                    blockId: item.id,
-                                    lineId: line.id,
-                                    values: { selectedId: value },
-                                  })
-                                : updateAssemblyLine({
-                                    productId,
-                                    blockId: item.id,
-                                    lineId: line.id,
-                                    values: { selectedId: value },
-                                  }),
-                            )
-                          }
-                        />
-                      ) : line.mode === 'LIST' ? (
-                        <div>
-                          <p className="text-sm text-gray-800">
-                            {line.options
-                              .map((option) => option.name)
-                              .join(' · ')}
-                          </p>
-                          <p className="text-xs text-gray">
-                            O vendedor preenche o que usou
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-800">
-                          {line.selected?.name}
+                  return (
+                    <TableRow key={line.id}>
+                      <TableCell>
+                        <p className="font-medium text-gray-800">{line.name}</p>
+                        <p className="text-xs text-gray">
+                          {resourceKindObj[line.kind]}
+                          {line.overridden ? ' · ajustada neste produto' : ''}
+                          {line.addedHere ? ' · só neste produto' : ''}
                         </p>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      {line.mode === 'LIST' ? (
-                        '-'
-                      ) : (
-                        <>
-                          <p className="text-sm">
-                            {/* Estas fórmulas usam o tempo da etapa, não o
-                                consumo (IP-32) */}
-                            {item.rules.timeField &&
-                            (line.formula === 'EQUAL_TIME' ||
-                              line.formula === 'PER_TIME')
-                              ? `tempo da etapa (${amount(item.rules.timeFieldDefault || 0, 'min')})`
-                              : amount(line.effective.perUnit, unit)}
-                          </p>
-                          {(line.effective.lossPercent > 0 ||
-                            line.effective.minimum !== null) && (
-                            <p className="text-xs text-gray">
-                              {[
-                                line.effective.lossPercent > 0
-                                  ? `+${num(line.effective.lossPercent, 1)}% de perda`
-                                  : null,
-                                line.effective.minimum !== null
-                                  ? `mínimo ${num(line.effective.minimum)} ${unit}`
-                                  : null,
-                              ]
-                                .filter(Boolean)
+                        {line.optional && (
+                          <Badge className="mt-1" variant="neutralLight">
+                            {line.optionalDefault
+                              ? 'Opcional · vem marcada'
+                              : 'Opcional · fora do custo padrão'}
+                          </Badge>
+                        )}
+                        {!line.options.length && (
+                          <Badge className="mt-1" variant="errorLight">
+                            Sem recurso: complete ou remova
+                          </Badge>
+                        )}
+                        {line.variationOverride && (
+                          <Badge
+                            className="mt-1"
+                            variant={
+                              assemblyOverrideObj.VARIATION_CHANGED.variant
+                            }
+                          >
+                            {assemblyOverrideObj.VARIATION_CHANGED.text}
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {line.mode === 'CHOOSE' ? (
+                          <SelectBasic
+                            name={`choose-${line.id}`}
+                            label=""
+                            className="w-full"
+                            options={line.options.map((option) => ({
+                              value: option.id,
+                              label: option.name,
+                            }))}
+                            value={line.selectedId}
+                            onChange={(value) =>
+                              run(
+                                assembly.activeVariation
+                                  ? setVariationLine({
+                                      productId,
+                                      variationId: assembly.activeVariation.id,
+                                      blockId: item.id,
+                                      lineId: line.id,
+                                      values: { selectedId: value },
+                                    })
+                                  : updateAssemblyLine({
+                                      productId,
+                                      blockId: item.id,
+                                      lineId: line.id,
+                                      values: { selectedId: value },
+                                    }),
+                              )
+                            }
+                          />
+                        ) : line.mode === 'LIST' ? (
+                          <div>
+                            <p className="text-sm text-gray-800">
+                              {line.options
+                                .map((option) => option.name)
                                 .join(' · ')}
                             </p>
-                          )}
-                          {line.effective.own && (
-                            <p className="text-xs text-brand-700">
-                              desta opção
+                            <p className="text-xs text-gray">
+                              O vendedor preenche o que usou
                             </p>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-800">
+                            {line.selected?.name}
+                          </p>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {line.mode === 'LIST' ? (
+                          '-'
+                        ) : (
+                          <>
+                            <p className="text-sm">
+                              {/* Estas fórmulas usam o tempo da etapa, não o
+                                consumo (IP-32) */}
+                              {item.rules.timeField &&
+                              (line.formula === 'EQUAL_TIME' ||
+                                line.formula === 'PER_TIME')
+                                ? `tempo da etapa (${amount(item.rules.timeFieldDefault || 0, 'min')})`
+                                : amount(line.effective.perUnit, unit)}
+                            </p>
+                            {(line.effective.lossPercent > 0 ||
+                              line.effective.minimum !== null) && (
+                              <p className="text-xs text-gray">
+                                {[
+                                  line.effective.lossPercent > 0
+                                    ? `+${num(line.effective.lossPercent, 1)}% de perda`
+                                    : null,
+                                  line.effective.minimum !== null
+                                    ? `mínimo ${num(line.effective.minimum)} ${unit}`
+                                    : null,
+                                ]
+                                  .filter(Boolean)
+                                  .join(' · ')}
+                              </p>
+                            )}
+                            {line.effective.own && (
+                              <p className="text-xs text-brand-700">
+                                desta opção
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-gray">
+                        {line.mode === 'LIST'
+                          ? 'Informado na venda'
+                          : formulaObj[line.formula]?.label}
+                        {line.mode !== 'LIST' &&
+                          formulaInputs[line.formula]?.length > 0 && (
+                            <span className="mt-1 flex flex-wrap gap-1">
+                              {formulaInputs[line.formula].map((input) => {
+                                const zero = zeroInput(input, item)
+                                return (
+                                  <span
+                                    key={input}
+                                    title={
+                                      zero
+                                        ? `A fórmula usa ${input}, e está zerado nesta etapa`
+                                        : `A fórmula usa ${input}`
+                                    }
+                                    className={cn(
+                                      'rounded px-1.5 py-0.5 text-[11px]',
+                                      zero
+                                        ? 'bg-error-50 text-error-700'
+                                        : 'bg-gray-100 text-gray-600',
+                                    )}
+                                  >
+                                    {input}
+                                  </span>
+                                )
+                              })}
+                            </span>
                           )}
-                        </>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-sm text-gray">
-                      {line.mode === 'LIST'
-                        ? 'Informado na venda'
-                        : formulaObj[line.formula]?.label}
-                      {line.mode !== 'LIST' &&
-                        formulaInputs[line.formula]?.length > 0 && (
-                          <span className="mt-1 flex flex-wrap gap-1">
-                            {formulaInputs[line.formula].map((input) => {
-                              const zero = zeroInput(input, item)
-                              return (
-                                <span
-                                  key={input}
-                                  title={
-                                    zero
-                                      ? `A fórmula usa ${input}, e está zerado nesta etapa`
-                                      : `A fórmula usa ${input}`
-                                  }
-                                  className={cn(
-                                    'rounded px-1.5 py-0.5 text-[11px]',
-                                    zero
-                                      ? 'bg-error-50 text-error-700'
-                                      : 'bg-gray-100 text-gray-600',
-                                  )}
-                                >
-                                  {input}
-                                </span>
-                              )
-                            })}
+                        {line.sheetYield && (
+                          <span
+                            className="mt-0.5 block text-xs"
+                            title={`Na outra posição cabem ${Math.min(line.sheetYield.firstFit, line.sheetYield.secondFit)}`}
+                          >
+                            {line.sheetYield.perSheet} por folha ·{' '}
+                            {line.sheetYield.sheets} folhas
+                            {line.sheetYield.leftover
+                              ? ` · sobram ${line.sheetYield.leftover}`
+                              : ''}
                           </span>
                         )}
-                      {line.sheetYield && (
-                        <span
-                          className="mt-0.5 block text-xs"
-                          title={`Na outra posição cabem ${Math.min(line.sheetYield.firstFit, line.sheetYield.secondFit)}`}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-right text-sm">
+                        {line.quantity === null
+                          ? '-'
+                          : amount(line.quantity, unit)}
+                        {line.minimumApplied && (
+                          <span className="block text-xs text-warning-700">
+                            mínimo aplicado
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-right text-sm font-medium">
+                        <PermissionGate
+                          permissions={['values:values:view']}
+                          fallback={<span>•••</span>}
                         >
-                          {line.sheetYield.perSheet} por folha ·{' '}
-                          {line.sheetYield.sheets} folhas
-                          {line.sheetYield.leftover
-                            ? ` · sobram ${line.sheetYield.leftover}`
-                            : ''}
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm">
-                      {line.quantity === null
-                        ? '-'
-                        : amount(line.quantity, unit)}
-                      {line.minimumApplied && (
-                        <span className="block text-xs text-warning-700">
-                          mínimo aplicado
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm font-medium">
-                      <PermissionGate
-                        permissions={['values:values:view']}
-                        fallback={<span>•••</span>}
-                      >
-                        {money(line.cost)}
-                      </PermissionGate>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
-                      <PermissionGate
-                        permissions={['values:values:view']}
-                        fallback={<span>•••</span>}
-                      >
-                        {money(line.sale)}
-                      </PermissionGate>
-                    </TableCell>
-                    <TableCell>
-                      <PermissionGate permissions={EDIT}>
-                        <div className="flex justify-end gap-1">
-                          {line.mode !== 'LIST' && (
-                            <ActionButton
-                              Icon={IconPencil}
-                              variant="neutralGhost"
-                              tooltip={`Ajustar ${line.name.toLowerCase()}`}
-                              onClick={() =>
-                                setDialog({ kind: 'line', block: item, line })
-                              }
-                            />
-                          )}
-                          {line.variationOverride &&
-                            assembly.activeVariation && (
+                          {money(line.cost)}
+                        </PermissionGate>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                        <PermissionGate
+                          permissions={['values:values:view']}
+                          fallback={<span>•••</span>}
+                        >
+                          {money(line.sale)}
+                        </PermissionGate>
+                      </TableCell>
+                      <TableCell>
+                        <PermissionGate permissions={EDIT}>
+                          <div className="flex justify-end gap-1">
+                            {line.mode !== 'LIST' && (
+                              <ActionButton
+                                Icon={IconPencil}
+                                variant="neutralGhost"
+                                tooltip={`Ajustar ${line.name.toLowerCase()}`}
+                                onClick={() =>
+                                  setDialog({ kind: 'line', block: item, line })
+                                }
+                              />
+                            )}
+                            {line.variationOverride &&
+                              assembly.activeVariation && (
+                                <ActionButton
+                                  Icon={IconArrowBackUp}
+                                  variant="neutralGhost"
+                                  tooltip="Voltar a acompanhar a base"
+                                  onClick={() =>
+                                    run(
+                                      clearVariationLine({
+                                        productId,
+                                        variationId:
+                                          assembly.activeVariation!.id,
+                                        blockId: item.id,
+                                        lineId: line.id,
+                                      }),
+                                      'Linha voltou a acompanhar a base',
+                                    )
+                                  }
+                                />
+                              )}
+                            {!inVariation && line.mode !== 'SINGLE' && (
+                              <ActionButton
+                                Icon={IconListDetails}
+                                variant="neutralGhost"
+                                tooltip="Opções da linha"
+                                onClick={() =>
+                                  setDialog({
+                                    kind: 'options',
+                                    blockId: item.id,
+                                    lineId: line.id,
+                                  })
+                                }
+                              />
+                            )}
+                            {!inVariation && (
+                              <ActionButton
+                                Icon={IconTrash}
+                                variant="errorGhost"
+                                tooltip={`Remover ${line.name.toLowerCase()}`}
+                                onClick={() => removeLine(item, line)}
+                              />
+                            )}
+                            {line.overridden && !inVariation && (
                               <ActionButton
                                 Icon={IconArrowBackUp}
                                 variant="neutralGhost"
-                                tooltip="Voltar a acompanhar a base"
+                                tooltip="Voltar ao que o processo define"
                                 onClick={() =>
                                   run(
-                                    clearVariationLine({
+                                    resetAssemblyLine({
                                       productId,
-                                      variationId: assembly.activeVariation!.id,
                                       blockId: item.id,
                                       lineId: line.id,
                                     }),
-                                    'Linha voltou a acompanhar a base',
+                                    'Linha voltou ao processo',
                                   )
                                 }
                               />
                             )}
-                          {!inVariation && line.mode !== 'SINGLE' && (
-                            <ActionButton
-                              Icon={IconListDetails}
-                              variant="neutralGhost"
-                              tooltip="Opções da linha"
-                              onClick={() =>
-                                setDialog({
-                                  kind: 'options',
-                                  blockId: item.id,
-                                  lineId: line.id,
-                                })
-                              }
-                            />
-                          )}
-                          {!inVariation && (
-                            <ActionButton
-                              Icon={IconTrash}
-                              variant="errorGhost"
-                              tooltip={`Remover ${line.name.toLowerCase()}`}
-                              onClick={() => removeLine(item, line)}
-                            />
-                          )}
-                          {line.overridden && !inVariation && (
-                            <ActionButton
-                              Icon={IconArrowBackUp}
-                              variant="neutralGhost"
-                              tooltip="Voltar ao que o processo define"
-                              onClick={() =>
-                                run(
-                                  resetAssemblyLine({
-                                    productId,
-                                    blockId: item.id,
-                                    lineId: line.id,
-                                  }),
-                                  'Linha voltou ao processo',
-                                )
-                              }
-                            />
-                          )}
-                        </div>
-                      </PermissionGate>
+                          </div>
+                        </PermissionGate>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+                {item.lines.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="py-6 text-center text-sm text-gray"
+                    >
+                      Nenhuma linha ainda. Acrescente o tempo, a máquina e o
+                      material que o setor de {item.sector.toLowerCase()} usa
+                      nesta etapa.
                     </TableCell>
                   </TableRow>
-                )
-              })}
-              {item.lines.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="py-6 text-center text-sm text-gray"
-                  >
-                    Nenhuma linha ainda. Acrescente o tempo, a máquina e o
-                    material que o setor de {item.sector.toLowerCase()} usa
-                    nesta etapa.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          {!inVariation && (
+                )}
+              </TableBody>
+            </Table>
+          )}
+          {!inVariation && !item.part && (
             <PermissionGate permissions={EDIT}>
               <div className="px-6 pb-2 pt-4">
                 <Button
@@ -1305,6 +1346,15 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         {!inVariation && (
           <PermissionGate permissions={EDIT}>
             <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="md"
+                variant="neutralOutline"
+                LeftIcon={IconPuzzle}
+                onClick={() => setDialog({ kind: 'part' })}
+              >
+                Parte
+              </Button>
               {baseSectors.map((sector) => (
                 <Button
                   key={sector}
@@ -1481,6 +1531,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           run(
             addAssemblyLine({ productId, blockId: target.id, values }),
             'Linha adicionada',
+          )
+        }}
+      />
+      <PartDialog
+        open={dialog?.kind === 'part'}
+        candidates={partsRes?.data || []}
+        onOpenChange={() => setDialog(null)}
+        onPick={(partProductId) => {
+          setDialog(null)
+          run(
+            addPartBlock({ productId, partProductId, baseBlockId: null }),
+            'Parte adicionada',
           )
         }}
       />

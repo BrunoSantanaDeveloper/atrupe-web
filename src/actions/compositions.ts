@@ -185,6 +185,32 @@ const seeds: Seed[] = [
     fields: [],
     steps: [],
   },
+  // O exemplo do time (IP-9): a placa em lona leva um quadro de ferro, que
+  // é produto próprio, não vendido sozinho — uma parte
+  {
+    id: 'placa-quadro',
+    name: 'Placa em lona com quadro de ferro',
+    code: 'PRD-03',
+    unit: 'm²',
+    price: 18000,
+    priceRule: 'FIXED',
+    releasedForSale: true,
+    variations: [],
+    fields: [],
+    steps: [],
+  },
+  {
+    id: 'quadro-metalon',
+    name: 'Quadro de metalon',
+    code: 'PRT-01',
+    unit: 'un',
+    price: 0,
+    priceRule: 'FIXED',
+    releasedForSale: false,
+    variations: [],
+    fields: [],
+    steps: [],
+  },
 ]
 
 const withCost = (seed: Seed): ProductComposition => {

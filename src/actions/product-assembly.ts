@@ -662,6 +662,156 @@ assemblies.push({
   ],
 })
 
+// O quadro de metalon é uma parte (IP-9): produto que não se vende sozinho e
+// entra na composição de outros — a placa em lona com quadro de ferro
+const metalon = (id: string, name: string, unitCost: number) => ({
+  id,
+  name,
+  unit: 'm',
+  unitCost,
+  unitSale: unitCost * 2,
+})
+
+assemblies.push({
+  productId: 'quadro-metalon',
+  name: 'Quadro de metalon',
+  code: 'PRT-01',
+  status: 'PART',
+  dimension: 'SALE',
+  unitKind: 'UNITY',
+  unitPrice: null,
+  measure: { quantity: 1, width: 2, height: 1 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription: 'Quadro em metalon 20 × 20, soldado, com fundo.',
+  blocks: [
+    {
+      id: `b${uid()}`,
+      processId: null,
+      name: 'Estrutura soldada',
+      sector: 'Produção',
+      role: 'BASE',
+      baseBlockId: null,
+      setupMinutes: 20,
+      sectorHourCost: HOUR['Produção'],
+      taskType: 'Produção',
+      originalRules: { ...baseRules },
+      localRules: null,
+      lines: [
+        {
+          id: `l${uid()}`,
+          name: 'Metalon',
+          kind: 'MATERIAL',
+          mode: 'CHOOSE',
+          options: [
+            metalon('metalon20', 'Metalon 20 × 20', 1000),
+            metalon('metalon30', 'Metalon 30 × 30', 1600),
+          ],
+          selectedId: 'metalon20',
+          perUnit: 1,
+          formula: 'PER_PERIMETER',
+          lossPercent: 10,
+          minimum: null,
+          overridden: false,
+        },
+        {
+          id: `l${uid()}`,
+          name: 'Solda',
+          kind: 'LABOR',
+          mode: 'SINGLE',
+          options: [labor('Produção')],
+          selectedId: 'mo-Produção',
+          perUnit: 15,
+          formula: 'PER_PERIMETER',
+          lossPercent: 0,
+          minimum: null,
+          overridden: false,
+        },
+      ],
+    },
+  ],
+  variations: [],
+})
+
+// A placa: a parte (o quadro) + a impressão da lona, com cantoneira
+// opcional nas laterais — o exemplo do time para o IP-28
+const placaFrame = {
+  id: `b${uid()}`,
+  processId: null,
+  partProductId: 'quadro-metalon',
+  name: 'Quadro de metalon',
+  sector: 'Produção',
+  role: 'BASE' as const,
+  baseBlockId: null,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...baseRules },
+  localRules: null,
+  lines: [],
+}
+const placaPrint = fromTemplate(templateOf('impressao-solvente')!, null)
+assemblies.push({
+  productId: 'placa-quadro',
+  name: 'Placa em lona com quadro de ferro',
+  code: 'PRD-03',
+  status: 'RELEASED',
+  dimension: 'SALE',
+  unitKind: 'AREA',
+  unitPrice: 18000,
+  measure: { quantity: 1, width: 2, height: 1 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription: 'Lona impressa esticada em quadro de metalon.',
+  blocks: [
+    placaFrame,
+    placaPrint,
+    {
+      id: `b${uid()}`,
+      processId: null,
+      name: 'Acabamento lateral',
+      sector: 'Produção',
+      role: 'FINISHING',
+      baseBlockId: placaFrame.id,
+      setupMinutes: 0,
+      sectorHourCost: HOUR['Produção'],
+      taskType: 'Produção',
+      originalRules: { ...finishingRules },
+      localRules: null,
+      lines: [
+        {
+          id: `l${uid()}`,
+          name: 'Cantoneira',
+          kind: 'MATERIAL',
+          mode: 'SINGLE',
+          options: [
+            {
+              id: 'cantoneira',
+              name: 'Cantoneira de alumínio',
+              unit: 'm',
+              unitCost: 1000,
+              unitSale: 2000,
+            },
+          ],
+          selectedId: 'cantoneira',
+          perUnit: 1.1,
+          formula: 'PER_PERIMETER',
+          lossPercent: 0,
+          minimum: null,
+          overridden: false,
+          optional: true,
+          optionalDefault: false,
+        },
+      ],
+    },
+  ],
+  variations: [],
+})
+
 const findOrCreate = (productId: string) => {
   let found = assemblies.find((item) => item.productId === productId)
   if (!found) {
@@ -831,6 +981,8 @@ const applyVariation = (
 const compute = (
   source: ProductAssembly,
   variation: ProductVariation | null = null,
+  // Parte dentro de parte tem limite: evita laço se alguém se incluir
+  depth = 0,
 ): ComputedAssembly => {
   const assembly = applyVariation(source, variation)
   // Sem preço próprio, a variação vale o preço do produto (PV-4); com
@@ -841,6 +993,8 @@ const compute = (
   const { measure } = assembly
   const area = round(measure.width * measure.height, 4)
   const blocks: ComputedBlock[] = []
+  // O consumo das partes entra no resumo do produto
+  const partSummaries: ResourceSummary[][] = []
 
   for (const block of assembly.blocks) {
     const rules = block.localRules ?? block.originalRules
@@ -972,16 +1126,39 @@ const compute = (
       block.setupMinutes * salePerMinute(block.sector),
     )
 
+    // A parte calcula a composição dela na medida desta etapa (IP-9)
+    const partSource = block.partProductId
+      ? assemblies.find((item) => item.productId === block.partProductId)
+      : null
+    const part =
+      partSource && depth < 3
+        ? compute({ ...partSource, measure: blockMeasure }, null, depth + 1)
+        : null
+    if (part) partSummaries.push(part.resourceSummary)
+
     blocks.push({
       ...block,
+      part: part
+        ? {
+            productId: part.productId,
+            name: part.name,
+            stages: part.blocks.length,
+          }
+        : null,
       name: block.localName || block.name,
       rules,
       measure: blockMeasure,
       setupCost,
       setupSale,
       lines,
-      cost: setupCost + lines.reduce((sum, line) => sum + (line.cost || 0), 0),
-      sale: setupSale + lines.reduce((sum, line) => sum + (line.sale || 0), 0),
+      cost:
+        setupCost +
+        (part?.cost || 0) +
+        lines.reduce((sum, line) => sum + (line.cost || 0), 0),
+      sale:
+        setupSale +
+        (part?.suggestedPrice || 0) +
+        lines.reduce((sum, line) => sum + (line.sale || 0), 0),
     })
   }
 
@@ -1026,6 +1203,7 @@ const compute = (
       })
     })
   })
+  partSummaries.flat().forEach(addUse)
   const resourceSummary = Array.from(summary.values())
 
   const cost = blocks.reduce((sum, block) => sum + block.cost, 0)
@@ -1908,5 +2086,80 @@ export const removeLineOption = async ({
   line.options = line.options.filter((option) => option.id !== optionId)
   if (line.selectedId === optionId) line.selectedId = line.options[0].id
   if (block.processId) line.overridden = true
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Partes: produto usado dentro de outro (IP-9)
+ * ------------------------------------------------------------------------- */
+
+// Produtos com composição que podem entrar como parte: os marcados como
+// parte primeiro, mas qualquer produto composto serve
+export const getPartCandidates = async ({ productId }: { productId: string }) =>
+  ok(
+    assemblies
+      .filter((item) => item.productId !== productId && item.blocks.length)
+      .map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        code: item.code,
+        status: item.status,
+        stages: item.blocks.length,
+      }))
+      .sort((a, b) => (a.status === 'PART' ? -1 : b.status === 'PART' ? 1 : 0)),
+  )
+
+// Um produto não pode conter a si mesmo, nem por dentro de outra parte
+const containsProduct = (
+  productId: string,
+  target: string,
+  depth = 0,
+): boolean => {
+  if (depth > 5) return true
+  const assembly = assemblies.find((item) => item.productId === productId)
+  return !!assembly?.blocks.some(
+    (block) =>
+      block.partProductId === target ||
+      (block.partProductId &&
+        containsProduct(block.partProductId, target, depth + 1)),
+  )
+}
+
+export const addPartBlock = async ({
+  productId,
+  partProductId,
+  baseBlockId,
+}: {
+  productId: string
+  partProductId: string
+  baseBlockId: string | null
+}) => {
+  const assembly = findOrCreate(productId)
+  const part = assemblies.find((item) => item.productId === partProductId)
+  if (!part || !part.blocks.length) return fail('Parte sem composição')
+  if (
+    partProductId === productId ||
+    containsProduct(partProductId, productId)
+  ) {
+    return fail('Um produto não pode ser parte dele mesmo')
+  }
+
+  const first = part.blocks[0]
+  insertBlock(assembly, {
+    id: `b${uid()}`,
+    processId: null,
+    partProductId,
+    name: part.name,
+    sector: first.sector,
+    role: baseBlockId ? 'FINISHING' : 'BASE',
+    baseBlockId,
+    setupMinutes: 0,
+    sectorHourCost: first.sectorHourCost,
+    taskType: first.taskType,
+    // A parte acompanha a medida e a quantidade do produto por padrão
+    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    localRules: null,
+    lines: [],
+  })
   return ok(null)
 }

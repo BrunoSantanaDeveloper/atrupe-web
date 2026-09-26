@@ -201,6 +201,10 @@ export type AssemblyBlock = {
   name: string
   // Nome desta etapa só neste produto, quando veio de um processo (IP-30)
   localName?: string
+  // Parte (IP-9): a etapa é outro produto com composição — a estrutura de
+  // metalon dentro da placa. O custo vem da composição dela, na medida da
+  // etapa, e ela não tem linhas próprias aqui
+  partProductId?: string
   sector: string
   role: BlockRole
   // O acabamento sabe de qual base ele é (MS-2)
@@ -289,6 +293,8 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   cost: number
   sale: number
   lines: ComputedLine[]
+  // A parte calculada: nome e quantas etapas ela tem
+  part: { productId: string; name: string; stages: number } | null
 }
 
 // Cada recurso uma vez, somado de todas as etapas (IP-34): a lista do que o
