@@ -56,7 +56,13 @@ import {
 } from '@/consts/processes'
 
 // Icons
-import { IconPlus, IconPencil, IconSettings } from '@tabler/icons-react'
+import {
+  IconPlus,
+  IconTrash,
+  IconPencil,
+  IconSettings,
+  IconListDetails,
+} from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -1012,6 +1018,183 @@ export function RulesDialog({
             onClick={() => onSave(useLocal ? rules : null, name)}
           >
             Salvar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Opções da linha: acrescentar e remover recursos de uma escolha ou lista.
+ * O mesmo recurso pode entrar mais de uma vez, com um nome de configuração
+ * para cada — "Refile lona", "Refile PVC", "Refile ACM" (IP-27)
+ * ------------------------------------------------------------------------- */
+
+export function OptionsDialog({
+  line,
+  resources,
+  onOpenChange,
+  onAdd,
+  onRemove,
+}: {
+  line?: ComputedLine
+  resources: AssemblyResource[]
+  onOpenChange: (open: boolean) => void
+  onAdd: (values: {
+    resourceId: string
+    configName: string
+    perUnit?: number
+  }) => Promise<boolean>
+  onRemove: (optionId: string) => void
+}) {
+  const [resourceId, setResourceId] = useState('')
+  const [configName, setConfigName] = useState('')
+  const [perUnit, setPerUnit] = useState('')
+
+  useEffect(() => {
+    setResourceId('')
+    setConfigName('')
+    setPerUnit('')
+  }, [line?.id])
+
+  if (!line) return null
+
+  const unit = line.options[0]?.unit
+  // Mesma unidade na escolha: é o que permite trocar uma pela outra (IP-39)
+  const available = resources.filter(
+    (item) =>
+      item.kind === line.kind &&
+      (line.mode !== 'CHOOSE' || !unit || item.unit === unit),
+  )
+  const repeated = line.options.some(
+    (option) => (option.resourceId || option.id) === resourceId,
+  )
+
+  return (
+    <Dialog open={!!line} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[640px]">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconListDetails} />
+            <div>
+              <DialogTitle>Opções · {line.name}</DialogTitle>
+              <DialogDescription>
+                {line.mode === 'CHOOSE'
+                  ? 'Entre estas, entra no custo só a escolhida.'
+                  : 'O vendedor informa no orçamento quanto usou de cada uma.'}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogBody className="space-y-5">
+          <div className="divide-y divide-gray-100 rounded-lg border border-gray-200">
+            {line.options.map((option) => (
+              <div
+                key={option.id}
+                className="flex items-center justify-between gap-3 px-4 py-2"
+              >
+                <span className="text-sm text-gray-800">
+                  {option.name}
+                  {option.id === line.selectedId && line.mode === 'CHOOSE' && (
+                    <span className="text-gray"> · escolhida</span>
+                  )}
+                </span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="errorGhost"
+                  disabled={line.options.length <= 1}
+                  LeftIcon={IconTrash}
+                  aria-label={`Remover ${option.name}`}
+                  onClick={() => onRemove(option.id)}
+                >
+                  Remover
+                </Button>
+              </div>
+            ))}
+          </div>
+
+          <form
+            className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4"
+            onSubmit={async (event) => {
+              event.preventDefault()
+              const added = await onAdd({
+                resourceId,
+                configName,
+                perUnit: perUnit === '' ? undefined : Number(perUnit),
+              })
+              if (added) {
+                setResourceId('')
+                setConfigName('')
+                setPerUnit('')
+              }
+            }}
+          >
+            <p className="text-sm font-medium text-gray-800">
+              Acrescentar opção
+            </p>
+            <SelectBasic
+              name="option-resource"
+              label="Recurso"
+              placeholder="Escolha o recurso"
+              options={available.map((item) => ({
+                value: item.id,
+                label: `${item.name} (${item.unit})`,
+              }))}
+              value={resourceId}
+              onChange={(value) => setResourceId(String(value))}
+            />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="option-config-name">
+                  Nome da configuração
+                  {repeated ? '' : ' (opcional)'}
+                </Label>
+                <Input
+                  id="option-config-name"
+                  placeholder="Ex.: Refile PVC"
+                  value={configName}
+                  onChange={(event) => setConfigName(event.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="option-per-unit">
+                  Consumo{unit ? ` (${unit})` : ''}
+                </Label>
+                <Input
+                  id="option-per-unit"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  placeholder={`${line.perUnit} (o da linha)`}
+                  value={perUnit}
+                  onChange={(event) => setPerUnit(event.target.value)}
+                />
+              </div>
+            </div>
+            <p className="text-sm text-gray">
+              {repeated
+                ? 'Este recurso já está na linha: o nome diferencia as configurações.'
+                : 'Com nome, o mesmo recurso pode entrar de novo com outro consumo.'}
+            </p>
+            <Button
+              type="submit"
+              variant="neutralOutline"
+              LeftIcon={IconPlus}
+              disabled={!resourceId || (repeated && !configName.trim())}
+            >
+              Acrescentar
+            </Button>
+          </form>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Fechar
           </Button>
         </DialogFooter>
       </DialogContent>

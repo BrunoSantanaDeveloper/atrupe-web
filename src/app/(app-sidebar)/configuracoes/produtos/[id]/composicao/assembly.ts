@@ -120,7 +120,12 @@ export const lineModeObj: { [key in LineMode]: string } = {
 }
 
 export type ResourceOption = {
+  // Identidade da opção dentro da linha
   id: string
+  // O recurso de verdade, quando a opção é uma configuração dele: o mesmo
+  // refile aparece como "Refile lona", "Refile PVC" e "Refile ACM" (IP-27)
+  resourceId?: string
+  configName?: string
   name: string
   unit: string
   // Custo por unidade do recurso. Mão de obra: por minuto

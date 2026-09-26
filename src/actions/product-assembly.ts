@@ -990,6 +990,7 @@ const compute = (
       summary.set(entry.id, { ...entry })
     }
   }
+  const catalogResources = resourceMap()
   blocks.forEach((block) => {
     if (block.setupMinutes) {
       addUse({
@@ -1004,9 +1005,11 @@ const compute = (
     }
     block.lines.forEach((line) => {
       if (!line.selected || line.quantity === null) return
+      const resourceId = line.selected.resourceId || line.selected.id
+      const resource = catalogResources.get(resourceId)
       addUse({
-        id: line.selected.id,
-        name: line.selected.name,
+        id: resourceId,
+        name: resource?.name || line.selected.name,
         kind: line.kind,
         unit: line.selected.unit,
         quantity: line.quantity,
@@ -1765,4 +1768,105 @@ export const getSaleComposition = async ({
     })),
   }
   return ok(report)
+}
+
+/* ---------------------------------------------------------------------------
+ * Opções de uma linha de escolha ou de lista (IP-27, IP-31)
+ * ------------------------------------------------------------------------- */
+
+export const addLineOption = async ({
+  productId,
+  blockId,
+  lineId,
+  resourceId,
+  configName,
+  perUnit,
+}: {
+  productId: string
+  blockId: string
+  lineId: string
+  resourceId: string
+  configName?: string
+  perUnit?: number
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  const line = block?.lines.find((item) => item.id === lineId)
+  if (!block || !line) return fail('Linha não encontrada')
+  if (line.mode === 'SINGLE') {
+    return fail('Recurso único não tem opções')
+  }
+
+  const resource = resourceMap().get(resourceId)
+  if (!resource) return fail('Recurso não encontrado')
+  // As opções de uma escolha são trocadas entre si: precisam medir igual
+  const unit = line.options[0]?.unit
+  if (line.mode === 'CHOOSE' && unit && resource.unit !== unit) {
+    return fail(`As opções desta linha são em ${unit}`)
+  }
+
+  const name = configName?.trim() || ''
+  const repeated = line.options.some(
+    (option) => (option.resourceId || option.id) === resourceId,
+  )
+  // O mesmo recurso duas vezes só com nome de configuração para diferenciar
+  if (repeated && !name) {
+    return fail('Este recurso já está na linha: dê um nome à configuração')
+  }
+  if (
+    name &&
+    line.options.some(
+      (option) =>
+        (option.resourceId || option.id) === resourceId &&
+        option.configName?.toLowerCase() === name.toLowerCase(),
+    )
+  ) {
+    return fail('Já existe uma configuração com esse nome')
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { kind, ...base } = resource
+  line.options = [
+    ...line.options,
+    {
+      ...base,
+      id: name ? `${resourceId}~${uid()}` : resourceId,
+      resourceId: name ? resourceId : undefined,
+      configName: name || undefined,
+      name: name ? `${resource.name} · ${name}` : resource.name,
+      perUnit,
+    },
+  ]
+  if (!line.selectedId && line.mode === 'CHOOSE') {
+    line.selectedId = line.options[0].id
+  }
+  if (block.processId) line.overridden = true
+  return ok(null)
+}
+
+export const removeLineOption = async ({
+  productId,
+  blockId,
+  lineId,
+  optionId,
+}: {
+  productId: string
+  blockId: string
+  lineId: string
+  optionId: string
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  const line = block?.lines.find((item) => item.id === lineId)
+  if (!block || !line) return fail('Linha não encontrada')
+  // Linha sem recurso é erro de cadastro (IP-37): a última opção fica
+  if (line.options.length <= 1) {
+    return fail('A linha precisa de ao menos um recurso; remova a linha')
+  }
+  line.options = line.options.filter((option) => option.id !== optionId)
+  if (line.selectedId === optionId) line.selectedId = line.options[0].id
+  if (block.processId) line.overridden = true
+  return ok(null)
 }

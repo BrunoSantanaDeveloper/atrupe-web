@@ -45,6 +45,7 @@ import {
   LineDialog,
   RulesDialog,
   NewLineDialog,
+  OptionsDialog,
   AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
@@ -75,6 +76,8 @@ import {
   getProcessCatalog,
   removeAssemblyLine,
   getAssemblyResources,
+  addLineOption,
+  removeLineOption,
   moveAssemblyBlock,
   resetAssemblyLine,
   setBlockLocalRules,
@@ -112,6 +115,7 @@ import {
   IconArrowDown,
   IconCirclePlus,
   IconArrowBackUp,
+  IconListDetails,
 } from '@tabler/icons-react'
 
 // Utils
@@ -143,6 +147,7 @@ type Dialog =
   | { kind: 'line'; block: ComputedBlock; line: ComputedLine }
   | { kind: 'rules'; block: ComputedBlock }
   | { kind: 'newLine'; block: ComputedBlock }
+  | { kind: 'options'; blockId: string; lineId: string }
   | null
 
 export function AssemblyEditor({ productId }: { productId: string }) {
@@ -610,6 +615,20 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                                 }
                               />
                             )}
+                          {!inVariation && line.mode !== 'SINGLE' && (
+                            <ActionButton
+                              Icon={IconListDetails}
+                              variant="neutralGhost"
+                              tooltip="Opções da linha"
+                              onClick={() =>
+                                setDialog({
+                                  kind: 'options',
+                                  blockId: item.id,
+                                  lineId: line.id,
+                                })
+                              }
+                            />
+                          )}
                           {!inVariation && (
                             <ActionButton
                               Icon={IconTrash}
@@ -1406,6 +1425,45 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           run(
             addAssemblyLine({ productId, blockId: target.id, values }),
             'Linha adicionada',
+          )
+        }}
+      />
+      <OptionsDialog
+        line={
+          dialog?.kind === 'options'
+            ? assembly.blocks
+                .find((block) => block.id === dialog.blockId)
+                ?.lines.find((line) => line.id === dialog.lineId)
+            : undefined
+        }
+        resources={resources?.resources || []}
+        onOpenChange={() => setDialog(null)}
+        onAdd={async (values) => {
+          if (dialog?.kind !== 'options') return false
+          const res = await addLineOption({
+            productId,
+            blockId: dialog.blockId,
+            lineId: dialog.lineId,
+            ...values,
+          })
+          if (!res.success) {
+            toast.error(res.message)
+            return false
+          }
+          toast.success('Opção acrescentada')
+          await refresh()
+          return true
+        }}
+        onRemove={(optionId) => {
+          if (dialog?.kind !== 'options') return
+          run(
+            removeLineOption({
+              productId,
+              blockId: dialog.blockId,
+              lineId: dialog.lineId,
+              optionId,
+            }),
+            'Opção removida',
           )
         }}
       />
