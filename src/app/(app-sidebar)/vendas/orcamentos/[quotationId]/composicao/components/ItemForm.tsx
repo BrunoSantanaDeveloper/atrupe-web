@@ -1,30 +1,20 @@
 'use client'
 
 // React
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 // Components
-import { SelectBasic } from '@/components/common/form/FormSelect'
+import { SaleCompositionFields } from '../../../components/QuotationItems/SaleCompositionFields'
 
 // Types
 import type { AddOption, ItemComposition, QuotationItem } from '../types'
 
-// Actions
-import { getSaleForm } from '@/actions/product-assembly'
-import {
-  hhmmToMinutes,
-  minutesToHhmm,
-} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
-
 // Hooks / Store / Consts
 import { cn } from '@/lib/utils'
-
-// Third-party
-import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconX } from '@tabler/icons-react'
@@ -81,114 +71,11 @@ export function ItemForm({
       })),
   )
 
-  // Produto com composição: o formulário mostra só o que é editável nela —
-  // campos extras, escolhas e listas. O resto fica por dentro (IP-36)
+  // Produto com composição: só o que é editável nela (IP-36)
   const productId = option?.hasComposition ? option.id : item?.productId
-  const { data: saleFormRes } = useQuery({
-    enabled: !!productId,
-    staleTime: Infinity,
-    queryKey: ['sale-form', productId],
-    queryFn: () => getSaleForm({ productId: productId! }),
-  })
-  const saleForm = saleFormRes?.data || null
-
-  const [extras, setExtras] = useState(item?.composition?.extras || [])
-  const [times, setTimes] = useState(item?.composition?.times || [])
-  const [choices, setChoices] = useState(item?.composition?.choices || [])
-  const [lists, setLists] = useState(item?.composition?.lists || [])
-  const [optionals, setOptionals] = useState(item?.composition?.optionals || [])
-
-  useEffect(() => {
-    if (!saleForm || item?.composition) return
-    setTimes(
-      saleForm.times.map((time) => ({
-        blockId: time.blockId,
-        minutes: time.defaultMinutes,
-      })),
-    )
-    setExtras(
-      saleForm.extras.map((extra) => ({
-        blockId: extra.blockId,
-        value: extra.defaultValue,
-      })),
-    )
-    setChoices(
-      saleForm.choices.map((choice) => ({
-        blockId: choice.blockId,
-        lineId: choice.lineId,
-        optionId: choice.defaultId,
-      })),
-    )
-    setOptionals(
-      saleForm.optionals.map((optional) => ({
-        blockId: optional.blockId,
-        lineId: optional.lineId,
-        included: optional.defaultIncluded,
-      })),
-    )
-  }, [saleForm, item?.composition])
-
-  const included = (lineId: string) =>
-    !!optionals.find((optional) => optional.lineId === lineId)?.included
-
-  const extraValue = (blockId: string) =>
-    extras.find((extra) => extra.blockId === blockId)?.value ?? 0
-  const choiceValue = (lineId: string) =>
-    choices.find((choice) => choice.lineId === lineId)?.optionId || ''
-  const listValue = (lineId: string, optionId: string) =>
-    lists.find(
-      (entry) => entry.lineId === lineId && entry.optionId === optionId,
-    )?.quantity || 0
-
-  const setListValue = (
-    blockId: string,
-    lineId: string,
-    optionId: string,
-    quantity: number,
-  ) =>
-    setLists((current) => [
-      ...current.filter(
-        (entry) => !(entry.lineId === lineId && entry.optionId === optionId),
-      ),
-      ...(quantity > 0 ? [{ blockId, lineId, optionId, quantity }] : []),
-    ])
-
-  // O resumo que aparece na linha do item
-  const summary = () =>
-    saleForm
-      ? [
-          ...saleForm.times.map(
-            (time) =>
-              `${time.name}: ${minutesToHhmm(
-                times.find((item) => item.blockId === time.blockId)?.minutes ??
-                  time.defaultMinutes,
-              )}`,
-          ),
-          ...saleForm.extras.map(
-            (extra) => `${extra.name}: ${extraValue(extra.blockId)}`,
-          ),
-          ...saleForm.choices.map(
-            (choice) =>
-              `${choice.name}: ${
-                choice.options.find(
-                  (item) => item.id === choiceValue(choice.lineId),
-                )?.name || '-'
-              }`,
-          ),
-          ...saleForm.optionals.map(
-            (optional) =>
-              `${included(optional.lineId) ? 'Com' : 'Sem'} ${optional.name.toLowerCase()}`,
-          ),
-          ...saleForm.lists.flatMap((list) =>
-            list.options
-              .filter((item) => listValue(list.lineId, item.id) > 0)
-              .map(
-                (item) =>
-                  `${item.name}: ${listValue(list.lineId, item.id)} ${item.unit}`,
-              ),
-          ),
-        ]
-      : []
+  const [composition, setComposition] = useState<ItemComposition | undefined>(
+    item?.composition,
+  )
 
   const setField = (fieldName: string, value: number) =>
     setFields((current) =>
@@ -304,7 +191,7 @@ export function ItemForm({
         </div>
       </div>
 
-      {!saleForm && fields.length > 0 && (
+      {!composition && fields.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {fields.map((field) => (
             <div key={field.name} className="space-y-1.5">
@@ -329,164 +216,11 @@ export function ItemForm({
         </div>
       )}
 
-      {saleForm &&
-        saleForm.extras.length +
-          saleForm.choices.length +
-          saleForm.times.length >
-          0 && (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-            {saleForm.times.map((time) => (
-              <div key={time.blockId} className="space-y-1.5">
-                <label
-                  htmlFor={`time-${time.blockId}`}
-                  className="text-sm font-medium"
-                >
-                  {time.name} (h:mm)
-                </label>
-                <Input
-                  id={`time-${time.blockId}`}
-                  placeholder="1:00"
-                  defaultValue={minutesToHhmm(
-                    times.find((item) => item.blockId === time.blockId)
-                      ?.minutes ?? time.defaultMinutes,
-                  )}
-                  onBlur={(event) =>
-                    setTimes((current) => [
-                      ...current.filter(
-                        (item) => item.blockId !== time.blockId,
-                      ),
-                      {
-                        blockId: time.blockId,
-                        minutes: hhmmToMinutes(event.target.value),
-                      },
-                    ])
-                  }
-                />
-              </div>
-            ))}
-            {saleForm.extras.map((extra) => (
-              <div key={extra.blockId} className="space-y-1.5">
-                <label
-                  htmlFor={`extra-${extra.blockId}`}
-                  className="text-sm font-medium"
-                >
-                  {extra.name}
-                </label>
-                <Input
-                  id={`extra-${extra.blockId}`}
-                  type="number"
-                  min={0}
-                  step={extra.kind === 'INTEGER' ? '1' : '0.01'}
-                  value={String(extraValue(extra.blockId))}
-                  onChange={(event) =>
-                    setExtras((current) => [
-                      ...current.filter(
-                        (item) => item.blockId !== extra.blockId,
-                      ),
-                      {
-                        blockId: extra.blockId,
-                        value: Number(event.target.value || 0),
-                      },
-                    ])
-                  }
-                />
-              </div>
-            ))}
-            {saleForm.choices.map((choice) => (
-              <SelectBasic
-                key={choice.lineId}
-                name={`choice-${choice.lineId}`}
-                label={choice.name}
-                options={choice.options.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
-                value={choiceValue(choice.lineId)}
-                onChange={(value) =>
-                  setChoices((current) => [
-                    ...current.filter((item) => item.lineId !== choice.lineId),
-                    {
-                      blockId: choice.blockId,
-                      lineId: choice.lineId,
-                      optionId: String(value),
-                    },
-                  ])
-                }
-              />
-            ))}
-          </div>
-        )}
-
-      {!!saleForm?.optionals.length && (
-        <div className="flex flex-wrap gap-x-6 gap-y-2">
-          {saleForm.optionals.map((optional) => (
-            <label
-              key={optional.lineId}
-              className="flex cursor-pointer items-center gap-2 text-sm"
-            >
-              <input
-                type="checkbox"
-                className="size-4 accent-brand-600"
-                checked={included(optional.lineId)}
-                onChange={(event) =>
-                  setOptionals((current) => [
-                    ...current.filter(
-                      (item) => item.lineId !== optional.lineId,
-                    ),
-                    {
-                      blockId: optional.blockId,
-                      lineId: optional.lineId,
-                      included: event.target.checked,
-                    },
-                  ])
-                }
-              />
-              <span className="font-medium text-gray-800">{optional.name}</span>
-              <span className="text-gray">· {optional.stage}</span>
-            </label>
-          ))}
-        </div>
-      )}
-
-      {saleForm?.lists.map((list) => (
-        <div key={list.lineId} className="space-y-2">
-          <p className="text-sm font-medium">
-            {list.name}
-            <span className="font-normal text-gray">
-              {' '}
-              · {list.stage} · informe o que este trabalho usa
-            </span>
-          </p>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
-            {list.options.map((item) => (
-              <div key={item.id} className="space-y-1.5">
-                <label
-                  htmlFor={`list-${list.lineId}-${item.id}`}
-                  className="text-sm text-gray-700"
-                >
-                  {item.name}
-                </label>
-                <Input
-                  id={`list-${list.lineId}-${item.id}`}
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={String(listValue(list.lineId, item.id))}
-                  endAdornment={<span className="text-sm">{item.unit}</span>}
-                  onChange={(event) =>
-                    setListValue(
-                      list.blockId,
-                      list.lineId,
-                      item.id,
-                      Number(event.target.value || 0),
-                    )
-                  }
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
+      <SaleCompositionFields
+        productId={productId}
+        initial={item?.composition}
+        onChange={setComposition}
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <Button
@@ -499,16 +233,7 @@ export function ItemForm({
               discount: Math.round(Number(discount || 0) * 100),
               fields,
               variation: variation || null,
-              composition: saleForm
-                ? {
-                    extras,
-                    times,
-                    choices,
-                    optionals,
-                    lists,
-                    summary: summary(),
-                  }
-                : undefined,
+              composition,
             })
           }
         >

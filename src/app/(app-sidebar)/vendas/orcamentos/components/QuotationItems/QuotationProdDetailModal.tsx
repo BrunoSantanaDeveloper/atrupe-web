@@ -57,11 +57,18 @@ import { useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
 
 import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
+import { SaleCompositionFields } from './SaleCompositionFields'
+import { saveItemComposition } from '@/actions/quotation-composition'
+import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
 interface Props {
   open: boolean
   editMode?: boolean
   data?: QuotationItemType
+  // O que o vendedor já escolheu na composição deste item, ao editar
+  composition?: ItemComposition
 }
 
 // Função auxiliar para calcular medida básica baseada no unitKind (valores brutos)
@@ -101,8 +108,18 @@ function calculateRawMeasurement(
   }
 }
 
-export function QuotationProdDetailModal({ open, editMode, data }: Props) {
+export function QuotationProdDetailModal({
+  open,
+  editMode,
+  data,
+  composition: savedComposition,
+}: Props) {
   const params = useParams()
+  // Produto com composição (PRO): o vendedor preenche só o que é editável
+  // nela, dentro deste mesmo modal (IP-36, ORC-3)
+  const [composition, setComposition] = React.useState<
+    ItemComposition | undefined
+  >()
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
@@ -328,8 +345,19 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
         return
       }
 
+      // Na edição, o productId do formulário é o id do item
+      if (composition && data?.productId) {
+        await saveItemComposition({
+          quotationId: String(quotationId),
+          key: String(data.productId),
+          composition,
+        })
+      }
       handleToggleModal(false)
       toast.success('Produto editado com sucesso!')
+      queryClient.invalidateQueries({
+        queryKey: ['quotation-item-compositions'],
+      })
       await queryClient.invalidateQueries({
         queryKey: [QUOTATION_DATA_QUERY_KEY],
       })
@@ -347,9 +375,21 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       return
     }
 
+    if (composition) {
+      const created = res.data as { id?: string } | undefined
+      await saveItemComposition({
+        quotationId: String(quotationId),
+        key: created?.id || String(data.productId),
+        composition,
+      })
+    }
+
     handleToggleModal(false)
     queryClient.invalidateQueries({
       queryKey: [QUOTATION_DATA_QUERY_KEY],
+    })
+    queryClient.invalidateQueries({
+      queryKey: ['quotation-item-compositions'],
     })
     reset()
   }
@@ -513,6 +553,18 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                     </div>
                   )
                 })}
+                <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                  <div className="w-full">
+                    <SaleCompositionFields
+                      key={data?.id || product?.id}
+                      productId={
+                        product?.id || data?.product?.originalProductId
+                      }
+                      initial={editMode ? savedComposition : undefined}
+                      onChange={setComposition}
+                    />
+                  </div>
+                </FeatureGate>
                 <FormTextarea<ProductsFormType>
                   name="technicalDescription"
                   label="Descritivo técnico"

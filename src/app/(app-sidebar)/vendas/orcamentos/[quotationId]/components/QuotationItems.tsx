@@ -44,6 +44,7 @@ import { QuotationCategorySelectorModal } from '../../components/QuotationItems/
 
 // Icons
 import {
+  IconSearch,
   IconCopy,
   IconCoin,
   IconPhoto,
@@ -59,7 +60,7 @@ import {
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Third-party
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Libs
 import { actionDisabled } from '@/lib/quotation'
@@ -75,6 +76,13 @@ import {
 
 // Actions
 import { createItem } from '@/actions/_cruds'
+import { getItemCompositions } from '@/actions/quotation-composition'
+import {
+  CompositionReport,
+  type ReportTarget,
+} from '../composicao/components/CompositionReport'
+import { FeatureGate } from '@/components/common/FeatureGate'
+import { FEATURES } from '@/consts/features'
 
 interface Props {
   data: QuotationType
@@ -106,6 +114,34 @@ export function QuotationItems({ data }: Props) {
   }, [shouldOpenAdd, status])
 
   const queryClient = useQueryClient()
+
+  // A composição que o vendedor escolheu em cada item (IP-36). Fica no mock
+  // até a API guardar o campo no item (backend-pendente.md)
+  const { data: compositionsRes } = useQuery({
+    queryKey: ['quotation-item-compositions', data?.id],
+    queryFn: () => getItemCompositions({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const [report, setReport] = useState<ReportTarget | null>(null)
+
+  const compositionOf = (item: QuotationItemType) =>
+    compositionsRes?.data?.[item.id] ||
+    compositionsRes?.data?.[item.product?.originalProductId]
+
+  // A API guarda as medidas em milímetros; o relatório calcula em metros
+  const reportTarget = (item: QuotationItemType): ReportTarget => {
+    const first = item.product?.compositions?.[0]
+    return {
+      id: item.id,
+      name: item.description,
+      productId: item.product?.originalProductId,
+      quantity: item.product?.quantity || 1,
+      width: first?.width ? first.width / 1000 : 1,
+      height: first?.height ? first.height / 1000 : 1,
+      variation: null,
+      composition: compositionOf(item),
+    }
+  }
 
   const mutationDuplicate = useMutation({
     mutationFn: (id: string) =>
@@ -229,6 +265,21 @@ export function QuotationItems({ data }: Props) {
                             <TableCell className="py-4">
                               <div className="flex justify-end gap-1">
                                 <TooltipProvider>
+                                  {compositionOf(item) && (
+                                    <FeatureGate
+                                      features={[
+                                        FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconSearch}
+                                        tooltip="Ver a composição completa"
+                                        onClick={() =>
+                                          setReport(reportTarget(item))
+                                        }
+                                      />
+                                    </FeatureGate>
+                                  )}
                                   <PermissionGate
                                     permissions={['sale:quotation:edit']}
                                   >
@@ -630,7 +681,9 @@ export function QuotationItems({ data }: Props) {
         open={modalType === 'productDetailEdit'}
         editMode={true}
         data={rowData}
+        composition={rowData ? compositionOf(rowData) : undefined}
       />
+      <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </>
   )
 }

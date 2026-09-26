@@ -57,8 +57,22 @@ const amount = (value: number, unit: string) => {
   return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
 }
 
+// O que o relatório precisa do item: serve ao item da tela de composição e
+// ao item do orçamento do sistema
+export type ReportTarget = Pick<
+  QuotationItem,
+  | 'id'
+  | 'name'
+  | 'productId'
+  | 'quantity'
+  | 'width'
+  | 'height'
+  | 'variation'
+  | 'composition'
+>
+
 interface Props {
-  item: QuotationItem | null
+  item: ReportTarget | null
   onOpenChange: (open: boolean) => void
 }
 

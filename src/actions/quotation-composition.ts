@@ -508,3 +508,38 @@ export const removeQuotationItem = async ({
 
   return { success: true, data: quotation, message: '' }
 }
+
+/* ---------------------------------------------------------------------------
+ * Composição do item no orçamento do sistema (IP-36, ORC-3). O item é gravado
+ * pela API de sempre; o que o vendedor escolheu na composição fica aqui até a
+ * API receber o campo `composition` no item (backend-pendente.md)
+ * ------------------------------------------------------------------------- */
+
+const itemCompositions = new Map<string, ItemComposition>()
+
+export const saveItemComposition = async ({
+  quotationId,
+  key,
+  composition,
+}: {
+  quotationId: string
+  // Id do item; ao criar, sem o id de volta, o id do produto
+  key: string
+  composition: ItemComposition
+}) => {
+  itemCompositions.set(`${quotationId}:${key}`, composition)
+  return { success: true, data: null, message: '' }
+}
+
+export const getItemCompositions = async ({
+  quotationId,
+}: {
+  quotationId: string
+}) => {
+  const data: Record<string, ItemComposition> = {}
+  itemCompositions.forEach((value, key) => {
+    const [quotation, item] = key.split(':')
+    if (quotation === quotationId) data[item] = value
+  })
+  return { success: true, data, message: '' }
+}
