@@ -2014,11 +2014,13 @@ export const getSaleComposition = async ({
 
   const report: SaleCompositionReport = {
     name: original.name,
+    technicalDescription: original.technicalDescription,
     measure,
     variation: variation?.name || null,
     blocks: computed.blocks.map((block) => ({
       id: block.id,
       name: block.name,
+      sale: block.sale,
       sector: block.sector,
       role: block.role,
       baseName:

@@ -59,6 +59,7 @@ import {
   IconPencil,
   IconTrash,
   IconSearch,
+  IconPrinter,
   IconChevronDown,
   IconChevronRight,
   IconShoppingCartPlus,
@@ -287,6 +288,14 @@ export function QuotationComposition({ quotationId }: Props) {
                   </Link>
                 </Button>
               </PermissionGate>
+              {/* A proposta impressa, com o nível de detalhe (IP-12) */}
+              <Button variant="neutralOutline" LeftIcon={IconPrinter} asChild>
+                <Link
+                  href={`/vendas/orcamentos/${quotationId}/composicao/proposta`}
+                >
+                  Proposta
+                </Link>
+              </Button>
               <PermissionGate permissions={['sale:quotation:edit']}>
                 <Button
                   LeftIcon={IconShoppingCartPlus}

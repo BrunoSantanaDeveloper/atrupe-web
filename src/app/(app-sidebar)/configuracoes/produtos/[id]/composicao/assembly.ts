@@ -453,11 +453,16 @@ export type SaleForm = {
 
 export type SaleCompositionReport = {
   name: string
+  // O texto que a proposta resumida mostra (IP-12, IP-24)
+  technicalDescription: string
   measure: AssemblyMeasure
   variation: string | null
   blocks: {
     id: string
     name: string
+    // Peso da etapa no preço sugerido: é o que reparte o valor do item entre
+    // as etapas na proposta detalhada com valores (IP-12)
+    sale: number
     sector: string
     role: BlockRole
     baseName: string | null
