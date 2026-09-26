@@ -22,6 +22,11 @@ import type {
   ProcessCatalogItem,
   AssemblyResource,
   NewLineValues,
+  SaleForm,
+  SaleExtra,
+  SaleChoice,
+  SaleListEntry,
+  SaleCompositionReport,
   PriceTier,
   SheetYield,
   ResourceOption,
@@ -1484,4 +1489,142 @@ export const setPriceTiers = async ({
   }
   findOrCreate(productId).priceTiers = clean
   return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * O produto na venda (IP-36)
+ * ------------------------------------------------------------------------- */
+
+// Só o que o vendedor pode mudar: campos extras, escolhas e listas
+export const getSaleForm = async ({ productId }: { productId: string }) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
+
+  const form: SaleForm = { extras: [], choices: [], lists: [] }
+  assembly.blocks.forEach((block) => {
+    const rules = block.localRules ?? block.originalRules
+    if (rules.extraField !== 'NONE') {
+      form.extras.push({
+        blockId: block.id,
+        name: rules.extraFieldName || block.name,
+        kind: rules.extraField,
+        defaultValue: rules.extraFieldDefault,
+      })
+    }
+    block.lines.forEach((line) => {
+      if (line.mode === 'CHOOSE') {
+        form.choices.push({
+          blockId: block.id,
+          lineId: line.id,
+          name: line.name,
+          stage: block.name,
+          defaultId: line.selectedId,
+          options: line.options.map(({ id, name }) => ({ id, name })),
+        })
+      }
+      if (line.mode === 'LIST') {
+        form.lists.push({
+          blockId: block.id,
+          lineId: line.id,
+          name: line.name,
+          stage: block.name,
+          options: line.options.map(({ id, name, unit }) => ({
+            id,
+            name,
+            unit,
+          })),
+        })
+      }
+    })
+  })
+  return ok<SaleForm | null>(form)
+}
+
+// A composição completa do item vendido, para consulta. Não leva custo nem
+// preço de recurso: a tela do orçamento mostra preço, não método (ORC-7)
+export const getSaleComposition = async ({
+  productId,
+  measure,
+  variationName,
+  extras = [],
+  choices = [],
+  lists = [],
+}: {
+  productId: string
+  measure: AssemblyMeasure
+  variationName?: string | null
+  extras?: SaleExtra[]
+  choices?: SaleChoice[]
+  lists?: SaleListEntry[]
+}) => {
+  const original = assemblies.find((item) => item.productId === productId)
+  if (!original || !original.blocks.length) {
+    return fail('Este produto não tem composição')
+  }
+
+  // Cópia: o que o vendedor escolheu vale só para esta venda
+  const source: ProductAssembly = structuredClone({ ...original, measure })
+  source.blocks.forEach((block) => {
+    const extra = extras.find((item) => item.blockId === block.id)
+    if (extra) {
+      block.localRules = {
+        ...(block.localRules ?? block.originalRules),
+        extraFieldDefault: extra.value,
+      }
+    }
+    block.lines.forEach((line) => {
+      const choice = choices.find(
+        (item) => item.blockId === block.id && item.lineId === line.id,
+      )
+      if (choice) line.selectedId = choice.optionId
+    })
+  })
+  const variation =
+    source.variations.find((item) => item.name === variationName) || null
+  const computed = compute(source, variation)
+
+  const report: SaleCompositionReport = {
+    name: original.name,
+    measure,
+    variation: variation?.name || null,
+    blocks: computed.blocks.map((block) => ({
+      id: block.id,
+      name: block.name,
+      sector: block.sector,
+      role: block.role,
+      baseName:
+        computed.blocks.find((item) => item.id === block.baseBlockId)?.name ||
+        null,
+      measure: block.measure,
+      extra:
+        block.rules.extraField === 'NONE'
+          ? null
+          : `${block.rules.extraFieldName}: ${block.rules.extraFieldDefault}`,
+      lines: block.lines.map((line) => ({
+        id: line.id,
+        name: line.name,
+        kind: line.kind,
+        resource: line.mode === 'LIST' ? null : line.selected?.name || null,
+        quantity: line.quantity,
+        unit: line.selected?.unit || line.options[0]?.unit || '',
+        entries:
+          line.mode === 'LIST'
+            ? line.options
+                .map((option) => ({
+                  name: option.name,
+                  unit: option.unit,
+                  quantity:
+                    lists.find(
+                      (item) =>
+                        item.blockId === block.id &&
+                        item.lineId === line.id &&
+                        item.optionId === option.id,
+                    )?.quantity || 0,
+                }))
+                .filter((entry) => entry.quantity > 0)
+            : null,
+      })),
+    })),
+  }
+  return ok(report)
 }

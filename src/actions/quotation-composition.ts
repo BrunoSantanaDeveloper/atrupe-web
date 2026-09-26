@@ -9,6 +9,7 @@ import type {
   Quotation,
   QuotationItem,
   QuotationLine,
+  ItemComposition,
 } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/composicao/types'
 
 const newId = (prefix: string) =>
@@ -260,6 +261,7 @@ export const getQuotationProducts = async () => {
       price: 4500,
       releasedForSale: true,
       measured: true,
+      hasComposition: true,
       fields: [{ name: 'Ilhoses por metro', defaultValue: 2 }],
     },
     {
@@ -278,6 +280,7 @@ export const getQuotationProducts = async () => {
       unit: 'un',
       price: 12000,
       releasedForSale: true,
+      hasComposition: true,
       // A variação também serve para as cores de impressão (PV-7): 4x4 é
       // frente e verso, então cada folha passa duas vezes pela máquina
       variations: [
@@ -382,6 +385,7 @@ export const addQuotationItem = async ({
   discount = 0,
   fields = [],
   variation = null,
+  composition,
 }: {
   quotationId: string
   option: AddOption
@@ -391,12 +395,15 @@ export const addQuotationItem = async ({
   discount?: number
   fields?: { name: string; value: number }[]
   variation?: string | null
+  composition?: ItemComposition
 }) => {
   const quotation = find(quotationId)
 
   const item: QuotationItem = {
     id: newId('item'),
     name: option.name,
+    productId: option.hasComposition ? option.id : undefined,
+    composition,
     origin: 'LIBRARY',
     sector: option.sector,
     quantity,
@@ -453,6 +460,7 @@ export const updateQuotationItem = async ({
   discount?: number
   fields?: { name: string; value: number }[]
   variation?: string | null
+  composition?: ItemComposition
 }) => {
   const quotation = find(quotationId)
   const item = quotation.items.find((current) => current.id === itemId)

@@ -324,3 +324,64 @@ export type NewLineValues = {
   lossPercent: number
   minimum: number | null
 }
+
+/* ---------------------------------------------------------------------------
+ * O produto na venda (IP-36): o vendedor preenche só o que é editável, e a
+ * composição completa fica num relatório de consulta, sem custo (ORC-7)
+ * ------------------------------------------------------------------------- */
+
+export type SaleChoice = { blockId: string; lineId: string; optionId: string }
+export type SaleListEntry = SaleChoice & { quantity: number }
+export type SaleExtra = { blockId: string; value: number }
+
+export type SaleForm = {
+  // Campos extras nomeados de cada etapa (nº de letras, distância dos ilhoses)
+  extras: {
+    blockId: string
+    name: string
+    kind: ExtraFieldKind
+    defaultValue: number
+  }[]
+  // Linhas de escolha: o vendedor troca o recurso (a lona 380 ou 440)
+  choices: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    defaultId: string
+    options: { id: string; name: string }[]
+  }[]
+  // Listas: o vendedor informa quanto usou de cada item
+  lists: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    options: { id: string; name: string; unit: string }[]
+  }[]
+}
+
+export type SaleCompositionReport = {
+  name: string
+  measure: AssemblyMeasure
+  variation: string | null
+  blocks: {
+    id: string
+    name: string
+    sector: string
+    role: BlockRole
+    baseName: string | null
+    measure: AssemblyMeasure
+    extra: string | null
+    lines: {
+      id: string
+      name: string
+      kind: ResourceKind
+      resource: string | null
+      quantity: number | null
+      unit: string
+      // Na lista, os itens que o vendedor informou
+      entries: { name: string; quantity: number; unit: string }[] | null
+    }[]
+  }[]
+}

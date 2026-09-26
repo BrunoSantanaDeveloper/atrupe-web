@@ -41,9 +41,26 @@ export type QuotationLine = {
   resolved: ResolvedResource[]
 }
 
+// O que o vendedor preencheu num produto com composição (IP-36): campos
+// extras, escolhas e listas. O resumo é o que aparece na linha do item
+export type ItemComposition = {
+  extras: { blockId: string; value: number }[]
+  choices: { blockId: string; lineId: string; optionId: string }[]
+  lists: {
+    blockId: string
+    lineId: string
+    optionId: string
+    quantity: number
+  }[]
+  summary: string[]
+}
+
 export type QuotationItem = {
   id: string
   name: string
+  // Produto com composição: permite abrir o relatório da composição completa
+  productId?: string
+  composition?: ItemComposition
   // Tipo interno (produto pronto, composição montada na hora). Fica discreto:
   // o vendedor não escolhe entre serviço, item pronto e produto (ORC-3)
   origin: 'LIBRARY' | 'COMPOSED'
@@ -85,4 +102,6 @@ export type AddOption = {
   variations?: { id: string; name: string; price: number | null }[]
   // Produto vendido por medida pede largura e altura; por unidade, não
   measured?: boolean
+  // O produto tem composição cadastrada (PRO)
+  hasComposition?: boolean
 }

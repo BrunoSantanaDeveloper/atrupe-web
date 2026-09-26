@@ -22,6 +22,7 @@ import { Card, CardFooter, CardContent } from '@/components/ui/card'
 // Components
 import { AddPanel } from './AddPanel'
 import { ItemForm, type ItemFormValues } from './ItemForm'
+import { CompositionReport } from './CompositionReport'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { FeatureGate } from '@/components/common/FeatureGate'
@@ -57,6 +58,7 @@ import {
   IconPlus,
   IconPencil,
   IconTrash,
+  IconSearch,
   IconChevronDown,
   IconChevronRight,
   IconShoppingCartPlus,
@@ -85,6 +87,8 @@ export function QuotationComposition({ quotationId }: Props) {
   // usam o mesmo formulário (ORC-4)
   const [picked, setPicked] = useState<AddOption | null>(null)
   const [editing, setEditing] = useState('')
+  // Item cuja composição completa está aberta, como relatório (IP-36)
+  const [report, setReport] = useState<QuotationItem | null>(null)
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -403,6 +407,13 @@ export function QuotationComposition({ quotationId }: Props) {
                             </TableCell>
                             <TableCell>
                               <div className="flex justify-end gap-1">
+                                {item.productId && (
+                                  <ActionButton
+                                    Icon={IconSearch}
+                                    tooltip={`Ver a composição completa de ${item.name}`}
+                                    onClick={() => setReport(item)}
+                                  />
+                                )}
                                 <PermissionGate
                                   permissions={['sale:quotation:edit']}
                                 >
@@ -443,18 +454,38 @@ export function QuotationComposition({ quotationId }: Props) {
                               <TableCell />
                               <TableCell colSpan={6} className="py-4">
                                 <div className="space-y-3">
-                                  {item.fields.length > 0 && (
-                                    <div className="flex flex-wrap gap-2">
-                                      {item.fields.map((field) => (
+                                  {!!item.composition?.summary.length && (
+                                    <div className="flex flex-wrap items-center gap-2">
+                                      {item.composition.summary.map((text) => (
                                         <Badge
-                                          key={field.name}
+                                          key={text}
                                           variant="neutralLight"
                                         >
-                                          {field.name}: {field.value}
+                                          {text}
                                         </Badge>
                                       ))}
+                                      <Button
+                                        size="sm"
+                                        variant="link"
+                                        onClick={() => setReport(item)}
+                                      >
+                                        Ver composição completa
+                                      </Button>
                                     </div>
                                   )}
+                                  {!item.composition &&
+                                    item.fields.length > 0 && (
+                                      <div className="flex flex-wrap gap-2">
+                                        {item.fields.map((field) => (
+                                          <Badge
+                                            key={field.name}
+                                            variant="neutralLight"
+                                          >
+                                            {field.name}: {field.value}
+                                          </Badge>
+                                        ))}
+                                      </div>
+                                    )}
 
                                   {item.lines.length ? (
                                     item.lines.map((line) => (
@@ -571,6 +602,7 @@ export function QuotationComposition({ quotationId }: Props) {
           )}
         </Card>
       </div>
+      <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </TooltipProvider>
   )
 }
