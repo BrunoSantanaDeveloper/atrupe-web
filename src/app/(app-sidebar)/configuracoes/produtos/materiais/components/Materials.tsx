@@ -2,6 +2,7 @@
 
 // React / Next
 import { Fragment, useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -37,7 +38,7 @@ import type { Material } from '../types'
 import { getMaterials, setMaterialActive } from '@/actions/materials'
 
 // Hooks / Store / Consts
-import { formatCurrencyToBrl } from '@/lib/utils'
+
 import { assetUnitShort } from '@/consts/assets'
 
 // Third-party
@@ -55,10 +56,10 @@ import {
 } from '@tabler/icons-react'
 
 // Sem custo ou preço mostra `-`, nunca R$ 0,00 (design.md §7)
-const formatValue = (value: number | null) =>
-  value === null ? '-' : formatCurrencyToBrl(value)
-
 export function Materials({ searchParams }: SearchParamsType) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
+  const formatValue = (value: number | null) => money(value)
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
   const [expanded, setExpanded] = useState<string[]>([])

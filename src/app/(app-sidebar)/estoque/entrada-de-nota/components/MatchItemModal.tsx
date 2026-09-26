@@ -2,6 +2,7 @@
 
 // React / Next
 import { useEffect, useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -29,7 +30,7 @@ import { matchInvoiceItem } from '@/actions/stock'
 import { getMaterials } from '@/actions/materials'
 
 // Hooks / Store / Consts
-import { formatCurrencyToBrl } from '@/lib/utils'
+
 import { assetUnitShort } from '@/consts/assets'
 
 // Third-party
@@ -49,6 +50,8 @@ interface Props {
 // Conciliação de materiais (DC-9): o item chega descrito pelo fornecedor e
 // precisa virar material interno, com o fator de conversão da unidade.
 export function MatchItemModal({ invoiceId, item, open, onOpenChange }: Props) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const [materialId, setMaterialId] = useState('')
   const [factor, setFactor] = useState('1')
@@ -108,7 +111,7 @@ export function MatchItemModal({ invoiceId, item, open, onOpenChange }: Props) {
             <p className="text-sm font-medium">{item?.description}</p>
             <p className="text-sm text-gray">
               {item?.supplierCode} · {item?.quantity} {item?.supplierUnit} ·{' '}
-              {formatCurrencyToBrl(item?.unitValue || 0)} cada
+              {money(item?.unitValue || 0)} cada
             </p>
           </div>
 
@@ -148,7 +151,7 @@ export function MatchItemModal({ invoiceId, item, open, onOpenChange }: Props) {
                 {converted} {assetUnitShort[selected.unit]}
               </p>
               <p className="text-sm text-gray">
-                Custo de entrada: {formatCurrencyToBrl(unitCost)} por{' '}
+                Custo de entrada: {money(unitCost)} por{' '}
                 {assetUnitShort[selected.unit]}
               </p>
             </div>

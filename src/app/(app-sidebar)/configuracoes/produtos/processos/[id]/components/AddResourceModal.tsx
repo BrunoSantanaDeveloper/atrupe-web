@@ -2,6 +2,7 @@
 
 // React / Next
 import { useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -28,7 +29,7 @@ import type { FormulaKey, ResourceKind } from '../../types'
 import { addProcessResource, getAvailableResources } from '@/actions/processes'
 
 // Hooks / Store / Consts
-import { formatCurrencyToBrl } from '@/lib/utils'
+
 import {
   formulaObj,
   formulaOptions,
@@ -49,6 +50,8 @@ interface Props {
 // Só patrimônio detalhado entra como máquina (P-16) e o material entra pela
 // variação (MT-5): a lista já chega assim da action.
 export function AddResourceModal({ processId }: Props) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
   const [kind, setKind] = useState<ResourceKind>('MATERIAL')
@@ -136,7 +139,7 @@ export function AddResourceModal({ processId }: Props) {
             options={[
               ...options.map((option) => ({
                 value: option.id,
-                label: `${option.name} — ${formatCurrencyToBrl(option.unitCost)}/${option.unit}`,
+                label: `${option.name} — ${money(option.unitCost)}/${option.unit}`,
               })),
               ...(kind === 'OUTSOURCED'
                 ? [{ value: 'loose', label: 'Terceirizado avulso' }]

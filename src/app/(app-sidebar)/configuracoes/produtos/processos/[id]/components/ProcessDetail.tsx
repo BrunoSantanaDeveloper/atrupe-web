@@ -2,6 +2,7 @@
 
 // React / Next
 import { useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -40,7 +41,7 @@ import { getProcess, removeProcessResource } from '@/actions/processes'
 
 // Hooks / Store / Consts
 import { resourceCost } from '@/lib/process-calc'
-import { formatCurrencyToBrl } from '@/lib/utils'
+
 import {
   formulaObj,
   resourceKindObj,
@@ -59,6 +60,8 @@ interface Props {
 }
 
 export function ProcessDetail({ id }: Props) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const [simulation, setSimulation] = useState<ProcessSimulation>({
     width: 1,
@@ -283,7 +286,7 @@ export function ProcessDetail({ id }: Props) {
                         <TableCell className="text-right">
                           {resource.unitCost === null
                             ? '-'
-                            : `${formatCurrencyToBrl(resource.unitCost)}/${resource.unit}`}
+                            : `${money(resource.unitCost)}/${resource.unit}`}
                         </TableCell>
                         <TableCell className="text-right text-sm text-gray">
                           {resource.quantity} {resource.unit}
@@ -291,7 +294,7 @@ export function ProcessDetail({ id }: Props) {
                         <TableCell className="text-right font-medium">
                           {costOf(resource.id) === null
                             ? '-'
-                            : formatCurrencyToBrl(costOf(resource.id) || 0)}
+                            : money(costOf(resource.id) || 0)}
                         </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-1">
@@ -319,14 +322,13 @@ export function ProcessDetail({ id }: Props) {
                 </p>
                 <div className="text-sm text-right">
                   <p className="text-gray">
-                    Preparo {formatCurrencyToBrl(setupCost)} ({' '}
-                    {process.setupMinutes} min ) + produção{' '}
-                    {formatCurrencyToBrl(production)}
+                    Preparo {money(setupCost)} ( {process.setupMinutes} min ) +
+                    produção {money(production)}
                   </p>
                   <p>
                     Custo na simulação:{' '}
                     <span className="text-lg font-semibold text-gray-900">
-                      {formatCurrencyToBrl(total)}
+                      {money(total)}
                     </span>
                   </p>
                 </div>

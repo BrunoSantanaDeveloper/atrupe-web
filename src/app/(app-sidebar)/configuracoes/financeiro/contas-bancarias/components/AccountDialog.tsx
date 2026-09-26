@@ -5,6 +5,7 @@
 
 // React
 import { useEffect, useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -51,7 +52,7 @@ import { toast } from 'sonner'
 import { IconBuildingBank, IconCash } from '@tabler/icons-react'
 
 // Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 const banks = [
   { value: '000', label: 'Empresa (dinheiro)' },
@@ -130,6 +131,8 @@ export function AccountDialog({
   onOpenChange,
   onSaved,
 }: Props) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const [draft, setDraft] = useState<Draft>(empty(methods))
   const [saving, setSaving] = useState(false)
 
@@ -278,7 +281,7 @@ export function AccountDialog({
               </div>
             ) : (
               <p className="text-sm text-gray">
-                Saldo inicial de {formatCurrencyToBrl(draft.openingBalance)} em{' '}
+                Saldo inicial de {money(draft.openingBalance)} em{' '}
                 {draft.openingDate.split('-').reverse().join('/')}. Não se
                 altera depois de criada: o saldo é calculado pelos lançamentos.
               </p>

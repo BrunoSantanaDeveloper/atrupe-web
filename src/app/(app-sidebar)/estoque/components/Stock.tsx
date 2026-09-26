@@ -2,6 +2,7 @@
 
 // React / Next
 import Link from 'next/link'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -37,7 +38,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import { getStockItems, getStockMovements } from '@/actions/stock'
 
 // Hooks / Store / Consts
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { stockMovementObj } from '@/consts/stock'
 
 // Third-party
@@ -56,6 +57,8 @@ const formatDate = (date: string | null) =>
   date ? new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR') : '-'
 
 export function Stock({ searchParams }: SearchParamsType) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const status = (searchParams?.status as string) || 'todos'
 
   const { data, isLoading } = useQuery({
@@ -162,7 +165,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                             {item.minimum} {item.unit}
                           </TableCell>
                           <TableCell className="text-right">
-                            {formatCurrencyToBrl(item.averageCost)}
+                            {money(item.averageCost)}
                           </TableCell>
                           <TableCell className="text-right">
                             {item.lastEntryCost === null ? (
@@ -171,7 +174,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                               </span>
                             ) : (
                               <>
-                                {formatCurrencyToBrl(item.lastEntryCost)}
+                                {money(item.lastEntryCost)}
                                 <span className="block text-xs text-gray">
                                   {formatDate(item.lastEntryDate)}
                                 </span>

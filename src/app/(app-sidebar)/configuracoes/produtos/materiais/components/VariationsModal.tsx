@@ -2,6 +2,7 @@
 
 // React / Next
 import { useEffect, useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -33,7 +34,6 @@ import type { Material } from '../types'
 import { createMaterialVariations } from '@/actions/materials'
 
 // Hooks / Store / Consts
-import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
 import { toast } from 'sonner'
@@ -57,6 +57,8 @@ const splitList = (value: string) =>
 // Marca × cor formam o cruzamento; o custo nasce repetido e é alterado linha a
 // linha (MT-3 e MT-4). Ao existir variação, o preço do material deixa de valer.
 export function VariationsModal({ material, open, onOpenChange }: Props) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const [brands, setBrands] = useState('')
   const [colors, setColors] = useState('')
@@ -197,14 +199,12 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
                       </TableCell>
                       <TableCell>{variation.color}</TableCell>
                       <TableCell className="text-right">
-                        {variation.cost === null
-                          ? '-'
-                          : formatCurrencyToBrl(variation.cost)}
+                        {variation.cost === null ? '-' : money(variation.cost)}
                       </TableCell>
                       <TableCell className="text-right">
                         {variation.price === null
                           ? '-'
-                          : formatCurrencyToBrl(variation.price)}
+                          : money(variation.price)}
                       </TableCell>
                     </TableRow>
                   ))}

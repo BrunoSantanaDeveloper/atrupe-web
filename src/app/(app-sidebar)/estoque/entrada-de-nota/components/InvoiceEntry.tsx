@@ -2,6 +2,7 @@
 
 // React / Next
 import { useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // UI
 import {
@@ -38,7 +39,6 @@ import type { InvoiceItem } from '../../types'
 import { getInvoices, confirmInvoiceEntry } from '@/actions/stock'
 
 // Hooks / Store / Consts
-import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
 import { toast } from 'sonner'
@@ -51,6 +51,8 @@ const formatDate = (date: string) =>
   new Date(`${date}T00:00:00`).toLocaleDateString('pt-BR')
 
 export function InvoiceEntry() {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const [matching, setMatching] = useState<{
     invoiceId: string
@@ -103,7 +105,7 @@ export function InvoiceEntry() {
                     </CardTitle>
                     <CardDescription>
                       Emitida em {formatDate(invoice.issueDate)} ·{' '}
-                      {formatCurrencyToBrl(invoice.total)}
+                      {money(invoice.total)}
                     </CardDescription>
                   </div>
                   <Badge
@@ -151,7 +153,7 @@ export function InvoiceEntry() {
                           {item.quantity}
                         </TableCell>
                         <TableCell className="text-right">
-                          {formatCurrencyToBrl(item.unitValue)}
+                          {money(item.unitValue)}
                         </TableCell>
                         <TableCell>
                           {item.materialId ? (

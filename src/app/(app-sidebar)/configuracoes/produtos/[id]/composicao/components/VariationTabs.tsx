@@ -25,7 +25,8 @@ import {
 } from '@/actions/compositions'
 
 // Hooks / Store / Consts
-import { cn, formatMoney } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { useMoney } from '@/hooks/useMoney'
 import { FEATURES } from '@/consts/features'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
@@ -44,6 +45,8 @@ interface Props {
 // base; só o que for alterado aqui passa a ser dela, e o resto continua
 // acompanhando — é o que evita a cópia que envelhece sozinha.
 export function VariationTabs({ product }: Props) {
+  // Preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const { hasFeature } = usePlanFeatures()
 
@@ -324,7 +327,7 @@ export function VariationTabs({ product }: Props) {
         <p className="text-sm text-gray">
           {product.variations.length
             ? 'Esta é a composição base. Ela vale para todas as variações, menos onde a variação tiver alteração própria.'
-            : `Produto sem variações. Crie uma quando o mesmo produto existir em tamanhos ou modelos diferentes — o preço de referência é ${formatMoney(
+            : `Produto sem variações. Crie uma quando o mesmo produto existir em tamanhos ou modelos diferentes — o preço de referência é ${money(
                 product.price || 0,
               )}.`}
         </p>

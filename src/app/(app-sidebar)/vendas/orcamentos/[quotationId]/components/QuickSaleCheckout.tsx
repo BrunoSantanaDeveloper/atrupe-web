@@ -77,11 +77,9 @@ import {
 } from '@tabler/icons-react'
 
 // Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { useMoney } from '@/hooks/useMoney'
 import { calculatePaymentTotals } from './QuotationActions/PaymentConditions/utils'
-
-// Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
-const money = (value: number) => formatCurrencyToBrl(value)
 
 const hora = (iso: string) =>
   new Date(iso).toLocaleTimeString('pt-BR', {
@@ -173,6 +171,7 @@ function ChargeNowDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const money = useMoney()
   const [saving, setSaving] = useState(false)
   const split = usePaymentSplit(sale.total)
   const refresh = useRefresh(sale.origin.quotationId)
@@ -251,6 +250,7 @@ export function QuickSaleCheckoutButton({
   sale: QuickSale
   size?: 'lg'
 }) {
+  const money = useMoney()
   const [charging, setCharging] = useState(false)
   const alertDialog = useAlertDialog()
   const refresh = useRefresh(sale.origin.quotationId)
@@ -307,6 +307,7 @@ export function QuickSaleCheckoutButton({
  * ------------------------------------------------------------------------- */
 
 export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
+  const money = useMoney()
   if (sale.isLoading) return <Skeleton className="h-40 w-full" />
 
   const isPos = sale.path === 'POS'
@@ -375,7 +376,9 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
 
 type Step = { label: string; detail: string; done: boolean }
 
-function stepsOf(checkout: QuickSaleCheckout): Step[] {
+type Money = (value: number) => string
+
+function stepsOf(checkout: QuickSaleCheckout, money: Money): Step[] {
   if (checkout.path === 'CASH_ONLY') {
     return [
       {
@@ -417,7 +420,7 @@ function stepsOf(checkout: QuickSaleCheckout): Step[] {
   ]
 }
 
-function headlineOf(checkout: QuickSaleCheckout) {
+function headlineOf(checkout: QuickSaleCheckout, money: Money) {
   if (checkout.cancelled) {
     return {
       title: 'Venda cancelada no caixa',
@@ -458,10 +461,11 @@ export function QuickSaleStatusCard({
   sale: QuickSale
   checkout: QuickSaleCheckout
 }) {
+  const money = useMoney()
   const [openPrint, setOpenPrint] = useState(false)
 
-  const steps = stepsOf(checkout)
-  const headline = headlineOf(checkout)
+  const steps = stepsOf(checkout, money)
+  const headline = headlineOf(checkout, money)
   const paid = checkout.paid > 0
   const finished = checkout.paid >= checkout.total && checkout.delivered
 

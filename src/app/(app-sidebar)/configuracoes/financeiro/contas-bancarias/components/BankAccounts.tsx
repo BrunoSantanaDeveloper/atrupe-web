@@ -9,6 +9,7 @@
 
 // React
 import { useState } from 'react'
+import { useMoney } from '@/hooks/useMoney'
 
 // Next
 import Link from 'next/link'
@@ -56,9 +57,11 @@ import {
 } from '@tabler/icons-react'
 
 // Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 export function BankAccounts(_: SearchParamsType) {
+  // Custo e preço só para quem tem a permissão de valores (§9)
+  const money = useMoney()
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
 
@@ -197,7 +200,7 @@ export function BankAccounts(_: SearchParamsType) {
                 account.balance < 0 ? 'text-error-600' : 'text-gray-900',
               )}
             >
-              {formatCurrencyToBrl(account.balance)}
+              {money(account.balance)}
             </p>
           </div>
           <div className="flex gap-1">
@@ -275,7 +278,7 @@ export function BankAccounts(_: SearchParamsType) {
                       Saldo em todas as contas
                     </p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {formatCurrencyToBrl(total)}
+                      {money(total)}
                     </p>
                   </div>
                   {/* O princípio da tela em uma frase (CX-0) */}
