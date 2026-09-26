@@ -40,6 +40,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
+import { getComposedProductIds } from '@/actions/product-assembly'
 import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -84,17 +85,38 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   const status =
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
-  const filters = { ...searchParams, status }
+  // O filtro de composição ainda não vai à API: é aplicado aqui (CP-17)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { composicao, ...apiParams } = searchParams
+  const filters = { ...apiParams, status }
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['product-list', searchParams],
+    queryKey: ['product-list', apiParams],
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
 
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-products'],
+    queryFn: () => getComposedProductIds(),
+    enabled: showComposition,
+  })
+  const composed = useMemo(
+    () => new Set(composedRes?.data || []),
+    [composedRes],
+  )
+
   // useMemo para o array não trocar de identidade a cada render e invalidar
   // os memos de seleção abaixo.
-  const products: ProductListType[] = useMemo(() => data?.data || [], [data])
+  const products: ProductListType[] = useMemo(() => {
+    const list: ProductListType[] = data?.data || []
+    if (!showComposition || !composicao) return list
+    return list.filter((product) =>
+      composicao === 'com'
+        ? composed.has(product.id)
+        : !composed.has(product.id),
+    )
+  }, [data, composicao, composed, showComposition])
   const hasData = products.length
 
   // A seleção vale para a página visível: trocar de página, aba ou filtro
@@ -265,7 +287,17 @@ export function ProductsData({ searchParams, tabs }: Props) {
                     </TableCell>
                   )}
                   <TableCell>
-                    <p className="font-medium">{product?.name}</p>
+                    <p className="font-medium">
+                      {product?.name}
+                      {showComposition && composed.has(product?.id) && (
+                        <Badge
+                          variant="blueLight"
+                          className="ml-2 align-middle"
+                        >
+                          Com composição
+                        </Badge>
+                      )}
+                    </p>
                     <p className="text-gray">{product?.code}</p>
                   </TableCell>
                   <TableCell className="text-gray-600">

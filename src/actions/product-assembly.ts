@@ -2163,3 +2163,12 @@ export const addPartBlock = async ({
   })
   return ok(null)
 }
+
+// Os produtos que já têm composição (CP-17): alimenta o filtro "com / sem
+// composição" da lista de produtos até a API filtrar (hasComposition)
+export const getComposedProductIds = async () =>
+  ok(
+    assemblies
+      .filter((item) => item.blocks.length)
+      .map((item) => item.productId),
+  )
