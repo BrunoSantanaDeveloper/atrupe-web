@@ -132,6 +132,11 @@ export type ResourceOption = {
   // Papel e chapa têm medida (AP-2), em metros: é o que permite o
   // aproveitamento de folha
   sheet?: { width: number; height: number }
+  // Consumo, perda e mínimo próprios desta opção (IP-26): no mesmo grupo,
+  // o ACM usa 1,0 e o PVC 1,2 com mínimo de 0,5. Vazio, vale o da linha
+  perUnit?: number
+  lossPercent?: number
+  minimum?: number | null
 }
 
 // O aproveitamento de folha (AP-1): as duas posições da peça na folha
@@ -252,6 +257,13 @@ export type ComputedLine = AssemblyLine & {
   sheetYield: SheetYield | null
   selected: ResourceOption | null
   quantity: number | null
+  // O que vale para a opção escolhida: o dela, ou o da linha (IP-26)
+  effective: {
+    perUnit: number
+    lossPercent: number
+    minimum: number | null
+    own: boolean
+  }
   cost: number | null
   // Quantidade × preço de venda do recurso (IP-25)
   sale: number | null

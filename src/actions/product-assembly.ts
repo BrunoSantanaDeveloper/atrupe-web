@@ -262,7 +262,10 @@ const catalog: Template[] = [
         name: 'Material',
         kind: 'MATERIAL',
         mode: 'CHOOSE',
-        options: substrates,
+        // O perfurado rasga mais no refile: perda própria (IP-26)
+        options: substrates.map((option) =>
+          option.id === 'perfurado' ? { ...option, lossPercent: 30 } : option,
+        ),
         selectedId: 'lona440',
         perUnit: 1,
         formula: 'PER_AREA',
@@ -802,8 +805,13 @@ const applyVariation = (
                   ...(override.selectedId !== undefined && {
                     selectedId: override.selectedId,
                   }),
+                  // O consumo da variação vale para qualquer opção escolhida
                   ...(override.perUnit !== undefined && {
                     perUnit: override.perUnit,
+                    options: line.options.map((option) => ({
+                      ...option,
+                      perUnit: undefined,
+                    })),
                   }),
                 }
               : line
@@ -890,6 +898,21 @@ const compute = (
           )
         : null
 
+      // Consumo, perda e mínimo da opção escolhida, ou os da linha (IP-26)
+      const own =
+        !!selected &&
+        (selected.perUnit !== undefined ||
+          selected.lossPercent !== undefined ||
+          selected.minimum !== undefined)
+      const effective = {
+        perUnit: selected?.perUnit ?? line.perUnit,
+        lossPercent: selected?.lossPercent ?? line.lossPercent,
+        minimum:
+          selected?.minimum !== undefined ? selected.minimum : line.minimum,
+        own,
+      }
+      const calcLine = { ...line, ...effective }
+
       // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8).
       // A opcional desmarcada fica fora da conta (IP-28)
       const raw =
@@ -897,13 +920,14 @@ const compute = (
           ? null
           : line.formula === 'SHEET_YIELD'
             ? sheetYield
-              ? sheetYield.sheets * line.perUnit
+              ? sheetYield.sheets * calcLine.perUnit
               : null
-            : lineQuantity(line, blockMeasure, extra)
+            : lineQuantity(calcLine, blockMeasure, extra)
 
-      let qty = raw === null ? null : raw * (1 + (line.lossPercent || 0) / 100)
-      if (qty !== null && line.minimum !== null) {
-        qty = Math.max(qty, line.minimum)
+      let qty =
+        raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
+      if (qty !== null && calcLine.minimum !== null) {
+        qty = Math.max(qty, calcLine.minimum)
       }
       qty = qty === null ? null : round(qty, 3)
 
@@ -915,6 +939,7 @@ const compute = (
         ),
         selected,
         quantity: qty,
+        effective,
         cost:
           qty === null || !selected
             ? null
@@ -1316,7 +1341,15 @@ export const updateAssemblyLine = async ({
       | 'optional'
       | 'optionalDefault'
     >
-  >
+  > & {
+    // Consumo, perda e mínimo por opção (IP-26); vazio volta ao da linha
+    optionValues?: {
+      id: string
+      perUnit?: number
+      lossPercent?: number
+      minimum?: number | null
+    }[]
+  }
 }) => {
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
@@ -1326,7 +1359,23 @@ export const updateAssemblyLine = async ({
 
   // Trocar a opção escolhida não é ajuste: é o uso normal da linha
   const onlyChoice = Object.keys(values).every((key) => key === 'selectedId')
-  Object.assign(line, values)
+  const { optionValues, ...lineValues } = values
+  Object.assign(line, lineValues)
+  // Lista nova: a mesma lista de opções pode ser de outros produtos
+  if (optionValues) {
+    line.options = line.options.map((option) => {
+      const next = optionValues.find((item) => item.id === option.id)
+      // Campo ausente volta a valer o da linha (o undefined some na ida)
+      return next
+        ? {
+            ...option,
+            perUnit: next.perUnit ?? undefined,
+            lossPercent: next.lossPercent ?? undefined,
+            minimum: next.minimum ?? undefined,
+          }
+        : option
+    })
+  }
   if (!onlyChoice) line.overridden = true
 
   return ok(null)

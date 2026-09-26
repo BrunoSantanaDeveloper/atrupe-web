@@ -502,20 +502,26 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       ) : (
                         <>
                           <p className="text-sm">
-                            {num(line.perUnit)} {unit}
+                            {num(line.effective.perUnit)} {unit}
                           </p>
-                          {(line.lossPercent > 0 || line.minimum !== null) && (
+                          {(line.effective.lossPercent > 0 ||
+                            line.effective.minimum !== null) && (
                             <p className="text-xs text-gray">
                               {[
-                                line.lossPercent > 0
-                                  ? `+${num(line.lossPercent, 1)}% de perda`
+                                line.effective.lossPercent > 0
+                                  ? `+${num(line.effective.lossPercent, 1)}% de perda`
                                   : null,
-                                line.minimum !== null
-                                  ? `mínimo ${num(line.minimum)} ${unit}`
+                                line.effective.minimum !== null
+                                  ? `mínimo ${num(line.effective.minimum)} ${unit}`
                                   : null,
                               ]
                                 .filter(Boolean)
                                 .join(' · ')}
+                            </p>
+                          )}
+                          {line.effective.own && (
+                            <p className="text-xs text-brand-700">
+                              desta opção
                             </p>
                           )}
                         </>

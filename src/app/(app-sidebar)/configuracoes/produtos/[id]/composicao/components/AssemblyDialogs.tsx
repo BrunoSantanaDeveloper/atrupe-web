@@ -497,7 +497,17 @@ export type LineValues = {
   minimum: number | null
   optional: boolean
   optionalDefault: boolean
+  // Consumo, perda e mínimo próprios de cada opção (IP-26)
+  optionValues?: {
+    id: string
+    perUnit?: number
+    lossPercent?: number
+    minimum?: number | null
+  }[]
 }
+
+const optionalNumber = (value: string) =>
+  value === '' ? undefined : Number(value)
 
 export function LineDialog({
   line,
@@ -532,6 +542,15 @@ export function LineDialog({
         minimum: line.minimum,
         optional: !!line.optional,
         optionalDefault: line.optionalDefault ?? true,
+        optionValues:
+          line.mode === 'CHOOSE'
+            ? line.options.map((option) => ({
+                id: option.id,
+                perUnit: option.perUnit,
+                lossPercent: option.lossPercent,
+                minimum: option.minimum,
+              }))
+            : undefined,
       })
     }
   }, [line])
@@ -638,6 +657,115 @@ export function LineDialog({
             A perda é somada ao consumo (a sobra do corte). O mínimo impede que
             a peça pequena saia com custo irreal.
           </p>
+          {!variationName && line?.mode === 'CHOOSE' && values.optionValues && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-800">
+                Por opção
+                <span className="font-normal text-gray">
+                  {' '}
+                  · em branco, vale o da linha
+                </span>
+              </p>
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 text-left text-xs text-gray">
+                    <tr>
+                      <th className="px-3 py-2 font-medium">Opção</th>
+                      <th className="px-3 py-2 font-medium">Consumo</th>
+                      <th className="px-3 py-2 font-medium">Perda (%)</th>
+                      <th className="px-3 py-2 font-medium">Mínimo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {line.options.map((option) => {
+                      const current = values.optionValues?.find(
+                        (item) => item.id === option.id,
+                      )
+                      const setOption = (
+                        key: 'perUnit' | 'lossPercent' | 'minimum',
+                        value: number | undefined,
+                      ) =>
+                        setValues((state) => ({
+                          ...state,
+                          optionValues: state.optionValues?.map((item) =>
+                            item.id === option.id
+                              ? { ...item, [key]: value }
+                              : item,
+                          ),
+                        }))
+
+                      return (
+                        <tr
+                          key={option.id}
+                          className="border-t border-gray-100"
+                        >
+                          <td className="px-3 py-2 text-gray-800">
+                            {option.name}
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input
+                              type="number"
+                              min={0}
+                              step="0.01"
+                              aria-label={`Consumo de ${option.name}`}
+                              placeholder={String(values.perUnit)}
+                              value={current?.perUnit ?? ''}
+                              onChange={(event) =>
+                                setOption(
+                                  'perUnit',
+                                  optionalNumber(event.target.value),
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input
+                              type="number"
+                              min={0}
+                              step="1"
+                              aria-label={`Perda de ${option.name}`}
+                              placeholder={String(values.lossPercent)}
+                              value={current?.lossPercent ?? ''}
+                              onChange={(event) =>
+                                setOption(
+                                  'lossPercent',
+                                  optionalNumber(event.target.value),
+                                )
+                              }
+                            />
+                          </td>
+                          <td className="px-3 py-2">
+                            <Input
+                              type="number"
+                              min={0}
+                              step="0.01"
+                              aria-label={`Mínimo de ${option.name}`}
+                              placeholder={
+                                values.minimum === null
+                                  ? '-'
+                                  : String(values.minimum)
+                              }
+                              value={current?.minimum ?? ''}
+                              onChange={(event) =>
+                                setOption(
+                                  'minimum',
+                                  optionalNumber(event.target.value),
+                                )
+                              }
+                            />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-sm text-gray">
+                No mesmo grupo, cada material pode consumir diferente: o ACM usa
+                1,0 e o PVC 1,2 com mínimo de 0,5.
+              </p>
+            </div>
+          )}
           {!variationName && (
             <OptionalFields
               optional={values.optional}
