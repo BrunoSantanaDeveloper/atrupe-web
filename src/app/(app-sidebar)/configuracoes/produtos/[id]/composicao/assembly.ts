@@ -466,6 +466,8 @@ export type SaleCompositionReport = {
     // as etapas na proposta detalhada com valores (IP-12)
     sale: number
     sector: string
+    // O tipo de tarefa que a etapa gera na produção (IP-23)
+    taskType: string
     role: BlockRole
     baseName: string | null
     measure: AssemblyMeasure

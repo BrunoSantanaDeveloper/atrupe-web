@@ -422,6 +422,14 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: false,
       },
       {
+        icon: IconListCheck,
+        title: 'Produção',
+        path: '/configuracoes/producao',
+        review: 'new',
+        permission: 'production:production:view',
+        requiredModule: 'production_manager',
+      },
+      {
         icon: IconUpload,
         title: 'Importações',
         path: '/configuracoes/importacoes',

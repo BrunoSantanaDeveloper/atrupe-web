@@ -2106,6 +2106,7 @@ export const getSaleComposition = async ({
       name: block.name,
       sale: block.sale,
       sector: block.sector,
+      taskType: block.taskType,
       role: block.role,
       baseName:
         computed.blocks.find((item) => item.id === block.baseBlockId)?.name ||
