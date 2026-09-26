@@ -204,6 +204,23 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [discountType])
 
+  // MS-16: o vendedor ajusta o valor do item para mais, para menos ou só para
+  // arredondar. Para mais, a diferença é valor agregado (vai como desconto
+  // negativo até a API ter o campo próprio); para menos, é desconto e vale o
+  // limite do perfil
+  const surcharge = Math.max(finalValue - baseValue, 0)
+  const surchargePercent = baseValue > 0 ? (surcharge / baseValue) * 100 : 0
+
+  const roundTotal = (direction: 'down' | 'up') => {
+    // Arredonda para o real inteiro; valores em centavos
+    const rounded =
+      direction === 'down'
+        ? Math.floor(finalValue / 100) * 100
+        : Math.ceil(finalValue / 100) * 100
+    setValue('finalValue', rounded)
+    handleTotalValueChange(rounded)
+  }
+
   // Atualiza os valores no submit
   const mutation = useMutation({
     mutationFn: (body: FormType) =>
@@ -248,9 +265,14 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-            <DialogTitle>Editar valores do item</DialogTitle>
+            <div>
+              <DialogTitle>Editar valores do item</DialogTitle>
+              <DialogDescription>
+                Mude o valor total para mais, para menos ou para arredondar.
+                Para menos, conta como desconto e vale o seu limite.
+              </DialogDescription>
+            </div>
           </div>
-          <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Form {...form}>
@@ -302,13 +324,42 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   </p>
                 )}
               </div>
-              <FormBrlInput<FormType>
-                name="finalValue"
-                label="Valor total"
-                startAdornment={<>R$</>}
-                width="flex-[1_0_200px]"
-                additionalOnChange={handleTotalValueChange}
-              />
+              <div className="flex flex-[1_0_200px] flex-col gap-1">
+                <FormBrlInput<FormType>
+                  name="finalValue"
+                  label="Valor total"
+                  startAdornment={<>R$</>}
+                  width="w-full"
+                  additionalOnChange={handleTotalValueChange}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="link"
+                    className="h-auto p-0"
+                    onClick={() => roundTotal('down')}
+                  >
+                    Arredondar para baixo
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="link"
+                    className="h-auto p-0"
+                    onClick={() => roundTotal('up')}
+                  >
+                    para cima
+                  </Button>
+                </div>
+              </div>
+              {surcharge > 0 && (
+                <p className="w-full rounded-lg bg-success-50 px-4 py-2 text-sm text-success-700">
+                  Valor agregado: + R$ {parseCurrencyToBrl(surcharge)} (
+                  {surchargePercent.toFixed(1)}%) sobre o valor base. Não conta
+                  como desconto.
+                </p>
+              )}
             </form>
           </Form>
         </DialogBody>
