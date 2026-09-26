@@ -61,6 +61,46 @@ export const formulaObj: {
     label: 'Por perímetro ÷ campo extra',
     help: 'Perímetro do item ÷ valor do campo extra × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
   },
+  TIME_TIMES_EXTRA: {
+    label: 'Tempo × campo extra',
+    help: 'Tempo informado × valor do campo extra. Não multiplica pela quantidade.',
+  },
+  EQUAL_TIME: {
+    label: 'Igual ao tempo',
+    help: 'Usa o tempo informado, uma vez só.',
+  },
+  PER_WIDTH_EXTRA: {
+    label: 'Por largura × campo extra',
+    help: 'Consumo × largura × campo extra × quantidade.',
+  },
+  PER_HEIGHT_EXTRA: {
+    label: 'Por altura × campo extra',
+    help: 'Consumo × altura × campo extra × quantidade.',
+  },
+  EXTRA_ONLY: {
+    label: 'Por campo extra, uma vez',
+    help: 'Consumo × campo extra. Não multiplica pela quantidade.',
+  },
+  PER_AREA_DIV_EXTRA: {
+    label: 'Por m² ÷ campo extra',
+    help: 'Consumo × área × quantidade ÷ campo extra. Ex.: peças que cabem numa chapa.',
+  },
+  PER_PERIMETER_EXTRA: {
+    label: 'Por perímetro × campo extra',
+    help: 'Consumo × perímetro × quantidade × campo extra.',
+  },
+  DIV_EXTRA: {
+    label: 'Dividido pelo campo extra',
+    help: 'Consumo ÷ campo extra, uma vez.',
+  },
+  AREA_EXTRA: {
+    label: 'Por m² × campo extra, uma vez',
+    help: 'Consumo × área × campo extra. Não multiplica pela quantidade.',
+  },
+  PER_AREA_EXTRA: {
+    label: 'Por m² × campo extra',
+    help: 'Consumo × área × quantidade × campo extra.',
+  },
 }
 
 export const formulaOptions = (Object.keys(formulaObj) as FormulaKey[]).map(

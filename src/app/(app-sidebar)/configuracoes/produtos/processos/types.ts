@@ -18,6 +18,17 @@ export type FormulaKey =
   | 'PER_EXTRA' // 9 — insumo × campo extra × quantidade
   | 'PER_TIME' // 13 — campo tempo × quantidade
   | 'PER_PERIMETER_DIV_EXTRA' // 10 — insumo × perímetro × quantidade ÷ campo extra (o ilhós)
+  // As que faltavam do legado (CP-14)
+  | 'TIME_TIMES_EXTRA' // 11 — insumo × campo tempo × campo extra
+  | 'EQUAL_TIME' // 12 — igual ao campo tempo
+  | 'PER_WIDTH_EXTRA' // 14 — insumo × largura × campo extra × quantidade
+  | 'PER_HEIGHT_EXTRA' // 15 — insumo × altura × campo extra × quantidade
+  | 'EXTRA_ONLY' // 16 — insumo × campo extra
+  | 'PER_AREA_DIV_EXTRA' // 17 — insumo × m² × quantidade ÷ campo extra
+  | 'PER_PERIMETER_EXTRA' // 18 — insumo × perímetro × quantidade × campo extra
+  | 'DIV_EXTRA' // 19 — insumo ÷ campo extra
+  | 'AREA_EXTRA' // 20 — insumo × m² × campo extra
+  | 'PER_AREA_EXTRA' // 21 — insumo × m² × quantidade × campo extra
 
 export type DimensionRule =
   | 'NONE'
@@ -38,6 +49,10 @@ export type ProcessResource = {
   formula: FormulaKey
   quantity: number
   extraFieldId: string | null
+  // Perda e mínimo, configuráveis em cada recurso (CP-8): a perda soma ao
+  // consumo, e o mínimo impede a peça pequena de sair com custo irreal
+  lossPercent?: number
+  minimum?: number | null
 }
 
 // Variável que o processo consome. Ela é declarada uma vez no produto e o
@@ -60,6 +75,9 @@ export type Process = {
   dimensionRule: DimensionRule
   multipliesParent: boolean
   extraFields: ExtraField[]
+  // O que o vendedor vê na hora de vender: o que perguntar ao cliente, o
+  // que conferir antes de fechar (CP-13)
+  sellerInstructions?: string
   resources: ProcessResource[]
   active: boolean
 }

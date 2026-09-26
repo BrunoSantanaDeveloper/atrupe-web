@@ -60,6 +60,8 @@ export function AddResourceModal({ processId }: Props) {
   const [resourceId, setResourceId] = useState('')
   const [formula, setFormula] = useState<FormulaKey>('PER_AREA')
   const [quantity, setQuantity] = useState('1')
+  const [lossPercent, setLossPercent] = useState('0')
+  const [minimum, setMinimum] = useState('')
   // Terceirizado avulso: o que não tem valor fixo e não vale cadastrar
   // (T-4). Fornecedor e custo ficam no próprio recurso
   const [supplier, setSupplier] = useState('')
@@ -91,6 +93,8 @@ export function AddResourceModal({ processId }: Props) {
           formula,
           quantity: Number(quantity || 1),
           extraFieldId: null,
+          lossPercent: Number(lossPercent || 0),
+          minimum: minimum === '' ? null : Number(minimum),
         },
       }),
     onSuccess: (response) => {
@@ -208,6 +212,40 @@ export function AddResourceModal({ processId }: Props) {
               onChange={(event) => setQuantity(event.target.value)}
             />
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label htmlFor="loss" className="text-sm font-medium">
+                Perda (%)
+              </label>
+              <Input
+                id="loss"
+                type="number"
+                min={0}
+                step="1"
+                value={lossPercent}
+                onChange={(event) => setLossPercent(event.target.value)}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="minimum" className="text-sm font-medium">
+                Mínimo ({selected?.unit || 'unidade'})
+              </label>
+              <Input
+                id="minimum"
+                type="number"
+                min={0}
+                step="0.01"
+                placeholder="Sem mínimo"
+                value={minimum}
+                onChange={(event) => setMinimum(event.target.value)}
+              />
+            </div>
+          </div>
+          <p className="text-sm text-gray">
+            A perda soma ao consumo (a sobra do corte). O mínimo impede que a
+            peça pequena saia com custo irreal — a madeira do banner usa 2,2 m
+            por metro, mas nunca menos de 1 m.
+          </p>
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>

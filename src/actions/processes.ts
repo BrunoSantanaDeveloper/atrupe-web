@@ -41,6 +41,9 @@ const processes: Process[] = [
         formula: 'PER_AREA',
         quantity: 1,
         extraFieldId: null,
+        // Os 1,2 m² por m² do legado, como perda explícita (CP-8)
+        lossPercent: 20,
+        minimum: 0.5,
       },
     ],
     active: true,

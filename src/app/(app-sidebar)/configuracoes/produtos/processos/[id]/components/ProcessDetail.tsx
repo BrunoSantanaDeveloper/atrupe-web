@@ -13,6 +13,8 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -27,7 +29,6 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
-import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { AddResourceModal } from './AddResourceModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -36,7 +37,11 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import type { ProcessSimulation } from '../../types'
 
 // Actions
-import { getProcess, removeProcessResource } from '@/actions/processes'
+import {
+  getProcess,
+  updateProcess,
+  removeProcessResource,
+} from '@/actions/processes'
 
 // Hooks / Store / Consts
 import { resourceCost } from '@/lib/process-calc'
@@ -65,6 +70,7 @@ export function ProcessDetail({ id }: Props) {
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const queryClient = useQueryClient()
+  const [instructions, setInstructions] = useState<string | null>(null)
   const [simulation, setSimulation] = useState<ProcessSimulation>({
     width: 1,
     height: 1,
@@ -292,6 +298,20 @@ export function ProcessDetail({ id }: Props) {
                         </TableCell>
                         <TableCell className="text-right text-sm text-gray">
                           {resource.quantity} {resource.unit}
+                          {(!!resource.lossPercent || !!resource.minimum) && (
+                            <span className="block text-xs">
+                              {[
+                                resource.lossPercent
+                                  ? `+${resource.lossPercent}% de perda`
+                                  : null,
+                                resource.minimum
+                                  ? `mínimo ${resource.minimum.toLocaleString('pt-BR')} ${resource.unit}`
+                                  : null,
+                              ]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-medium">
                           {costOf(resource.id) === null
@@ -346,21 +366,46 @@ export function ProcessDetail({ id }: Props) {
           )}
         </Card>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <ReviewTodo rule="CP-13" title="Instruções para o vendedor">
-            Texto que o processo mostra na hora da venda — o que perguntar ao
-            cliente, o que conferir antes de fechar. Decidido em 23/09, não
-            construído.
-          </ReviewTodo>
-          <ReviewTodo rule="CP-8" title="Quantidade mínima por linha">
-            Cada recurso do processo passa a ter um mínimo cobrado, para o
-            pedido pequeno não sair abaixo do custo.
-          </ReviewTodo>
-          <ReviewTodo rule="CP-14" title="Fórmulas que faltam">
-            As fórmulas abertas, entre elas ilhós (perímetro ÷ campo extra), que
-            hoje não têm como ser escritas.
-          </ReviewTodo>
-        </div>
+        {/* O que o vendedor vê ao vender (CP-13) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Instruções para o vendedor</CardTitle>
+            <CardDescription>
+              Aparecem na hora da venda, junto com este processo: o que
+              perguntar ao cliente, o que conferir antes de fechar.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            <Textarea
+              aria-label="Instruções para o vendedor"
+              placeholder="Ex.: confirmar se o banner vai para área externa — nesse caso, usar lona 440."
+              value={instructions ?? process.sellerInstructions ?? ''}
+              onChange={(event) => setInstructions(event.target.value)}
+            />
+            <PermissionGate permissions={['product_settings:products:edit']}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                disabled={
+                  instructions === null ||
+                  instructions === (process.sellerInstructions ?? '')
+                }
+                onClick={async () => {
+                  const res = await updateProcess({
+                    id: process.id,
+                    sellerInstructions: instructions ?? '',
+                  })
+                  if (!res.success) return toast.error(res.message)
+                  toast.success('Instruções salvas')
+                  setInstructions(null)
+                  queryClient.invalidateQueries({ queryKey: ['process', id] })
+                }}
+              >
+                Salvar instruções
+              </Button>
+            </PermissionGate>
+          </CardContent>
+        </Card>
       </div>
     </TooltipProvider>
   )

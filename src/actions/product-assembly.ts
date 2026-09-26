@@ -532,6 +532,26 @@ const lineQuantity = (
     case 'PER_PERIMETER_DIV_EXTRA':
       // Quantos cabem no perímetro: nunca fração de ilhós
       return extra > 0 ? Math.ceil(perimeter / extra) * k * n : null
+    case 'TIME_TIMES_EXTRA':
+      return k * extra
+    case 'EQUAL_TIME':
+      return k
+    case 'PER_WIDTH_EXTRA':
+      return k * w * extra * n
+    case 'PER_HEIGHT_EXTRA':
+      return k * h * extra * n
+    case 'EXTRA_ONLY':
+      return k * extra
+    case 'PER_AREA_DIV_EXTRA':
+      return extra > 0 ? (k * area * n) / extra : null
+    case 'PER_PERIMETER_EXTRA':
+      return k * perimeter * extra * n
+    case 'DIV_EXTRA':
+      return extra > 0 ? k / extra : null
+    case 'AREA_EXTRA':
+      return k * area * extra
+    case 'PER_AREA_EXTRA':
+      return k * area * extra * n
     default:
       return null
   }
