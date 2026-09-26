@@ -28,12 +28,15 @@ import { saleRemaining, type PendingSale } from '../types'
 
 // Actions
 import { receiveSale } from '@/actions/cash-front'
+import { getQuickSaleSettings } from '@/actions/quick-sale'
 
 // Third-party
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
+import { useQuery } from '@tanstack/react-query'
 
 // Utils
-import { formatCurrencyToBrl } from '@/lib/utils'
+import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
 const money = (value: number) => formatCurrencyToBrl(value)
@@ -46,7 +49,15 @@ interface Props {
 
 export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
   const [deliver, setDeliver] = useState(true)
+  const [waived, setWaived] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  const { data: session } = useSession()
+  const { data: settingsRes } = useQuery({
+    queryKey: ['quick-sale-settings'],
+    queryFn: () => getQuickSaleSettings(),
+  })
+  const settings = settingsRes?.data
 
   const remaining = sale ? saleRemaining(sale) : 0
   const split = usePaymentSplit(remaining)
@@ -57,11 +68,27 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
 
     reset(saleRemaining(sale))
     setDeliver(true)
+    setWaived(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sale])
 
+  // O sinal mínimo vale para a venda rápida que ainda não recebeu nada e
+  // vai ficar para retirada (FC-6, FC-17). Quem tem permissão dispensa
+  const downPayment =
+    sale &&
+    sale.kind === 'QUICK' &&
+    sale.paid === 0 &&
+    settings?.downPaymentRequired
+      ? Math.ceil((sale.total * settings.downPaymentPercent) / 100)
+      : 0
+  const paying = Math.min(received, remaining)
+  const belowDownPayment = !deliver && !waived && paying < downPayment
+  // Entregar é com tudo pago: o restante do sinal é cobrado na retirada
+  const deliverWithDebt = deliver && missing > 0
+  const blocked = !received || belowDownPayment || deliverWithDebt
+
   const save = async () => {
-    if (!sale) return
+    if (!sale || blocked) return
 
     setSaving(true)
     const res = await receiveSale(sale.id, split.parts(), deliver)
@@ -105,6 +132,43 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
               </span>
             </span>
           </label>
+
+          {downPayment > 0 && !deliver && (
+            <div
+              className={cn(
+                'rounded-lg border p-4 text-sm',
+                belowDownPayment
+                  ? 'border-warning-300 bg-warning-50 text-warning-800'
+                  : 'border-gray-200 text-gray',
+              )}
+            >
+              <p className="font-medium">
+                Sinal mínimo: {money(downPayment)} (
+                {settings?.downPaymentPercent}%)
+              </p>
+              <p className="mt-0.5">
+                {belowDownPayment
+                  ? 'O trabalho só fica para retirada com a entrada mínima paga. O restante é cobrado quando o cliente buscar.'
+                  : 'Entrada coberta. O restante é cobrado na retirada.'}
+              </p>
+              {session?.user?.isAdmin && (
+                <label className="mt-3 flex items-center gap-2 font-medium text-gray-800">
+                  <Checkbox
+                    checked={waived}
+                    onCheckedChange={(checked) => setWaived(!!checked)}
+                  />
+                  Dispensar o sinal nesta venda
+                </label>
+              )}
+            </div>
+          )}
+
+          {deliverWithDebt && (
+            <p className="text-sm text-warning-800">
+              Para entregar, receba o restante. Se o cliente vai buscar depois,
+              desmarque &quot;Entregar agora&quot;.
+            </p>
+          )}
         </DialogBody>
         <DialogFooter>
           <Button
@@ -117,10 +181,10 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
           <Button
             type="button"
             isLoading={saving}
-            disabled={!received}
+            disabled={blocked}
             onClick={save}
           >
-            {missing > 0 ? 'Receber parcial' : 'Receber'}
+            {missing > 0 ? 'Receber sinal' : 'Receber'}
           </Button>
         </DialogFooter>
       </DialogContent>

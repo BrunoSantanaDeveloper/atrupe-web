@@ -10,6 +10,11 @@ export type QuickSaleSettings = {
   payment: QuickSalePayment
   // Meios aceitos quando a cobrança é na hora
   cashMethods: string[]
+  // Entrada obrigatória (sinal) quando o cliente paga agora e busca depois
+  // (FC-6, FC-17): um recurso habilitável, com percentual da empresa. O
+  // restante é cobrado na retirada, e quem tem permissão dispensa caso a caso
+  downPaymentRequired: boolean
+  downPaymentPercent: number
   enabled: boolean
   // O cliente padrão da venda de balcão. Precisa ser um cliente de verdade,
   // com id: criar o orçamento exige `clientId`, não um nome digitado. Pode ser

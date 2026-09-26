@@ -72,6 +72,8 @@ export function QuickSaleSettingsForm() {
   const [responsibleId, setResponsibleId] = useState('none')
   const [payment, setPayment] = useState<QuickSalePayment>('CASH_ONLY')
   const [cashMethods, setCashMethods] = useState<string[]>([])
+  const [downPaymentRequired, setDownPaymentRequired] = useState(false)
+  const [downPaymentPercent, setDownPaymentPercent] = useState(50)
 
   useEffect(() => {
     if (!settings) return
@@ -88,6 +90,8 @@ export function QuickSaleSettingsForm() {
     setResponsibleId(settings.responsibleId || 'none')
     setPayment(settings.payment)
     setCashMethods(settings.cashMethods)
+    setDownPaymentRequired(settings.downPaymentRequired)
+    setDownPaymentPercent(settings.downPaymentPercent)
   }, [settings])
 
   const toggleMethod = (value: string) =>
@@ -109,6 +113,8 @@ export function QuickSaleSettingsForm() {
         responsibleId: responsibleId === 'none' ? null : responsibleId,
         payment,
         cashMethods,
+        downPaymentRequired,
+        downPaymentPercent,
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
@@ -311,7 +317,59 @@ export function QuickSaleSettingsForm() {
               </p>
             </div>
           )}
+
+          {payment === 'POS' && (
+            <div className="space-y-4 rounded-lg border border-gray-200 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="max-w-2xl">
+                  <p className="font-medium">Entrada obrigatória (sinal)</p>
+                  <p className="text-sm text-gray">
+                    Quando o cliente deixa o trabalho para buscar depois, o
+                    caixa só libera com a entrada mínima paga. O restante é
+                    cobrado na retirada. Quem tem permissão pode dispensar o
+                    sinal caso a caso.
+                  </p>
+                </div>
+                <PermissionGate permissions={['sales_settings:series:edit']}>
+                  <Switch
+                    checked={downPaymentRequired}
+                    onCheckedChange={setDownPaymentRequired}
+                    aria-label="Entrada obrigatória"
+                  />
+                </PermissionGate>
+              </div>
+              {downPaymentRequired && (
+                <div className="w-full max-w-[200px] space-y-1.5">
+                  <label
+                    htmlFor="quick-down-payment"
+                    className="text-sm font-medium"
+                  >
+                    Percentual do sinal
+                  </label>
+                  <Input
+                    id="quick-down-payment"
+                    type="number"
+                    min={1}
+                    max={100}
+                    step="1"
+                    endAdornment={<span className="text-sm">%</span>}
+                    value={downPaymentPercent}
+                    onChange={(event) =>
+                      setDownPaymentPercent(Number(event.target.value) || 0)
+                    }
+                  />
+                </div>
+              )}
+            </div>
+          )}
         </CardContent>
+        <CardFooter className="justify-end">
+          <PermissionGate permissions={['sales_settings:series:edit']}>
+            <Button isLoading={isPending} onClick={() => save()}>
+              Salvar
+            </Button>
+          </PermissionGate>
+        </CardFooter>
       </Card>
     </div>
   )

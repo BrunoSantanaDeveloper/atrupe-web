@@ -94,6 +94,8 @@ async function defaults(): Promise<QuickSaleSettings> {
     enabled: true,
     payment: 'CASH_ONLY',
     cashMethods: cashMethods.map((method) => method.value),
+    downPaymentRequired: false,
+    downPaymentPercent: 50,
     clientId: client?.id || '',
     clientName: client?.name || '',
     description: '',
@@ -136,6 +138,19 @@ export const updateQuickSaleSettings = async (
       success: false,
       data: null,
       message: 'Escolha o cliente padrão da venda rápida',
+    }
+  }
+
+  if (
+    values.downPaymentRequired &&
+    (values.downPaymentPercent === undefined ||
+      values.downPaymentPercent <= 0 ||
+      values.downPaymentPercent > 100)
+  ) {
+    return {
+      success: false,
+      data: null,
+      message: 'O sinal precisa ser um percentual entre 1% e 100%',
     }
   }
 
