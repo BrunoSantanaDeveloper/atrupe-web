@@ -817,10 +817,11 @@ export function RulesDialog({
 }: {
   block?: ComputedBlock
   onOpenChange: (open: boolean) => void
-  onSave: (rules: SaleRules | null) => void
+  onSave: (rules: SaleRules | null, name: string) => void
 }) {
   const [useLocal, setUseLocal] = useState(false)
   const [rules, setRules] = useState<SaleRules | null>(null)
+  const [name, setName] = useState('')
 
   // Na etapa montada no produto, as regras são dela: não há o que sobrescrever
   const own = block?.processId === null
@@ -829,6 +830,7 @@ export function RulesDialog({
     if (block) {
       setUseLocal(block.processId === null || !!block.localRules)
       setRules(block.localRules ?? block.originalRules)
+      setName(block.name)
     }
   }, [block])
 
@@ -844,7 +846,7 @@ export function RulesDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
             <div>
-              <DialogTitle>Regras de venda · {block.name}</DialogTitle>
+              <DialogTitle>Configurar · {block.name}</DialogTitle>
               <DialogDescription>
                 Como esta etapa aparece para o vendedor no orçamento.
               </DialogDescription>
@@ -852,6 +854,22 @@ export function RulesDialog({
           </div>
         </DialogHeader>
         <DialogBody className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="rules-block-name">
+              {own ? 'Nome da etapa' : 'Nome neste produto'}
+            </Label>
+            <Input
+              id="rules-block-name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            {!own && (
+              <p className="text-sm text-gray">
+                Muda só aqui; o processo continua com o nome dele.
+              </p>
+            )}
+          </div>
+
           {!own && (
             <>
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm">
@@ -988,8 +1006,12 @@ export function RulesDialog({
           >
             Cancelar
           </Button>
-          <Button type="button" onClick={() => onSave(useLocal ? rules : null)}>
-            Salvar regras
+          <Button
+            type="button"
+            disabled={!name.trim()}
+            onClick={() => onSave(useLocal ? rules : null, name)}
+          >
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

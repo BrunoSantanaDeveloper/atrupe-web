@@ -22,6 +22,7 @@ import type {
   ProcessCatalogItem,
   AssemblyResource,
   NewLineValues,
+  ResourceSummary,
   SaleForm,
   SaleExtra,
   SaleOptional,
@@ -926,6 +927,8 @@ const compute = (
 
       let qty =
         raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
+      const minimumApplied =
+        qty !== null && calcLine.minimum !== null && qty < calcLine.minimum
       if (qty !== null && calcLine.minimum !== null) {
         qty = Math.max(qty, calcLine.minimum)
       }
@@ -939,6 +942,7 @@ const compute = (
         ),
         selected,
         quantity: qty,
+        minimumApplied,
         effective,
         cost:
           qty === null || !selected
@@ -962,6 +966,7 @@ const compute = (
 
     blocks.push({
       ...block,
+      name: block.localName || block.name,
       rules,
       measure: blockMeasure,
       setupCost,
@@ -971,6 +976,46 @@ const compute = (
       sale: setupSale + lines.reduce((sum, line) => sum + (line.sale || 0), 0),
     })
   }
+
+  // Cada recurso uma vez, somado de todas as etapas (IP-34). O preparo entra
+  // como mão de obra do setor
+  const summary = new Map<string, ResourceSummary>()
+  const addUse = (entry: ResourceSummary) => {
+    const current = summary.get(entry.id)
+    if (current) {
+      current.quantity = round(current.quantity + entry.quantity, 3)
+      current.cost += entry.cost
+      current.sale += entry.sale
+    } else {
+      summary.set(entry.id, { ...entry })
+    }
+  }
+  blocks.forEach((block) => {
+    if (block.setupMinutes) {
+      addUse({
+        id: `mo-${block.sector}`,
+        name: `Mão de obra · ${block.sector}`,
+        kind: 'LABOR',
+        unit: 'min',
+        quantity: block.setupMinutes,
+        cost: block.setupCost,
+        sale: block.setupSale,
+      })
+    }
+    block.lines.forEach((line) => {
+      if (!line.selected || line.quantity === null) return
+      addUse({
+        id: line.selected.id,
+        name: line.selected.name,
+        kind: line.kind,
+        unit: line.selected.unit,
+        quantity: line.quantity,
+        cost: line.cost || 0,
+        sale: line.sale || 0,
+      })
+    })
+  })
+  const resourceSummary = Array.from(summary.values())
 
   const cost = blocks.reduce((sum, block) => sum + block.cost, 0)
   // O sugerido é a soma do preço de venda de cada recurso, como no legado
@@ -992,6 +1037,7 @@ const compute = (
     ...assembly,
     area,
     blocks,
+    resourceSummary,
     cost,
     suggestedPrice,
     saleAmount: round(saleAmount, 4),
@@ -1413,15 +1459,23 @@ export const setBlockLocalRules = async ({
   productId,
   blockId,
   rules,
+  name,
 }: {
   productId: string
   blockId: string
   rules: SaleRules | null
+  // Nome da etapa; na que veio de processo, vale só neste produto (IP-30)
+  name?: string
 }) => {
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
+  if (name !== undefined) {
+    if (!name.trim()) return fail('Informe o nome da etapa')
+    if (block.processId === null) block.name = name.trim()
+    else block.localName = name.trim() === block.name ? undefined : name.trim()
+  }
   // Na etapa montada no produto, as regras são dela mesma: não há original
   if (block.processId === null) {
     if (rules) block.originalRules = rules

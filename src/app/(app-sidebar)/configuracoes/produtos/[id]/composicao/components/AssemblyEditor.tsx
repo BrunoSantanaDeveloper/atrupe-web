@@ -123,6 +123,14 @@ const EDIT = ['product_settings:products:edit']
 const num = (value: number, digits = 3) =>
   value.toLocaleString('pt-BR', { maximumFractionDigits: digits })
 
+// Tempo em horas e minutos, como o legado mostra: 90 min → 1h30 (IP-33)
+const amount = (value: number, unit: string) => {
+  if (unit !== 'min' || value < 60) return `${num(value)} ${unit}`
+  const hours = Math.floor(value / 60)
+  const minutes = Math.round(value - hours * 60)
+  return minutes ? `${hours}h${String(minutes).padStart(2, '0')}` : `${hours}h`
+}
+
 const money = (value: number | null) =>
   value === null ? '-' : formatCurrencyToBrl(value)
 
@@ -355,7 +363,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                   <ActionButton
                     Icon={IconSettings}
                     variant="neutralGhost"
-                    tooltip="Regras de venda"
+                    tooltip="Configurar etapa"
                     onClick={() => setDialog({ kind: 'rules', block: item })}
                   />
                   <ActionButton
@@ -502,7 +510,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       ) : (
                         <>
                           <p className="text-sm">
-                            {num(line.effective.perUnit)} {unit}
+                            {amount(line.effective.perUnit, unit)}
                           </p>
                           {(line.effective.lossPercent > 0 ||
                             line.effective.minimum !== null) && (
@@ -547,7 +555,12 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                     <TableCell className="whitespace-nowrap text-right text-sm">
                       {line.quantity === null
                         ? '-'
-                        : `${num(line.quantity)} ${unit}`}
+                        : amount(line.quantity, unit)}
+                      {line.minimumApplied && (
+                        <span className="block text-xs text-warning-700">
+                          mínimo aplicado
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-right text-sm font-medium">
                       <PermissionGate
@@ -1247,6 +1260,65 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         </Card>
       )}
 
+      {/* O que o produto consome, cada recurso uma vez (IP-34) */}
+      {assembly.resourceSummary.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Resumo por recurso</CardTitle>
+            <CardDescription>
+              Cada recurso uma vez, somado de todas as etapas, na medida
+              simulada. É a lista do que o produto consome.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table className="min-w-[640px]">
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[40%]">Recurso</TableHead>
+                  <TableHead className="w-[15%]">Tipo</TableHead>
+                  <TableHead className="w-[15%] text-right">
+                    Quantidade
+                  </TableHead>
+                  <TableHead className="w-[15%] text-right">Custo</TableHead>
+                  <TableHead className="w-[15%] text-right">Venda</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {assembly.resourceSummary.map((resource) => (
+                  <TableRow key={resource.id}>
+                    <TableCell className="text-sm font-medium text-gray-800">
+                      {resource.name}
+                    </TableCell>
+                    <TableCell className="text-sm text-gray">
+                      {resourceKindObj[resource.kind]}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-right text-sm">
+                      {amount(resource.quantity, resource.unit)}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-right text-sm">
+                      <PermissionGate
+                        permissions={['values:values:view']}
+                        fallback={<span>•••</span>}
+                      >
+                        {money(resource.cost)}
+                      </PermissionGate>
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                      <PermissionGate
+                        permissions={['values:values:view']}
+                        fallback={<span>•••</span>}
+                      >
+                        {money(resource.sale)}
+                      </PermissionGate>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+
       {/* 4. O texto técnico que vai para a proposta (IP-24) */}
       <Card>
         <CardHeader>
@@ -1373,15 +1445,13 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       <RulesDialog
         block={dialog?.kind === 'rules' ? dialog.block : undefined}
         onOpenChange={() => setDialog(null)}
-        onSave={(rules) => {
+        onSave={(rules, name) => {
           if (dialog?.kind !== 'rules') return
           const target = dialog.block
           setDialog(null)
           run(
-            setBlockLocalRules({ productId, blockId: target.id, rules }),
-            rules
-              ? 'Regras próprias salvas'
-              : 'Etapa voltou às regras do processo',
+            setBlockLocalRules({ productId, blockId: target.id, rules, name }),
+            'Etapa configurada',
           )
         }}
       />

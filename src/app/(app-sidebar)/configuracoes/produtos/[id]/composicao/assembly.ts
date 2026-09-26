@@ -191,6 +191,8 @@ export type AssemblyBlock = {
   // O processo de onde a etapa foi incluída; nulo na etapa montada no produto
   processId: string | null
   name: string
+  // Nome desta etapa só neste produto, quando veio de um processo (IP-30)
+  localName?: string
   sector: string
   role: BlockRole
   // O acabamento sabe de qual base ele é (MS-2)
@@ -257,6 +259,8 @@ export type ComputedLine = AssemblyLine & {
   sheetYield: SheetYield | null
   selected: ResourceOption | null
   quantity: number | null
+  // O mínimo substituiu a conta (IP-35): a peça pequena pagou o mínimo
+  minimumApplied: boolean
   // O que vale para a opção escolhida: o dela, ou o da linha (IP-26)
   effective: {
     perUnit: number
@@ -279,9 +283,22 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   lines: ComputedLine[]
 }
 
+// Cada recurso uma vez, somado de todas as etapas (IP-34): a lista do que o
+// produto consome, para a produção e o estoque
+export type ResourceSummary = {
+  id: string
+  name: string
+  kind: ResourceKind
+  unit: string
+  quantity: number
+  cost: number
+  sale: number
+}
+
 export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   area: number
   blocks: ComputedBlock[]
+  resourceSummary: ResourceSummary[]
   cost: number
   // A soma do preço de venda de cada recurso, como o "valor sugerido" do
   // legado (IP-25). Não muda o valor de venda: adotá-lo é decisão do usuário
