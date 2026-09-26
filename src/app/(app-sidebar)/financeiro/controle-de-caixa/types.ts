@@ -94,6 +94,8 @@ export type Movement = {
   settled: boolean
   retroactive: boolean
   reason?: string
+  // Plano de contas: obrigatório em todo lançamento (CX-5, 26/09/2026)
+  category?: string
   responsible: string
   // Transferência e estorno andam em par (CX-2)
   linkedId?: string

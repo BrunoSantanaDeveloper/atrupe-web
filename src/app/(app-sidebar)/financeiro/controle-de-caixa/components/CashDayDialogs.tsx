@@ -39,6 +39,10 @@ import {
   transferBetweenAccounts,
 } from '@/actions/cash-accounts'
 
+// Hooks
+import { useTransactionNature } from '@/hooks/queries/useTransactionNature'
+import { useTransactionCategory } from '@/hooks/queries/useTransactionCategory'
+
 // Third-party
 import { toast } from 'sonner'
 
@@ -221,15 +225,35 @@ export function AdjustmentDialog({
   const [direction, setDirection] = useState<'in' | 'out'>('in')
   const [amount, setAmount] = useState(0)
   const [reason, setReason] = useState('')
+  const [natureId, setNatureId] = useState('')
+  const [categoryId, setCategoryId] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // O plano de contas do START: natureza e categoria, de receita para a
+  // entrada e de despesa para a saída (CX-5)
+  const { data: natures } = useTransactionNature(
+    direction === 'in' ? 'receivable' : 'payable',
+  )
+  const { data: categories } = useTransactionCategory({ natureId })
 
   useEffect(() => {
     if (open) {
       setDirection('in')
       setAmount(0)
       setReason('')
+      setNatureId('')
+      setCategoryId('')
     }
   }, [open])
+
+  useEffect(() => {
+    setNatureId('')
+    setCategoryId('')
+  }, [direction])
+
+  const categoryLabel = (Array.isArray(categories) ? categories : []).find(
+    (item: { id: string }) => item.id === categoryId,
+  )?.description
 
   if (!day || !account) return null
 
@@ -239,6 +263,7 @@ export function AdjustmentDialog({
       day.id,
       direction === 'in' ? amount : -amount,
       reason,
+      categoryLabel || '',
     )
     setSaving(false)
     if (!res.success) return toast.error(res.message)
@@ -257,7 +282,7 @@ export function AdjustmentDialog({
         <Button
           type="button"
           isLoading={saving}
-          disabled={!amount || !reason.trim()}
+          disabled={!amount || !reason.trim() || !categoryId}
           onClick={save}
         >
           Lançar ajuste
@@ -288,6 +313,39 @@ export function AdjustmentDialog({
         onChange={setAmount}
         autoFocus
       />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SelectBasic
+          name="adjust-nature"
+          label="Natureza"
+          placeholder="Escolha a natureza"
+          options={(Array.isArray(natures) ? natures : []).map(
+            (item: { id: string; description: string }) => ({
+              value: item.id,
+              label: item.description,
+            }),
+          )}
+          value={natureId}
+          onChange={(value) => {
+            setNatureId(value)
+            setCategoryId('')
+          }}
+        />
+        <SelectBasic
+          name="adjust-category"
+          label="Categoria"
+          placeholder={
+            natureId ? 'Escolha a categoria' : 'Escolha a natureza antes'
+          }
+          options={(Array.isArray(categories) ? categories : []).map(
+            (item: { id: string; description: string }) => ({
+              value: item.id,
+              label: item.description,
+            }),
+          )}
+          value={categoryId}
+          onChange={setCategoryId}
+        />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="adjust-reason">Motivo</Label>
         <Textarea

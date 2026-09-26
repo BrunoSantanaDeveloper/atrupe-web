@@ -74,6 +74,7 @@ function Section({
                 <span className="block text-xs text-gray">
                   {movementKindLabel[item.kind]} · {item.method}
                   {showDate ? ` · de ${brDate(item.operationDate)}` : ''}
+                  {item.category ? ` · ${item.category}` : ''}
                   {item.reason ? ` · ${item.reason}` : ''} · {item.responsible}
                 </span>
               </span>

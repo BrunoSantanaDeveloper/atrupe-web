@@ -486,6 +486,7 @@ export const addAdjustment = async (
   dayId: string,
   amount: number,
   reason: string,
+  category: string,
 ) => {
   const target = days.find((item) => item.id === dayId)
 
@@ -495,6 +496,8 @@ export const addAdjustment = async (
   if (!amount) return fail('Informe o valor do ajuste')
   // No legado o ajuste não pedia motivo; aqui pede, como a sangria (CX-3)
   if (!reason.trim()) return fail('Informe o motivo do ajuste')
+  // Informar o plano de contas é obrigatório (CX-5)
+  if (!category) return fail('Informe o plano de contas do ajuste')
 
   target.movements.push(
     mv({
@@ -502,6 +505,7 @@ export const addAdjustment = async (
       description: amount > 0 ? 'Ajuste de entrada' : 'Ajuste de saída',
       amount,
       reason,
+      category,
     }),
   )
 
