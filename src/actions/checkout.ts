@@ -15,6 +15,7 @@ import type {
   EvolutionRequest,
   EvolutionResult,
   PlanStatesResponse,
+  PrincipalAdminOptions,
   QuoteRequest,
   QuoteResponse,
   RegularizationView,
@@ -54,6 +55,13 @@ export async function lookupCompany(cnpj: string) {
 export async function checkRepresentative(cnpj: string, cpf: string) {
   return call<RepresentativeCheck>((api) =>
     api.post('/subscriptions/checkout/representative-check', { cnpj, cpf }),
+  )
+}
+
+/** Quem pode ser o Administrador Principal da Conta, com o atual marcado. */
+export async function fetchPrincipalAdminOptions() {
+  return call<PrincipalAdminOptions>((api) =>
+    api.get('/subscriptions/checkout/principal-admin'),
   )
 }
 

@@ -13,7 +13,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { SubscriptionSummaryCards } from './SubscriptionSummaryCards'
 import { PaymentsTable } from './PaymentsTable'
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog'
-import { ContractModal } from './ContractModal'
+import { ContractSection } from './ContractSection'
 import { OwnershipSection } from './OwnershipSection'
 
 // UI
@@ -23,7 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Icons
-import { IconPrinter, IconFileText, IconPlus } from '@tabler/icons-react'
+import { IconPrinter, IconPlus } from '@tabler/icons-react'
 
 // Actions
 import { getItem, getData } from '@/actions/_cruds'
@@ -49,7 +49,6 @@ export function SubscriptionManagementClient({
 }: SearchParamsType) {
   const { data: session, update } = useSession()
   const [cancelOpen, setCancelOpen] = useState(false)
-  const [contractOpen, setContractOpen] = useState(false)
 
   const page = Number(searchParams?.page) || 1
 
@@ -142,15 +141,6 @@ export function SubscriptionManagementClient({
                 Icon={IconPrinter}
                 onClick={() => window.print()}
               />
-              {!isTrial && (
-                <ActionButton
-                  tooltip="Contrato"
-                  size="iconMd"
-                  variant="neutralOutline"
-                  Icon={IconFileText}
-                  onClick={() => setContractOpen(true)}
-                />
-              )}
               {subscription.status === 'ACTIVE' && !isTrial && isOwner && (
                 <Button
                   variant="neutralOutline"
@@ -189,7 +179,12 @@ export function SubscriptionManagementClient({
         </Card>
       ) : (
         <div className="space-y-5">
-          <SubscriptionSummaryCards subscription={subscription} />
+          <SubscriptionSummaryCards
+            subscription={subscription}
+            isPrincipalAdmin={isOwner}
+          />
+
+          {!isTrial && <ContractSection />}
 
           <PaymentsTable
             payments={payments}
@@ -203,8 +198,6 @@ export function SubscriptionManagementClient({
             onOpenChange={setCancelOpen}
             subscriptionId={subscription.id}
           />
-
-          <ContractModal open={contractOpen} onOpenChange={setContractOpen} />
         </div>
       )}
 

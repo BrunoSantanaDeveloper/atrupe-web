@@ -47,7 +47,12 @@ export interface TransferInvite {
   daysLeft?: number
   emailHasAccount?: boolean
   blocked?: { code: string; message: string } | null
-  terms?: { contractId: string; version: number; html: string }
+  terms?: {
+    contractId: string
+    name?: string
+    version: number
+    html: string
+  }
 }
 
 /** POST /ownership/invite/company */

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { IconArrowRight } from '@tabler/icons-react'
@@ -48,6 +49,9 @@ const RESTRICTION_TEXT: Record<ComplementsRestriction, string> = {
     'Sua assinatura não é cobrada pelo gateway de pagamento. Fale com a Atrupe para incluir complementos.',
 }
 
+const PRINCIPAL_ADMIN_ONLY =
+  'Só o administrador principal da conta (Usuário nº 1) altera o plano e os complementos.'
+
 const formatDay = (iso: string) =>
   new Date(iso).toLocaleDateString('pt-BR', { timeZone: 'UTC' })
 
@@ -67,9 +71,13 @@ interface Props {
  */
 export function EvolutionHub({ planStates, current }: Props) {
   const router = useRouter()
+  const { data: session } = useSession()
   const { setSelection } = useCheckoutStore()
   const sub = current.subscription!
   const contractedKeys = sub.modules.map((m) => m.key)
+  // Alterar o plano e os complementos é do Administrador Principal da Conta
+  // (contrato 1.1, 4.2); os demais veem a oferta, sem poder contratá-la.
+  const isPrincipalAdmin = !!session?.company?.isOwner
   const restriction = current.restriction
 
   const [added, setAdded] = useState<string[]>([])
@@ -248,7 +256,7 @@ export function EvolutionHub({ planStates, current }: Props) {
             }
             ctaLabel="Evoluir"
             onCta={evolve}
-            ctaDisabled={restriction === 'OPEN_CHARGE'}
+            ctaDisabled={restriction === 'OPEN_CHARGE' || !isPrincipalAdmin}
           />
         ) : upcoming ? (
           <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 text-sm text-gray-600">
@@ -264,7 +272,11 @@ export function EvolutionHub({ planStates, current }: Props) {
           footer={
             <div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm text-gray-600">
-                {restriction ? (
+                {!isPrincipalAdmin ? (
+                  <span className="text-warning-700">
+                    {PRINCIPAL_ADMIN_ONLY}
+                  </span>
+                ) : restriction ? (
                   <span className="text-warning-700">
                     {RESTRICTION_TEXT[restriction]}
                   </span>
@@ -298,7 +310,7 @@ export function EvolutionHub({ planStates, current }: Props) {
                 variant="neutralOutline"
                 className="flex-none"
                 onClick={contractComplements}
-                disabled={!!restriction}
+                disabled={!!restriction || !isPrincipalAdmin}
                 RightIcon={IconArrowRight}
               >
                 Incluir no plano atual
@@ -324,7 +336,7 @@ export function EvolutionHub({ planStates, current }: Props) {
               description={m.description}
               priceCents={m.priceCents}
               checked={added.includes(m.key)}
-              disabled={!!restriction}
+              disabled={!!restriction || !isPrincipalAdmin}
               onCheckedChange={(checked) => toggleModule(m.key, checked)}
             />
           ))}
@@ -332,7 +344,7 @@ export function EvolutionHub({ planStates, current }: Props) {
             value={users}
             min={sub.additionalUsers}
             max={sub.maxAdditionalUsers}
-            disabled={!!restriction}
+            disabled={!!restriction || !isPrincipalAdmin}
             onChange={setUsers}
             priceCents={sub.additionalUserPriceCents}
             hint={`Hoje você tem ${sub.additionalUsers}`}

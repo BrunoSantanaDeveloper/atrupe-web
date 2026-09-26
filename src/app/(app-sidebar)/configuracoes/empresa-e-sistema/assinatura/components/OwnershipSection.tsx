@@ -173,8 +173,9 @@ export function OwnershipSection() {
                 </Button>
               ) : (
                 <p className="text-sm text-gray-500" data-so-o-titular>
-                  Somente o titular da conta transfere a titularidade e cancela
-                  a assinatura.
+                  Somente o administrador principal da conta (Usuário nº 1)
+                  transfere a titularidade, altera o plano e os complementos e
+                  cancela a assinatura.
                 </p>
               )}
             </>

@@ -14,6 +14,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -55,6 +56,7 @@ export function CancelSubscriptionDialog({
   const [selectedReason, setSelectedReason] = useState('')
   const [feedback, setFeedback] = useState('')
   const [confirmText, setConfirmText] = useState('')
+  const [exportsConfirmed, setExportsConfirmed] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const queryClient = useQueryClient()
@@ -64,6 +66,7 @@ export function CancelSubscriptionDialog({
     setSelectedReason('')
     setFeedback('')
     setConfirmText('')
+    setExportsConfirmed(false)
     onOpenChange(false)
   }
 
@@ -72,14 +75,21 @@ export function CancelSubscriptionDialog({
       toast.error('Digite CANCELAR para confirmar.')
       return
     }
+    if (!exportsConfirmed) {
+      toast.error('Confirme as exportações antes de cancelar.')
+      return
+    }
 
     setIsSubmitting(true)
     try {
+      // Com mensalidade vencida o servidor recusa (contrato 1.1, 7.5 e 8.1),
+      // e a mensagem dele diz o que fazer.
       const res = await deleteWithBody({
         route: `/subscriptions/${subscriptionId}/cancel`,
         data: {
           reason: selectedReason,
           feedback,
+          exportsConfirmed,
         },
       })
 
@@ -185,9 +195,10 @@ export function CancelSubscriptionDialog({
                 </div>
               </DialogTitle>
               <DialogDescription>
-                Esta ação é irreversível. Ao cancelar, você perderá acesso ao
-                sistema no próximo ciclo de cobrança. Seus dados serão mantidos
-                por 30 dias.
+                Esta ação é irreversível. O acesso ao sistema é encerrado ao
+                confirmar, sem restituição proporcional do ciclo em andamento.
+                Depois do cancelamento, o ambiente não fica disponível para
+                exportar dados.
               </DialogDescription>
             </DialogHeader>
 
@@ -202,6 +213,21 @@ export function CancelSubscriptionDialog({
                   </p>
                 )}
               </div>
+
+              {/* Contrato 1.1, 5.10 e 9.2: confirmar as exportações antes. */}
+              <label className="mt-4 flex items-start gap-2.5 text-sm text-gray-700">
+                <Checkbox
+                  checked={exportsConfirmed}
+                  onCheckedChange={(value) =>
+                    setExportsConfirmed(value === true)
+                  }
+                  className="mt-0.5"
+                />
+                <span>
+                  Fiz as exportações que considero necessárias e estou ciente de
+                  que os dados deixam de estar disponíveis após o cancelamento.
+                </span>
+              </label>
 
               <div className="space-y-1.5 mt-4">
                 <Label htmlFor="cancel-confirm">
@@ -230,7 +256,7 @@ export function CancelSubscriptionDialog({
                 <Button
                   variant="error"
                   onClick={handleSubmit}
-                  disabled={confirmText !== 'CANCELAR'}
+                  disabled={confirmText !== 'CANCELAR' || !exportsConfirmed}
                   isLoading={isSubmitting}
                   RightIcon={IconCircleCheck}
                 >

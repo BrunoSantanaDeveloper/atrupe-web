@@ -169,9 +169,14 @@ export function TableData({ tabs, searchParams }: Props) {
                                   description={item?.role?.name || ''}
                                   imageUrl={item?.avatarUrl || ''}
                                 />
-                                {/* Quem responde pela conta perante a Atrupe. */}
+                                {/* O Administrador Principal da Conta (contrato 1.1, 4.1). */}
                                 {item?.isOwner && (
-                                  <Badge variant="light">Titular</Badge>
+                                  <Badge
+                                    variant="light"
+                                    title="Administrador principal da conta"
+                                  >
+                                    Usuário nº 1
+                                  </Badge>
                                 )}
                               </TableCell>
                               <TableCell

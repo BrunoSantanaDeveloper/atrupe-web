@@ -19,12 +19,17 @@ export interface ContractParties {
   contractorDocument: string
   representativeName?: string | null
   representativeCpf?: string | null
+  /** O Usuário nº 1 indicado (contrato 1.1, 1.5 e 4.1). */
+  principalAdminName?: string | null
+  principalAdminEmail?: string | null
 }
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   html?: string
+  /** O nome da versão vigente, como o contrato se apresenta. */
+  name?: string
   version?: number
   parties: ContractParties
   onAccept: () => void
@@ -41,6 +46,7 @@ export function TermsDialog({
   open,
   onOpenChange,
   html,
+  name,
   version,
   parties,
   onAccept,
@@ -56,8 +62,10 @@ export function TermsDialog({
         <DialogHeader>
           <DialogTitle>Termos de Contratação</DialogTitle>
           <DialogDescription>
-            Contrato de Licença de Uso de Software e Suporte Técnico
-            {version ? ` — versão ${version}` : ''}
+            {name ||
+              `Contrato de Licença de Uso de Software e Suporte Técnico${
+                version ? ` — versão ${version}` : ''
+              }`}
           </DialogDescription>
         </DialogHeader>
 
@@ -80,6 +88,18 @@ export function TermsDialog({
                 : ''}
               .
             </p>
+            {parties.principalAdminName && (
+              <p>
+                <strong>
+                  ADMINISTRADOR PRINCIPAL DA CONTA (Usuário nº 1):
+                </strong>{' '}
+                {parties.principalAdminName}
+                {parties.principalAdminEmail
+                  ? ` (${parties.principalAdminEmail})`
+                  : ''}
+                .
+              </p>
+            )}
           </section>
 
           {html ? (

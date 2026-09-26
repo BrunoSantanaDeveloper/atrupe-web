@@ -168,7 +168,21 @@ export interface CheckoutRequest extends QuoteRequest {
     tradeName?: string
   }
   representative?: { cpf: string; name?: string; isSelf: boolean }
+  /** O Usuário nº 1 indicado; sem ele, fica o atual. */
+  principalAdminUserId?: string
   termsAcceptance: { contractId: string; version: number; accepted: true }
+}
+
+/** Um administrador ativo que pode ser o Usuário nº 1 da conta. */
+export interface PrincipalAdminCandidate {
+  userId: string
+  name: string
+  email: string
+}
+
+export interface PrincipalAdminOptions {
+  currentUserId: string | null
+  candidates: PrincipalAdminCandidate[]
 }
 
 export interface CheckoutResult {
@@ -295,6 +309,8 @@ export interface EvolutionResult extends CheckoutResult {
 export interface ContractTerms {
   html: string
   contractId: string
+  /** O nome da versão, como o contrato se apresenta (ex.: "— versão 1.1"). */
+  name?: string
   version: number
 }
 

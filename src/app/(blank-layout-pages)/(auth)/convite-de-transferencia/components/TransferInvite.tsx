@@ -602,6 +602,7 @@ function InviteAcceptForm({
         onOpenChange={setTermsOpen}
         html={invite.terms?.html}
         version={invite.terms?.version}
+        name={invite.terms?.name}
         parties={{
           contractorType: 'PJ',
           contractorName: legalName,

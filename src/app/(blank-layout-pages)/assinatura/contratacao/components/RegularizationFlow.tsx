@@ -252,6 +252,7 @@ export function RegularizationFlow() {
         onOpenChange={setTermsOpen}
         html={terms?.html}
         version={terms?.version}
+        name={terms?.name}
         parties={{
           contractorType: contractor?.type ?? 'PJ',
           contractorName: contractor?.name ?? '',

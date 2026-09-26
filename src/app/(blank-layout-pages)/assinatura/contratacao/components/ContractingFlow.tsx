@@ -16,6 +16,7 @@ import { generateIdempotencyKey } from '@/lib/idempotency'
 import {
   checkRepresentative,
   fetchContractTerms,
+  fetchPrincipalAdminOptions,
   fetchQuote,
   lookupCompany,
   submitCheckout,
@@ -116,6 +117,27 @@ export function ContractingFlow() {
     },
     staleTime: 5 * 60 * 1000,
   })
+
+  // O Usuário nº 1 que a contratante indica (contrato 1.1, 1.5 e 4.1): vem
+  // marcado o atual, e a escolha vai no aceite.
+  const [principalAdminUserId, setPrincipalAdminUserId] = useState<
+    string | null
+  >(null)
+  const { data: principalAdminOptions } = useQuery({
+    queryKey: ['principal-admin-options'],
+    queryFn: async () => {
+      const res = await fetchPrincipalAdminOptions()
+      if (!res.success || !res.data) throw new Error(res.message)
+      return res.data
+    },
+    staleTime: 5 * 60 * 1000,
+  })
+  const principalAdmin =
+    principalAdminOptions?.candidates.find(
+      (c) =>
+        c.userId ===
+        (principalAdminUserId ?? principalAdminOptions.currentUserId),
+    ) ?? null
 
   const quoteQuery = useQuery({
     queryKey: [
@@ -250,8 +272,10 @@ export function ContractingFlow() {
           : (values.representativeName ?? null)
         : null,
       representativeCpf: isPJ ? (values.representativeCpf ?? null) : null,
+      principalAdminName: principalAdmin?.name ?? null,
+      principalAdminEmail: principalAdmin?.email ?? null,
     }
-  }, [values, registry, representative])
+  }, [values, registry, representative, principalAdmin])
 
   const goToPayment = async () => {
     setTermsError(null)
@@ -338,6 +362,7 @@ export function ContractingFlow() {
               isSelf: !!v.representativeIsSelf,
             }
           : undefined,
+      principalAdminUserId: principalAdmin?.userId,
       termsAcceptance: {
         contractId: terms.contractId,
         version: terms.version,
@@ -472,6 +497,11 @@ export function ContractingFlow() {
                 representative={representative}
                 onCnpjChange={handleCnpjChange}
                 onRepresentativeCpfChange={handleRepresentativeCpfChange}
+                principalAdmin={{
+                  options: principalAdminOptions?.candidates ?? [],
+                  value: principalAdmin?.userId ?? null,
+                  onChange: setPrincipalAdminUserId,
+                }}
               />
             </CheckoutColumns>
           ) : (
@@ -530,6 +560,7 @@ export function ContractingFlow() {
         onOpenChange={setTermsOpen}
         html={terms?.html}
         version={terms?.version}
+        name={terms?.name}
         parties={parties}
         onAccept={() => {
           form.setValue('termsAccepted', true)

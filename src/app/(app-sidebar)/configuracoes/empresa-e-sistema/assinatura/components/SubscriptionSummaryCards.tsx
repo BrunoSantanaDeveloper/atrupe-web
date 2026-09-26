@@ -54,10 +54,16 @@ interface SubscriptionSummaryCardsProps {
     additionalUsers: number
     subscriptionFeatures: SubscriptionFeature[]
   }
+  /**
+   * Retirar módulos e incluir usuários é do Administrador Principal da Conta
+   * (contrato 1.1, 4.2): para os demais, os atalhos não aparecem.
+   */
+  isPrincipalAdmin?: boolean
 }
 
 export function SubscriptionSummaryCards({
   subscription,
+  isPrincipalAdmin = true,
 }: SubscriptionSummaryCardsProps) {
   const [removeModuleOpen, setRemoveModuleOpen] = useState(false)
   const [selectedModule, setSelectedModule] =
@@ -85,6 +91,7 @@ export function SubscriptionSummaryCards({
 
   const isTrial = subscription.plan.planType === 'TRIAL'
   const isCanceled = subscription.status !== 'ACTIVE'
+  const canChange = !isTrial && !isCanceled && isPrincipalAdmin
 
   return (
     <>
@@ -121,7 +128,7 @@ export function SubscriptionSummaryCards({
                 {formatCurrencyToBrl(nfTotal)}
               </p>
             </div>
-            {nfMainModule && !isTrial && !isCanceled && (
+            {nfMainModule && canChange && (
               <Button
                 type="button"
                 variant="light"
@@ -172,7 +179,7 @@ export function SubscriptionSummaryCards({
                 )}
               </p>
             </div>
-            {!isTrial && !isCanceled && (
+            {canChange && (
               <Button
                 asChild
                 variant="light"

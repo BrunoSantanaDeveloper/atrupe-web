@@ -4,9 +4,19 @@ import { useController, useFormContext } from 'react-hook-form'
 
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { FormInput } from '@/components/common/form/FormInput'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Spinner } from '@/components/ui/spinner'
 import { cn, maskCnpj, maskCpf } from '@/lib/utils'
-import type { CompanyRegistryView } from '@/types/checkout'
+import type {
+  CompanyRegistryView,
+  PrincipalAdminCandidate,
+} from '@/types/checkout'
 
 import {
   AccountStatus,
@@ -36,6 +46,12 @@ interface Props {
   representative: RepresentativeState
   onCnpjChange: (masked: string) => void
   onRepresentativeCpfChange: (masked: string) => void
+  /** O Usuário nº 1 que a contratante indica (contrato 1.1, 1.5 e 4.1). */
+  principalAdmin?: {
+    options: PrincipalAdminCandidate[]
+    value: string | null
+    onChange: (userId: string) => void
+  }
 }
 
 /** Aviso sob um campo: consultando (neutro), certo (marca) ou problema (erro). */
@@ -77,6 +93,7 @@ export function ContractorStep({
   representative,
   onCnpjChange,
   onRepresentativeCpfChange,
+  principalAdmin,
 }: Props) {
   const { control, setValue } = useFormContext<ContractingForm>()
   const { field: personType } = useController({ control, name: 'personType' })
@@ -261,6 +278,56 @@ export function ContractorStep({
           </ChoiceCard>
         </div>
       </div>
+
+      {principalAdmin && principalAdmin.options.length > 0 && (
+        <PrincipalAdminField {...principalAdmin} />
+      )}
     </CheckoutSection>
+  )
+}
+
+/**
+ * O Administrador Principal da Conta, o Usuário nº 1: é a contratante quem o
+ * indica, entre os administradores — quem conduz a contratação não o é
+ * automaticamente (contrato 1.1, 4.8).
+ */
+function PrincipalAdminField({
+  options,
+  value,
+  onChange,
+}: NonNullable<Props['principalAdmin']>) {
+  const only = options.length === 1 ? options[0] : null
+
+  return (
+    <div className="flex flex-col gap-2.5">
+      <GroupTitle id="administrador-principal-titulo">
+        Administrador principal da conta (Usuário nº 1)
+      </GroupTitle>
+      {only ? (
+        <p className="text-sm text-gray-700">
+          {only.name} <span className="text-gray-500">— {only.email}</span>
+        </p>
+      ) : (
+        <Select value={value ?? undefined} onValueChange={onChange}>
+          <SelectTrigger
+            aria-labelledby="administrador-principal-titulo"
+            className="w-full"
+          >
+            <SelectValue placeholder="Escolha um administrador" />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option.userId} value={option.userId}>
+                {option.name} — {option.email}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      <SectionNote>
+        É quem altera o plano, contrata ou remove módulos e cancela a
+        assinatura. Os demais administradores seguem com o acesso de hoje.
+      </SectionNote>
+    </div>
   )
 }
