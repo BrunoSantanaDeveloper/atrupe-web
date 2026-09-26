@@ -249,6 +249,8 @@ export type ProductVariation = {
   id: string
   name: string
   unitPrice: number | null
+  // Faixas próprias da variação (FQ-4); sem elas, vale a tabela do produto
+  priceTiers?: PriceTier[]
   overrides: VariationOverride[]
 }
 
@@ -340,6 +342,9 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   // A faixa vigente para a quantidade simulada, e cada faixa com o custo
   // naquela quantidade, para ver se a tabela aperta a margem (FQ-3)
   activeTier: PriceTier | null
+  // A tabela que vale: a da variação vista, ou a do produto (FQ-4)
+  effectiveTiers: PriceTier[]
+  tiersFromVariation: boolean
   tierSummary: {
     from: number
     unitPrice: number

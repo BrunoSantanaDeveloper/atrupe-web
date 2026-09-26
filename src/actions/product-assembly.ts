@@ -1008,9 +1008,16 @@ const compute = (
   const assembly = applyVariation(source, variation)
   // Sem preço próprio, a variação vale o preço do produto (PV-4); com
   // tabela por faixa, vale a faixa da quantidade (FQ-1)
-  const tier = tierFor(assembly.priceTiers, assembly.measure.quantity)
+  // A variação pode ter tabela própria (FQ-4); com ela, a faixa vale mais
+  // que o preço único da variação
+  const tiersFromVariation = !!variation?.priceTiers
+  const effectiveTiers = variation?.priceTiers ?? assembly.priceTiers
+  const tier = tierFor(effectiveTiers, assembly.measure.quantity)
   const unitPrice =
-    variation?.unitPrice ?? tier?.unitPrice ?? assembly.unitPrice
+    (tiersFromVariation ? tier?.unitPrice : undefined) ??
+    variation?.unitPrice ??
+    tier?.unitPrice ??
+    assembly.unitPrice
   const { measure } = assembly
   const area = round(measure.width * measure.height, 4)
   const blocks: ComputedBlock[] = []
@@ -1269,7 +1276,10 @@ const compute = (
       suggestedPrice / Math.max(saleAmount, 0.0001),
     ),
     activeVariation: variation,
-    activeTier: variation?.unitPrice == null ? tier : null,
+    activeTier:
+      tiersFromVariation || variation?.unitPrice == null ? tier : null,
+    effectiveTiers,
+    tiersFromVariation,
     tierSummary: [],
     variationSummary: [],
     // Produto sem composição nunca aparece com margem zero (DC-15)
@@ -1322,7 +1332,7 @@ export const getAssembly = async ({
 
   // Cada faixa com o custo unitário naquela quantidade: a composição conta a
   // mesma história por outro caminho, e a diferença aparece (FQ-3)
-  result.tierSummary = [...assembly.priceTiers]
+  result.tierSummary = [...result.effectiveTiers]
     .sort((a, b) => a.from - b.from)
     .map((tier) => {
       const computed = compute(
@@ -1826,17 +1836,37 @@ export const clearVariationLine = async ({
 export const setPriceTiers = async ({
   productId,
   tiers,
+  variationId,
+  inherit,
 }: {
   productId: string
   tiers: PriceTier[]
+  // Na variação: grava a tabela dela, ou volta à do produto (FQ-4)
+  variationId?: string
+  inherit?: boolean
 }) => {
+  if (variationId) {
+    const variation = findOrCreate(productId).variations.find(
+      (item) => item.id === variationId,
+    )
+    if (!variation) return fail('Variação não encontrada')
+    if (inherit) {
+      variation.priceTiers = undefined
+      return ok(null)
+    }
+  }
   const clean = tiers
     .filter((tier) => tier.from > 0 && tier.unitPrice >= 0)
     .sort((a, b) => a.from - b.from)
   if (new Set(clean.map((tier) => tier.from)).size !== clean.length) {
     return fail('Duas faixas começam na mesma quantidade')
   }
-  findOrCreate(productId).priceTiers = clean
+  const assembly = findOrCreate(productId)
+  const variation = variationId
+    ? assembly.variations.find((item) => item.id === variationId)
+    : null
+  if (variation) variation.priceTiers = clean
+  else assembly.priceTiers = clean
   return ok(null)
 }
 

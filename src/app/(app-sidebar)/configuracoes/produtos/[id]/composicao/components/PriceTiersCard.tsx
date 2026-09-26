@@ -64,12 +64,18 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
   const [tiers, setTiers] = useState<PriceTier[]>([])
   const [saving, setSaving] = useState(false)
 
+  // Na variação vista, a tabela dela; sem tabela própria, a do produto (FQ-4)
+  const variation = assembly.activeVariation
+  const source = assembly.effectiveTiers
+
   useEffect(() => {
-    setTiers(assembly.priceTiers)
-  }, [assembly.priceTiers])
+    setTiers(source)
+  }, [source])
 
   const unit = unitSymbol[assembly.unitKind]
-  const changed = JSON.stringify(tiers) !== JSON.stringify(assembly.priceTiers)
+  const changed = JSON.stringify(tiers) !== JSON.stringify(source)
+  // Na variação sem tabela própria, editar é criar a dela
+  const inherited = !!variation && !assembly.tiersFromVariation
 
   const setTier = (index: number, patch: Partial<PriceTier>) =>
     setTiers((current) =>
@@ -78,7 +84,11 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
 
   const save = async () => {
     setSaving(true)
-    const res = await setPriceTiers({ productId: assembly.productId, tiers })
+    const res = await setPriceTiers({
+      productId: assembly.productId,
+      tiers,
+      variationId: variation?.id,
+    })
     setSaving(false)
     if (!res.success) return toast.error(res.message)
     toast.success('Tabela de faixas salva')
@@ -91,11 +101,16 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Preço por faixa de quantidade</CardTitle>
+        <CardTitle>
+          Preço por faixa de quantidade
+          {variation ? ` · ${variation.name}` : ''}
+        </CardTitle>
         <CardDescription>
-          Até 100 um valor, de 101 a 500 outro. A faixa vale para o total da
-          venda: 150 unidades saem todas pelo valor da segunda faixa. Sem
-          tabela, vale o valor de venda do produto.
+          {variation
+            ? inherited
+              ? 'Esta variação usa a tabela do produto. Mude um valor e salve para ela ter a própria.'
+              : 'Tabela própria desta variação. As outras continuam com a delas.'
+            : 'Até 100 um valor, de 101 a 500 outro. A faixa vale para o total da venda: 150 unidades saem todas pelo valor da segunda faixa. Sem tabela, vale o valor de venda do produto.'}
         </CardDescription>
       </CardHeader>
       {tiers.length > 0 && (
@@ -231,14 +246,35 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
           >
             Nova faixa
           </Button>
-          <Button
-            type="button"
-            isLoading={saving}
-            disabled={!changed}
-            onClick={save}
-          >
-            Salvar faixas
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {variation && assembly.tiersFromVariation && (
+              <Button
+                type="button"
+                variant="neutralOutline"
+                onClick={async () => {
+                  const res = await setPriceTiers({
+                    productId: assembly.productId,
+                    tiers: [],
+                    variationId: variation.id,
+                    inherit: true,
+                  })
+                  if (!res.success) return toast.error(res.message)
+                  toast.success('Variação voltou à tabela do produto')
+                  onSaved()
+                }}
+              >
+                Usar a tabela do produto
+              </Button>
+            )}
+            <Button
+              type="button"
+              isLoading={saving}
+              disabled={!changed}
+              onClick={save}
+            >
+              {inherited ? 'Criar tabela desta variação' : 'Salvar faixas'}
+            </Button>
+          </div>
         </CardFooter>
       </PermissionGate>
     </Card>
