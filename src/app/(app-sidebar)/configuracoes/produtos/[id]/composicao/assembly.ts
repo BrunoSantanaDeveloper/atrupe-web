@@ -166,13 +166,19 @@ export type AssemblyLine = {
   minimum: number | null
   // Ajustada neste produto: o processo original continua como estava
   overridden: boolean
+  // Acrescentada neste produto numa etapa que veio de um processo
+  addedHere?: boolean
 }
 
 export type BlockRole = 'BASE' | 'FINISHING'
 
+// A etapa é do produto: o trabalho de um setor, com os recursos e o tempo
+// que ele usa. Pode ser montada ali mesmo ou incluída de um processo já
+// cadastrado — o processo é um cadastro à parte, não a origem obrigatória
 export type AssemblyBlock = {
   id: string
-  processId: string
+  // O processo de onde a etapa foi incluída; nulo na etapa montada no produto
+  processId: string | null
   name: string
   sector: string
   role: BlockRole
@@ -298,4 +304,23 @@ export type ProcessCatalogItem = {
   role: BlockRole
   // Setor da base de que ele é acabamento
   finishingOf: string | null
+}
+
+// Os recursos que uma etapa montada no produto pode usar
+export type AssemblyResource = ResourceOption & { kind: ResourceKind }
+
+export type AssemblyResources = {
+  sectors: string[]
+  resources: AssemblyResource[]
+}
+
+export type NewLineValues = {
+  name: string
+  kind: ResourceKind
+  mode: LineMode
+  optionIds: string[]
+  perUnit: number
+  formula: FormulaKey
+  lossPercent: number
+  minimum: number | null
 }

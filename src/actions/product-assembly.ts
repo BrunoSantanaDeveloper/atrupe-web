@@ -20,6 +20,8 @@ import type {
   ComputedAssembly,
   ProductVariation,
   ProcessCatalogItem,
+  AssemblyResource,
+  NewLineValues,
   PriceTier,
   SheetYield,
   ResourceOption,
@@ -78,8 +80,9 @@ const finishingRules: SaleRules = {
 
 type Template = Omit<
   AssemblyBlock,
-  'id' | 'baseBlockId' | 'localRules' | 'lines'
+  'id' | 'baseBlockId' | 'localRules' | 'lines' | 'processId'
 > & {
+  processId: string
   finishingOf: string | null
   lines: Omit<AssemblyLine, 'id' | 'overridden'>[]
 }
@@ -1087,6 +1090,146 @@ export const updateAssembly = async ({
   return ok(null)
 }
 
+// O acabamento entra logo depois da base e dos acabamentos que ela já tem
+const insertBlock = (assembly: ProductAssembly, block: AssemblyBlock) => {
+  if (block.baseBlockId) {
+    let index = assembly.blocks.findIndex(
+      (item) => item.id === block.baseBlockId,
+    )
+    while (assembly.blocks[index + 1]?.baseBlockId === block.baseBlockId) {
+      index++
+    }
+    assembly.blocks.splice(index + 1, 0, block)
+  } else {
+    assembly.blocks.push(block)
+  }
+}
+
+// Mão de obra de todos os setores e os recursos que os processos já usam
+const resourceMap = () => {
+  const map = new Map<string, AssemblyResource>()
+  Object.keys(HOUR).forEach((sector) =>
+    map.set(`mo-${sector}`, { ...labor(sector), kind: 'LABOR' }),
+  )
+  catalog.forEach((template) =>
+    template.lines.forEach((line) =>
+      line.options.forEach((option) => {
+        if (!map.has(option.id))
+          map.set(option.id, { ...option, kind: line.kind })
+      }),
+    ),
+  )
+  return map
+}
+
+export const getAssemblyResources = async () =>
+  ok({
+    sectors: Object.keys(HOUR),
+    resources: Array.from(resourceMap().values()),
+  })
+
+// A etapa montada no próprio produto: o trabalho de um setor, com os
+// recursos e o tempo que ele usa. Não passa por Processos
+export const addOwnBlock = async ({
+  productId,
+  name,
+  sector,
+  baseBlockId,
+}: {
+  productId: string
+  name: string
+  sector: string
+  baseBlockId: string | null
+}) => {
+  if (!name.trim()) return fail('Informe o nome da etapa')
+  const assembly = findOrCreate(productId)
+  const block: AssemblyBlock = {
+    id: `b${uid()}`,
+    processId: null,
+    name: name.trim(),
+    sector,
+    role: baseBlockId ? 'FINISHING' : 'BASE',
+    baseBlockId,
+    setupMinutes: 0,
+    sectorHourCost: HOUR[sector] || 1800,
+    taskType: sector,
+    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    localRules: null,
+    lines: [],
+  }
+  insertBlock(assembly, block)
+  return ok(block.id)
+}
+
+export const addAssemblyLine = async ({
+  productId,
+  blockId,
+  values,
+}: {
+  productId: string
+  blockId: string
+  values: NewLineValues
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  if (!block) return fail('Etapa não encontrada')
+  if (!values.name.trim()) return fail('Informe o nome da linha')
+
+  const map = resourceMap()
+  const options = values.optionIds
+    .map((id) => map.get(id))
+    .filter((item): item is AssemblyResource => !!item)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .map(({ kind, ...option }) => option)
+  if (!options.length) return fail('Escolha ao menos um recurso')
+  if (values.mode === 'SINGLE' && options.length > 1) {
+    return fail('Recurso único leva um recurso só')
+  }
+  // As opções de uma escolha são trocadas entre si: precisam medir igual (IP-39)
+  if (
+    values.mode === 'CHOOSE' &&
+    new Set(options.map((option) => option.unit)).size > 1
+  ) {
+    return fail('As opções de uma escolha precisam ter a mesma unidade')
+  }
+
+  const list = values.mode === 'LIST'
+  block.lines.push({
+    id: `l${uid()}`,
+    name: values.name.trim(),
+    kind: values.kind,
+    mode: values.mode,
+    options,
+    selectedId: list ? '' : options[0].id,
+    perUnit: list ? 0 : values.perUnit,
+    formula: list ? 'SELLER' : values.formula,
+    lossPercent: list ? 0 : values.lossPercent,
+    minimum: list ? null : values.minimum,
+    overridden: false,
+    // Numa etapa vinda de processo, a linha a mais é só deste produto
+    addedHere: block.processId !== null,
+  })
+  return ok(null)
+}
+
+export const removeAssemblyLine = async ({
+  productId,
+  blockId,
+  lineId,
+}: {
+  productId: string
+  blockId: string
+  lineId: string
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  if (!block) return fail('Etapa não encontrada')
+  block.lines = block.lines.filter((line) => line.id !== lineId)
+  return ok(null)
+}
+
 export const addAssemblyBlock = async ({
   productId,
   processId,
@@ -1101,16 +1244,7 @@ export const addAssemblyBlock = async ({
   if (!template) return fail('Processo não encontrado')
 
   const block = fromTemplate(template, baseBlockId)
-
-  // O acabamento entra logo depois da base e dos acabamentos que ela já tem
-  if (baseBlockId) {
-    let index = assembly.blocks.findIndex((item) => item.id === baseBlockId)
-    while (assembly.blocks[index + 1]?.baseBlockId === baseBlockId) index++
-    assembly.blocks.splice(index + 1, 0, block)
-  } else {
-    assembly.blocks.push(block)
-  }
-
+  insertBlock(assembly, block)
   return ok(block.id)
 }
 
@@ -1194,7 +1328,7 @@ export const resetAssemblyLine = async ({
     (item) => item.id === blockId,
   )
   const index = block?.lines.findIndex((item) => item.id === lineId) ?? -1
-  const template = block && templateOf(block.processId)
+  const template = block?.processId ? templateOf(block.processId) : null
   if (!block || index < 0 || !template) return fail('Linha não encontrada')
 
   const original = template.lines[index]
@@ -1221,6 +1355,12 @@ export const setBlockLocalRules = async ({
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
+  // Na etapa montada no produto, as regras são dela mesma: não há original
+  if (block.processId === null) {
+    if (rules) block.originalRules = rules
+    block.localRules = null
+    return ok(null)
+  }
   block.localRules = rules
   return ok(null)
 }

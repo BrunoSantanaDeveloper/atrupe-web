@@ -44,6 +44,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   LineDialog,
   RulesDialog,
+  NewLineDialog,
   AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
@@ -68,8 +69,12 @@ import {
 import {
   getAssembly,
   updateAssembly,
+  addOwnBlock,
+  addAssemblyLine,
   addAssemblyBlock,
   getProcessCatalog,
+  removeAssemblyLine,
+  getAssemblyResources,
   moveAssemblyBlock,
   resetAssemblyLine,
   setBlockLocalRules,
@@ -129,6 +134,7 @@ type Dialog =
   | { kind: 'finish'; block: ComputedBlock }
   | { kind: 'line'; block: ComputedBlock; line: ComputedLine }
   | { kind: 'rules'; block: ComputedBlock }
+  | { kind: 'newLine'; block: ComputedBlock }
   | null
 
 export function AssemblyEditor({ productId }: { productId: string }) {
@@ -159,8 +165,15 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     queryFn: () => getProcessCatalog(),
   })
 
+  const { data: resourcesRes } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['assembly-resources'],
+    queryFn: () => getAssemblyResources(),
+  })
+
   const assembly = data?.data
   const catalog = useMemo(() => catalogRes?.data || [], [catalogRes])
+  const resources = resourcesRes?.data
 
   useEffect(() => {
     if (assembly && !measure) {
@@ -195,11 +208,8 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     saved.width !== measure.width ||
     saved.height !== measure.height
 
-  const baseSectors = Array.from(
-    new Set(
-      catalog.filter((item) => item.role === 'BASE').map((item) => item.sector),
-    ),
-  )
+  // A etapa é do setor: todos os setores da empresa podem começar o produto
+  const baseSectors = resources?.sectors || []
 
   const finishingFor = (block: ComputedBlock) =>
     catalog.filter(
@@ -226,10 +236,14 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   const removeBlock = (block: ComputedBlock) =>
     alertDialog.open({
       title: `Remover ${block.name}?`,
-      description:
+      description: [
         block.role === 'BASE'
-          ? 'A etapa sai do produto com os acabamentos dela. O processo continua cadastrado.'
-          : 'A etapa sai do produto. O processo continua cadastrado.',
+          ? 'A etapa sai do produto com os acabamentos dela.'
+          : 'A etapa sai do produto.',
+        block.processId ? 'O processo continua cadastrado.' : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
       confirmLabel: 'Remover',
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
@@ -239,6 +253,25 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         await refresh()
       },
       toastMsg: { success: 'Etapa removida', error: 'Erro ao remover a etapa' },
+    })
+
+  const removeLine = (block: ComputedBlock, line: ComputedLine) =>
+    alertDialog.open({
+      title: `Remover ${line.name}?`,
+      description: `A linha sai da etapa ${block.name}.`,
+      confirmLabel: 'Remover',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeAssemblyLine({
+          productId,
+          blockId: block.id,
+          lineId: line.id,
+        })
+        if (!res.success) throw new Error(res.message)
+        await refresh()
+      },
+      toastMsg: { success: 'Linha removida', error: 'Erro ao remover a linha' },
     })
 
   const baseName = (block: ComputedBlock) =>
@@ -258,7 +291,6 @@ export function AssemblyEditor({ productId }: { productId: string }) {
 
   const block = (item: ComputedBlock, index: number) => {
     const finishing = item.role === 'FINISHING'
-    const options = finishing ? [] : finishingFor(item)
 
     return (
       <Card
@@ -277,6 +309,9 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 </Badge>
               ) : (
                 <Badge variant="neutralLight">Base</Badge>
+              )}
+              {item.processId && (
+                <Badge variant="neutralLight">Processo cadastrado</Badge>
               )}
               {item.localRules && (
                 <Badge variant={assemblyOverrideObj.LOCAL_RULES.variant}>
@@ -309,7 +344,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
                 <div className="flex gap-1">
-                  {!finishing && options.length > 0 && (
+                  {!finishing && (
                     <ActionButton
                       Icon={IconCirclePlus}
                       variant="neutralGhost"
@@ -389,6 +424,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                       <p className="text-xs text-gray">
                         {resourceKindObj[line.kind]}
                         {line.overridden ? ' · ajustada neste produto' : ''}
+                        {line.addedHere ? ' · só neste produto' : ''}
                       </p>
                       {line.variationOverride && (
                         <Badge
@@ -543,6 +579,14 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                                 }
                               />
                             )}
+                          {!inVariation && (
+                            <ActionButton
+                              Icon={IconTrash}
+                              variant="errorGhost"
+                              tooltip={`Remover ${line.name.toLowerCase()}`}
+                              onClick={() => removeLine(item, line)}
+                            />
+                          )}
                           {line.overridden && !inVariation && (
                             <ActionButton
                               Icon={IconArrowBackUp}
@@ -566,8 +610,35 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                   </TableRow>
                 )
               })}
+              {item.lines.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={8}
+                    className="py-6 text-center text-sm text-gray"
+                  >
+                    Nenhuma linha ainda. Acrescente o tempo, a máquina e o
+                    material que o setor de {item.sector.toLowerCase()} usa
+                    nesta etapa.
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
+          {!inVariation && (
+            <PermissionGate permissions={EDIT}>
+              <div className="px-6 pb-2 pt-4">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="neutralOutline"
+                  LeftIcon={IconCirclePlus}
+                  onClick={() => setDialog({ kind: 'newLine', block: item })}
+                >
+                  Nova linha
+                </Button>
+              </div>
+            </PermissionGate>
+          )}
         </CardContent>
         {item.setupMinutes > 0 && (
           <CardFooter className="justify-between text-sm text-gray">
@@ -1120,7 +1191,9 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         <div>
           <p className="text-base font-semibold text-gray-800">Composição</p>
           <p className="text-sm text-gray">
-            Comece pela base; os acabamentos entram embaixo dela.
+            Divida o produto nas etapas de produção de cada setor, com os
+            recursos e o tempo de cada uma. Os acabamentos entram embaixo da
+            base.
           </p>
         </div>
         {!inVariation && (
@@ -1201,9 +1274,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         }
         description={
           dialog?.kind === 'finish'
-            ? `Só os acabamentos do setor de ${dialog.block.sector.toLowerCase()}.`
-            : 'Escolha o processo que começa o produto.'
+            ? `Um trabalho feito sobre ${dialog.block.name.toLowerCase()}, com a medida dela.`
+            : 'O trabalho que o setor faz neste produto.'
         }
+        onCreate={(name) => {
+          if (dialog?.kind !== 'add' && dialog?.kind !== 'finish') return
+          const input =
+            dialog.kind === 'finish'
+              ? { sector: dialog.block.sector, baseBlockId: dialog.block.id }
+              : { sector: dialog.sector, baseBlockId: null }
+          setDialog(null)
+          run(addOwnBlock({ productId, name, ...input }), 'Etapa criada')
+        }}
         processes={
           dialog?.kind === 'finish'
             ? finishingFor(dialog.block)
@@ -1223,10 +1305,25 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           )
         }}
       />
+      <NewLineDialog
+        block={dialog?.kind === 'newLine' ? dialog.block : undefined}
+        resources={resources?.resources || []}
+        onOpenChange={() => setDialog(null)}
+        onSave={(values) => {
+          if (dialog?.kind !== 'newLine') return
+          const target = dialog.block
+          setDialog(null)
+          run(
+            addAssemblyLine({ productId, blockId: target.id, values }),
+            'Linha adicionada',
+          )
+        }}
+      />
       <LineDialog
         line={dialog?.kind === 'line' ? dialog.line : undefined}
         onOpenChange={() => setDialog(null)}
         variationName={variation?.name}
+        ownStage={dialog?.kind === 'line' && dialog.block.processId === null}
         onSave={(values: LineValues) => {
           if (dialog?.kind !== 'line') return
           const { block: target, line } = dialog
