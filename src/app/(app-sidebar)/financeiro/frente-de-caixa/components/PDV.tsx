@@ -3,8 +3,9 @@
 // PROVISÓRIO nos dados: a API ainda não tem os endpoints da frente de caixa.
 // A tela implementa as regras FC-1 a FC-20 lendo `src/actions/cash-front.ts`.
 
-// React
+// React / Next
 import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
 import {
@@ -62,6 +63,7 @@ import {
 } from '@tabler/icons-react'
 
 // Utils
+import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
@@ -81,7 +83,15 @@ export function PDV() {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
 
-  const [aba, setAba] = useState<Aba>('receber')
+  // A aba fica na URL (design.md §5.1): o link guarda onde o caixa estava
+  const router = useRouter()
+  const params = useSearchParams()
+  const abas: Aba[] = ['receber', 'caixa', 'retirada']
+  const aba: Aba = abas.includes(params.get('aba') as Aba)
+    ? (params.get('aba') as Aba)
+    : 'receber'
+  const setAba = (value: Aba) =>
+    updateFilterParam('aba', value, { router, params })
   const [receiving, setReceiving] = useState<PendingSale>()
   const [dialog, setDialog] = useState('')
 

@@ -8,6 +8,7 @@
 
 // React
 import { Fragment, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 // Next
 import Link from 'next/link'
@@ -72,6 +73,7 @@ import {
 import { cashControlStatusObj } from '@/consts/cashControl'
 
 // Utils
+import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 const money = (value: number) => formatCurrencyToBrl(value)
@@ -105,8 +107,20 @@ export function CashControl(_: SearchParamsType) {
   const isAdmin = !!session?.user?.isAdmin
 
   const [dialog, setDialog] = useState<Dialog>(null)
-  const [tab, setTab] = useState<Tab>('ALL')
-  const [accountFilter, setAccountFilter] = useState('all')
+  // Aba e filtro ficam na URL (design.md §5.1, §8)
+  const router = useRouter()
+  const params = useSearchParams()
+  const statusParam = params.get('status')
+  const tab: Tab =
+    statusParam === 'OPEN' || statusParam === 'CLOSED' ? statusParam : 'ALL'
+  const accountFilter = params.get('conta') || 'all'
+  const setTab = (value: Tab) =>
+    updateFilterParam('status', value === 'ALL' ? 'all' : value, {
+      router,
+      params,
+    })
+  const setAccountFilter = (value: string) =>
+    updateFilterParam('conta', value, { router, params })
 
   const { data, isLoading } = useQuery({
     queryKey: ['cash-control'],
