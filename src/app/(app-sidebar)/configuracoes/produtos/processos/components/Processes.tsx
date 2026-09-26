@@ -44,7 +44,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconBan,
-  IconEye,
+  IconSearch,
   IconListCheck,
   IconPlayerPlay,
 } from '@tabler/icons-react'
@@ -189,7 +189,7 @@ export function Processes({ searchParams }: SearchParamsType) {
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
                                     <ActionButton
-                                      Icon={IconEye}
+                                      Icon={IconSearch}
                                       tooltip={`Abrir ${process.name}`}
                                       link={`/configuracoes/produtos/processos/${process.id}`}
                                     />

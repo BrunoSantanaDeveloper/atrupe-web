@@ -50,7 +50,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconEye,
+  IconSearch,
   IconLayersLinked,
   IconBuildingWarehouse,
 } from '@tabler/icons-react'
@@ -222,7 +222,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                             <TableCell>
                               <div className="flex justify-end gap-1">
                                 <ActionButton
-                                  Icon={IconEye}
+                                  Icon={IconSearch}
                                   tooltip={`Abrir ${asset.name}`}
                                   link={`/configuracoes/empresa-e-sistema/patrimonios/${asset.id}`}
                                 />

@@ -27,8 +27,12 @@ export default function CashControlPage({ searchParams }: SearchParamsType) {
         />
       }
     >
+      {/* O saldo das contas é informação financeira: exige a permissão de
+          valores, como o item de menu. A frente de caixa não exige — o
+          operador vê o dinheiro do caixa, não custo nem fluxo (26/09/2026) */}
       <PermissionGate
-        permissions={['financial:cash_control:view']}
+        requireAll
+        permissions={['financial:cash_control:view', 'values:values:view']}
         fallback={<div>Você não tem permissão para acessar esta página.</div>}
       >
         <CashControl searchParams={searchParams} />
