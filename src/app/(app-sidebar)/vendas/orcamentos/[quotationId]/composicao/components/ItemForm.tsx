@@ -91,6 +91,7 @@ export function ItemForm({
   const [extras, setExtras] = useState(item?.composition?.extras || [])
   const [choices, setChoices] = useState(item?.composition?.choices || [])
   const [lists, setLists] = useState(item?.composition?.lists || [])
+  const [optionals, setOptionals] = useState(item?.composition?.optionals || [])
 
   useEffect(() => {
     if (!saleForm || item?.composition) return
@@ -107,7 +108,17 @@ export function ItemForm({
         optionId: choice.defaultId,
       })),
     )
+    setOptionals(
+      saleForm.optionals.map((optional) => ({
+        blockId: optional.blockId,
+        lineId: optional.lineId,
+        included: optional.defaultIncluded,
+      })),
+    )
   }, [saleForm, item?.composition])
+
+  const included = (lineId: string) =>
+    !!optionals.find((optional) => optional.lineId === lineId)?.included
 
   const extraValue = (blockId: string) =>
     extras.find((extra) => extra.blockId === blockId)?.value ?? 0
@@ -145,6 +156,10 @@ export function ItemForm({
                   (item) => item.id === choiceValue(choice.lineId),
                 )?.name || '-'
               }`,
+          ),
+          ...saleForm.optionals.map(
+            (optional) =>
+              `${included(optional.lineId) ? 'Com' : 'Sem'} ${optional.name.toLowerCase()}`,
           ),
           ...saleForm.lists.flatMap((list) =>
             list.options
@@ -349,6 +364,37 @@ export function ItemForm({
         </div>
       )}
 
+      {!!saleForm?.optionals.length && (
+        <div className="flex flex-wrap gap-x-6 gap-y-2">
+          {saleForm.optionals.map((optional) => (
+            <label
+              key={optional.lineId}
+              className="flex cursor-pointer items-center gap-2 text-sm"
+            >
+              <input
+                type="checkbox"
+                className="size-4 accent-brand-600"
+                checked={included(optional.lineId)}
+                onChange={(event) =>
+                  setOptionals((current) => [
+                    ...current.filter(
+                      (item) => item.lineId !== optional.lineId,
+                    ),
+                    {
+                      blockId: optional.blockId,
+                      lineId: optional.lineId,
+                      included: event.target.checked,
+                    },
+                  ])
+                }
+              />
+              <span className="font-medium text-gray-800">{optional.name}</span>
+              <span className="text-gray">· {optional.stage}</span>
+            </label>
+          ))}
+        </div>
+      )}
+
       {saleForm?.lists.map((list) => (
         <div key={list.lineId} className="space-y-2">
           <p className="text-sm font-medium">
@@ -401,7 +447,7 @@ export function ItemForm({
               fields,
               variation: variation || null,
               composition: saleForm
-                ? { extras, choices, lists, summary: summary() }
+                ? { extras, choices, optionals, lists, summary: summary() }
                 : undefined,
             })
           }

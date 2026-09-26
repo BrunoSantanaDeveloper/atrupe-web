@@ -181,7 +181,62 @@ const emptyLine = (kind: ResourceKind): NewLineValues => ({
   formula: 'PER_UNIT',
   lossPercent: 0,
   minimum: null,
+  optional: false,
+  optionalDefault: true,
 })
+
+// Opcional é escolha do vendedor (a cantoneira do quadro com lona); linha sem
+// recurso é outra coisa — erro de cadastro, que o sistema não deixa criar
+function OptionalFields({
+  optional,
+  optionalDefault,
+  onChange,
+}: {
+  optional: boolean
+  optionalDefault: boolean
+  onChange: (values: { optional: boolean; optionalDefault: boolean }) => void
+}) {
+  return (
+    <div className="space-y-3 rounded-lg border border-gray-200 p-4">
+      <label className="flex items-start justify-between gap-6">
+        <span>
+          <span className="block text-sm font-medium text-gray-800">
+            Opcional
+          </span>
+          <span className="block text-sm text-gray">
+            O vendedor decide no orçamento se esta linha entra.
+          </span>
+        </span>
+        <Switch
+          checked={optional}
+          onCheckedChange={(checked) =>
+            onChange({ optional: checked, optionalDefault })
+          }
+          aria-label="Opcional"
+        />
+      </label>
+      {optional && (
+        <label className="flex items-start justify-between gap-6">
+          <span>
+            <span className="block text-sm font-medium text-gray-800">
+              Já vem marcada no orçamento
+            </span>
+            <span className="block text-sm text-gray">
+              É também o que o custo e o sugerido da composição consideram.
+            </span>
+          </span>
+          <Switch
+            checked={optionalDefault}
+            onCheckedChange={(checked) =>
+              onChange({ optional, optionalDefault: checked })
+            }
+            aria-label="Já vem marcada no orçamento"
+          />
+        </label>
+      )}
+    </div>
+  )
+}
 
 export function NewLineDialog({
   block,
@@ -402,6 +457,13 @@ export function NewLineDialog({
               </div>
             </>
           )}
+          <OptionalFields
+            optional={values.optional}
+            optionalDefault={values.optionalDefault}
+            onChange={(next) =>
+              setValues((current) => ({ ...current, ...next }))
+            }
+          />
         </DialogBody>
         <DialogFooter>
           <Button
@@ -433,6 +495,8 @@ export type LineValues = {
   formula: FormulaKey
   lossPercent: number
   minimum: number | null
+  optional: boolean
+  optionalDefault: boolean
 }
 
 export function LineDialog({
@@ -455,6 +519,8 @@ export function LineDialog({
     formula: 'FIXED',
     lossPercent: 0,
     minimum: null,
+    optional: false,
+    optionalDefault: true,
   })
 
   useEffect(() => {
@@ -464,6 +530,8 @@ export function LineDialog({
         formula: line.formula,
         lossPercent: line.lossPercent,
         minimum: line.minimum,
+        optional: !!line.optional,
+        optionalDefault: line.optionalDefault ?? true,
       })
     }
   }, [line])
@@ -570,6 +638,15 @@ export function LineDialog({
             A perda é somada ao consumo (a sobra do corte). O mínimo impede que
             a peça pequena saia com custo irreal.
           </p>
+          {!variationName && (
+            <OptionalFields
+              optional={values.optional}
+              optionalDefault={values.optionalDefault}
+              onChange={(next) =>
+                setValues((current) => ({ ...current, ...next }))
+              }
+            />
+          )}
         </DialogBody>
         <DialogFooter>
           <Button

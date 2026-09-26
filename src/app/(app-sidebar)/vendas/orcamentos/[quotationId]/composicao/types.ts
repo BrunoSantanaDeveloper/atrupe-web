@@ -46,6 +46,8 @@ export type QuotationLine = {
 export type ItemComposition = {
   extras: { blockId: string; value: number }[]
   choices: { blockId: string; lineId: string; optionId: string }[]
+  // As linhas opcionais e se entraram nesta venda (IP-28)
+  optionals: { blockId: string; lineId: string; included: boolean }[]
   lists: {
     blockId: string
     lineId: string

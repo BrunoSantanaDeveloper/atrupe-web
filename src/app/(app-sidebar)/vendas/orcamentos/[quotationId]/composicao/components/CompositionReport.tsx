@@ -78,6 +78,7 @@ export function CompositionReport({ item, onOpenChange }: Props) {
         variationName: item!.variation,
         extras: item!.composition?.extras,
         choices: item!.composition?.choices,
+        optionals: item!.composition?.optionals,
         lists: item!.composition?.lists,
       }),
   })

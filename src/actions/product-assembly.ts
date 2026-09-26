@@ -24,6 +24,7 @@ import type {
   NewLineValues,
   SaleForm,
   SaleExtra,
+  SaleOptional,
   SaleChoice,
   SaleListEntry,
   SaleCompositionReport,
@@ -334,6 +335,9 @@ const catalog: Template[] = [
         formula: 'PER_WIDTH',
         lossPercent: 0,
         minimum: null,
+        // O banner pode ir sem cordão: o vendedor decide (IP-28)
+        optional: true,
+        optionalDefault: true,
       },
     ],
   },
@@ -886,9 +890,10 @@ const compute = (
           )
         : null
 
-      // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8)
+      // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8).
+      // A opcional desmarcada fica fora da conta (IP-28)
       const raw =
-        line.mode === 'LIST'
+        line.mode === 'LIST' || (line.optional && !line.optionalDefault)
           ? null
           : line.formula === 'SHEET_YIELD'
             ? sheetYield
@@ -1211,6 +1216,8 @@ export const addAssemblyLine = async ({
     formula: list ? 'SELLER' : values.formula,
     lossPercent: list ? 0 : values.lossPercent,
     minimum: list ? null : values.minimum,
+    optional: values.optional,
+    optionalDefault: values.optional ? values.optionalDefault : undefined,
     overridden: false,
     // Numa etapa vinda de processo, a linha a mais é só deste produto
     addedHere: block.processId !== null,
@@ -1301,7 +1308,13 @@ export const updateAssemblyLine = async ({
   values: Partial<
     Pick<
       AssemblyLine,
-      'selectedId' | 'perUnit' | 'formula' | 'lossPercent' | 'minimum'
+      | 'selectedId'
+      | 'perUnit'
+      | 'formula'
+      | 'lossPercent'
+      | 'minimum'
+      | 'optional'
+      | 'optionalDefault'
     >
   >
 }) => {
@@ -1500,7 +1513,7 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
 
-  const form: SaleForm = { extras: [], choices: [], lists: [] }
+  const form: SaleForm = { extras: [], choices: [], optionals: [], lists: [] }
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
     if (rules.extraField !== 'NONE') {
@@ -1512,6 +1525,17 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
       })
     }
     block.lines.forEach((line) => {
+      // Linha vazia é erro de cadastro: não chega ao orçamento (IP-37)
+      if (!line.options.length) return
+      if (line.optional) {
+        form.optionals.push({
+          blockId: block.id,
+          lineId: line.id,
+          name: line.name,
+          stage: block.name,
+          defaultIncluded: !!line.optionalDefault,
+        })
+      }
       if (line.mode === 'CHOOSE') {
         form.choices.push({
           blockId: block.id,
@@ -1548,6 +1572,7 @@ export const getSaleComposition = async ({
   variationName,
   extras = [],
   choices = [],
+  optionals = [],
   lists = [],
 }: {
   productId: string
@@ -1555,6 +1580,7 @@ export const getSaleComposition = async ({
   variationName?: string | null
   extras?: SaleExtra[]
   choices?: SaleChoice[]
+  optionals?: SaleOptional[]
   lists?: SaleListEntry[]
 }) => {
   const original = assemblies.find((item) => item.productId === productId)
@@ -1577,7 +1603,16 @@ export const getSaleComposition = async ({
         (item) => item.blockId === block.id && item.lineId === line.id,
       )
       if (choice) line.selectedId = choice.optionId
+      const optional = optionals.find(
+        (item) => item.blockId === block.id && item.lineId === line.id,
+      )
+      if (optional) line.optionalDefault = optional.included
     })
+    // O relatório mostra o que foi vendido: sem linha vazia e sem a opcional
+    // que ficou de fora
+    block.lines = block.lines.filter(
+      (line) => line.options.length && (!line.optional || line.optionalDefault),
+    )
   })
   const variation =
     source.variations.find((item) => item.name === variationName) || null

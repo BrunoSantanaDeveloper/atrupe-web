@@ -426,6 +426,18 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                         {line.overridden ? ' · ajustada neste produto' : ''}
                         {line.addedHere ? ' · só neste produto' : ''}
                       </p>
+                      {line.optional && (
+                        <Badge className="mt-1" variant="neutralLight">
+                          {line.optionalDefault
+                            ? 'Opcional · vem marcada'
+                            : 'Opcional · fora do custo padrão'}
+                        </Badge>
+                      )}
+                      {!line.options.length && (
+                        <Badge className="mt-1" variant="errorLight">
+                          Sem recurso: complete ou remova
+                        </Badge>
+                      )}
                       {line.variationOverride && (
                         <Badge
                           className="mt-1"

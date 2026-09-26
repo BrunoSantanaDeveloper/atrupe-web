@@ -168,6 +168,12 @@ export type AssemblyLine = {
   overridden: boolean
   // Acrescentada neste produto numa etapa que veio de um processo
   addedHere?: boolean
+  // Opcional (IP-28): o vendedor decide no orçamento se entra — a cantoneira
+  // do quadro com lona. Não confundir com linha vazia, que é erro de cadastro
+  optional?: boolean
+  // Se a opcional já vem marcada no orçamento; é também o que o custo e o
+  // sugerido da composição consideram
+  optionalDefault?: boolean
 }
 
 export type BlockRole = 'BASE' | 'FINISHING'
@@ -323,6 +329,8 @@ export type NewLineValues = {
   formula: FormulaKey
   lossPercent: number
   minimum: number | null
+  optional: boolean
+  optionalDefault: boolean
 }
 
 /* ---------------------------------------------------------------------------
@@ -333,6 +341,11 @@ export type NewLineValues = {
 export type SaleChoice = { blockId: string; lineId: string; optionId: string }
 export type SaleListEntry = SaleChoice & { quantity: number }
 export type SaleExtra = { blockId: string; value: number }
+export type SaleOptional = {
+  blockId: string
+  lineId: string
+  included: boolean
+}
 
 export type SaleForm = {
   // Campos extras nomeados de cada etapa (nº de letras, distância dos ilhoses)
@@ -350,6 +363,14 @@ export type SaleForm = {
     stage: string
     defaultId: string
     options: { id: string; name: string }[]
+  }[]
+  // Opcionais: o vendedor marca se entram nesta venda
+  optionals: {
+    blockId: string
+    lineId: string
+    name: string
+    stage: string
+    defaultIncluded: boolean
   }[]
   // Listas: o vendedor informa quanto usou de cada item
   lists: {
