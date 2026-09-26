@@ -73,6 +73,10 @@ export type PendingSale = {
   // false = foi para o fluxo financeiro; entra no relatório do dia, mas não
   // no saldo do caixa
   goesToCash: boolean
+  // Com mais de um caixa, quem puxou a venda para atender (FC-5)
+  claimedBy?: string | null
+  // Revertida para faturamento: a forma escolhida para o cliente (FC-4)
+  billing?: string
 }
 
 // A venda rápida vista do lado do vendedor, depois de sair do orçamento.

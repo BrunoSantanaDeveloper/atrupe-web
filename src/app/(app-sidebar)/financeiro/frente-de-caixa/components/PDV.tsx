@@ -33,6 +33,7 @@ import {
   CloseCashDialog,
 } from './CashDialogs'
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
+import { BillingDialog } from './BillingDialog'
 
 // Types
 import {
@@ -47,10 +48,11 @@ import {
 } from '../types'
 
 // Actions
-import { getCashFront, reverseSale } from '@/actions/cash-front'
+import { claimSale, getCashFront, reverseSale } from '@/actions/cash-front'
 
 // Third-party
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
@@ -59,8 +61,13 @@ import {
   IconCashBanknote,
   IconPackageExport,
   IconReceiptRefund,
+  IconUserCheck,
+  IconFileInvoice,
   IconDeviceImacCancel,
 } from '@tabler/icons-react'
+
+// Consts
+import { cashFrontClaimObj } from '@/consts/cashFront'
 
 // Utils
 import { updateFilterParam } from '@/lib/filter-utils'
@@ -93,6 +100,11 @@ export function PDV() {
   const setAba = (value: Aba) =>
     updateFilterParam('aba', value, { router, params })
   const [receiving, setReceiving] = useState<PendingSale>()
+  const [billingSale, setBillingSale] = useState<PendingSale>()
+  const { data: authSession } = useSession()
+  // Reverter para faturamento é restrito (FC-15); por enquanto, o
+  // administrador
+  const canBill = !!authSession?.user?.isAdmin
   const [dialog, setDialog] = useState('')
 
   const { data, isLoading } = useQuery({
@@ -115,6 +127,17 @@ export function PDV() {
   // mesma soma, a conferência do fechamento nunca bateria (FC-12.1)
   const noCaixa = sales.filter((sale) => sale.goesToCash)
   const noFluxo = sales.filter((sale) => !sale.goesToCash)
+
+  const me = session ? `${session.name} · ${session.operator}` : ''
+  const claimOf = (sale: PendingSale) =>
+    !sale.claimedBy ? 'FREE' : sale.claimedBy === me ? 'MINE' : 'OTHER'
+
+  const claim = async (sale: PendingSale) => {
+    const res = await claimSale(sale.id)
+    if (!res.success) return toast.error(res.message)
+    toast.success(`${sale.reference} com você`)
+    await refresh()
+  }
 
   const cancelSale = (sale: PendingSale) =>
     alertDialog.open({
@@ -287,6 +310,14 @@ export function PDV() {
                               ? ' · sinal pago, aguarda retirada'
                               : ''}
                           </p>
+                          <Badge
+                            className="mt-1"
+                            variant={cashFrontClaimObj[claimOf(sale)].variant}
+                          >
+                            {claimOf(sale) === 'OTHER'
+                              ? sale.claimedBy
+                              : cashFrontClaimObj[claimOf(sale)].text}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-sm text-gray">
                           {sale.seller}
@@ -305,17 +336,38 @@ export function PDV() {
                             <PermissionGate
                               permissions={['financial:pdv:edit']}
                             >
+                              {claimOf(sale) === 'FREE' && (
+                                <ActionButton
+                                  Icon={IconUserCheck}
+                                  variant="neutralGhost"
+                                  tooltip="Puxar para mim"
+                                  disabled={!isOpen}
+                                  onClick={() => claim(sale)}
+                                />
+                              )}
                               <ActionButton
                                 Icon={IconCashBanknote}
                                 variant="neutralGhost"
                                 tooltip={
-                                  isOpen
-                                    ? 'Receber'
-                                    : 'Abra o caixa para receber'
+                                  !isOpen
+                                    ? 'Abra o caixa para receber'
+                                    : claimOf(sale) === 'OTHER'
+                                      ? `Sendo atendida no ${sale.claimedBy}`
+                                      : 'Receber'
                                 }
-                                disabled={!isOpen}
+                                disabled={!isOpen || claimOf(sale) === 'OTHER'}
                                 onClick={() => setReceiving(sale)}
                               />
+                              {canBill &&
+                                sale.kind === 'QUICK' &&
+                                sale.paid === 0 && (
+                                  <ActionButton
+                                    Icon={IconFileInvoice}
+                                    variant="neutralGhost"
+                                    tooltip="Faturar para o cliente"
+                                    onClick={() => setBillingSale(sale)}
+                                  />
+                                )}
                               <ActionButton
                                 Icon={IconReceiptRefund}
                                 variant="errorGhost"
@@ -352,7 +404,7 @@ export function PDV() {
                             </TableCell>
                             <TableCell colSpan={2} className="text-right">
                               <Badge variant="neutralLight">
-                                Faturamento mensal
+                                {sale.billing || 'Faturamento mensal'}
                               </Badge>
                             </TableCell>
                             <TableCell />
@@ -524,6 +576,11 @@ export function PDV() {
           sale={receiving}
           onDone={refresh}
           onOpenChange={(open) => !open && setReceiving(undefined)}
+        />
+        <BillingDialog
+          sale={billingSale}
+          onDone={refresh}
+          onOpenChange={(open) => !open && setBillingSale(undefined)}
         />
         <OpenCashDialog
           open={dialog === 'abrir'}

@@ -95,6 +95,8 @@ let sales: PendingSale[] = [
     delivered: false,
     approvedAt: hoje('15:40:00'),
     goesToCash: true,
+    // Outro caixa já puxou esta venda para atender (FC-5)
+    claimedBy: 'Caixa 2 · Paulo Mendes',
   },
   {
     id: 's3',
@@ -219,6 +221,17 @@ export const receiveSale = async (
       message: 'Abra o caixa antes de receber',
     }
   }
+
+  // Com mais de um caixa, só recebe quem puxou a venda (FC-5)
+  const me = `${session.name} · ${session.operator}`
+  if (sale.claimedBy && sale.claimedBy !== me) {
+    return {
+      success: false,
+      data: null,
+      message: `Esta venda está sendo atendida no ${sale.claimedBy}`,
+    }
+  }
+  sale.claimedBy = me
 
   const amount = parts.reduce((total, part) => total + part.amount, 0)
 
@@ -375,4 +388,61 @@ export const chargeQuickSaleNow = async (
   }
 
   return { success: true, data: checkouts[origin.quotationId], message: '' }
+}
+
+// Com mais de um caixa, cada um puxa para si a venda que vai atender (FC-5)
+export const claimSale = async (saleId: string) => {
+  const sale = sales.find((item) => item.id === saleId)
+  if (!sale || !session) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+
+  const me = `${session.name} · ${session.operator}`
+  if (sale.claimedBy && sale.claimedBy !== me) {
+    return {
+      success: false,
+      data: null,
+      message: `Esta venda já está com o ${sale.claimedBy}`,
+    }
+  }
+
+  sale.claimedBy = me
+  return { success: true, data: sale, message: '' }
+}
+
+export const releaseSale = async (saleId: string) => {
+  const sale = sales.find((item) => item.id === saleId)
+  if (sale && sale.paid === 0) sale.claimedBy = null
+  return { success: true, data: null, message: '' }
+}
+
+// Reverter a venda rápida para faturamento (FC-4): o cliente que paga no fim
+// do mês. A venda sai da fila do caixa e vai para o fluxo financeiro, no
+// nome do cliente e com a forma de pagamento dele
+export const reverseToBilling = async (
+  saleId: string,
+  client: { id: string; name: string },
+  billing: string,
+) => {
+  const sale = sales.find((item) => item.id === saleId)
+  if (!sale) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+  if (!client.id) {
+    return { success: false, data: null, message: 'Escolha o cliente' }
+  }
+  if (sale.paid > 0) {
+    return {
+      success: false,
+      data: null,
+      message:
+        'A venda já tem sinal recebido. Estorne o sinal antes de faturar para o cliente',
+    }
+  }
+
+  sale.client = client.name
+  sale.billing = billing
+  sale.goesToCash = false
+  sale.claimedBy = null
+  return { success: true, data: sale, message: '' }
 }
