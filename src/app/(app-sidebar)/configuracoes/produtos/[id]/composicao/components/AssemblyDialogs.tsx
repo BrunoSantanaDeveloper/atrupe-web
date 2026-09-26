@@ -137,10 +137,13 @@ export type LineValues = {
 
 export function LineDialog({
   line,
+  variationName,
   onOpenChange,
   onSave,
 }: {
   line?: ComputedLine
+  // Na variação só o consumo muda: o 4x4 passa a folha duas vezes (PV-7)
+  variationName?: string
   onOpenChange: (open: boolean) => void
   onSave: (values: LineValues) => void
 }) {
@@ -173,27 +176,33 @@ export function LineDialog({
             <div>
               <DialogTitle>Ajustar {line?.name.toLowerCase()}</DialogTitle>
               <DialogDescription>
-                Vale só neste produto. O processo continua como está.
+                {variationName
+                  ? `Vale só na variação ${variationName}. O resto acompanha a base.`
+                  : 'Vale só neste produto. O processo continua como está.'}
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <SelectBasic
-            name="line-formula"
-            label="Como a quantidade é calculada"
-            options={formulaOptions}
-            value={values.formula}
-            onChange={(value) =>
-              setValues((current) => ({
-                ...current,
-                formula: value as FormulaKey,
-              }))
-            }
-          />
-          <p className="-mt-2 text-sm text-gray">
-            {formulaObj[values.formula]?.help}
-          </p>
+          {!variationName && (
+            <SelectBasic
+              name="line-formula"
+              label="Como a quantidade é calculada"
+              options={formulaOptions}
+              value={values.formula}
+              onChange={(value) =>
+                setValues((current) => ({
+                  ...current,
+                  formula: value as FormulaKey,
+                }))
+              }
+            />
+          )}
+          {!variationName && (
+            <p className="-mt-2 text-sm text-gray">
+              {formulaObj[values.formula]?.help}
+            </p>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="line-per-unit">Consumo ({unit})</Label>
@@ -211,42 +220,46 @@ export function LineDialog({
                 }
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="line-loss">Perda (%)</Label>
-              <Input
-                id="line-loss"
-                type="number"
-                min={0}
-                step="1"
-                value={values.lossPercent}
-                onChange={(event) =>
-                  setValues((current) => ({
-                    ...current,
-                    lossPercent: Number(event.target.value) || 0,
-                  }))
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="line-minimum">Mínimo ({unit})</Label>
-              <Input
-                id="line-minimum"
-                type="number"
-                min={0}
-                step="0.01"
-                placeholder="Sem mínimo"
-                value={values.minimum ?? ''}
-                onChange={(event) =>
-                  setValues((current) => ({
-                    ...current,
-                    minimum:
-                      event.target.value === ''
-                        ? null
-                        : Number(event.target.value),
-                  }))
-                }
-              />
-            </div>
+            {!variationName && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="line-loss">Perda (%)</Label>
+                  <Input
+                    id="line-loss"
+                    type="number"
+                    min={0}
+                    step="1"
+                    value={values.lossPercent}
+                    onChange={(event) =>
+                      setValues((current) => ({
+                        ...current,
+                        lossPercent: Number(event.target.value) || 0,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="line-minimum">Mínimo ({unit})</Label>
+                  <Input
+                    id="line-minimum"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="Sem mínimo"
+                    value={values.minimum ?? ''}
+                    onChange={(event) =>
+                      setValues((current) => ({
+                        ...current,
+                        minimum:
+                          event.target.value === ''
+                            ? null
+                            : Number(event.target.value),
+                      }))
+                    }
+                  />
+                </div>
+              </>
+            )}
           </div>
           <p className="text-sm text-gray">
             A perda é somada ao consumo (a sobra do corte). O mínimo impede que

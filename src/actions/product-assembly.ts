@@ -18,6 +18,7 @@ import type {
   ComputedBlock,
   ProductAssembly,
   ComputedAssembly,
+  ProductVariation,
   ProcessCatalogItem,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
@@ -437,6 +438,34 @@ const assemblies: ProductAssembly[] = [
       bannerBase,
       fromTemplate(templateOf('acabamento-banner')!, bannerBase.id),
     ],
+    variations: [
+      {
+        // A mesma composição com a lona mais barata e preço próprio
+        id: 'v-economica',
+        name: 'Econômico · lona 380',
+        unitPrice: 3900,
+        overrides: [
+          {
+            blockId: bannerBase.id,
+            lineId: bannerBase.lines[1].id,
+            selectedId: 'lona380',
+          },
+        ],
+      },
+      {
+        // Mais qualidade de impressão, e o preço do produto
+        id: 'v-alta',
+        name: 'Alta definição · 6 passes',
+        unitPrice: null,
+        overrides: [
+          {
+            blockId: bannerBase.id,
+            lineId: bannerBase.lines[0].id,
+            selectedId: 'solv6',
+          },
+        ],
+      },
+    ],
   },
 ]
 
@@ -457,6 +486,7 @@ const findOrCreate = (productId: string) => {
       allowEditDescription: true,
       technicalDescription: '',
       blocks: [],
+      variations: [],
     }
     assemblies.push(found)
   }
@@ -507,7 +537,42 @@ const lineQuantity = (
   }
 }
 
-const compute = (assembly: ProductAssembly): ComputedAssembly => {
+const applyVariation = (
+  assembly: ProductAssembly,
+  variation: ProductVariation | null,
+) =>
+  variation
+    ? {
+        ...assembly,
+        blocks: assembly.blocks.map((block) => ({
+          ...block,
+          lines: block.lines.map((line) => {
+            const override = variation.overrides.find(
+              (item) => item.blockId === block.id && item.lineId === line.id,
+            )
+            return override
+              ? {
+                  ...line,
+                  ...(override.selectedId !== undefined && {
+                    selectedId: override.selectedId,
+                  }),
+                  ...(override.perUnit !== undefined && {
+                    perUnit: override.perUnit,
+                  }),
+                }
+              : line
+          }),
+        })),
+      }
+    : assembly
+
+const compute = (
+  source: ProductAssembly,
+  variation: ProductVariation | null = null,
+): ComputedAssembly => {
+  const assembly = applyVariation(source, variation)
+  // Sem preço próprio, a variação vale o preço do produto (PV-4)
+  const unitPrice = variation?.unitPrice ?? assembly.unitPrice
   const { measure } = assembly
   const area = round(measure.width * measure.height, 4)
   const blocks: ComputedBlock[] = []
@@ -561,6 +626,9 @@ const compute = (assembly: ProductAssembly): ComputedAssembly => {
 
       return {
         ...line,
+        variationOverride: !!variation?.overrides.some(
+          (item) => item.blockId === block.id && item.lineId === line.id,
+        ),
         selected,
         quantity: qty,
         cost:
@@ -597,9 +665,7 @@ const compute = (assembly: ProductAssembly): ComputedAssembly => {
         : assembly.unitAmount * measure.quantity
 
   const priceForMeasure =
-    assembly.unitPrice === null
-      ? null
-      : Math.round(assembly.unitPrice * saleAmount)
+    unitPrice === null ? null : Math.round(unitPrice * saleAmount)
 
   return {
     ...assembly,
@@ -612,6 +678,8 @@ const compute = (assembly: ProductAssembly): ComputedAssembly => {
     suggestedUnitPrice: Math.round(
       suggestedPrice / Math.max(saleAmount, 0.0001),
     ),
+    activeVariation: variation,
+    variationSummary: [],
     // Produto sem composição nunca aparece com margem zero (DC-15)
     margin:
       priceForMeasure && cost
@@ -632,12 +700,32 @@ const fail = (message: string) => ({ success: false, data: null, message })
 export const getAssembly = async ({
   productId,
   measure,
+  variationId,
 }: {
   productId: string
   measure?: AssemblyMeasure
+  variationId?: string | null
 }) => {
   const assembly = findOrCreate(productId)
-  return ok(compute(measure ? { ...assembly, measure } : assembly))
+  const base = measure ? { ...assembly, measure } : assembly
+  const variation =
+    assembly.variations.find((item) => item.id === variationId) || null
+
+  const result = compute(base, variation)
+  // O custo muda por variação mesmo com preço único: é o que revela que o
+  // GG dá menos margem que o P (PV-4)
+  result.variationSummary = [null, ...assembly.variations].map((item) => {
+    const computed = compute(base, item)
+    return {
+      id: item?.id || '',
+      name: item?.name || 'Base',
+      cost: computed.cost,
+      priceForMeasure: computed.priceForMeasure,
+      margin: computed.margin,
+    }
+  })
+
+  return ok(result)
 }
 
 export const getProcessCatalog = async () =>
@@ -828,5 +916,108 @@ export const setBlockLocalRules = async ({
   )
   if (!block) return fail('Etapa não encontrada')
   block.localRules = rules
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Variações (PV-1 a PV-7)
+ * ------------------------------------------------------------------------- */
+
+export const addVariation = async ({
+  productId,
+  name,
+}: {
+  productId: string
+  name: string
+}) => {
+  if (!name.trim()) return fail('Dê um nome para a variação')
+  const assembly = findOrCreate(productId)
+  const variation: ProductVariation = {
+    id: `v${uid()}`,
+    name: name.trim(),
+    unitPrice: null,
+    overrides: [],
+  }
+  assembly.variations.push(variation)
+  return ok(variation.id)
+}
+
+export const removeVariation = async ({
+  productId,
+  variationId,
+}: {
+  productId: string
+  variationId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  assembly.variations = assembly.variations.filter(
+    (item) => item.id !== variationId,
+  )
+  return ok(null)
+}
+
+export const setVariationPrice = async ({
+  productId,
+  variationId,
+  unitPrice,
+}: {
+  productId: string
+  variationId: string
+  unitPrice: number | null
+}) => {
+  const variation = findOrCreate(productId).variations.find(
+    (item) => item.id === variationId,
+  )
+  if (!variation) return fail('Variação não encontrada')
+  variation.unitPrice = unitPrice
+  return ok(null)
+}
+
+// O que muda na variação vira exceção dela; o resto continua acompanhando a
+// base (PV-2)
+export const setVariationLine = async ({
+  productId,
+  variationId,
+  blockId,
+  lineId,
+  values,
+}: {
+  productId: string
+  variationId: string
+  blockId: string
+  lineId: string
+  values: { selectedId?: string; perUnit?: number }
+}) => {
+  const variation = findOrCreate(productId).variations.find(
+    (item) => item.id === variationId,
+  )
+  if (!variation) return fail('Variação não encontrada')
+
+  const current = variation.overrides.find(
+    (item) => item.blockId === blockId && item.lineId === lineId,
+  )
+  if (current) Object.assign(current, values)
+  else variation.overrides.push({ blockId, lineId, ...values })
+  return ok(null)
+}
+
+export const clearVariationLine = async ({
+  productId,
+  variationId,
+  blockId,
+  lineId,
+}: {
+  productId: string
+  variationId: string
+  blockId: string
+  lineId: string
+}) => {
+  const variation = findOrCreate(productId).variations.find(
+    (item) => item.id === variationId,
+  )
+  if (!variation) return fail('Variação não encontrada')
+  variation.overrides = variation.overrides.filter(
+    (item) => !(item.blockId === blockId && item.lineId === lineId),
+  )
   return ok(null)
 }

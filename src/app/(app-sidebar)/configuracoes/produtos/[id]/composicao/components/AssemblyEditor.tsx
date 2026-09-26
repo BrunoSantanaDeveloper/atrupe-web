@@ -9,6 +9,7 @@
 
 // React
 import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
 import {
@@ -73,6 +74,11 @@ import {
   setBlockLocalRules,
   updateAssemblyLine,
   removeAssemblyBlock,
+  addVariation,
+  removeVariation,
+  setVariationLine,
+  setVariationPrice,
+  clearVariationLine,
 } from '@/actions/product-assembly'
 
 // Hooks / Store / Consts
@@ -103,6 +109,7 @@ import {
 } from '@tabler/icons-react'
 
 // Utils
+import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 const EDIT = ['product_settings:products:edit']
@@ -130,11 +137,19 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   // A medida da simulação é da tela; a medida padrão só muda ao salvar
   const [measure, setMeasure] = useState<AssemblyMeasure>()
   const [dialog, setDialog] = useState<Dialog>(null)
+  const [newVariation, setNewVariation] = useState<string | null>(null)
+
+  // A variação vista fica na URL (design.md §8): ?variacao=
+  const router = useRouter()
+  const params = useSearchParams()
+  const variationId = params.get('variacao')
+  const setVariation = (id: string | null) =>
+    updateFilterParam('variacao', id || 'all', { router, params })
   const [description, setDescription] = useState('')
 
   const { data, isLoading } = useQuery({
-    queryKey: ['assembly', productId, measure],
-    queryFn: () => getAssembly({ productId, measure }),
+    queryKey: ['assembly', productId, measure, variationId],
+    queryFn: () => getAssembly({ productId, measure, variationId }),
     placeholderData: keepPreviousData,
   })
   const { data: catalogRes } = useQuery({
@@ -172,6 +187,8 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   }
 
   const saved = assembly.measure
+  const variation = assembly.activeVariation
+  const inVariation = !!variation
   const measureChanged =
     saved.quantity !== measure.quantity ||
     saved.width !== measure.width ||
@@ -192,10 +209,16 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   // venda, o mesmo campo do cadastro do START
   const adoptSuggested = () =>
     run(
-      updateAssembly({
-        productId,
-        values: { unitPrice: assembly.suggestedUnitPrice },
-      }),
+      assembly.activeVariation
+        ? setVariationPrice({
+            productId,
+            variationId: assembly.activeVariation.id,
+            unitPrice: assembly.suggestedUnitPrice,
+          })
+        : updateAssembly({
+            productId,
+            values: { unitPrice: assembly.suggestedUnitPrice },
+          }),
       'Preço sugerido adotado',
     )
 
@@ -277,60 +300,63 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 </span>
               </p>
             </PermissionGate>
-            <PermissionGate permissions={EDIT}>
-              <div className="flex gap-1">
-                {!finishing && options.length > 0 && (
+            {/* A estrutura é da base: a variação só muda linhas (PV-2) */}
+            {!inVariation && (
+              <PermissionGate permissions={EDIT}>
+                <div className="flex gap-1">
+                  {!finishing && options.length > 0 && (
+                    <ActionButton
+                      Icon={IconCirclePlus}
+                      variant="neutralGhost"
+                      tooltip="Adicionar acabamento"
+                      onClick={() => setDialog({ kind: 'finish', block: item })}
+                    />
+                  )}
                   <ActionButton
-                    Icon={IconCirclePlus}
+                    Icon={IconSettings}
                     variant="neutralGhost"
-                    tooltip="Adicionar acabamento"
-                    onClick={() => setDialog({ kind: 'finish', block: item })}
+                    tooltip="Regras de venda"
+                    onClick={() => setDialog({ kind: 'rules', block: item })}
                   />
-                )}
-                <ActionButton
-                  Icon={IconSettings}
-                  variant="neutralGhost"
-                  tooltip="Regras de venda"
-                  onClick={() => setDialog({ kind: 'rules', block: item })}
-                />
-                <ActionButton
-                  Icon={IconArrowUp}
-                  variant="neutralGhost"
-                  tooltip="Subir etapa"
-                  disabled={index === 0}
-                  onClick={() =>
-                    run(
-                      moveAssemblyBlock({
-                        productId,
-                        blockId: item.id,
-                        direction: 'UP',
-                      }),
-                    )
-                  }
-                />
-                <ActionButton
-                  Icon={IconArrowDown}
-                  variant="neutralGhost"
-                  tooltip="Descer etapa"
-                  disabled={index === assembly.blocks.length - 1}
-                  onClick={() =>
-                    run(
-                      moveAssemblyBlock({
-                        productId,
-                        blockId: item.id,
-                        direction: 'DOWN',
-                      }),
-                    )
-                  }
-                />
-                <ActionButton
-                  Icon={IconTrash}
-                  variant="errorGhost"
-                  tooltip="Remover etapa"
-                  onClick={() => removeBlock(item)}
-                />
-              </div>
-            </PermissionGate>
+                  <ActionButton
+                    Icon={IconArrowUp}
+                    variant="neutralGhost"
+                    tooltip="Subir etapa"
+                    disabled={index === 0}
+                    onClick={() =>
+                      run(
+                        moveAssemblyBlock({
+                          productId,
+                          blockId: item.id,
+                          direction: 'UP',
+                        }),
+                      )
+                    }
+                  />
+                  <ActionButton
+                    Icon={IconArrowDown}
+                    variant="neutralGhost"
+                    tooltip="Descer etapa"
+                    disabled={index === assembly.blocks.length - 1}
+                    onClick={() =>
+                      run(
+                        moveAssemblyBlock({
+                          productId,
+                          blockId: item.id,
+                          direction: 'DOWN',
+                        }),
+                      )
+                    }
+                  />
+                  <ActionButton
+                    Icon={IconTrash}
+                    variant="errorGhost"
+                    tooltip="Remover etapa"
+                    onClick={() => removeBlock(item)}
+                  />
+                </div>
+              </PermissionGate>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -358,6 +384,16 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                         {resourceKindObj[line.kind]}
                         {line.overridden ? ' · ajustada neste produto' : ''}
                       </p>
+                      {line.variationOverride && (
+                        <Badge
+                          className="mt-1"
+                          variant={
+                            assemblyOverrideObj.VARIATION_CHANGED.variant
+                          }
+                        >
+                          {assemblyOverrideObj.VARIATION_CHANGED.text}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell>
                       {line.mode === 'CHOOSE' ? (
@@ -372,12 +408,20 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                           value={line.selectedId}
                           onChange={(value) =>
                             run(
-                              updateAssemblyLine({
-                                productId,
-                                blockId: item.id,
-                                lineId: line.id,
-                                values: { selectedId: value },
-                              }),
+                              assembly.activeVariation
+                                ? setVariationLine({
+                                    productId,
+                                    variationId: assembly.activeVariation.id,
+                                    blockId: item.id,
+                                    lineId: line.id,
+                                    values: { selectedId: value },
+                                  })
+                                : updateAssemblyLine({
+                                    productId,
+                                    blockId: item.id,
+                                    lineId: line.id,
+                                    values: { selectedId: value },
+                                  }),
                             )
                           }
                         />
@@ -454,7 +498,26 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                               }
                             />
                           )}
-                          {line.overridden && (
+                          {line.variationOverride &&
+                            assembly.activeVariation && (
+                              <ActionButton
+                                Icon={IconArrowBackUp}
+                                variant="neutralGhost"
+                                tooltip="Voltar a acompanhar a base"
+                                onClick={() =>
+                                  run(
+                                    clearVariationLine({
+                                      productId,
+                                      variationId: assembly.activeVariation!.id,
+                                      blockId: item.id,
+                                      lineId: line.id,
+                                    }),
+                                    'Linha voltou a acompanhar a base',
+                                  )
+                                }
+                              />
+                            )}
+                          {line.overridden && !inVariation && (
                             <ActionButton
                               Icon={IconArrowBackUp}
                               variant="neutralGhost"
@@ -555,30 +618,47 @@ export function AssemblyEditor({ productId }: { productId: string }) {
               <div className="space-y-2">
                 <Label htmlFor="assembly-unit-price">
                   {unitSaleLabel[assembly.unitKind]}
+                  {variation ? ` · ${variation.name}` : ''}
                 </Label>
                 <Input
-                  key={`${assembly.unitKind}-${assembly.unitPrice}`}
+                  key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
                   id="assembly-unit-price"
                   type="number"
                   min={0}
                   step="0.01"
                   startAdornment={<span className="text-sm">R$</span>}
+                  placeholder={
+                    variation && assembly.unitPrice !== null
+                      ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
+                      : ''
+                  }
                   defaultValue={
-                    assembly.unitPrice === null ? '' : assembly.unitPrice / 100
+                    variation
+                      ? variation.unitPrice === null
+                        ? ''
+                        : variation.unitPrice / 100
+                      : assembly.unitPrice === null
+                        ? ''
+                        : assembly.unitPrice / 100
                   }
-                  onBlur={(event) =>
+                  onBlur={(event) => {
+                    const value =
+                      event.target.value === ''
+                        ? null
+                        : Math.round(Number(event.target.value) * 100)
                     run(
-                      updateAssembly({
-                        productId,
-                        values: {
-                          unitPrice:
-                            event.target.value === ''
-                              ? null
-                              : Math.round(Number(event.target.value) * 100),
-                        },
-                      }),
+                      variation
+                        ? setVariationPrice({
+                            productId,
+                            variationId: variation.id,
+                            unitPrice: value,
+                          })
+                        : updateAssembly({
+                            productId,
+                            values: { unitPrice: value },
+                          }),
                     )
-                  }
+                  }}
                 />
               </div>
             </PermissionGate>
@@ -845,7 +925,162 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         </Card>
       </PermissionGate>
 
-      {/* 3. A composição: etapas por setor, acabamentos embaixo da base */}
+      {/* 3. As variações: a mesma composição com exceções (PV-1 a PV-7) */}
+      <Card>
+        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+          <div>
+            <CardTitle>Variações</CardTitle>
+            <CardDescription>
+              P, M, G; 4x0 ou 4x4; com ou sem laminação. A variação nasce igual
+              à base, e só o que você mudar nela passa a ser dela.
+            </CardDescription>
+          </div>
+          <PermissionGate permissions={EDIT}>
+            {newVariation === null ? (
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconCirclePlus}
+                onClick={() => setNewVariation('')}
+              >
+                Nova variação
+              </Button>
+            ) : (
+              <div className="flex w-full gap-2 sm:w-auto">
+                <Input
+                  autoFocus
+                  aria-label="Nome da variação"
+                  placeholder="Ex.: 4x4, GG, laminado"
+                  value={newVariation}
+                  onChange={(event) => setNewVariation(event.target.value)}
+                />
+                <Button
+                  type="button"
+                  onClick={async () => {
+                    const res = await addVariation({
+                      productId,
+                      name: newVariation,
+                    })
+                    if (!res.success) return toast.error(res.message)
+                    setNewVariation(null)
+                    await refresh()
+                    setVariation(res.data as string)
+                  }}
+                >
+                  Criar
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setNewVariation(null)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            )}
+          </PermissionGate>
+        </CardHeader>
+        <CardContent className="space-y-4 px-6 pb-6">
+          <div className="flex flex-wrap gap-2">
+            {assembly.variationSummary.map((item) => (
+              <Button
+                key={item.id || 'base'}
+                type="button"
+                variant={
+                  (variation?.id || '') === item.id
+                    ? 'default'
+                    : 'neutralOutline'
+                }
+                onClick={() => setVariation(item.id || null)}
+              >
+                {item.name}
+              </Button>
+            ))}
+          </div>
+          {assembly.variationSummary.length > 1 && (
+            <PermissionGate permissions={['values:values:view']}>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[40%]">Variação</TableHead>
+                    <TableHead className="w-[20%] text-right">Custo</TableHead>
+                    <TableHead className="w-[20%] text-right">
+                      Valor de venda
+                    </TableHead>
+                    <TableHead className="w-[20%] text-right">Margem</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {assembly.variationSummary.map((item) => (
+                    <TableRow key={item.id || 'base'}>
+                      <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell className="text-right">
+                        {money(item.cost)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {money(item.priceForMeasure)}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          'text-right font-medium',
+                          item.margin !== null &&
+                            item.margin < 0 &&
+                            'text-error-700',
+                        )}
+                      >
+                        {item.margin === null ? '-' : `${num(item.margin, 1)}%`}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </PermissionGate>
+          )}
+          {variation && (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-light-300 bg-blue-light-50 p-4 text-sm">
+              <p className="text-gray-700">
+                <strong>Você está na variação {variation.name}.</strong> O que
+                mudar nas linhas abaixo vale só para ela; o resto acompanha a
+                base. Etapas se acrescentam na base.
+              </p>
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  type="button"
+                  variant="errorGhost"
+                  size="sm"
+                  onClick={() =>
+                    alertDialog.open({
+                      title: `Remover a variação ${variation.name}?`,
+                      description:
+                        'As exceções desta variação se perdem. A base não muda.',
+                      confirmLabel: 'Remover',
+                      cancelLabel: 'Cancelar',
+                      confirmVariant: 'error',
+                      onConfirm: async () => {
+                        const res = await removeVariation({
+                          productId,
+                          variationId: variation.id,
+                        })
+                        if (!res.success) throw new Error(res.message)
+                        setVariation(null)
+                        await refresh()
+                      },
+                      toastMsg: {
+                        success: 'Variação removida',
+                        error: 'Erro ao remover a variação',
+                      },
+                    })
+                  }
+                >
+                  Remover variação
+                </Button>
+              </PermissionGate>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 4. A composição: etapas por setor, acabamentos embaixo da base */}
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-base font-semibold text-gray-800">Composição</p>
@@ -853,22 +1088,24 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             Comece pela base; os acabamentos entram embaixo dela.
           </p>
         </div>
-        <PermissionGate permissions={EDIT}>
-          <div className="flex flex-wrap gap-2">
-            {baseSectors.map((sector) => (
-              <Button
-                key={sector}
-                type="button"
-                size="md"
-                variant="neutralOutline"
-                LeftIcon={IconCirclePlus}
-                onClick={() => setDialog({ kind: 'add', sector })}
-              >
-                {sector}
-              </Button>
-            ))}
-          </div>
-        </PermissionGate>
+        {!inVariation && (
+          <PermissionGate permissions={EDIT}>
+            <div className="flex flex-wrap gap-2">
+              {baseSectors.map((sector) => (
+                <Button
+                  key={sector}
+                  type="button"
+                  size="md"
+                  variant="neutralOutline"
+                  LeftIcon={IconCirclePlus}
+                  onClick={() => setDialog({ kind: 'add', sector })}
+                >
+                  {sector}
+                </Button>
+              ))}
+            </div>
+          </PermissionGate>
+        )}
       </div>
 
       {assembly.blocks.length ? (
@@ -954,10 +1191,24 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       <LineDialog
         line={dialog?.kind === 'line' ? dialog.line : undefined}
         onOpenChange={() => setDialog(null)}
+        variationName={variation?.name}
         onSave={(values: LineValues) => {
           if (dialog?.kind !== 'line') return
           const { block: target, line } = dialog
           setDialog(null)
+          if (variation) {
+            run(
+              setVariationLine({
+                productId,
+                variationId: variation.id,
+                blockId: target.id,
+                lineId: line.id,
+                values: { perUnit: values.perUnit },
+              }),
+              `Linha ajustada na variação ${variation.name}`,
+            )
+            return
+          }
           run(
             updateAssemblyLine({
               productId,

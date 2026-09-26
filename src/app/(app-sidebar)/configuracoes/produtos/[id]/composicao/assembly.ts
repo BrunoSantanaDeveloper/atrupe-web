@@ -170,6 +170,23 @@ export type AssemblyMeasure = {
   height: number
 }
 
+// Variação do produto (PV-1 a PV-7): P, M, G; 4x0, 4x4; com ou sem
+// laminação. Nasce igual à base, e só o que for mudado passa a ser dela
+// (PV-2). O preço próprio é opcional: sem ele vale o do produto (PV-4)
+export type VariationOverride = {
+  blockId: string
+  lineId: string
+  selectedId?: string
+  perUnit?: number
+}
+
+export type ProductVariation = {
+  id: string
+  name: string
+  unitPrice: number | null
+  overrides: VariationOverride[]
+}
+
 export type ProductAssembly = {
   productId: string
   name: string
@@ -188,10 +205,13 @@ export type ProductAssembly = {
   allowEditDescription: boolean
   technicalDescription: string
   blocks: AssemblyBlock[]
+  variations: ProductVariation[]
 }
 
 // O que o servidor devolve depois de calcular (SEG-1)
 export type ComputedLine = AssemblyLine & {
+  // Mudada na variação que está sendo vista (PV-2)
+  variationOverride: boolean
   selected: ResourceOption | null
   quantity: number | null
   cost: number | null
@@ -217,6 +237,16 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   // O sugerido pela composição, na unidade comercial (por m², por metro…)
   suggestedUnitPrice: number
   margin: number | null
+  // A variação calculada, quando há uma escolhida
+  activeVariation: ProductVariation | null
+  // Custo e preço de cada variação na medida padrão, para comparar a margem
+  variationSummary: {
+    id: string
+    name: string
+    cost: number
+    priceForMeasure: number | null
+    margin: number | null
+  }[]
 }
 
 // Um processo do catálogo, para adicionar ao produto

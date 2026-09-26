@@ -3,20 +3,12 @@
 // UI
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { AssemblyEditor } from './AssemblyEditor'
 import { ProductFields } from './ProductFields'
-import { VariationTabs } from './VariationTabs'
 import { FeatureGate } from '@/components/common/FeatureGate'
 
 // Actions
@@ -33,7 +25,8 @@ interface Props {
 }
 
 // O produto composto: a composição por etapas (o "item pronto" do legado,
-// área 8 §3.4.1), os campos que o vendedor preenche e as variações.
+// área 8 §3.4.1), com as variações dentro dela, e os campos que o vendedor
+// preenche.
 export function CompositionDetail({ id }: Props) {
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -66,19 +59,6 @@ export function CompositionDetail({ id }: Props) {
         <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
           <ProductFields productId={product.id} fields={product.fields} />
         </FeatureGate>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Variações</CardTitle>
-            <CardDescription>
-              O mesmo produto em tamanhos ou modelos diferentes. A variação
-              nasce igual à base e só o que for alterado nela passa a ser dela.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            <VariationTabs product={product} />
-          </CardContent>
-        </Card>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <ReviewTodo rule="AP-1" title="Aproveitamento de folha e chapa">
