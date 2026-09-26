@@ -1,202 +1,151 @@
 'use client'
 
-// React / Next
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+// Novo processo: nome, setor e se é acabamento de outro setor (MS-1). O resto
+// — linhas, regras, tempo — se monta na página do processo.
+
+// React
+import { useEffect, useState } from 'react'
 
 // UI
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
-  DialogClose,
   DialogTitle,
   DialogFooter,
   DialogHeader,
   DialogContent,
+  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
-import { ActionButton } from '@/components/common/ActionButton'
-
-// Types
-import type { DimensionRule, Process } from '../types'
 
 // Actions
-import { createProcess, updateProcess } from '@/actions/processes'
-
-// Hooks / Store / Consts
-import { dimensionRuleOptions } from '@/consts/processes'
+import {
+  createProcessDef,
+  getAssemblyResources,
+} from '@/actions/product-assembly'
 
 // Third-party
 import { toast } from 'sonner'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPlus, IconPencil } from '@tabler/icons-react'
+import { IconCirclePlus, IconListCheck } from '@tabler/icons-react'
 
-const sectors = [
-  'Impressão',
-  'Produção',
-  'Criação',
-  'CNC',
-  'Marcenaria',
-  'Instalação',
-  'Gráfica',
-].map((sector) => ({ value: sector, label: sector }))
-
-// Cada processo pertence a um setor (D3 §9). Os recursos entram na página do
-// processo, depois de criado.
 interface Props {
-  // Com o processo informado, o mesmo formulário edita em vez de criar
-  process?: Process
+  onCreated: (processId: string) => void
 }
 
-export function NewProcessModal({ process }: Props) {
-  const router = useRouter()
+export function NewProcessModal({ onCreated }: Props) {
   const queryClient = useQueryClient()
-  const isEdit = Boolean(process)
   const [open, setOpen] = useState(false)
-  const [name, setName] = useState(process?.name || '')
-  const [sector, setSector] = useState(process?.sector || sectors[0].value)
-  const [dimensionRule, setDimensionRule] = useState<DimensionRule>(
-    process?.dimensionRule || 'FREE_SIZE',
-  )
-  // Tempo de preparo vem preenchido com um padrão; sem preparo, informa zero
-  const [setupMinutes, setSetupMinutes] = useState(
-    process ? String(process.setupMinutes) : '10',
-  )
+  const [name, setName] = useState('')
+  const [sector, setSector] = useState('')
+  const [finishingOf, setFinishingOf] = useState('none')
+  const [saving, setSaving] = useState(false)
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      process
-        ? updateProcess({
-            id: process.id,
-            name,
-            sector,
-            dimensionRule,
-            setupMinutes: Number(setupMinutes) || 0,
-          })
-        : createProcess({
-            name,
-            sector,
-            dimensionRule,
-            setupMinutes: Number(setupMinutes) || 0,
-          }),
-    onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
-
-      toast.success(isEdit ? 'Processo atualizado' : 'Processo criado')
-      queryClient.invalidateQueries({ queryKey: ['processes'] })
-      queryClient.invalidateQueries({ queryKey: ['process'] })
-      setOpen(false)
-
-      if (isEdit) return
-
-      setName('')
-
-      if (response.data) {
-        router.push(`/configuracoes/produtos/processos/${response.data.id}`)
-      }
-    },
-    onError: () =>
-      toast.error(
-        isEdit ? 'Erro ao atualizar o processo' : 'Erro ao criar o processo',
-      ),
+  const { data } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['assembly-resources'],
+    queryFn: () => getAssemblyResources(),
   })
+  const sectors = data?.data?.sectors || []
+
+  useEffect(() => {
+    if (open) {
+      setName('')
+      setSector(sectors[0] || '')
+      setFinishingOf('none')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
+  const save = async () => {
+    setSaving(true)
+    const res = await createProcessDef({
+      name,
+      sector,
+      finishingOf: finishingOf === 'none' ? null : finishingOf,
+    })
+    setSaving(false)
+    if (!res.success || !res.data) return toast.error(res.message)
+    toast.success('Processo criado')
+    await queryClient.invalidateQueries({ queryKey: ['process-list'] })
+    setOpen(false)
+    onCreated(res.data)
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {isEdit ? (
-        <ActionButton
-          Icon={IconPencil}
-          tooltip={`Editar ${process?.name}`}
-          onClick={() => setOpen(true)}
-        />
-      ) : (
-        <Button LeftIcon={IconPlus} onClick={() => setOpen(true)}>
-          Novo processo
-        </Button>
-      )}
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogTrigger asChild>
+        <Button LeftIcon={IconCirclePlus}>Novo processo</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={isEdit ? IconPencil : IconPlus}
-            />
-            <DialogTitle>
-              {isEdit ? 'Editar processo' : 'Novo processo'}
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Crie a etapa produtiva e escolha o setor responsável.
-            </DialogDescription>
+            <FeaturedIcon variant="neutralOutline" Icon={IconListCheck} />
+            <div>
+              <DialogTitle>Novo processo</DialogTitle>
+              <DialogDescription>
+                A etapa de um setor que se repete em vários produtos.
+              </DialogDescription>
+            </div>
           </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="process-name" className="text-sm font-medium">
-              Nome
-            </label>
+          <div className="space-y-2">
+            <Label htmlFor="process-name">Nome</Label>
             <Input
               id="process-name"
+              autoFocus
+              placeholder="Ex.: Impressão solvente, Bainha, Ilhós"
               value={name}
-              placeholder="Ex.: Impressão em lona"
               onChange={(event) => setName(event.target.value)}
             />
           </div>
           <SelectBasic
-            name="sector"
-            label="Setor responsável"
+            name="process-sector"
+            label="Setor"
+            options={sectors.map((item) => ({ value: item, label: item }))}
             value={sector}
-            onChange={setSector}
-            options={sectors}
+            onChange={(value) => value && setSector(String(value))}
           />
           <SelectBasic
-            name="dimension"
-            label="Como a medida entra no cálculo"
-            value={dimensionRule}
-            onChange={(value) => setDimensionRule(value as DimensionRule)}
-            options={dimensionRuleOptions}
+            name="process-finishing"
+            label="É acabamento de"
+            options={[
+              { value: 'none', label: 'Não é acabamento' },
+              ...sectors.map((item) => ({ value: item, label: item })),
+            ]}
+            value={finishingOf}
+            onChange={(value) => value && setFinishingOf(String(value))}
           />
-          <div className="space-y-1.5">
-            <label htmlFor="process-setup" className="text-sm font-medium">
-              Tempo de preparo (minutos)
-            </label>
-            <Input
-              id="process-setup"
-              type="number"
-              min={0}
-              value={setupMinutes}
-              onChange={(event) => setSetupMinutes(event.target.value)}
-            />
-            <p className="text-sm text-gray">
-              O preparo acontece uma vez por pedido, não por peça: acerto de
-              máquina, separação de material, montagem de gabarito. Sem preparo,
-              informe zero.
-            </p>
-          </div>
           <p className="text-sm text-gray">
-            Os recursos — máquina, material, mão de obra e terceirizado — entram
-            na página do processo, com a fórmula de cada um.
+            O acabamento é oferecido ao lado da etapa do setor de que ele é
+            acabamento, e herda a medida dela.
           </p>
         </DialogBody>
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancelar
-            </Button>
-          </DialogClose>
           <Button
-            isLoading={isPending}
-            disabled={!name}
-            onClick={() => mutate()}
+            type="button"
+            variant="outline"
+            onClick={() => setOpen(false)}
           >
-            {isEdit ? 'Salvar alterações' : 'Criar processo'}
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            isLoading={saving}
+            disabled={!name.trim() || !sector}
+            onClick={save}
+          >
+            Criar processo
           </Button>
         </DialogFooter>
       </DialogContent>

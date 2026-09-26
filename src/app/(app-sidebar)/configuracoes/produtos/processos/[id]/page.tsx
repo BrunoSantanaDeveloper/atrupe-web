@@ -1,4 +1,4 @@
-import { ProcessDetail } from './components/ProcessDetail'
+import { ProcessEditor } from './components/ProcessEditor'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { UpgradeFallback } from '@/components/common/UpgradeFallback'
@@ -24,7 +24,7 @@ export default function ProcessPage({ params }: { params: { id: string } }) {
         features={[FEATURES.COSTS.COST_BASE]}
         fallback={<UpgradeFallback title="Processos" />}
       >
-        <ProcessDetail id={params.id} />
+        <ProcessEditor id={params.id} />
       </FeatureGate>
     </PermissionGate>
   )

@@ -568,8 +568,59 @@ const fromTemplate = (
   }
 }
 
-const templateOf = (processId: string) =>
-  catalog.find((item) => item.processId === processId)
+/* ---------------------------------------------------------------------------
+ * Processos (MS-11): o processo é guardado no mesmo formato da etapa da
+ * composição — linhas de escolha e lista, opções com consumo próprio, regras
+ * de venda, tempo e tipo de tarefa. A tela de Processos edita esse formato,
+ * e o produto copia o processo ao incluí-lo
+ * ------------------------------------------------------------------------- */
+
+type ProcessMeta = {
+  finishingOf: string | null
+  sellerInstructions: string
+  active: boolean
+}
+
+const PROCESS_PREFIX = 'processo:'
+const processStore = new Map<
+  string,
+  { block: AssemblyBlock; meta: ProcessMeta }
+>()
+
+catalog.forEach((template) => {
+  const { finishingOf, lines, processId, ...rest } = template
+  processStore.set(processId, {
+    block: {
+      ...rest,
+      id: `p-${processId}`,
+      processId: null,
+      baseBlockId: null,
+      localRules: null,
+      lines: lines.map((line) => ({
+        ...line,
+        id: `l${uid()}`,
+        overridden: false,
+      })),
+    },
+    meta: { finishingOf, sellerInstructions: '', active: true },
+  })
+})
+
+const templateOf = (processId: string): Template | undefined => {
+  const entry = processStore.get(processId)
+  if (!entry) return undefined
+  return {
+    ...entry.block,
+    processId,
+    finishingOf: entry.meta.finishingOf,
+    lines: entry.block.lines,
+  } as Template
+}
+
+const processTemplates = (onlyActive = true) =>
+  Array.from(processStore.keys())
+    .filter((id) => !onlyActive || processStore.get(id)!.meta.active)
+    .map((id) => templateOf(id)!)
 
 // O Banner do legado (ITP1): impressão solvente + acabamento de banner
 const bannerBase = fromTemplate(templateOf('impressao-solvente')!, null)
@@ -812,6 +863,32 @@ assemblies.push({
   ],
   variations: [],
 })
+
+// Cada processo tem um "produto" técnico com uma etapa só: é o que deixa as
+// ações da composição (linhas, opções, regras) valerem também para ele
+const processWrapper = (processId: string, block: AssemblyBlock) => ({
+  productId: PROCESS_PREFIX + processId,
+  name: block.name,
+  code: '',
+  status: 'DRAFT' as const,
+  dimension: 'SALE' as const,
+  unitKind: 'AREA' as const,
+  unitPrice: null,
+  measure: { quantity: 1, width: 1, height: 1 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription: '',
+  blocks: [block],
+  variations: [],
+})
+processStore.forEach((entry, processId) =>
+  assemblies.push(processWrapper(processId, entry.block)),
+)
+
+const isProcessHost = (productId: string) =>
+  productId.startsWith(PROCESS_PREFIX)
 
 const findOrCreate = (productId: string) => {
   let found = assemblies.find((item) => item.productId === productId)
@@ -1362,7 +1439,7 @@ export const getAssembly = async ({
 
 export const getProcessCatalog = async () =>
   ok(
-    catalog.map(
+    processTemplates().map(
       (item): ProcessCatalogItem => ({
         id: item.processId,
         name: item.name,
@@ -1434,7 +1511,7 @@ const resourceMap = () => {
   Object.keys(HOUR).forEach((sector) =>
     map.set(`mo-${sector}`, { ...labor(sector), kind: 'LABOR' }),
   )
-  catalog.forEach((template) =>
+  processTemplates(false).forEach((template) =>
     template.lines.forEach((line) =>
       line.options.forEach((option) => {
         if (!map.has(option.id))
@@ -2177,7 +2254,12 @@ export const removeLineOption = async ({
 export const getPartCandidates = async ({ productId }: { productId: string }) =>
   ok(
     assemblies
-      .filter((item) => item.productId !== productId && item.blocks.length)
+      .filter(
+        (item) =>
+          item.productId !== productId &&
+          !isProcessHost(item.productId) &&
+          item.blocks.length,
+      )
       .map((item) => ({
         productId: item.productId,
         name: item.name,
@@ -2248,7 +2330,7 @@ export const addPartBlock = async ({
 export const getComposedProductIds = async () =>
   ok(
     assemblies
-      .filter((item) => item.blocks.length)
+      .filter((item) => !isProcessHost(item.productId) && item.blocks.length)
       .map((item) => item.productId),
   )
 
@@ -2393,5 +2475,147 @@ export const removeVariationBlock = async ({
   variation.extraBlocks = (variation.extraBlocks || []).filter(
     (block) => block.id !== blockId && block.baseBlockId !== blockId,
   )
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Tela de Processos (MS-11)
+ * ------------------------------------------------------------------------- */
+
+// Acabamento, serviço de máquina ou primário: sai do que o processo tem, não
+// é campo a digitar (MS-7)
+const processCategory = (block: AssemblyBlock, meta: ProcessMeta) =>
+  meta.finishingOf
+    ? `Acabamento de ${meta.finishingOf.toLowerCase()}`
+    : block.lines.some((line) => line.kind === 'MACHINE')
+      ? 'Serviço de máquina'
+      : 'Primário'
+
+const usedIn = (processId: string) =>
+  assemblies
+    .filter(
+      (item) =>
+        !isProcessHost(item.productId) &&
+        (item.blocks.some((block) => block.processId === processId) ||
+          item.variations.some((variation) =>
+            variation.extraBlocks?.some(
+              (block) => block.processId === processId,
+            ),
+          )),
+    )
+    .map((item) => ({ productId: item.productId, name: item.name }))
+
+export const getProcessList = async () =>
+  ok(
+    Array.from(processStore.entries()).map(([id, { block, meta }]) => ({
+      id,
+      name: block.name,
+      sector: block.sector,
+      category: processCategory(block, meta),
+      finishingOf: meta.finishingOf,
+      taskType: block.taskType,
+      setupMinutes: block.setupMinutes,
+      rules: block.originalRules,
+      lines: block.lines.length,
+      kinds: Array.from(new Set(block.lines.map((line) => line.kind))),
+      // Linha sem recurso é erro de cadastro (IP-37, MS-8)
+      incomplete:
+        !block.lines.length || block.lines.some((line) => !line.options.length),
+      active: meta.active,
+      usedIn: usedIn(id).length,
+    })),
+  )
+
+export const getProcessDetail = async ({
+  processId,
+  measure,
+}: {
+  processId: string
+  measure?: AssemblyMeasure
+}) => {
+  const entry = processStore.get(processId)
+  if (!entry) return fail('Processo não encontrado')
+  const host = findOrCreate(PROCESS_PREFIX + processId)
+  const computed = compute({ ...host, measure: measure ?? host.measure })
+  return ok({
+    id: processId,
+    hostId: host.productId,
+    meta: entry.meta,
+    category: processCategory(entry.block, entry.meta),
+    block: computed.blocks[0],
+    cost: computed.cost,
+    sale: computed.suggestedPrice,
+    resourceSummary: computed.resourceSummary,
+    measure: measure ?? host.measure,
+    usedIn: usedIn(processId),
+  })
+}
+
+export const createProcessDef = async ({
+  name,
+  sector,
+  finishingOf,
+}: {
+  name: string
+  sector: string
+  finishingOf: string | null
+}) => {
+  if (!name.trim()) return fail('Informe o nome do processo')
+  const processId = `proc-${uid()}`
+  const block: AssemblyBlock = {
+    id: `p-${processId}`,
+    processId: null,
+    name: name.trim(),
+    sector,
+    role: finishingOf ? 'FINISHING' : 'BASE',
+    baseBlockId: null,
+    setupMinutes: 0,
+    sectorHourCost: HOUR[sector] || 1800,
+    taskType: sector,
+    originalRules: finishingOf ? { ...finishingRules } : { ...baseRules },
+    localRules: null,
+    lines: [],
+  }
+  processStore.set(processId, {
+    block,
+    meta: { finishingOf, sellerInstructions: '', active: true },
+  })
+  assemblies.push(processWrapper(processId, block))
+  return ok(processId)
+}
+
+export const updateProcessMeta = async ({
+  processId,
+  values,
+}: {
+  processId: string
+  values: {
+    sector?: string
+    finishingOf?: string | null
+    setupMinutes?: number
+    sellerInstructions?: string
+    active?: boolean
+  }
+}) => {
+  const entry = processStore.get(processId)
+  if (!entry) return fail('Processo não encontrado')
+  const { block, meta } = entry
+  if (values.sector) {
+    block.sector = values.sector
+    block.sectorHourCost = HOUR[values.sector] || block.sectorHourCost
+  }
+  if (values.finishingOf !== undefined) {
+    meta.finishingOf = values.finishingOf
+    block.role = values.finishingOf ? 'FINISHING' : 'BASE'
+  }
+  if (values.setupMinutes !== undefined) {
+    block.setupMinutes = Math.max(0, values.setupMinutes)
+  }
+  if (values.sellerInstructions !== undefined) {
+    meta.sellerInstructions = values.sellerInstructions
+  }
+  // Processo usado em produto é inativado, não excluído: os produtos que já
+  // o copiaram continuam como estão
+  if (values.active !== undefined) meta.active = values.active
   return ok(null)
 }
