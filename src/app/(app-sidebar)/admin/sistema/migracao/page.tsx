@@ -17,6 +17,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Topbar } from '@/components/common/Topbar'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
@@ -116,6 +117,7 @@ export default function AdminMigracaoPage() {
   )
   const [runId, setRunId] = useState<string | null>(null)
   const [disparando, setDisparando] = useState(false)
+  const [historicoInteiro, setHistoricoInteiro] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
 
   const [cnpj, setCnpj] = useState('')
@@ -212,6 +214,7 @@ export default function AdminMigracaoPage() {
         companyId: baseSelecionada.empresaVinculada.id,
         legacyBase: baseSelecionada.base,
         dryRun,
+        fullHistory: historicoInteiro,
       },
     })
 
@@ -410,6 +413,29 @@ export default function AdminMigracaoPage() {
                   antes que ele entre na base do cliente.
                 </p>
               </div>
+
+              <label className="flex items-start gap-2 text-sm">
+                <Checkbox
+                  checked={historicoInteiro}
+                  onCheckedChange={(valor) => {
+                    setHistoricoInteiro(valor === true)
+                    // A simulação anterior deixa de valer: ela foi feita com a
+                    // outra regra de corte.
+                    setRunId(null)
+                  }}
+                  disabled={rodando}
+                  className="mt-0.5"
+                />
+                <span>
+                  A conta foi criada só para receber a migração e o cliente não
+                  a usou.
+                  <span className="block text-xs text-muted-foreground">
+                    Traz o financeiro inteiro, sem cortar na data em que a conta
+                    passou a ser usada. Marque só quando tiver certeza: numa
+                    conta em uso, isso duplica o que o cliente já lançou.
+                  </span>
+                </span>
+              </label>
 
               <div className="flex flex-wrap items-center gap-2">
                 <Button
