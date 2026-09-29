@@ -4,7 +4,6 @@
 import { useEffect, useState } from 'react'
 
 // UI
-import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import {
@@ -21,6 +20,12 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { EmptyState } from '@/components/ui/empty-state'
+import {
+  RateInput,
+  parseHours,
+  formatHours,
+  formatHoursLabel,
+} from '@/components/common/RateInput'
 
 // Types
 import type { LaborSector } from '../../types'
@@ -104,7 +109,7 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
             <div>
               <p className="text-xs text-gray">Carga horária estimada</p>
               <p className="text-lg font-semibold text-gray-900">
-                {totalHours ? `${totalHours} h` : '-'}
+                {totalHours ? formatHoursLabel(totalHours) : '-'}
               </p>
             </div>
             <div>
@@ -129,7 +134,8 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
                   <Slider
                     className="flex-1 min-w-[140px]"
                     min={0}
-                    max={220}
+                    // O limite da barra é de desenho: o campo pode passar dele
+                    max={Math.max(220, Math.ceil(hours[person.id] ?? 0))}
                     step={1}
                     value={[hours[person.id] ?? 0]}
                     aria-label={`Carga horária — ${person.name}`}
@@ -140,20 +146,18 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
                       }))
                     }
                   />
-                  <Input
-                    type="number"
-                    min={0}
-                    className="h-10 w-[96px]"
-                    value={String(hours[person.id] ?? 0)}
+                  <RateInput
+                    className="h-10 w-[112px]"
+                    value={hours[person.id] ?? 0}
+                    format={formatHours}
+                    parse={parseHours}
+                    placeholder="0:00"
                     endAdornment={<span className="text-sm">h</span>}
-                    aria-label={`Carga horária em horas — ${person.name}`}
-                    onChange={(event) =>
+                    aria-label={`Carga horária em horas e minutos — ${person.name}`}
+                    onCommit={(value) =>
                       setHours((current) => ({
                         ...current,
-                        [person.id]: Math.max(
-                          Number(event.target.value || 0),
-                          0,
-                        ),
+                        [person.id]: value,
                       }))
                     }
                   />

@@ -403,11 +403,24 @@ export const updateDistribution = async ({
   percentages: { id: string; percentage: number }[]
 }) => {
   const received = sectors.filter((sector) => sector.nature === 'PRODUCTIVE')
-  const total = percentages
-    .filter((item) => received.some((sector) => sector.id === item.id))
-    .reduce((sum, item) => sum + item.percentage, 0)
+  const productive = percentages.filter((item) =>
+    received.some((sector) => sector.id === item.id),
+  )
+  const total = productive.reduce((sum, item) => sum + item.percentage, 0)
+  const administrative = administrativeCost()
 
-  if (total > 100) {
+  // Conferido pelo valor, com tolerância de 1 centavo: percentuais vindos de
+  // um valor arredondado à mão podem somar 100,01% (design.md §6.8)
+  const exceeded = administrative
+    ? productive.reduce(
+        (sum, item) =>
+          sum + Math.round((administrative * item.percentage) / 100),
+        0,
+      ) >
+      administrative + 1
+    : total > 100
+
+  if (exceeded) {
     return {
       success: false,
       data: null,
@@ -735,7 +748,8 @@ export const updateLaborHours = async ({
   hours.forEach(({ id, hours: value }) => {
     const person = team.find((item) => item.id === id)
 
-    if (person) person.hours = Math.max(Math.round(value) || 0, 0)
+    // Horas com minutos (design.md §6.8): guarda arredondado ao minuto
+    if (person) person.hours = Math.max(Math.round((value || 0) * 60) / 60, 0)
   })
 
   return { success: true, data: null, message: '' }

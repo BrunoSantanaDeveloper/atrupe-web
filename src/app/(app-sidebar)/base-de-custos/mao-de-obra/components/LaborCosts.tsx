@@ -22,6 +22,7 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
+import { formatHoursLabel } from '@/components/common/RateInput'
 import { WorkloadModal } from './WorkloadModal'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
@@ -108,7 +109,9 @@ export function LaborCosts() {
                       {formatValue(sector.distributedCost)}
                     </TableCell>
                     <TableCell className="text-right">
-                      {sector.hours === null ? '-' : `${sector.hours} h`}
+                      {sector.hours === null
+                        ? '-'
+                        : formatHoursLabel(sector.hours)}
                     </TableCell>
                     <TableCell className="text-right">
                       {formatValue(sector.costPerHour)}

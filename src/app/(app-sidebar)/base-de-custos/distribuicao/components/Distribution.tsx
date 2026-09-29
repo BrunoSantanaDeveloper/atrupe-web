@@ -22,6 +22,7 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import { DistributionSummaryCards } from './DistributionSummaryCards'
+import { formatPercent } from '@/components/common/RateInput'
 
 // Actions
 import {
@@ -29,6 +30,9 @@ import {
   updateDistribution,
   getDistributionTotals,
 } from '@/actions/cost-base'
+
+// Hooks / Store / Consts
+import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Third-party
 import { toast } from 'sonner'
@@ -98,17 +102,37 @@ export function Distribution() {
     0,
   )
 
+  // O fechamento é conferido pelo valor, em centavos, e não pelo percentual
+  // exibido, com tolerância de 1 centavo (design.md §6.8 e §7)
+  const distributedCost = productive.reduce(
+    (sum, sector) =>
+      sum +
+      Math.round((administrativeCost * (percentages[sector.id] ?? 0)) / 100),
+    0,
+  )
   const distributedPercentage = productive.reduce(
     (sum, sector) => sum + (percentages[sector.id] ?? 0),
     0,
   )
+  const difference = administrativeCost - distributedCost
+  const exceeded = administrativeCost
+    ? difference < -1
+    : distributedPercentage > 100
+  const closed = administrativeCost
+    ? Math.abs(difference) <= 1
+    : distributedPercentage === 100
 
-  const exceeded = distributedPercentage > 100
+  const percentLabel = (value: number) => `${formatPercent(Math.abs(value))}%`
+  const statusLabel = exceeded
+    ? `Passou ${percentLabel(distributedPercentage - 100)} · ${formatCurrencyToBrl(-difference)}`
+    : closed
+      ? '100% distribuído'
+      : `Faltam ${percentLabel(100 - distributedPercentage)}${administrativeCost ? ` · ${formatCurrencyToBrl(difference)}` : ''}`
 
   const handleChange = (id: string, percentage: number) =>
     setPercentages((current) => ({
       ...current,
-      [id]: Math.min(Math.max(Math.round(percentage) || 0, 0), 100),
+      [id]: Math.min(Math.max(percentage || 0, 0), 100),
     }))
 
   return (
@@ -155,16 +179,12 @@ export function Distribution() {
                   variant={
                     exceeded
                       ? 'errorLight'
-                      : distributedPercentage === 100
+                      : closed
                         ? 'successLight'
                         : 'neutralLight'
                   }
                 >
-                  {exceeded
-                    ? `Excede em ${distributedPercentage - 100}%`
-                    : distributedPercentage === 100
-                      ? '100% distribuído'
-                      : `Faltam ${100 - distributedPercentage}%`}
+                  {statusLabel}
                 </Badge>
                 <span className="text-sm text-gray">
                   {distributedPercentage === 0
