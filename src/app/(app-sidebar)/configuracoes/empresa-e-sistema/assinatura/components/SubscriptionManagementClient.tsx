@@ -14,6 +14,7 @@ import { SubscriptionSummaryCards } from './SubscriptionSummaryCards'
 import { PaymentsTable } from './PaymentsTable'
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog'
 import { ContractSection } from './ContractSection'
+import { ModulesSection } from './ModulesSection'
 import { OwnershipSection } from './OwnershipSection'
 
 // UI
@@ -183,6 +184,15 @@ export function SubscriptionManagementClient({
             subscription={subscription}
             isPrincipalAdmin={isOwner}
           />
+
+          {!isTrial && (
+            <ModulesSection
+              subscriptionId={subscription.id}
+              modules={subscription.subscriptionFeatures ?? []}
+              isPrincipalAdmin={isOwner}
+              canChange={subscription.status === 'ACTIVE'}
+            />
+          )}
 
           {!isTrial && <ContractSection />}
 

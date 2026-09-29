@@ -1,7 +1,5 @@
 'use client'
 
-import { useState } from 'react'
-
 // Next
 import Image, { StaticImageData } from 'next/image'
 import Link from 'next/link'
@@ -12,7 +10,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 
 // Icons
-import { IconReceipt, IconPlus, IconUserPlus, IconX } from '@tabler/icons-react'
+import { IconReceipt, IconPlus, IconUserPlus } from '@tabler/icons-react'
 
 // Logos
 import startLogo from '@/assets/images/start-logo.png'
@@ -23,9 +21,6 @@ import fullLogo from '@/assets/images/full-logo.png'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
-
-// Components
-import { RemoveModuleDialog } from './RemoveModuleDialog'
 
 const planLogos: Record<string, StaticImageData> = {
   START: startLogo,
@@ -65,10 +60,6 @@ export function SubscriptionSummaryCards({
   subscription,
   isPrincipalAdmin = true,
 }: SubscriptionSummaryCardsProps) {
-  const [removeModuleOpen, setRemoveModuleOpen] = useState(false)
-  const [selectedModule, setSelectedModule] =
-    useState<SubscriptionFeature | null>(null)
-
   // All active extra modules (subscription-level features added by user)
   const activeModules =
     subscription.subscriptionFeatures?.filter(
@@ -83,11 +74,6 @@ export function SubscriptionSummaryCards({
   )
 
   const nfTotal = nfMainModule ? nfMainModule.price || 0 : 0
-
-  const handleRemoveModule = (feature: SubscriptionFeature) => {
-    setSelectedModule(feature)
-    setRemoveModuleOpen(true)
-  }
 
   const isTrial = subscription.plan.planType === 'TRIAL'
   const isCanceled = subscription.status !== 'ACTIVE'
@@ -128,16 +114,6 @@ export function SubscriptionSummaryCards({
                 {formatCurrencyToBrl(nfTotal)}
               </p>
             </div>
-            {nfMainModule && canChange && (
-              <Button
-                type="button"
-                variant="light"
-                size="iconSm"
-                RightIcon={IconX}
-                className="absolute top-3 right-3 text-gray-400 hover:text-error-500"
-                onClick={() => handleRemoveModule(nfMainModule)}
-              />
-            )}
           </CardContent>
         </Card>
 
@@ -194,17 +170,6 @@ export function SubscriptionSummaryCards({
           </CardContent>
         </Card>
       </div>
-
-      {selectedModule && (
-        <RemoveModuleDialog
-          open={removeModuleOpen}
-          onOpenChange={setRemoveModuleOpen}
-          subscriptionId={subscription.id}
-          moduleKey={selectedModule.feature.key}
-          moduleName={selectedModule.feature.name}
-          modulePrice={selectedModule.price}
-        />
-      )}
     </>
   )
 }
