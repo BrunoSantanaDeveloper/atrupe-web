@@ -92,6 +92,7 @@ import {
   importFromLibrary,
   moveAssemblyBlock,
   resetAssemblyLine,
+  restoreProcessLines,
   setBlockLocalRules,
   updateAssemblyLine,
   removeAssemblyBlock,
@@ -320,7 +321,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   const removeLine = (block: ComputedBlock, line: ComputedLine) =>
     alertDialog.open({
       title: `Remover ${line.name}?`,
-      description: `A linha sai da etapa ${block.name}.`,
+      // Na etapa que acompanha um processo, a linha sai só daqui (CP-21)
+      description:
+        block.processId && line.sourceLineId
+          ? `A linha sai só deste produto. O processo continua com ela, e dá para restaurá-la depois.`
+          : `A linha sai da etapa ${block.name}.`,
       confirmLabel: 'Remover',
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
@@ -794,7 +799,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                               <ActionButton
                                 Icon={IconArrowBackUp}
                                 variant="neutralGhost"
-                                tooltip="Voltar ao que o processo define"
+                                tooltip="Voltar a acompanhar o processo"
                                 onClick={() =>
                                   run(
                                     resetAssemblyLine({
@@ -802,7 +807,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                                       blockId: item.id,
                                       lineId: line.id,
                                     }),
-                                    'Linha voltou ao processo',
+                                    'A linha voltou a acompanhar o processo',
                                   )
                                 }
                               />
@@ -842,6 +847,30 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                 </Button>
               </div>
             </PermissionGate>
+          )}
+          {!inVariation && !!item.removedSourceLineIds?.length && (
+            <div className="flex flex-wrap items-center gap-2 px-6 pt-3 text-sm text-gray">
+              <span>
+                {item.removedSourceLineIds.length === 1
+                  ? '1 linha do processo foi tirada deste produto.'
+                  : `${item.removedSourceLineIds.length} linhas do processo foram tiradas deste produto.`}
+              </span>
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="link"
+                  onClick={() =>
+                    run(
+                      restoreProcessLines({ productId, blockId: item.id }),
+                      'Linhas do processo restauradas',
+                    )
+                  }
+                >
+                  Restaurar
+                </Button>
+              </PermissionGate>
+            </div>
           )}
         </CardContent>
         {item.setupMinutes > 0 && (

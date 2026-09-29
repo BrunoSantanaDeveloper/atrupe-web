@@ -181,8 +181,12 @@ export type AssemblyLine = {
   // Perda e mínimo são de cada linha, não regra do sistema (CP-8)
   lossPercent: number
   minimum: number | null
-  // Ajustada neste produto: o processo original continua como estava
+  // Ajustada neste produto: deixa de acompanhar o processo e fica como está
+  // quando o processo muda (CP-21)
   overridden: boolean
+  // A linha do processo de onde esta veio: é o que liga a etapa ao processo
+  // e deixa a mudança do processo chegar ao produto (CP-21)
+  sourceLineId?: string
   // Acrescentada neste produto numa etapa que veio de um processo
   addedHere?: boolean
   // Opcional (IP-28): o vendedor decide no orçamento se entra — a cantoneira
@@ -223,6 +227,11 @@ export type AssemblyBlock = {
   // Custo-hora do setor, para o preparo. Vem da Base de custos
   sectorHourCost: number
   taskType: string
+  // Tipo de tarefa escolhido só neste produto; sem ele, vale o do processo
+  localTaskType?: string
+  // Linhas do processo tiradas só deste produto: não voltam quando o
+  // processo muda, até alguém restaurar (CP-21)
+  removedSourceLineIds?: string[]
   // As regras do processo e, quando houver, as deste produto
   originalRules: SaleRules
   localRules: SaleRules | null

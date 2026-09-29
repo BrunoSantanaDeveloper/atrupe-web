@@ -561,8 +561,10 @@ const fromTemplate = (
     baseBlockId,
     localRules: null,
     lines: lines.map((line) => ({
-      ...line,
+      ...structuredClone(line),
       id: `l${uid()}`,
+      // O molde vem do processo (templateOf), que já tem o id de cada linha
+      sourceLineId: (line as Partial<AssemblyLine>).id,
       overridden: false,
     })),
   }
@@ -572,7 +574,7 @@ const fromTemplate = (
  * Processos (MS-11): o processo é guardado no mesmo formato da etapa da
  * composição — linhas de escolha e lista, opções com consumo próprio, regras
  * de venda, tempo e tipo de tarefa. A tela de Processos edita esse formato,
- * e o produto copia o processo ao incluí-lo
+ * e o produto que inclui o processo acompanha a montagem dele (CP-21)
  * ------------------------------------------------------------------------- */
 
 type ProcessMeta = {
@@ -890,7 +892,102 @@ processStore.forEach((entry, processId) =>
 const isProcessHost = (productId: string) =>
   productId.startsWith(PROCESS_PREFIX)
 
+/* ---------------------------------------------------------------------------
+ * Vínculo com o processo (CP-21): a etapa incluída de um processo acompanha a
+ * montagem dele. Mudar o processo muda os produtos que o usam; o que o produto
+ * ajustou só para ele (linha ajustada, linha só dele, linha tirada, nome,
+ * regras e tipo de tarefa) continua sendo do produto. O custo nunca dependeu
+ * disso: ele vem do recurso
+ * ------------------------------------------------------------------------- */
+
+const syncBlock = (block: AssemblyBlock) => {
+  if (!block.processId || block.partProductId) return
+  const source = processStore.get(block.processId)?.block
+  if (!source) return
+
+  block.name = source.name
+  block.sector = source.sector
+  block.sectorHourCost = source.sectorHourCost
+  block.setupMinutes = source.setupMinutes
+  block.taskType = block.localTaskType ?? source.taskType
+  block.originalRules = source.originalRules
+
+  const removed = new Set(block.removedSourceLineIds || [])
+  const sourceById = new Map(source.lines.map((line) => [line.id, line]))
+  const lines: AssemblyLine[] = []
+
+  block.lines.forEach((line) => {
+    if (!line.sourceLineId) {
+      lines.push(line)
+      return
+    }
+    const origin = sourceById.get(line.sourceLineId)
+    if (!origin) {
+      // O processo tirou a linha: a que foi ajustada aqui fica como deste produto
+      if (line.overridden) {
+        lines.push({
+          ...line,
+          sourceLineId: undefined,
+          overridden: false,
+          addedHere: true,
+        })
+      }
+      return
+    }
+    if (line.overridden) {
+      lines.push(line)
+      return
+    }
+    const next = structuredClone(origin)
+    lines.push({
+      ...next,
+      id: line.id,
+      sourceLineId: origin.id,
+      overridden: false,
+      addedHere: undefined,
+      // A opção escolhida é o uso normal da linha neste produto
+      selectedId: next.options.some((option) => option.id === line.selectedId)
+        ? line.selectedId
+        : next.selectedId,
+    })
+  })
+
+  // Linha nova no processo entra na mesma posição que tem lá
+  source.lines.forEach((origin, index) => {
+    if (removed.has(origin.id)) return
+    if (lines.some((line) => line.sourceLineId === origin.id)) return
+    const before = new Set(source.lines.slice(0, index).map((line) => line.id))
+    let at = 0
+    lines.forEach((line, position) => {
+      if (line.sourceLineId && before.has(line.sourceLineId)) at = position + 1
+    })
+    lines.splice(at, 0, {
+      ...structuredClone(origin),
+      id: `l${uid()}`,
+      sourceLineId: origin.id,
+      overridden: false,
+      addedHere: undefined,
+    })
+  })
+
+  block.lines = lines
+  // A linha que o processo também tirou não precisa mais do registro
+  block.removedSourceLineIds = Array.from(removed).filter((id) =>
+    sourceById.has(id),
+  )
+}
+
+const syncLinks = () =>
+  assemblies.forEach((assembly) => {
+    if (isProcessHost(assembly.productId)) return
+    assembly.blocks.forEach(syncBlock)
+    assembly.variations.forEach((variation) =>
+      variation.extraBlocks?.forEach(syncBlock),
+    )
+  })
+
 const findOrCreate = (productId: string) => {
+  syncLinks()
   let found = assemblies.find((item) => item.productId === productId)
   if (!found) {
     found = {
@@ -1637,7 +1734,32 @@ export const removeAssemblyLine = async ({
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
-  block.lines = block.lines.filter((line) => line.id !== lineId)
+  const line = block.lines.find((item) => item.id === lineId)
+  // Tirada só deste produto: não volta quando o processo muda (CP-21)
+  if (block.processId && line?.sourceLineId) {
+    block.removedSourceLineIds = [
+      ...(block.removedSourceLineIds || []),
+      line.sourceLineId,
+    ]
+  }
+  block.lines = block.lines.filter((item) => item.id !== lineId)
+  return ok(null)
+}
+
+// Traz de volta as linhas do processo tiradas deste produto (CP-21)
+export const restoreProcessLines = async ({
+  productId,
+  blockId,
+}: {
+  productId: string
+  blockId: string
+}) => {
+  const block = findOrCreate(productId).blocks.find(
+    (item) => item.id === blockId,
+  )
+  if (!block?.processId) return fail('Etapa não encontrada')
+  block.removedSourceLineIds = []
+  syncBlock(block)
   return ok(null)
 }
 
@@ -1758,7 +1880,7 @@ export const updateAssemblyLine = async ({
   return ok(null)
 }
 
-// Volta a linha ao que o processo define
+// Volta a linha a acompanhar o processo
 export const resetAssemblyLine = async ({
   productId,
   blockId,
@@ -1771,17 +1893,18 @@ export const resetAssemblyLine = async ({
   const block = findOrCreate(productId).blocks.find(
     (item) => item.id === blockId,
   )
-  const index = block?.lines.findIndex((item) => item.id === lineId) ?? -1
-  const template = block?.processId ? templateOf(block.processId) : null
-  if (!block || index < 0 || !template) return fail('Linha não encontrada')
+  const line = block?.lines.find((item) => item.id === lineId)
+  const origin =
+    block?.processId && line?.sourceLineId
+      ? processStore
+          .get(block.processId)
+          ?.block.lines.find((item) => item.id === line.sourceLineId)
+      : undefined
+  if (!block || !line || !origin) return fail('Linha não encontrada')
 
-  const original = template.lines[index]
-  block.lines[index] = {
-    ...original,
-    id: block.lines[index].id,
-    selectedId: block.lines[index].selectedId || original.selectedId,
-    overridden: false,
-  }
+  // Volta a acompanhar o processo (CP-21)
+  line.overridden = false
+  syncBlock(block)
   return ok(null)
 }
 
@@ -1805,7 +1928,16 @@ export const setBlockLocalRules = async ({
     (item) => item.id === blockId,
   )
   if (!block) return fail('Etapa não encontrada')
-  if (taskType) block.taskType = taskType
+  if (taskType) {
+    block.taskType = taskType
+    // Na etapa vinda de processo, o tipo diferente do processo é deste produto
+    if (block.processId) {
+      block.localTaskType =
+        taskType === processStore.get(block.processId)?.block.taskType
+          ? undefined
+          : taskType
+    }
+  }
   if (name !== undefined) {
     if (!name.trim()) return fail('Informe o nome da etapa')
     if (block.processId === null) block.name = name.trim()
@@ -1968,6 +2100,7 @@ export const setPriceTiers = async ({
 
 // Só o que o vendedor pode mudar: campos extras, escolhas e listas
 export const getSaleForm = async ({ productId }: { productId: string }) => {
+  syncLinks()
   const assembly = assemblies.find((item) => item.productId === productId)
   if (!assembly || !assembly.blocks.length) return ok<SaleForm | null>(null)
 
@@ -2063,6 +2196,7 @@ export const getSaleComposition = async ({
   optionals?: SaleOptional[]
   lists?: SaleListEntry[]
 }) => {
+  syncLinks()
   const original = assemblies.find((item) => item.productId === productId)
   if (!original || !original.blocks.length) {
     return fail('Este produto não tem composição')
@@ -2297,6 +2431,7 @@ const containsProduct = (
   depth = 0,
 ): boolean => {
   if (depth > 5) return true
+  syncLinks()
   const assembly = assemblies.find((item) => item.productId === productId)
   return !!assembly?.blocks.some(
     (block) =>
@@ -2634,8 +2769,8 @@ export const updateProcessMeta = async ({
   if (values.sellerInstructions !== undefined) {
     meta.sellerInstructions = values.sellerInstructions
   }
-  // Processo usado em produto é inativado, não excluído: os produtos que já
-  // o copiaram continuam como estão
+  // Processo usado em produto é inativado, não excluído: os produtos que o
+  // usam continuam acompanhando a montagem dele; ele só deixa de ser oferecido
   if (values.active !== undefined) meta.active = values.active
   return ok(null)
 }

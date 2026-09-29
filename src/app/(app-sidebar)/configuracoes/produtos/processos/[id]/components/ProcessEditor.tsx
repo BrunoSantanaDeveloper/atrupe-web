@@ -205,8 +205,9 @@ export function ProcessEditor({ id }: { id: string }) {
   const removeLine = (line: ComputedLine) =>
     alertDialog.open({
       title: `Remover ${line.name}?`,
+      // Os produtos acompanham o processo (CP-21)
       description: detail.usedIn.length
-        ? 'Os produtos que já usam o processo têm a cópia deles e não mudam.'
+        ? `A linha sai do processo e ${detail.usedIn.length === 1 ? 'do produto que o usa' : `dos ${detail.usedIn.length} produtos que o usam`}, menos onde ela foi ajustada só para o produto.`
         : 'A linha sai do processo.',
       confirmLabel: 'Remover',
       cancelLabel: 'Cancelar',
@@ -424,6 +425,14 @@ export function ProcessEditor({ id }: { id: string }) {
               Recurso único, escolha de um (o vendedor escolhe entre opções de
               mesma unidade) ou lista para o vendedor preencher.
             </CardDescription>
+            {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
+            {detail.usedIn.length > 0 && (
+              <Badge variant="warningLight" className="w-fit">
+                {detail.usedIn.length === 1
+                  ? 'Mudar a montagem muda 1 produto'
+                  : `Mudar a montagem muda ${detail.usedIn.length} produtos`}
+              </Badge>
+            )}
           </CardHeader>
           <CardContent>
             <Table className="min-w-[860px]">
@@ -662,14 +671,14 @@ export function ProcessEditor({ id }: { id: string }) {
           )}
         </Card>
 
-        {/* 4. Onde o processo está: os produtos têm a cópia deles */}
+        {/* 4. Onde o processo está: os produtos acompanham a montagem (CP-21) */}
         <Card>
           <CardHeader>
             <CardTitle>Usado em</CardTitle>
             <CardDescription>
-              Cada produto guarda uma cópia do processo e pode ajustá-la. Mudar
-              aqui vale para os produtos que incluírem o processo daqui em
-              diante.
+              Os produtos acompanham este processo: mudar a montagem aqui muda
+              todos eles. O que cada produto ajustou só para ele continua como
+              está, e os orçamentos já feitos não mudam.
             </CardDescription>
           </CardHeader>
           <CardContent className="px-6 pb-6">

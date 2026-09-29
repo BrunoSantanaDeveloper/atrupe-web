@@ -298,7 +298,7 @@ export function Processes({ searchParams }: SearchParamsType) {
               <CardFooter className="text-sm text-gray">
                 {processes.length}{' '}
                 {processes.length === 1 ? 'processo' : 'processos'} · o produto
-                copia o processo ao incluí-lo, e pode ajustar a cópia
+                acompanha o processo e pode ajustar só para ele
               </CardFooter>
             </>
           )}
