@@ -276,8 +276,14 @@ export const {
           legalName: token.companyLegalName || '',
           logo: token.companyLogo || '',
           favicon: token.companyFavicon || '',
+          // Liberação só para testes locais: com DEV_IGNORE_BLOCK=true no
+          // .env.local, o `next dev` ignora o bloqueio vindo do backend.
+          // Nunca vale no build de produção
           blockLevel:
-            (token.blockLevel as 'NONE' | 'PARTIAL' | 'FULL') || 'NONE',
+            process.env.NODE_ENV === 'development' &&
+            process.env.DEV_IGNORE_BLOCK === 'true'
+              ? 'NONE'
+              : (token.blockLevel as 'NONE' | 'PARTIAL' | 'FULL') || 'NONE',
           plan: {
             name: token.subscription || 'TRIAL',
             active: token.subscriptionActive || false,
