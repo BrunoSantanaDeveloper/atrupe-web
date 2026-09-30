@@ -37,14 +37,10 @@ import { BillingDialog } from './BillingDialog'
 
 // Types
 import {
-  cashOnHand,
-  totalByMethod,
   saleRemaining,
   cashMovementLabel,
   paymentMethodLabel,
-  paymentMethodDestination,
   type PendingSale,
-  type PaymentMethod,
 } from '../types'
 
 // Actions
@@ -57,12 +53,17 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
+// Mesmos ícones do Fluxo financeiro: o polegar é o recebimento (para baixo,
+// previsto; para cima, com parte recebida), o ciclo é mudar as parcelas
 import {
-  IconCashBanknote,
-  IconPackageExport,
-  IconReceiptRefund,
+  IconTrash,
+  IconThumbUp,
   IconUserCheck,
-  IconFileInvoice,
+  IconThumbDown,
+  IconRefreshDot,
+  IconPackageExport,
+  IconSortAscending,
+  IconSortDescending,
   IconDeviceImacCancel,
 } from '@tabler/icons-react'
 
@@ -81,8 +82,6 @@ const hora = (iso: string) =>
     hour: '2-digit',
     minute: '2-digit',
   })
-
-const methods: PaymentMethod[] = ['CASH', 'PIX', 'CARD']
 
 type Aba = 'caixa' | 'receber' | 'retirada'
 
@@ -116,6 +115,16 @@ export function PDV() {
   const session = data?.data?.session
   const sales = data?.data?.sales || []
   const pickups = data?.data?.pickups || []
+  // Com um caixa só não há o que reservar: a marca de quem atende e o
+  // "Puxar para mim" só aparecem com mais de uma frente de caixa aberta (FC-5)
+  const multiCash = (data?.data?.openCashFronts ?? 1) > 1
+
+  // Ordem da fila, como no Fluxo financeiro: da mais antiga para a mais nova
+  // (padrão) ou o contrário. Fica na URL
+  const sort = params.get('sort') === 'desc' ? 'desc' : 'asc'
+  const byApproval = (a: PendingSale, b: PendingSale) =>
+    (sort === 'asc' ? 1 : -1) *
+    (new Date(a.approvedAt).getTime() - new Date(b.approvedAt).getTime())
 
   const refresh = () =>
     queryClient.invalidateQueries({ queryKey: ['cash-front'] })
@@ -125,8 +134,8 @@ export function PDV() {
   // As vendas que foram para o fluxo financeiro entram no relatório do dia,
   // mas não no saldo do caixa. Ficam separadas de propósito: se entrassem na
   // mesma soma, a conferência do fechamento nunca bateria (FC-12.1)
-  const noCaixa = sales.filter((sale) => sale.goesToCash)
-  const noFluxo = sales.filter((sale) => !sale.goesToCash)
+  const noCaixa = sales.filter((sale) => sale.goesToCash).sort(byApproval)
+  const noFluxo = sales.filter((sale) => !sale.goesToCash).sort(byApproval)
 
   const me = session ? `${session.name} · ${session.operator}` : ''
   const claimOf = (sale: PendingSale) =>
@@ -228,40 +237,10 @@ export function PDV() {
           </Card>
         ) : (
           <>
-            {/* O que o caixa tem agora, separado por forma de pagamento,
-                porque é assim que o dinheiro sai no fechamento (FC-3) */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-              <Card>
-                <CardContent className="px-6 py-5">
-                  <p className="text-sm text-gray">Dinheiro em caixa</p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {money(cashOnHand(session))}
-                  </p>
-                  <p className="mt-1 text-sm text-gray">
-                    Abertura {money(session.openingBalance)} · é o que se conta
-                    no fechamento
-                  </p>
-                </CardContent>
-              </Card>
-              {methods.map((method) => (
-                <Card key={method}>
-                  <CardContent className="px-6 py-5">
-                    <p className="text-sm text-gray">
-                      {paymentMethodLabel[method]} recebido
-                    </p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {money(totalByMethod(session, method))}
-                    </p>
-                    <p className="mt-1 text-sm text-gray">
-                      {paymentMethodDestination[method]}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
+            {/* Os valores do caixa não ficam na tela principal, à vista de
+                quem passa pelo balcão: aparecem só no fechamento */}
             <Card>
-              <CardContent className="flex flex-wrap gap-2 px-6 py-4">
+              <CardContent className="flex flex-wrap items-center gap-2 px-6 py-4">
                 {(
                   [
                     ['receber', `A receber (${noCaixa.length})`],
@@ -281,6 +260,28 @@ export function PDV() {
                     {label}
                   </Button>
                 ))}
+                {aba === 'receber' && (
+                  <ActionButton
+                    className="ml-auto"
+                    size="iconMd"
+                    variant="neutralOutline"
+                    tooltip={
+                      sort === 'asc'
+                        ? 'Ordenação decrescente'
+                        : 'Ordenação crescente'
+                    }
+                    Icon={
+                      sort === 'asc' ? IconSortDescending : IconSortAscending
+                    }
+                    onClick={() =>
+                      updateFilterParam(
+                        'sort',
+                        sort === 'asc' ? 'desc' : 'asc',
+                        { router, params },
+                      )
+                    }
+                  />
+                )}
               </CardContent>
             </Card>
 
@@ -310,14 +311,16 @@ export function PDV() {
                               ? ' · sinal pago, aguarda retirada'
                               : ''}
                           </p>
-                          <Badge
-                            className="mt-1"
-                            variant={cashFrontClaimObj[claimOf(sale)].variant}
-                          >
-                            {claimOf(sale) === 'OTHER'
-                              ? sale.claimedBy
-                              : cashFrontClaimObj[claimOf(sale)].text}
-                          </Badge>
+                          {multiCash && (
+                            <Badge
+                              className="mt-1"
+                              variant={cashFrontClaimObj[claimOf(sale)].variant}
+                            >
+                              {claimOf(sale) === 'OTHER'
+                                ? sale.claimedBy
+                                : cashFrontClaimObj[claimOf(sale)].text}
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell className="text-sm text-gray">
                           {sale.seller}
@@ -336,7 +339,7 @@ export function PDV() {
                             <PermissionGate
                               permissions={['financial:pdv:edit']}
                             >
-                              {claimOf(sale) === 'FREE' && (
+                              {multiCash && claimOf(sale) === 'FREE' && (
                                 <ActionButton
                                   Icon={IconUserCheck}
                                   variant="neutralGhost"
@@ -346,14 +349,22 @@ export function PDV() {
                                 />
                               )}
                               <ActionButton
-                                Icon={IconCashBanknote}
-                                variant="neutralGhost"
+                                Icon={
+                                  sale.paid > 0 ? IconThumbUp : IconThumbDown
+                                }
+                                variant={
+                                  sale.paid > 0
+                                    ? 'warningGhost'
+                                    : 'neutralGhost'
+                                }
                                 tooltip={
                                   !isOpen
                                     ? 'Abra o caixa para receber'
                                     : claimOf(sale) === 'OTHER'
                                       ? `Sendo atendida no ${sale.claimedBy}`
-                                      : 'Receber'
+                                      : sale.paid > 0
+                                        ? 'Receber o restante'
+                                        : 'Receber'
                                 }
                                 disabled={!isOpen || claimOf(sale) === 'OTHER'}
                                 onClick={() => setReceiving(sale)}
@@ -362,14 +373,14 @@ export function PDV() {
                                 sale.kind === 'QUICK' &&
                                 sale.paid === 0 && (
                                   <ActionButton
-                                    Icon={IconFileInvoice}
+                                    Icon={IconRefreshDot}
                                     variant="neutralGhost"
                                     tooltip="Faturar para o cliente"
                                     onClick={() => setBillingSale(sale)}
                                   />
                                 )}
                               <ActionButton
-                                Icon={IconReceiptRefund}
+                                Icon={IconTrash}
                                 variant="errorGhost"
                                 tooltip="Cancelar a venda"
                                 onClick={() => cancelSale(sale)}
@@ -493,17 +504,12 @@ export function PDV() {
                     ))}
                   </TableBody>
                 </Table>
-                <CardFooter className="flex-wrap justify-between gap-3">
+                <CardFooter>
                   <p className="max-w-xl text-sm text-gray">
                     O cartão entra pelo <strong>valor cheio</strong>. A taxa
                     aparece na previsão do caixa principal, com o líquido entre
-                    parênteses, e é confirmada na baixa.
-                  </p>
-                  <p className="text-sm">
-                    Dinheiro em caixa:{' '}
-                    <span className="text-lg font-semibold text-gray-900">
-                      {money(cashOnHand(session))}
-                    </span>
+                    parênteses, e é confirmada na baixa. O total do caixa
+                    aparece no fechamento.
                   </p>
                 </CardFooter>
               </Card>
@@ -516,7 +522,7 @@ export function PDV() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Trabalho</TableHead>
                       <TableHead>Contato</TableHead>
-                      <TableHead>Pronto desde</TableHead>
+                      <TableHead>Aguardando há</TableHead>
                       <TableHead className="text-right">
                         Falta receber
                       </TableHead>
@@ -524,8 +530,6 @@ export function PDV() {
                   </TableHeader>
                   <TableBody>
                     {pickups.map((pickup) => {
-                      const vencido = pickup.daysWaiting > pickup.deadlineDays
-
                       return (
                         <TableRow key={pickup.id}>
                           <TableCell>
@@ -537,20 +541,10 @@ export function PDV() {
                           <TableCell className="text-sm text-gray">
                             {pickup.phone}
                           </TableCell>
-                          <TableCell>
-                            <p className="text-sm text-gray-700">
-                              {pickup.daysWaiting} dias
-                            </p>
-                            <p
-                              className={cn(
-                                'text-sm',
-                                vencido ? 'text-error-600' : 'text-gray',
-                              )}
-                            >
-                              {vencido
-                                ? `Prazo de ${pickup.deadlineDays} dias vencido`
-                                : `Prazo de ${pickup.deadlineDays} dias`}
-                            </p>
+                          <TableCell className="text-sm text-gray-700">
+                            {pickup.daysWaiting === 1
+                              ? '1 dia'
+                              : `${pickup.daysWaiting} dias`}
                           </TableCell>
                           <TableCell className="text-right font-medium">
                             {money(pickup.remaining)}
@@ -562,9 +556,9 @@ export function PDV() {
                 </Table>
                 <CardFooter>
                   <p className="text-sm text-gray">
-                    Esta lista responde <strong>para quem ligar</strong>. Ao fim
-                    do prazo, a empresa decide descartar o material e o que não
-                    foi pago é lançado como perda.
+                    Esta lista responde <strong>para quem ligar</strong>. Não há
+                    prazo no sistema: cada empresa decide quando dar baixa, e o
+                    que não foi pago é lançado como perda.
                   </p>
                 </CardFooter>
               </Card>

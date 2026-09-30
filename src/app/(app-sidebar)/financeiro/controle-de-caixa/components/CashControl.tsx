@@ -61,8 +61,10 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
+  IconEye,
   IconPencil,
   IconSearch,
+  IconEyeOff,
   IconPrinter,
   IconArrowBackUp,
   IconCircleCheck,
@@ -108,6 +110,9 @@ export function CashControl(_: SearchParamsType) {
   const isAdmin = !!session?.user?.isAdmin
 
   const [dialog, setDialog] = useState<Dialog>(null)
+  // Os saldos ficam escondidos até alguém pedir, como no Fluxo financeiro:
+  // valor grande à vista na tela é informação para quem passa por ela
+  const [showTotals, setShowTotals] = useState(false)
   // Aba e filtro ficam na URL (design.md §5.1, §8)
   const router = useRouter()
   const params = useSearchParams()
@@ -158,7 +163,9 @@ export function CashControl(_: SearchParamsType) {
       : undefined
   const dialogAccount = dialogDay ? accountOf(dialogDay.accountId) : undefined
 
-  const todayCard = (account: BankAccount) => {
+  // Uma linha por conta, com a situação do dia e a ação que ela pede. Os
+  // valores só aparecem com "Mostrar totais"
+  const todayRow = (account: BankAccount) => {
     const day = days.find(
       (item) => item.accountId === account.id && item.date === today,
     )
@@ -166,65 +173,83 @@ export function CashControl(_: SearchParamsType) {
     const totals = day ? cashDayTotals(day) : undefined
 
     return (
-      <Card
+      <TableRow
         key={account.id}
-        className={cn(!account.cashControl && 'bg-gray-50 shadow-none')}
+        className={cn(!account.cashControl && 'bg-gray-25')}
       >
-        <CardContent className="flex h-full flex-col gap-4 p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <AccountIcon icon={account.bankIcon} />
-              <div>
-                <p className="font-semibold text-gray-800">{account.name}</p>
-                <p className="text-xs text-gray">
-                  {accountKindLabel[account.kind]}
-                </p>
-              </div>
-            </div>
-            {!account.cashControl ? (
-              <Badge variant={cashTodayStatusObj.FREE.variant}>
-                {cashTodayStatusObj.FREE.text}
-              </Badge>
-            ) : day ? (
-              <Badge variant={cashControlStatusObj[day.status].variant}>
-                {cashControlStatusObj[day.status].text}
-              </Badge>
-            ) : (
-              <Badge variant={cashTodayStatusObj.NO_DAY.variant}>
-                {cashTodayStatusObj.NO_DAY.text}
-              </Badge>
-            )}
-          </div>
-
-          <div>
-            <p className="text-xs text-gray">Saldo</p>
-            <p
-              className={cn(
-                'text-2xl font-semibold',
-                account.balance < 0 ? 'text-error-600' : 'text-gray-900',
-              )}
-            >
-              {money(account.balance)}
-            </p>
-            <p className="mt-1 text-xs text-gray">
-              {!account.cashControl
-                ? 'Recebe e paga sem abrir caixa'
-                : day?.status === 'OPEN' && totals
-                  ? `Aberto às ${hora(day.openedAt)} · entrou ${money(totals.entries)} · saiu ${money(totals.exits)}`
-                  : day?.status === 'CLOSED'
-                    ? `Fechado às ${hora(day.closedAt)} por ${day.closedBy}`
-                    : blockedBy
-                      ? `O caixa de ${brDate(blockedBy.date)} ainda está aberto`
-                      : 'O caixa de hoje ainda não foi aberto'}
-            </p>
-            {totals && totals.pending !== 0 && (
-              <p className="mt-1 text-xs text-gray">
-                + {money(totals.pending)} previstos
+        <TableCell className="py-2.5">
+          <div className="flex items-center gap-3">
+            <AccountIcon icon={account.bankIcon} />
+            <div>
+              <p className="font-medium text-gray-800">{account.name}</p>
+              <p className="text-xs text-gray">
+                {accountKindLabel[account.kind]}
               </p>
-            )}
+            </div>
           </div>
-
-          <div className="mt-auto flex flex-wrap gap-2">
+        </TableCell>
+        <TableCell className="py-2.5">
+          {!account.cashControl ? (
+            <Badge variant={cashTodayStatusObj.FREE.variant}>
+              {cashTodayStatusObj.FREE.text}
+            </Badge>
+          ) : day ? (
+            <Badge variant={cashControlStatusObj[day.status].variant}>
+              {cashControlStatusObj[day.status].text}
+            </Badge>
+          ) : (
+            <Badge variant={cashTodayStatusObj.NO_DAY.variant}>
+              {cashTodayStatusObj.NO_DAY.text}
+            </Badge>
+          )}
+          <p className="mt-1 text-xs text-gray">
+            {!account.cashControl
+              ? 'Recebe e paga sem abrir caixa'
+              : day?.status === 'OPEN'
+                ? `Aberto às ${hora(day.openedAt)}`
+                : day?.status === 'CLOSED'
+                  ? `Fechado às ${hora(day.closedAt)} por ${day.closedBy}`
+                  : blockedBy
+                    ? `O caixa de ${brDate(blockedBy.date)} ainda está aberto`
+                    : 'O caixa de hoje ainda não foi aberto'}
+          </p>
+        </TableCell>
+        {showTotals && (
+          <>
+            <TableCell className="py-2.5 text-right text-sm">
+              {day?.status === 'OPEN' && totals ? (
+                <>
+                  <span className="text-success-600">
+                    + {money(totals.entries)}
+                  </span>
+                  <br />
+                  <span className="text-error-600">
+                    − {money(totals.exits)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-gray">-</span>
+              )}
+            </TableCell>
+            <TableCell className="py-2.5 text-right">
+              <p
+                className={cn(
+                  'font-medium',
+                  account.balance < 0 ? 'text-error-600' : 'text-gray-800',
+                )}
+              >
+                {money(account.balance)}
+              </p>
+              {totals && totals.pending !== 0 && (
+                <p className="text-xs text-gray">
+                  + {money(totals.pending)} previstos
+                </p>
+              )}
+            </TableCell>
+          </>
+        )}
+        <TableCell className="py-2.5">
+          <div className="flex justify-end gap-2">
             {!account.cashControl ? (
               <Button type="button" variant="neutralOutline" size="sm" asChild>
                 <Link href="/configuracoes/financeiro/contas-bancarias">
@@ -235,18 +260,18 @@ export function CashControl(_: SearchParamsType) {
               <PermissionGate permissions={['financial:cash_control:edit']}>
                 <Button
                   type="button"
-                  size="sm"
-                  onClick={() => setDialog({ kind: 'close', day })}
-                >
-                  Fechar caixa
-                </Button>
-                <Button
-                  type="button"
                   variant="neutralOutline"
                   size="sm"
                   onClick={() => setDialog({ kind: 'adjust', day })}
                 >
                   Ajuste
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => setDialog({ kind: 'close', day })}
+                >
+                  Fechar caixa
                 </Button>
               </PermissionGate>
             ) : day?.status === 'CLOSED' ? (
@@ -280,8 +305,8 @@ export function CashControl(_: SearchParamsType) {
               </PermissionGate>
             )}
           </div>
-        </CardContent>
-      </Card>
+        </TableCell>
+      </TableRow>
     )
   }
 
@@ -309,15 +334,24 @@ export function CashControl(_: SearchParamsType) {
               </PermissionGate>
             }
             secondaryCta={
-              <PermissionGate permissions={['financial:cash_control:create']}>
-                <Button
-                  type="button"
+              <div className="flex items-center gap-3">
+                <PermissionGate permissions={['financial:cash_control:create']}>
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    onClick={() => setDialog({ kind: 'open' })}
+                  >
+                    Abrir caixa de outro dia
+                  </Button>
+                </PermissionGate>
+                <ActionButton
+                  size="iconMd"
                   variant="neutralOutline"
-                  onClick={() => setDialog({ kind: 'open' })}
-                >
-                  Abrir caixa de outro dia
-                </Button>
-              </PermissionGate>
+                  tooltip={showTotals ? 'Ocultar totais' : 'Mostrar totais'}
+                  Icon={showTotals ? IconEyeOff : IconEye}
+                  onClick={() => setShowTotals((current) => !current)}
+                />
+              </div>
             }
           />
 
@@ -349,9 +383,24 @@ export function CashControl(_: SearchParamsType) {
             </div>
           ))}
 
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {accounts.map(todayCard)}
-          </div>
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[34%]">Conta</TableHead>
+                  <TableHead className="w-full">Hoje</TableHead>
+                  {showTotals && (
+                    <>
+                      <TableHead className="text-right">Movimento</TableHead>
+                      <TableHead className="text-right">Saldo</TableHead>
+                    </>
+                  )}
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>{accounts.map(todayRow)}</TableBody>
+            </Table>
+          </Card>
 
           <Card>
             <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-4">

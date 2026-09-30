@@ -1,8 +1,9 @@
 'use client'
 
-// Reverter a venda rápida para faturamento (FC-4). O cliente que paga no fim
-// do mês: a venda sai da fila do caixa e vai para o fluxo financeiro, no
-// nome dele e com a forma de pagamento dele.
+// Reverter a venda rápida para faturamento (FC-4). Quem informa o cliente e
+// define o boleto ou o faturamento é o caixa: a venda sai da fila e vai para o
+// fluxo financeiro, no nome do cliente. Os campos são os mesmos do lançamento
+// a receber do Fluxo financeiro, para as duas telas não divergirem.
 
 // React
 import { useEffect, useState } from 'react'
@@ -17,12 +18,16 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
-import { SelectBasic } from '@/components/common/form/FormSelect'
+import { FormInput } from '@/components/common/form/FormInput'
+import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { AsyncSelectBasic } from '@/components/common/form/AsyncSelectBasic'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
+import { PaymentConditionsSelectField } from '@/components/common/form/global-inputs/PaymentConditionsSelectField'
 
 // Types
 import type { PendingSale } from '../types'
@@ -32,13 +37,13 @@ import { reverseToBilling } from '@/actions/cash-front'
 
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
-import { billingOptions } from '@/consts/cashFront'
 
 // Third-party
 import { toast } from 'sonner'
+import { useForm } from 'react-hook-form'
 
 // Icons
-import { IconFileInvoice } from '@tabler/icons-react'
+import { IconRefreshDot } from '@tabler/icons-react'
 
 interface Props {
   sale?: PendingSale
@@ -46,93 +51,129 @@ interface Props {
   onOpenChange: (open: boolean) => void
 }
 
+type BillingValues = {
+  paymentConditionId: string
+  installmentQty: number
+  dueDate: Date | undefined
+  notes: string
+}
+
+const defaults: BillingValues = {
+  paymentConditionId: '',
+  installmentQty: 1,
+  dueDate: undefined,
+  notes: '',
+}
+
 export function BillingDialog({ sale, onDone, onOpenChange }: Props) {
   const money = useMoney()
+  // A busca de cliente devolve o nome junto, que o registro da venda usa
   const [client, setClient] = useState<{ value: string; label: string } | null>(
     null,
   )
-  const [billing, setBilling] = useState(billingOptions[0].value)
-  const [saving, setSaving] = useState(false)
+  const form = useForm<BillingValues>({ defaultValues: defaults })
 
   useEffect(() => {
-    if (sale) {
-      setClient(null)
-      setBilling(billingOptions[0].value)
-    }
-  }, [sale])
+    if (!sale) return
 
-  const save = async () => {
+    setClient(null)
+    form.reset(defaults)
+  }, [sale, form])
+
+  const save = form.handleSubmit(async (values) => {
     if (!sale || !client) return
-    setSaving(true)
-    const res = await reverseToBilling(
-      sale.id,
-      { id: client.value, name: client.label },
-      billing,
-    )
-    setSaving(false)
+
+    const res = await reverseToBilling(sale.id, {
+      client: { id: client.value, name: client.label },
+      paymentConditionId: values.paymentConditionId,
+      installmentQty: Number(values.installmentQty) || 1,
+      dueDate: values.dueDate ? values.dueDate.toISOString() : '',
+      notes: values.notes,
+    })
+
     if (!res.success) return toast.error(res.message)
+
     toast.success('Venda faturada para o cliente')
     onDone()
     onOpenChange(false)
-  }
+  })
+
+  const ready =
+    !!client && !!form.watch('paymentConditionId') && !!form.watch('dueDate')
 
   return (
     <Dialog open={!!sale} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
-            <div>
-              <DialogTitle>
-                Faturar {sale?.reference} para o cliente
-              </DialogTitle>
-              <DialogDescription>
-                {money(sale?.total)} · a venda sai do caixa e vai para o fluxo
-                financeiro, no nome do cliente.
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-        <DialogBody className="space-y-4">
-          <AsyncSelectBasic
-            route="/client"
-            width="w-full"
-            value={client}
-            onChange={setClient}
-            minChars={1}
-            label="Cliente"
-            placeholder="Busque o cliente"
-          />
-          <SelectBasic
-            name="billing-method"
-            label="Forma de pagamento"
-            options={billingOptions}
-            value={billing}
-            onChange={setBilling}
-          />
-          <p className="text-sm text-gray">
-            Faturar é para o cliente com cadastro completo: pré-cadastro não
-            fatura. Se o cadastro estiver incompleto, complete em Cadastros
-            antes.
-          </p>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            isLoading={saving}
-            disabled={!client}
-            onClick={save}
-          >
-            Faturar para o cliente
-          </Button>
-        </DialogFooter>
+      <DialogContent className="sm:max-w-[640px]">
+        <Form {...form}>
+          <form onSubmit={save}>
+            <DialogHeader>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconRefreshDot} />
+                <div>
+                  <DialogTitle>
+                    Faturar {sale?.reference} para o cliente
+                  </DialogTitle>
+                  <DialogDescription>
+                    {money(sale?.total)} · a venda sai do caixa e vai para o
+                    fluxo financeiro, no nome do cliente.
+                  </DialogDescription>
+                </div>
+              </div>
+            </DialogHeader>
+            <DialogBody>
+              <div className="flex flex-wrap gap-5">
+                <AsyncSelectBasic
+                  route="/client"
+                  width="flex-[1_0_100%]"
+                  value={client}
+                  onChange={setClient}
+                  minChars={1}
+                  label="Cliente"
+                  placeholder="Busque o cliente"
+                />
+                <PaymentConditionsSelectField
+                  name="paymentConditionId"
+                  label="Forma de pagamento"
+                  width="flex-[1_0_260px]"
+                />
+                <FormInput
+                  type="number"
+                  name="installmentQty"
+                  label="Quantidade de parcelas"
+                  width="flex-[1_0_160px]"
+                  min={1}
+                />
+                <FormDatePickerInput
+                  name="dueDate"
+                  label="Data de vencimento"
+                  width="flex-[1_0_260px]"
+                />
+                <FormTextarea name="notes" label="Observação" />
+                <p className="text-sm text-gray">
+                  Só cliente com cadastro aprovado e liberado para a forma
+                  escolhida pode ser faturado. Pré-cadastro não fatura: complete
+                  o cadastro em Cadastros antes.
+                </p>
+              </div>
+            </DialogBody>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                isLoading={form.formState.isSubmitting}
+                disabled={!ready}
+              >
+                Faturar para o cliente
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )

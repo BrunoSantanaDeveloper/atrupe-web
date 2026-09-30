@@ -24,6 +24,7 @@ let session: CashSession | null = {
   openedAt: hoje('08:12:00'),
   openingBalance: 20000,
   status: 'OPEN',
+  blindCount: false,
   movements: [
     {
       id: 'm1',
@@ -122,7 +123,6 @@ const pickups: AwaitingPickup[] = [
     phone: '(48) 99911-4420',
     finishedAt: '2026-09-02',
     remaining: 12000,
-    deadlineDays: 30,
     daysWaiting: 22,
   },
   {
@@ -132,7 +132,6 @@ const pickups: AwaitingPickup[] = [
     phone: '(48) 98812-7701',
     finishedAt: '2026-08-14',
     remaining: 45000,
-    deadlineDays: 30,
     daysWaiting: 41,
   },
 ]
@@ -140,9 +139,13 @@ const pickups: AwaitingPickup[] = [
 // A venda rápida do ponto de vista do orçamento, por id do orçamento
 const checkouts: Record<string, QuickSaleCheckout> = {}
 
+// Quantas frentes de caixa estão abertas agora. Com uma só, não há o que
+// reservar: "Atender esta venda" e a marca de quem atende nem aparecem (FC-5)
+const openCashFronts = 2
+
 export const getCashFront = async () => ({
   success: true,
-  data: { session, sales, pickups },
+  data: { session, sales, pickups, openCashFronts },
   message: '',
 })
 
@@ -154,6 +157,7 @@ export const openCashSession = async (openingBalance: number) => {
     openedAt: new Date().toISOString(),
     openingBalance,
     status: 'OPEN',
+    blindCount: false,
     movements: [],
   }
 
@@ -421,15 +425,27 @@ export const releaseSale = async (saleId: string) => {
 // nome do cliente e com a forma de pagamento dele
 export const reverseToBilling = async (
   saleId: string,
-  client: { id: string; name: string },
-  billing: string,
+  values: {
+    client: { id: string; name: string }
+    paymentConditionId: string
+    installmentQty: number
+    dueDate: string
+    notes?: string
+  },
 ) => {
   const sale = sales.find((item) => item.id === saleId)
   if (!sale) {
     return { success: false, data: null, message: 'Venda não encontrada' }
   }
-  if (!client.id) {
+  if (!values.client.id) {
     return { success: false, data: null, message: 'Escolha o cliente' }
+  }
+  if (!values.paymentConditionId || !values.dueDate) {
+    return {
+      success: false,
+      data: null,
+      message: 'Informe a forma de pagamento e o vencimento',
+    }
   }
   if (sale.paid > 0) {
     return {
@@ -439,9 +455,15 @@ export const reverseToBilling = async (
         'A venda já tem sinal recebido. Estorne o sinal antes de faturar para o cliente',
     }
   }
+  // Na API: só cliente com cadastro aprovado e liberado para a forma
+  // escolhida (boleto, faturamento) pode ser faturado (FC-4)
 
-  sale.client = client.name
-  sale.billing = billing
+  const dueDate = new Date(values.dueDate).toLocaleDateString('pt-BR')
+  sale.client = values.client.name
+  sale.billing =
+    values.installmentQty > 1
+      ? `${values.installmentQty}x · 1º vencimento ${dueDate}`
+      : `Vencimento ${dueDate}`
   sale.goesToCash = false
   sale.claimedBy = null
   return { success: true, data: sale, message: '' }

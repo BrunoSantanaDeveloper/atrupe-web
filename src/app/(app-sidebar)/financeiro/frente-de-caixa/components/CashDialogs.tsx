@@ -245,21 +245,22 @@ export function CloseCashDialog({
   onDone,
   onOpenChange,
 }: CloseProps) {
+  const expected = cashOnHand(session)
+  const blind = session.blindCount
   const [counted, setCounted] = useState(0)
-  // A conferência é às cegas: o operador digita o que contou e só então vê o
-  // que o sistema esperava. Vendo o esperado antes, a contagem tende a
-  // "bater" sempre — e o controle perde a razão de existir (FC-7)
-  const [revealed, setRevealed] = useState(false)
+  // Na contagem às cegas o operador digita o que contou e só então vê o que o
+  // sistema esperava. Na conferência simples (padrão) o esperado já aparece e
+  // o operador confirma ou corrige o valor contado (FC-7)
+  const [revealed, setRevealed] = useState(!blind)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (!open) return
 
-    setCounted(0)
-    setRevealed(false)
-  }, [open])
+    setCounted(blind ? 0 : expected)
+    setRevealed(!blind)
+  }, [open, blind, expected])
 
-  const expected = cashOnHand(session)
   const difference = counted - expected
 
   const save = async () => {
@@ -279,11 +280,41 @@ export function CloseCashDialog({
         <DialogHeader>
           <DialogTitle>Fechar o caixa</DialogTitle>
           <DialogDescription>
-            Conte o dinheiro da gaveta e informe o total. O valor esperado só
-            aparece depois — contar sabendo o esperado não é conferência.
+            {blind
+              ? 'Conte o dinheiro da gaveta e informe o total. O valor esperado só aparece depois.'
+              : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'}
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">
+          {/* Os valores do caixa só aparecem aqui, no fechamento: na tela
+              principal ficariam à vista de quem passa pelo balcão */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium">O que entrou no caixa</p>
+            {methods.map((method) => (
+              <div
+                key={method}
+                className="flex justify-between text-sm text-gray"
+              >
+                <span>
+                  {paymentMethodLabel[method]} ·{' '}
+                  {paymentMethodDestination[method]}
+                </span>
+                <span className="font-medium text-gray-700">
+                  {money(totalByMethod(session, method))}
+                </span>
+              </div>
+            ))}
+            <div className="flex justify-between text-sm text-gray">
+              <span>
+                Dinheiro · {paymentMethodDestination.CASH} (abertura{' '}
+                {money(session.openingBalance)})
+              </span>
+              <span className="font-medium text-gray-700">
+                {revealed ? money(expected) : 'após a contagem'}
+              </span>
+            </div>
+          </div>
+
           <MoneyInput
             autoFocus
             id="counted"
@@ -291,7 +322,7 @@ export function CloseCashDialog({
             value={counted}
             onChange={(cents) => {
               setCounted(cents)
-              setRevealed(false)
+              if (blind) setRevealed(false)
             }}
           />
 
@@ -306,6 +337,8 @@ export function CloseCashDialog({
               Conferir com o esperado
             </Button>
           ) : (
+            // Esperado, contado e diferença sempre lado a lado: nenhuma
+            // diferença fica escondida (FC-7)
             <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
               <div className="flex justify-between text-sm">
                 <span className="text-gray">Esperado em dinheiro</span>
@@ -337,36 +370,12 @@ export function CloseCashDialog({
               </div>
               {difference !== 0 && (
                 <p className="text-sm text-gray">
-                  A diferença fica registrada no fechamento, no nome de quem
-                  operou o caixa.
+                  A diferença vai para Quebra de caixa, no nome de quem operou o
+                  caixa.
                 </p>
               )}
             </div>
           )}
-
-          <div className="space-y-2">
-            <p className="text-sm font-medium">O que vai para onde</p>
-            {methods.map((method) => (
-              <div
-                key={method}
-                className="flex justify-between text-sm text-gray"
-              >
-                <span>
-                  {paymentMethodLabel[method]} ·{' '}
-                  {paymentMethodDestination[method]}
-                </span>
-                <span className="font-medium text-gray-700">
-                  {money(totalByMethod(session, method))}
-                </span>
-              </div>
-            ))}
-            <div className="flex justify-between text-sm text-gray">
-              <span>Dinheiro · {paymentMethodDestination.CASH}</span>
-              <span className="font-medium text-gray-700">
-                {money(counted)}
-              </span>
-            </div>
-          </div>
         </DialogBody>
         <DialogFooter>
           <Button

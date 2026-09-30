@@ -104,7 +104,6 @@ export type AwaitingPickup = {
   phone: string
   finishedAt: string
   remaining: number
-  deadlineDays: number
   daysWaiting: number
 }
 
@@ -115,6 +114,9 @@ export type CashSession = {
   openedAt: string
   openingBalance: number
   status: 'OPEN' | 'CLOSED'
+  // Modo de conferência do fechamento, do cadastro da frente de caixa (FC-7):
+  // conferência simples (padrão) ou contagem às cegas
+  blindCount: boolean
   movements: CashMovement[]
 }
 
