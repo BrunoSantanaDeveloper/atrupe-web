@@ -42,6 +42,11 @@ export function usePlanFeatures() {
   const canManageRejectionReasons = () =>
     hasFeature('quotation_rejection_reasons')
 
+  // Motivo ao cancelar ordem de serviço: chave própria, a mesma que o
+  // servidor exige quando o cancelamento leva um motivo.
+  const canRequestOrderCancellationReason = () =>
+    hasFeature('service_order_cancellation_reason')
+
   const canManageBudgetStatus = () =>
     hasFeature('quotation_status_configuration')
 
@@ -101,6 +106,7 @@ export function usePlanFeatures() {
     canManageSectors,
     canManageSalesOrders,
     canManageRejectionReasons,
+    canRequestOrderCancellationReason,
     canManageBudgetStatus,
     hasFinancialModule,
     canCreateBankAccount,

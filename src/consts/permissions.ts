@@ -61,6 +61,10 @@ export const permissionsData = [
         exportable: true,
       },
       {
+        name: 'Controle de caixa',
+        key: 'cash_control',
+      },
+      {
         name: 'Lançamento de despesas fixas',
         key: 'fixed_expense',
       },
@@ -109,6 +113,20 @@ export const permissionsData = [
         name: 'Cadastro de fornecedores',
         key: 'supplier',
         exportable: true,
+      },
+      {
+        name: 'Limite de crédito do cliente',
+        key: 'credit_limit',
+      },
+    ],
+  },
+  {
+    section: 'Produção',
+    key: 'production',
+    items: [
+      {
+        name: 'Agenda de entrega',
+        key: 'delivery_schedule',
       },
     ],
   },
@@ -169,11 +187,10 @@ export const permissionsData = [
         name: 'Despesas fixas',
         key: 'fixed_expenses',
       },
-      // TODO: Reativar no plano LITE
-      // {
-      //   name: 'Limites de crédito',
-      //   key: 'credit_limits',
-      // },
+      {
+        name: 'Limites de crédito',
+        key: 'credit_limits',
+      },
       {
         name: 'Folha de pagamento',
         key: 'payroll',
@@ -192,15 +209,14 @@ export const permissionsData = [
         name: 'Perfil de vendedor',
         key: 'seller_profile',
       },
-      // TODO: Reativar no plano LITE
-      // {
-      //   name: 'Motivos de rejeições e cancelamentos',
-      //   key: 'rejection_reasons',
-      // },
-      // {
-      //   name: 'Status de orçamento',
-      //   key: 'quotation_status',
-      // },
+      {
+        name: 'Motivos de rejeições e cancelamentos',
+        key: 'rejection_reasons',
+      },
+      {
+        name: 'Status de orçamento',
+        key: 'quotation_status',
+      },
     ],
   },
   {

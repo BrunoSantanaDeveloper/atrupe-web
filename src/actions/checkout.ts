@@ -159,9 +159,24 @@ export async function fetchPublicPlans() {
       additionalUserPrice?: number
       isActive: boolean
       videoUrl: string | null
+      /** Card do plano na trilha, editado no painel; nulo = texto do código. */
+      presentation: { pitch: string; actions: string[] } | null
       sections: { concept: any; features: any }
     }[]
   >((api) => api.get('/plan/public/subscription'))
+}
+
+/** A tabela "Compare todos os planos", editada no painel de planos. */
+export async function fetchPlanComparison() {
+  return call<
+    {
+      group: string
+      rows: {
+        label: string
+        since: 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
+      }[]
+    }[]
+  >((api) => api.get('/plan/public/comparison'))
 }
 
 export async function fetchPublicModules() {

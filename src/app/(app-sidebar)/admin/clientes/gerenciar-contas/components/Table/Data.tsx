@@ -78,7 +78,7 @@ export interface AccountItem {
   email: string
   createdAt: string
   plan: string
-  planType: 'START' | 'LITE' | 'PRO'
+  planType: 'TRIAL' | 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
   status: 'ACTIVE' | 'BLOCKED' | 'INACTIVE' | 'CANCELED'
   state: { id: string; name: string }
   city: { id: string; name: string }
@@ -90,9 +90,12 @@ interface GroupedData {
 }
 
 const planVariants = {
+  TRIAL: 'neutralLight',
   START: 'default',
   LITE: 'neutral',
   PRO: 'orange',
+  ELITE: 'purple',
+  FULL: 'blue',
 } as const
 
 export function Data({ searchParams, searchDescription }: Props) {
@@ -206,7 +209,10 @@ export function Data({ searchParams, searchDescription }: Props) {
                               {/* Plano */}
                               <TableCell>
                                 <Badge
-                                  variant={planVariants[item.planType]}
+                                  variant={
+                                    planVariants[item.planType] ??
+                                    'neutralLight'
+                                  }
                                   className="text-xs font-medium capitalize"
                                 >
                                   {item.planType.toLowerCase()}
@@ -234,7 +240,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     />
                                     <ActionButton
                                       Icon={IconStack2}
-                                      tooltip="Módulos"
+                                      tooltip="Recursos da conta"
                                       onClick={() => {
                                         setRowData(item)
                                         setIsModulesDialogOpen(true)

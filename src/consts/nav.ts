@@ -51,6 +51,9 @@ export interface MainNavigationType {
   permission?: string | string[] // Nova propriedade para permissões (string ou array para múltiplas permissões)
   requireAllPermissions?: boolean // Se true, requer todas as permissões (AND), senão requer qualquer uma (OR)
   requiredModule?: string // Módulo contratado necessário para exibir o item
+  // Recurso do plano necessário para exibir o item (com lista, basta um). A
+  // composição dos planos é configurada pelo superadmin.
+  requiredFeature?: string | string[]
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
 
@@ -105,6 +108,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/a-receber',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
+        requiredFeature: 'accounts_receivable',
       },
       {
         icon: IconTrendingDown,
@@ -112,6 +116,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/a-pagar',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
+        requiredFeature: 'accounts_payable',
       },
       {
         icon: IconArrowsExchange,
@@ -126,6 +131,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/controle-de-caixa',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
+        requiredFeature: 'cash_control',
       },
       {
         icon: IconDeviceDesktopDollar,
@@ -133,6 +139,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/financeiro/frente-de-caixa',
         permission: ['financial:flow:view', 'values:values:view'],
         requireAllPermissions: true,
+        requiredFeature: 'pdv_screen',
       },
       {
         icon: IconCalendarDollar,
@@ -154,6 +161,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     icon: IconListSearch,
     title: 'Produção',
     path: '/producao',
+    requiredFeature: 'delivery_production_tabs',
     children: [
       // {
       //   icon: IconClipboardList,

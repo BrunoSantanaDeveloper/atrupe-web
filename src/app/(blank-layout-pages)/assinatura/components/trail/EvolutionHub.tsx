@@ -17,10 +17,7 @@ import {
 } from '@/actions/checkout'
 import { useCheckoutStore } from '@/store/checkoutStore'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import {
-  PLAN_PRESENTATION,
-  type SequencePlanType,
-} from '@/lib/plans/methodTrail'
+import { planPresentation } from '@/lib/plans/methodTrail'
 import type {
   ComplementsRestriction,
   ContractingCurrent,
@@ -179,7 +176,7 @@ export function EvolutionHub({ planStates, current }: Props) {
   const complements = complementsQuery.data
   const evolutionQuote = evolution?.quote ?? null
   const nextPresentation = next
-    ? PLAN_PRESENTATION[next.planType as SequencePlanType]
+    ? planPresentation(next.planType, nextDetails?.presentation)
     : null
   const nextVideo = nextPresentation?.video
     ? {

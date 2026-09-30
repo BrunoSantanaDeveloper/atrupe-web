@@ -59,7 +59,7 @@ export function CancelOrder({ data }: Props) {
   const [reason, setReason] = useState('')
 
   const queryClient = useQueryClient()
-  const { canManageRejectionReasons } = usePlanFeatures()
+  const { canRequestOrderCancellationReason } = usePlanFeatures()
 
   const alertDialog = useAlertDialog()
 
@@ -74,7 +74,7 @@ export function CancelOrder({ data }: Props) {
 
   const handleCancel = async () => {
     // Se não informa motivo, cancela direto
-    if (!canManageRejectionReasons()) {
+    if (!canRequestOrderCancellationReason()) {
       const confirmed = await alertDialog.open({
         title: 'Confirma cancelamento da venda?',
         iconVariant: 'errorBorderedLight',
@@ -176,7 +176,7 @@ export function CancelOrder({ data }: Props) {
   }
 
   // Se tiver permissão, mostra botão simples sem modal
-  if (!canManageRejectionReasons()) {
+  if (!canRequestOrderCancellationReason()) {
     return (
       <CustomButton
         icon={IconX}

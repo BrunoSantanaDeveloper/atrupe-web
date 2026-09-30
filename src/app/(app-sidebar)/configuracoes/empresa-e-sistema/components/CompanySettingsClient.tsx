@@ -16,10 +16,13 @@ import {
   IconSettingsCog,
 } from '@tabler/icons-react'
 import { MeasureDefaultsDialog } from '../padrao-de-medida/components/MeasureDefaultsDialog'
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 const defaultPath = 'empresa-e-sistema'
 
 export function CompanySettingsClient() {
+  const { canManageSectors } = usePlanFeatures()
+
   const settings: CompanySettingsType[] = [
     {
       category: 'Empresa e sistema',
@@ -40,14 +43,19 @@ export function CompanySettingsClient() {
           link: `${defaultPath}/assinatura`,
           permission: 'company_settings:subscription:view',
         },
-        {
-          title: 'Setores',
-          icon: IconSettingsCog,
-          description:
-            'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
-          link: `${defaultPath}/setores`,
-          permission: 'company_settings:sectors:view',
-        },
+        // Setores é recurso de plano (configurado pelo superadmin).
+        ...(canManageSectors()
+          ? [
+              {
+                title: 'Setores',
+                icon: IconSettingsCog,
+                description:
+                  'Defina os setores da sua empresa que serão utilizados em cadastros e etapas de produção.',
+                link: `${defaultPath}/setores`,
+                permission: 'company_settings:sectors:view',
+              },
+            ]
+          : []),
         {
           title: 'Padrão de medida',
           icon: IconRuler2,

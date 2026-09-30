@@ -81,12 +81,7 @@ export function SidebarComponent(props: Props) {
   const mainNavigation = getMainNavigation(user)
 
   const { hasAnyPermission, hasAllPermissions } = usePermissions()
-  const {
-    hasFinancialModule,
-    hasFeature,
-    canManageRejectionReasons,
-    canManageDeliverySchedule,
-  } = usePlanFeatures()
+  const { hasFeature, hasAnyFeature } = usePlanFeatures()
   const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
     useFiscalOnboardingStatus()
 
@@ -131,45 +126,21 @@ export function SidebarComponent(props: Props) {
       return false
     }
 
-    // Depois verifica features específicas do plano baseado no path
-    // Controle de Setores
-    // if (item.path?.includes('/setores')) {
-    //   return canManageSectors()
-    // }
+    // Recurso do plano que o item exige (declarado em consts/nav.ts)
+    if (
+      item.requiredFeature &&
+      !hasAnyFeature(
+        Array.isArray(item.requiredFeature)
+          ? item.requiredFeature
+          : [item.requiredFeature],
+      )
+    ) {
+      return false
+    }
 
     // Controle de Colaboradores e Usuários - baseado no limite de usuários
     if (item.path?.includes('/colaboradores-e-usuarios')) {
       return getUserLimit() > 0
-    }
-
-    // Controle de PDV/Frente de Caixa
-    if (item.path?.includes('/frente-de-caixa')) {
-      return hasFinancialModule('pdv')
-    }
-
-    // Controle de Controle de Caixa
-    if (item.path?.includes('/controle-de-caixa')) {
-      return hasFinancialModule('cash')
-    }
-
-    // Controle de A Receber
-    if (item.path?.includes('/a-receber')) {
-      return hasFinancialModule('receivable')
-    }
-
-    // Controle de A Pagar
-    if (item.path?.includes('/a-pagar')) {
-      return hasFinancialModule('payable')
-    }
-
-    // Controle de Motivos de Rejeição e Cancelamento
-    if (item.path?.includes('/motivos-de-rejeicao-e-cancelamento')) {
-      return canManageRejectionReasons()
-    }
-
-    // Controle de Agenda de entrega
-    if (item.path?.includes('/producao')) {
-      return canManageDeliverySchedule()
     }
 
     // Outras verificações de features podem ser adicionadas aqui

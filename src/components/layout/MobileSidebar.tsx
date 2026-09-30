@@ -57,6 +57,7 @@ interface NavigationItem {
   action?: boolean
   permission?: string | string[]
   requiredModule?: string
+  requiredFeature?: string | string[]
   children?: NavigationItem[]
 }
 
@@ -72,12 +73,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   const router = useRouter()
 
   const { hasPermission } = usePermissions()
-  const {
-    hasFinancialModule,
-    hasFeature,
-    canManageRejectionReasons,
-    canManageDeliverySchedule,
-  } = usePlanFeatures()
+  const { hasFeature, hasAnyFeature } = usePlanFeatures()
   const { isPending: isFiscalPending, needsSetup: isFiscalNeedsSetup } =
     useFiscalOnboardingStatus()
 
@@ -122,28 +118,16 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
       return getUserLimit() > 0
     }
 
-    if (item.path?.includes('/frente-de-caixa')) {
-      return hasFinancialModule('pdv')
-    }
-
-    if (item.path?.includes('/controle-de-caixa')) {
-      return hasFinancialModule('cash')
-    }
-
-    if (item.path?.includes('/a-receber')) {
-      return hasFinancialModule('receivable')
-    }
-
-    if (item.path?.includes('/a-pagar')) {
-      return hasFinancialModule('payable')
-    }
-
-    if (item.path?.includes('/motivos-de-rejeicao-e-cancelamento')) {
-      return canManageRejectionReasons()
-    }
-
-    if (item.path?.includes('/producao')) {
-      return canManageDeliverySchedule()
+    // Recurso do plano que o item exige (declarado em consts/nav.ts)
+    if (
+      item.requiredFeature &&
+      !hasAnyFeature(
+        Array.isArray(item.requiredFeature)
+          ? item.requiredFeature
+          : [item.requiredFeature],
+      )
+    ) {
+      return false
     }
 
     return true

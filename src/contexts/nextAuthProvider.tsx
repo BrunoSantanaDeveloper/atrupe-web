@@ -184,6 +184,9 @@ function SessionActivityHandler({ children }: PropsWithChildren) {
     if (status === 'authenticated' && !initialRefreshDoneRef.current) {
       initialRefreshDoneRef.current = true
       refreshUserData()
+      // O plano (recursos e limites) pode ter mudado no painel do superadmin:
+      // recarregar a página já traz a composição nova.
+      refreshCompanyState()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])

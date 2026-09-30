@@ -14,11 +14,7 @@ import {
 } from '@/actions/checkout'
 import { useCheckoutStore } from '@/store/checkoutStore'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
-import {
-  PLAN_PRESENTATION,
-  previousPlanType,
-  type SequencePlanType,
-} from '@/lib/plans/methodTrail'
+import { planPresentation, previousPlanType } from '@/lib/plans/methodTrail'
 import type { PlanStatesResponse } from '@/types/checkout'
 import type { VisualPlanType } from '@/types/plans'
 
@@ -67,9 +63,6 @@ export function PlanTrail({ planStates }: Props) {
     annualAvailable && selection.cycle === 'YEARLY' ? 'YEARLY' : 'MONTHLY'
 
   const offer = planStates.plans.find((p) => p.state === 'ELEGIVEL') ?? null
-  const presentation = offer
-    ? PLAN_PRESENTATION[offer.planType as SequencePlanType]
-    : null
 
   const trialEndsAt = session?.company?.plan?.trialEndsAt
   const trialExpired =
@@ -132,6 +125,10 @@ export function PlanTrail({ planStates }: Props) {
     })
     router.push('/assinatura/contratacao')
   }
+
+  const presentation = offer
+    ? planPresentation(offer.planType, offerDetails?.presentation)
+    : null
 
   const recurringCents = quote?.quote?.recurringCents
   const previous = offer ? previousPlanType(offer.planType) : null

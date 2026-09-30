@@ -80,8 +80,9 @@ export function NewBankAccountDialog({
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const queryClient = useQueryClient()
-  const { canCreateBankAccount, hasFinancialModule, canProvision } =
-    usePlanFeatures()
+  const { canCreateBankAccount, hasFeature, canProvision } = usePlanFeatures()
+  // O switch "Controle de caixa" da conta é recurso de plano próprio.
+  const canSwitchCashControl = hasFeature('bank_account_cash_control_switch')
 
   const { data: paymentConditions } = usePaymentConditions()
 
@@ -102,7 +103,8 @@ export function NewBankAccountDialog({
       name: rowData?.name || '',
       bankId: rowData?.bankId || '',
       description: rowData?.description || '',
-      cashControl: !!rowData?.cashControl || true,
+      // Conta nova nasce com controle de caixa; a existente mantém o que tem.
+      cashControl: rowData ? !!rowData.cashControl : true,
       bankAccountCashControl: editMode
         ? (rowData?.bankAccountCashControl || []).map((item) => ({
             ...item,
@@ -130,7 +132,12 @@ export function NewBankAccountDialog({
 
   useEffect(() => setDialogOpen(open ?? false), [open])
 
-  const onSubmit = async (data: FormType) => {
+  const onSubmit = async (formData: FormType) => {
+    // Sem o recurso, o switch não aparece e o campo não é enviado: a conta
+    // mantém o controle de caixa que já tinha (o servidor recusa a mudança).
+    const data = canSwitchCashControl
+      ? formData
+      : (({ cashControl: _cashControl, ...rest }) => rest)(formData)
     const res = editMode
       ? await updateItemNew({ route: `/bank/account/${rowData?.id}`, data })
       : await createItemNew({ route: '/bank/account', data })
@@ -210,7 +217,7 @@ export function NewBankAccountDialog({
                   width="flex-[1_0_600px]"
                   disabled={!canCreateBankAccount()}
                 />
-                {hasFinancialModule('cash') && (
+                {canSwitchCashControl && (
                   <FormSwitch<FormType>
                     name="cashControl"
                     label="Controle de Caixa"

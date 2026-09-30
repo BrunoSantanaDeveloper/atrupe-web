@@ -130,94 +130,39 @@ function convertPermissionsArrayToObject(permissions: string[] = []) {
   return permissionsObject
 }
 
+/**
+ * Permissão (seção.item) → recurso do plano que a tela exige; com lista,
+ * basta um. A composição dos planos é configurada pelo superadmin.
+ */
+const PERMISSION_FEATURES: Record<string, string[]> = {
+  'financial.cash_control': ['cash_control'],
+  'register.credit_limit': ['credit_limit_configuration'],
+  'financial_settings.credit_limits': ['credit_limit_configuration'],
+  'production.delivery_schedule': ['delivery_production_tabs'],
+  'company_settings.sectors': ['sectors_configuration'],
+  'sales_settings.rejection_reasons': ['quotation_rejection_reasons'],
+  'sales_settings.quotation_status': ['quotation_status_configuration'],
+}
+
 export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
   const queryClient = useQueryClient()
   const { data: session } = useSession()
-  const {
-    hasFeature,
-    hasFinancialModule,
-    canManageDeliverySchedule,
-    canManageSectors,
-    canManageRejectionReasons,
-    canManageBudgetStatus,
-    canManageSalesOrders,
-  } = usePlanFeatures()
+  const { hasAnyFeature } = usePlanFeatures()
 
   // Função para obter limite de usuários da sessão
   const getUserLimit = () => session?.company?.plan?.limits?.max_users || 0
 
+  // Só aparece a permissão de uma tela que o plano da empresa inclui.
   const _shouldShowPermission = (section: string, item: string) => {
-    // Verifica permissões do módulo financeiro
-    if (section === 'financial') {
-      if (item === 'payable') return hasFinancialModule('payable')
-      if (item === 'receivable') return hasFinancialModule('receivable')
-      if (item === 'cash_control') return hasFinancialModule('cash')
-      if (item === 'checkout') return hasFinancialModule('pdv')
-      if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
+    const features = PERMISSION_FEATURES[`${section}.${item}`]
+    if (features && !hasAnyFeature(features)) return false
+
+    if (section === 'company_settings' && item === 'users') {
+      return getUserLimit() > 0
     }
 
-    // Verifica permissões de cadastros
-    if (section === 'register') {
-      if (item === 'client') {
-        return true
-      }
-      if (item === 'supplier') {
-        return true
-      }
-      if (item === 'credit_limit') return false // Temporariamente desabilitado até implementação do plano full
-    }
-
-    // Verifica permissões de configurações financeiras
-    if (section === 'financial_settings') {
-      if (item === 'credit_limits') return false // Temporariamente desabilitado até implementação do plano full
-    }
-
-    // Verifica permissões de produtos
-    if (section === 'product_settings') {
-      return true
-    }
-
-    // Verifica permissões de produção
-    if (section === 'production') {
-      if (item === 'delivery_schedule') {
-        // Agenda de entrega só disponível no plano full
-        return canManageDeliverySchedule()
-      }
-    }
-
-    // Verifica permissões de empresa e sistema
-    if (section === 'company_settings') {
-      if (item === 'measurement_standards') return canManageSectors()
-      if (item === 'users') return getUserLimit() > 0
-    }
-
-    // Verifica permissões de vendas
-    if (section === 'sales_settings') {
-      if (item === 'rejection_reasons') {
-        // Motivos de rejeição só disponível no plano full
-        return canManageRejectionReasons()
-      }
-      if (item === 'quotation_status') {
-        // Status de orçamento só disponível no plano full
-        return canManageBudgetStatus()
-      }
-      if (item === 'series') {
-        return canManageSalesOrders()
-      }
-    }
-
-    // Verifica permissões de venda
-    if (section === 'sale') {
-      if (item === 'quick') {
-        // Venda rápida só disponível no plano full
-        return canManageSalesOrders()
-      }
-    }
-
-    // Fiscal section only shown if company has contracted the module
-    if (section === 'nota_fiscal') {
-      return hasFeature('nota_fiscal')
-    }
+    // A seção fiscal só aparece com o módulo contratado.
+    if (section === 'nota_fiscal') return hasAnyFeature(['nota_fiscal'])
 
     return true
   }

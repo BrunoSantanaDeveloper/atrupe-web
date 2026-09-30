@@ -196,6 +196,26 @@ export const PLAN_PRESENTATION: Record<
   },
 }
 
+/**
+ * O card de uma etapa: frase e itens vêm do servidor (editados no painel de
+ * planos); sem eles, valem os do código acima. O vídeo continua o local.
+ */
+export function planPresentation(
+  planType: string,
+  server?: { pitch?: string; actions?: string[] } | null,
+) {
+  const local = PLAN_PRESENTATION[planType as SequencePlanType]
+  if (!local && !server?.pitch) return null
+  return {
+    pitch: server?.pitch || local?.pitch || '',
+    actions:
+      server?.actions && server.actions.length > 0
+        ? server.actions
+        : (local?.actions ?? []),
+    video: local?.video,
+  }
+}
+
 /** A etapa anterior na trilha, para o "Tudo do Start, mais:" do card. */
 export const previousPlanType = (planType: string) => {
   const index = PLAN_SEQUENCE.indexOf(planType as SequencePlanType)

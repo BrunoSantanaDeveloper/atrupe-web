@@ -20,7 +20,6 @@ export const FEATURES = {
   SALES: {
     QUOTATION_QUICK_SALE: 'quotation_quick_sale',
     QUOTATION_REJECTION_REASONS: 'quotation_rejection_reasons',
-    QUOTATION_REQUIRE_REJECTION_REASON: 'quotation_require_rejection_reason',
     QUOTATION_STATUS_CONFIGURATION: 'quotation_status_configuration',
     QUOTATION_STATUS_COLUMN: 'quotation_status_column',
     SERVICE_ORDER_CANCELLATION_REASON: 'service_order_cancellation_reason',
