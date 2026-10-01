@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -60,6 +61,8 @@ import {
 
 // Actions
 import {
+  getUsualNext,
+  setUsualNext,
   addLineOption,
   addAssemblyLine,
   getProcessDetail,
@@ -73,6 +76,7 @@ import {
 
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
+import { usePermissions } from '@/hooks/usePermissions'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import {
   formulaObj,
@@ -156,6 +160,28 @@ export function ProcessEditor({ id }: { id: string }) {
     queryKey: ['assembly-resources'],
     queryFn: () => getAssemblyResources(),
   })
+  // As etapas seguintes usuais, vistas dos dois lados (FL-7)
+  const { data: usualRes } = useQuery({
+    queryKey: ['usual-next', id],
+    queryFn: () => getUsualNext({ processId: id }),
+  })
+  const { hasAnyPermission } = usePermissions()
+  const canEdit = hasAnyPermission(EDIT)
+
+  const toggleUsual = async (
+    side: 'before' | 'after',
+    otherId: string,
+    usual: boolean,
+  ) => {
+    const res = await setUsualNext({
+      fromProcessId: side === 'before' ? otherId : id,
+      toProcessId: side === 'before' ? id : otherId,
+      usual,
+    })
+    if (!res.success) return toast.error(res.message)
+    queryClient.invalidateQueries({ queryKey: ['usual-next'] })
+    queryClient.invalidateQueries({ queryKey: ['next-step'] })
+  }
 
   const detail = data?.data
   const block = detail?.block
@@ -699,6 +725,75 @@ export function ProcessEditor({ id }: { id: string }) {
                 Nenhum produto usa este processo ainda.
               </p>
             )}
+          </CardContent>
+        </Card>
+
+        {/* 5. No fluxo dos produtos (FL-7): as etapas seguintes usuais são
+            marcadas à mão, num par guardado uma vez e editável dos dois
+            lados. Nada é bloqueado: o não marcado fica em "ver todos" */}
+        <Card>
+          <CardHeader>
+            <CardTitle>No fluxo dos produtos</CardTitle>
+            <CardDescription>
+              Ao montar um produto, &quot;+ etapa seguinte&quot; mostra primeiro
+              o que está marcado aqui; o resto fica em &quot;ver todos&quot;.
+              Marcar de um lado aparece no outro. Sem marcação, valem os
+              acabamentos do mesmo setor.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
+            {(
+              [
+                [
+                  'before',
+                  'Costuma vir depois de',
+                  'Os processos que normalmente vêm antes deste. A dupla face vem depois do adesivo, do PVC e do ACM.',
+                ],
+                [
+                  'after',
+                  'Etapas seguintes usuais',
+                  'Os processos que normalmente vêm depois deste. Depois da impressão, o refile e a laminação.',
+                ],
+              ] as const
+            ).map(([side, label, help]) => (
+              <div key={side} className="space-y-2">
+                <p className="text-sm font-medium text-gray-800">{label}</p>
+                <p className="text-xs text-gray">{help}</p>
+                <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
+                  {!usualRes ? (
+                    <Skeleton className="h-20 w-full" />
+                  ) : usualRes.data?.[side].length ? (
+                    usualRes.data[side].map((item) => (
+                      <label
+                        key={item.id}
+                        className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
+                      >
+                        <Checkbox
+                          checked={item.usual}
+                          disabled={!canEdit}
+                          aria-label={item.name}
+                          onCheckedChange={(checked) =>
+                            toggleUsual(side, item.id, checked === true)
+                          }
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-gray-800">
+                            {item.name}
+                          </span>
+                          <span className="block text-xs text-gray">
+                            {item.sector}
+                          </span>
+                        </span>
+                      </label>
+                    ))
+                  ) : (
+                    <p className="px-2 py-1.5 text-sm text-gray">
+                      Nenhum outro processo cadastrado.
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
