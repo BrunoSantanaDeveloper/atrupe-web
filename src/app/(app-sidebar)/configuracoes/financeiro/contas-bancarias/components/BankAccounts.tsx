@@ -49,8 +49,10 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
 import {
-  IconPencil,
+  IconEye,
   IconTrash,
+  IconEyeOff,
+  IconPencil,
   IconRestore,
   IconArrowRight,
 } from '@tabler/icons-react'
@@ -72,6 +74,9 @@ export function BankAccounts(_: SearchParamsType) {
 
   const [editing, setEditing] = useState<BankAccount>()
   const [dialogOpen, setDialogOpen] = useState(false)
+  // Os saldos ficam escondidos até alguém pedir, como no Fluxo financeiro:
+  // valor grande à vista na tela é informação para quem passa por ela
+  const [showTotals, setShowTotals] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['bank-accounts'],
@@ -197,17 +202,19 @@ export function BankAccounts(_: SearchParamsType) {
         </div>
 
         <div className="flex items-center justify-between gap-6 md:justify-end">
-          <div className="md:text-right">
-            <p className="text-xs text-gray">Saldo</p>
-            <p
-              className={cn(
-                'text-lg font-semibold',
-                account.balance < 0 ? 'text-error-600' : 'text-gray-900',
-              )}
-            >
-              {money(account.balance)}
-            </p>
-          </div>
+          {showTotals && (
+            <div className="md:text-right">
+              <p className="text-xs text-gray">Saldo</p>
+              <p
+                className={cn(
+                  'text-sm font-semibold',
+                  account.balance < 0 ? 'text-error-600' : 'text-gray-900',
+                )}
+              >
+                {money(account.balance)}
+              </p>
+            </div>
+          )}
           <div className="flex gap-1">
             {account.isActive ? (
               <>
@@ -270,6 +277,17 @@ export function BankAccounts(_: SearchParamsType) {
                 </Button>
               </PermissionGate>
             }
+            secondaryCta={
+              <PermissionGate permissions={['values:values:view']}>
+                <ActionButton
+                  size="iconMd"
+                  variant="neutralOutline"
+                  tooltip={showTotals ? 'Ocultar totais' : 'Mostrar totais'}
+                  Icon={showTotals ? IconEyeOff : IconEye}
+                  onClick={() => setShowTotals((current) => !current)}
+                />
+              </PermissionGate>
+            }
           />
 
           {isLoading ? (
@@ -278,14 +296,18 @@ export function BankAccounts(_: SearchParamsType) {
             <>
               <Card>
                 <CardContent className="flex flex-col gap-4 px-6 py-5 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <p className="text-sm text-gray">
-                      Saldo em todas as contas
+                  {/* Sem totais grandes à vista: o saldo aparece compacto,
+                      atrás do "Mostrar totais" (padrão de 30/09/2026) */}
+                  {showTotals && (
+                    <p className="text-sm">
+                      <span className="text-gray">
+                        Saldo em todas as contas{' '}
+                      </span>
+                      <span className="font-semibold text-gray-900">
+                        {money(total)}
+                      </span>
                     </p>
-                    <p className="text-2xl font-semibold text-gray-900">
-                      {money(total)}
-                    </p>
-                  </div>
+                  )}
                   {/* O princípio da tela em uma frase (CX-0) */}
                   <p className="max-w-xl text-sm text-gray">
                     Contas <strong>com controle de caixa</strong> abrem e fecham

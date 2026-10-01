@@ -127,11 +127,6 @@ export function CashControl(_: SearchParamsType) {
   // Ordem do histórico, com o mesmo botão do Fluxo financeiro: do mais novo
   // para o mais antigo (padrão) ou o contrário, guardada na URL
   const sort = params.get('sort') === 'asc' ? 'asc' : 'desc'
-  const setTab = (value: Tab) =>
-    updateFilterParam('status', value === 'ALL' ? 'all' : value, {
-      router,
-      params,
-    })
   const setAccountFilter = (value: string) =>
     updateFilterParam('conta', value, { router, params })
 
@@ -367,6 +362,25 @@ export function CashControl(_: SearchParamsType) {
             review="new"
             title="Controle de caixa"
             supportText={`Hoje, ${longDate(today)}`}
+            // As abas do histórico ficam no cabeçalho, com o estado na URL
+            // (design.md §5.1)
+            paramName="status"
+            activeTab={tab === 'ALL' ? 'all' : tab}
+            tabs={[
+              { value: 'all', tab: 'all', label: 'Todos', count: days.length },
+              {
+                value: 'OPEN',
+                tab: 'OPEN',
+                label: 'Abertos',
+                count: days.filter((day) => day.status === 'OPEN').length,
+              },
+              {
+                value: 'CLOSED',
+                tab: 'CLOSED',
+                label: 'Fechados',
+                count: days.filter((day) => day.status === 'CLOSED').length,
+              },
+            ]}
             primaryCta={
               <PermissionGate permissions={['financial:cash_control:create']}>
                 <Button
@@ -451,24 +465,10 @@ export function CashControl(_: SearchParamsType) {
 
           <Card>
             <CardContent className="flex flex-wrap items-end justify-between gap-4 px-6 py-4">
-              <div className="flex flex-wrap gap-2">
-                {(
-                  [
-                    ['ALL', 'Todos'],
-                    ['OPEN', 'Abertos'],
-                    ['CLOSED', 'Fechados'],
-                  ] as const
-                ).map(([value, label]) => (
-                  <Button
-                    key={value}
-                    type="button"
-                    variant={tab === value ? 'default' : 'neutralOutline'}
-                    onClick={() => setTab(value)}
-                  >
-                    {label}
-                  </Button>
-                ))}
-              </div>
+              <p className="text-sm text-gray">
+                Histórico dos caixas por dia e por conta. O relatório de cada
+                dia abre na lupa.
+              </p>
               <div className="flex items-end gap-3">
                 <SelectBasic
                   name="account-filter"
