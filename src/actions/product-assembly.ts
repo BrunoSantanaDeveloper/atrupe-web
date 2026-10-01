@@ -34,6 +34,10 @@ import type {
   PriceTier,
   SheetYield,
   ResourceOption,
+  FlowStage,
+  UsualNeighbor,
+  ComposedItemView,
+  NextStepCandidates,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
@@ -90,7 +94,7 @@ const finishingRules: SaleRules = {
 
 type Template = Omit<
   AssemblyBlock,
-  'id' | 'baseBlockId' | 'localRules' | 'lines' | 'processId'
+  'id' | 'dependsOn' | 'baseBlockId' | 'localRules' | 'lines' | 'processId'
 > & {
   processId: string
   finishingOf: string | null
@@ -551,14 +555,17 @@ const catalog: Template[] = [
 
 const fromTemplate = (
   template: Template,
-  baseBlockId: string | null,
+  // As etapas de que esta depende (FL-1). A primeira é a referência de
+  // medida (MS-5)
+  dependsOn: string[],
 ): AssemblyBlock => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { finishingOf, lines, ...rest } = template
   return {
     ...rest,
     id: `b${uid()}`,
-    baseBlockId,
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
     localRules: null,
     lines: lines.map((line) => ({
       ...structuredClone(line),
@@ -596,6 +603,7 @@ catalog.forEach((template) => {
       ...rest,
       id: `p-${processId}`,
       processId: null,
+      dependsOn: [],
       baseBlockId: null,
       localRules: null,
       lines: lines.map((line) => ({
@@ -607,6 +615,26 @@ catalog.forEach((template) => {
     meta: { finishingOf, sellerInstructions: '', active: true },
   })
 })
+
+// As etapas seguintes usuais (FL-7): um par (processo → processo seguinte),
+// guardado uma vez e editável dos dois lados. "+ etapa seguinte" mostra
+// primeiro os marcados; "ver todos" abre o resto. Nada é bloqueado
+const pairKey = (fromProcessId: string, toProcessId: string) =>
+  `${fromProcessId}→${toProcessId}`
+const usualNext = new Set<string>(
+  [
+    ['impressao-solvente', 'acabamento-banner'],
+    ['impressao-solvente', 'bainha'],
+    ['impressao-solvente', 'ilhos'],
+    ['impressao-solvente', 'laminacao'],
+    ['bainha', 'ilhos'],
+    ['impressao-digital', 'corte-guilhotina'],
+    ['arte', 'impressao-solvente'],
+    ['arte', 'impressao-digital'],
+    ['acabamento-banner', 'instalacao'],
+    ['laminacao', 'instalacao'],
+  ].map(([from, to]) => pairKey(from, to)),
+)
 
 const templateOf = (processId: string): Template | undefined => {
   const entry = processStore.get(processId)
@@ -625,7 +653,7 @@ const processTemplates = (onlyActive = true) =>
     .map((id) => templateOf(id)!)
 
 // O Banner do legado (ITP1): impressão solvente + acabamento de banner
-const bannerBase = fromTemplate(templateOf('impressao-solvente')!, null)
+const bannerBase = fromTemplate(templateOf('impressao-solvente')!, [])
 const assemblies: ProductAssembly[] = [
   {
     productId: 'banner',
@@ -644,7 +672,7 @@ const assemblies: ProductAssembly[] = [
       'Lona 440 g impressa em solvente, com bastão de madeira, ponteiras e cordão.',
     blocks: [
       bannerBase,
-      fromTemplate(templateOf('acabamento-banner')!, bannerBase.id),
+      fromTemplate(templateOf('acabamento-banner')!, [bannerBase.id]),
     ],
     variations: [
       {
@@ -680,7 +708,7 @@ const assemblies: ProductAssembly[] = [
 // O cartão de visita da regra AP-1: 5 × 9 cm, mil unidades. Na A3 cabem
 // 24 na melhor posição (20 na outra) e são 42 folhas; o 4x4 passa cada
 // folha duas vezes (PV-7). A tabela por faixa é a da gráfica (FQ-1)
-const cartaoBase = fromTemplate(templateOf('impressao-digital')!, null)
+const cartaoBase = fromTemplate(templateOf('impressao-digital')!, [])
 assemblies.push({
   productId: 'cartao',
   name: 'Cartão de visita',
@@ -702,7 +730,7 @@ assemblies.push({
   technicalDescription: 'Cartão 5 × 9 cm em couchê 300 g, impressão colorida.',
   blocks: [
     cartaoBase,
-    fromTemplate(templateOf('corte-guilhotina')!, cartaoBase.id),
+    fromTemplate(templateOf('corte-guilhotina')!, [cartaoBase.id]),
   ],
   variations: [
     {
@@ -747,6 +775,7 @@ assemblies.push({
       name: 'Estrutura soldada',
       sector: 'Produção',
       role: 'BASE',
+      dependsOn: [],
       baseBlockId: null,
       setupMinutes: 20,
       sectorHourCost: HOUR['Produção'],
@@ -789,15 +818,22 @@ assemblies.push({
   variations: [],
 })
 
-// A placa: a parte (o quadro) + a impressão da lona, com cantoneira
-// opcional nas laterais — o exemplo do time para o IP-28
-const placaFrame = {
+// A placa é o exemplo do time para o fluxo (FL-4): dois caminhos que correm
+// em paralelo — criação → impressão da lona, e a estrutura → pintura, com a
+// cantoneira opcional (IP-28) — e se encontram na instalação, que depende
+// dos dois. O quadro entra como parte (IP-9)
+const placaArte = fromTemplate(templateOf('arte')!, [])
+const placaPrint = fromTemplate(templateOf('impressao-solvente')!, [
+  placaArte.id,
+])
+const placaFrame: AssemblyBlock = {
   id: `b${uid()}`,
   processId: null,
   partProductId: 'quadro-metalon',
   name: 'Quadro de metalon',
   sector: 'Produção',
-  role: 'BASE' as const,
+  role: 'BASE',
+  dependsOn: [],
   baseBlockId: null,
   setupMinutes: 0,
   sectorHourCost: HOUR['Produção'],
@@ -806,7 +842,100 @@ const placaFrame = {
   localRules: null,
   lines: [],
 }
-const placaPrint = fromTemplate(templateOf('impressao-solvente')!, null)
+const placaPaint: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Pintura da estrutura',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [placaFrame.id],
+  baseBlockId: placaFrame.id,
+  setupMinutes: 10,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Tinta',
+      kind: 'MATERIAL',
+      mode: 'SINGLE',
+      options: [
+        {
+          id: 'tinta-esmalte',
+          name: 'Esmalte sintético preto',
+          unit: 'l',
+          unitCost: 3200,
+          unitSale: 5500,
+        },
+      ],
+      selectedId: 'tinta-esmalte',
+      perUnit: 0.05,
+      formula: 'PER_PERIMETER',
+      lossPercent: 10,
+      minimum: 0.1,
+      overridden: false,
+    },
+    {
+      id: `l${uid()}`,
+      name: 'Pintura',
+      kind: 'LABOR',
+      mode: 'SINGLE',
+      options: [labor('Produção')],
+      selectedId: 'mo-Produção',
+      perUnit: 4,
+      formula: 'PER_PERIMETER',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+    },
+  ],
+}
+const placaEdge: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Acabamento lateral',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [placaPaint.id],
+  baseBlockId: placaFrame.id,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Cantoneira',
+      kind: 'MATERIAL',
+      mode: 'SINGLE',
+      options: [
+        {
+          id: 'cantoneira',
+          name: 'Cantoneira de alumínio',
+          unit: 'm',
+          unitCost: 1000,
+          unitSale: 2000,
+        },
+      ],
+      selectedId: 'cantoneira',
+      perUnit: 1.1,
+      formula: 'PER_PERIMETER',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+      optional: true,
+      optionalDefault: false,
+    },
+  ],
+}
+// O ponto de encontro (FL-4): a instalação espera a lona e a estrutura
+const placaInstall = fromTemplate(templateOf('instalacao')!, [
+  placaPrint.id,
+  placaEdge.id,
+])
 assemblies.push({
   productId: 'placa-quadro',
   name: 'Placa em lona com quadro de ferro',
@@ -822,16 +951,59 @@ assemblies.push({
   priceTiers: [],
   technicalDescription: 'Lona impressa esticada em quadro de metalon.',
   blocks: [
-    placaFrame,
+    placaArte,
     placaPrint,
+    placaFrame,
+    placaPaint,
+    placaEdge,
+    placaInstall,
+  ],
+  variations: [],
+})
+
+// O painel de ACM é uma parte que tem outra parte por dentro (IP-9, três
+// níveis): o quadro de metalon, com a chapa aplicada em cima
+const acmFrame: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  partProductId: 'quadro-metalon',
+  name: 'Quadro de metalon',
+  sector: 'Produção',
+  role: 'BASE',
+  dependsOn: [],
+  baseBlockId: null,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...baseRules },
+  localRules: null,
+  lines: [],
+}
+assemblies.push({
+  productId: 'painel-acm',
+  name: 'Painel de ACM',
+  code: 'PRT-02',
+  status: 'PART',
+  dimension: 'SALE',
+  unitKind: 'AREA',
+  unitPrice: null,
+  measure: { quantity: 1, width: 3, height: 1 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription: 'Chapa de ACM aplicada sobre quadro de metalon.',
+  blocks: [
+    acmFrame,
     {
       id: `b${uid()}`,
       processId: null,
-      name: 'Acabamento lateral',
+      name: 'Aplicação do ACM',
       sector: 'Produção',
       role: 'FINISHING',
-      baseBlockId: placaFrame.id,
-      setupMinutes: 0,
+      dependsOn: [acmFrame.id],
+      baseBlockId: acmFrame.id,
+      setupMinutes: 15,
       sectorHourCost: HOUR['Produção'],
       taskType: 'Produção',
       originalRules: { ...finishingRules },
@@ -839,29 +1011,126 @@ assemblies.push({
       lines: [
         {
           id: `l${uid()}`,
-          name: 'Cantoneira',
+          name: 'Chapa',
           kind: 'MATERIAL',
-          mode: 'SINGLE',
+          mode: 'CHOOSE',
           options: [
             {
-              id: 'cantoneira',
-              name: 'Cantoneira de alumínio',
-              unit: 'm',
-              unitCost: 1000,
-              unitSale: 2000,
+              id: 'acm-branco',
+              name: 'ACM 3 mm branco',
+              unit: 'm²',
+              unitCost: 9800,
+              unitSale: 16000,
+            },
+            {
+              id: 'acm-preto',
+              name: 'ACM 3 mm preto',
+              unit: 'm²',
+              unitCost: 10400,
+              unitSale: 17000,
             },
           ],
-          selectedId: 'cantoneira',
-          perUnit: 1.1,
-          formula: 'PER_PERIMETER',
+          selectedId: 'acm-branco',
+          perUnit: 1,
+          formula: 'PER_AREA',
+          lossPercent: 15,
+          minimum: null,
+          overridden: false,
+        },
+        {
+          id: `l${uid()}`,
+          name: 'Montagem',
+          kind: 'LABOR',
+          mode: 'SINGLE',
+          options: [labor('Produção')],
+          selectedId: 'mo-Produção',
+          perUnit: 30,
+          formula: 'PER_AREA',
           lossPercent: 0,
           minimum: null,
           overridden: false,
-          optional: true,
-          optionalDefault: false,
         },
       ],
     },
+  ],
+  variations: [],
+})
+
+// A fachada (IP-9.1): a criação abre o trabalho; as partes correm em
+// paralelo, cada uma com a composição dela; a montagem junta tudo e a
+// instalação fecha. É o segundo produto que o time pediu para validar o
+// fluxo (FL-5)
+const fachadaArte = fromTemplate(templateOf('arte')!, [])
+const fachadaPanel: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  partProductId: 'painel-acm',
+  name: 'Painel de ACM',
+  sector: 'Produção',
+  role: 'BASE',
+  dependsOn: [fachadaArte.id],
+  baseBlockId: fachadaArte.id,
+  setupMinutes: 0,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...baseRules },
+  localRules: null,
+  lines: [],
+}
+const fachadaLetters = fromTemplate(templateOf('impressao-solvente')!, [
+  fachadaArte.id,
+])
+fachadaLetters.localName = 'Adesivo das letras'
+const fachadaAssembly: AssemblyBlock = {
+  id: `b${uid()}`,
+  processId: null,
+  name: 'Montagem da fachada',
+  sector: 'Produção',
+  role: 'FINISHING',
+  dependsOn: [fachadaPanel.id, fachadaLetters.id],
+  baseBlockId: fachadaPanel.id,
+  setupMinutes: 30,
+  sectorHourCost: HOUR['Produção'],
+  taskType: 'Produção',
+  originalRules: { ...finishingRules },
+  localRules: null,
+  lines: [
+    {
+      id: `l${uid()}`,
+      name: 'Montagem',
+      kind: 'LABOR',
+      mode: 'SINGLE',
+      options: [labor('Produção')],
+      selectedId: 'mo-Produção',
+      perUnit: 40,
+      formula: 'PER_AREA',
+      lossPercent: 0,
+      minimum: null,
+      overridden: false,
+    },
+  ],
+}
+assemblies.push({
+  productId: 'fachada-acm',
+  name: 'Fachada em ACM com letras',
+  code: 'PRD-04',
+  status: 'RELEASED',
+  dimension: 'SALE',
+  unitKind: 'AREA',
+  unitPrice: 65000,
+  measure: { quantity: 1, width: 6, height: 1.2 },
+  unitAmount: 1,
+  allowEditValues: true,
+  allowEditDescription: true,
+  priceTiers: [],
+  technicalDescription:
+    'Painel de ACM sobre estrutura metálica, com letras em adesivo e instalação.',
+  blocks: [
+    fachadaArte,
+    fachadaPanel,
+    fachadaLetters,
+    fachadaAssembly,
+    fromTemplate(templateOf('instalacao')!, [fachadaAssembly.id]),
   ],
   variations: [],
 })
@@ -891,6 +1160,123 @@ processStore.forEach((entry, processId) =>
 
 const isProcessHost = (productId: string) =>
   productId.startsWith(PROCESS_PREFIX)
+
+// O item montado no orçamento (ORC-11) vive aqui como um produto técnico,
+// para usar as mesmas ações da composição. Não é cadastro: não aparece como
+// parte, não conta como produto composto e não entra em "Usado em"
+const DRAFT_PREFIX = 'orcamento:'
+const isDraft = (productId: string) => productId.startsWith(DRAFT_PREFIX)
+const isHidden = (productId: string) =>
+  isProcessHost(productId) || isDraft(productId)
+
+/* ---------------------------------------------------------------------------
+ * O fluxo (FL-1): cada etapa depende de nenhuma, uma ou várias anteriores
+ * ------------------------------------------------------------------------- */
+
+// As etapas na ordem do fluxo: toda etapa vem depois das que ela depende e,
+// entre as que já podem entrar, vale a ordem em que foram criadas
+const orderBlocks = (blocks: AssemblyBlock[]) => {
+  const ids = new Set(blocks.map((block) => block.id))
+  const done = new Set<string>()
+  const result: AssemblyBlock[] = []
+  let pending = [...blocks]
+  while (pending.length) {
+    const ready = pending.filter((block) =>
+      block.dependsOn.every((id) => !ids.has(id) || done.has(id)),
+    )
+    // Um laço não deveria existir; se existir, segue a ordem gravada
+    const batch = ready.length ? ready : [pending[0]]
+    batch.forEach((block) => {
+      done.add(block.id)
+      result.push(block)
+    })
+    pending = pending.filter((block) => !done.has(block.id))
+  }
+  return result
+}
+
+// `from` chega em `target` seguindo as dependências? Serve para impedir que
+// "ligar a…" feche um laço
+const dependsTransitively = (
+  blocks: AssemblyBlock[],
+  from: string,
+  target: string,
+  seen = new Set<string>(),
+): boolean => {
+  if (from === target) return true
+  if (seen.has(from)) return false
+  seen.add(from)
+  const block = blocks.find((item) => item.id === from)
+  return !!block?.dependsOn.some((id) =>
+    dependsTransitively(blocks, id, target, seen),
+  )
+}
+
+// Inserir no meio da ligação (FL-5): a etapa nova passa a depender de `after`
+// e `before`, que dependia de `after`, passa a depender da nova
+const wireBetween = (
+  blocks: AssemblyBlock[],
+  block: AssemblyBlock,
+  before: string | undefined,
+) => {
+  if (!before) return
+  const next = blocks.find((item) => item.id === before)
+  if (!next) return
+  const replaced = block.dependsOn.filter((id) => next.dependsOn.includes(id))
+  if (!replaced.length) return
+  next.dependsOn = Array.from(
+    new Set(
+      next.dependsOn.map((id) => (replaced.includes(id) ? block.id : id)),
+    ),
+  )
+  if (next.baseBlockId && replaced.includes(next.baseBlockId)) {
+    next.baseBlockId = block.id
+  }
+}
+
+// Tirar uma etapa do meio: quem dependia dela passa a depender do que ela
+// dependia, para o fluxo não se partir
+const unwire = (blocks: AssemblyBlock[], removedId: string) => {
+  const removed = blocks.find((item) => item.id === removedId)
+  if (!removed) return blocks
+  return blocks
+    .filter((item) => item.id !== removedId)
+    .map((item) => {
+      if (!item.dependsOn.includes(removedId)) return item
+      const dependsOn = Array.from(
+        new Set([
+          ...item.dependsOn.filter((id) => id !== removedId),
+          ...removed.dependsOn,
+        ]),
+      )
+      return {
+        ...item,
+        dependsOn,
+        baseBlockId:
+          item.baseBlockId === removedId
+            ? (removed.baseBlockId ?? removed.dependsOn[0] ?? null)
+            : item.baseBlockId,
+      }
+    })
+}
+
+// O fluxo como a tela desenha (FL-5), com o que a parte tem por dentro até
+// três níveis (IP-9)
+const flowOf = (assembly: ProductAssembly, depth = 0): FlowStage[] =>
+  orderBlocks(assembly.blocks).map((block) => {
+    const partSource = block.partProductId
+      ? assemblies.find((item) => item.productId === block.partProductId)
+      : null
+    return {
+      id: block.id,
+      name: block.localName || block.name,
+      sector: block.sector,
+      dependsOn: block.dependsOn,
+      processId: block.processId,
+      partProductId: block.partProductId ?? null,
+      partFlow: partSource && depth < 2 ? flowOf(partSource, depth + 1) : null,
+    }
+  })
 
 /* ---------------------------------------------------------------------------
  * Vínculo com o processo (CP-21): a etapa incluída de um processo acompanha a
@@ -1201,7 +1587,8 @@ const compute = (
   // O consumo das partes entra no resumo do produto
   const partSummaries: ResourceSummary[][] = []
 
-  for (const block of assembly.blocks) {
+  // Na ordem do fluxo: a etapa que usa a medida de outra vem depois dela
+  for (const block of orderBlocks(assembly.blocks)) {
     const rules = block.localRules ?? block.originalRules
     const base = blocks.find((item) => item.id === block.baseBlockId)
     const reference = base?.measure ?? measure
@@ -1366,6 +1753,7 @@ const compute = (
             stages: part.blocks.length,
           }
         : null,
+      partFlow: partSource && depth < 2 ? flowOf(partSource, depth + 1) : null,
       partLines: part
         ? part.blocks.flatMap((item) => [...item.partLines, ...item.lines])
         : [],
@@ -1596,20 +1984,29 @@ export const updateAssembly = async ({
   return ok(null)
 }
 
-// O acabamento entra logo depois da base e dos acabamentos que ela já tem
-const insertBlock = (assembly: ProductAssembly, block: AssemblyBlock) => {
-  if (block.baseBlockId) {
-    let index = assembly.blocks.findIndex(
-      (item) => item.id === block.baseBlockId,
-    )
-    while (assembly.blocks[index + 1]?.baseBlockId === block.baseBlockId) {
-      index++
-    }
-    assembly.blocks.splice(index + 1, 0, block)
-  } else {
-    assembly.blocks.push(block)
-  }
+// A posição na lista não importa mais: o fluxo é desenhado pela dependência
+// (FL-5). A etapa entra logo depois da última de que ela depende, para a
+// leitura em lista continuar fazendo sentido
+const insertBlock = (
+  assembly: ProductAssembly,
+  block: AssemblyBlock,
+  insertBefore?: string,
+) => {
+  const last = Math.max(
+    -1,
+    ...block.dependsOn.map((id) =>
+      assembly.blocks.findIndex((item) => item.id === id),
+    ),
+  )
+  assembly.blocks.splice(last + 1, 0, block)
+  wireBetween(assembly.blocks, block, insertBefore)
 }
+
+// A etapa nova que depende de outra começa com as regras de acabamento (FL-2,
+// MS-5): mesma medida da base, acompanhando a quantidade dela. Quem monta
+// ajusta depois, se precisar
+const rulesFor = (dependsOn: string[]) =>
+  dependsOn.length ? { ...finishingRules } : { ...baseRules }
 
 // Mão de obra de todos os setores e os recursos que os processos já usam
 const resourceMap = () => {
@@ -1640,12 +2037,16 @@ export const addOwnBlock = async ({
   productId,
   name,
   sector,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   name: string
   sector: string
-  baseBlockId: string | null
+  // As etapas de que a nova depende (FL-1); vazio é um caminho novo
+  dependsOn?: string[]
+  // Inserir no meio da ligação: a etapa que passa a depender da nova
+  insertBefore?: string
 }) => {
   if (!name.trim()) return fail('Informe o nome da etapa')
   const assembly = findOrCreate(productId)
@@ -1654,16 +2055,17 @@ export const addOwnBlock = async ({
     processId: null,
     name: name.trim(),
     sector,
-    role: baseBlockId ? 'FINISHING' : 'BASE',
-    baseBlockId,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
     setupMinutes: 0,
     sectorHourCost: HOUR[sector] || 1800,
     taskType: sector,
-    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    originalRules: rulesFor(dependsOn),
     localRules: null,
     lines: [],
   }
-  insertBlock(assembly, block)
+  insertBlock(assembly, block, insertBefore)
   return ok(block.id)
 }
 
@@ -1766,21 +2168,25 @@ export const restoreProcessLines = async ({
 export const addAssemblyBlock = async ({
   productId,
   processId,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   processId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
+  insertBefore?: string
 }) => {
   const assembly = findOrCreate(productId)
   const template = templateOf(processId)
   if (!template) return fail('Processo não encontrado')
 
-  const block = fromTemplate(template, baseBlockId)
-  insertBlock(assembly, block)
+  const block = fromTemplate(template, dependsOn)
+  insertBlock(assembly, block, insertBefore)
   return ok(block.id)
 }
 
+// Tirar a etapa do fluxo: quem dependia dela passa a depender do que ela
+// dependia. O fluxo continua ligado (FL-12)
 export const removeAssemblyBlock = async ({
   productId,
   blockId,
@@ -1789,11 +2195,131 @@ export const removeAssemblyBlock = async ({
   blockId: string
 }) => {
   const assembly = findOrCreate(productId)
-  // A base sai com os acabamentos dela: acabamento sem base não existe
-  assembly.blocks = assembly.blocks.filter(
-    (block) => block.id !== blockId && block.baseBlockId !== blockId,
-  )
+  assembly.blocks = unwire(assembly.blocks, blockId)
+  assembly.variations.forEach((variation) => {
+    if (!variation.extraBlocks) return
+    variation.extraBlocks = variation.extraBlocks.map((block) =>
+      block.dependsOn.includes(blockId)
+        ? {
+            ...block,
+            dependsOn: block.dependsOn.filter((id) => id !== blockId),
+            baseBlockId:
+              block.baseBlockId === blockId ? null : block.baseBlockId,
+          }
+        : block,
+    )
+  })
   return ok(null)
+}
+
+// "Ligar a…" (FL-5): a etapa passa a depender também de outra — é o ponto
+// de encontro, a instalação que espera os dois caminhos (FL-4)
+export const linkBlock = async ({
+  productId,
+  blockId,
+  toId,
+}: {
+  productId: string
+  blockId: string
+  toId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
+  const target = assembly.blocks.find((item) => item.id === toId)
+  if (!block || !target) return fail('Etapa não encontrada')
+  if (blockId === toId) return fail('A etapa não pode depender dela mesma')
+  if (block.dependsOn.includes(toId)) return ok(null)
+  if (dependsTransitively(assembly.blocks, toId, blockId)) {
+    return fail(
+      `${target.localName || target.name} já vem depois de ${block.localName || block.name}: ligar as duas fecharia um laço`,
+    )
+  }
+  block.dependsOn = [...block.dependsOn, toId]
+  if (!block.baseBlockId) block.baseBlockId = toId
+  return ok(null)
+}
+
+export const unlinkBlock = async ({
+  productId,
+  blockId,
+  fromId,
+}: {
+  productId: string
+  blockId: string
+  fromId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
+  if (!block) return fail('Etapa não encontrada')
+  block.dependsOn = block.dependsOn.filter((id) => id !== fromId)
+  if (block.baseBlockId === fromId) {
+    block.baseBlockId = block.dependsOn[0] ?? null
+  }
+  return ok(null)
+}
+
+// Trocar o processo que preenche a etapa (FL-6): a caixa continua no mesmo
+// lugar do fluxo, com as mesmas ligações; o que muda é a montagem
+export const replaceBlockProcess = async ({
+  productId,
+  blockId,
+  processId,
+}: {
+  productId: string
+  blockId: string
+  processId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const index = assembly.blocks.findIndex((item) => item.id === blockId)
+  if (index < 0) return fail('Etapa não encontrada')
+  const template = templateOf(processId)
+  if (!template) return fail('Processo não encontrado')
+  const current = assembly.blocks[index]
+  const next = fromTemplate(template, current.dependsOn)
+  next.id = current.id
+  next.baseBlockId = current.baseBlockId
+  assembly.blocks[index] = next
+  return ok(null)
+}
+
+// O que "+ etapa seguinte" oferece depois desta etapa (FL-7)
+export const getNextStepCandidates = async ({
+  productId,
+  blockId,
+}: {
+  productId: string
+  blockId: string | null
+}) => {
+  const assembly = findOrCreate(productId)
+  const block = blockId
+    ? assembly.blocks.find((item) => item.id === blockId)
+    : null
+  const toItem = (item: Template): ProcessCatalogItem => ({
+    id: item.processId,
+    name: item.name,
+    sector: item.sector,
+    role: item.role,
+    finishingOf: item.finishingOf,
+  })
+  const all = processTemplates()
+    .map(toItem)
+    .sort(
+      (a, b) =>
+        a.sector.localeCompare(b.sector) || a.name.localeCompare(b.name),
+    )
+  if (!block) return ok<NextStepCandidates>({ usual: [], all, bySector: false })
+
+  const marked = block.processId
+    ? all.filter((item) => usualNext.has(pairKey(block.processId!, item.id)))
+    : []
+  if (marked.length) {
+    return ok<NextStepCandidates>({ usual: marked, all, bySector: false })
+  }
+  // Sem marcação, valem os acabamentos do setor da etapa, como no legado
+  const bySector = all.filter(
+    (item) => item.role === 'FINISHING' && item.finishingOf === block.sector,
+  )
+  return ok<NextStepCandidates>({ usual: bySector, all, bySector: true })
 }
 
 export const moveAssemblyBlock = async ({
@@ -2411,7 +2937,7 @@ export const getPartCandidates = async ({ productId }: { productId: string }) =>
       .filter(
         (item) =>
           item.productId !== productId &&
-          !isProcessHost(item.productId) &&
+          !isHidden(item.productId) &&
           item.blocks.length,
       )
       .map((item) => ({
@@ -2444,11 +2970,13 @@ const containsProduct = (
 export const addPartBlock = async ({
   productId,
   partProductId,
-  baseBlockId,
+  dependsOn = [],
+  insertBefore,
 }: {
   productId: string
   partProductId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
+  insertBefore?: string
 }) => {
   const assembly = findOrCreate(productId)
   const part = assemblies.find((item) => item.productId === partProductId)
@@ -2460,24 +2988,26 @@ export const addPartBlock = async ({
     return fail('Um produto não pode ser parte dele mesmo')
   }
 
-  const first = part.blocks[0]
-  insertBlock(assembly, {
+  const first = orderBlocks(part.blocks)[0]
+  const block: AssemblyBlock = {
     id: `b${uid()}`,
     processId: null,
     partProductId,
     name: part.name,
     sector: first.sector,
-    role: baseBlockId ? 'FINISHING' : 'BASE',
-    baseBlockId,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
+    dependsOn: [...dependsOn],
+    baseBlockId: dependsOn[0] ?? null,
     setupMinutes: 0,
     sectorHourCost: first.sectorHourCost,
     taskType: first.taskType,
     // A parte acompanha a medida e a quantidade do produto por padrão
-    originalRules: baseBlockId ? { ...finishingRules } : { ...baseRules },
+    originalRules: rulesFor(dependsOn),
     localRules: null,
     lines: [],
-  })
-  return ok(null)
+  }
+  insertBlock(assembly, block, insertBefore)
+  return ok(block.id)
 }
 
 // Os produtos que já têm composição (CP-17): alimenta o filtro "com / sem
@@ -2485,7 +3015,7 @@ export const addPartBlock = async ({
 export const getComposedProductIds = async () =>
   ok(
     assemblies
-      .filter((item) => !isProcessHost(item.productId) && item.blocks.length)
+      .filter((item) => !isHidden(item.productId) && item.blocks.length)
       .map((item) => item.productId),
   )
 
@@ -2572,15 +3102,16 @@ export const importFromLibrary = async ({
   if (!entry) return fail('Composição não encontrada na biblioteca')
   const assembly = findOrCreate(productId)
 
-  let base: AssemblyBlock | null = null
+  // A biblioteca é uma sequência (FL-1): cada processo vem depois do
+  // anterior, e o fluxo nasce ligado
+  let previous: AssemblyBlock | null = null
   entry.processes.forEach((processId) => {
     const template = templateOf(processId)
     if (!template) return
-    const finishing = template.role === 'FINISHING'
-    const block = fromTemplate(template, finishing ? base?.id || null : null)
-    if (finishing && !base) block.role = 'BASE'
+    const block = fromTemplate(template, previous ? [previous.id] : [])
+    if (!previous && block.role === 'FINISHING') block.role = 'BASE'
     insertBlock(assembly, block)
-    if (!finishing) base = block
+    previous = block
   })
   return ok(null)
 }
@@ -2594,12 +3125,12 @@ export const addVariationBlock = async ({
   productId,
   variationId,
   processId,
-  baseBlockId,
+  dependsOn = [],
 }: {
   productId: string
   variationId: string
   processId: string
-  baseBlockId: string | null
+  dependsOn?: string[]
 }) => {
   const variation = findOrCreate(productId).variations.find(
     (item) => item.id === variationId,
@@ -2609,7 +3140,7 @@ export const addVariationBlock = async ({
   if (!template) return fail('Processo não encontrado')
   variation.extraBlocks = [
     ...(variation.extraBlocks || []),
-    fromTemplate(template, baseBlockId),
+    fromTemplate(template, dependsOn),
   ]
   return ok(null)
 }
@@ -2627,9 +3158,7 @@ export const removeVariationBlock = async ({
     (item) => item.id === variationId,
   )
   if (!variation) return fail('Variação não encontrada')
-  variation.extraBlocks = (variation.extraBlocks || []).filter(
-    (block) => block.id !== blockId && block.baseBlockId !== blockId,
-  )
+  variation.extraBlocks = unwire(variation.extraBlocks || [], blockId)
   return ok(null)
 }
 
@@ -2650,7 +3179,7 @@ const usedIn = (processId: string) =>
   assemblies
     .filter(
       (item) =>
-        !isProcessHost(item.productId) &&
+        !isHidden(item.productId) &&
         (item.blocks.some((block) => block.processId === processId) ||
           item.variations.some((variation) =>
             variation.extraBlocks?.some(
@@ -2723,6 +3252,7 @@ export const createProcessDef = async ({
     name: name.trim(),
     sector,
     role: finishingOf ? 'FINISHING' : 'BASE',
+    dependsOn: [],
     baseBlockId: null,
     setupMinutes: 0,
     sectorHourCost: HOUR[sector] || 1800,
@@ -2773,4 +3303,222 @@ export const updateProcessMeta = async ({
   // usam continuam acompanhando a montagem dele; ele só deixa de ser oferecido
   if (values.active !== undefined) meta.active = values.active
   return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Etapas seguintes usuais (FL-7): o par é editável dos dois lados
+ * ------------------------------------------------------------------------- */
+
+const neighborsOf = (processId: string, direction: 'before' | 'after') =>
+  processTemplates(false)
+    .filter((item) => item.processId !== processId)
+    .map(
+      (item): UsualNeighbor => ({
+        id: item.processId,
+        name: item.name,
+        sector: item.sector,
+        role: item.role,
+        finishingOf: item.finishingOf,
+        usual: usualNext.has(
+          direction === 'after'
+            ? pairKey(processId, item.processId)
+            : pairKey(item.processId, processId),
+        ),
+      }),
+    )
+    .sort(
+      (a, b) =>
+        Number(b.usual) - Number(a.usual) ||
+        a.sector.localeCompare(b.sector) ||
+        a.name.localeCompare(b.name),
+    )
+
+// Visto do processo: de quem ele "costuma vir depois", e quais são as
+// "etapas seguintes usuais" dele
+export const getUsualNext = async ({ processId }: { processId: string }) => {
+  if (!processStore.has(processId)) return fail('Processo não encontrado')
+  return ok({
+    before: neighborsOf(processId, 'before'),
+    after: neighborsOf(processId, 'after'),
+  })
+}
+
+export const setUsualNext = async ({
+  fromProcessId,
+  toProcessId,
+  usual,
+}: {
+  fromProcessId: string
+  toProcessId: string
+  usual: boolean
+}) => {
+  if (!processStore.has(fromProcessId) || !processStore.has(toProcessId)) {
+    return fail('Processo não encontrado')
+  }
+  if (fromProcessId === toProcessId) {
+    return fail('Um processo não vem depois dele mesmo')
+  }
+  const key = pairKey(fromProcessId, toProcessId)
+  if (usual) usualNext.add(key)
+  else usualNext.delete(key)
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * O item montado no orçamento (ORC-11): o mesmo editor de fluxo do produto,
+ * só naquele item. Não vira cadastro, a não ser que o vendedor peça
+ * ------------------------------------------------------------------------- */
+
+export const createDraftAssembly = async ({
+  name,
+  measure,
+}: {
+  name?: string
+  measure?: AssemblyMeasure
+}) => {
+  const productId = `${DRAFT_PREFIX}${uid()}`
+  assemblies.push({
+    productId,
+    name: name?.trim() || 'Item composto',
+    code: '',
+    status: 'DRAFT',
+    dimension: 'SALE',
+    unitKind: 'UNITY',
+    unitPrice: null,
+    measure: measure ?? { quantity: 1, width: 1, height: 1 },
+    unitAmount: 1,
+    allowEditValues: true,
+    allowEditDescription: true,
+    priceTiers: [],
+    technicalDescription: '',
+    blocks: [],
+    variations: [],
+  })
+  return ok(productId)
+}
+
+// O que o vendedor vê ao montar: as etapas e o preço de venda de cada
+// recurso, como no legado ("Lona 440 g – R$ 25,00"). O custo não sai daqui
+// (ORC-7): ele existe no cálculo e vai para o retrato da venda (ORC-10)
+export const getComposedItemView = async ({
+  productId,
+  measure,
+}: {
+  productId: string
+  measure?: AssemblyMeasure
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Item não encontrado')
+  const computed = compute(measure ? { ...assembly, measure } : assembly)
+  const view: ComposedItemView = {
+    productId,
+    name: assembly.name,
+    measure: computed.measure,
+    stages: computed.blocks.map((block) => ({
+      id: block.id,
+      name: block.name,
+      sector: block.sector,
+      dependsOn: block.dependsOn,
+      processId: block.processId,
+      partProductId: block.partProductId ?? null,
+      partFlow: block.partFlow,
+      sale: block.sale,
+      setupMinutes: block.setupMinutes + block.partSetupMinutes,
+      lines: [...block.partLines, ...block.lines].map((line) => ({
+        id: line.id,
+        name: line.name,
+        kind: line.kind,
+        resource: line.mode === 'LIST' ? null : line.selected?.name || null,
+        quantity: line.quantity,
+        unit: line.selected?.unit || line.options[0]?.unit || '',
+        sale: line.sale,
+      })),
+    })),
+    total: computed.suggestedPrice,
+  }
+  return ok(view)
+}
+
+// O retrato da venda do item montado (ORC-10): custo e preço de cada etapa,
+// gravados na linha do orçamento. É leitura de servidor para servidor; a tela
+// do orçamento não chama isto (ORC-7)
+export const resolveComposedItem = async ({
+  productId,
+  measure,
+}: {
+  productId: string
+  measure: AssemblyMeasure
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Item não encontrado')
+  const computed = compute({ ...assembly, measure })
+  return ok(
+    computed.blocks.map((block) => ({
+      id: block.id,
+      name: block.name,
+      sector: block.sector,
+      kind: block.partProductId ? ('PART' as const) : ('PROCESS' as const),
+      cost: block.cost,
+      sale: block.sale,
+      measure: block.measure,
+      resolved: [...block.partLines, ...block.lines]
+        .filter((line) => line.selected && line.quantity !== null)
+        .map((line) => ({
+          id: line.id,
+          kind: line.kind,
+          name: line.selected!.name,
+          unit: line.selected!.unit,
+          quantity: line.quantity!,
+          unitCost: line.selected!.unitCost,
+          cost: line.cost || 0,
+        })),
+    })),
+  )
+}
+
+export const updateDraftAssembly = async ({
+  productId,
+  values,
+}: {
+  productId: string
+  values: { name?: string; measure?: AssemblyMeasure }
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly || !isDraft(productId)) return fail('Item não encontrado')
+  if (values.name !== undefined)
+    assembly.name = values.name.trim() || assembly.name
+  if (values.measure) assembly.measure = values.measure
+  return ok(null)
+}
+
+// "Salvar como produto" (ORC-11): o produto nasce "Em edição" (IP-14), para
+// ser revisado antes de liberado para venda. O item do orçamento continua
+// sendo o que foi montado nele
+export const saveDraftAsProduct = async ({
+  productId,
+  name,
+}: {
+  productId: string
+  name: string
+}) => {
+  const draft = assemblies.find((item) => item.productId === productId)
+  if (!draft) return fail('Item não encontrado')
+  if (!draft.blocks.length) return fail('Monte ao menos uma etapa antes')
+  const newId = `prd-${uid()}`
+  assemblies.push({
+    ...structuredClone(draft),
+    productId: newId,
+    name: name.trim() || draft.name,
+    code: '',
+    status: 'DRAFT',
+  })
+  return ok(newId)
+}
+
+// O fluxo de um produto, para a parte que abre (IP-9) e para quem só precisa
+// desenhar
+export const getFlow = async ({ productId }: { productId: string }) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return fail('Produto não encontrado')
+  return ok<FlowStage[]>(flowOf(assembly))
 }

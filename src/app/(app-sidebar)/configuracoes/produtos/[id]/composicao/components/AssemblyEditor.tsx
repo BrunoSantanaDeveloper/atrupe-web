@@ -10,7 +10,7 @@ import Link from 'next/link'
 // custa este produto na medida em que ele é vendido, e se o preço cobre.
 
 // React
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
@@ -48,12 +48,16 @@ import {
   RulesDialog,
   NewLineDialog,
   OptionsDialog,
-  PartDialog,
   LibraryDialog,
-  AddBlockDialog,
   type LineValues,
 } from './AssemblyDialogs'
 import { PriceTiersCard } from './PriceTiersCard'
+import { NextStepDialog, LinkStageDialog } from './NextStepDialog'
+import {
+  FlowCanvas,
+  type FlowNode,
+  type FlowMenuItem,
+} from '@/components/common/FlowCanvas/FlowCanvas'
 
 // Types
 import {
@@ -79,7 +83,6 @@ import {
   addOwnBlock,
   addAssemblyLine,
   addAssemblyBlock,
-  getProcessCatalog,
   removeAssemblyLine,
   getAssemblyResources,
   addLineOption,
@@ -90,7 +93,10 @@ import {
   removeVariationBlock,
   getLibrary,
   importFromLibrary,
-  moveAssemblyBlock,
+  linkBlock,
+  unlinkBlock,
+  replaceBlockProcess,
+  getNextStepCandidates,
   resetAssemblyLine,
   restoreProcessLines,
   setBlockLocalRules,
@@ -121,17 +127,17 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Icons
 import {
+  IconLink,
   IconTrash,
+  IconBooks,
   IconPencil,
-  IconArrowUp,
+  IconSearch,
+  IconUnlink,
+  IconReplace,
   IconSettings,
-  IconArrowDown,
   IconCirclePlus,
   IconArrowBackUp,
   IconListDetails,
-  IconSearch,
-  IconPuzzle,
-  IconBooks,
 } from '@tabler/icons-react'
 
 // Utils
@@ -180,15 +186,61 @@ const toOptions = <K extends string>(obj: { [key in K]: string }) =>
   (Object.keys(obj) as K[]).map((value) => ({ value, label: obj[value] }))
 
 type Dialog =
-  | { kind: 'add'; sector: string }
-  | { kind: 'finish'; block: ComputedBlock }
+  // "O que vem depois?" (FL-5): depois de `after` (nulo é um caminho novo)
+  // e, ao inserir no meio da ligação, antes de `before`
+  | { kind: 'next'; after: ComputedBlock | null; before?: ComputedBlock }
+  // Ligar a outra etapa: o ponto de encontro (FL-4)
+  | { kind: 'link'; block: ComputedBlock }
+  // Trocar ou escolher o processo que preenche a etapa (FL-6)
+  | { kind: 'swap'; block: ComputedBlock }
   | { kind: 'line'; block: ComputedBlock; line: ComputedLine }
   | { kind: 'rules'; block: ComputedBlock }
   | { kind: 'newLine'; block: ComputedBlock }
   | { kind: 'options'; blockId: string; lineId: string }
-  | { kind: 'part' }
   | { kind: 'library' }
   | null
+
+// A caixa do fluxo a partir da etapa calculada
+const toFlowNode = (
+  block: ComputedBlock,
+  allBlocks: ComputedBlock[],
+): FlowNode => {
+  const subtitle = block.part
+    ? `Parte · ${block.part.stages} ${block.part.stages === 1 ? 'etapa' : 'etapas'}`
+    : block.processId
+      ? `Processo · ${block.sector}`
+      : block.sector
+  const badge = block.variationOnly
+    ? { text: 'Só nesta variação', variant: 'blueLight' as const }
+    : block.localRules
+      ? assemblyOverrideObj.LOCAL_RULES
+      : !block.part && !block.lines.length
+        ? { text: 'Sem recursos', variant: 'warningLight' as const }
+        : undefined
+  return {
+    id: block.id,
+    name: block.name,
+    sector: block.sector,
+    // Só as ligações com etapas que estão no desenho
+    dependsOn: block.dependsOn.filter((id) =>
+      allBlocks.some((item) => item.id === id),
+    ),
+    subtitle,
+    badge,
+    part: block.partFlow
+      ? block.partFlow.map(function toNode(stage): FlowNode {
+          return {
+            id: stage.id,
+            name: stage.name,
+            sector: stage.sector,
+            dependsOn: stage.dependsOn,
+            subtitle: stage.partProductId ? 'Parte' : undefined,
+            part: stage.partFlow ? stage.partFlow.map(toNode) : null,
+          }
+        })
+      : null,
+  }
+}
 
 export function AssemblyEditor({ productId }: { productId: string }) {
   const queryClient = useQueryClient()
@@ -198,6 +250,10 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   const [measure, setMeasure] = useState<AssemblyMeasure>()
   const [dialog, setDialog] = useState<Dialog>(null)
   const [newVariation, setNewVariation] = useState<string | null>(null)
+  // A etapa escolhida no fluxo: o detalhe dela (recursos, tempo) aparece
+  // embaixo do desenho (FL-5, FL-8)
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [expandedPart, setExpandedPart] = useState<string | null>(null)
 
   // A variação vista fica na URL (design.md §8): ?variacao=
   const router = useRouter()
@@ -212,12 +268,6 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     queryFn: () => getAssembly({ productId, measure, variationId }),
     placeholderData: keepPreviousData,
   })
-  const { data: catalogRes } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['process-catalog'],
-    queryFn: () => getProcessCatalog(),
-  })
-
   const { data: resourcesRes } = useQuery({
     staleTime: Infinity,
     queryKey: ['assembly-resources'],
@@ -234,8 +284,20 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     queryFn: () => getPartCandidates({ productId }),
   })
 
+  // O que "+ etapa seguinte" oferece depois da etapa escolhida (FL-7)
+  const nextAfterId =
+    dialog?.kind === 'next'
+      ? dialog.after?.id || null
+      : dialog?.kind === 'swap'
+        ? dialog.block.dependsOn[0] || null
+        : null
+  const { data: candidatesRes } = useQuery({
+    enabled: dialog?.kind === 'next' || dialog?.kind === 'swap',
+    queryKey: ['next-step', productId, nextAfterId],
+    queryFn: () => getNextStepCandidates({ productId, blockId: nextAfterId }),
+  })
+
   const assembly = data?.data
-  const catalog = useMemo(() => catalogRes?.data || [], [catalogRes])
   const resources = resourcesRes?.data
 
   useEffect(() => {
@@ -274,10 +336,85 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   // A etapa é do setor: todos os setores da empresa podem começar o produto
   const baseSectors = resources?.sectors || []
 
-  const finishingFor = (block: ComputedBlock) =>
-    catalog.filter(
-      (item) => item.role === 'FINISHING' && item.finishingOf === block.sector,
-    )
+  // A etapa aberta embaixo do fluxo: a escolhida, ou a primeira
+  const selectedBlock =
+    assembly.blocks.find((item) => item.id === selectedId) ||
+    assembly.blocks[0] ||
+    null
+  const flowNodes = assembly.blocks.map((item) =>
+    toFlowNode(item, assembly.blocks),
+  )
+  const nameOf = (id: string) =>
+    assembly.blocks.find((item) => item.id === id)?.name || ''
+
+  // O menu da caixa (FL-5): abrir o detalhe, trocar o processo, ligar a
+  // outra etapa, remover. Na variação, só a etapa que é dela sai
+  const stageMenu = (node: FlowNode): FlowMenuItem[] => {
+    const block = assembly.blocks.find((item) => item.id === node.id)
+    if (!block) return []
+    if (inVariation) {
+      return block.variationOnly
+        ? [
+            {
+              label: 'Remover desta variação',
+              icon: IconTrash,
+              destructive: true,
+              onSelect: () =>
+                run(
+                  removeVariationBlock({
+                    productId,
+                    variationId: variation!.id,
+                    blockId: block.id,
+                  }),
+                  'Etapa removida da variação',
+                ),
+            },
+          ]
+        : []
+    }
+    return [
+      {
+        label: 'Configurar etapa',
+        icon: IconSettings,
+        onSelect: () => setDialog({ kind: 'rules', block }),
+      },
+      ...(block.part
+        ? []
+        : [
+            {
+              label: block.processId
+                ? 'Trocar o processo'
+                : 'Preencher com um processo',
+              icon: IconReplace,
+              onSelect: () => setDialog({ kind: 'swap', block }),
+            },
+          ]),
+      {
+        label: 'Ligar a…',
+        icon: IconLink,
+        disabled: assembly.blocks.length < 2,
+        onSelect: () => setDialog({ kind: 'link', block }),
+      },
+      ...block.dependsOn
+        .filter((id) => assembly.blocks.some((item) => item.id === id))
+        .map((id) => ({
+          label: `Desligar de ${nameOf(id).toLowerCase()}`,
+          icon: IconUnlink,
+          onSelect: () =>
+            run(
+              unlinkBlock({ productId, blockId: block.id, fromId: id }),
+              'Ligação desfeita',
+            ),
+        })),
+      {
+        label: 'Remover etapa',
+        icon: IconTrash,
+        destructive: true,
+        separator: true,
+        onSelect: () => removeBlock(block),
+      },
+    ]
+  }
 
   // O sugerido já vem na unidade comercial: adotar é gravar como valor de
   // venda, o mesmo campo do cadastro do START
@@ -300,9 +437,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
     alertDialog.open({
       title: `Remover ${block.name}?`,
       description: [
-        block.role === 'BASE'
-          ? 'A etapa sai do produto com os acabamentos dela.'
-          : 'A etapa sai do produto.',
+        'A etapa sai do fluxo, e as etapas que vinham depois dela passam a vir depois das anteriores.',
         block.processId ? 'O processo continua cadastrado.' : '',
       ]
         .filter(Boolean)
@@ -341,8 +476,11 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       toastMsg: { success: 'Linha removida', error: 'Erro ao remover a linha' },
     })
 
-  const baseName = (block: ComputedBlock) =>
-    assembly.blocks.find((item) => item.id === block.baseBlockId)?.name
+  const dependsText = (block: ComputedBlock) => {
+    const names = block.dependsOn.map(nameOf).filter(Boolean)
+    if (!names.length) return 'Começa o produto'
+    return `Depois de ${names.join(' e ')}`
+  }
 
   const measureText = (block: ComputedBlock) => {
     const { rules, measure: m } = block
@@ -356,27 +494,16 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       : `${qty} · ${size}`
   }
 
-  const block = (item: ComputedBlock, index: number) => {
-    const finishing = item.role === 'FINISHING'
-
+  // O detalhe da etapa escolhida no fluxo (FL-5): recursos, tempo e regras,
+  // fora do desenho. Quem monta vê tudo (FL-8)
+  const stageDetail = (item: ComputedBlock) => {
     return (
-      <Card
-        key={item.id}
-        className={cn(
-          finishing && 'ml-4 border-l-4 border-l-brand-200 md:ml-8',
-        )}
-      >
+      <Card key={item.id} className="border-brand-200">
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="neutralLight">{item.sector}</Badge>
-              {finishing ? (
-                <Badge variant="blueLight">
-                  Acabamento de {baseName(item)?.toLowerCase()}
-                </Badge>
-              ) : (
-                <Badge variant="neutralLight">Base</Badge>
-              )}
+              <Badge variant="blueLight">{dependsText(item)}</Badge>
               {item.processId && (
                 <Badge variant="neutralLight">Processo cadastrado</Badge>
               )}
@@ -419,12 +546,12 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             {inVariation && (
               <PermissionGate permissions={EDIT}>
                 <div className="flex gap-1">
-                  {!finishing && !item.variationOnly && (
+                  {!item.variationOnly && (
                     <ActionButton
                       Icon={IconCirclePlus}
                       variant="neutralGhost"
-                      tooltip={`Acabamento só em ${variation?.name}`}
-                      onClick={() => setDialog({ kind: 'finish', block: item })}
+                      tooltip={`Etapa seguinte só em ${variation?.name}`}
+                      onClick={() => setDialog({ kind: 'next', after: item })}
                     />
                   )}
                   {item.variationOnly && (
@@ -451,49 +578,17 @@ export function AssemblyEditor({ productId }: { productId: string }) {
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
                 <div className="flex gap-1">
-                  {!finishing && (
-                    <ActionButton
-                      Icon={IconCirclePlus}
-                      variant="neutralGhost"
-                      tooltip="Adicionar acabamento"
-                      onClick={() => setDialog({ kind: 'finish', block: item })}
-                    />
-                  )}
+                  <ActionButton
+                    Icon={IconCirclePlus}
+                    variant="neutralGhost"
+                    tooltip="Etapa seguinte"
+                    onClick={() => setDialog({ kind: 'next', after: item })}
+                  />
                   <ActionButton
                     Icon={IconSettings}
                     variant="neutralGhost"
                     tooltip="Configurar etapa"
                     onClick={() => setDialog({ kind: 'rules', block: item })}
-                  />
-                  <ActionButton
-                    Icon={IconArrowUp}
-                    variant="neutralGhost"
-                    tooltip="Subir etapa"
-                    disabled={index === 0}
-                    onClick={() =>
-                      run(
-                        moveAssemblyBlock({
-                          productId,
-                          blockId: item.id,
-                          direction: 'UP',
-                        }),
-                      )
-                    }
-                  />
-                  <ActionButton
-                    Icon={IconArrowDown}
-                    variant="neutralGhost"
-                    tooltip="Descer etapa"
-                    disabled={index === assembly.blocks.length - 1}
-                    onClick={() =>
-                      run(
-                        moveAssemblyBlock({
-                          productId,
-                          blockId: item.id,
-                          direction: 'DOWN',
-                        }),
-                      )
-                    }
                   />
                   <ActionButton
                     Icon={IconTrash}
@@ -1419,79 +1514,124 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         </CardContent>
       </Card>
 
-      {/* 4. A composição: etapas por setor, acabamentos embaixo da base */}
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-base font-semibold text-gray-800">Composição</p>
-          <p className="text-sm text-gray">
-            {inVariation
-              ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-              : 'Divida o produto nas etapas de produção de cada setor, com os recursos e o tempo de cada uma. Os acabamentos entram embaixo da base.'}
-          </p>
-        </div>
-        <PermissionGate permissions={EDIT}>
-          <div className="flex flex-wrap gap-2">
-            {!inVariation && (
-              <>
-                <Button
-                  type="button"
-                  size="md"
-                  variant="neutralOutline"
-                  LeftIcon={IconBooks}
-                  onClick={() => setDialog({ kind: 'library' })}
-                >
-                  Biblioteca
-                </Button>
-                <Button
-                  type="button"
-                  size="md"
-                  variant="neutralOutline"
-                  LeftIcon={IconPuzzle}
-                  onClick={() => setDialog({ kind: 'part' })}
-                >
-                  Parte
-                </Button>
-              </>
-            )}
-            {baseSectors.map((sector) => (
+      {/* 4. A composição é o fluxo da produção (FL-1 a FL-5): cada caixa é
+          a etapa de um setor, ligada às que vêm antes dela. As caixas são
+          posicionadas pelo sistema; tudo parte de "o que vem depois?" */}
+      <Card>
+        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+          <div>
+            <CardTitle>Composição</CardTitle>
+            <CardDescription>
+              {inVariation
+                ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
+                : 'O caminho da produção: cada caixa é a etapa de um setor e vira uma tarefa. Use o "+" depois de uma caixa para a etapa seguinte; usar de novo na mesma caixa abre um caminho em paralelo. Clique na caixa para ver os recursos e o tempo.'}
+            </CardDescription>
+          </div>
+          {!inVariation && (
+            <PermissionGate permissions={EDIT}>
               <Button
-                key={sector}
                 type="button"
                 size="md"
                 variant="neutralOutline"
-                LeftIcon={IconCirclePlus}
-                onClick={() => setDialog({ kind: 'add', sector })}
+                LeftIcon={IconBooks}
+                onClick={() => setDialog({ kind: 'library' })}
               >
-                {sector}
+                Biblioteca
               </Button>
-            ))}
-          </div>
-        </PermissionGate>
-      </div>
-
-      {assembly.blocks.length ? (
-        assembly.blocks.map((item, index) => (
-          <Fragment key={item.id}>{block(item, index)}</Fragment>
-        ))
-      ) : (
-        <Card>
-          <EmptyState
-            title="Nenhuma etapa ainda"
-            description="Importe uma composição pronta da biblioteca, ou adicione a etapa onde o produto começa — a impressão, a criação, o corte. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
-            action={
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  LeftIcon={IconBooks}
-                  onClick={() => setDialog({ kind: 'library' })}
-                >
-                  Importar da biblioteca
-                </Button>
-              </PermissionGate>
+            </PermissionGate>
+          )}
+        </CardHeader>
+        <CardContent className="px-6 pb-6">
+          <PermissionGate
+            permissions={EDIT}
+            fallback={
+              <FlowCanvas
+                readOnly
+                nodes={flowNodes}
+                selectedId={selectedBlock?.id}
+                onSelect={setSelectedId}
+                expandedPartId={expandedPart}
+                onTogglePart={(id) =>
+                  setExpandedPart((current) => (current === id ? null : id))
+                }
+                empty={
+                  <EmptyState
+                    title="Nenhuma etapa ainda"
+                    description="O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
+                  />
+                }
+              />
             }
-          />
-        </Card>
-      )}
+          >
+            <FlowCanvas
+              nodes={flowNodes}
+              selectedId={selectedBlock?.id}
+              onSelect={setSelectedId}
+              menu={stageMenu}
+              expandedPartId={expandedPart}
+              onTogglePart={(id) =>
+                setExpandedPart((current) => (current === id ? null : id))
+              }
+              onAddAfter={(node) => {
+                const after = assembly.blocks.find(
+                  (item) => item.id === node.id,
+                )
+                if (after) setDialog({ kind: 'next', after })
+              }}
+              onInsertBetween={
+                inVariation
+                  ? undefined
+                  : (from, to) => {
+                      const after = assembly.blocks.find(
+                        (item) => item.id === from.id,
+                      )
+                      const before = assembly.blocks.find(
+                        (item) => item.id === to.id,
+                      )
+                      if (after && before) {
+                        setDialog({ kind: 'next', after, before })
+                      }
+                    }
+              }
+              onAddPath={
+                inVariation
+                  ? undefined
+                  : () => setDialog({ kind: 'next', after: null })
+              }
+              addPathLabel={
+                assembly.blocks.length ? 'Novo caminho' : 'Primeira etapa'
+              }
+              empty={
+                <EmptyState
+                  title="Nenhuma etapa ainda"
+                  description="Importe uma composição pronta da biblioteca, ou comece pela etapa onde o produto começa — a criação, a impressão, o corte. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
+                  action={
+                    <div className="flex flex-wrap justify-center gap-2">
+                      <Button
+                        type="button"
+                        variant="neutralOutline"
+                        LeftIcon={IconBooks}
+                        onClick={() => setDialog({ kind: 'library' })}
+                      >
+                        Importar da biblioteca
+                      </Button>
+                      <Button
+                        type="button"
+                        LeftIcon={IconCirclePlus}
+                        onClick={() => setDialog({ kind: 'next', after: null })}
+                      >
+                        Primeira etapa
+                      </Button>
+                    </div>
+                  }
+                />
+              }
+            />
+          </PermissionGate>
+        </CardContent>
+      </Card>
+
+      {selectedBlock && stageDetail(selectedBlock)}
 
       {/* O que o produto consome, cada recurso uma vez (IP-34) */}
       {assembly.resourceSummary.length > 0 && (
@@ -1587,41 +1727,37 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         </CardContent>
       </Card>
 
-      <AddBlockDialog
-        open={dialog?.kind === 'add' || dialog?.kind === 'finish'}
-        allowOwn={!inVariation}
+      {/* "O que vem depois?" (FL-5): a etapa seguinte, a inserida no meio da
+          ligação e o caminho novo passam pelo mesmo diálogo */}
+      <NextStepDialog
+        open={dialog?.kind === 'next'}
         onOpenChange={() => setDialog(null)}
         title={
-          dialog?.kind === 'finish'
-            ? `Acabamento para ${dialog.block.name.toLowerCase()}`
-            : `Etapa de ${dialog?.kind === 'add' ? dialog.sector.toLowerCase() : ''}`
+          dialog?.kind === 'next'
+            ? dialog.before
+              ? `Entre ${dialog.after?.name.toLowerCase()} e ${dialog.before.name.toLowerCase()}`
+              : dialog.after
+                ? `Depois de ${dialog.after.name.toLowerCase()}`
+                : assembly.blocks.length
+                  ? 'Novo caminho'
+                  : 'Primeira etapa'
+            : ''
         }
         description={
-          dialog?.kind === 'finish'
-            ? `Um trabalho feito sobre ${dialog.block.name.toLowerCase()}, com a medida dela.`
-            : 'O trabalho que o setor faz neste produto.'
+          dialog?.kind === 'next' && !dialog.after && assembly.blocks.length
+            ? 'Um caminho que começa sozinho — a estrutura que depois se encontra com a lona na instalação. Ligue-o a uma etapa pelo menu da caixa.'
+            : undefined
         }
-        onCreate={(name) => {
-          if (dialog?.kind !== 'add' && dialog?.kind !== 'finish') return
-          const input =
-            dialog.kind === 'finish'
-              ? { sector: dialog.block.sector, baseBlockId: dialog.block.id }
-              : { sector: dialog.sector, baseBlockId: null }
-          setDialog(null)
-          run(addOwnBlock({ productId, name, ...input }), 'Etapa criada')
-        }}
-        processes={
-          dialog?.kind === 'finish'
-            ? finishingFor(dialog.block)
-            : dialog?.kind === 'add'
-              ? catalog.filter(
-                  (item) =>
-                    item.role === 'BASE' && item.sector === dialog.sector,
-                )
-              : []
-        }
-        onPick={(processId) => {
-          const baseBlockId = dialog?.kind === 'finish' ? dialog.block.id : null
+        afterName={dialog?.kind === 'next' ? dialog.after?.name : null}
+        candidates={dialog?.kind === 'next' ? candidatesRes?.data : undefined}
+        sectors={baseSectors}
+        parts={partsRes?.data || []}
+        allowOwn={!inVariation}
+        allowPart={!inVariation}
+        onPickProcess={(processId) => {
+          if (dialog?.kind !== 'next') return
+          const dependsOn = dialog.after ? [dialog.after.id] : []
+          const insertBefore = dialog.before?.id
           setDialog(null)
           run(
             variation
@@ -1629,13 +1765,107 @@ export function AssemblyEditor({ productId }: { productId: string }) {
                   productId,
                   variationId: variation.id,
                   processId,
-                  baseBlockId,
+                  dependsOn,
                 })
-              : addAssemblyBlock({ productId, processId, baseBlockId }),
+              : addAssemblyBlock({
+                  productId,
+                  processId,
+                  dependsOn,
+                  insertBefore,
+                }).then((res) => {
+                  if (res.success && res.data) setSelectedId(res.data)
+                  return res
+                }),
             variation
               ? `Etapa acrescentada só em ${variation.name}`
               : 'Etapa adicionada',
           )
+        }}
+        onCreateOwn={(name, sector) => {
+          if (dialog?.kind !== 'next') return
+          const dependsOn = dialog.after ? [dialog.after.id] : []
+          const insertBefore = dialog.before?.id
+          setDialog(null)
+          run(
+            addOwnBlock({
+              productId,
+              name,
+              sector,
+              dependsOn,
+              insertBefore,
+            }).then((res) => {
+              if (res.success && res.data) setSelectedId(res.data)
+              return res
+            }),
+            'Etapa criada',
+          )
+        }}
+        onPickPart={(partProductId) => {
+          if (dialog?.kind !== 'next') return
+          const dependsOn = dialog.after ? [dialog.after.id] : []
+          const insertBefore = dialog.before?.id
+          setDialog(null)
+          run(
+            addPartBlock({
+              productId,
+              partProductId,
+              dependsOn,
+              insertBefore,
+            }).then((res) => {
+              if (res.success && res.data) setSelectedId(res.data)
+              return res
+            }),
+            'Parte adicionada',
+          )
+        }}
+      />
+      {/* Trocar o processo que preenche a etapa (FL-6) */}
+      <NextStepDialog
+        open={dialog?.kind === 'swap'}
+        onOpenChange={() => setDialog(null)}
+        title={
+          dialog?.kind === 'swap'
+            ? dialog.block.processId
+              ? `Trocar o processo de ${dialog.block.name.toLowerCase()}`
+              : `Preencher ${dialog.block.name.toLowerCase()} com um processo`
+            : ''
+        }
+        description="A caixa continua no mesmo lugar do fluxo, com as mesmas ligações. O que muda é a montagem: recursos, tempo e regras passam a ser os do processo."
+        afterName={
+          dialog?.kind === 'swap' && dialog.block.dependsOn[0]
+            ? nameOf(dialog.block.dependsOn[0])
+            : null
+        }
+        candidates={dialog?.kind === 'swap' ? candidatesRes?.data : undefined}
+        sectors={baseSectors}
+        allowOwn={false}
+        allowPart={false}
+        onPickProcess={(processId) => {
+          if (dialog?.kind !== 'swap') return
+          const blockId = dialog.block.id
+          setDialog(null)
+          run(
+            replaceBlockProcess({ productId, blockId, processId }),
+            'Processo trocado',
+          )
+        }}
+        onCreateOwn={() => undefined}
+      />
+      {/* "Ligar a…": o ponto de encontro (FL-4) */}
+      <LinkStageDialog
+        open={dialog?.kind === 'link'}
+        onOpenChange={() => setDialog(null)}
+        block={dialog?.kind === 'link' ? dialog.block : null}
+        stages={assembly.blocks.map((item) => ({
+          id: item.id,
+          name: item.name,
+          sector: item.sector,
+        }))}
+        onPick={(toId) => {
+          if (dialog?.kind !== 'link') return
+          const blockId = dialog.block.id
+          setDialog(null)
+          run(linkBlock({ productId, blockId, toId }), 'Etapas ligadas')
         }}
       />
       <NewLineDialog
@@ -1662,18 +1892,6 @@ export function AssemblyEditor({ productId }: { productId: string }) {
           run(
             importFromLibrary({ productId, libraryId }),
             'Composição importada — ajuste ao seu jeito de produzir',
-          )
-        }}
-      />
-      <PartDialog
-        open={dialog?.kind === 'part'}
-        candidates={partsRes?.data || []}
-        onOpenChange={() => setDialog(null)}
-        onPick={(partProductId) => {
-          setDialog(null)
-          run(
-            addPartBlock({ productId, partProductId, baseBlockId: null }),
-            'Parte adicionada',
           )
         }}
       />

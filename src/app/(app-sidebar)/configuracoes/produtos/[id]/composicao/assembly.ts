@@ -221,7 +221,12 @@ export type AssemblyBlock = {
   partProductId?: string
   sector: string
   role: BlockRole
-  // O acabamento sabe de qual base ele é (MS-2)
+  // A composição é o caminho da produção (FL-1): cada etapa depende de
+  // nenhuma, uma ou várias etapas anteriores. É o que desenha o fluxo, e o
+  // que a produção vai seguir (FL-10, FL-13)
+  dependsOn: string[]
+  // A etapa cuja medida esta usa quando a regra é "mesma medida da base"
+  // (MS-5): a primeira de que ela depende, por padrão
   baseBlockId: string | null
   setupMinutes: number
   // Custo-hora do setor, para o preparo. Vem da Base de custos
@@ -308,6 +313,20 @@ export type ComputedLine = AssemblyLine & {
   sale: number | null
 }
 
+// Uma caixa do fluxo, como a tela desenha (FL-5): serve à composição do
+// produto, ao que a parte tem por dentro (IP-9) e ao item montado no
+// orçamento (ORC-11)
+export type FlowStage = {
+  id: string
+  name: string
+  sector: string
+  dependsOn: string[]
+  processId: string | null
+  partProductId: string | null
+  // O que a parte tem por dentro, até três níveis (IP-9)
+  partFlow: FlowStage[] | null
+}
+
 export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   rules: SaleRules
   measure: AssemblyMeasure
@@ -318,6 +337,8 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   lines: ComputedLine[]
   // A parte calculada: nome e quantas etapas ela tem
   part: { productId: string; name: string; stages: number } | null
+  // O fluxo da parte, para a caixa que abre (FL-5, IP-9)
+  partFlow: FlowStage[] | null
   // As linhas e o preparo das etapas da parte, para a produção saber o que
   // ela consome (GP-16)
   partLines: ComputedLine[]
@@ -385,6 +406,51 @@ export type ProcessCatalogItem = {
   role: BlockRole
   // Setor da base de que ele é acabamento
   finishingOf: string | null
+}
+
+// O que "+ etapa seguinte" oferece (FL-7): primeiro os processos marcados
+// como usuais depois desta etapa, e "ver todos" para o resto. Sem marcação,
+// valem os acabamentos do setor da etapa, como no legado
+export type NextStepCandidates = {
+  usual: ProcessCatalogItem[]
+  all: ProcessCatalogItem[]
+  // true quando os usuais vieram do setor, por falta de marcação
+  bySector: boolean
+}
+
+// A marcação "costuma vir depois de" entre dois processos (FL-7), vista de
+// um dos lados: a lista de todos os outros processos, com a marca
+export type UsualNeighbor = ProcessCatalogItem & { usual: boolean }
+
+// O item montado no orçamento (ORC-11), como o vendedor vê: etapas com o
+// preço de venda de cada recurso e NUNCA o custo (ORC-7). O custo continua
+// sendo calculado e gravado no retrato da venda (ORC-10), mas não sai daqui
+export type ComposedItemView = {
+  productId: string
+  name: string
+  measure: AssemblyMeasure
+  stages: {
+    id: string
+    name: string
+    sector: string
+    dependsOn: string[]
+    processId: string | null
+    partProductId: string | null
+    partFlow: FlowStage[] | null
+    sale: number
+    setupMinutes: number
+    lines: {
+      id: string
+      name: string
+      kind: ResourceKind
+      resource: string | null
+      quantity: number | null
+      unit: string
+      sale: number | null
+    }[]
+  }[]
+  // Soma do preço de venda de todas as etapas
+  total: number
 }
 
 // Os recursos que uma etapa montada no produto pode usar
