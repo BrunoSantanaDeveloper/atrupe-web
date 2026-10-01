@@ -13,6 +13,7 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
@@ -24,6 +25,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
+import { ImportMaterialsDialog } from './ImportMaterialsDialog'
 import { ActionButton } from '@/components/common/ActionButton'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -50,6 +52,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconBan,
+  IconUpload,
   IconBoxSeam,
   IconPalette,
   IconPlayerPlay,
@@ -66,6 +69,7 @@ export function Materials({ searchParams }: SearchParamsType) {
   const alertDialog = useAlertDialog()
   const [expanded, setExpanded] = useState<string[]>([])
   const [variations, setVariations] = useState<Material>()
+  const [importing, setImporting] = useState(false)
 
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
@@ -126,6 +130,18 @@ export function Materials({ searchParams }: SearchParamsType) {
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
               <NewMaterialModal />
+            </PermissionGate>
+          }
+          secondaryCta={
+            <PermissionGate permissions={['product_settings:products:edit']}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                LeftIcon={IconUpload}
+                onClick={() => setImporting(true)}
+              >
+                Importar lista
+              </Button>
             </PermissionGate>
           }
         />
@@ -311,11 +327,6 @@ export function Materials({ searchParams }: SearchParamsType) {
           )}
         </Card>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ReviewTodo rule="IMP-1" title="Importar lista de materiais">
-            A planilha que vem do SketchUp ou da marcenaria entra aqui, e cada
-            linha é conciliada com o material cadastrado. O de-para fica salvo:
-            da segunda vez o sistema já sabe.
-          </ReviewTodo>
           <ReviewTodo rule="ALT-20" title="Entrada automática de notas">
             A nota do fornecedor chega pela Migrate e vira entrada de material,
             fornecedor e conta a pagar, sem digitação.
@@ -326,6 +337,14 @@ export function Materials({ searchParams }: SearchParamsType) {
           material={variations}
           open={!!variations}
           onOpenChange={() => setVariations(undefined)}
+        />
+        <ImportMaterialsDialog
+          open={importing}
+          materials={materials}
+          onOpenChange={setImporting}
+          onDone={() =>
+            queryClient.invalidateQueries({ queryKey: ['materials'] })
+          }
         />
       </div>
     </TooltipProvider>
