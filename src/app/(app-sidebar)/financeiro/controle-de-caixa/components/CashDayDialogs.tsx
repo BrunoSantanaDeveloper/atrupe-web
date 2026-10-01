@@ -41,6 +41,9 @@ import { useTransactionCategory } from '@/hooks/queries/useTransactionCategory'
 // Third-party
 import { toast } from 'sonner'
 
+// Icons
+import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
+
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
@@ -284,22 +287,26 @@ export function AdjustmentDialog({
         </Button>
       }
     >
+      {/* O mesmo desenho de "Nova receita" e "Nova despesa" do Fluxo
+          financeiro: o ajuste é uma receita ou uma despesa lançada direto no
+          caixa, com plano de contas (CX-5) */}
       <div className="grid grid-cols-2 gap-2">
-        {(
-          [
-            ['in', 'Entrada'],
-            ['out', 'Saída'],
-          ] as const
-        ).map(([value, label]) => (
-          <Button
-            key={value}
-            type="button"
-            variant={direction === value ? 'default' : 'neutralOutline'}
-            onClick={() => setDirection(value)}
-          >
-            {label}
-          </Button>
-        ))}
+        <Button
+          type="button"
+          variant={direction === 'in' ? 'success' : 'neutralOutline'}
+          LeftIcon={IconTrendingUp}
+          onClick={() => setDirection('in')}
+        >
+          Entrada (receita)
+        </Button>
+        <Button
+          type="button"
+          variant={direction === 'out' ? 'error' : 'neutralOutline'}
+          LeftIcon={IconTrendingDown}
+          onClick={() => setDirection('out')}
+        >
+          Saída (despesa)
+        </Button>
       </div>
       <MoneyInput
         id="adjust-amount"

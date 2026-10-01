@@ -129,12 +129,15 @@ export function ReceiveSaleDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
             <div className="min-w-0">
-              <DialogTitle className="mb-1">Recebimento</DialogTitle>
+              <DialogTitle className="mb-1">
+                {sale?.ready ? 'Retirada' : 'Recebimento'}
+              </DialogTitle>
               <DialogDescription className="truncate">
                 {sale?.client} - {sale?.reference}
                 {sale?.paid
                   ? ` · sinal de ${formatMoney(sale.paid)} já pago`
                   : ''}
+                {sale?.ready ? ' · trabalho pronto' : ''}
               </DialogDescription>
             </div>
           </div>

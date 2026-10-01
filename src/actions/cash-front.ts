@@ -10,7 +10,6 @@ import type {
   PaymentPart,
   PendingSale,
   CashMovement,
-  AwaitingPickup,
   QuickSaleCheckout,
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/types'
 
@@ -56,6 +55,7 @@ let session: CashSession | null = {
       description: 'Troco para o dia',
       reason: 'Reforço de troco, notas pequenas',
       responsible: 'Renata Alves',
+      account: 'Caixa Empresa',
       createdAt: hoje('10:05:00'),
       parts: [{ method: 'CASH', amount: 10000 }],
     },
@@ -75,6 +75,7 @@ let session: CashSession | null = {
       description: 'Sangria',
       reason: 'Acima do limite de dinheiro em gaveta',
       responsible: 'Renata Alves',
+      account: 'Caixa Empresa',
       createdAt: hoje('14:00:00'),
       parts: [{ method: 'CASH', amount: 15000 }],
     },
@@ -125,26 +126,40 @@ let sales: PendingSale[] = [
   },
 ]
 
-const pickups: AwaitingPickup[] = [
+// Trabalhos prontos e não retirados (FC-19): a mesma venda, marcada como
+// pronta. Saem da fila "A receber" e entram em "Aguardando retirada"
+sales.push(
   {
     id: 'p1',
     reference: 'VR-2026-0244',
     client: 'Juliana Prado',
     phone: '(48) 99911-4420',
-    finishedAt: '2026-09-02',
-    remaining: 12000,
-    daysWaiting: 22,
+    seller: 'Tiago Nunes',
+    kind: 'QUICK',
+    total: 24000,
+    paid: 12000,
+    delivered: false,
+    approvedAt: '2026-09-01T10:20:00',
+    goesToCash: true,
+    ready: true,
+    readyAt: '2026-09-09T16:00:00',
   },
   {
     id: 'p2',
     reference: 'VR-2026-0198',
     client: 'Oficina do Léo',
     phone: '(48) 98812-7701',
-    finishedAt: '2026-08-14',
-    remaining: 45000,
-    daysWaiting: 41,
+    seller: 'Ana Prado',
+    kind: 'QUICK',
+    total: 90000,
+    paid: 45000,
+    delivered: false,
+    approvedAt: '2026-08-12T09:00:00',
+    goesToCash: true,
+    ready: true,
+    readyAt: '2026-08-21T11:30:00',
   },
-]
+)
 
 // A venda rápida do ponto de vista do orçamento, por id do orçamento
 const checkouts: Record<string, QuickSaleCheckout> = {}
@@ -155,7 +170,7 @@ const openCashFronts = 2
 
 export const getCashFront = async () => ({
   success: true,
-  data: { session, sales, pickups, openCashFronts },
+  data: { session, sales, openCashFronts },
   message: '',
 })
 
@@ -191,6 +206,9 @@ export const addCashMovement = async (
   kind: 'WITHDRAWAL' | 'SUPPLY',
   amount: number,
   reason: string,
+  // De onde o suprimento vem, ou para onde a sangria vai (uma conta da
+  // empresa). Não é receita nem despesa: é dinheiro mudando de lugar
+  account = 'Caixa Empresa',
 ) => {
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
@@ -204,12 +222,19 @@ export const addCashMovement = async (
         'Informe o motivo: sangria e suprimento registram motivo e responsável',
     }
   }
+  if (amount <= 0) {
+    return { success: false, data: null, message: 'Informe o valor' }
+  }
 
   push({
     kind,
-    description: kind === 'WITHDRAWAL' ? 'Sangria' : 'Suprimento',
+    description:
+      kind === 'WITHDRAWAL'
+        ? `Sangria → ${account}`
+        : `Suprimento ← ${account}`,
     reason,
     responsible: session.operator,
+    account,
     parts: [{ method: 'CASH', amount }],
   })
 
@@ -396,12 +421,28 @@ export const closeCashSession = async (countedCash: number, keep = 0) => {
   }
 }
 
+// Trabalho pronto, cliente não buscou (FC-19): a venda sai de "A receber" e
+// passa para "Aguardando retirada". Com o gerenciador de produção, é a
+// conclusão da ordem que marca; sem ele, o caixa ou o vendedor marca aqui
+export const markSaleReady = async (saleId: string) => {
+  const sale = sales.find((item) => item.id === saleId)
+  if (!sale) {
+    return { success: false, data: null, message: 'Venda não encontrada' }
+  }
+  if (sale.delivered) {
+    return { success: false, data: null, message: 'A venda já foi entregue' }
+  }
+  sale.ready = true
+  sale.readyAt = new Date().toISOString()
+  return { success: true, data: sale, message: '' }
+}
+
 // Dar baixa no trabalho não retirado (FC-19): "Descartar" encerra a venda e
 // lança como perda o que não foi pago, com o sinal recebido abatendo. Pede
 // justificativa e fica registrado (quem e quando)
-export const discardPickup = async (pickupId: string, reason: string) => {
-  const index = pickups.findIndex((item) => item.id === pickupId)
-  if (index < 0) {
+export const discardPickup = async (saleId: string, reason: string) => {
+  const sale = sales.find((item) => item.id === saleId && item.ready)
+  if (!sale) {
     return { success: false, data: null, message: 'Trabalho não encontrado' }
   }
   if (!reason.trim()) {
@@ -411,11 +452,13 @@ export const discardPickup = async (pickupId: string, reason: string) => {
       message: 'Descartar exige justificativa',
     }
   }
-  const [pickup] = pickups.splice(index, 1)
+  sales = sales.filter((item) => item.id !== saleId)
+  const checkout = sale.quotationId && checkouts[sale.quotationId]
+  if (checkout) checkout.cancelled = true
   return {
     success: true,
     data: {
-      loss: pickup.remaining,
+      loss: Math.max(0, sale.total - sale.paid),
       discardedBy: session?.operator || 'Operador',
       discardedAt: new Date().toISOString(),
     },

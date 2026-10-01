@@ -16,6 +16,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import {
@@ -23,9 +25,10 @@ import {
   paymentMethodDestination,
   paymentMethodLabel,
   totalByMethod,
+  daysWaiting,
   type CashSession,
+  type PendingSale,
   type PaymentMethod,
-  type AwaitingPickup,
 } from '../types'
 
 // Actions
@@ -36,8 +39,14 @@ import {
   closeCashSession,
 } from '@/actions/cash-front'
 
+import { getBankAccounts } from '@/actions/cash-accounts'
+
 // Third-party
 import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
+
+// Icons
+import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -150,20 +159,44 @@ export function CashMovementDialog({
 }: MovementProps) {
   const [amount, setAmount] = useState(0)
   const [reason, setReason] = useState('')
+  const [accountId, setAccountId] = useState('')
   const [saving, setSaving] = useState(false)
 
   const sangria = kind === 'WITHDRAWAL'
+
+  // Dinheiro que entra ou sai tem origem e destino: uma conta da empresa.
+  // Padrão é a conta Caixa (a gaveta principal, o cofre)
+  const { data: accountsRes } = useQuery({
+    enabled: open,
+    staleTime: Infinity,
+    queryKey: ['bank-accounts'],
+    queryFn: () => getBankAccounts(),
+  })
+  const accounts = (accountsRes?.data || []).filter(
+    (account) => account.isActive && account.kind !== 'CARD',
+  )
 
   useEffect(() => {
     if (!open) return
 
     setAmount(0)
     setReason('')
+    setAccountId('')
   }, [open])
 
+  useEffect(() => {
+    if (open && !accountId && accounts.length) {
+      setAccountId(
+        accounts.find((account) => account.kind === 'CASH')?.id ||
+          accounts[0].id,
+      )
+    }
+  }, [open, accountId, accounts])
+
   const save = async () => {
+    const account = accounts.find((item) => item.id === accountId)
     setSaving(true)
-    const res = await addCashMovement(kind, amount, reason)
+    const res = await addCashMovement(kind, amount, reason, account?.name)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -175,23 +208,46 @@ export function CashMovementDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[460px]">
+      <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>{sangria ? 'Sangria' : 'Suprimento'}</DialogTitle>
-          <DialogDescription>
-            {sangria
-              ? 'Retirada de dinheiro do caixa durante o expediente. Fica registrada com motivo e responsável.'
-              : 'Entrada de dinheiro no caixa, normalmente para ter troco. Fica registrada com motivo e responsável.'}
-          </DialogDescription>
+          <div className="flex items-center gap-4">
+            {/* O mesmo desenho de "Nova despesa" e "Nova receita" do Fluxo
+                financeiro: sai em vermelho, entra em verde */}
+            <FeaturedIcon
+              variant={sangria ? 'error' : 'success'}
+              Icon={sangria ? IconTrendingDown : IconTrendingUp}
+            />
+            <div>
+              <DialogTitle>{sangria ? 'Sangria' : 'Suprimento'}</DialogTitle>
+              <DialogDescription>
+                {sangria
+                  ? 'Dinheiro que sai do caixa durante o expediente e vai para uma conta da empresa. Não é despesa: é dinheiro mudando de lugar.'
+                  : 'Dinheiro que entra no caixa, vindo de uma conta da empresa, normalmente para ter troco. Não é receita: é dinheiro mudando de lugar.'}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
-          <MoneyInput
-            autoFocus
-            id="amount"
-            label="Valor"
-            value={amount}
-            onChange={setAmount}
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <MoneyInput
+              autoFocus
+              id="amount"
+              label="Valor"
+              value={amount}
+              onChange={setAmount}
+            />
+            <SelectBasic
+              name="movement-account"
+              label={sangria ? 'Para onde vai' : 'De onde vem'}
+              className="w-full"
+              options={accounts.map((account) => ({
+                value: account.id,
+                label: account.name,
+              }))}
+              value={accountId}
+              onChange={setAccountId}
+            />
+          </div>
           <div className="space-y-1.5">
             <label htmlFor="reason" className="text-sm font-medium">
               Motivo
@@ -223,11 +279,12 @@ export function CashMovementDialog({
           </Button>
           <Button
             type="button"
+            variant={sangria ? 'error' : 'success'}
             isLoading={saving}
-            disabled={!amount || !reason.trim()}
+            disabled={!amount || !reason.trim() || !accountId}
             onClick={save}
           >
-            Registrar
+            {sangria ? 'Registrar sangria' : 'Registrar suprimento'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -471,7 +528,7 @@ export function DiscardPickupDialog({
   onDone,
   onOpenChange,
 }: {
-  pickup?: AwaitingPickup
+  pickup?: PendingSale
   onDone: () => void
   onOpenChange: (open: boolean) => void
 }) {
@@ -503,10 +560,11 @@ export function DiscardPickupDialog({
         <DialogHeader>
           <DialogTitle>Descartar {pickup?.reference}?</DialogTitle>
           <DialogDescription>
-            {pickup?.client} · aguardando há {pickup?.daysWaiting}{' '}
-            {pickup?.daysWaiting === 1 ? 'dia' : 'dias'}. A venda é encerrada e
-            o que não foi pago, {money(pickup?.remaining || 0)}, é lançado como
-            perda. O sinal já recebido fica, abatendo a perda.
+            {pickup?.client} · aguardando há {pickup ? daysWaiting(pickup) : 0}{' '}
+            {pickup && daysWaiting(pickup) === 1 ? 'dia' : 'dias'}. A venda é
+            encerrada e o que não foi pago,{' '}
+            {money(pickup ? Math.max(0, pickup.total - pickup.paid) : 0)}, é
+            lançado como perda. O sinal já recebido fica, abatendo a perda.
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-2">

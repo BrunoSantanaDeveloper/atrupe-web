@@ -50,6 +50,9 @@ export type CashMovement = {
   // Sangria, suprimento e estorno registram motivo e responsável (FC-8, FC-13)
   reason?: string
   responsible?: string
+  // Dinheiro que entra ou sai tem origem e destino: o suprimento vem de uma
+  // conta da empresa, a sangria vai para uma. Não é receita nem despesa
+  account?: string
   // Arredondamento no balcão (FC-18), registrado como desconto na venda
   discount?: number
   parts: PaymentPart[]
@@ -80,6 +83,12 @@ export type PendingSale = {
   claimedBy?: string | null
   // Revertida para faturamento: a forma escolhida para o cliente (FC-4)
   billing?: string
+  // Trabalho concluído e não entregue (FC-19): sai da fila "A receber" e
+  // passa para "Aguardando retirada". Sem o gerenciador de produção, quem
+  // marca é o caixa ou o vendedor; com ele, a conclusão da ordem marca
+  ready?: boolean
+  readyAt?: string
+  phone?: string
 }
 
 // A venda rápida vista do lado do vendedor, depois de sair do orçamento.
@@ -99,16 +108,14 @@ export type QuickSaleCheckout = {
   parts: PaymentPart[]
 }
 
-// Trabalho pronto e não retirado (FC-19)
-export type AwaitingPickup = {
-  id: string
-  reference: string
-  client: string
-  phone: string
-  finishedAt: string
-  remaining: number
-  daysWaiting: number
-}
+// Há quantos dias o trabalho pronto espera o cliente (FC-19)
+export const daysWaiting = (sale: PendingSale) =>
+  sale.readyAt
+    ? Math.max(
+        0,
+        Math.floor((Date.now() - new Date(sale.readyAt).getTime()) / 86400000),
+      )
+    : 0
 
 export type CashSession = {
   id: string

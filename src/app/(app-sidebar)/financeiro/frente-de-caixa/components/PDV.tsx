@@ -38,15 +38,20 @@ import { BillingDialog } from './BillingDialog'
 
 // Types
 import {
+  daysWaiting,
   saleRemaining,
   cashMovementLabel,
   paymentMethodLabel,
   type PendingSale,
-  type AwaitingPickup,
 } from '../types'
 
 // Actions
-import { claimSale, getCashFront, reverseSale } from '@/actions/cash-front'
+import {
+  claimSale,
+  reverseSale,
+  getCashFront,
+  markSaleReady,
+} from '@/actions/cash-front'
 
 // Third-party
 import { toast } from 'sonner'
@@ -64,6 +69,9 @@ import {
   IconUserCheck,
   IconThumbDown,
   IconRefreshDot,
+  IconTrendingUp,
+  IconPackage,
+  IconTrendingDown,
   IconPackageExport,
   IconSortAscending,
   IconSortDescending,
@@ -101,7 +109,7 @@ export function PDV() {
     : 'receber'
   const [receiving, setReceiving] = useState<PendingSale>()
   const [billingSale, setBillingSale] = useState<PendingSale>()
-  const [discarding, setDiscarding] = useState<AwaitingPickup>()
+  const [discarding, setDiscarding] = useState<PendingSale>()
   const { data: authSession } = useSession()
   // Reverter para faturamento é restrito (FC-15); por enquanto, o
   // administrador
@@ -116,7 +124,8 @@ export function PDV() {
 
   const session = data?.data?.session
   const sales = data?.data?.sales || []
-  const pickups = data?.data?.pickups || []
+  // Trabalho pronto e não entregue sai da fila e vai para a retirada (FC-19)
+  const pickups = sales.filter((sale) => sale.ready && !sale.delivered)
   // Com um caixa só não há o que reservar: a marca de quem atende e o
   // "Puxar para mim" só aparecem com mais de uma frente de caixa aberta (FC-5)
   const multiCash = (data?.data?.openCashFronts ?? 1) > 1
@@ -136,8 +145,19 @@ export function PDV() {
   // As vendas que foram para o fluxo financeiro entram no relatório do dia,
   // mas não no saldo do caixa. Ficam separadas de propósito: se entrassem na
   // mesma soma, a conferência do fechamento nunca bateria (FC-12.1)
-  const noCaixa = sales.filter((sale) => sale.goesToCash).sort(byApproval)
-  const noFluxo = sales.filter((sale) => !sale.goesToCash).sort(byApproval)
+  const noCaixa = sales
+    .filter((sale) => sale.goesToCash && !sale.ready)
+    .sort(byApproval)
+  const noFluxo = sales
+    .filter((sale) => !sale.goesToCash && !sale.ready)
+    .sort(byApproval)
+
+  const markReady = async (sale: PendingSale) => {
+    const res = await markSaleReady(sale.id)
+    if (!res.success) return toast.error(res.message)
+    toast.success(`${sale.reference} aguardando retirada`)
+    await refresh()
+  }
 
   const me = session ? `${session.name} · ${session.operator}` : ''
   const claimOf = (sale: PendingSale) =>
@@ -257,21 +277,27 @@ export function PDV() {
                     }
                   />
                 )}
+                {/* O mesmo desenho de "Nova despesa" e "Nova receita" do
+                    Fluxo financeiro: o que sai em vermelho, o que entra em
+                    verde. Mas não é receita nem despesa: é dinheiro mudando
+                    de lugar, com origem e destino */}
                 {isOpen && (
                   <PermissionGate permissions={['financial:pdv:edit']}>
                     <Button
                       type="button"
-                      variant="neutralOutline"
-                      onClick={() => setDialog('suprimento')}
-                    >
-                      Suprimento
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="neutralOutline"
+                      variant="error"
+                      LeftIcon={IconTrendingDown}
                       onClick={() => setDialog('sangria')}
                     >
                       Sangria
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="success"
+                      LeftIcon={IconTrendingUp}
+                      onClick={() => setDialog('suprimento')}
+                    >
+                      Suprimento
                     </Button>
                   </PermissionGate>
                 )}
@@ -375,6 +401,15 @@ export function PDV() {
                                 }
                                 disabled={!isOpen || claimOf(sale) === 'OTHER'}
                                 onClick={() => setReceiving(sale)}
+                              />
+                              {/* Sem o gerenciador de produção, o caixa
+                                  marca o trabalho pronto: a venda sai da
+                                  fila e vai para a retirada (FC-19) */}
+                              <ActionButton
+                                Icon={IconPackage}
+                                variant="neutralGhost"
+                                tooltip="Pronto, aguardando retirada"
+                                onClick={() => markReady(sale)}
                               />
                               {canBill &&
                                 sale.kind === 'QUICK' &&
@@ -531,7 +566,8 @@ export function PDV() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Trabalho</TableHead>
                       <TableHead>Contato</TableHead>
-                      <TableHead>Aguardando há</TableHead>
+                      <TableHead>Pronto há</TableHead>
+                      <TableHead className="text-right">Já pago</TableHead>
                       <TableHead className="text-right">
                         Falta receber
                       </TableHead>
@@ -539,28 +575,55 @@ export function PDV() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {pickups.map((pickup) => {
+                    {pickups.map((sale) => {
+                      const days = daysWaiting(sale)
                       return (
-                        <TableRow key={pickup.id}>
+                        <TableRow key={sale.id}>
                           <TableCell>
                             <p className="font-medium text-gray-800">
-                              {pickup.reference}
+                              {sale.reference}
                             </p>
-                            <p className="text-sm text-gray">{pickup.client}</p>
+                            <p className="text-sm text-gray">{sale.client}</p>
                           </TableCell>
                           <TableCell className="whitespace-nowrap text-sm text-gray">
-                            {pickup.phone}
+                            {sale.phone || '-'}
                           </TableCell>
                           <TableCell className="whitespace-nowrap text-sm text-gray-700">
-                            {pickup.daysWaiting === 1
-                              ? '1 dia'
-                              : `${pickup.daysWaiting} dias`}
+                            {days === 1 ? '1 dia' : `${days} dias`}
+                          </TableCell>
+                          <TableCell className="text-right text-success-600">
+                            {sale.paid ? money(sale.paid) : '—'}
                           </TableCell>
                           <TableCell className="text-right font-medium">
-                            {money(pickup.remaining)}
+                            {money(saleRemaining(sale))}
                           </TableCell>
                           <TableCell>
-                            <div className="flex justify-end">
+                            <div className="flex justify-end gap-1">
+                              <PermissionGate
+                                permissions={['financial:pdv:edit']}
+                              >
+                                {/* O cliente veio buscar: recebe o restante
+                                    e entrega, no mesmo diálogo (FC-12) */}
+                                <ActionButton
+                                  Icon={
+                                    sale.paid > 0 ? IconThumbUp : IconThumbDown
+                                  }
+                                  variant={
+                                    sale.paid > 0
+                                      ? 'warningGhost'
+                                      : 'neutralGhost'
+                                  }
+                                  tooltip={
+                                    !isOpen
+                                      ? 'Abra o caixa para receber'
+                                      : saleRemaining(sale) > 0
+                                        ? 'Receber o restante e entregar'
+                                        : 'Entregar'
+                                  }
+                                  disabled={!isOpen}
+                                  onClick={() => setReceiving(sale)}
+                                />
+                              </PermissionGate>
                               {/* A baixa é "Descartar", quando a empresa
                                   decidir (FC-19): restrita, com justificativa */}
                               <PermissionGate
@@ -570,7 +633,7 @@ export function PDV() {
                                   Icon={IconTrashX}
                                   variant="errorGhost"
                                   tooltip="Descartar e lançar perda"
-                                  onClick={() => setDiscarding(pickup)}
+                                  onClick={() => setDiscarding(sale)}
                                 />
                               </PermissionGate>
                             </div>
@@ -584,14 +647,16 @@ export function PDV() {
                   <ListDataTotalEmpty
                     icon={IconPackageExport}
                     title="Nada aguardando retirada"
-                    description="O trabalho concluído e não entregue aparece aqui, com há quantos dias espera"
+                    description="O trabalho pronto e não entregue aparece aqui, com há quantos dias espera"
                   />
                 )}
                 <CardFooter>
                   <p className="text-sm text-gray">
-                    Esta lista responde <strong>para quem ligar</strong>. Não há
-                    prazo no sistema: cada empresa decide quando descartar, e o
-                    que não foi pago é lançado como perda, com o sinal abatendo.
+                    Esta lista responde <strong>para quem ligar</strong>. A
+                    venda chega aqui quando o trabalho fica pronto sem ser
+                    entregue; sai quando o cliente busca e paga o restante, ou
+                    quando a empresa descarta e lança a perda, com o sinal
+                    abatendo. Não há prazo no sistema.
                   </p>
                 </CardFooter>
               </Card>
