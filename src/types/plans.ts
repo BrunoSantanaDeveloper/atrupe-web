@@ -15,6 +15,8 @@ export interface VisualPlanType {
   basePrice?: number
   isActive: boolean
   videoUrl?: string
+  /** Card do plano na trilha, editado no painel de planos (nulo = texto do código). */
+  presentation?: { pitch: string; actions: string[] } | null
   badge?: {
     text: string
     variant: 'light' | 'orangeLight'

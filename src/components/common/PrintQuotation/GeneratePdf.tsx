@@ -407,6 +407,8 @@ type CompositionItemType = {
   originalCompositionId: string
   name: string
   unitOfMeasure: string
+  /** Unidade do item. Ausente em documento antigo, que cai na dedução. */
+  unitKind?: string | null
   quantity: number
   originalQuantity: number
   unitValue: number
@@ -426,7 +428,30 @@ function hasPrintableValue(value?: string | number | null) {
 }
 
 function adaptCompositionForDisplayUtils(comp: CompositionItemType) {
-  // Inferir o tipo de unidade baseado nas dimensões disponíveis
+  // A unidade do item manda. Deduzir pelas dimensões tratava como área o item
+  // cobrado por unidade — comum nas vendas vindas do sistema legado —, e a
+  // proposta saía em m² e por m² enquanto a tela mostrava "un".
+  if (comp.unitKind !== undefined) {
+    // Unidade nula no banco vale como unidade simples, igual à tela. Deduzir
+    // nesse caso era o que mantinha a divergência nos itens migrados.
+    const kind = comp.unitKind ?? 'UNITY'
+
+    return {
+      ...comp,
+      unitKind: kind,
+      unitOfMeasure: comp.unitOfMeasure
+        ? {
+            id: '',
+            code: comp.unitOfMeasure,
+            name: comp.unitOfMeasure,
+            kind,
+          }
+        : undefined,
+    }
+  }
+
+  // Payload sem o campo — hoje só a pré-visualização das configurações:
+  // deduz a unidade pelas dimensões.
   let unitKind = 'UNITY'
 
   if (comp.width && comp.height) {
@@ -938,19 +963,16 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                                 composition.quantity ||
                                 composition.originalQuantity ||
                                 1
-                              const unitKind =
-                                adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                               let details = `${compositionQty} un`
-                              if (unitKind !== 'UNITY') {
-                                const fullDetails =
-                                  generateFormattedQuantityDetails(adaptedComp)
-                                const dimensionPart = fullDetails.replace(
-                                  /^\d+\s+un\s*/,
-                                  '',
-                                )
-                                if (dimensionPart)
-                                  details += ` ${dimensionPart}`
-                              }
+                              // A medida sai também no item cobrado por unidade: o formatador
+                              // só a acrescenta quando ela existe, qualquer que seja a unidade.
+                              const fullDetails =
+                                generateFormattedQuantityDetails(adaptedComp)
+                              const dimensionPart = fullDetails.replace(
+                                /^\d+\s+un\s*/,
+                                '',
+                              )
+                              if (dimensionPart) details += ` ${dimensionPart}`
                               return details
                             })()}
                           </Text>
@@ -1057,13 +1079,10 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                                   composition.quantity ||
                                   composition.originalQuantity ||
                                   1
-                                const unitKind =
-                                  adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                                 let details = `${compositionQty} un`
-                                if (
-                                  printOptions.showDimensions &&
-                                  unitKind !== 'UNITY'
-                                ) {
+                                // A medida sai também no item cobrado por unidade: o formatador
+                                // só a acrescenta quando ela existe, qualquer que seja a unidade.
+                                if (printOptions.showDimensions) {
                                   const fullDetails =
                                     generateFormattedQuantityDetails(
                                       adaptedComp,
@@ -1308,14 +1327,11 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                               adaptCompositionForDisplayUtils(comp)
                             const compositionQty =
                               comp.quantity || comp.originalQuantity || 1
-                            const unitKind =
-                              adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                             let details = `${compositionQty} un`
 
-                            if (
-                              printOptions.showDimensions &&
-                              unitKind !== 'UNITY'
-                            ) {
+                            // A medida sai também no item cobrado por unidade: o formatador
+                            // só a acrescenta quando ela existe, qualquer que seja a unidade.
+                            if (printOptions.showDimensions) {
                               const fullDetails =
                                 generateFormattedQuantityDetails(adaptedComp)
                               // Extrair apenas a parte das dimensões (tudo após "un ")
@@ -1363,21 +1379,19 @@ export function GeneratePdf({ data, printOptions, type }: Props) {
                             adaptCompositionForDisplayUtils(comp)
                           const compositionQty =
                             comp.quantity || comp.originalQuantity || 1
-                          const unitKind =
-                            adaptedComp.unitKind?.toUpperCase() || 'UNITY'
                           let details = `${compositionQty} un`
 
-                          if (unitKind !== 'UNITY') {
-                            const fullDetails =
-                              generateFormattedQuantityDetails(adaptedComp)
-                            // Extrair apenas a parte das dimensões (tudo após "un ")
-                            const dimensionPart = fullDetails.replace(
-                              /^\d+\s+un\s*/,
-                              '',
-                            )
-                            if (dimensionPart) {
-                              details += ` ${dimensionPart}`
-                            }
+                          // A medida sai também no item cobrado por unidade: o formatador
+                          // só a acrescenta quando ela existe, qualquer que seja a unidade.
+                          const fullDetails =
+                            generateFormattedQuantityDetails(adaptedComp)
+                          // Extrair apenas a parte das dimensões (tudo após "un ")
+                          const dimensionPart = fullDetails.replace(
+                            /^\d+\s+un\s*/,
+                            '',
+                          )
+                          if (dimensionPart) {
+                            details += ` ${dimensionPart}`
                           }
 
                           return (

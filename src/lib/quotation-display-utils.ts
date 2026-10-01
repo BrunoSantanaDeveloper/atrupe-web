@@ -251,7 +251,17 @@ export function generateFormattedQuantityDetails(
 
     case 'UNITY':
     default:
-      // Para unidade simples, sem dimensões extras
+      // Unidade simples também pode trazer a medida do arquivo: é assim que a
+      // venda vem do sistema legado — cobrada por unidade, com o tamanho
+      // anotado na linha. Sem isto a medida existe no banco e não aparece em
+      // lugar nenhum: nem na tela do documento, nem na proposta impressa.
+      if (composition.width && composition.height) {
+        const widthM = millimetersToMeters(composition.width)
+        const heightM = millimetersToMeters(composition.height)
+        details += `${widthM}x${heightM}`
+      } else if (composition.length) {
+        details += `${millimetersToMeters(composition.length)} m`
+      }
       break
   }
 

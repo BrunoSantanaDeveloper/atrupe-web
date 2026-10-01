@@ -205,7 +205,10 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
       const items = watch('items') ?? []
 
       const measurement = (): number => {
-        const basicMeasurement = calculateRawMeasurement(item, item.unitKind)
+        const basicMeasurement = calculateRawMeasurement(
+          item,
+          item.unitKind ?? 'UNITY',
+        )
 
         // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
         // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
@@ -230,7 +233,10 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
     const items = watch('items') ?? []
 
     const measurement = (): number => {
-      const basicMeasurement = calculateRawMeasurement(item, item.unitKind)
+      const basicMeasurement = calculateRawMeasurement(
+        item,
+        item.unitKind ?? 'UNITY',
+      )
 
       // Para produto simples (apenas 1 item): multiplicar apenas pela quantidade
       // Para produto composto (múltiplos itens): multiplicar por ambas as quantidades
@@ -471,7 +477,7 @@ export function QuotationProdDetailModal({ open, editMode, data }: Props) {
                       <MeasurementInput<ProductsFormType>
                         control={control}
                         index={index}
-                        unitKind={watch(`items.${index}.unitKind`)}
+                        unitKind={watch(`items.${index}.unitKind`) ?? 'UNITY'}
                         onHasChanged={() => {
                           const { total, measurementValue } =
                             calculateSalesValue(index)

@@ -105,6 +105,8 @@ type CompositionItemType = {
   originalCompositionId: string
   name: string
   unitOfMeasure: string
+  /** Unidade do item. Ausente em documento antigo, que cai na dedução. */
+  unitKind?: string | null
   quantity: number
   originalQuantity: number
   unitValue: number

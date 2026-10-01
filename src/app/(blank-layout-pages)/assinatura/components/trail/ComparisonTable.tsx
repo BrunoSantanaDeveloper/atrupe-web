@@ -1,7 +1,9 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { IconCheck, IconMinus } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { fetchPlanComparison } from '@/actions/checkout'
 import {
   COMPARISON_GROUPS,
   includesFeature,
@@ -37,6 +39,15 @@ export function allPlansReleased(plans: PlanTrailItem[]) {
  * oferta; rola dentro do próprio contêiner em tela estreita.
  */
 export function ComparisonTable({ plans, currentPlanType }: Props) {
+  // A tabela é editada no painel de planos; sem resposta, vale a do código.
+  const { data: groups } = useQuery({
+    queryKey: ['plan-comparison'],
+    queryFn: async () => {
+      const res = await fetchPlanComparison()
+      return res.success && res.data?.length ? res.data : COMPARISON_GROUPS
+    },
+    staleTime: 5 * 60 * 1000,
+  })
   const columns = PLAN_SEQUENCE.filter((t) =>
     plans.some((p) => p.planType === t),
   )
@@ -67,7 +78,7 @@ export function ComparisonTable({ plans, currentPlanType }: Props) {
             </tr>
           </thead>
           <tbody>
-            {COMPARISON_GROUPS.map((group) => (
+            {(groups ?? COMPARISON_GROUPS).map((group) => (
               <FragmentGroup
                 key={group.group}
                 group={group}
