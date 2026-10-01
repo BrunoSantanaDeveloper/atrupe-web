@@ -78,8 +78,11 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
       data,
     })
 
-    if (!res.success) {
-      toast.error(res.message)
+    if (!res?.success) {
+      toast.error(
+        res?.message ||
+          'Senha gerencial incorreta ou sessão encerrada. Entre de novo e tente outra vez.',
+      )
       return
     }
 
