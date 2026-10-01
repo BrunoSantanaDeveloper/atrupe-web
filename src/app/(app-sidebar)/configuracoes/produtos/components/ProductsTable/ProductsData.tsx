@@ -371,6 +371,16 @@ export function ProductsData({ searchParams, tabs }: Props) {
           const canConfigureFiscalData =
             hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
 
+          // No PRO o produto nasce e então ganha composição (CP-16): reabre
+          // direto na aba do fluxo de etapas
+          if (showComposition) {
+            setTimeout(() => {
+              setSelectedProductId(product.id)
+              setOpenDialog('compose-product')
+            }, 500)
+            return
+          }
+
           if (canConfigureFiscalData) {
             // Increased timeout to ensure NewProduct modal is fully closed and state is settled
             setTimeout(() => {
@@ -382,9 +392,12 @@ export function ProductsData({ searchParams, tabs }: Props) {
         }}
       />
       <NewProduct
-        open={openDialog === 'edit-product'}
+        open={openDialog === 'edit-product' || openDialog === 'compose-product'}
         editMode
         productId={selectedProductId}
+        initialTab={
+          openDialog === 'compose-product' ? 'composition' : 'general'
+        }
         onOpenChange={(open) => {
           if (!open) {
             setOpenDialog('')

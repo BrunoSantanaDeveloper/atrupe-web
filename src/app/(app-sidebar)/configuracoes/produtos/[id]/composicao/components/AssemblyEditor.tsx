@@ -242,7 +242,15 @@ const toFlowNode = (
   }
 }
 
-export function AssemblyEditor({ productId }: { productId: string }) {
+// `embedded`: dentro do diálogo do produto (CP-17) o cartão "Produto" some,
+// porque unidade, valor e medidas já são os campos da aba Produto
+export function AssemblyEditor({
+  productId,
+  embedded = false,
+}: {
+  productId: string
+  embedded?: boolean
+}) {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
 
@@ -988,303 +996,306 @@ export function AssemblyEditor({ productId }: { productId: string }) {
   const status = assemblyStatusObj[assembly.status]
 
   return (
-    <div className="space-y-5">
+    // Embutido no diálogo do produto, o fluxo sobe para o topo (order-first)
+    <div className="flex flex-col gap-5">
       {/* 1. O produto: a cobrança é a do cadastro do START (IP-17) —
           unidade comercial, valor de venda e padrão de medidas */}
-      <Card>
-        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-          <div>
-            <CardTitle>Produto</CardTitle>
-            <CardDescription>
-              Os mesmos campos do cadastro do produto. A composição acrescenta o
-              custo e o preço sugerido.
-            </CardDescription>
-          </div>
-          <PermissionGate permissions={EDIT}>
-            <div className="w-full sm:w-[260px]">
+      {!embedded && (
+        <Card>
+          <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+            <div>
+              <CardTitle>Produto</CardTitle>
+              <CardDescription>
+                Os mesmos campos do cadastro do produto. A composição acrescenta
+                o custo e o preço sugerido.
+              </CardDescription>
+            </div>
+            <PermissionGate permissions={EDIT}>
+              <div className="w-full sm:w-[260px]">
+                <SelectBasic
+                  name="assembly-status"
+                  label="Situação"
+                  options={toOptions(
+                    Object.fromEntries(
+                      Object.entries(assemblyStatusObj).map(([key, value]) => [
+                        key,
+                        value.text,
+                      ]),
+                    ) as { [key in AssemblyStatus]: string },
+                  )}
+                  value={assembly.status}
+                  onChange={(value) =>
+                    run(
+                      updateAssembly({
+                        productId,
+                        values: { status: value as AssemblyStatus },
+                      }),
+                      assemblyStatusObj[value as AssemblyStatus].text,
+                    )
+                  }
+                />
+                <p className="mt-1 text-xs text-gray">{status.help}</p>
+              </div>
+            </PermissionGate>
+          </CardHeader>
+          <CardContent className="space-y-6 px-6 pb-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <SelectBasic
-                name="assembly-status"
-                label="Situação"
-                options={toOptions(
-                  Object.fromEntries(
-                    Object.entries(assemblyStatusObj).map(([key, value]) => [
-                      key,
-                      value.text,
-                    ]),
-                  ) as { [key in AssemblyStatus]: string },
-                )}
-                value={assembly.status}
+                name="assembly-unit"
+                label="Unidade comercial"
+                options={toOptions(unitKindObj)}
+                value={assembly.unitKind}
                 onChange={(value) =>
                   run(
                     updateAssembly({
                       productId,
-                      values: { status: value as AssemblyStatus },
+                      values: { unitKind: value as UnitKind },
                     }),
-                    assemblyStatusObj[value as AssemblyStatus].text,
                   )
                 }
               />
-              <p className="mt-1 text-xs text-gray">{status.help}</p>
-            </div>
-          </PermissionGate>
-        </CardHeader>
-        <CardContent className="space-y-6 px-6 pb-6">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <SelectBasic
-              name="assembly-unit"
-              label="Unidade comercial"
-              options={toOptions(unitKindObj)}
-              value={assembly.unitKind}
-              onChange={(value) =>
-                run(
-                  updateAssembly({
-                    productId,
-                    values: { unitKind: value as UnitKind },
-                  }),
-                )
-              }
-            />
-            <PermissionGate permissions={['values:values:view']}>
-              <div className="space-y-2">
-                <Label htmlFor="assembly-unit-price">
-                  {unitSaleLabel[assembly.unitKind]}
-                  {variation ? ` · ${variation.name}` : ''}
-                </Label>
-                <Input
-                  key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
-                  id="assembly-unit-price"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  startAdornment={<span className="text-sm">R$</span>}
-                  placeholder={
-                    variation && assembly.unitPrice !== null
-                      ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
-                      : ''
-                  }
-                  defaultValue={
-                    variation
-                      ? variation.unitPrice === null
-                        ? ''
-                        : variation.unitPrice / 100
-                      : assembly.unitPrice === null
-                        ? ''
-                        : assembly.unitPrice / 100
-                  }
-                  onBlur={(event) => {
-                    const value =
-                      event.target.value === ''
-                        ? null
-                        : Math.round(Number(event.target.value) * 100)
-                    run(
-                      variation
-                        ? setVariationPrice({
-                            productId,
-                            variationId: variation.id,
-                            unitPrice: value,
-                          })
-                        : updateAssembly({
-                            productId,
-                            values: { unitPrice: value },
-                          }),
-                    )
-                  }}
-                />
-              </div>
-            </PermissionGate>
-            <SelectBasic
-              name="assembly-dimension"
-              label="Medida no orçamento"
-              options={toOptions(productDimensionObj)}
-              value={assembly.dimension}
-              onChange={(value) =>
-                run(
-                  updateAssembly({
-                    productId,
-                    values: { dimension: value as ProductDimension },
-                  }),
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <h4 className="mb-2 text-base font-semibold text-gray-700">
-              Padrão de medidas do produto
-            </h4>
-            <div className="grid grid-cols-2 gap-4 rounded-xl border border-blue-light-300 bg-blue-light-50 p-6 md:grid-cols-5">
-              <div className="space-y-2">
-                <Label htmlFor="measure-quantity">Quantidade</Label>
-                <Input
-                  id="measure-quantity"
-                  type="number"
-                  min={0}
-                  step="1"
-                  value={measure.quantity}
-                  onChange={(event) =>
-                    setMeasure((current) =>
-                      current
-                        ? {
-                            ...current,
-                            quantity: Number(event.target.value) || 0,
-                          }
-                        : current,
-                    )
-                  }
-                />
-              </div>
-              {assembly.unitKind !== 'AREA' &&
-                assembly.unitKind !== 'UNITY' && (
-                  <div className="space-y-2">
-                    <Label htmlFor="assembly-unit-amount">
-                      {unitAmountLabel[assembly.unitKind]} (
-                      {unitSymbol[assembly.unitKind]})
-                    </Label>
-                    <Input
-                      key={`amount-${assembly.unitAmount}`}
-                      id="assembly-unit-amount"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      defaultValue={assembly.unitAmount}
-                      onBlur={(event) =>
-                        run(
-                          updateAssembly({
-                            productId,
-                            values: {
-                              unitAmount: Number(event.target.value) || 0,
-                            },
-                          }),
-                        )
-                      }
-                    />
-                  </div>
-                )}
-              {(
-                [
-                  [
-                    'width',
-                    assembly.unitKind === 'AREA'
-                      ? 'Largura (m)'
-                      : 'Largura da peça (m)',
-                  ],
-                  [
-                    'height',
-                    assembly.unitKind === 'AREA'
-                      ? 'Altura (m)'
-                      : 'Altura da peça (m)',
-                  ],
-                ] as const
-              ).map(([key, label]) => (
-                <div key={key} className="space-y-2">
-                  <Label htmlFor={`measure-${key}`}>{label}</Label>
+              <PermissionGate permissions={['values:values:view']}>
+                <div className="space-y-2">
+                  <Label htmlFor="assembly-unit-price">
+                    {unitSaleLabel[assembly.unitKind]}
+                    {variation ? ` · ${variation.name}` : ''}
+                  </Label>
                   <Input
-                    id={`measure-${key}`}
+                    key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
+                    id="assembly-unit-price"
                     type="number"
                     min={0}
                     step="0.01"
-                    value={measure[key]}
+                    startAdornment={<span className="text-sm">R$</span>}
+                    placeholder={
+                      variation && assembly.unitPrice !== null
+                        ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
+                        : ''
+                    }
+                    defaultValue={
+                      variation
+                        ? variation.unitPrice === null
+                          ? ''
+                          : variation.unitPrice / 100
+                        : assembly.unitPrice === null
+                          ? ''
+                          : assembly.unitPrice / 100
+                    }
+                    onBlur={(event) => {
+                      const value =
+                        event.target.value === ''
+                          ? null
+                          : Math.round(Number(event.target.value) * 100)
+                      run(
+                        variation
+                          ? setVariationPrice({
+                              productId,
+                              variationId: variation.id,
+                              unitPrice: value,
+                            })
+                          : updateAssembly({
+                              productId,
+                              values: { unitPrice: value },
+                            }),
+                      )
+                    }}
+                  />
+                </div>
+              </PermissionGate>
+              <SelectBasic
+                name="assembly-dimension"
+                label="Medida no orçamento"
+                options={toOptions(productDimensionObj)}
+                value={assembly.dimension}
+                onChange={(value) =>
+                  run(
+                    updateAssembly({
+                      productId,
+                      values: { dimension: value as ProductDimension },
+                    }),
+                  )
+                }
+              />
+            </div>
+
+            <div>
+              <h4 className="mb-2 text-base font-semibold text-gray-700">
+                Padrão de medidas do produto
+              </h4>
+              <div className="grid grid-cols-2 gap-4 rounded-xl border border-blue-light-300 bg-blue-light-50 p-6 md:grid-cols-5">
+                <div className="space-y-2">
+                  <Label htmlFor="measure-quantity">Quantidade</Label>
+                  <Input
+                    id="measure-quantity"
+                    type="number"
+                    min={0}
+                    step="1"
+                    value={measure.quantity}
                     onChange={(event) =>
                       setMeasure((current) =>
                         current
                           ? {
                               ...current,
-                              [key]: Number(event.target.value) || 0,
+                              quantity: Number(event.target.value) || 0,
                             }
                           : current,
                       )
                     }
                   />
                 </div>
-              ))}
-              {assembly.unitKind === 'AREA' && (
-                <div className="space-y-2">
-                  <Label>Área total</Label>
-                  <p className="flex h-11 items-center text-sm text-gray-800">
-                    {num(assembly.saleAmount)} m²
-                  </p>
-                </div>
+                {assembly.unitKind !== 'AREA' &&
+                  assembly.unitKind !== 'UNITY' && (
+                    <div className="space-y-2">
+                      <Label htmlFor="assembly-unit-amount">
+                        {unitAmountLabel[assembly.unitKind]} (
+                        {unitSymbol[assembly.unitKind]})
+                      </Label>
+                      <Input
+                        key={`amount-${assembly.unitAmount}`}
+                        id="assembly-unit-amount"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        defaultValue={assembly.unitAmount}
+                        onBlur={(event) =>
+                          run(
+                            updateAssembly({
+                              productId,
+                              values: {
+                                unitAmount: Number(event.target.value) || 0,
+                              },
+                            }),
+                          )
+                        }
+                      />
+                    </div>
+                  )}
+                {(
+                  [
+                    [
+                      'width',
+                      assembly.unitKind === 'AREA'
+                        ? 'Largura (m)'
+                        : 'Largura da peça (m)',
+                    ],
+                    [
+                      'height',
+                      assembly.unitKind === 'AREA'
+                        ? 'Altura (m)'
+                        : 'Altura da peça (m)',
+                    ],
+                  ] as const
+                ).map(([key, label]) => (
+                  <div key={key} className="space-y-2">
+                    <Label htmlFor={`measure-${key}`}>{label}</Label>
+                    <Input
+                      id={`measure-${key}`}
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={measure[key]}
+                      onChange={(event) =>
+                        setMeasure((current) =>
+                          current
+                            ? {
+                                ...current,
+                                [key]: Number(event.target.value) || 0,
+                              }
+                            : current,
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+                {assembly.unitKind === 'AREA' && (
+                  <div className="space-y-2">
+                    <Label>Área total</Label>
+                    <p className="flex h-11 items-center text-sm text-gray-800">
+                      {num(assembly.saleAmount)} m²
+                    </p>
+                  </div>
+                )}
+                <PermissionGate permissions={['values:values:view']}>
+                  <div className="space-y-2">
+                    <Label>Valor</Label>
+                    <p className="flex h-11 items-center text-base font-semibold text-gray-900">
+                      {money(assembly.priceForMeasure)}
+                    </p>
+                  </div>
+                </PermissionGate>
+              </div>
+              {assembly.unitKind !== 'AREA' && (
+                <p className="mt-2 text-sm text-gray">
+                  Largura e altura da peça não mudam o valor de venda: servem
+                  para calcular a composição.
+                </p>
               )}
-              <PermissionGate permissions={['values:values:view']}>
-                <div className="space-y-2">
-                  <Label>Valor</Label>
-                  <p className="flex h-11 items-center text-base font-semibold text-gray-900">
-                    {money(assembly.priceForMeasure)}
-                  </p>
-                </div>
-              </PermissionGate>
             </div>
-            {assembly.unitKind !== 'AREA' && (
-              <p className="mt-2 text-sm text-gray">
-                Largura e altura da peça não mudam o valor de venda: servem para
-                calcular a composição.
-              </p>
-            )}
-          </div>
 
-          <PermissionGate permissions={EDIT}>
-            <div className="flex flex-wrap gap-6">
-              {(
-                [
-                  ['allowEditValues', 'Permitir editar valor'],
-                  ['allowEditDescription', 'Permitir editar descrição'],
-                ] as const
-              ).map(([key, label]) => (
-                <label
-                  key={key}
-                  className="flex items-center gap-3 text-sm font-medium"
-                >
-                  <Switch
-                    checked={assembly[key]}
-                    onCheckedChange={(checked) =>
-                      run(
-                        updateAssembly({
-                          productId,
-                          values: { [key]: checked },
-                        }),
-                      )
-                    }
-                    aria-label={label}
-                  />
-                  {label}
-                </label>
-              ))}
-            </div>
-          </PermissionGate>
-        </CardContent>
-        {measureChanged && (
-          <CardFooter className="flex-wrap justify-between gap-3">
-            <p className="text-sm text-gray">
-              Simulando {num(measure.quantity)} × {num(measure.width)} ×{' '}
-              {num(measure.height)} m. O padrão é {num(saved.quantity)} ×{' '}
-              {num(saved.width)} × {num(saved.height)} m.
-            </p>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="neutralOutline"
-                onClick={() => setMeasure(saved)}
-              >
-                Voltar ao padrão
-              </Button>
-              <PermissionGate permissions={EDIT}>
+            <PermissionGate permissions={EDIT}>
+              <div className="flex flex-wrap gap-6">
+                {(
+                  [
+                    ['allowEditValues', 'Permitir editar valor'],
+                    ['allowEditDescription', 'Permitir editar descrição'],
+                  ] as const
+                ).map(([key, label]) => (
+                  <label
+                    key={key}
+                    className="flex items-center gap-3 text-sm font-medium"
+                  >
+                    <Switch
+                      checked={assembly[key]}
+                      onCheckedChange={(checked) =>
+                        run(
+                          updateAssembly({
+                            productId,
+                            values: { [key]: checked },
+                          }),
+                        )
+                      }
+                      aria-label={label}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </PermissionGate>
+          </CardContent>
+          {measureChanged && (
+            <CardFooter className="flex-wrap justify-between gap-3">
+              <p className="text-sm text-gray">
+                Simulando {num(measure.quantity)} × {num(measure.width)} ×{' '}
+                {num(measure.height)} m. O padrão é {num(saved.quantity)} ×{' '}
+                {num(saved.width)} × {num(saved.height)} m.
+              </p>
+              <div className="flex gap-2">
                 <Button
                   type="button"
                   variant="neutralOutline"
-                  onClick={() =>
-                    run(
-                      updateAssembly({ productId, values: { measure } }),
-                      'Padrão de medidas salvo',
-                    )
-                  }
+                  onClick={() => setMeasure(saved)}
                 >
-                  Salvar como padrão
+                  Voltar ao padrão
                 </Button>
-              </PermissionGate>
-            </div>
-          </CardFooter>
-        )}
-      </Card>
+                <PermissionGate permissions={EDIT}>
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    onClick={() =>
+                      run(
+                        updateAssembly({ productId, values: { measure } }),
+                        'Padrão de medidas salvo',
+                      )
+                    }
+                  >
+                    Salvar como padrão
+                  </Button>
+                </PermissionGate>
+              </div>
+            </CardFooter>
+          )}
+        </Card>
+      )}
 
       {/* 2. O resultado: custo e preço nesta medida */}
       <PermissionGate permissions={['values:values:view']}>
@@ -1517,7 +1528,7 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       {/* 4. A composição é o fluxo da produção (FL-1 a FL-5): cada caixa é
           a etapa de um setor, ligada às que vêm antes dela. As caixas são
           posicionadas pelo sistema; tudo parte de "o que vem depois?" */}
-      <Card>
+      <Card className={cn(embedded && 'order-first')}>
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div>
             <CardTitle>Composição</CardTitle>
@@ -1631,11 +1642,15 @@ export function AssemblyEditor({ productId }: { productId: string }) {
         </CardContent>
       </Card>
 
-      {selectedBlock && stageDetail(selectedBlock)}
+      {selectedBlock && (
+        <div className={cn(embedded && 'order-first')}>
+          {stageDetail(selectedBlock)}
+        </div>
+      )}
 
       {/* O que o produto consome, cada recurso uma vez (IP-34) */}
       {assembly.resourceSummary.length > 0 && (
-        <Card>
+        <Card className={cn(embedded && 'order-first')}>
           <CardHeader>
             <CardTitle>Resumo por recurso</CardTitle>
             <CardDescription>
@@ -1693,39 +1708,41 @@ export function AssemblyEditor({ productId }: { productId: string }) {
       )}
 
       {/* 4. O texto técnico que vai para a proposta (IP-24) */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Descritivo técnico</CardTitle>
-          <CardDescription>
-            Aparece na proposta impressa, abaixo do nome do produto.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3 px-6 pb-6">
-          <Textarea
-            aria-label="Descritivo técnico"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-          <PermissionGate permissions={EDIT}>
-            <Button
-              type="button"
-              variant="neutralOutline"
-              disabled={description === assembly.technicalDescription}
-              onClick={() =>
-                run(
-                  updateAssembly({
-                    productId,
-                    values: { technicalDescription: description },
-                  }),
-                  'Descritivo salvo',
-                )
-              }
-            >
-              Salvar descritivo
-            </Button>
-          </PermissionGate>
-        </CardContent>
-      </Card>
+      {!embedded && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Descritivo técnico</CardTitle>
+            <CardDescription>
+              Aparece na proposta impressa, abaixo do nome do produto.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            <Textarea
+              aria-label="Descritivo técnico"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+            <PermissionGate permissions={EDIT}>
+              <Button
+                type="button"
+                variant="neutralOutline"
+                disabled={description === assembly.technicalDescription}
+                onClick={() =>
+                  run(
+                    updateAssembly({
+                      productId,
+                      values: { technicalDescription: description },
+                    }),
+                    'Descritivo salvo',
+                  )
+                }
+              >
+                Salvar descritivo
+              </Button>
+            </PermissionGate>
+          </CardContent>
+        </Card>
+      )}
 
       {/* "O que vem depois?" (FL-5): a etapa seguinte, a inserida no meio da
           ligação e o caminho novo passam pelo mesmo diálogo */}

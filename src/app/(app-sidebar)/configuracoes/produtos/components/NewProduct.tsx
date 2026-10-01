@@ -23,6 +23,8 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 // Components
 import { LucideIcon } from '@/components/LucideIcon'
 import { ProductionStages } from './ProductionStages'
+import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -58,6 +60,7 @@ import {
   IconCircleCheck,
   IconPencil,
   IconReceiptTax,
+  IconHierarchy2,
 } from '@tabler/icons-react'
 
 // Action
@@ -72,13 +75,20 @@ import {
 import { useSector } from '@/hooks/queries/useSector'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
+import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+
+export type ProductTab = 'general' | 'composition' | 'fiscal'
 
 interface Props {
   editMode?: boolean
   open: boolean
   onOpenChange: (open: boolean) => void
   productId?: string
+  // Aba em que o diálogo abre: depois de criar o produto no PRO ele reabre
+  // direto na composição (CP-16: o produto nasce e então ganha composição)
+  initialTab?: ProductTab
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (product: any) => void
 }
@@ -116,21 +126,34 @@ function NewProductModal({
   productId,
   open,
   onOpenChange,
+  initialTab = 'general',
   onSuccess,
 }: Props) {
   const queryClient = useQueryClient()
-  const { canManageProducts, canManageProductionStages, hasFiscalModule } =
-    usePlanFeatures()
+  const {
+    canManageProducts,
+    canManageProductionStages,
+    hasFiscalModule,
+    hasFeature,
+  } = usePlanFeatures()
   const { data: sectors } = useSector({ isProductionStage: true })
 
   const [insertAnother, setInsertAnother] = useState(false)
-  const [activeTab, setActiveTab] = useState('general')
+  const [activeTab, setActiveTab] = useState<ProductTab>(initialTab)
 
   const alertDialog = useAlertDialog()
 
   const canAddComposition = canManageProducts()
   const canShowProductionStages = canManageProductionStages()
   const showFiscalTab = hasFiscalModule()
+  // A composição é recurso do cadastro do produto, não tela à parte (CP-17):
+  // do PRO em diante o diálogo ganha a aba, e o fluxo de etapas (FL-1) toma o
+  // lugar da lista simples de etapas do LITE (ET-1)
+  const showCompositionTab = hasFeature(FEATURES.COSTS.COST_BASE)
+
+  useEffect(() => {
+    if (open) setActiveTab(initialTab)
+  }, [open, initialTab])
 
   const { data: product, isLoading } = useQuery({
     staleTime: Infinity,
@@ -432,7 +455,13 @@ function NewProductModal({
       requireAll={true}
     >
       <Dialog open={open} onOpenChange={handleToggleModal}>
-        <DialogContent className="sm:max-w-[855px]">
+        <DialogContent
+          className={cn(
+            activeTab === 'composition'
+              ? 'sm:max-w-[1180px]'
+              : 'sm:max-w-[855px]',
+          )}
+        >
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
@@ -445,7 +474,7 @@ function NewProductModal({
           <DialogBody className="p-0">
             <Tabs
               value={activeTab}
-              onValueChange={setActiveTab}
+              onValueChange={(value) => setActiveTab(value as ProductTab)}
               className="flex flex-col h-full"
             >
               <div className="px-6 pt-4 border-b border-gray-100">
@@ -454,6 +483,12 @@ function NewProductModal({
                     <IconPackage size={14} className="mr-1.5" />
                     Produto
                   </TabsTrigger>
+                  {showCompositionTab && (
+                    <TabsTrigger value="composition">
+                      <IconHierarchy2 size={14} className="mr-1.5" />
+                      Composição
+                    </TabsTrigger>
+                  )}
                   {showFiscalTab && (
                     <TabsTrigger value="fiscal">
                       <IconReceiptTax size={14} className="mr-1.5" />
@@ -563,7 +598,7 @@ function NewProductModal({
                             )}
                             <FormInput
                               name={`items.${index}.name`}
-                              label="Nome da composição"
+                              label="Nome da unidade de venda"
                               width="flex-[1_0_100%]"
                             />
 
@@ -621,7 +656,7 @@ function NewProductModal({
                               rounded
                             />
                             <p className="text-sm text-gray-600 font-medium">
-                              Adicionar composição
+                              Adicionar outra unidade de venda
                             </p>
                           </Button>
                         </div>
@@ -646,10 +681,53 @@ function NewProductModal({
                           label="Permitir editar descrição"
                         />
                       </div>
-                      {canShowProductionStages && <ProductionStages />}
+                      {canShowProductionStages && !showCompositionTab && (
+                        <ProductionStages />
+                      )}
                     </form>
                   </Form>
                 </TabsContent>
+
+                {showCompositionTab && (
+                  <TabsContent value="composition" className="mt-0 p-6">
+                    {editMode && productId ? (
+                      <TooltipProvider>
+                        <div className="space-y-5">
+                          <AssemblyEditor productId={productId} embedded />
+                          {canShowProductionStages && (
+                            <Form {...form}>
+                              <div className="space-y-1">
+                                <ProductionStages />
+                                <p className="text-sm text-gray">
+                                  Enquanto a Agenda de entrega não lê o fluxo,
+                                  ela usa esta lista de setores. As caixas do
+                                  fluxo acima são as etapas que vão substituí-la
+                                  (ET-1).
+                                </p>
+                              </div>
+                            </Form>
+                          )}
+                        </div>
+                      </TooltipProvider>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3 py-16 text-center">
+                        <FeaturedIcon
+                          variant="light"
+                          Icon={IconHierarchy2}
+                          rounded
+                        />
+                        <p className="text-base font-semibold text-gray-700">
+                          O fluxo de etapas vem depois de salvar
+                        </p>
+                        <p className="max-w-md text-sm text-gray">
+                          Preencha a aba Produto e salve. O produto reabre nesta
+                          aba para você montar as etapas, com os processos,
+                          materiais e tempos de cada uma.
+                        </p>
+                      </div>
+                    )}
+                  </TabsContent>
+                )}
 
                 {showFiscalTab && (
                   <TabsContent value="fiscal" className="mt-0 p-6">

@@ -19,6 +19,7 @@ import { NewProduct, NewProductTriggerButton } from './NewProduct'
 import { ProductFiscalDataDialog } from './ProductFiscalData'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { FEATURES } from '@/consts/features'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { FiscalPendenciasAlert } from './FiscalPendenciasAlert'
@@ -140,10 +141,20 @@ export function Products({ searchParams }: SearchParamsType) {
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
   const { hasAllPermissions } = usePermissions()
-  const { hasFiscalModule } = usePlanFeatures()
+  const { hasFiscalModule, hasFeature } = usePlanFeatures()
 
   const canConfigureProductFiscalData =
     hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
+  // No PRO o produto recém-criado reabre na aba Composição (CP-16)
+  const canCompose = hasFeature(FEATURES.COSTS.COST_BASE)
+
+  const openAfterCreate = (product: { id: string; name: string }) => {
+    setTimeout(() => {
+      setSelectedProductId(product.id)
+      setSelectedProductName(product.name)
+      setOpenDialog(canCompose ? 'compose-product' : 'fiscal-data')
+    }, 500)
+  }
 
   // EC-26: sem a permissão "Valores", a planilha sai sem as colunas de preço
   const canSeeValues = hasAllPermissions(['values:values:view'])
@@ -272,12 +283,8 @@ export function Products({ searchParams }: SearchParamsType) {
                     open={openDialog === 'new-product'}
                     onOpenChange={() => setOpenDialog('')}
                     onSuccess={(product) => {
-                      if (canConfigureProductFiscalData) {
-                        setTimeout(() => {
-                          setSelectedProductId(product.id)
-                          setSelectedProductName(product.name)
-                          setOpenDialog('fiscal-data')
-                        }, 500)
+                      if (canCompose || canConfigureProductFiscalData) {
+                        openAfterCreate(product)
                       }
                     }}
                   />
@@ -290,12 +297,21 @@ export function Products({ searchParams }: SearchParamsType) {
           open={openDialog === 'new-product'}
           onOpenChange={() => setOpenDialog('')}
           onSuccess={(product) => {
-            if (canConfigureProductFiscalData) {
-              setTimeout(() => {
-                setSelectedProductId(product.id)
-                setSelectedProductName(product.name)
-                setOpenDialog('fiscal-data')
-              }, 500)
+            if (canCompose || canConfigureProductFiscalData) {
+              openAfterCreate(product)
+            }
+          }}
+        />
+        <NewProduct
+          open={openDialog === 'compose-product'}
+          editMode
+          productId={selectedProductId}
+          initialTab="composition"
+          onOpenChange={(open) => {
+            if (!open) {
+              setOpenDialog('')
+              setSelectedProductId('')
+              setSelectedProductName('')
             }
           }}
         />
