@@ -16,4 +16,6 @@ export const cashTodayStatusObj: { [key: string]: BadgeType } = {
   FREE: { text: 'Livre', variant: 'neutralLight' },
   NO_DAY: { text: 'Sem caixa hoje', variant: 'warningLight' },
   REOPENED: { text: 'Reaberto', variant: 'warningLight' },
+  // A operadora de cartão não fecha o dia (CX-3)
+  NO_CLOSE: { text: 'Não fecha', variant: 'neutralLight' },
 }

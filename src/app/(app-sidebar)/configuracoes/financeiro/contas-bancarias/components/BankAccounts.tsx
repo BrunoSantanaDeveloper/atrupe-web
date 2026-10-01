@@ -161,7 +161,9 @@ export function BankAccounts(_: SearchParamsType) {
             <p className="text-sm text-gray">
               {account.kind === 'BANK'
                 ? account.bankName
-                : 'Dinheiro em espécie'}
+                : account.kind === 'CARD'
+                  ? `${account.bankName} · o que a operadora ainda deve, pelo valor cheio`
+                  : 'Dinheiro em espécie'}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {receives.length ? (

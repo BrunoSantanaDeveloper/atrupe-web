@@ -8,7 +8,6 @@
 
 // Types
 import {
-  COUNT_TOLERANCE,
   cashDayTotals,
   type CashDay,
   type Movement,
@@ -61,6 +60,8 @@ let accounts: BankAccount[] = [
     bankCode: '000',
     bankIcon: 'company',
     cashControl: true,
+    blindCount: false,
+    shortageTolerance: null,
     isActive: true,
     hasHistory: true,
     openingBalance: 20000,
@@ -82,6 +83,8 @@ let accounts: BankAccount[] = [
     bankCode: '237',
     bankIcon: 'bancoBradesco',
     cashControl: true,
+    blindCount: false,
+    shortageTolerance: null,
     isActive: true,
     hasHistory: true,
     openingBalance: 150000,
@@ -117,6 +120,8 @@ let accounts: BankAccount[] = [
     bankCode: '077',
     bankIcon: '',
     cashControl: false,
+    blindCount: false,
+    shortageTolerance: null,
     isActive: true,
     hasHistory: true,
     openingBalance: 0,
@@ -134,12 +139,36 @@ let accounts: BankAccount[] = [
     bankCode: '341',
     bankIcon: 'bancoItau',
     cashControl: false,
+    blindCount: false,
+    shortageTolerance: null,
     isActive: false,
     hasHistory: true,
     openingBalance: 0,
     openingDate: day(-400),
     balance: 0,
     rules: rules({}),
+  },
+  {
+    // A operadora de cartão não fecha o dia (CX-3): o saldo é o que ela ainda
+    // deve à empresa, pelo valor cheio; a taxa aparece na liquidação (FC-10)
+    id: 'a5',
+    name: 'Rede (cartões)',
+    kind: 'CARD',
+    bankName: 'Rede',
+    bankCode: '',
+    bankIcon: '',
+    cashControl: false,
+    blindCount: false,
+    shortageTolerance: null,
+    isActive: true,
+    hasHistory: true,
+    openingBalance: 0,
+    openingDate: day(-30),
+    balance: 208500,
+    rules: rules({
+      deb: { acceptIncomes: true, incomeType: 'PROVISION', isDefault: true },
+      cre: { acceptIncomes: true, incomeType: 'PROVISION', isDefault: true },
+    }),
   },
 ]
 
@@ -207,11 +236,16 @@ const days: CashDay[] = [
     openedAt: at(-1, '08:02:00'),
     reopenings: [],
     movements: [
+      // O dinheiro do fechamento da frente de caixa chega pendente: alguém
+      // do caixa principal confere e aprova (4.2)
       mv({
-        kind: 'INCOME',
+        kind: 'TRANSFER_IN',
         description: 'Fechamento FC nº 12 · dinheiro',
         amount: 85000,
         operationDate: day(-1),
+        settled: false,
+        awaitingApproval: true,
+        responsible: 'Renata Alves (caixa 1)',
       }),
       mv({
         kind: 'TRANSFER_OUT',
@@ -341,6 +375,9 @@ export const saveBankAccount = async (
 
   const values = {
     ...input,
+    // A operadora não tem controle de caixa nem contagem: não fecha o dia
+    cashControl: input.kind === 'CARD' ? false : input.cashControl,
+    blindCount: input.kind === 'CASH' && input.cashControl && input.blindCount,
     bankIcon: iconByCode[input.kind === 'CASH' ? '000' : input.bankCode] || '',
   }
 
@@ -591,22 +628,26 @@ export const closeCashDay = async (
   }
 
   // Na gaveta, a diferença vira "quebra de caixa" no nome de quem operava —
-  // nunca um ajuste silencioso. Dentro da tolerância, os centavos também vão
-  // para a quebra, sem pedir explicação
+  // nunca um ajuste silencioso. Por padrão não há tolerância: toda diferença
+  // é lançada. Com tolerância ligada, a diferença dentro dela continua
+  // visível (fica no `informed`), mas não é lançada (4.1)
   if (account.kind === 'CASH' && difference !== 0) {
-    if (Math.abs(difference) > COUNT_TOLERANCE && !note.trim()) {
+    const tolerance = account.shortageTolerance
+    const within = tolerance !== null && Math.abs(difference) <= tolerance
+    if (!within && !note.trim()) {
       return fail('A contagem não bate: explique a diferença')
     }
-
-    target.movements.push(
-      mv({
-        kind: difference < 0 ? 'SHORTAGE' : 'OVERAGE',
-        description: 'Diferença da contagem',
-        amount: difference,
-        operationDate: target.date,
-        reason: note || 'Dentro da tolerância',
-      }),
-    )
+    if (!within) {
+      target.movements.push(
+        mv({
+          kind: difference < 0 ? 'SHORTAGE' : 'OVERAGE',
+          description: 'Diferença da contagem',
+          amount: difference,
+          operationDate: target.date,
+          reason: note,
+        }),
+      )
+    }
   }
 
   target.status = 'CLOSED'
@@ -639,5 +680,23 @@ export const reopenCashDay = async (dayId: string, reason: string) => {
     reason,
   })
 
+  return ok(null)
+}
+
+// O caixa principal aprova o que recebe da frente de caixa (4.2): o valor
+// deixa de ser previsto e passa a compor o saldo, com o registro de quem
+// conferiu
+export const approveMovement = async (dayId: string, movementId: string) => {
+  const target = days.find((item) => item.id === dayId)
+  const movement = target?.movements.find((item) => item.id === movementId)
+  if (!target || !movement) return fail('Lançamento não encontrado')
+  if (target.status !== 'OPEN') {
+    return fail('Este caixa está fechado: reabra para aprovar')
+  }
+  if (!movement.awaitingApproval)
+    return fail('Este valor não aguarda aprovação')
+  movement.awaitingApproval = false
+  movement.settled = true
+  movement.approvedBy = 'Maicol Souza'
   return ok(null)
 }

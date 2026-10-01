@@ -23,12 +23,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import {
-  COUNT_TOLERANCE,
-  cashDayTotals,
-  type CashDay,
-  type BankAccount,
-} from '../types'
+import { cashDayTotals, type CashDay, type BankAccount } from '../types'
 
 // Actions
 import {
@@ -363,7 +358,8 @@ export function AdjustmentDialog({
 }
 
 /* ---------------------------------------------------------------------------
- * Fechar — a gaveta se conta às cegas; o banco confere o extrato (CX-3)
+ * Fechar — a gaveta se conta (conferência simples ou às cegas, conforme o
+ * cadastro da conta); o banco confere o extrato (CX-3, 4.1)
  * ------------------------------------------------------------------------- */
 
 export function CloseDayDialog({
@@ -378,24 +374,30 @@ export function CloseDayDialog({
   const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const isCash = account?.kind === 'CASH'
+  // Às cegas só na conta Caixa que pediu isso no cadastro; o padrão é a
+  // conferência simples, com o esperado à vista e o contado já preenchido
+  const blind = isCash && !!account?.blindCount
+  const expected = day ? cashDayTotals(day).balance : 0
+
   useEffect(() => {
     if (open) {
-      setStep('inform')
-      setInformed(0)
+      setStep(blind ? 'inform' : 'check')
+      setInformed(blind ? 0 : expected)
       setNote('')
     }
-  }, [open])
+  }, [open, blind, expected])
 
   if (!day || !account) return null
 
-  const isCash = account.kind === 'CASH'
-  const expected = cashDayTotals(day).balance
   const difference = informed - expected
-  // Na gaveta, centavos dentro da tolerância não pedem explicação; no banco,
+  const tolerance = isCash ? account.shortageTolerance : null
+  // Dentro da tolerância (se houver): aparece, mas não é lançada como quebra
+  const withinTolerance =
+    difference !== 0 && tolerance !== null && Math.abs(difference) <= tolerance
+  // Sem tolerância, toda diferença pede explicação e vira quebra; no banco,
   // o extrato tem de bater ou ser explicado
-  const needsNote = isCash
-    ? Math.abs(difference) > COUNT_TOLERANCE
-    : difference !== 0
+  const needsNote = difference !== 0 && !withinTolerance
 
   const save = async () => {
     setSaving(true)
@@ -407,6 +409,16 @@ export function CloseDayDialog({
     onOpenChange(false)
   }
 
+  const informedField = (
+    <MoneyInput
+      id="close-informed"
+      label={isCash ? 'Total contado na gaveta' : 'Saldo do extrato'}
+      value={informed}
+      onChange={setInformed}
+      autoFocus
+    />
+  )
+
   return (
     <Shell
       open={open}
@@ -414,17 +426,15 @@ export function CloseDayDialog({
       title={`Fechar ${account.name} · ${brDate(day.date)}`}
       description={
         isCash
-          ? 'Conte o dinheiro e informe o total. O valor esperado aparece só depois — vendo antes, a contagem tende a bater sempre.'
+          ? blind
+            ? 'Conte o dinheiro e informe o total. O valor esperado aparece só depois da contagem.'
+            : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'
           : 'Informe o saldo do extrato no fim do dia. Se não bater com o sistema, explique a diferença.'
       }
       wide
       footer={
         step === 'inform' ? (
-          <Button
-            type="button"
-            disabled={!informed && informed !== 0}
-            onClick={() => setStep('check')}
-          >
+          <Button type="button" onClick={() => setStep('check')}>
             Conferir
           </Button>
         ) : (
@@ -440,25 +450,21 @@ export function CloseDayDialog({
       }
     >
       {step === 'inform' ? (
-        <MoneyInput
-          id="close-informed"
-          label={isCash ? 'Total contado na gaveta' : 'Saldo do extrato'}
-          value={informed}
-          onChange={setInformed}
-          autoFocus
-        />
+        informedField
       ) : (
         <>
+          {!blind && informedField}
+          {/* Esperado, contado e diferença sempre lado a lado (4.1) */}
           <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray">O sistema esperava</span>
+              <span className="font-medium">{money(expected)}</span>
+            </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray">
                 {isCash ? 'Você contou' : 'Extrato'}
               </span>
               <span className="font-medium">{money(informed)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray">O sistema esperava</span>
-              <span className="font-medium">{money(expected)}</span>
             </div>
             <div className="flex justify-between border-t border-gray-200 pt-2">
               <span className="font-medium">
@@ -485,11 +491,10 @@ export function CloseDayDialog({
           {difference !== 0 && (
             <p className="text-sm text-gray">
               {isCash
-                ? 'A diferença vai para "Quebra de caixa", no nome de quem operou o caixa — não vira ajuste escondido.'
+                ? withinTolerance
+                  ? `Dentro da tolerância de ${money(tolerance!)}: a diferença fica registrada no fechamento, mas não é lançada como quebra.`
+                  : 'A diferença vai para "Quebra de caixa", no nome de quem operou o caixa — não vira ajuste escondido.'
                 : 'A diferença fica registrada no fechamento, com a explicação.'}
-              {isCash && !needsNote
-                ? ' Está dentro da tolerância, então não precisa explicar.'
-                : ''}
             </p>
           )}
           <div className="space-y-2">
@@ -502,14 +507,16 @@ export function CloseDayDialog({
               onChange={(event) => setNote(event.target.value)}
             />
           </div>
-          <Button
-            type="button"
-            variant="link"
-            className="px-0"
-            onClick={() => setStep('inform')}
-          >
-            {isCash ? 'Contar de novo' : 'Corrigir o saldo informado'}
-          </Button>
+          {blind && (
+            <Button
+              type="button"
+              variant="link"
+              className="px-0"
+              onClick={() => setStep('inform')}
+            >
+              Contar de novo
+            </Button>
+          )}
         </>
       )}
     </Shell>

@@ -7,12 +7,14 @@
 // só nas contas com controle ligado.
 
 // O tipo da conta decide como o dia se fecha (CX-3): a gaveta se conta, o
-// banco se concilia com o extrato
-export type AccountKind = 'CASH' | 'BANK'
+// banco se concilia com o extrato, e a operadora de cartão não fecha — o dia
+// mostra só o total que entrou, e a conferência acontece na liquidação (FC-10)
+export type AccountKind = 'CASH' | 'BANK' | 'CARD'
 
 export const accountKindLabel: Record<AccountKind, string> = {
   CASH: 'Caixa físico',
   BANK: 'Banco',
+  CARD: 'Operadora de cartão',
 }
 
 // Como a baixa acontece na conta: compensada na hora ou provisionada, para
@@ -50,6 +52,13 @@ export type BankAccount = {
   // Ligado, a conta segue as regras que exigem disciplina: abrir, contar,
   // fechar, justificar (CX-1, por conta)
   cashControl: boolean
+  // Só na conta Caixa com controle: o dia se fecha contando às cegas (o
+  // operador informa sem ver o esperado). Desligado é a conferência simples
+  blindCount: boolean
+  // Tolerância da quebra, em centavos. Nula por padrão: toda diferença vira
+  // quebra. Com tolerância, a diferença dentro dela aparece, mas não é
+  // lançada (4.1, 30/09/2026)
+  shortageTolerance: number | null
   isActive: boolean
   // Com histórico, "excluir" inativa (CX-2)
   hasHistory: boolean
@@ -99,6 +108,11 @@ export type Movement = {
   responsible: string
   // Transferência e estorno andam em par (CX-2)
   linkedId?: string
+  // O dinheiro que vem do fechamento da frente de caixa chega pendente: uma
+  // pessoa responsável pelo caixa principal confere e aprova (4.2). Fica o
+  // registro dos dois lados
+  awaitingApproval?: boolean
+  approvedBy?: string
 }
 
 export type CashDayStatus = 'OPEN' | 'CLOSED'
@@ -151,5 +165,18 @@ export const cashDayTotals = (day: CashDay) => {
   }
 }
 
-// Tolerância para a diferença da contagem, em centavos (FC-18, CX-3)
-export const COUNT_TOLERANCE = 50
+// A diferença da contagem no fechamento: o informado contra o que o sistema
+// esperava antes de lançar a quebra. Com tolerância, a quebra pode não ter
+// sido lançada, e a diferença continua visível (4.1)
+export const countDifference = (day: CashDay) => {
+  if (day.informed === undefined) return null
+  const quebra = day.movements
+    .filter((item) => item.kind === 'SHORTAGE' || item.kind === 'OVERAGE')
+    .reduce((sum, item) => sum + item.amount, 0)
+  return {
+    expected: cashDayTotals(day).balance - quebra,
+    difference: day.informed - (cashDayTotals(day).balance - quebra),
+    // Lançada como quebra, ou só registrada (dentro da tolerância)
+    posted: quebra !== 0,
+  }
+}
