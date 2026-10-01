@@ -694,6 +694,7 @@ export function PDV() {
         {session && (
           <CloseCashDialog
             session={session}
+            billed={noFluxo}
             open={dialog === 'fechar'}
             onDone={() => {
               refresh()

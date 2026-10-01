@@ -412,11 +412,30 @@ export const closeCashSession = async (countedCash: number, keep = 0) => {
     },
   ].filter((transfer) => transfer.amount > 0)
 
+  // As vendas do dia que foram para o fluxo financeiro são registro deste
+  // caixa: saem com o fechamento e ficam no relatório do dia, separadas do
+  // que passou pelo caixa (3.2). Amanhã a frente de caixa abre limpa
+  const billed = sales.filter((sale) => !sale.goesToCash)
+  sales = sales.filter((sale) => sale.goesToCash)
+
   session.status = 'CLOSED'
 
   return {
     success: true,
-    data: { countedCash, expected, difference, posted, keep, transfers },
+    data: {
+      countedCash,
+      expected,
+      difference,
+      posted,
+      keep,
+      transfers,
+      billed: billed.map((sale) => ({
+        reference: sale.reference,
+        client: sale.client,
+        total: sale.total,
+        billing: sale.billing || 'Faturamento mensal',
+      })),
+    },
     message: '',
   }
 }

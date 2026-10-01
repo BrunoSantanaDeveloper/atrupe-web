@@ -296,6 +296,9 @@ const methods: PaymentMethod[] = ['PIX', 'CARD']
 
 interface CloseProps extends BaseProps {
   session: CashSession
+  // As vendas do dia que foram para o fluxo financeiro: aparecem no
+  // fechamento como registro, fora da soma do caixa (3.2)
+  billed?: PendingSale[]
 }
 
 // Fechar é contar o dinheiro e comparar com o esperado (FC-7). É aqui, e só
@@ -306,6 +309,7 @@ interface CloseProps extends BaseProps {
 export function CloseCashDialog({
   open,
   session,
+  billed = [],
   onDone,
   onOpenChange,
 }: CloseProps) {
@@ -468,6 +472,33 @@ export function CloseCashDialog({
                   </p>
                 )}
               </div>
+
+              {/* Registro do dia, fora do caixa: saem com o fechamento e
+                  ficam no relatório do dia (3.2) */}
+              {billed.length > 0 && (
+                <div className="space-y-1.5 text-sm">
+                  <p className="font-medium">
+                    Vendas do dia que foram para o fluxo financeiro
+                  </p>
+                  {billed.map((sale) => (
+                    <p
+                      key={sale.id}
+                      className="flex justify-between gap-4 text-gray"
+                    >
+                      <span>
+                        {sale.reference} · {sale.client} ·{' '}
+                        {sale.billing || 'Faturamento mensal'}
+                      </span>
+                      <span>{money(sale.total)}</span>
+                    </p>
+                  ))}
+                  <p className="text-xs text-gray">
+                    Não entram no caixa nem na conferência: já estão no fluxo
+                    financeiro como títulos a receber. Saem daqui com o
+                    fechamento e ficam no relatório do dia.
+                  </p>
+                </div>
+              )}
 
               {/* Para onde o dinheiro vai (4.2): um movimento por forma */}
               {transfers.length > 0 && (
