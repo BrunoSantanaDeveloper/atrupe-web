@@ -25,10 +25,12 @@ import {
   totalByMethod,
   type CashSession,
   type PaymentMethod,
+  type AwaitingPickup,
 } from '../types'
 
 // Actions
 import {
+  discardPickup,
   openCashSession,
   addCashMovement,
   closeCashSession,
@@ -239,6 +241,11 @@ interface CloseProps extends BaseProps {
   session: CashSession
 }
 
+// Fechar é contar o dinheiro e comparar com o esperado (FC-7). É aqui, e só
+// aqui, que os valores do caixa aparecem (4.2): o que entrou por forma, o
+// dinheiro esperado, o contado e a diferença, sempre lado a lado. O
+// fechamento transfere para as contas do caixa principal, um movimento por
+// forma; o dinheiro pode ficar em parte na gaveta, como troco de amanhã
 export function CloseCashDialog({
   open,
   session,
@@ -247,7 +254,9 @@ export function CloseCashDialog({
 }: CloseProps) {
   const expected = cashOnHand(session)
   const blind = session.blindCount
+  const tolerance = session.shortageTolerance
   const [counted, setCounted] = useState(0)
+  const [keep, setKeep] = useState(0)
   // Na contagem às cegas o operador digita o que contou e só então vê o que o
   // sistema esperava. Na conferência simples (padrão) o esperado já aparece e
   // o operador confirma ou corrige o valor contado (FC-7)
@@ -258,14 +267,31 @@ export function CloseCashDialog({
     if (!open) return
 
     setCounted(blind ? 0 : expected)
+    setKeep(0)
     setRevealed(!blind)
   }, [open, blind, expected])
 
   const difference = counted - expected
+  // Dentro da tolerância (se houver), a diferença aparece, mas não é lançada
+  const withinTolerance =
+    difference !== 0 && tolerance !== null && Math.abs(difference) <= tolerance
+  const transfers = [
+    {
+      method: 'CASH' as const,
+      amount: Math.max(0, counted - keep),
+      note: keep > 0 ? `ficam ${money(keep)} na gaveta` : '',
+    },
+    { method: 'PIX' as const, amount: totalByMethod(session, 'PIX'), note: '' },
+    {
+      method: 'CARD' as const,
+      amount: totalByMethod(session, 'CARD'),
+      note: '',
+    },
+  ].filter((transfer) => transfer.amount > 0)
 
   const save = async () => {
     setSaving(true)
-    const res = await closeCashSession(counted)
+    const res = await closeCashSession(counted, keep)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -276,9 +302,9 @@ export function CloseCashDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Fechar o caixa</DialogTitle>
+          <DialogTitle>Fechar o caixa nº {session.number}</DialogTitle>
           <DialogDescription>
             {blind
               ? 'Conte o dinheiro da gaveta e informe o total. O valor esperado só aparece depois.'
@@ -293,7 +319,7 @@ export function CloseCashDialog({
             {methods.map((method) => (
               <div
                 key={method}
-                className="flex justify-between text-sm text-gray"
+                className="flex justify-between gap-4 text-sm text-gray"
               >
                 <span>
                   {paymentMethodLabel[method]} ·{' '}
@@ -304,9 +330,9 @@ export function CloseCashDialog({
                 </span>
               </div>
             ))}
-            <div className="flex justify-between text-sm text-gray">
+            <div className="flex justify-between gap-4 text-sm text-gray">
               <span>
-                Dinheiro · {paymentMethodDestination.CASH} (abertura{' '}
+                Dinheiro esperado na gaveta (abertura{' '}
                 {money(session.openingBalance)})
               </span>
               <span className="font-medium text-gray-700">
@@ -315,16 +341,24 @@ export function CloseCashDialog({
             </div>
           </div>
 
-          <MoneyInput
-            autoFocus
-            id="counted"
-            label="Dinheiro contado na gaveta"
-            value={counted}
-            onChange={(cents) => {
-              setCounted(cents)
-              if (blind) setRevealed(false)
-            }}
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <MoneyInput
+              autoFocus
+              id="counted"
+              label="Dinheiro contado na gaveta"
+              value={counted}
+              onChange={(cents) => {
+                setCounted(cents)
+                if (blind) setRevealed(false)
+              }}
+            />
+            <MoneyInput
+              id="keep"
+              label="Fica na gaveta para amanhã"
+              value={keep}
+              onChange={setKeep}
+            />
+          </div>
 
           {!revealed ? (
             <Button
@@ -337,44 +371,72 @@ export function CloseCashDialog({
               Conferir com o esperado
             </Button>
           ) : (
-            // Esperado, contado e diferença sempre lado a lado: nenhuma
-            // diferença fica escondida (FC-7)
-            <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray">Esperado em dinheiro</span>
-                <span className="font-medium">{money(expected)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray">Contado</span>
-                <span className="font-medium">{money(counted)}</span>
-              </div>
-              <div className="flex justify-between border-t border-gray-200 pt-3">
-                <span className="font-medium">
-                  {difference === 0
-                    ? 'Sem diferença'
-                    : difference > 0
-                      ? 'Sobra'
-                      : 'Falta'}
-                </span>
-                <span
-                  className={
-                    difference === 0
-                      ? 'font-semibold text-gray-900'
+            <>
+              {/* Esperado, contado e diferença sempre lado a lado: nenhuma
+                  diferença fica escondida (FC-7) */}
+              <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray">Esperado em dinheiro</span>
+                  <span className="font-medium">{money(expected)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray">Contado</span>
+                  <span className="font-medium">{money(counted)}</span>
+                </div>
+                <div className="flex justify-between border-t border-gray-200 pt-3">
+                  <span className="font-medium">
+                    {difference === 0
+                      ? 'Sem diferença'
                       : difference > 0
-                        ? 'font-semibold text-success-600'
-                        : 'font-semibold text-error-600'
-                  }
-                >
-                  {money(Math.abs(difference))}
-                </span>
+                        ? 'Sobra'
+                        : 'Falta'}
+                  </span>
+                  <span
+                    className={
+                      difference === 0
+                        ? 'font-semibold text-gray-900'
+                        : difference > 0
+                          ? 'font-semibold text-success-600'
+                          : 'font-semibold text-error-600'
+                    }
+                  >
+                    {money(Math.abs(difference))}
+                  </span>
+                </div>
+                {difference !== 0 && (
+                  <p className="text-sm text-gray">
+                    {withinTolerance
+                      ? `Dentro da tolerância de ${money(tolerance!)}: fica registrada, mas não é lançada como quebra.`
+                      : 'A diferença vai para Quebra de caixa, no nome de quem operou o caixa.'}
+                  </p>
+                )}
               </div>
-              {difference !== 0 && (
-                <p className="text-sm text-gray">
-                  A diferença vai para Quebra de caixa, no nome de quem operou o
-                  caixa.
-                </p>
+
+              {/* Para onde o dinheiro vai (4.2): um movimento por forma */}
+              {transfers.length > 0 && (
+                <div className="space-y-1.5 text-sm">
+                  <p className="font-medium">
+                    O fechamento lança nas contas do caixa principal
+                  </p>
+                  {transfers.map((transfer) => (
+                    <p
+                      key={transfer.method}
+                      className="flex justify-between gap-4 text-gray"
+                    >
+                      <span>
+                        Fechamento FC nº {session.number} ·{' '}
+                        {paymentMethodLabel[transfer.method].toLowerCase()} →{' '}
+                        {paymentMethodDestination[transfer.method]}
+                        {transfer.note ? ` (${transfer.note})` : ''}
+                      </span>
+                      <span className="font-medium text-gray-700">
+                        {money(transfer.amount)}
+                      </span>
+                    </p>
+                  ))}
+                </div>
               )}
-            </div>
+            </>
           )}
         </DialogBody>
         <DialogFooter>
@@ -388,10 +450,97 @@ export function CloseCashDialog({
           <Button
             type="button"
             isLoading={saving}
-            disabled={!revealed}
+            disabled={!revealed || keep > counted}
             onClick={save}
           >
             Fechar caixa
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Descartar o trabalho não retirado (FC-19): encerra a venda e lança como
+ * perda o que não foi pago, com o sinal abatendo. Pede justificativa
+ * ------------------------------------------------------------------------- */
+
+export function DiscardPickupDialog({
+  pickup,
+  onDone,
+  onOpenChange,
+}: {
+  pickup?: AwaitingPickup
+  onDone: () => void
+  onOpenChange: (open: boolean) => void
+}) {
+  const [reason, setReason] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    if (pickup) setReason('')
+  }, [pickup])
+
+  const save = async () => {
+    if (!pickup) return
+    setSaving(true)
+    const res = await discardPickup(pickup.id, reason)
+    setSaving(false)
+
+    if (!res.success) return toast.error(res.message)
+
+    toast.success(
+      `Trabalho descartado · perda de ${money(res.data?.loss || 0)} registrada`,
+    )
+    onDone()
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={!!pickup} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Descartar {pickup?.reference}?</DialogTitle>
+          <DialogDescription>
+            {pickup?.client} · aguardando há {pickup?.daysWaiting}{' '}
+            {pickup?.daysWaiting === 1 ? 'dia' : 'dias'}. A venda é encerrada e
+            o que não foi pago, {money(pickup?.remaining || 0)}, é lançado como
+            perda. O sinal já recebido fica, abatendo a perda.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogBody className="space-y-2">
+          <label htmlFor="discard-reason" className="text-sm font-medium">
+            Justificativa
+          </label>
+          <Textarea
+            id="discard-reason"
+            rows={3}
+            autoFocus
+            value={reason}
+            placeholder="Ex.: cliente não respondeu às ligações desde agosto"
+            onChange={(event) => setReason(event.target.value)}
+          />
+          <p className="text-sm text-gray">
+            Fica registrado quem descartou, quando e por quê.
+          </p>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            variant="error"
+            isLoading={saving}
+            disabled={!reason.trim()}
+            onClick={save}
+          >
+            Descartar e lançar perda
           </Button>
         </DialogFooter>
       </DialogContent>

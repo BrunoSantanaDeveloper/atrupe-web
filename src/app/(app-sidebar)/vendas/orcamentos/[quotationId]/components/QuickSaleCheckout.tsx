@@ -36,6 +36,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import {
+  RoundingOption,
   usePaymentSplit,
   PaymentSplitFields,
   PaymentSplitSummary,
@@ -189,7 +190,11 @@ function ChargeNowDialog({
 
   const save = async () => {
     setSaving(true)
-    const res = await chargeQuickSaleNow(sale.origin, split.parts())
+    const res = await chargeQuickSaleNow(
+      sale.origin,
+      split.parts(),
+      split.discount,
+    )
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -215,6 +220,8 @@ function ChargeNowDialog({
         </DialogHeader>
         <DialogBody className="space-y-4">
           <PaymentSplitFields split={split} methods={methods} />
+          {/* Arredondamento no balcão (FC-18), o mesmo do caixa */}
+          <RoundingOption split={split} />
           <PaymentSplitSummary split={split} />
         </DialogBody>
         <DialogFooter>

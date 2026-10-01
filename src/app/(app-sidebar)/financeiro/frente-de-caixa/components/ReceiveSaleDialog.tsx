@@ -18,6 +18,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 // Components
 import {
+  RoundingOption,
   usePaymentSplit,
   PaymentSplitFields,
   PaymentSplitSummary,
@@ -43,11 +44,18 @@ const money = (value: number) => formatCurrencyToBrl(value)
 
 interface Props {
   sale?: PendingSale
+  // Limite do arredondamento no balcão, do cadastro da frente de caixa
+  roundingLimit?: number
   onDone: () => void
   onOpenChange: (open: boolean) => void
 }
 
-export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
+export function ReceiveSaleDialog({
+  sale,
+  roundingLimit,
+  onDone,
+  onOpenChange,
+}: Props) {
   const [deliver, setDeliver] = useState(true)
   const [waived, setWaived] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -60,8 +68,8 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
   const settings = settingsRes?.data
 
   const remaining = sale ? saleRemaining(sale) : 0
-  const split = usePaymentSplit(remaining)
-  const { reset, received, missing } = split
+  const split = usePaymentSplit(remaining, roundingLimit)
+  const { reset, received, missing, discount } = split
 
   useEffect(() => {
     if (!sale) return
@@ -91,7 +99,7 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
     if (!sale || blocked) return
 
     setSaving(true)
-    const res = await receiveSale(sale.id, split.parts(), deliver)
+    const res = await receiveSale(sale.id, split.parts(), deliver, discount)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -115,6 +123,7 @@ export function ReceiveSaleDialog({ sale, onDone, onOpenChange }: Props) {
         </DialogHeader>
         <DialogBody className="space-y-4">
           <PaymentSplitFields split={split} />
+          <RoundingOption split={split} />
           <PaymentSplitSummary split={split} />
 
           {/* No balcão receber e entregar são o mesmo gesto — menos no sinal,

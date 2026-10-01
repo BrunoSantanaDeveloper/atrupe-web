@@ -12,13 +12,14 @@ export const paymentMethodLabel: Record<PaymentMethod, string> = {
   CARD: 'Cartão',
 }
 
-// Para onde o dinheiro vai no fechamento (FC-3): dinheiro entra no caixa
-// principal; cartão e PIX viram previsão de recebimento no caixa principal,
-// pelo valor cheio, e a baixa acontece quando o dinheiro cai (FC-10)
+// Para onde o dinheiro vai no fechamento (FC-3, CX-4): um movimento por forma
+// de pagamento, cada um na conta que aceita aquela forma. O dinheiro chega à
+// conta Caixa pendente de aprovação; o cartão vai à operadora pelo valor
+// cheio, e a taxa só aparece na liquidação (FC-10)
 export const paymentMethodDestination: Record<PaymentMethod, string> = {
-  CASH: 'Caixa Empresa',
-  PIX: 'Previsão no caixa principal',
-  CARD: 'Previsão no caixa principal · taxa na baixa',
+  CASH: 'Caixa (gaveta) · pendente de aprovação',
+  PIX: 'banco da conta padrão do PIX',
+  CARD: 'operadora de cartão · valor cheio',
 }
 
 // Uma parte do recebimento. O pagamento misto (FC-9) é simplesmente mais de
@@ -49,6 +50,8 @@ export type CashMovement = {
   // Sangria, suprimento e estorno registram motivo e responsável (FC-8, FC-13)
   reason?: string
   responsible?: string
+  // Arredondamento no balcão (FC-18), registrado como desconto na venda
+  discount?: number
   parts: PaymentPart[]
 }
 
@@ -109,6 +112,9 @@ export type AwaitingPickup = {
 
 export type CashSession = {
   id: string
+  // Número do caixa, para o nome dos movimentos do fechamento ("Fechamento FC
+  // nº 12 · dinheiro")
+  number: number
   name: string
   operator: string
   openedAt: string
@@ -117,6 +123,13 @@ export type CashSession = {
   // Modo de conferência do fechamento, do cadastro da frente de caixa (FC-7):
   // conferência simples (padrão) ou contagem às cegas
   blindCount: boolean
+  // Tolerância da quebra, em centavos. Nula por padrão: toda diferença é
+  // lançada como quebra. Com tolerância, a diferença dentro dela continua
+  // aparecendo, mas não é lançada (FC-7, 30/09/2026)
+  shortageTolerance: number | null
+  // Limite do arredondamento no balcão, em centavos (FC-18): até ele, a
+  // diferença vira desconto na venda, não quebra de caixa. Padrão R$ 1,00
+  roundingLimit: number
   movements: CashMovement[]
 }
 
@@ -144,3 +157,6 @@ export const sessionTotal = (session: CashSession) =>
 
 export const saleRemaining = (sale: PendingSale) =>
   Math.max(0, sale.total - sale.paid)
+
+// Limite padrão do arredondamento no balcão (FC-18): R$ 1,00
+export const DEFAULT_ROUNDING_LIMIT = 100

@@ -6,9 +6,13 @@ import { useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 
+// UI
+import { Checkbox } from '@/components/ui/checkbox'
+
 // Types
 import {
   paymentMethodLabel,
+  DEFAULT_ROUNDING_LIMIT,
   type PaymentPart,
   type PaymentMethod,
 } from '../types'
@@ -23,12 +27,18 @@ export const allPaymentMethods: PaymentMethod[] = ['CASH', 'PIX', 'CARD']
 
 // A conta do recebimento, usada pelo caixa (receber a venda) e pelo vendedor
 // (cobrar a venda rápida na hora). Uma só, para as duas telas não divergirem.
-export function usePaymentSplit(remaining: number) {
+export function usePaymentSplit(
+  remaining: number,
+  // Limite do arredondamento no balcão (FC-18), em centavos. Até ele, o que
+  // faltou vira desconto na venda registrado na hora, não quebra de caixa
+  roundingLimit = DEFAULT_ROUNDING_LIMIT,
+) {
   const [amounts, setAmounts] = useState<Record<PaymentMethod, number>>({
     CASH: remaining,
     PIX: 0,
     CARD: 0,
   })
+  const [rounding, setRounding] = useState(false)
 
   const received = allPaymentMethods.reduce(
     (total, method) => total + amounts[method],
@@ -38,7 +48,11 @@ export function usePaymentSplit(remaining: number) {
   // No balcão, o cliente entrega uma nota maior: o troco é a diferença entre
   // o que ele deu e o que faltava
   const change = Math.max(0, received - remaining)
-  const missing = Math.max(0, remaining - received)
+  const rawMissing = Math.max(0, remaining - received)
+  // Falta pouco: dá para arredondar e registrar a diferença como desconto
+  const canRound = rawMissing > 0 && rawMissing <= roundingLimit
+  const discount = canRound && rounding ? rawMissing : 0
+  const missing = rawMissing - discount
 
   // O troco sai do dinheiro: o que entra no caixa é o valor da venda
   const parts = (): PaymentPart[] =>
@@ -54,8 +68,10 @@ export function usePaymentSplit(remaining: number) {
 
   // O caso comum é receber tudo em dinheiro: já vem preenchido, e quem divide
   // o pagamento muda daí
-  const reset = (value: number, method: PaymentMethod = 'CASH') =>
+  const reset = (value: number, method: PaymentMethod = 'CASH') => {
     setAmounts({ CASH: 0, PIX: 0, CARD: 0, [method]: value })
+    setRounding(false)
+  }
 
   const setAmount = (method: PaymentMethod, value: number) =>
     setAmounts((current) => ({ ...current, [method]: value }))
@@ -68,6 +84,11 @@ export function usePaymentSplit(remaining: number) {
     change,
     missing,
     parts,
+    roundingLimit,
+    canRound,
+    rounding,
+    setRounding,
+    discount,
   }
 }
 
@@ -116,8 +137,37 @@ export function PaymentSplitFields({
   )
 }
 
+// Arredondamento no balcão (FC-18): registrado na hora como desconto na
+// venda, até o limite do cadastro. Acima dele vale o limite de desconto do
+// perfil do vendedor, como no orçamento
+export function RoundingOption({ split }: { split: Split }) {
+  const { canRound, rounding, setRounding, roundingLimit, missing, discount } =
+    split
+  if (!canRound) return null
+  const value = rounding ? discount : missing
+
+  return (
+    <label className="flex items-start gap-3 rounded-lg border border-gray-200 p-4">
+      <Checkbox
+        checked={rounding}
+        onCheckedChange={(checked) => setRounding(!!checked)}
+        aria-label="Arredondar"
+      />
+      <span>
+        <span className="text-sm font-medium">
+          Arredondar: desconto de {money(value)} na venda
+        </span>
+        <span className="mt-0.5 block text-sm text-gray">
+          Registrado na hora como desconto, até {money(roundingLimit)}. Não vira
+          diferença de caixa.
+        </span>
+      </span>
+    </label>
+  )
+}
+
 export function PaymentSplitSummary({ split }: { split: Split }) {
-  const { received, missing, change } = split
+  const { received, missing, change, discount } = split
 
   return (
     <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
@@ -125,6 +175,12 @@ export function PaymentSplitSummary({ split }: { split: Split }) {
         <span className="text-gray">Recebido</span>
         <span className="font-medium">{money(received)}</span>
       </div>
+      {discount > 0 && (
+        <div className="flex justify-between text-sm">
+          <span className="text-gray">Desconto de arredondamento</span>
+          <span className="font-medium">− {money(discount)}</span>
+        </div>
+      )}
       <div className="flex justify-between border-t border-gray-200 pt-2">
         <span className="font-medium">
           {missing > 0 ? 'Ainda falta' : 'Troco'}

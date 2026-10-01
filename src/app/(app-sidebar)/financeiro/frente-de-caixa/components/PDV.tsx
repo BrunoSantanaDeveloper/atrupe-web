@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Card, CardFooter } from '@/components/ui/card'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -29,8 +29,9 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import {
   OpenCashDialog,
-  CashMovementDialog,
   CloseCashDialog,
+  CashMovementDialog,
+  DiscardPickupDialog,
 } from './CashDialogs'
 import { ReceiveSaleDialog } from './ReceiveSaleDialog'
 import { BillingDialog } from './BillingDialog'
@@ -41,6 +42,7 @@ import {
   cashMovementLabel,
   paymentMethodLabel,
   type PendingSale,
+  type AwaitingPickup,
 } from '../types'
 
 // Actions
@@ -57,6 +59,7 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 // previsto; para cima, com parte recebida), o ciclo é mudar as parcelas
 import {
   IconTrash,
+  IconTrashX,
   IconThumbUp,
   IconUserCheck,
   IconThumbDown,
@@ -96,10 +99,9 @@ export function PDV() {
   const aba: Aba = abas.includes(params.get('aba') as Aba)
     ? (params.get('aba') as Aba)
     : 'receber'
-  const setAba = (value: Aba) =>
-    updateFilterParam('aba', value, { router, params })
   const [receiving, setReceiving] = useState<PendingSale>()
   const [billingSale, setBillingSale] = useState<PendingSale>()
+  const [discarding, setDiscarding] = useState<AwaitingPickup>()
   const { data: authSession } = useSession()
   // Reverter para faturamento é restrito (FC-15); por enquanto, o
   // administrador
@@ -181,8 +183,35 @@ export function PDV() {
           title="Frente de caixa"
           supportText={
             session
-              ? `${session.name} · ${session.operator} · aberto às ${hora(session.openedAt)}`
+              ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
               : 'Nenhum caixa aberto'
+          }
+          // As abas ficam na URL (design.md §5.1), com a contagem de cada uma
+          paramName="aba"
+          activeTab={session ? aba : undefined}
+          tabs={
+            session
+              ? [
+                  {
+                    value: 'receber',
+                    tab: 'receber',
+                    label: 'A receber',
+                    count: noCaixa.length,
+                  },
+                  {
+                    value: 'caixa',
+                    tab: 'caixa',
+                    label: 'Movimento do caixa',
+                    count: session.movements.length,
+                  },
+                  {
+                    value: 'retirada',
+                    tab: 'retirada',
+                    label: 'Aguardando retirada',
+                    count: pickups.length,
+                  },
+                ]
+              : undefined
           }
           primaryCta={
             isOpen ? (
@@ -204,65 +233,11 @@ export function PDV() {
             )
           }
           secondaryCta={
-            isOpen ? (
-              <PermissionGate permissions={['financial:pdv:edit']}>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() => setDialog('suprimento')}
-                  >
-                    Suprimento
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="neutralOutline"
-                    onClick={() => setDialog('sangria')}
-                  >
-                    Sangria
-                  </Button>
-                </div>
-              </PermissionGate>
-            ) : undefined
-          }
-        />
-
-        {!session ? (
-          <Card>
-            <ListDataTotalEmpty
-              icon={IconDeviceImacCancel}
-              title="Nenhum caixa aberto"
-              description="Abra o caixa para começar a receber. O saldo inicial é o troco que já está na gaveta."
-            />
-          </Card>
-        ) : (
-          <>
-            {/* Os valores do caixa não ficam na tela principal, à vista de
-                quem passa pelo balcão: aparecem só no fechamento */}
-            <Card>
-              <CardContent className="flex flex-wrap items-center gap-2 px-6 py-4">
-                {(
-                  [
-                    ['receber', `A receber (${noCaixa.length})`],
-                    [
-                      'caixa',
-                      `Movimento do caixa (${session.movements.length})`,
-                    ],
-                    ['retirada', `Aguardando retirada (${pickups.length})`],
-                  ] as const
-                ).map(([value, label]) => (
-                  <Button
-                    key={value}
-                    type="button"
-                    variant={aba === value ? 'default' : 'neutralOutline'}
-                    onClick={() => setAba(value)}
-                  >
-                    {label}
-                  </Button>
-                ))}
+            session ? (
+              <div className="flex items-center gap-2">
+                {/* Ordem da fila, com o mesmo botão do Fluxo financeiro */}
                 {aba === 'receber' && (
                   <ActionButton
-                    className="ml-auto"
                     size="iconMd"
                     variant="neutralOutline"
                     tooltip={
@@ -282,9 +257,41 @@ export function PDV() {
                     }
                   />
                 )}
-              </CardContent>
-            </Card>
+                {isOpen && (
+                  <PermissionGate permissions={['financial:pdv:edit']}>
+                    <Button
+                      type="button"
+                      variant="neutralOutline"
+                      onClick={() => setDialog('suprimento')}
+                    >
+                      Suprimento
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="neutralOutline"
+                      onClick={() => setDialog('sangria')}
+                    >
+                      Sangria
+                    </Button>
+                  </PermissionGate>
+                )}
+              </div>
+            ) : undefined
+          }
+        />
 
+        {!session ? (
+          <Card>
+            <ListDataTotalEmpty
+              icon={IconDeviceImacCancel}
+              title="Nenhum caixa aberto"
+              description="Abra o caixa para começar a receber. O saldo inicial é o troco que já está na gaveta."
+            />
+          </Card>
+        ) : (
+          <>
+            {/* Os valores do caixa não ficam na tela principal, à vista de
+                quem passa pelo balcão: aparecem só no fechamento */}
             {aba === 'receber' && (
               <Card>
                 <Table>
@@ -473,6 +480,9 @@ export function PDV() {
                             {movement.responsible
                               ? ` · ${movement.responsible}`
                               : ''}
+                            {movement.discount
+                              ? ` · arredondamento de ${money(movement.discount)} como desconto`
+                              : ''}
                           </p>
                         </TableCell>
                         <TableCell className="text-sm text-gray">
@@ -506,10 +516,9 @@ export function PDV() {
                 </Table>
                 <CardFooter>
                   <p className="max-w-xl text-sm text-gray">
-                    O cartão entra pelo <strong>valor cheio</strong>. A taxa
-                    aparece na previsão do caixa principal, com o líquido entre
-                    parênteses, e é confirmada na baixa. O total do caixa
-                    aparece no fechamento.
+                    O cartão entra pelo <strong>valor cheio</strong>; no
+                    fechamento vai para a operadora, e a taxa só aparece na
+                    liquidação. Os totais do caixa aparecem no fechamento.
                   </p>
                 </CardFooter>
               </Card>
@@ -526,6 +535,7 @@ export function PDV() {
                       <TableHead className="text-right">
                         Falta receber
                       </TableHead>
+                      <TableHead />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -538,10 +548,10 @@ export function PDV() {
                             </p>
                             <p className="text-sm text-gray">{pickup.client}</p>
                           </TableCell>
-                          <TableCell className="text-sm text-gray">
+                          <TableCell className="whitespace-nowrap text-sm text-gray">
                             {pickup.phone}
                           </TableCell>
-                          <TableCell className="text-sm text-gray-700">
+                          <TableCell className="whitespace-nowrap text-sm text-gray-700">
                             {pickup.daysWaiting === 1
                               ? '1 dia'
                               : `${pickup.daysWaiting} dias`}
@@ -549,16 +559,39 @@ export function PDV() {
                           <TableCell className="text-right font-medium">
                             {money(pickup.remaining)}
                           </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end">
+                              {/* A baixa é "Descartar", quando a empresa
+                                  decidir (FC-19): restrita, com justificativa */}
+                              <PermissionGate
+                                permissions={['financial:pdv:delete']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrashX}
+                                  variant="errorGhost"
+                                  tooltip="Descartar e lançar perda"
+                                  onClick={() => setDiscarding(pickup)}
+                                />
+                              </PermissionGate>
+                            </div>
+                          </TableCell>
                         </TableRow>
                       )
                     })}
                   </TableBody>
                 </Table>
+                {pickups.length === 0 && (
+                  <ListDataTotalEmpty
+                    icon={IconPackageExport}
+                    title="Nada aguardando retirada"
+                    description="O trabalho concluído e não entregue aparece aqui, com há quantos dias espera"
+                  />
+                )}
                 <CardFooter>
                   <p className="text-sm text-gray">
                     Esta lista responde <strong>para quem ligar</strong>. Não há
-                    prazo no sistema: cada empresa decide quando dar baixa, e o
-                    que não foi pago é lançado como perda.
+                    prazo no sistema: cada empresa decide quando descartar, e o
+                    que não foi pago é lançado como perda, com o sinal abatendo.
                   </p>
                 </CardFooter>
               </Card>
@@ -568,8 +601,14 @@ export function PDV() {
 
         <ReceiveSaleDialog
           sale={receiving}
+          roundingLimit={session?.roundingLimit}
           onDone={refresh}
           onOpenChange={(open) => !open && setReceiving(undefined)}
+        />
+        <DiscardPickupDialog
+          pickup={discarding}
+          onDone={refresh}
+          onOpenChange={(open) => !open && setDiscarding(undefined)}
         />
         <BillingDialog
           sale={billingSale}

@@ -17,14 +17,24 @@ import type {
 const hoje = (hora: string) =>
   `${new Date().toISOString().slice(0, 10)}T${hora}`
 
+// O cadastro da frente de caixa (3.1): modo de conferência, tolerância da
+// quebra e limite do arredondamento. Padrões do documento: conferência
+// simples, sem tolerância, R$ 1,00 de arredondamento
+const register = {
+  blindCount: false,
+  shortageTolerance: null as number | null,
+  roundingLimit: 100,
+}
+
 let session: CashSession | null = {
   id: 'c1',
+  number: 13,
   name: 'Caixa 1',
   operator: 'Renata Alves',
   openedAt: hoje('08:12:00'),
   openingBalance: 20000,
   status: 'OPEN',
-  blindCount: false,
+  ...register,
   movements: [
     {
       id: 'm1',
@@ -152,12 +162,13 @@ export const getCashFront = async () => ({
 export const openCashSession = async (openingBalance: number) => {
   session = {
     id: `c${Date.now()}`,
+    number: (session?.number ?? 12) + 1,
     name: 'Caixa 1',
     operator: 'Renata Alves',
     openedAt: new Date().toISOString(),
     openingBalance,
     status: 'OPEN',
-    blindCount: false,
+    ...register,
     movements: [],
   }
 
@@ -211,6 +222,9 @@ export const receiveSale = async (
   saleId: string,
   parts: PaymentPart[],
   deliver: boolean,
+  // Arredondamento no balcão (FC-18): até o limite do cadastro, a diferença
+  // vira desconto na venda, registrado na hora, e não quebra de caixa
+  discount = 0,
 ) => {
   const sale = sales.find((item) => item.id === saleId)
 
@@ -239,9 +253,21 @@ export const receiveSale = async (
 
   const amount = parts.reduce((total, part) => total + part.amount, 0)
 
+  if (discount > 0) {
+    if (discount > session.roundingLimit) {
+      return {
+        success: false,
+        data: null,
+        message: `O arredondamento no balcão vai até ${(session.roundingLimit / 100).toFixed(2).replace('.', ',')}. Acima disso, vale o limite de desconto do perfil do vendedor`,
+      }
+    }
+    sale.total -= discount
+  }
+
   push({
     kind: 'SALE',
     description: `${sale.reference} · ${sale.client}`,
+    discount: discount || undefined,
     parts,
   })
 
@@ -295,16 +321,106 @@ export const reverseSale = async (saleId: string, reason: string) => {
   return { success: true, data: null, message: '' }
 }
 
-// Fechamento com conferência às cegas (FC-7): o operador informa o que contou
-// e só então vê o esperado, e a diferença fica registrada
-export const closeCashSession = async (countedCash: number) => {
+// Fechamento (FC-7, 4.2): a diferença entre o esperado e o contado vai para
+// "Quebra de caixa" no nome de quem operava, salvo dentro da tolerância, se
+// houver. O dinheiro contado, menos o que fica na gaveta para amanhã, vai
+// para a conta Caixa pendente de aprovação; PIX para o banco; cartão para a
+// operadora, pelo valor cheio — um movimento por forma, não por venda
+export const closeCashSession = async (countedCash: number, keep = 0) => {
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
   }
+  if (keep < 0 || keep > countedCash) {
+    return {
+      success: false,
+      data: null,
+      message: 'O valor que fica na gaveta não pode passar do contado',
+    }
+  }
+
+  const movements = session.movements
+  const expected = movements.reduce(
+    (total, movement) =>
+      total +
+      movement.parts
+        .filter((part) => part.method === 'CASH')
+        .reduce((sum, part) => sum + part.amount, 0) *
+        (movement.kind === 'WITHDRAWAL' || movement.kind === 'REVERSAL'
+          ? -1
+          : 1),
+    session.openingBalance,
+  )
+  const difference = countedCash - expected
+  const tolerance = session.shortageTolerance
+  const posted =
+    difference !== 0 && (tolerance === null || Math.abs(difference) > tolerance)
+
+  const byMethod = (method: 'PIX' | 'CARD') =>
+    movements
+      .filter((movement) => movement.kind !== 'WITHDRAWAL')
+      .reduce(
+        (total, movement) =>
+          total +
+          movement.parts
+            .filter((part) => part.method === method)
+            .reduce((sum, part) => sum + part.amount, 0) *
+            (movement.kind === 'REVERSAL' ? -1 : 1),
+        0,
+      )
+
+  const transfers = [
+    {
+      method: 'CASH' as const,
+      amount: countedCash - keep,
+      destination: 'Caixa Empresa',
+      pending: true,
+    },
+    {
+      method: 'PIX' as const,
+      amount: byMethod('PIX'),
+      destination: 'Bradesco',
+    },
+    {
+      method: 'CARD' as const,
+      amount: byMethod('CARD'),
+      destination: 'Rede (cartões)',
+    },
+  ].filter((transfer) => transfer.amount > 0)
 
   session.status = 'CLOSED'
 
-  return { success: true, data: { countedCash }, message: '' }
+  return {
+    success: true,
+    data: { countedCash, expected, difference, posted, keep, transfers },
+    message: '',
+  }
+}
+
+// Dar baixa no trabalho não retirado (FC-19): "Descartar" encerra a venda e
+// lança como perda o que não foi pago, com o sinal recebido abatendo. Pede
+// justificativa e fica registrado (quem e quando)
+export const discardPickup = async (pickupId: string, reason: string) => {
+  const index = pickups.findIndex((item) => item.id === pickupId)
+  if (index < 0) {
+    return { success: false, data: null, message: 'Trabalho não encontrado' }
+  }
+  if (!reason.trim()) {
+    return {
+      success: false,
+      data: null,
+      message: 'Descartar exige justificativa',
+    }
+  }
+  const [pickup] = pickups.splice(index, 1)
+  return {
+    success: true,
+    data: {
+      loss: pickup.remaining,
+      discardedBy: session?.operator || 'Operador',
+      discardedAt: new Date().toISOString(),
+    },
+    message: '',
+  }
 }
 
 export const getQuickSaleCheckout = async (quotationId: string) => ({
@@ -368,10 +484,20 @@ export const sendQuickSaleToCash = async (origin: QuickSaleOrigin) => {
 export const chargeQuickSaleNow = async (
   origin: QuickSaleOrigin,
   parts: PaymentPart[],
+  // Arredondamento no balcão (FC-18), como desconto na venda
+  discount = 0,
 ) => {
   const paid = parts.reduce((total, part) => total + part.amount, 0)
 
-  if (paid < origin.total) {
+  if (discount > register.roundingLimit) {
+    return {
+      success: false,
+      data: null,
+      message: 'Arredondamento acima do limite do balcão',
+    }
+  }
+
+  if (paid + discount < origin.total) {
     return {
       success: false,
       data: null,
@@ -384,7 +510,7 @@ export const chargeQuickSaleNow = async (
     quotationId: origin.quotationId,
     path: 'CASH_ONLY',
     sentAt: new Date().toISOString(),
-    total: origin.total,
+    total: origin.total - discount,
     paid,
     delivered: true,
     cancelled: false,
