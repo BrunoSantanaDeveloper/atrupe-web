@@ -143,7 +143,9 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
       return canManageRejectionReasons()
     }
 
-    if (item.path?.includes('/producao')) {
+    // Só a Agenda de entrega depende das abas de entrega: o grupo Produção e
+    // Configurações › Produção têm o Gerenciador, que tem gate próprio
+    if (item.path?.includes('/producao/agenda-de-entrega')) {
       return canManageDeliverySchedule()
     }
 

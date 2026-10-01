@@ -169,7 +169,9 @@ export function SidebarComponent(props: Props) {
     }
 
     // Controle de Agenda de entrega
-    if (item.path?.includes('/producao')) {
+    // Só a Agenda de entrega depende das abas de entrega: o grupo Produção e
+    // Configurações › Produção têm o Gerenciador, que tem gate próprio
+    if (item.path?.includes('/producao/agenda-de-entrega')) {
       return canManageDeliverySchedule()
     }
 
