@@ -36,11 +36,11 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import {
-  RoundingOption,
-  usePaymentSplit,
-  PaymentSplitFields,
-  PaymentSplitSummary,
+  useCashReceipt,
+  CashReceiptFields,
+  CashReceiptBalance,
 } from '@/app/(app-sidebar)/financeiro/frente-de-caixa/components/PaymentSplit'
+import { Form } from '@/components/ui/form'
 
 // Types
 import { QuotationType } from '@/types/sales/quotation'
@@ -72,6 +72,7 @@ import {
   IconBolt,
   IconPrinter,
   IconReceipt,
+  IconThumbUp,
   IconCashRegister,
   IconCashBanknote,
   IconReceiptRefund,
@@ -177,72 +178,97 @@ function ChargeNowDialog({
 }) {
   const money = useMoney()
   const [saving, setSaving] = useState(false)
-  const split = usePaymentSplit(sale.total)
+  const [rounding, setRounding] = useState(false)
+  // O mesmo formulário da baixa do Fluxo financeiro e do caixa, restrito às
+  // formas aceitas na configuração da venda rápida
+  const receipt = useCashReceipt(sale.total, {
+    methods: sale.methods,
+    rounding,
+  })
   const refresh = useRefresh(sale.origin.quotationId)
 
-  const methods = [...sale.methods]
-
-  // Abre sempre com o total no primeiro meio aceito, o caso comum
   useEffect(() => {
-    if (open) split.reset(sale.total, methods[0])
+    if (open) {
+      receipt.reset(sale.total)
+      setRounding(false)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open])
 
-  const save = async () => {
+  const save = receipt.form.handleSubmit(async () => {
     setSaving(true)
     const res = await chargeQuickSaleNow(
       sale.origin,
-      split.parts(),
-      split.discount,
+      receipt.parts(),
+      receipt.discount,
     )
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
 
     toast.success(
-      split.change > 0
-        ? `Venda cobrada · troco de ${money(split.change)}`
+      receipt.change > 0
+        ? `Venda cobrada · troco de ${money(receipt.change)}`
         : 'Venda cobrada',
     )
     await refresh()
     onOpenChange(false)
-  }
+  })
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
-          <DialogTitle>Cobrar {money(sale.total)}</DialogTitle>
-          <DialogDescription>
-            À vista, pelo total. Para parcelar ou cobrar depois, faça um
-            orçamento comum.
-          </DialogDescription>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
+            <div className="min-w-0">
+              <DialogTitle className="mb-1">Recebimento</DialogTitle>
+              <DialogDescription className="truncate">
+                {sale.origin.client} - {sale.origin.reference} · à vista, pelo
+                total. Para parcelar ou cobrar depois, faça um orçamento comum.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
-        <DialogBody className="space-y-4">
-          <PaymentSplitFields split={split} methods={methods} />
-          {/* Arredondamento no balcão (FC-18), o mesmo do caixa */}
-          <RoundingOption split={split} />
-          <PaymentSplitSummary split={split} />
+        <DialogBody>
+          <Form {...receipt.form}>
+            <form
+              id="charge-now"
+              onSubmit={save}
+              noValidate
+              className="flex flex-wrap gap-4"
+            >
+              <CashReceiptFields receipt={receipt} />
+              <CashReceiptBalance
+                receipt={receipt}
+                onRoundingChange={setRounding}
+              />
+            </form>
+          </Form>
         </DialogBody>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancelar
-          </Button>
-          <Button
-            type="button"
-            isLoading={saving}
-            // Venda rápida não fica em aberto: sem o total, não cobra (VR-5)
-            disabled={split.missing > 0}
-            onClick={save}
-          >
-            {split.missing > 0
-              ? `Faltam ${money(split.missing)}`
-              : 'Cobrar e concluir'}
-          </Button>
+        <DialogFooter className="sm:justify-between">
+          <div />
+          <div className="space-x-4">
+            <Button
+              type="button"
+              variant="neutralOutline"
+              onClick={() => onOpenChange(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              form="charge-now"
+              RightIcon={IconCircleCheck}
+              isLoading={saving}
+              // Venda rápida não fica em aberto: sem o total, não cobra (VR-5)
+              disabled={receipt.missing > 0}
+            >
+              {receipt.missing > 0
+                ? `Faltam ${money(receipt.missing)}`
+                : 'Confirmar recebimento'}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

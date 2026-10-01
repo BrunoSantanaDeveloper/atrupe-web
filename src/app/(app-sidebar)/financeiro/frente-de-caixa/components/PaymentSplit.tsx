@@ -1,13 +1,36 @@
 'use client'
 
+// O recebimento do caixa com o MESMO formulário da baixa do Fluxo financeiro
+// (`financeiro/_components/transactions/Actions/Payment`): data do
+// recebimento, forma de pagamento, banco, conta, valor e valor recebido, com
+// o bloco de saldo quando o recebido é diferente do valor. O que o caixa
+// acrescenta por cima: o pagamento misto (FC-9) como mais de uma forma no
+// mesmo recebimento — a divisão de parcela do Fluxo —, o troco (FC-2) e o
+// arredondamento no balcão (FC-18).
+//
+// É um componente só, usado pelo caixa (receber a venda) e pelo vendedor
+// (cobrar a venda rápida na hora), para as duas contas nunca divergirem.
+
 // React
-import { useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
 // UI
-import { Input } from '@/components/ui/input'
-
-// UI
+import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Separator } from '@/components/ui/separator'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+
+// Components
+import { FormSelect } from '@/components/common/form/FormSelect'
+import { FormBrlInput } from '@/components/common/form/FormBrlInput'
+import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
+import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
+import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
 
 // Types
 import {
@@ -17,183 +40,411 @@ import {
   type PaymentMethod,
 } from '../types'
 
-// Utils
-import { cn, formatCurrencyToBrl } from '@/lib/utils'
+// Hooks / Store / Consts
+import { usePlanFeatures } from '@/hooks/usePlanFeatures'
+import { useBankAccount } from '@/hooks/queries/useBankAccount'
+import { useBankFilterCondition } from '@/hooks/queries/useBankFilterCondition'
+import { useAvailablePaymentConditions } from '@/hooks/queries/useAvailablePaymentConditions'
 
-// Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
-const money = (value: number) => formatCurrencyToBrl(value)
+// Third-party
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useFieldArray, useForm, useFormContext } from 'react-hook-form'
+
+// Icons
+import {
+  IconPlus,
+  IconTrash,
+  IconRefreshDot,
+  IconCornerRightDown,
+} from '@tabler/icons-react'
+
+// Utils
+import { cn, formatMoney } from '@/lib/utils'
 
 export const allPaymentMethods: PaymentMethod[] = ['CASH', 'PIX', 'CARD']
 
-// A conta do recebimento, usada pelo caixa (receber a venda) e pelo vendedor
-// (cobrar a venda rápida na hora). Uma só, para as duas telas não divergirem.
-export function usePaymentSplit(
+// A forma de pagamento do cadastro vira a forma do caixa pelo nome: o caixa
+// só precisa saber se é dinheiro (vai para a gaveta), PIX ou cartão
+export const methodOfCondition = (name?: string): PaymentMethod => {
+  const lower = (name || '').toLowerCase()
+  if (lower.includes('pix')) return 'PIX'
+  if (
+    lower.includes('cart') ||
+    lower.includes('crédito') ||
+    lower.includes('credito') ||
+    lower.includes('débito') ||
+    lower.includes('debito')
+  ) {
+    return 'CARD'
+  }
+  return 'CASH'
+}
+
+const partSchema = z.object({
+  paymentConditionId: z.string().min(1, 'Campo obrigatório'),
+  bankId: z.string().optional(),
+  bankAccountId: z.string().optional(),
+  amount: z.number(),
+})
+
+export const receiptSchema = z.object({
+  paidDate: z.date(),
+  totalValue: z.number(),
+  // Uma parte por forma: o pagamento misto é mais de uma (FC-9)
+  parts: z.array(partSchema).min(1),
+})
+
+export type ReceiptValues = z.infer<typeof receiptSchema>
+
+export function useCashReceipt(
   remaining: number,
-  // Limite do arredondamento no balcão (FC-18), em centavos. Até ele, o que
-  // faltou vira desconto na venda registrado na hora, não quebra de caixa
-  roundingLimit = DEFAULT_ROUNDING_LIMIT,
+  options: {
+    // Limite do arredondamento no balcão (FC-18), em centavos
+    roundingLimit?: number
+    // Formas aceitas (a venda rápida "cobrar na hora" restringe)
+    methods?: readonly PaymentMethod[]
+    rounding?: boolean
+  } = {},
 ) {
-  const [amounts, setAmounts] = useState<Record<PaymentMethod, number>>({
-    CASH: remaining,
-    PIX: 0,
-    CARD: 0,
+  const roundingLimit = options.roundingLimit ?? DEFAULT_ROUNDING_LIMIT
+  const form = useForm<ReceiptValues>({
+    resolver: zodResolver(receiptSchema),
+    defaultValues: {
+      paidDate: new Date(),
+      totalValue: remaining,
+      parts: [
+        {
+          paymentConditionId: '',
+          bankId: '',
+          bankAccountId: '',
+          amount: remaining,
+        },
+      ],
+    },
   })
-  const [rounding, setRounding] = useState(false)
+  const { watch, setValue, reset } = form
+  const fields = useFieldArray({ control: form.control, name: 'parts' })
+  const { data: conditions } = useAvailablePaymentConditions('receivable')
 
-  const received = allPaymentMethods.reduce(
-    (total, method) => total + amounts[method],
-    0,
-  )
+  // Sem forma de pagamento cadastrada para receber (empresa nova, conta de
+  // teste), o caixa oferece as três do balcão: dinheiro, PIX e cartão
+  const conditionOptions = useMemo(() => {
+    const list = conditions?.length
+      ? conditions.map((condition) => ({
+          value: condition.id,
+          label: condition.name,
+        }))
+      : allPaymentMethods.map((method) => ({
+          value: method,
+          label: paymentMethodLabel[method],
+        }))
+    if (!options.methods) return list
+    return list.filter((option) =>
+      options.methods!.includes(methodOfCondition(option.label)),
+    )
+  }, [conditions, options.methods])
 
-  // No balcão, o cliente entrega uma nota maior: o troco é a diferença entre
-  // o que ele deu e o que faltava
-  const change = Math.max(0, received - remaining)
-  const rawMissing = Math.max(0, remaining - received)
+  const conditionName = (id: string) =>
+    conditionOptions.find((option) => option.value === id)?.label
+
+  const parts = watch('parts') || []
+  const totalValue = watch('totalValue') || 0
+  const received = parts.reduce((total, part) => total + (part.amount || 0), 0)
+  const change = Math.max(0, received - totalValue)
+  const rawMissing = Math.max(0, totalValue - received)
   // Falta pouco: dá para arredondar e registrar a diferença como desconto
   const canRound = rawMissing > 0 && rawMissing <= roundingLimit
+  const rounding = !!options.rounding
   const discount = canRound && rounding ? rawMissing : 0
   const missing = rawMissing - discount
 
-  // O troco sai do dinheiro: o que entra no caixa é o valor da venda
-  const parts = (): PaymentPart[] =>
-    allPaymentMethods
-      .filter((method) => amounts[method] > 0)
-      .map((method) => {
-        const amount =
-          method === 'CASH' ? amounts.CASH - change : amounts[method]
-
+  // Cada parte vira uma forma do caixa; o troco sai do dinheiro (FC-2)
+  const paymentParts = (): PaymentPart[] => {
+    let changeLeft = change
+    return parts
+      .map((part) => {
+        const method = methodOfCondition(conditionName(part.paymentConditionId))
+        let amount = part.amount || 0
+        if (method === 'CASH' && changeLeft > 0) {
+          const taken = Math.min(amount, changeLeft)
+          amount -= taken
+          changeLeft -= taken
+        }
         return { method, amount }
       })
       .filter((part) => part.amount > 0)
-
-  // O caso comum é receber tudo em dinheiro: já vem preenchido, e quem divide
-  // o pagamento muda daí
-  const reset = (value: number, method: PaymentMethod = 'CASH') => {
-    setAmounts({ CASH: 0, PIX: 0, CARD: 0, [method]: value })
-    setRounding(false)
   }
 
-  const setAmount = (method: PaymentMethod, value: number) =>
-    setAmounts((current) => ({ ...current, [method]: value }))
+  const resetTo = (value: number) =>
+    reset({
+      paidDate: new Date(),
+      totalValue: value,
+      parts: [
+        {
+          paymentConditionId: '',
+          bankId: '',
+          bankAccountId: '',
+          amount: value,
+        },
+      ],
+    })
+
+  // Repassar o que falta para a parte, como "Repassar saldo para esta
+  // parcela" no Fluxo financeiro
+  const passBalance = (index: number) =>
+    setValue(`parts.${index}.amount`, (parts[index]?.amount || 0) + rawMissing)
+
+  const addPart = () =>
+    fields.append({
+      paymentConditionId: '',
+      bankId: '',
+      bankAccountId: '',
+      amount: rawMissing,
+    })
 
   return {
-    amounts,
-    setAmount,
-    reset,
+    form,
+    fields,
     received,
     change,
     missing,
-    parts,
-    roundingLimit,
+    rawMissing,
     canRound,
     rounding,
-    setRounding,
     discount,
+    roundingLimit,
+    totalValue,
+    parts: paymentParts,
+    reset: resetTo,
+    passBalance,
+    addPart,
+    removePart: (index: number) => fields.remove(index),
+    conditionOptions,
+    conditionName,
   }
 }
 
-type Split = ReturnType<typeof usePaymentSplit>
+export type CashReceipt = ReturnType<typeof useCashReceipt>
 
-export function PaymentSplitFields({
-  split,
-  methods = allPaymentMethods,
+// Uma forma do recebimento: os mesmos campos da baixa do Fluxo financeiro,
+// com banco e conta pré-selecionados como lá
+function PartRow({
+  index,
+  receipt,
+  canRemove,
 }: {
-  split: Split
-  methods?: PaymentMethod[]
+  index: number
+  receipt: CashReceipt
+  canRemove: boolean
 }) {
+  const { watch, setValue } = useFormContext<ReceiptValues>()
+  const { canCreateBankAccount } = usePlanFeatures()
+  const conditionId = watch(`parts.${index}.paymentConditionId`) || ''
+  const bankId = watch(`parts.${index}.bankId`) || ''
+  const bankAccountId = watch(`parts.${index}.bankAccountId`) || ''
+
+  const { data: banks } = useBankFilterCondition(conditionId)
+  const { data: bankAccounts } = useBankAccount({
+    filters: { bankId },
+    isBankRequired: true,
+  })
+
+  // O primeiro banco e a primeira conta já vêm marcados (CX-2: a conta
+  // padrão é pré-selecionada, não obrigatória)
+  useEffect(() => {
+    if (banks?.length && conditionId && !bankId) {
+      setValue(`parts.${index}.bankId`, banks[0].id)
+    }
+  }, [banks, conditionId, bankId, index, setValue])
+
+  useEffect(() => {
+    if (bankAccounts?.length && bankId && !bankAccountId) {
+      setValue(`parts.${index}.bankAccountId`, bankAccounts[0].id)
+    }
+  }, [bankAccounts, bankId, bankAccountId, index, setValue])
+
   return (
-    <div className="space-y-3">
-      {methods.map((method) => (
-        <div key={method} className="flex items-center gap-3">
-          <label
-            htmlFor={`amount-${method}`}
-            className="w-28 text-sm font-medium"
-          >
-            {paymentMethodLabel[method]}
-          </label>
-          <Input
-            id={`amount-${method}`}
-            type="number"
-            min={0}
-            step="0.01"
-            startAdornment={<span className="text-sm">R$</span>}
-            value={(split.amounts[method] / 100).toFixed(2)}
-            onChange={(event) =>
-              split.setAmount(
-                method,
-                Math.round(Number(event.target.value || 0) * 100),
-              )
-            }
-          />
-        </div>
-      ))}
-      {methods.length > 1 && (
-        <p className="text-sm text-gray">
-          Para dividir o pagamento, preencha mais de uma forma. Cada parte vai
-          para a sua conta.
-        </p>
-      )}
+    <div className="flex w-full flex-wrap gap-4">
+      <FormSelect<ReceiptValues>
+        name={`parts.${index}.paymentConditionId`}
+        label="Forma de pagamento"
+        placeholder="Forma de pagamento"
+        width="flex-[1_0_200px]"
+        options={receipt.conditionOptions}
+      />
+      <SelectBankFilterConditionField<ReceiptValues>
+        name={`parts.${index}.bankId`}
+        label="Banco"
+        width="flex-[1_0_160px]"
+        conditionId={conditionId}
+        disabled={!conditionId || !canCreateBankAccount()}
+      />
+      <SelectBankAccountField<ReceiptValues>
+        name={`parts.${index}.bankAccountId`}
+        label="Conta"
+        width="flex-[1_0_160px]"
+        bankId={bankId}
+        disabled={!bankId || !canCreateBankAccount()}
+      />
+      <FormBrlInput<ReceiptValues>
+        name={`parts.${index}.amount`}
+        placeholder="0,00"
+        label="Valor recebido"
+        startAdornment={<>R$</>}
+        width="flex-[1_0_140px]"
+      />
+      <div className="mt-6 flex gap-1">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              type="button"
+              LeftIcon={IconRefreshDot}
+              size="icon"
+              variant="neutralGhost"
+              disabled={receipt.rawMissing === 0}
+              aria-label="Repassar o que falta para esta forma"
+              onClick={() => receipt.passBalance(index)}
+            />
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Repassar o que falta para esta forma</p>
+          </TooltipContent>
+        </Tooltip>
+        {canRemove && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                LeftIcon={IconTrash}
+                size="icon"
+                variant="neutralGhost"
+                aria-label="Remover esta forma"
+                onClick={() => receipt.removePart(index)}
+              />
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Remover esta forma</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
     </div>
   )
 }
 
-// Arredondamento no balcão (FC-18): registrado na hora como desconto na
-// venda, até o limite do cadastro. Acima dele vale o limite de desconto do
-// perfil do vendedor, como no orçamento
-export function RoundingOption({ split }: { split: Split }) {
-  const { canRound, rounding, setRounding, roundingLimit, missing, discount } =
-    split
-  if (!canRound) return null
-  const value = rounding ? discount : missing
-
+// Os campos, na mesma ordem da baixa do Fluxo financeiro. Renderizar dentro
+// de <Form {...receipt.form}>
+export function CashReceiptFields({ receipt }: { receipt: CashReceipt }) {
   return (
-    <label className="flex items-start gap-3 rounded-lg border border-gray-200 p-4">
-      <Checkbox
-        checked={rounding}
-        onCheckedChange={(checked) => setRounding(!!checked)}
-        aria-label="Arredondar"
+    <div className="flex flex-wrap gap-4">
+      <FormDatePickerInput
+        name="paidDate"
+        label="Data do recebimento"
+        width="flex-[1_0_250px]"
       />
-      <span>
-        <span className="text-sm font-medium">
-          Arredondar: desconto de {money(value)} na venda
-        </span>
-        <span className="mt-0.5 block text-sm text-gray">
-          Registrado na hora como desconto, até {money(roundingLimit)}. Não vira
-          diferença de caixa.
-        </span>
-      </span>
-    </label>
+      <FormBrlInput<ReceiptValues>
+        name="totalValue"
+        placeholder="0,00"
+        label="Valor"
+        startAdornment={<>R$</>}
+        width="flex-[1_0_250px]"
+        disabled
+      />
+      {receipt.fields.fields.map((field, index) => (
+        <PartRow
+          key={field.id}
+          index={index}
+          receipt={receipt}
+          canRemove={receipt.fields.fields.length > 1}
+        />
+      ))}
+      {/* Pagamento misto (FC-9): mais de uma forma no mesmo recebimento,
+          cada parte indo para a sua conta */}
+      <Button
+        type="button"
+        size="sm"
+        variant="neutralOutline"
+        LeftIcon={IconPlus}
+        onClick={receipt.addPart}
+      >
+        Dividir em outra forma
+      </Button>
+    </div>
   )
 }
 
-export function PaymentSplitSummary({ split }: { split: Split }) {
-  const { received, missing, change, discount } = split
+// O bloco de saldo da baixa do Fluxo financeiro: aqui ele diz se é troco
+// (recebeu a mais, em dinheiro) ou o que ainda falta (sinal), e oferece o
+// arredondamento no balcão (FC-18) quando falta pouco
+export function CashReceiptBalance({
+  receipt,
+  onRoundingChange,
+}: {
+  receipt: CashReceipt
+  onRoundingChange?: (rounding: boolean) => void
+}) {
+  const {
+    received,
+    totalValue,
+    change,
+    missing,
+    canRound,
+    rounding,
+    discount,
+  } = receipt
+  if (received === totalValue && !discount) return null
+  const over = change > 0
 
   return (
-    <div className="space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
-      <div className="flex justify-between text-sm">
-        <span className="text-gray">Recebido</span>
-        <span className="font-medium">{money(received)}</span>
-      </div>
-      {discount > 0 && (
-        <div className="flex justify-between text-sm">
-          <span className="text-gray">Desconto de arredondamento</span>
-          <span className="font-medium">− {money(discount)}</span>
+    <div className="w-full rounded-lg border bg-gray-50 p-4">
+      <div
+        className={cn(
+          'flex justify-between gap-5 rounded-lg p-3',
+          over
+            ? 'bg-success-200 text-success-900'
+            : missing > 0
+              ? 'bg-error-200 text-error-900'
+              : 'bg-success-200 text-success-900',
+        )}
+      >
+        <div className="flex items-center gap-2">
+          <FeaturedIcon
+            variant={over || missing === 0 ? 'successLight' : 'errorLight'}
+            size="xs"
+            Icon={IconCornerRightDown}
+          />
+          <p className="text-sm font-medium">
+            {over ? 'Troco' : missing > 0 ? 'Ainda falta' : 'Arredondado'}
+          </p>
         </div>
-      )}
-      <div className="flex justify-between border-t border-gray-200 pt-2">
-        <span className="font-medium">
-          {missing > 0 ? 'Ainda falta' : 'Troco'}
-        </span>
-        <span
-          className={cn(
-            'text-lg font-semibold',
-            missing > 0 ? 'text-error-600' : 'text-gray-900',
-          )}
-        >
-          {money(missing > 0 ? missing : change)}
-        </span>
+        <p className="text-sm font-semibold">
+          {formatMoney(over ? change : missing > 0 ? missing : discount)}
+        </p>
       </div>
+      {canRound && onRoundingChange && (
+        <>
+          <Separator className="my-4" />
+          <label className="flex items-start gap-3">
+            <Checkbox
+              checked={rounding}
+              onCheckedChange={(checked) => onRoundingChange(!!checked)}
+              aria-label="Arredondar"
+            />
+            <span>
+              <span className="text-sm font-medium">
+                Arredondar: desconto de {formatMoney(receipt.rawMissing)} na
+                venda
+              </span>
+              <span className="mt-0.5 block text-sm text-gray">
+                Registrado na hora como desconto, até{' '}
+                {formatMoney(receipt.roundingLimit)}. Não vira diferença de
+                caixa.
+              </span>
+            </span>
+          </label>
+        </>
+      )}
     </div>
   )
 }
