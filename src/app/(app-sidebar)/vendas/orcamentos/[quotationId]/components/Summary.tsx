@@ -278,7 +278,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                   )}
                 </DetailCardRowItem>
               )}
-              {!data?.quickSale ? (
+              {!data?.quickSale || data?.client ? (
                 <DetailCardRowItem
                   showSeparator={false}
                   className="pb-4 lg:grid-cols-5"

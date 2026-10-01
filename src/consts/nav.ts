@@ -33,6 +33,7 @@ import {
   IconDeviceDesktopDollar,
   IconReceiptTax,
   IconTicket,
+  IconSquareRoundedPlusFilled,
 } from '@tabler/icons-react'
 import { IconAtrupeLogo, IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -87,13 +88,16 @@ export const defaultMainNavigation: MainNavigationType[] = [
         path: '/vendas/ordens-de-servico',
         permission: 'sale:order:view',
       },
-      // {
-      //   icon: IconSquareRoundedPlusFilled,
-      //   title: 'Nova venda rápida',
-      //   path: '#',
-      //   action: true,
-      //   permission: 'sale:quick:view',
-      // },
+      {
+        icon: IconSquareRoundedPlusFilled,
+        title: 'Nova venda rápida',
+        // A lista de orçamentos abre o formulário da venda rápida.
+        path: '/vendas/orcamentos',
+        query: '?venda-rapida=1',
+        action: true,
+        permission: 'sale:quotation:create',
+        requiredFeature: 'quotation_quick_sale',
+      },
     ],
   },
   {

@@ -52,7 +52,7 @@ export function QuotationActions({ data }: Props) {
           </PermissionGate>
           {canSetClient ? (
             <PermissionGate permissions={['sale:quotation:edit']}>
-              <SetClient />
+              <SetClient quotationId={data.id} />
             </PermissionGate>
           ) : null}
           {canOpen ? (

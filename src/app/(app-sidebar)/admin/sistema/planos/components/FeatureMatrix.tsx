@@ -84,10 +84,6 @@ export function FeatureMatrix() {
             level="tela"
             detail="Só a tela esconde: é exibição, ou não há API a proteger."
           />
-          <EnforcementBadge
-            level="nenhum"
-            detail="A chave ainda não muda nada no sistema."
-          />
         </div>
       </div>
 

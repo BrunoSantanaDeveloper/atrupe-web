@@ -6,6 +6,7 @@ import { AvailabilityTab } from './components/AvailabilityTab'
 import { FeatureMatrix } from './components/FeatureMatrix'
 import { HistoryTab } from './components/HistoryTab'
 import { LimitsMatrix } from './components/LimitsMatrix'
+import { PricingTexts } from './components/PricingTexts'
 
 const TABS: TabNavType[] = [
   {
@@ -15,6 +16,7 @@ const TABS: TabNavType[] = [
   },
   { value: 'recursos', tab: 'recursos', label: 'Recursos por plano' },
   { value: 'limites', tab: 'limites', label: 'Limites' },
+  { value: 'precos', tab: 'precos', label: 'Preços e textos' },
   { value: 'historico', tab: 'historico', label: 'Histórico' },
 ]
 
@@ -46,6 +48,8 @@ export default function AdminPlansPage({
         <FeatureMatrix />
       ) : tab === 'limites' ? (
         <LimitsMatrix />
+      ) : tab === 'precos' ? (
+        <PricingTexts />
       ) : tab === 'historico' ? (
         <HistoryTab />
       ) : (

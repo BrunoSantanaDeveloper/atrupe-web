@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 // UI
 import { Card } from '@/components/ui/card'
@@ -13,7 +14,11 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { NewClientModal } from './NewClient'
-import { NewQuotationModal, NewQuotationTriggerButton } from './NewQuotation'
+import {
+  NewQuickSaleTriggerButton,
+  NewQuotationModal,
+  NewQuotationTriggerButton,
+} from './NewQuotation'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { QuotationsData } from './QuotationsTable/QuotationsData'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
@@ -153,6 +158,16 @@ const QUOTATION_VALUE_EXPORT_COLUMNS: ExportColumn<QuotationExportType>[] = [
 
 export function Quotations({ searchParams }: SearchParamsType) {
   const [openDialog, setOpenDialog] = useState('')
+
+  // "Nova venda rápida" no menu abre o formulário aqui.
+  const router = useRouter()
+  const pathname = usePathname()
+  const quickSaleFromMenu = searchParams?.['venda-rapida'] === '1'
+  useEffect(() => {
+    if (!quickSaleFromMenu) return
+    setOpenDialog('quick-sale')
+    router.replace(pathname)
+  }, [quickSaleFromMenu, router, pathname])
   const { hasAllPermissions } = usePermissions()
 
   const { data, isLoading } = useQuery({
@@ -243,6 +258,9 @@ export function Quotations({ searchParams }: SearchParamsType) {
                 emptyMessage="Nenhum orcamento disponivel para exportacao"
               />
             </PermissionGate>
+            <NewQuickSaleTriggerButton
+              onOpenChange={() => setOpenDialog('quick-sale')}
+            />
             <NewQuotationTriggerButton
               onOpenChange={() => {
                 setOpenDialog('new-quotation')
@@ -285,6 +303,11 @@ export function Quotations({ searchParams }: SearchParamsType) {
           )}
           <NewQuotationModal
             open={openDialog === 'new-quotation'}
+            onOpenChange={() => setOpenDialog('')}
+          />
+          <NewQuotationModal
+            quickSale
+            open={openDialog === 'quick-sale'}
             onOpenChange={() => setOpenDialog('')}
           />
         </Card>

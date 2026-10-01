@@ -37,7 +37,7 @@ export function usePlanFeatures() {
 
   const canManageMultipleCompanies = () => hasFeature('multiple_companies')
 
-  const canManageSalesOrders = () => hasFeature('quotation_quick_sale')
+  const canCreateQuickSale = () => hasFeature('quotation_quick_sale')
 
   const canManageRejectionReasons = () =>
     hasFeature('quotation_rejection_reasons')
@@ -104,7 +104,7 @@ export function usePlanFeatures() {
     hasAnyFeature,
     hasAllFeatures,
     canManageSectors,
-    canManageSalesOrders,
+    canCreateQuickSale,
     canManageRejectionReasons,
     canRequestOrderCancellationReason,
     canManageBudgetStatus,

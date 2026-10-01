@@ -6,6 +6,8 @@ import type {
   PlanConfigHistoryPage,
   PlanDefaultsDiff,
   PlanFeatureChangeResult,
+  PlanComparisonGroup,
+  PlanComparisonView,
   PlanFeaturePreview,
   PlanMatrix,
 } from '@/types/planConfig'
@@ -118,5 +120,40 @@ export async function saveCompanyFeature(
 ) {
   return domainCall<{ changed: boolean }>((api) =>
     api.patch(`/plan/config/companies/${companyId}/features`, body),
+  )
+}
+
+export async function savePlanPricing(
+  planId: string,
+  body: {
+    basePrice: number
+    additionalUserPrice: number
+    expectedAffected?: number
+    password?: string
+  },
+) {
+  return domainCall<{ changed: boolean; affected: number }>((api) =>
+    api.patch(`/plan/config/${planId}/pricing`, body),
+  )
+}
+
+export async function savePlanPresentation(
+  planId: string,
+  body: { pitch: string; actions: string[] },
+) {
+  return domainCall<{ changed: boolean }>((api) =>
+    api.patch(`/plan/config/${planId}/presentation`, body),
+  )
+}
+
+export async function fetchPlanComparisonConfig() {
+  return domainCall<PlanComparisonView>((api) =>
+    api.get('/plan/config/comparison'),
+  )
+}
+
+export async function savePlanComparison(groups: PlanComparisonGroup[]) {
+  return domainCall<{ changed: boolean }>((api) =>
+    api.put('/plan/config/comparison', { groups }),
   )
 }

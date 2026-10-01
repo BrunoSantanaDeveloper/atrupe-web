@@ -23,6 +23,24 @@ export interface PlanMatrixLimit {
   detail: string
 }
 
+export interface PlanPresentation {
+  pitch: string
+  actions: string[]
+}
+
+export type ComparisonPlanType = 'START' | 'LITE' | 'PRO' | 'ELITE' | 'FULL'
+
+export interface PlanComparisonGroup {
+  group: string
+  rows: { label: string; since: ComparisonPlanType }[]
+}
+
+export interface PlanComparisonView {
+  groups: PlanComparisonGroup[]
+  isDefault: boolean
+  defaults: PlanComparisonGroup[]
+}
+
 export interface PlanMatrixPlan {
   id: string
   name: string
@@ -30,10 +48,17 @@ export interface PlanMatrixPlan {
   order: number
   isActive: boolean
   basePrice: number
+  additionalUserPrice: number
+  /** Card do plano na trilha; nulo = texto padrão do código. */
+  presentation: PlanPresentation | null
   currentSubscriptions: number
   features: Record<string, boolean>
   limits: Record<string, number | null>
-  defaults: { features: string[]; limits: Record<string, number> }
+  defaults: {
+    features: string[]
+    limits: Record<string, number>
+    presentation: PlanPresentation | null
+  }
 }
 
 export interface PlanMatrix {
@@ -94,18 +119,34 @@ export interface PlanDefaultsDiff {
   requiresChoice: boolean
 }
 
+/** Lado de uma mudança no histórico; os campos dependem do tipo. */
+export interface HistoryChangeSide {
+  enabled?: boolean
+  value?: number | null
+  isActive?: boolean
+  basePrice?: number
+  additionalUserPrice?: number
+}
+
 export interface PlanConfigHistoryEntry {
   id: string
-  entityType: 'PLAN_FEATURE' | 'PLAN_LIMIT' | 'PLAN'
+  entityType: 'PLAN_FEATURE' | 'PLAN_LIMIT' | 'PLAN' | 'COMPARISON'
   planId: string | null
   planType: string | null
   featureKey: string | null
   limitKey: string | null
-  action: 'ENABLED' | 'DISABLED' | 'VALUE_CHANGED' | 'AVAILABILITY_CHANGED'
+  action:
+    | 'ENABLED'
+    | 'DISABLED'
+    | 'VALUE_CHANGED'
+    | 'AVAILABILITY_CHANGED'
+    | 'PRICE_CHANGED'
+    | 'PRESENTATION_CHANGED'
+    | 'COMPARISON_CHANGED'
   description: string
   changes: {
-    before?: { enabled?: boolean; value?: number | null; isActive?: boolean }
-    after?: { enabled?: boolean; value?: number | null; isActive?: boolean }
+    before?: HistoryChangeSide
+    after?: HistoryChangeSide
   } | null
   metadata: Record<string, unknown> | null
   createdBy: string | null

@@ -35,6 +35,7 @@ import {
   IconCirclePlus,
   IconArrowRight,
   IconReportMoney,
+  IconBolt,
 } from '@tabler/icons-react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
@@ -58,13 +59,17 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   data?: QuotationType
+  /** Nova venda rápida: o cliente é opcional. */
+  quickSale?: boolean
 }
 export function NewQuotationModal({
   editMode = false,
   open,
   onOpenChange,
   data,
+  quickSale = false,
 }: Props) {
+  const isQuickSale = editMode ? !!data?.quickSale : quickSale
   const { data: session } = useSession()
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
@@ -92,10 +97,10 @@ export function NewQuotationModal({
     if (data && open) {
       form.reset({
         companyId: data?.company?.id,
-        clientId: {
-          label: data?.client?.name,
-          value: data?.client?.id,
-        } as unknown as string,
+        // Venda rápida pode não ter cliente.
+        clientId: (data?.client
+          ? { label: data.client.name, value: data.client.id }
+          : null) as unknown as string,
         contactId: data?.contact?.id || '',
         description: data?.description,
         contactSourceId: data?.contactSource?.id ?? '',
@@ -117,6 +122,11 @@ export function NewQuotationModal({
       }
     }
   }, [sellers, session, form, editMode])
+
+  // A venda rápida vem do botão que abriu o formulário.
+  useEffect(() => {
+    if (open && !editMode) form.setValue('quickSale', quickSale)
+  }, [open, editMode, quickSale, form])
 
   // Definir série com isDefault como padrão
   useEffect(() => {
@@ -202,7 +212,9 @@ export function NewQuotationModal({
     }
 
     handleToggleModal(false)
-    toast.success('Orçamento criado com sucesso!')
+    toast.success(
+      isQuickSale ? 'Venda rápida criada!' : 'Orçamento criado com sucesso!',
+    )
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
@@ -222,7 +234,13 @@ export function NewQuotationModal({
             <DialogTitle>
               <div className="flex items-center gap-4">
                 <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
-                {!editMode ? 'Novo orçamento' : 'Editar orçamento'}
+                {isQuickSale
+                  ? !editMode
+                    ? 'Nova venda rápida'
+                    : 'Editar venda rápida'
+                  : !editMode
+                    ? 'Novo orçamento'
+                    : 'Editar orçamento'}
               </div>
             </DialogTitle>
             <DialogDescription hidden></DialogDescription>
@@ -237,7 +255,7 @@ export function NewQuotationModal({
               >
                 <ClientSelector
                   name="clientId"
-                  label="Cliente"
+                  label={isQuickSale ? 'Cliente (opcional)' : 'Cliente'}
                   width="w-full"
                   additionalOnChange={() => {
                     // Limpar seleção de contato quando cliente mudar
@@ -319,12 +337,38 @@ export function NewQuotationModal({
                 isLoading={form.formState.isSubmitting}
                 RightIcon={IconArrowRight}
               >
-                {!editMode ? 'Criar orçamento' : 'Salvar edição'}
+                {!editMode
+                  ? isQuickSale
+                    ? 'Criar venda rápida'
+                    : 'Criar orçamento'
+                  : 'Salvar edição'}
               </Button>
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </PermissionGate>
+  )
+}
+
+/** Botão "Nova venda rápida": exige o recurso do plano e criar orçamento. */
+export function NewQuickSaleTriggerButton({
+  onOpenChange,
+}: {
+  onOpenChange: (open: boolean) => void
+}) {
+  const { canCreateQuickSale } = usePlanFeatures()
+  if (!canCreateQuickSale()) return null
+  return (
+    <PermissionGate permissions={['sale:quotation:create']}>
+      <Button
+        type="button"
+        variant="neutralOutline"
+        LeftIcon={IconBolt}
+        onClick={() => onOpenChange(true)}
+      >
+        Venda rápida
+      </Button>
     </PermissionGate>
   )
 }
