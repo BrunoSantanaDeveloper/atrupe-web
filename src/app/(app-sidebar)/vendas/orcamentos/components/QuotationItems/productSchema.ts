@@ -16,7 +16,10 @@ export const productSchema = z.object({
     z.object({
       id: z.string(),
       name: z.string().optional().nullable(),
-      unitKind: z.string(),
+      // O item pode estar sem unidade no banco — é o caso de parte das vendas
+      // migradas. Exigir string travava o Salvar numa validação sem campo
+      // visível na tela, e a edição não acontecia.
+      unitKind: z.string().nullable().optional(),
       quantity: z
         .preprocess((value) => Number(value), z.number())
         .refine((value) => value >= 1, {
@@ -32,7 +35,10 @@ export const productSchema = z.object({
         })
         .optional()
         .nullable(),
-      height: z.coerce.number().positive().optional().nullable(),
+      // Zero é válido: limpar o campo grava 0, e com a medida liberada no item
+      // por unidade isso virou caminho normal. Exigir positivo reprovava o
+      // Salvar com mensagem em inglês sob o campo.
+      height: z.coerce.number().min(0).optional().nullable(),
       length: z
         .number({
           required_error: 'Campo obrigatório',

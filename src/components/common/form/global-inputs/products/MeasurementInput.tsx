@@ -145,7 +145,36 @@ export function MeasurementInput<T extends FieldValues>({
         )
       case 'UNITY':
       default:
-        return null
+        // Item cobrado por unidade também tem tamanho — é o do arquivo, que o
+        // sistema legado anota na linha da venda. Sem estes campos a medida
+        // ficava gravada e o usuário não conseguia nem ver nem corrigir.
+        //
+        // Sem o total em m² e sem recalcular o preço: aqui a medida descreve
+        // o item, não o forma — a unidade simples é cobrada por quantidade.
+        // Recalcular reescreveria o valor de venda de um documento que já foi
+        // ao cliente, por causa de arredondamento vindo do sistema de origem.
+        return (
+          <>
+            <LinearMeter<T>
+              {...commonProps}
+              {...props}
+              name={`items.${index}.width` as Path<T>}
+              label="Largura"
+              width={commonProps.width as string}
+              defaultUnit={companyDefaults?.LENGTH}
+              getUnitAbbreviation={getUnitAbbreviation}
+            />
+            <LinearMeter<T>
+              {...commonProps}
+              {...props}
+              name={`items.${index}.height` as Path<T>}
+              label="Altura"
+              width={commonProps.width as string}
+              defaultUnit={companyDefaults?.LENGTH}
+              getUnitAbbreviation={getUnitAbbreviation}
+            />
+          </>
+        )
     }
   }
   return renderComponent()
