@@ -437,10 +437,11 @@ export function PDV() {
                       <>
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
                           <TableCell colSpan={6} className="text-sm text-gray">
-                            <strong>Foram para o fluxo financeiro</strong> —
-                            cliente com forma de pagamento definida. Aparecem
-                            aqui como registro do dia e{' '}
-                            <strong>não entram no saldo do caixa</strong>.
+                            <strong>Faturadas pelo caixa para o cliente</strong>{' '}
+                            — chegaram como venda rápida e o caixa definiu o
+                            cliente e a forma. Já estão no fluxo financeiro e{' '}
+                            <strong>não entram no saldo do caixa</strong>; saem
+                            daqui no fechamento.
                           </TableCell>
                         </TableRow>
                         {noFluxo.map((sale) => (

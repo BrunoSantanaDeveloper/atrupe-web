@@ -60,7 +60,7 @@ export type CashMovement = {
 
 // A venda esperando o caixa. O tipo decide o caminho (FC-12.1): a venda
 // rápida sempre passa pelo caixa; o orçamento normal com forma de pagamento
-// definida vai direto ao fluxo financeiro e aqui aparece só como registro
+// definida vai direto ao fluxo financeiro e não passa por aqui
 export type SaleKind = 'QUICK' | 'QUOTATION'
 
 export type PendingSale = {
@@ -76,8 +76,9 @@ export type PendingSale = {
   paid: number
   delivered: boolean
   approvedAt: string
-  // false = foi para o fluxo financeiro; entra no relatório do dia, mas não
-  // no saldo do caixa
+  // false = o caixa faturou para o cliente (FC-4): a venda foi para o fluxo
+  // financeiro e fica aqui só como registro do dia, fora do saldo, até o
+  // fechamento. O orçamento que já nasce faturado não passa pelo caixa
   goesToCash: boolean
   // Com mais de um caixa, quem puxou a venda para atender (FC-5)
   claimedBy?: string | null

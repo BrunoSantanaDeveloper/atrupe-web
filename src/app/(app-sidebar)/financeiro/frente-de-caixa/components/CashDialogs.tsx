@@ -478,7 +478,7 @@ export function CloseCashDialog({
               {billed.length > 0 && (
                 <div className="space-y-1.5 text-sm">
                   <p className="font-medium">
-                    Vendas do dia que foram para o fluxo financeiro
+                    Faturadas pelo caixa para o cliente
                   </p>
                   {billed.map((sale) => (
                     <p
@@ -493,7 +493,8 @@ export function CloseCashDialog({
                     </p>
                   ))}
                   <p className="text-xs text-gray">
-                    Não entram no caixa nem na conferência: já estão no fluxo
+                    Chegaram como venda rápida e foram faturadas pelo caixa. Não
+                    entram no caixa nem na conferência: já estão no fluxo
                     financeiro como títulos a receber. Saem daqui com o
                     fechamento e ficam no relatório do dia.
                   </p>

@@ -111,18 +111,22 @@ let sales: PendingSale[] = [
     claimedBy: 'Caixa 2 · Paulo Mendes',
   },
   {
+    // Chegou como venda rápida e o caixa faturou para o cliente (FC-4): saiu
+    // da fila e foi para o fluxo financeiro. Fica como registro do que o
+    // caixa fez, até o fechamento. O orçamento que já nasce faturado
+    // (faturamento mensal, boleto) não passa pela frente de caixa e não
+    // aparece aqui (decidido em 01/10/2026)
     id: 's3',
-    reference: 'ORC-2026-0184',
+    reference: 'VR-2026-0316',
     client: 'Supermercado Bom Preço',
     seller: 'Ana Prado',
-    kind: 'QUOTATION',
-    total: 320000,
+    kind: 'QUICK',
+    total: 32000,
     paid: 0,
     delivered: false,
     approvedAt: hoje('16:10:00'),
-    // Cliente com faturamento mensal: foi para o fluxo financeiro e aqui
-    // aparece só como registro do dia (FC-12.1)
     goesToCash: false,
+    billing: 'Faturamento mensal',
   },
 ]
 
