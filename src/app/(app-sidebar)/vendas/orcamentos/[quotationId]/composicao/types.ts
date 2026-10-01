@@ -111,3 +111,22 @@ export type AddOption = {
   // O produto tem composição cadastrada (PRO)
   hasComposition?: boolean
 }
+
+// O item montado na hora pelo vendedor (ORC-11), como a tela do orçamento o
+// vê: nome, medida, quantas etapas tem e o preço. SEM custo (ORC-7) — o
+// retrato da venda com o custo fica no servidor, para o resultado previsto
+export type ComposedItemSummary = {
+  id: string
+  // O produto técnico onde o fluxo do item foi montado (product-assembly)
+  draftId: string
+  name: string
+  description: string
+  quantity: number
+  width: number
+  height: number
+  stages: number
+  sectors: string[]
+  price: number
+  // Sem nenhuma etapa: fica marcado e o orçamento não conclui (MS-12)
+  attention: boolean
+}

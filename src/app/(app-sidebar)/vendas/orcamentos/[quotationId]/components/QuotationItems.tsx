@@ -39,6 +39,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { QuotationItemsModal } from '../../components/QuotationItems/QuotationItemsModal'
+import { QuotationComposeModal } from '../../components/QuotationItems/QuotationComposeModal'
 import { QuotationProdDetailModal } from '../../components/QuotationItems/QuotationProdDetailModal'
 import { QuotationCategorySelectorModal } from '../../components/QuotationItems/QuotationCategorySelectorModal'
 
@@ -76,13 +77,19 @@ import {
 
 // Actions
 import { createItem } from '@/actions/_cruds'
-import { getItemCompositions } from '@/actions/quotation-composition'
+import {
+  getComposedItems,
+  getItemCompositions,
+  removeComposedItem,
+} from '@/actions/quotation-composition'
 import {
   CompositionReport,
   type ReportTarget,
 } from '../composicao/components/CompositionReport'
+import type { ComposedItemSummary } from '../composicao/types'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
+import { useAlertDialog } from '@/store/useAlertDialog'
 
 interface Props {
   data: QuotationType
@@ -127,6 +134,37 @@ export function QuotationItems({ data }: Props) {
   const compositionOf = (item: QuotationItemType) =>
     compositionsRes?.data?.[item.id] ||
     compositionsRes?.data?.[item.product?.originalProductId]
+
+  // Os itens montados na hora (ORC-11) ficam no mock até a API guardar o
+  // item sem produto. Chegam sem custo (ORC-7)
+  const alertDialog = useAlertDialog()
+  const [composeTarget, setComposeTarget] =
+    useState<ComposedItemSummary | null>(null)
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-items', data?.id],
+    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const composed = composedRes?.data || []
+
+  const removeComposed = (item: ComposedItemSummary) =>
+    alertDialog.open({
+      title: `Excluir ${item.name}?`,
+      description:
+        'O item sai do orçamento. Esta ação não poderá ser desfeita.',
+      confirmLabel: 'Excluir',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeComposedItem({
+          quotationId: String(data?.id),
+          itemId: item.id,
+        })
+        if (!res.success) throw new Error(res.message)
+        queryClient.invalidateQueries({ queryKey: ['composed-items'] })
+      },
+      toastMsg: { success: 'Item excluído', error: 'Erro ao excluir o item' },
+    })
 
   // A API guarda as medidas em milímetros; o relatório calcula em metros
   const reportTarget = (item: QuotationItemType): ReportTarget => {
@@ -175,12 +213,12 @@ export function QuotationItems({ data }: Props) {
               Itens
             </CardTitle>
             <Badge variant="neutralLight" className="mt-1">
-              {items?.length}
+              {(items?.length || 0) + composed.length}
             </Badge>
           </div>
         </CardHeader>
         <CardContent className="pb-0">
-          {items?.length ? (
+          {items?.length || composed.length ? (
             <>
               <Accordion
                 type="multiple"
@@ -614,6 +652,92 @@ export function QuotationItems({ data }: Props) {
                       </AccordionItem>
                     )
                   })}
+
+                  {/* Os itens montados na hora (ORC-11). O tipo fica
+                      discreto, como marcação (ORC-3); sem etapa, "Exige
+                      atenção" (MS-12) */}
+                  {composed.map((item) => (
+                    <TableBody
+                      key={item.id}
+                      className="[&_tr:last-child]:border-b"
+                    >
+                      <TableRow className="border-b">
+                        <TableCell className="pl-14 py-6 text-sm font-medium">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span>{item.name}</span>
+                            <Badge variant="blueLight">Composição</Badge>
+                            {item.attention && (
+                              <Badge status variant="warningLight">
+                                Exige atenção
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="mt-1 text-xs font-normal text-gray">
+                            {item.attention
+                              ? 'Sem nenhuma etapa. Monte as etapas ou exclua o item para concluir o orçamento.'
+                              : item.description ||
+                                `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'} · ${item.sectors.join(', ')}`}
+                          </p>
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {item.quantity}
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray">
+                          {item.width && item.height
+                            ? `${item.width} x ${item.height} m`.replace(
+                                /\./g,
+                                ',',
+                              )
+                            : '-'}
+                        </TableCell>
+                        <TableCell className="py-4 text-sm text-gray text-nowrap">
+                          {item.quantity} un
+                        </TableCell>
+                        <PermissionGate permissions={['values:values:view']}>
+                          <TableCell className="py-4 text-sm text-gray">
+                            {formatCurrencyToBrl(
+                              Math.round(item.price / (item.quantity || 1)),
+                            )}
+                          </TableCell>
+                          <TableCell className="text-warning-600 text-nowrap py-4">
+                            -
+                          </TableCell>
+                          <TableCell className="py-4 text-sm text-gray">
+                            {formatCurrencyToBrl(item.price)}
+                          </TableCell>
+                        </PermissionGate>
+                        <TableCell className="py-4">
+                          <div className="flex justify-end gap-1">
+                            <TooltipProvider>
+                              <PermissionGate
+                                permissions={['sale:quotation:edit']}
+                              >
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  tooltip="Editar item"
+                                  onClick={() => {
+                                    setComposeTarget(item)
+                                    openChangeModal(true, 'composeItem')
+                                  }}
+                                  disabled={actionDisabled('edit', status)}
+                                />
+                              </PermissionGate>
+                              <PermissionGate
+                                permissions={['sale:quotation:delete']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrashX}
+                                  tooltip="Excluir item"
+                                  onClick={() => removeComposed(item)}
+                                  disabled={actionDisabled('delete', status)}
+                                />
+                              </PermissionGate>
+                            </TooltipProvider>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  ))}
                 </Table>
               </Accordion>
 
@@ -682,6 +806,16 @@ export function QuotationItems({ data }: Props) {
         editMode={true}
         data={rowData}
         composition={rowData ? compositionOf(rowData) : undefined}
+      />
+      {/* O item montado na hora (ORC-11): criar e editar com o mesmo modal */}
+      <QuotationComposeModal
+        open={modalType === 'composeItem'}
+        quotationId={String(data?.id)}
+        editing={composeTarget}
+        onClose={() => {
+          openChangeModal(false)
+          setComposeTarget(null)
+        }}
       />
       <CompositionReport item={report} onOpenChange={() => setReport(null)} />
     </>

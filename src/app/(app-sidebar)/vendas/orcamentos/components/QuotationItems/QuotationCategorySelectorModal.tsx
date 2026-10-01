@@ -9,11 +9,17 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { FeatureGate } from '@/components/common/FeatureGate'
 import { useSectorWithProducts } from '@/hooks/queries/useSectorWithProducts'
 import { Dialog } from '@radix-ui/react-dialog'
-import { IconLayoutGridAdd, IconQuestionMark } from '@tabler/icons-react'
+import {
+  IconPuzzle,
+  IconQuestionMark,
+  IconLayoutGridAdd,
+} from '@tabler/icons-react'
 import { useQuotation } from '@/contexts/quotationContext'
 import { sectorIcons } from '@/consts/sectors'
+import { FEATURES } from '@/consts/features'
 import { Loader2 } from 'lucide-react'
 
 interface QuotationCategorySelectorModalProps {
@@ -81,6 +87,8 @@ export function QuotationCategorySelectorModal({
 
   // Ordenar os dados antes de renderizar
   const sortedData = data ? sortSectors(data) : []
+  // O botão "Composição" conta na grade: é o último, depois dos setores
+  const tiles = sortedData.length + 1
 
   return (
     <Dialog open={open} onOpenChange={openChangeModal}>
@@ -104,11 +112,11 @@ export function QuotationCategorySelectorModal({
         <DialogBody>
           <div
             className={`gap-3 grid ${
-              sortedData.length <= 1
+              tiles <= 1
                 ? 'grid-cols-1'
-                : sortedData.length === 2
+                : tiles === 2
                   ? 'grid-cols-2'
-                  : sortedData.length === 3
+                  : tiles === 3
                     ? 'grid-cols-3'
                     : 'grid-cols-4'
             }`}
@@ -144,6 +152,26 @@ export function QuotationCategorySelectorModal({
                   <span className="text-xs text-wrap">{option.name}</span>
                 </Button>
               ))
+            )}
+            {/* Composição é o último botão, e é a exceção (ORC-1, ORC-11):
+                para quando o produto não existe pronto. Não disputa atenção
+                com os setores */}
+            {!isLoading && (
+              <FeatureGate features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}>
+                <Button
+                  type="button"
+                  variant="neutralOutline"
+                  className="p-2 flex-col w-[120px] h-[120px] rounded-xl border border-dashed border-gray-300 bg-gray-50 text-gray-600 overflow-hidden shadow-none"
+                  title="Montar um item que não existe pronto"
+                  onClick={() => openChangeModal(true, 'composeItem')}
+                >
+                  <IconPuzzle
+                    className="mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full"
+                    aria-hidden="true"
+                  />
+                  <span className="text-xs text-wrap">Composição</span>
+                </Button>
+              </FeatureGate>
             )}
           </div>
         </DialogBody>

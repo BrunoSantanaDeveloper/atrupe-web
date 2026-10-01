@@ -21,13 +21,14 @@ import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQu
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Type
 import { QuotationType } from '@/types/sales/quotation'
 
 // Action
 import { createItemNew } from '@/actions/_cruds'
+import { getComposedItems } from '@/actions/quotation-composition'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -66,6 +67,14 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   const queryClient = useQueryClient()
 
+  // Item de composição sem nenhuma etapa impede concluir (ORC-11, MS-12)
+  const { data: composedRes } = useQuery({
+    queryKey: ['composed-items', data?.id],
+    queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const composedAttention = !!composedRes?.data?.some((item) => item.attention)
+
   // Se tiver pendente de configurar as condições de pagamento, abrir o modal direto antes de concluir
   const hasInstallments = data?.paymentConditions?.installmentQty > 0
   const hasPaymentCondition = !!data?.paymentConditions?.paymentCondition?.id
@@ -89,6 +98,16 @@ export function FinishQuotation({ data, canFinish }: Props) {
   }
 
   const handleFinish = async () => {
+    if (composedAttention) {
+      setOpen(true)
+      setAlertDialog({
+        title: 'Item exige atenção',
+        description:
+          'Há um item de composição sem nenhuma etapa. Monte as etapas ou exclua o item antes de concluir o orçamento.',
+      })
+      return
+    }
+
     setLoading(true)
 
     setOpen(true)
