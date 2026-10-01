@@ -12,7 +12,7 @@
 // subtítulo de cada caixa.
 
 // React
-import { Fragment, type ReactNode } from 'react'
+import { Fragment, useEffect, useState, type ReactNode } from 'react'
 
 // UI
 import { Badge } from '@/components/ui/badge'
@@ -110,6 +110,23 @@ export function FlowCanvas({
 }: Props) {
   const layout = layoutFlow(nodes)
   const byId = new Map(nodes.map((node) => [node.id, node]))
+
+  // O menu da caixa dentro de um modal: Esc fecha só o menu. O Dialog e o
+  // DropdownMenu do Radix não compartilham a pilha de camadas neste projeto,
+  // e os dois fechariam juntos; o Esc é tratado antes, na captura da janela
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
+  useEffect(() => {
+    if (!openMenuId) return
+    const handler = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      setOpenMenuId(null)
+    }
+    window.addEventListener('keydown', handler, { capture: true })
+    return () =>
+      window.removeEventListener('keydown', handler, { capture: true })
+  }, [openMenuId])
   const expanded = expandedPartId ? byId.get(expandedPartId) : undefined
   const marker = `flow-arrow-${depth}`
 
@@ -256,7 +273,12 @@ export function FlowCanvas({
                       </Button>
                     )}
                     {items.length > 0 && (
-                      <DropdownMenu>
+                      <DropdownMenu
+                        open={openMenuId === node.id}
+                        onOpenChange={(open) =>
+                          setOpenMenuId(open ? node.id : null)
+                        }
+                      >
                         <DropdownMenuTrigger asChild>
                           <Button
                             type="button"
@@ -354,12 +376,15 @@ export function FlowCanvas({
         empty
       )}
 
-      {(!readOnly && onAddPath) || layout.detached.size > 0 ? (
+      {/* Sem etapa, o estado vazio já traz a ação: o botão de baixo só
+          aparece com o desenho */}
+      {(!readOnly && onAddPath && (nodes.length > 0 || !empty)) ||
+      layout.detached.size > 0 ? (
         <div
           className="flex flex-wrap items-center justify-between gap-3"
           style={{ paddingLeft: nodes.length ? 0 : PAD }}
         >
-          {!readOnly && onAddPath ? (
+          {!readOnly && onAddPath && (nodes.length > 0 || !empty) ? (
             <Button
               type="button"
               size="sm"
