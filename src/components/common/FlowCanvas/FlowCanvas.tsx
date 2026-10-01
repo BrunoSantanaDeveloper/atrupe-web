@@ -172,7 +172,7 @@ export function FlowCanvas({
                 <Fragment key={node.id}>
                   <div
                     className={cn(
-                      'absolute flex items-center gap-3 rounded-xl border bg-white px-3 py-2.5 shadow-sm transition-colors',
+                      'absolute flex items-center gap-2.5 rounded-xl border bg-white py-2 pl-2.5 pr-1.5 shadow-sm transition-colors',
                       selected
                         ? 'border-brand-500 ring-2 ring-brand-100'
                         : 'border-gray-200 hover:border-brand-300',
@@ -211,19 +211,25 @@ export function FlowCanvas({
                       }}
                       aria-pressed={selected}
                     >
-                      <span className="block truncate text-sm font-medium text-gray-800">
+                      <span
+                        className="line-clamp-2 text-sm font-medium leading-5 text-gray-800"
+                        title={node.name}
+                      >
                         {node.name}
                       </span>
-                      <span className="block truncate text-xs text-gray">
-                        {node.subtitle || node.sector}
-                      </span>
-                      {node.badge && (
+                      {/* O badge, quando existe, toma o lugar do subtítulo:
+                          a caixa tem altura fixa */}
+                      {node.badge ? (
                         <Badge
                           variant={node.badge.variant}
                           className="mt-0.5 h-4 px-1.5 text-[10px]"
                         >
                           {node.badge.text}
                         </Badge>
+                      ) : (
+                        <span className="block truncate text-xs leading-4 text-gray">
+                          {node.subtitle || node.sector}
+                        </span>
                       )}
                     </button>
                     {node.part && onTogglePart && (

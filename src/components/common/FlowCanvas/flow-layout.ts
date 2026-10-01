@@ -29,7 +29,7 @@ export type FlowLayout = {
   detached: Set<string>
 }
 
-export const NODE_W = 212
+export const NODE_W = 240
 export const NODE_H = 76
 export const COL_GAP = 72
 export const ROW_GAP = 20
@@ -145,16 +145,36 @@ export const layoutFlow = (nodes: FlowNodeInput[]): FlowLayout => {
 }
 
 // Caminho da ligação: uma curva de uma caixa à outra, saindo pela direita e
-// chegando pela esquerda
+// chegando pela esquerda. A ligação que pula colunas (a impressão que vai
+// direto para a instalação, passando pela coluna do acabamento) desce para o
+// vão entre as linhas e segue por ele, para não parecer que atravessa a caixa
+// do meio
 export const edgePath = (from: FlowPosition, to: FlowPosition) => {
   const x0 = from.x + NODE_W
   const y0 = from.y + NODE_H / 2
   const x1 = to.x
   const y1 = to.y + NODE_H / 2
-  const mid = (x0 + x1) / 2
-  return {
-    d: `M ${x0} ${y0} C ${mid} ${y0}, ${mid} ${y1}, ${x1} ${y1}`,
-    midX: (x0 + x1) / 2,
-    midY: (y0 + y1) / 2,
+
+  if (to.col - from.col <= 1) {
+    const mid = (x0 + x1) / 2
+    return {
+      d: `M ${x0} ${y0} C ${mid} ${y0}, ${mid} ${y1}, ${x1} ${y1}`,
+      midX: (x0 + x1) / 2,
+      midY: (y0 + y1) / 2,
+    }
   }
+
+  // O vão logo abaixo da caixa de origem (ou acima, quando o destino está
+  // mais alto): nunca passa por dentro de uma caixa
+  const yb =
+    to.row < from.row ? from.y - ROW_GAP / 2 : from.y + NODE_H + ROW_GAP / 2
+  const xa = x0 + COL_GAP / 2
+  const xb = x1 - COL_GAP / 2
+  const d = [
+    `M ${x0} ${y0}`,
+    `C ${xa} ${y0}, ${xa} ${yb}, ${xa + 8} ${yb}`,
+    `L ${xb - 8} ${yb}`,
+    `C ${xb} ${yb}, ${xb} ${y1}, ${x1} ${y1}`,
+  ].join(' ')
+  return { d, midX: (xa + xb) / 2, midY: yb }
 }
