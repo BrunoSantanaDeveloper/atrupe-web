@@ -285,7 +285,16 @@ export const {
               ? 'NONE'
               : (token.blockLevel as 'NONE' | 'PARTIAL' | 'FULL') || 'NONE',
           plan: {
-            name: token.subscription || 'TRIAL',
+            // Mesmo espírito do DEV_IGNORE_BLOCK: DEV_PLAN_NAME=ELITE no
+            // .env.local faz a conta de teste aparecer no plano desejado
+            // enquanto a API de dev não permite trocar plano (planos sem
+            // preço). Só no `next dev`; as features vêm de
+            // NEXT_PUBLIC_DEV_FEATURES (usePlanFeatures)
+            name:
+              process.env.NODE_ENV === 'development' &&
+              process.env.DEV_PLAN_NAME
+                ? process.env.DEV_PLAN_NAME
+                : token.subscription || 'TRIAL',
             active: token.subscriptionActive || false,
             trialEndsAt: token.trialEndsAt || '',
             features: token.features || [],
