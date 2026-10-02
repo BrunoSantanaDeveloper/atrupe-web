@@ -139,6 +139,8 @@ export type CashSession = {
   // diferença vira desconto na venda, não quebra de caixa. Padrão R$ 1,00
   roundingLimit: number
   movements: CashMovement[]
+  // O que explica a diferença do fechamento (fora da tolerância é obrigatória)
+  closingNote?: string
 }
 
 const signed = (movement: CashMovement, method?: PaymentMethod) =>

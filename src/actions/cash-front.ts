@@ -355,7 +355,11 @@ export const reverseSale = async (saleId: string, reason: string) => {
 // houver. O dinheiro contado, menos o que fica na gaveta para amanhã, vai
 // para a conta Caixa pendente de aprovação; PIX para o banco; cartão para a
 // operadora, pelo valor cheio — um movimento por forma, não por venda
-export const closeCashSession = async (countedCash: number, keep = 0) => {
+export const closeCashSession = async (
+  countedCash: number,
+  keep = 0,
+  note = '',
+) => {
   if (!session) {
     return { success: false, data: null, message: 'Nenhum caixa aberto' }
   }
@@ -423,10 +427,13 @@ export const closeCashSession = async (countedCash: number, keep = 0) => {
   sales = sales.filter((sale) => sale.goesToCash)
 
   session.status = 'CLOSED'
+  // A explicação da diferença fica no fechamento, como no controle de caixa
+  session.closingNote = note.trim() || undefined
 
   return {
     success: true,
     data: {
+      note: session.closingNote,
       countedCash,
       expected,
       difference,

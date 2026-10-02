@@ -137,7 +137,21 @@ type Dialog =
   | { kind: 'options'; lineId: string }
   | null
 
-export function ProcessEditor({ id }: { id: string }) {
+export type ProcessSection = 'config' | 'resources' | 'usage'
+
+// `embedded`: dentro do diálogo do processo (mesmo desenho do diálogo do
+// produto, design.md §17). Cada aba monta uma seção: Processo (config),
+// Composição (recursos e simulação) e Uso (usado em, fluxo dos produtos)
+export function ProcessEditor({
+  id,
+  embedded = false,
+  section,
+}: {
+  id: string
+  embedded?: boolean
+  section?: ProcessSection
+}) {
+  const show = (part: ProcessSection) => !section || section === part
   const money = useMoney()
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
@@ -267,535 +281,578 @@ export function ProcessEditor({ id }: { id: string }) {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <Topbar
-          review="new"
-          title={block.name}
-          previousPage="/configuracoes/produtos/processos"
-          supportText={`${detail.category} · ${block.sector}${
-            detail.meta.active ? '' : ' · inativo'
-          }`}
-          primaryCta={
-            <PermissionGate permissions={EDIT}>
-              <Button
-                variant="neutralOutline"
-                LeftIcon={IconSettings}
-                onClick={() => setDialog({ kind: 'rules' })}
-              >
-                Nome, tarefa e regras de venda
-              </Button>
-            </PermissionGate>
-          }
-        />
+        {!embedded && (
+          <Topbar
+            review="new"
+            title={block.name}
+            previousPage="/configuracoes/produtos/processos"
+            supportText={`${detail.category} · ${block.sector}${
+              detail.meta.active ? '' : ' · inativo'
+            }`}
+            primaryCta={
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  variant="neutralOutline"
+                  LeftIcon={IconSettings}
+                  onClick={() => setDialog({ kind: 'rules' })}
+                >
+                  Nome, tarefa e regras de venda
+                </Button>
+              </PermissionGate>
+            }
+          />
+        )}
 
         {/* 1. O que o processo é e como se comporta na venda */}
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Configuração</CardTitle>
-              <CardDescription>
-                Tarefa na produção: {block.taskType.toLowerCase()} · {rulesText}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-3">
-              <SelectBasic
-                name="process-sector"
-                label="Setor"
-                options={sectors.map((item) => ({ value: item, label: item }))}
-                value={meta.sector}
-                onChange={(value) =>
-                  value &&
-                  setMeta((current) => ({ ...current, sector: String(value) }))
-                }
-              />
-              <SelectBasic
-                name="process-finishing"
-                label="É acabamento de"
-                options={[
-                  { value: 'none', label: 'Não é acabamento' },
-                  ...sectors.map((item) => ({ value: item, label: item })),
-                ]}
-                value={meta.finishingOf}
-                onChange={(value) =>
-                  value &&
-                  setMeta((current) => ({
-                    ...current,
-                    finishingOf: String(value),
-                  }))
-                }
-              />
-              <div className="space-y-2">
-                <Label htmlFor="process-setup">Preparo (min)</Label>
-                <Input
-                  id="process-setup"
-                  type="number"
-                  min={0}
-                  step="1"
-                  value={meta.setupMinutes}
-                  onChange={(event) =>
-                    setMeta((current) => ({
-                      ...current,
-                      setupMinutes: Number(event.target.value) || 0,
-                    }))
-                  }
-                />
-              </div>
-              <div className="space-y-2 sm:col-span-3">
-                <Label htmlFor="process-instructions">
-                  Instruções para o vendedor
-                </Label>
-                <Textarea
-                  id="process-instructions"
-                  placeholder="O que perguntar ao cliente, o que conferir antes de fechar"
-                  value={meta.sellerInstructions}
-                  onChange={(event) =>
-                    setMeta((current) => ({
-                      ...current,
-                      sellerInstructions: event.target.value,
-                    }))
-                  }
-                />
-              </div>
-            </CardContent>
-            <PermissionGate permissions={EDIT}>
-              <CardFooter className="flex-wrap justify-between gap-3">
-                <p className="text-sm text-gray">
-                  O preparo entra uma vez por pedido, com o custo-hora do setor.
-                </p>
-                <Button
-                  type="button"
-                  disabled={!metaChanged}
-                  onClick={() =>
-                    run(
-                      updateProcessMeta({
-                        processId: id,
-                        values: {
-                          sector: meta.sector,
-                          finishingOf:
-                            meta.finishingOf === 'none'
-                              ? null
-                              : meta.finishingOf,
-                          setupMinutes: meta.setupMinutes,
-                          sellerInstructions: meta.sellerInstructions,
-                        },
-                      }),
-                      'Processo salvo',
-                    )
-                  }
-                >
-                  Salvar configuração
-                </Button>
-              </CardFooter>
-            </PermissionGate>
-          </Card>
-
-          {/* 2. Simulação: conferir o processo antes de usá-lo */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Simulação</CardTitle>
-              <CardDescription>
-                Confira o consumo numa medida. Não grava nada.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 px-6">
-              <div className="grid grid-cols-3 gap-3">
-                {(
-                  [
-                    ['quantity', 'Qtd.'],
-                    ['width', 'Larg. (m)'],
-                    ['height', 'Alt. (m)'],
-                  ] as const
-                ).map(([key, label]) => (
-                  <div key={key} className="space-y-2">
-                    <Label htmlFor={`sim-${key}`}>{label}</Label>
+        {(show('config') || show('resources')) && (
+          <div
+            className={cn(
+              'grid grid-cols-1 gap-5',
+              !embedded && 'lg:grid-cols-3',
+            )}
+          >
+            {show('config') && (
+              <Card className={cn(!embedded && 'lg:col-span-2')}>
+                <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+                  <div>
+                    <CardTitle>Configuração</CardTitle>
+                    <CardDescription>
+                      Tarefa na produção: {block.taskType.toLowerCase()} ·{' '}
+                      {rulesText}
+                    </CardDescription>
+                  </div>
+                  {embedded && (
+                    <PermissionGate permissions={EDIT}>
+                      <Button
+                        variant="neutralOutline"
+                        LeftIcon={IconSettings}
+                        onClick={() => setDialog({ kind: 'rules' })}
+                      >
+                        Nome, tarefa e regras de venda
+                      </Button>
+                    </PermissionGate>
+                  )}
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-3">
+                  <SelectBasic
+                    name="process-sector"
+                    label="Setor"
+                    options={sectors.map((item) => ({
+                      value: item,
+                      label: item,
+                    }))}
+                    value={meta.sector}
+                    onChange={(value) =>
+                      value &&
+                      setMeta((current) => ({
+                        ...current,
+                        sector: String(value),
+                      }))
+                    }
+                  />
+                  <SelectBasic
+                    name="process-finishing"
+                    label="É acabamento de"
+                    options={[
+                      { value: 'none', label: 'Não é acabamento' },
+                      ...sectors.map((item) => ({ value: item, label: item })),
+                    ]}
+                    value={meta.finishingOf}
+                    onChange={(value) =>
+                      value &&
+                      setMeta((current) => ({
+                        ...current,
+                        finishingOf: String(value),
+                      }))
+                    }
+                  />
+                  <div className="space-y-2">
+                    <Label htmlFor="process-setup">Preparo (min)</Label>
                     <Input
-                      id={`sim-${key}`}
+                      id="process-setup"
                       type="number"
                       min={0}
-                      step={key === 'quantity' ? '1' : '0.01'}
-                      value={measure[key]}
+                      step="1"
+                      value={meta.setupMinutes}
                       onChange={(event) =>
-                        setMeasure((current) => ({
-                          ...current!,
-                          [key]: Number(event.target.value) || 0,
+                        setMeta((current) => ({
+                          ...current,
+                          setupMinutes: Number(event.target.value) || 0,
                         }))
                       }
                     />
                   </div>
-                ))}
-              </div>
-              <PermissionGate permissions={['values:values:view']}>
-                <div className="grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3">
-                  <p>
-                    <span className="block text-xs text-gray">Custo</span>
-                    <span className="text-lg font-semibold text-gray-900">
-                      {money(detail.cost)}
-                    </span>
-                  </p>
-                  <p>
-                    <span className="block text-xs text-gray">Venda</span>
-                    <span className="text-lg font-semibold text-success-700">
-                      {money(detail.sale)}
-                    </span>
-                  </p>
+                  <div className="space-y-2 sm:col-span-3">
+                    <Label htmlFor="process-instructions">
+                      Instruções para o vendedor
+                    </Label>
+                    <Textarea
+                      id="process-instructions"
+                      placeholder="O que perguntar ao cliente, o que conferir antes de fechar"
+                      value={meta.sellerInstructions}
+                      onChange={(event) =>
+                        setMeta((current) => ({
+                          ...current,
+                          sellerInstructions: event.target.value,
+                        }))
+                      }
+                    />
+                  </div>
+                </CardContent>
+                <PermissionGate permissions={EDIT}>
+                  <CardFooter className="flex-wrap justify-between gap-3">
+                    <p className="text-sm text-gray">
+                      O preparo entra uma vez por pedido, com o custo-hora do
+                      setor.
+                    </p>
+                    <Button
+                      type="button"
+                      disabled={!metaChanged}
+                      onClick={() =>
+                        run(
+                          updateProcessMeta({
+                            processId: id,
+                            values: {
+                              sector: meta.sector,
+                              finishingOf:
+                                meta.finishingOf === 'none'
+                                  ? null
+                                  : meta.finishingOf,
+                              setupMinutes: meta.setupMinutes,
+                              sellerInstructions: meta.sellerInstructions,
+                            },
+                          }),
+                          'Processo salvo',
+                        )
+                      }
+                    >
+                      Salvar configuração
+                    </Button>
+                  </CardFooter>
+                </PermissionGate>
+              </Card>
+            )}
+
+            {/* 2. Simulação: conferir o processo antes de usá-lo */}
+            {(!embedded || show('resources')) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Simulação</CardTitle>
+                  <CardDescription>
+                    Confira o consumo numa medida. Não grava nada.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4 px-6">
+                  <div className="grid grid-cols-3 gap-3">
+                    {(
+                      [
+                        ['quantity', 'Qtd.'],
+                        ['width', 'Larg. (m)'],
+                        ['height', 'Alt. (m)'],
+                      ] as const
+                    ).map(([key, label]) => (
+                      <div key={key} className="space-y-2">
+                        <Label htmlFor={`sim-${key}`}>{label}</Label>
+                        <Input
+                          id={`sim-${key}`}
+                          type="number"
+                          min={0}
+                          step={key === 'quantity' ? '1' : '0.01'}
+                          value={measure[key]}
+                          onChange={(event) =>
+                            setMeasure((current) => ({
+                              ...current!,
+                              [key]: Number(event.target.value) || 0,
+                            }))
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <PermissionGate permissions={['values:values:view']}>
+                    <div className="grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3">
+                      <p>
+                        <span className="block text-xs text-gray">Custo</span>
+                        <span className="text-lg font-semibold text-gray-900">
+                          {money(detail.cost)}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="block text-xs text-gray">Venda</span>
+                        <span className="text-lg font-semibold text-success-700">
+                          {money(detail.sale)}
+                        </span>
+                      </p>
+                    </div>
+                  </PermissionGate>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* 3. As linhas: o que o setor usa nesta etapa */}
+        {show('resources') && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recursos e tempo</CardTitle>
+              <CardDescription>
+                Recurso único, escolha de um (o vendedor escolhe entre opções de
+                mesma unidade) ou lista para o vendedor preencher.
+              </CardDescription>
+              {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
+              {detail.usedIn.length > 0 && (
+                <Badge variant="warningLight" className="w-fit">
+                  {detail.usedIn.length === 1
+                    ? 'Mudar a montagem muda 1 produto'
+                    : `Mudar a montagem muda ${detail.usedIn.length} produtos`}
+                </Badge>
+              )}
+            </CardHeader>
+            <CardContent>
+              <Table className="min-w-[860px]">
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="w-[18%]">Linha</TableHead>
+                    <TableHead className="w-[22%]">Recurso</TableHead>
+                    <TableHead className="w-[13%]">Consumo</TableHead>
+                    <TableHead className="w-[17%]">Cálculo</TableHead>
+                    <TableHead className="w-[10%] text-right">
+                      Quantidade
+                    </TableHead>
+                    <TableHead className="w-[8%] text-right">Custo</TableHead>
+                    <TableHead className="w-[8%] text-right">Venda</TableHead>
+                    <TableHead className="w-[4%]" />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {block.lines.map((line) => {
+                    const unit =
+                      line.selected?.unit || line.options[0]?.unit || ''
+                    return (
+                      <TableRow key={line.id}>
+                        <TableCell>
+                          <p className="font-medium text-gray-800">
+                            {line.name}
+                          </p>
+                          <p className="text-xs text-gray">
+                            {resourceKindObj[line.kind]}
+                          </p>
+                          {line.optional && (
+                            <Badge className="mt-1" variant="neutralLight">
+                              {line.optionalDefault
+                                ? 'Opcional · vem marcada'
+                                : 'Opcional · fora do custo padrão'}
+                            </Badge>
+                          )}
+                          {!line.options.length && (
+                            <Badge className="mt-1" variant="errorLight">
+                              Sem recurso: complete ou remova
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {line.mode === 'CHOOSE' ? (
+                            <SelectBasic
+                              name={`choose-${line.id}`}
+                              label=""
+                              className="w-full"
+                              options={line.options.map((option) => ({
+                                value: option.id,
+                                label: option.name,
+                              }))}
+                              value={line.selectedId}
+                              onChange={(value) =>
+                                value &&
+                                run(
+                                  updateAssemblyLine({
+                                    productId: hostId,
+                                    blockId: block.id,
+                                    lineId: line.id,
+                                    values: { selectedId: String(value) },
+                                  }),
+                                  'Opção padrão alterada',
+                                )
+                              }
+                            />
+                          ) : line.mode === 'LIST' ? (
+                            <div>
+                              <p className="text-sm text-gray-800">
+                                {line.options
+                                  .map((option) => option.name)
+                                  .join(' · ')}
+                              </p>
+                              <p className="text-xs text-gray">
+                                O vendedor preenche o que usou
+                              </p>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-gray-800">
+                              {line.selected?.name}
+                            </p>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {line.mode === 'LIST' ? (
+                            '-'
+                          ) : (
+                            <>
+                              <p className="text-sm">
+                                {rules.timeField &&
+                                (line.formula === 'EQUAL_TIME' ||
+                                  line.formula === 'PER_TIME')
+                                  ? `tempo da etapa (${amount(rules.timeFieldDefault || 0, 'min')})`
+                                  : amount(line.effective.perUnit, unit)}
+                              </p>
+                              {(line.effective.lossPercent > 0 ||
+                                line.effective.minimum !== null) && (
+                                <p className="text-xs text-gray">
+                                  {[
+                                    line.effective.lossPercent > 0
+                                      ? `+${num(line.effective.lossPercent, 1)}% de perda`
+                                      : null,
+                                    line.effective.minimum !== null
+                                      ? `mínimo ${num(line.effective.minimum)} ${unit}`
+                                      : null,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(' · ')}
+                                </p>
+                              )}
+                              {line.effective.own && (
+                                <p className="text-xs text-brand-700">
+                                  desta opção
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-sm text-gray">
+                          {line.mode === 'LIST'
+                            ? 'Informado na venda'
+                            : formulaObj[line.formula]?.label}
+                          {line.mode !== 'LIST' &&
+                            formulaInputs[line.formula]?.length > 0 && (
+                              <span className="mt-1 flex flex-wrap gap-1">
+                                {formulaInputs[line.formula].map((input) => (
+                                  <span
+                                    key={input}
+                                    className={cn(
+                                      'rounded px-1.5 py-0.5 text-[11px]',
+                                      zeroInput(input, block)
+                                        ? 'bg-error-50 text-error-700'
+                                        : 'bg-gray-100 text-gray-600',
+                                    )}
+                                  >
+                                    {input}
+                                  </span>
+                                ))}
+                              </span>
+                            )}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-right text-sm">
+                          {line.quantity === null
+                            ? '-'
+                            : amount(line.quantity, unit)}
+                          {line.minimumApplied && (
+                            <span className="block text-xs text-warning-700">
+                              mínimo aplicado
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-right text-sm font-medium">
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(line.cost)}
+                          </PermissionGate>
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                          <PermissionGate
+                            permissions={['values:values:view']}
+                            fallback={<span>•••</span>}
+                          >
+                            {money(line.sale)}
+                          </PermissionGate>
+                        </TableCell>
+                        <TableCell>
+                          <PermissionGate permissions={EDIT}>
+                            <div className="flex justify-end gap-1">
+                              {line.mode !== 'LIST' && (
+                                <ActionButton
+                                  Icon={IconPencil}
+                                  variant="neutralGhost"
+                                  tooltip={`Ajustar ${line.name.toLowerCase()}`}
+                                  onClick={() =>
+                                    setDialog({ kind: 'line', lineId: line.id })
+                                  }
+                                />
+                              )}
+                              {line.mode !== 'SINGLE' && (
+                                <ActionButton
+                                  Icon={IconListDetails}
+                                  variant="neutralGhost"
+                                  tooltip="Opções da linha"
+                                  onClick={() =>
+                                    setDialog({
+                                      kind: 'options',
+                                      lineId: line.id,
+                                    })
+                                  }
+                                />
+                              )}
+                              <ActionButton
+                                Icon={IconTrash}
+                                variant="errorGhost"
+                                tooltip={`Remover ${line.name.toLowerCase()}`}
+                                onClick={() => removeLine(line)}
+                              />
+                            </div>
+                          </PermissionGate>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                  {block.lines.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={8}
+                        className="py-6 text-center text-sm text-gray"
+                      >
+                        Nenhuma linha ainda. Acrescente o tempo, a máquina e o
+                        material que o setor de {block.sector.toLowerCase()}{' '}
+                        usa.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+              <PermissionGate permissions={EDIT}>
+                <div className="px-6 pb-2 pt-4">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="neutralOutline"
+                    LeftIcon={IconCirclePlus}
+                    onClick={() => setDialog({ kind: 'newLine' })}
+                  >
+                    Nova linha
+                  </Button>
                 </div>
               </PermissionGate>
             </CardContent>
-          </Card>
-        </div>
-
-        {/* 3. As linhas: o que o setor usa nesta etapa */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recursos e tempo</CardTitle>
-            <CardDescription>
-              Recurso único, escolha de um (o vendedor escolhe entre opções de
-              mesma unidade) ou lista para o vendedor preencher.
-            </CardDescription>
-            {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
-            {detail.usedIn.length > 0 && (
-              <Badge variant="warningLight" className="w-fit">
-                {detail.usedIn.length === 1
-                  ? 'Mudar a montagem muda 1 produto'
-                  : `Mudar a montagem muda ${detail.usedIn.length} produtos`}
-              </Badge>
+            {block.setupMinutes > 0 && (
+              <CardFooter className="text-sm text-gray">
+                Preparo: {block.setupMinutes} min, uma vez por pedido
+              </CardFooter>
             )}
-          </CardHeader>
-          <CardContent>
-            <Table className="min-w-[860px]">
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-[18%]">Linha</TableHead>
-                  <TableHead className="w-[22%]">Recurso</TableHead>
-                  <TableHead className="w-[13%]">Consumo</TableHead>
-                  <TableHead className="w-[17%]">Cálculo</TableHead>
-                  <TableHead className="w-[10%] text-right">
-                    Quantidade
-                  </TableHead>
-                  <TableHead className="w-[8%] text-right">Custo</TableHead>
-                  <TableHead className="w-[8%] text-right">Venda</TableHead>
-                  <TableHead className="w-[4%]" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {block.lines.map((line) => {
-                  const unit =
-                    line.selected?.unit || line.options[0]?.unit || ''
-                  return (
-                    <TableRow key={line.id}>
-                      <TableCell>
-                        <p className="font-medium text-gray-800">{line.name}</p>
-                        <p className="text-xs text-gray">
-                          {resourceKindObj[line.kind]}
-                        </p>
-                        {line.optional && (
-                          <Badge className="mt-1" variant="neutralLight">
-                            {line.optionalDefault
-                              ? 'Opcional · vem marcada'
-                              : 'Opcional · fora do custo padrão'}
-                          </Badge>
-                        )}
-                        {!line.options.length && (
-                          <Badge className="mt-1" variant="errorLight">
-                            Sem recurso: complete ou remova
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {line.mode === 'CHOOSE' ? (
-                          <SelectBasic
-                            name={`choose-${line.id}`}
-                            label=""
-                            className="w-full"
-                            options={line.options.map((option) => ({
-                              value: option.id,
-                              label: option.name,
-                            }))}
-                            value={line.selectedId}
-                            onChange={(value) =>
-                              value &&
-                              run(
-                                updateAssemblyLine({
-                                  productId: hostId,
-                                  blockId: block.id,
-                                  lineId: line.id,
-                                  values: { selectedId: String(value) },
-                                }),
-                                'Opção padrão alterada',
-                              )
-                            }
-                          />
-                        ) : line.mode === 'LIST' ? (
-                          <div>
-                            <p className="text-sm text-gray-800">
-                              {line.options
-                                .map((option) => option.name)
-                                .join(' · ')}
-                            </p>
-                            <p className="text-xs text-gray">
-                              O vendedor preenche o que usou
-                            </p>
-                          </div>
-                        ) : (
-                          <p className="text-sm text-gray-800">
-                            {line.selected?.name}
-                          </p>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {line.mode === 'LIST' ? (
-                          '-'
-                        ) : (
-                          <>
-                            <p className="text-sm">
-                              {rules.timeField &&
-                              (line.formula === 'EQUAL_TIME' ||
-                                line.formula === 'PER_TIME')
-                                ? `tempo da etapa (${amount(rules.timeFieldDefault || 0, 'min')})`
-                                : amount(line.effective.perUnit, unit)}
-                            </p>
-                            {(line.effective.lossPercent > 0 ||
-                              line.effective.minimum !== null) && (
-                              <p className="text-xs text-gray">
-                                {[
-                                  line.effective.lossPercent > 0
-                                    ? `+${num(line.effective.lossPercent, 1)}% de perda`
-                                    : null,
-                                  line.effective.minimum !== null
-                                    ? `mínimo ${num(line.effective.minimum)} ${unit}`
-                                    : null,
-                                ]
-                                  .filter(Boolean)
-                                  .join(' · ')}
-                              </p>
-                            )}
-                            {line.effective.own && (
-                              <p className="text-xs text-brand-700">
-                                desta opção
-                              </p>
-                            )}
-                          </>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray">
-                        {line.mode === 'LIST'
-                          ? 'Informado na venda'
-                          : formulaObj[line.formula]?.label}
-                        {line.mode !== 'LIST' &&
-                          formulaInputs[line.formula]?.length > 0 && (
-                            <span className="mt-1 flex flex-wrap gap-1">
-                              {formulaInputs[line.formula].map((input) => (
-                                <span
-                                  key={input}
-                                  className={cn(
-                                    'rounded px-1.5 py-0.5 text-[11px]',
-                                    zeroInput(input, block)
-                                      ? 'bg-error-50 text-error-700'
-                                      : 'bg-gray-100 text-gray-600',
-                                  )}
-                                >
-                                  {input}
-                                </span>
-                              ))}
-                            </span>
-                          )}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm">
-                        {line.quantity === null
-                          ? '-'
-                          : amount(line.quantity, unit)}
-                        {line.minimumApplied && (
-                          <span className="block text-xs text-warning-700">
-                            mínimo aplicado
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm font-medium">
-                        <PermissionGate
-                          permissions={['values:values:view']}
-                          fallback={<span>•••</span>}
-                        >
-                          {money(line.cost)}
-                        </PermissionGate>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
-                        <PermissionGate
-                          permissions={['values:values:view']}
-                          fallback={<span>•••</span>}
-                        >
-                          {money(line.sale)}
-                        </PermissionGate>
-                      </TableCell>
-                      <TableCell>
-                        <PermissionGate permissions={EDIT}>
-                          <div className="flex justify-end gap-1">
-                            {line.mode !== 'LIST' && (
-                              <ActionButton
-                                Icon={IconPencil}
-                                variant="neutralGhost"
-                                tooltip={`Ajustar ${line.name.toLowerCase()}`}
-                                onClick={() =>
-                                  setDialog({ kind: 'line', lineId: line.id })
-                                }
-                              />
-                            )}
-                            {line.mode !== 'SINGLE' && (
-                              <ActionButton
-                                Icon={IconListDetails}
-                                variant="neutralGhost"
-                                tooltip="Opções da linha"
-                                onClick={() =>
-                                  setDialog({
-                                    kind: 'options',
-                                    lineId: line.id,
-                                  })
-                                }
-                              />
-                            )}
-                            <ActionButton
-                              Icon={IconTrash}
-                              variant="errorGhost"
-                              tooltip={`Remover ${line.name.toLowerCase()}`}
-                              onClick={() => removeLine(line)}
-                            />
-                          </div>
-                        </PermissionGate>
-                      </TableCell>
-                    </TableRow>
-                  )
-                })}
-                {block.lines.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={8}
-                      className="py-6 text-center text-sm text-gray"
-                    >
-                      Nenhuma linha ainda. Acrescente o tempo, a máquina e o
-                      material que o setor de {block.sector.toLowerCase()} usa.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            <PermissionGate permissions={EDIT}>
-              <div className="px-6 pb-2 pt-4">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="neutralOutline"
-                  LeftIcon={IconCirclePlus}
-                  onClick={() => setDialog({ kind: 'newLine' })}
-                >
-                  Nova linha
-                </Button>
-              </div>
-            </PermissionGate>
-          </CardContent>
-          {block.setupMinutes > 0 && (
-            <CardFooter className="text-sm text-gray">
-              Preparo: {block.setupMinutes} min, uma vez por pedido
-            </CardFooter>
-          )}
-        </Card>
+          </Card>
+        )}
 
         {/* 4. Onde o processo está: os produtos acompanham a montagem (CP-21) */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Usado em</CardTitle>
-            <CardDescription>
-              Os produtos acompanham este processo: mudar a montagem aqui muda
-              todos eles. O que cada produto ajustou só para ele continua como
-              está, e os orçamentos já feitos não mudam.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            {detail.usedIn.length ? (
-              <div className="flex flex-wrap gap-2">
-                {detail.usedIn.map((item) => (
-                  <Link
-                    key={item.productId}
-                    href={`/configuracoes/produtos/${item.productId}/composicao`}
-                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:border-brand-300 hover:bg-brand-25"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray">
-                Nenhum produto usa este processo ainda.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+        {show('usage') && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Usado em</CardTitle>
+              <CardDescription>
+                Os produtos acompanham este processo: mudar a montagem aqui muda
+                todos eles. O que cada produto ajustou só para ele continua como
+                está, e os orçamentos já feitos não mudam.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              {detail.usedIn.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {detail.usedIn.map((item) => (
+                    <Link
+                      key={item.productId}
+                      href={`/configuracoes/produtos/${item.productId}/composicao`}
+                      className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:border-brand-300 hover:bg-brand-25"
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray">
+                  Nenhum produto usa este processo ainda.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* 5. No fluxo dos produtos (FL-7): as etapas seguintes usuais são
             marcadas à mão, num par guardado uma vez e editável dos dois
             lados. Nada é bloqueado: o não marcado fica em "ver todos" */}
-        <Card>
-          <CardHeader>
-            <CardTitle>No fluxo dos produtos</CardTitle>
-            <CardDescription>
-              Ao montar um produto, &quot;+ etapa seguinte&quot; mostra primeiro
-              o que está marcado aqui; o resto fica em &quot;ver todos&quot;.
-              Marcar de um lado aparece no outro. Sem marcação, valem os
-              acabamentos do mesmo setor.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
-            {(
-              [
+        {show('usage') && (
+          <Card>
+            <CardHeader>
+              <CardTitle>No fluxo dos produtos</CardTitle>
+              <CardDescription>
+                Ao montar um produto, &quot;+ etapa seguinte&quot; mostra
+                primeiro o que está marcado aqui; o resto fica em &quot;ver
+                todos&quot;. Marcar de um lado aparece no outro. Sem marcação,
+                valem os acabamentos do mesmo setor.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-6 px-6 pb-6 lg:grid-cols-2">
+              {(
                 [
-                  'before',
-                  'Costuma vir depois de',
-                  'Os processos que normalmente vêm antes deste. A dupla face vem depois do adesivo, do PVC e do ACM.',
-                ],
-                [
-                  'after',
-                  'Etapas seguintes usuais',
-                  'Os processos que normalmente vêm depois deste. Depois da impressão, o refile e a laminação.',
-                ],
-              ] as const
-            ).map(([side, label, help]) => (
-              <div key={side} className="space-y-2">
-                <p className="text-sm font-medium text-gray-800">{label}</p>
-                <p className="text-xs text-gray">{help}</p>
-                <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-                  {!usualRes ? (
-                    <Skeleton className="h-20 w-full" />
-                  ) : usualRes.data?.[side].length ? (
-                    usualRes.data[side].map((item) => (
-                      <label
-                        key={item.id}
-                        className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
-                      >
-                        <Checkbox
-                          checked={item.usual}
-                          disabled={!canEdit}
-                          aria-label={item.name}
-                          onCheckedChange={(checked) =>
-                            toggleUsual(side, item.id, checked === true)
-                          }
-                        />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-gray-800">
-                            {item.name}
+                  [
+                    'before',
+                    'Costuma vir depois de',
+                    'Os processos que normalmente vêm antes deste. A dupla face vem depois do adesivo, do PVC e do ACM.',
+                  ],
+                  [
+                    'after',
+                    'Etapas seguintes usuais',
+                    'Os processos que normalmente vêm depois deste. Depois da impressão, o refile e a laminação.',
+                  ],
+                ] as const
+              ).map(([side, label, help]) => (
+                <div key={side} className="space-y-2">
+                  <p className="text-sm font-medium text-gray-800">{label}</p>
+                  <p className="text-xs text-gray">{help}</p>
+                  <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
+                    {!usualRes ? (
+                      <Skeleton className="h-20 w-full" />
+                    ) : usualRes.data?.[side].length ? (
+                      usualRes.data[side].map((item) => (
+                        <label
+                          key={item.id}
+                          className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-1.5 text-sm hover:bg-gray-50"
+                        >
+                          <Checkbox
+                            checked={item.usual}
+                            disabled={!canEdit}
+                            aria-label={item.name}
+                            onCheckedChange={(checked) =>
+                              toggleUsual(side, item.id, checked === true)
+                            }
+                          />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-gray-800">
+                              {item.name}
+                            </span>
+                            <span className="block text-xs text-gray">
+                              {item.sector}
+                            </span>
                           </span>
-                          <span className="block text-xs text-gray">
-                            {item.sector}
-                          </span>
-                        </span>
-                      </label>
-                    ))
-                  ) : (
-                    <p className="px-2 py-1.5 text-sm text-gray">
-                      Nenhum outro processo cadastrado.
-                    </p>
-                  )}
+                        </label>
+                      ))
+                    ) : (
+                      <p className="px-2 py-1.5 text-sm text-gray">
+                        Nenhum outro processo cadastrado.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <RulesDialog

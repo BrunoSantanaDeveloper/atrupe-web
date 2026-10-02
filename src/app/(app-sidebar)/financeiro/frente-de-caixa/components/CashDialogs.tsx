@@ -13,11 +13,15 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import {
+  MoneyInput,
+  CashCountCheck,
+  needsExplanation,
+} from '../../_components/cash/CashCountCheck'
 
 // Types
 import {
@@ -46,48 +50,18 @@ import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconTrendingUp, IconTrendingDown } from '@tabler/icons-react'
+import {
+  IconLock,
+  IconLockOpen,
+  IconTrendingUp,
+  IconTrendingDown,
+} from '@tabler/icons-react'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Os valores estão em centavos, que é o que formatCurrencyToBrl recebe
 const money = (value: number) => formatCurrencyToBrl(value)
-
-// Campo de dinheiro em reais, guardando centavos
-function MoneyInput({
-  id,
-  label,
-  value,
-  onChange,
-  autoFocus,
-}: {
-  id: string
-  label: string
-  value: number
-  onChange: (cents: number) => void
-  autoFocus?: boolean
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
-        {label}
-      </label>
-      <Input
-        id={id}
-        type="number"
-        min={0}
-        step="0.01"
-        autoFocus={autoFocus}
-        startAdornment={<span className="text-sm">R$</span>}
-        value={(value / 100).toFixed(2)}
-        onChange={(event) =>
-          onChange(Math.round(Number(event.target.value || 0) * 100))
-        }
-      />
-    </div>
-  )
-}
 
 interface BaseProps {
   open: boolean
@@ -115,11 +89,16 @@ export function OpenCashDialog({ open, onDone, onOpenChange }: BaseProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle>Abrir caixa</DialogTitle>
-          <DialogDescription>
-            O saldo inicial é o troco que já está na gaveta. Ele entra na
-            conferência do fechamento.
-          </DialogDescription>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconLockOpen} />
+            <div>
+              <DialogTitle>Abrir caixa</DialogTitle>
+              <DialogDescription>
+                O saldo inicial é o troco que já está na gaveta. Ele entra na
+                conferência do fechamento.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         <DialogBody>
           <MoneyInput
@@ -322,6 +301,7 @@ export function CloseCashDialog({
   // sistema esperava. Na conferência simples (padrão) o esperado já aparece e
   // o operador confirma ou corrige o valor contado (FC-7)
   const [revealed, setRevealed] = useState(!blind)
+  const [note, setNote] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -329,13 +309,13 @@ export function CloseCashDialog({
 
     setCounted(blind ? 0 : expected)
     setKeep(0)
+    setNote('')
     setRevealed(!blind)
   }, [open, blind, expected])
 
-  const difference = counted - expected
-  // Dentro da tolerância (se houver), a diferença aparece, mas não é lançada
-  const withinTolerance =
-    difference !== 0 && tolerance !== null && Math.abs(difference) <= tolerance
+  // Fora da tolerância (ou sem ela), a diferença pede explicação, como no
+  // fechamento do dia do controle de caixa
+  const needsNote = needsExplanation(expected, counted, tolerance)
   const transfers = [
     {
       method: 'CASH' as const,
@@ -352,7 +332,7 @@ export function CloseCashDialog({
 
   const save = async () => {
     setSaving(true)
-    const res = await closeCashSession(counted, keep)
+    const res = await closeCashSession(counted, keep, note)
     setSaving(false)
 
     if (!res.success) return toast.error(res.message)
@@ -365,12 +345,17 @@ export function CloseCashDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Fechar o caixa nº {session.number}</DialogTitle>
-          <DialogDescription>
-            {blind
-              ? 'Conte o dinheiro da gaveta e informe o total. O valor esperado só aparece depois.'
-              : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'}
-          </DialogDescription>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconLock} />
+            <div>
+              <DialogTitle>Fechar o caixa nº {session.number}</DialogTitle>
+              <DialogDescription>
+                {blind
+                  ? 'Conte o dinheiro da gaveta e informe o total. O valor esperado só aparece depois.'
+                  : 'Confira o dinheiro da gaveta: confirme o valor contado ou corrija se for diferente.'}
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
           {/* Os valores do caixa só aparecem aqui, no fechamento: na tela
@@ -433,44 +418,22 @@ export function CloseCashDialog({
             </Button>
           ) : (
             <>
-              {/* Esperado, contado e diferença sempre lado a lado: nenhuma
-                  diferença fica escondida (FC-7) */}
-              <div className="space-y-3 rounded-lg border border-gray-200 bg-gray-50 p-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray">Esperado em dinheiro</span>
-                  <span className="font-medium">{money(expected)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray">Contado</span>
-                  <span className="font-medium">{money(counted)}</span>
-                </div>
-                <div className="flex justify-between border-t border-gray-200 pt-3">
-                  <span className="font-medium">
-                    {difference === 0
-                      ? 'Sem diferença'
-                      : difference > 0
-                        ? 'Sobra'
-                        : 'Falta'}
-                  </span>
-                  <span
-                    className={
-                      difference === 0
-                        ? 'font-semibold text-gray-900'
-                        : difference > 0
-                          ? 'font-semibold text-success-600'
-                          : 'font-semibold text-error-600'
-                    }
-                  >
-                    {money(Math.abs(difference))}
-                  </span>
-                </div>
-                {difference !== 0 && (
-                  <p className="text-sm text-gray">
-                    {withinTolerance
-                      ? `Dentro da tolerância de ${money(tolerance!)}: fica registrada, mas não é lançada como quebra.`
-                      : 'A diferença vai para Quebra de caixa, no nome de quem operou o caixa.'}
-                  </p>
-                )}
+              {/* A mesma conferência do controle de caixa (FC-7, 4.1) */}
+              <CashCountCheck
+                expected={expected}
+                counted={counted}
+                tolerance={tolerance}
+              />
+              <div className="space-y-2">
+                <label htmlFor="close-note" className="text-sm font-medium">
+                  {needsNote ? 'O que explica a diferença?' : 'Observação'}
+                </label>
+                <Textarea
+                  id="close-note"
+                  rows={2}
+                  value={note}
+                  onChange={(event) => setNote(event.target.value)}
+                />
               </div>
 
               {/* Registro do dia, fora do caixa: saem com o fechamento e
@@ -539,7 +502,9 @@ export function CloseCashDialog({
           <Button
             type="button"
             isLoading={saving}
-            disabled={!revealed || keep > counted}
+            disabled={
+              !revealed || keep > counted || (needsNote && !note.trim())
+            }
             onClick={save}
           >
             Fechar caixa

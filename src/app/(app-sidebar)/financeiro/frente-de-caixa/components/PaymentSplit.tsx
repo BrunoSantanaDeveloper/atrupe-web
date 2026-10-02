@@ -1,9 +1,10 @@
 'use client'
 
 // O recebimento do caixa com o MESMO formulário da baixa do Fluxo financeiro
-// (`financeiro/_components/transactions/Actions/Payment`): data do
-// recebimento, forma de pagamento, banco, conta, valor e valor recebido, com
-// o bloco de saldo quando o recebido é diferente do valor. O que o caixa
+// (`financeiro/_components/transactions/Actions/Payment`): forma de
+// pagamento, banco, conta, valor e valor recebido, com o bloco de saldo
+// quando o recebido é diferente do valor. Sem a data: no balcão o
+// recebimento é agora, e a data é a do caixa aberto (decisão de 01/10/2026). O que o caixa
 // acrescenta por cima: o pagamento misto (FC-9) como mais de uma forma no
 // mesmo recebimento — a divisão de parcela do Fluxo —, o troco (FC-2) e o
 // arredondamento no balcão (FC-18).
@@ -28,7 +29,6 @@ import {
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
-import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { SelectBankAccountField } from '@/components/common/form/global-inputs/BankAccountSelectField'
 import { SelectBankFilterConditionField } from '@/components/common/form/global-inputs/BanksFilterConditionSelectField'
 
@@ -89,7 +89,6 @@ const partSchema = z.object({
 })
 
 export const receiptSchema = z.object({
-  paidDate: z.date(),
   totalValue: z.number(),
   // Uma parte por forma: o pagamento misto é mais de uma (FC-9)
   parts: z.array(partSchema).min(1),
@@ -111,7 +110,6 @@ export function useCashReceipt(
   const form = useForm<ReceiptValues>({
     resolver: zodResolver(receiptSchema),
     defaultValues: {
-      paidDate: new Date(),
       totalValue: remaining,
       parts: [
         {
@@ -178,7 +176,6 @@ export function useCashReceipt(
 
   const resetTo = (value: number) =>
     reset({
-      paidDate: new Date(),
       totalValue: value,
       parts: [
         {
@@ -243,6 +240,11 @@ function PartRow({
   const conditionId = watch(`parts.${index}.paymentConditionId`) || ''
   const bankId = watch(`parts.${index}.bankId`) || ''
   const bankAccountId = watch(`parts.${index}.bankAccountId`) || ''
+  // Dinheiro fica na gaveta do caixa até o fechamento: não há banco nem conta
+  // a escolher. PIX e cartão vão para a conta, como na baixa do Fluxo
+  const isCash =
+    !!conditionId &&
+    methodOfCondition(receipt.conditionName(conditionId)) === 'CASH'
 
   const { data: banks } = useBankFilterCondition(conditionId)
   const { data: bankAccounts } = useBankAccount({
@@ -273,20 +275,31 @@ function PartRow({
         width="flex-[1_0_200px]"
         options={receipt.conditionOptions}
       />
-      <SelectBankFilterConditionField<ReceiptValues>
-        name={`parts.${index}.bankId`}
-        label="Banco"
-        width="flex-[1_0_160px]"
-        conditionId={conditionId}
-        disabled={!conditionId || !canCreateBankAccount()}
-      />
-      <SelectBankAccountField<ReceiptValues>
-        name={`parts.${index}.bankAccountId`}
-        label="Conta"
-        width="flex-[1_0_160px]"
-        bankId={bankId}
-        disabled={!bankId || !canCreateBankAccount()}
-      />
+      {isCash ? (
+        <div className="flex-[1_0_336px] space-y-2">
+          <p className="text-sm font-medium">Conta</p>
+          <p className="flex h-11 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700">
+            Gaveta do caixa · vai para a conta Caixa no fechamento
+          </p>
+        </div>
+      ) : (
+        <>
+          <SelectBankFilterConditionField<ReceiptValues>
+            name={`parts.${index}.bankId`}
+            label="Banco"
+            width="flex-[1_0_160px]"
+            conditionId={conditionId}
+            disabled={!conditionId || !canCreateBankAccount()}
+          />
+          <SelectBankAccountField<ReceiptValues>
+            name={`parts.${index}.bankAccountId`}
+            label="Conta"
+            width="flex-[1_0_160px]"
+            bankId={bankId}
+            disabled={!bankId || !canCreateBankAccount()}
+          />
+        </>
+      )}
       <FormBrlInput<ReceiptValues>
         name={`parts.${index}.amount`}
         placeholder="0,00"
@@ -338,11 +351,6 @@ function PartRow({
 export function CashReceiptFields({ receipt }: { receipt: CashReceipt }) {
   return (
     <div className="flex flex-wrap gap-4">
-      <FormDatePickerInput
-        name="paidDate"
-        label="Data do recebimento"
-        width="flex-[1_0_250px]"
-      />
       <FormBrlInput<ReceiptValues>
         name="totalValue"
         placeholder="0,00"
