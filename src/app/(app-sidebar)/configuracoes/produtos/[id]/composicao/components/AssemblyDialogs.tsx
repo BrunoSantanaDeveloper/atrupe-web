@@ -321,8 +321,12 @@ export function NewLineDialog({
           : [...values.optionIds, id],
     )
 
+  // No recurso único o nome é o do próprio recurso (a impressora laser); só
+  // o grupo de escolha e a lista precisam de um nome seu ("Papel")
+  const singleName = values.mode === 'SINGLE' ? chosen[0]?.name || '' : ''
+  const finalName = values.name.trim() || singleName
   const valid =
-    values.name.trim() &&
+    finalName &&
     values.optionIds.length > 0 &&
     !mixedUnits &&
     (values.mode !== 'CHOOSE' || values.optionIds.length > 1)
@@ -348,10 +352,22 @@ export function NewLineDialog({
         <DialogBody className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="new-line-name">Nome</Label>
+              <Label htmlFor="new-line-name">
+                {values.mode === 'SINGLE'
+                  ? 'Nome (opcional)'
+                  : values.mode === 'CHOOSE'
+                    ? 'Nome do grupo'
+                    : 'Nome da lista'}
+              </Label>
               <Input
                 id="new-line-name"
-                placeholder="Ex.: Tempo por metro, Material"
+                placeholder={
+                  values.mode === 'SINGLE'
+                    ? singleName || 'Fica o nome do recurso escolhido'
+                    : values.mode === 'CHOOSE'
+                      ? 'Ex.: Papel, Lona, Acabamento'
+                      : 'Ex.: Materiais da estrutura'
+                }
                 value={values.name}
                 onChange={(event) => set('name', event.target.value)}
               />
@@ -389,9 +405,9 @@ export function NewLineDialog({
           />
           <p className="-mt-2 text-sm text-gray">
             {values.mode === 'SINGLE'
-              ? 'Um recurso, sempre o mesmo.'
+              ? 'Um recurso, sempre o mesmo: a impressora, a lona, a hora do setor.'
               : values.mode === 'CHOOSE'
-                ? 'Várias opções de mesma unidade; entra no custo só a escolhida (a lona do banner).'
+                ? 'Um grupo com várias opções de mesma unidade, e o vendedor escolhe uma no orçamento: o grupo "Papel" com couché 150 g, couché 300 g e offset 90 g. Entra no custo só a escolhida.'
                 : 'O vendedor informa no orçamento quanto usou de cada item (o metalon de uma base de ACM).'}
           </p>
 
@@ -514,7 +530,7 @@ export function NewLineDialog({
           <Button
             type="button"
             disabled={!valid}
-            onClick={() => onSave(values)}
+            onClick={() => onSave({ ...values, name: finalName })}
           >
             Adicionar {resourceKindObj[values.kind].toLowerCase()}
           </Button>
