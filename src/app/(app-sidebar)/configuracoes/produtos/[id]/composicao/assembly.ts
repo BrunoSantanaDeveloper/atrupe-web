@@ -270,6 +270,21 @@ export type ProductVariation = {
   overrides: VariationOverride[]
 }
 
+// O que o cadastro do START/LITE já tem e a composição herda ao abrir pela
+// primeira vez (CP-16: o produto chega ao PRO como está): unidade, valor,
+// medida padrão, descritivo e permissões de edição
+export type AssemblySeed = {
+  name: string
+  code: string
+  unitKind: UnitKind
+  unitPrice: number | null
+  width?: number
+  height?: number
+  technicalDescription?: string
+  allowEditValues?: boolean
+  allowEditDescription?: boolean
+}
+
 export type ProductAssembly = {
   productId: string
   name: string

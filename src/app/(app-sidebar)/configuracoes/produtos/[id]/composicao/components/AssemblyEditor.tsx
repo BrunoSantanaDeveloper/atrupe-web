@@ -10,7 +10,7 @@ import Link from 'next/link'
 // custa este produto na medida em que ele é vendido, e se o preço cobre.
 
 // React
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
@@ -74,6 +74,7 @@ import {
   type AssemblyStatus,
   type AssemblyMeasure,
   type ProductDimension,
+  type AssemblySeed,
 } from '../assembly'
 
 // Actions
@@ -108,6 +109,10 @@ import {
   setVariationPrice,
   clearVariationLine,
 } from '@/actions/product-assembly'
+
+// Actions (cadastro)
+import { getItemOld } from '@/actions/_cruds'
+import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Hooks / Store / Consts
 import {
@@ -147,6 +152,28 @@ import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 const SHOW_SECOND_PART = false
+
+// Do produto da API para a semente da composição: unidade, valor por unidade
+// (guardado por mm², mm, ml… e mostrado por m², m, l), medida padrão em
+// metros (a API guarda milímetros), descritivo e permissões
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const seedFromProduct = (product: any): AssemblySeed | undefined => {
+  if (!product?.id) return undefined
+  const item = product.items?.[0]
+  const unitKind: UnitKind = item?.unitKind || 'UNITY'
+  const raw = Number(item?.unitCost ?? product.unitCost ?? 0)
+  return {
+    name: product.name || 'Produto',
+    code: product.code || '',
+    unitKind,
+    unitPrice: raw > 0 ? Math.round(convertRawToUnitCost(unitKind, raw)) : null,
+    width: item?.width ? Number(item.width) / 1000 : undefined,
+    height: item?.height ? Number(item.height) / 1000 : undefined,
+    technicalDescription: product.technicalDescription || '',
+    allowEditValues: product.allowEditValues ?? true,
+    allowEditDescription: product.allowEditDescription ?? true,
+  }
+}
 
 const EDIT = ['product_settings:products:edit']
 
@@ -289,9 +316,23 @@ export function AssemblyEditor({
     updateFilterParam('variacao', id || 'all', { router, params })
   const [description, setDescription] = useState('')
 
+  // O produto do cadastro (API), para a composição abrir com a unidade, o
+  // valor e a medida que o START/LITE já tinham (CP-16). Só para ids reais;
+  // os exemplos do mock e os rascunhos do orçamento não têm cadastro
+  const isCatalogId = /^[0-9a-f-]{32,36}$/i.test(productId)
+  const { data: catalogProduct, isFetched: catalogFetched } = useQuery({
+    staleTime: Infinity,
+    enabled: isCatalogId,
+    queryKey: ['product', productId],
+    queryFn: () => getItemOld({ route: 'productRoute', id: productId }),
+  })
+  const seed = useMemo(() => seedFromProduct(catalogProduct), [catalogProduct])
+
   const { data, isLoading } = useQuery({
-    queryKey: ['assembly', productId, measure, variationId],
-    queryFn: () => getAssembly({ productId, measure, variationId }),
+    // Espera o cadastro chegar, para a primeira composição já nascer dele
+    enabled: !isCatalogId || catalogFetched,
+    queryKey: ['assembly', productId, measure, variationId, seed],
+    queryFn: () => getAssembly({ productId, measure, variationId, seed }),
     placeholderData: keepPreviousData,
   })
   const { data: resourcesRes } = useQuery({
@@ -1070,8 +1111,10 @@ export function AssemblyEditor({
                 }
               />
               <PermissionGate permissions={['values:values:view']}>
-                <div className="space-y-2">
-                  <Label htmlFor="assembly-unit-price">
+                {/* A mesma estrutura do SelectBasic ao lado: rótulo com mb-2 e
+                    campo de 44 px, para as três colunas alinharem */}
+                <div className="flex flex-col">
+                  <Label htmlFor="assembly-unit-price" className="mb-2">
                     {unitSaleLabel[assembly.unitKind]}
                     {variation ? ` · ${variation.name}` : ''}
                   </Label>

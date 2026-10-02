@@ -17,6 +17,7 @@ import type {
   ComputedLine,
   ComputedBlock,
   ProductAssembly,
+  AssemblySeed,
   ComputedAssembly,
   ProductVariation,
   ProcessCatalogItem,
@@ -1372,7 +1373,30 @@ const syncLinks = () =>
     )
   })
 
-const findOrCreate = (productId: string) => {
+// A composição nasce com o que o cadastro do produto já tem (CP-16). Só a
+// primeira vez: depois que alguém mexeu (etapa, valor, nome), a semente não
+// sobrescreve mais
+const untouched = (assembly: ProductAssembly) =>
+  assembly.name === 'Produto' &&
+  assembly.unitPrice === null &&
+  assembly.blocks.length === 0
+
+const applySeed = (assembly: ProductAssembly, seed: AssemblySeed) => {
+  assembly.name = seed.name || assembly.name
+  assembly.code = seed.code || assembly.code
+  assembly.unitKind = seed.unitKind || assembly.unitKind
+  assembly.unitPrice = seed.unitPrice
+  assembly.measure = {
+    quantity: 1,
+    width: seed.width && seed.width > 0 ? seed.width : 1,
+    height: seed.height && seed.height > 0 ? seed.height : 1,
+  }
+  assembly.technicalDescription = seed.technicalDescription || ''
+  assembly.allowEditValues = seed.allowEditValues ?? true
+  assembly.allowEditDescription = seed.allowEditDescription ?? true
+}
+
+const findOrCreate = (productId: string, seed?: AssemblySeed) => {
   syncLinks()
   let found = assemblies.find((item) => item.productId === productId)
   if (!found) {
@@ -1395,6 +1419,7 @@ const findOrCreate = (productId: string) => {
     }
     assemblies.push(found)
   }
+  if (seed && untouched(found)) applySeed(found, seed)
   return found
 }
 
@@ -1883,12 +1908,15 @@ export const getAssembly = async ({
   productId,
   measure,
   variationId,
+  seed,
 }: {
   productId: string
   measure?: AssemblyMeasure
   variationId?: string | null
+  // O cadastro do produto, para a composição nascer com ele (CP-16)
+  seed?: AssemblySeed
 }) => {
-  const assembly = findOrCreate(productId)
+  const assembly = findOrCreate(productId, seed)
   const base = measure ? { ...assembly, measure } : assembly
   const variation =
     assembly.variations.find((item) => item.id === variationId) || null
