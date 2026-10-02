@@ -1620,7 +1620,9 @@ export function AssemblyEditor({
             <CardDescription>
               {inVariation
                 ? `O que você acrescentar aqui existe só em ${variation?.name}. As etapas da base continuam valendo.`
-                : 'O caminho da produção: cada caixa é a etapa de um setor e vira uma tarefa. Use o "+" depois de uma caixa para a etapa seguinte; usar de novo na mesma caixa abre um caminho em paralelo. Clique na caixa para ver os recursos e o tempo.'}
+                : assembly.blocks.length
+                  ? 'Cada caixa é a etapa de um setor. Clique na caixa para ver a máquina, o material e a mão de obra; o "+" acrescenta a etapa seguinte.'
+                  : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa.'}
             </CardDescription>
           </div>
           {!inVariation && (
@@ -1699,12 +1701,13 @@ export function AssemblyEditor({
               }
               empty={
                 <EmptyState
-                  title="Nenhuma etapa ainda"
-                  description={`A máquina, o material e a mão de obra entram dentro de uma etapa. Para um produto de uma etapa só, componha direto a etapa de ${ownSector.toLowerCase()}; com mais etapas, comece pela primeira ou importe da biblioteca. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição.`}
+                  title={`Monte a etapa de ${ownSector.toLowerCase()}`}
+                  description="É nela que entram a máquina, o material e a mão de obra. Enquanto não houver composição, o produto segue vendido pelo preço cadastrado."
                   action={
-                    <div className="flex flex-wrap justify-center gap-2">
-                      {/* O atalho do produto simples: a etapa do setor dele,
-                          já aberta com os botões de máquina e material */}
+                    <div className="flex flex-col items-center gap-3">
+                      {/* Uma ação só: a etapa do setor do produto, já aberta
+                          com os botões de máquina e material. O caso de
+                          várias etapas fica num link discreto */}
                       <Button
                         type="button"
                         LeftIcon={IconCirclePlus}
@@ -1725,23 +1728,16 @@ export function AssemblyEditor({
                           )
                         }
                       >
-                        Compor a etapa de {ownSector.toLowerCase()}
+                        Montar a etapa de {ownSector.toLowerCase()}
                       </Button>
                       <Button
                         type="button"
-                        variant="neutralOutline"
-                        LeftIcon={IconCirclePlus}
+                        variant="link"
+                        className="h-auto px-0 text-sm"
                         onClick={() => setDialog({ kind: 'next', after: null })}
                       >
-                        Primeira etapa
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="neutralOutline"
-                        LeftIcon={IconBooks}
-                        onClick={() => setDialog({ kind: 'library' })}
-                      >
-                        Importar da biblioteca
+                        O produto começa em outro setor ou usa um processo
+                        cadastrado
                       </Button>
                     </div>
                   }
