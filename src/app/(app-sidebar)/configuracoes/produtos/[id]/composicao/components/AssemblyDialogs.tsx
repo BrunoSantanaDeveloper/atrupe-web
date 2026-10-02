@@ -311,15 +311,29 @@ export function NewLineDialog({
   const mixedUnits =
     values.mode === 'CHOOSE' && new Set(chosen.map((i) => i.unit)).size > 1
 
-  const toggle = (id: string) =>
+  // No recurso único o nome já vem preenchido com o do recurso escolhido
+  // (a lona, a impressora) e a pessoa edita se quiser. Se ela já escreveu
+  // um nome seu, a escolha não o apaga
+  const toggle = (id: string) => {
+    if (values.mode === 'SINGLE') {
+      const picked = available.find((item) => item.id === id)
+      const previous = chosen[0]?.name || ''
+      const keepsOwnName =
+        values.name.trim() !== '' && values.name.trim() !== previous
+      setValues((current) => ({
+        ...current,
+        optionIds: [id],
+        name: keepsOwnName ? current.name : picked?.name || current.name,
+      }))
+      return
+    }
     set(
       'optionIds',
-      values.mode === 'SINGLE'
-        ? [id]
-        : values.optionIds.includes(id)
-          ? values.optionIds.filter((item) => item !== id)
-          : [...values.optionIds, id],
+      values.optionIds.includes(id)
+        ? values.optionIds.filter((item) => item !== id)
+        : [...values.optionIds, id],
     )
+  }
 
   // No recurso único o nome é o do próprio recurso (a impressora laser); só
   // o grupo de escolha e a lista precisam de um nome seu ("Papel")
@@ -354,7 +368,7 @@ export function NewLineDialog({
             <div className="space-y-2">
               <Label htmlFor="new-line-name">
                 {values.mode === 'SINGLE'
-                  ? 'Nome (opcional)'
+                  ? 'Nome'
                   : values.mode === 'CHOOSE'
                     ? 'Nome do grupo'
                     : 'Nome da lista'}
@@ -363,7 +377,7 @@ export function NewLineDialog({
                 id="new-line-name"
                 placeholder={
                   values.mode === 'SINGLE'
-                    ? singleName || 'Fica o nome do recurso escolhido'
+                    ? 'Escolha o recurso: o nome vem dele'
                     : values.mode === 'CHOOSE'
                       ? 'Ex.: Papel, Lona, Acabamento'
                       : 'Ex.: Materiais da estrutura'
