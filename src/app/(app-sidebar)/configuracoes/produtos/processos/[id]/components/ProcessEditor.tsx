@@ -58,6 +58,8 @@ import {
   type ComputedBlock,
   type AssemblyMeasure,
 } from '../../../[id]/composicao/assembly'
+import type { ResourceKind } from '../../types'
+import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
 
 // Actions
 import {
@@ -97,7 +99,6 @@ import {
   IconTrash,
   IconPencil,
   IconSettings,
-  IconCirclePlus,
   IconListDetails,
 } from '@tabler/icons-react'
 
@@ -132,7 +133,7 @@ const zeroInput = (input: FormulaInput, block: ComputedBlock) => {
 
 type Dialog =
   | { kind: 'rules' }
-  | { kind: 'newLine' }
+  | { kind: 'newLine'; lineKind?: ResourceKind }
   | { kind: 'line'; lineId: string }
   | { kind: 'options'; lineId: string }
   | null
@@ -513,10 +514,10 @@ export function ProcessEditor({
               <Table className="min-w-[860px]">
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="w-[18%]">Linha</TableHead>
-                    <TableHead className="w-[22%]">Recurso</TableHead>
+                    <TableHead className="w-[18%]">Recurso</TableHead>
+                    <TableHead className="w-[22%]">Item</TableHead>
                     <TableHead className="w-[13%]">Consumo</TableHead>
-                    <TableHead className="w-[17%]">Cálculo</TableHead>
+                    <TableHead className="w-[17%]">Tipo de cálculo</TableHead>
                     <TableHead className="w-[10%] text-right">
                       Quantidade
                     </TableHead>
@@ -720,9 +721,10 @@ export function ProcessEditor({
                         colSpan={8}
                         className="py-6 text-center text-sm text-gray"
                       >
-                        Nenhuma linha ainda. Acrescente o tempo, a máquina e o
-                        material que o setor de {block.sector.toLowerCase()}{' '}
-                        usa.
+                        Este processo ainda não tem recursos. Acrescente abaixo
+                        a máquina, o material e a mão de obra que o setor de{' '}
+                        {block.sector.toLowerCase()} usa, cada um com o seu tipo
+                        de cálculo.
                       </TableCell>
                     </TableRow>
                   )}
@@ -730,15 +732,11 @@ export function ProcessEditor({
               </Table>
               <PermissionGate permissions={EDIT}>
                 <div className="px-6 pb-2 pt-4">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="neutralOutline"
-                    LeftIcon={IconCirclePlus}
-                    onClick={() => setDialog({ kind: 'newLine' })}
-                  >
-                    Nova linha
-                  </Button>
+                  <ResourceKindButtons
+                    onPick={(lineKind) =>
+                      setDialog({ kind: 'newLine', lineKind })
+                    }
+                  />
                 </div>
               </PermissionGate>
             </CardContent>
@@ -874,13 +872,14 @@ export function ProcessEditor({
       />
       <NewLineDialog
         block={dialog?.kind === 'newLine' ? block : undefined}
+        initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}
         resources={resourcesRes?.data?.resources || []}
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
           setDialog(null)
           run(
             addAssemblyLine({ productId: hostId, blockId: block.id, values }),
-            'Linha adicionada',
+            'Recurso acrescentado ao processo',
           )
         }}
       />
@@ -899,7 +898,7 @@ export function ProcessEditor({
               lineId,
               values,
             }),
-            'Linha ajustada',
+            'Recurso ajustado',
           )
         }}
       />

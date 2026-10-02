@@ -54,6 +54,7 @@ import type {
 // Hooks / Store / Consts
 import {
   formulaObj,
+  resourceKindObj,
   formulaOptions,
   resourceKindOptions,
   dimensionRuleOptions,
@@ -271,19 +272,23 @@ function OptionalFields({
 export function NewLineDialog({
   block,
   resources,
+  initialKind = 'LABOR',
   onOpenChange,
   onSave,
 }: {
   block?: ComputedBlock
   resources: AssemblyResource[]
+  // O botão que abriu o diálogo já diz o tipo: Máquina, Material, Mão de
+  // obra ou Terceirizado, como no item pronto do legado
+  initialKind?: ResourceKind
   onOpenChange: (open: boolean) => void
   onSave: (values: NewLineValues) => void
 }) {
-  const [values, setValues] = useState<NewLineValues>(emptyLine('LABOR'))
+  const [values, setValues] = useState<NewLineValues>(emptyLine(initialKind))
 
   useEffect(() => {
-    if (block) setValues(emptyLine('LABOR'))
-  }, [block])
+    if (block) setValues(emptyLine(initialKind))
+  }, [block, initialKind])
 
   const set = <K extends keyof NewLineValues>(
     key: K,
@@ -329,10 +334,13 @@ export function NewLineDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <div>
-              <DialogTitle>Nova linha · {block?.name}</DialogTitle>
+              <DialogTitle>
+                Acrescentar {resourceKindObj[values.kind].toLowerCase()} ·{' '}
+                {block?.name}
+              </DialogTitle>
               <DialogDescription>
-                O que o setor de {block?.sector.toLowerCase()} usa nesta etapa:
-                tempo, máquina ou material.
+                O que o setor de {block?.sector.toLowerCase()} usa nesta etapa,
+                e como a quantidade é calculada a partir da medida vendida.
               </DialogDescription>
             </div>
           </div>
@@ -340,7 +348,7 @@ export function NewLineDialog({
         <DialogBody className="space-y-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="new-line-name">Nome da linha</Label>
+              <Label htmlFor="new-line-name">Nome</Label>
               <Input
                 id="new-line-name"
                 placeholder="Ex.: Tempo por metro, Material"
@@ -365,7 +373,7 @@ export function NewLineDialog({
 
           <SelectBasic
             name="new-line-mode"
-            label="Como a linha funciona"
+            label="Como funciona"
             options={toOptions(lineModeObj)}
             value={values.mode}
             onChange={(value) =>
@@ -426,7 +434,7 @@ export function NewLineDialog({
             <>
               <SelectBasic
                 name="new-line-formula"
-                label="Como a quantidade é calculada"
+                label="Tipo de cálculo"
                 options={formulaOptions}
                 value={values.formula}
                 onChange={(value) => set('formula', value as FormulaKey)}
@@ -508,7 +516,7 @@ export function NewLineDialog({
             disabled={!valid}
             onClick={() => onSave(values)}
           >
-            Adicionar linha
+            Adicionar {resourceKindObj[values.kind].toLowerCase()}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -616,7 +624,7 @@ export function LineDialog({
           {!variationName && (
             <SelectBasic
               name="line-formula"
-              label="Como a quantidade é calculada"
+              label="Tipo de cálculo"
               options={formulaOptions}
               value={values.formula}
               onChange={(value) =>

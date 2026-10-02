@@ -10,7 +10,7 @@ import Link from 'next/link'
 // custa este produto na medida em que ele é vendido, e se o preço cobre.
 
 // React
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
@@ -115,6 +115,8 @@ import {
   assemblyOverrideObj,
 } from '@/consts/productAssembly'
 import { formulaObj, resourceKindObj } from '@/consts/processes'
+import type { ResourceKind } from '../../../processos/types'
+import { ResourceKindButtons } from './ResourceKindButtons'
 
 // Third-party
 import { toast } from 'sonner'
@@ -195,7 +197,7 @@ type Dialog =
   | { kind: 'swap'; block: ComputedBlock }
   | { kind: 'line'; block: ComputedBlock; line: ComputedLine }
   | { kind: 'rules'; block: ComputedBlock }
-  | { kind: 'newLine'; block: ComputedBlock }
+  | { kind: 'newLine'; block: ComputedBlock; lineKind?: ResourceKind }
   | { kind: 'options'; blockId: string; lineId: string }
   | { kind: 'library' }
   | null
@@ -262,6 +264,20 @@ export function AssemblyEditor({
   // embaixo do desenho (FL-5, FL-8)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [expandedPart, setExpandedPart] = useState<string | null>(null)
+  // Ao escolher ou acrescentar uma etapa, o detalhe dela entra na vista
+  const detailRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!selectedId) return
+    const timer = setTimeout(
+      () =>
+        detailRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        }),
+      150,
+    )
+    return () => clearTimeout(timer)
+  }, [selectedId])
 
   // A variação vista fica na URL (design.md §8): ?variacao=
   const router = useRouter()
@@ -635,10 +651,10 @@ export function AssemblyEditor({
             <Table className="min-w-[760px]">
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead className="w-[18%]">Linha</TableHead>
-                  <TableHead className="w-[24%]">Recurso</TableHead>
+                  <TableHead className="w-[18%]">Recurso</TableHead>
+                  <TableHead className="w-[24%]">Item</TableHead>
                   <TableHead className="w-[12%]">Consumo</TableHead>
-                  <TableHead className="w-[16%]">Cálculo</TableHead>
+                  <TableHead className="w-[16%]">Tipo de cálculo</TableHead>
                   <TableHead className="w-[10%] text-right">
                     Quantidade
                   </TableHead>
@@ -927,9 +943,10 @@ export function AssemblyEditor({
                       colSpan={8}
                       className="py-6 text-center text-sm text-gray"
                     >
-                      Nenhuma linha ainda. Acrescente o tempo, a máquina e o
-                      material que o setor de {item.sector.toLowerCase()} usa
-                      nesta etapa.
+                      Esta etapa ainda não tem recursos. Acrescente abaixo a
+                      máquina, o material e a mão de obra que o setor de{' '}
+                      {item.sector.toLowerCase()} usa nela, cada um com o seu
+                      tipo de cálculo. O custo da etapa é a soma deles.
                     </TableCell>
                   </TableRow>
                 )}
@@ -939,15 +956,11 @@ export function AssemblyEditor({
           {!inVariation && !item.part && (
             <PermissionGate permissions={EDIT}>
               <div className="px-6 pb-2 pt-4">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="neutralOutline"
-                  LeftIcon={IconCirclePlus}
-                  onClick={() => setDialog({ kind: 'newLine', block: item })}
-                >
-                  Nova linha
-                </Button>
+                <ResourceKindButtons
+                  onPick={(lineKind) =>
+                    setDialog({ kind: 'newLine', block: item, lineKind })
+                  }
+                />
               </div>
             </PermissionGate>
           )}
@@ -1643,7 +1656,7 @@ export function AssemblyEditor({
       </Card>
 
       {selectedBlock && (
-        <div className={cn(embedded && 'order-first')}>
+        <div ref={detailRef} className={cn(embedded && 'order-first')}>
           {stageDetail(selectedBlock)}
         </div>
       )}
@@ -1887,6 +1900,7 @@ export function AssemblyEditor({
       />
       <NewLineDialog
         block={dialog?.kind === 'newLine' ? dialog.block : undefined}
+        initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}
         resources={resources?.resources || []}
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
@@ -1895,7 +1909,7 @@ export function AssemblyEditor({
           setDialog(null)
           run(
             addAssemblyLine({ productId, blockId: target.id, values }),
-            'Linha adicionada',
+            'Recurso acrescentado à etapa',
           )
         }}
       />
@@ -1980,7 +1994,7 @@ export function AssemblyEditor({
               lineId: line.id,
               values,
             }),
-            'Linha ajustada neste produto',
+            'Recurso ajustado neste produto',
           )
         }}
       />
