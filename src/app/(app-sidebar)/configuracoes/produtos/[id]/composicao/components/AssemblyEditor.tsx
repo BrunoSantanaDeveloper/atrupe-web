@@ -115,6 +115,7 @@ import { getItemOld } from '@/actions/_cruds'
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
 
 // Hooks / Store / Consts
+import { useSector } from '@/hooks/queries/useSector'
 import {
   assemblyStatusObj,
   assemblyOverrideObj,
@@ -327,6 +328,8 @@ export function AssemblyEditor({
     queryFn: () => getItemOld({ route: 'productRoute', id: productId }),
   })
   const seed = useMemo(() => seedFromProduct(catalogProduct), [catalogProduct])
+  // Para nomear a etapa única do produto simples pelo setor do cadastro
+  const { data: companySectors } = useSector()
 
   const { data, isLoading } = useQuery({
     // Espera o cadastro chegar, para a primeira composição já nascer dele
@@ -402,6 +405,15 @@ export function AssemblyEditor({
 
   // A etapa é do setor: todos os setores da empresa podem começar o produto
   const baseSectors = resources?.sectors || []
+  // O setor do produto no cadastro: é a etapa única do produto simples. O
+  // cadastro devolve só o id; o nome vem da lista de setores da empresa
+  const ownSector: string =
+    companySectors?.find((item) => item.id === catalogProduct?.sectorId)
+      ?.name ||
+    catalogProduct?.sectorName ||
+    catalogProduct?.sector?.name ||
+    baseSectors[0] ||
+    'Produção'
 
   // A etapa aberta embaixo do fluxo: a escolhida, ou a primeira
   const selectedBlock =
@@ -1688,9 +1700,41 @@ export function AssemblyEditor({
               empty={
                 <EmptyState
                   title="Nenhuma etapa ainda"
-                  description="Importe uma composição pronta da biblioteca, ou comece pela etapa onde o produto começa — a criação, a impressão, o corte. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição."
+                  description={`A máquina, o material e a mão de obra entram dentro de uma etapa. Para um produto de uma etapa só, componha direto a etapa de ${ownSector.toLowerCase()}; com mais etapas, comece pela primeira ou importe da biblioteca. O produto continua sendo vendido pelo preço cadastrado enquanto não houver composição.`}
                   action={
                     <div className="flex flex-wrap justify-center gap-2">
+                      {/* O atalho do produto simples: a etapa do setor dele,
+                          já aberta com os botões de máquina e material */}
+                      <Button
+                        type="button"
+                        LeftIcon={IconCirclePlus}
+                        onClick={() =>
+                          run(
+                            addOwnBlock({
+                              productId,
+                              name: ownSector,
+                              sector: ownSector,
+                              dependsOn: [],
+                            }).then((res) => {
+                              if (res.success && res.data) {
+                                setSelectedId(res.data)
+                              }
+                              return res
+                            }),
+                            `Etapa de ${ownSector.toLowerCase()} criada: acrescente a máquina, o material e a mão de obra`,
+                          )
+                        }
+                      >
+                        Compor a etapa de {ownSector.toLowerCase()}
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="neutralOutline"
+                        LeftIcon={IconCirclePlus}
+                        onClick={() => setDialog({ kind: 'next', after: null })}
+                      >
+                        Primeira etapa
+                      </Button>
                       <Button
                         type="button"
                         variant="neutralOutline"
@@ -1698,13 +1742,6 @@ export function AssemblyEditor({
                         onClick={() => setDialog({ kind: 'library' })}
                       >
                         Importar da biblioteca
-                      </Button>
-                      <Button
-                        type="button"
-                        LeftIcon={IconCirclePlus}
-                        onClick={() => setDialog({ kind: 'next', after: null })}
-                      >
-                        Primeira etapa
                       </Button>
                     </div>
                   }
