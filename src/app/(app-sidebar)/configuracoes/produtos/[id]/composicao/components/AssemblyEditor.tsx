@@ -146,6 +146,8 @@ import {
 import { updateFilterParam } from '@/lib/filter-utils'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
+const SHOW_SECOND_PART = false
+
 const EDIT = ['product_settings:products:edit']
 
 const num = (value: number, digits = 3) =>
@@ -1380,163 +1382,178 @@ export function AssemblyEditor({
         </Card>
       </PermissionGate>
 
-      {/* A tabela comercial ao lado do custo técnico (FQ-1 a FQ-3) */}
-      <PriceTiersCard assembly={assembly} onSaved={refresh} />
+      {/* Segunda parte (decisão de 30/09 e 02/10/2026): faixa de quantidade e
+          variações ficam fora da tela enquanto a composição é acertada. O
+          código continua; só não é mostrado */}
+      {SHOW_SECOND_PART && (
+        <>
+          {/* A tabela comercial ao lado do custo técnico (FQ-1 a FQ-3) */}
+          <PriceTiersCard assembly={assembly} onSaved={refresh} />
 
-      {/* 3. As variações: a mesma composição com exceções (PV-1 a PV-7) */}
-      <Card>
-        <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-          <div>
-            <CardTitle>Variações</CardTitle>
-            <CardDescription>
-              P, M, G; 4x0 ou 4x4; com ou sem laminação. A variação nasce igual
-              à base, e só o que você mudar nela passa a ser dela.
-            </CardDescription>
-          </div>
-          <PermissionGate permissions={EDIT}>
-            {newVariation === null ? (
-              <Button
-                type="button"
-                variant="neutralOutline"
-                LeftIcon={IconCirclePlus}
-                onClick={() => setNewVariation('')}
-              >
-                Nova variação
-              </Button>
-            ) : (
-              <div className="flex w-full gap-2 sm:w-auto">
-                <Input
-                  autoFocus
-                  aria-label="Nome da variação"
-                  placeholder="Ex.: 4x4, GG, laminado"
-                  value={newVariation}
-                  onChange={(event) => setNewVariation(event.target.value)}
-                />
-                <Button
-                  type="button"
-                  onClick={async () => {
-                    const res = await addVariation({
-                      productId,
-                      name: newVariation,
-                    })
-                    if (!res.success) return toast.error(res.message)
-                    setNewVariation(null)
-                    await refresh()
-                    setVariation(res.data as string)
-                  }}
-                >
-                  Criar
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setNewVariation(null)}
-                >
-                  Cancelar
-                </Button>
+          {/* 3. As variações: a mesma composição com exceções (PV-1 a PV-7) */}
+          <Card>
+            <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
+              <div>
+                <CardTitle>Variações</CardTitle>
+                <CardDescription>
+                  P, M, G; 4x0 ou 4x4; com ou sem laminação. A variação nasce
+                  igual à base, e só o que você mudar nela passa a ser dela.
+                </CardDescription>
               </div>
-            )}
-          </PermissionGate>
-        </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-6">
-          <div className="flex flex-wrap gap-2">
-            {assembly.variationSummary.map((item) => (
-              <Button
-                key={item.id || 'base'}
-                type="button"
-                variant={
-                  (variation?.id || '') === item.id
-                    ? 'default'
-                    : 'neutralOutline'
-                }
-                onClick={() => setVariation(item.id || null)}
-              >
-                {item.name}
-              </Button>
-            ))}
-          </div>
-          {assembly.variationSummary.length > 1 && (
-            <PermissionGate permissions={['values:values:view']}>
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[40%]">Variação</TableHead>
-                    <TableHead className="w-[20%] text-right">Custo</TableHead>
-                    <TableHead className="w-[20%] text-right">
-                      Valor de venda
-                    </TableHead>
-                    <TableHead className="w-[20%] text-right">Margem</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {assembly.variationSummary.map((item) => (
-                    <TableRow key={item.id || 'base'}>
-                      <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell className="text-right">
-                        {money(item.cost)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {money(item.priceForMeasure)}
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          'text-right font-medium',
-                          item.margin !== null &&
-                            item.margin < 0 &&
-                            'text-error-700',
-                        )}
-                      >
-                        {item.margin === null ? '-' : `${num(item.margin, 1)}%`}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </PermissionGate>
-          )}
-          {variation && (
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-light-300 bg-blue-light-50 p-4 text-sm">
-              <p className="text-gray-700">
-                <strong>Você está na variação {variation.name}.</strong> O que
-                mudar nas linhas abaixo vale só para ela; o resto acompanha a
-                base. Etapas se acrescentam na base.
-              </p>
               <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  variant="errorGhost"
-                  size="sm"
-                  onClick={() =>
-                    alertDialog.open({
-                      title: `Remover a variação ${variation.name}?`,
-                      description:
-                        'As exceções desta variação se perdem. A base não muda.',
-                      confirmLabel: 'Remover',
-                      cancelLabel: 'Cancelar',
-                      confirmVariant: 'error',
-                      onConfirm: async () => {
-                        const res = await removeVariation({
+                {newVariation === null ? (
+                  <Button
+                    type="button"
+                    variant="neutralOutline"
+                    LeftIcon={IconCirclePlus}
+                    onClick={() => setNewVariation('')}
+                  >
+                    Nova variação
+                  </Button>
+                ) : (
+                  <div className="flex w-full gap-2 sm:w-auto">
+                    <Input
+                      autoFocus
+                      aria-label="Nome da variação"
+                      placeholder="Ex.: 4x4, GG, laminado"
+                      value={newVariation}
+                      onChange={(event) => setNewVariation(event.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      onClick={async () => {
+                        const res = await addVariation({
                           productId,
-                          variationId: variation.id,
+                          name: newVariation,
                         })
-                        if (!res.success) throw new Error(res.message)
-                        setVariation(null)
+                        if (!res.success) return toast.error(res.message)
+                        setNewVariation(null)
                         await refresh()
-                      },
-                      toastMsg: {
-                        success: 'Variação removida',
-                        error: 'Erro ao remover a variação',
-                      },
-                    })
-                  }
-                >
-                  Remover variação
-                </Button>
+                        setVariation(res.data as string)
+                      }}
+                    >
+                      Criar
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setNewVariation(null)}
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                )}
               </PermissionGate>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent className="space-y-4 px-6 pb-6">
+              <div className="flex flex-wrap gap-2">
+                {assembly.variationSummary.map((item) => (
+                  <Button
+                    key={item.id || 'base'}
+                    type="button"
+                    variant={
+                      (variation?.id || '') === item.id
+                        ? 'default'
+                        : 'neutralOutline'
+                    }
+                    onClick={() => setVariation(item.id || null)}
+                  >
+                    {item.name}
+                  </Button>
+                ))}
+              </div>
+              {assembly.variationSummary.length > 1 && (
+                <PermissionGate permissions={['values:values:view']}>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-gray-50">
+                        <TableHead className="w-[40%]">Variação</TableHead>
+                        <TableHead className="w-[20%] text-right">
+                          Custo
+                        </TableHead>
+                        <TableHead className="w-[20%] text-right">
+                          Valor de venda
+                        </TableHead>
+                        <TableHead className="w-[20%] text-right">
+                          Margem
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {assembly.variationSummary.map((item) => (
+                        <TableRow key={item.id || 'base'}>
+                          <TableCell className="font-medium">
+                            {item.name}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {money(item.cost)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {money(item.priceForMeasure)}
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              'text-right font-medium',
+                              item.margin !== null &&
+                                item.margin < 0 &&
+                                'text-error-700',
+                            )}
+                          >
+                            {item.margin === null
+                              ? '-'
+                              : `${num(item.margin, 1)}%`}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </PermissionGate>
+              )}
+              {variation && (
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-blue-light-300 bg-blue-light-50 p-4 text-sm">
+                  <p className="text-gray-700">
+                    <strong>Você está na variação {variation.name}.</strong> O
+                    que mudar nas linhas abaixo vale só para ela; o resto
+                    acompanha a base. Etapas se acrescentam na base.
+                  </p>
+                  <PermissionGate permissions={EDIT}>
+                    <Button
+                      type="button"
+                      variant="errorGhost"
+                      size="sm"
+                      onClick={() =>
+                        alertDialog.open({
+                          title: `Remover a variação ${variation.name}?`,
+                          description:
+                            'As exceções desta variação se perdem. A base não muda.',
+                          confirmLabel: 'Remover',
+                          cancelLabel: 'Cancelar',
+                          confirmVariant: 'error',
+                          onConfirm: async () => {
+                            const res = await removeVariation({
+                              productId,
+                              variationId: variation.id,
+                            })
+                            if (!res.success) throw new Error(res.message)
+                            setVariation(null)
+                            await refresh()
+                          },
+                          toastMsg: {
+                            success: 'Variação removida',
+                            error: 'Erro ao remover a variação',
+                          },
+                        })
+                      }
+                    >
+                      Remover variação
+                    </Button>
+                  </PermissionGate>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {/* 4. A composição é o fluxo da produção (FL-1 a FL-5): cada caixa é
           a etapa de um setor, ligada às que vêm antes dela. As caixas são
