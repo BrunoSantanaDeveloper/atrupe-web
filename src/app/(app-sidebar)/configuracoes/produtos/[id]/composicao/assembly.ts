@@ -311,6 +311,9 @@ export type QuoteField = { id: string; name: string; defaultValue: number }
 // dele. Entra na lista de tipos de cálculo das linhas deste produto
 export type ProductFormula = { id: string; name: string; expression: string }
 
+// Variação do produto na lista do produto base (03/10/2026)
+export type ProductVariantRef = { id: string; name: string }
+
 export type ProductAssembly = {
   productId: string
   name: string
@@ -336,6 +339,10 @@ export type ProductAssembly = {
   variations: ProductVariation[]
   fields?: QuoteField[]
   formulas?: ProductFormula[]
+  // Variações do produto (P, M, G…) como cópias independentes da composição
+  // (decisão de 03/10/2026, no lugar da herança da PV-2). Cada uma é outra
+  // composição, com id "<produto>::v:<id>"; esta lista fica no produto base
+  variants?: ProductVariantRef[]
 }
 
 // O que o servidor devolve depois de calcular (SEG-1)

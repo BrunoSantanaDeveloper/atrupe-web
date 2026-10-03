@@ -1185,8 +1185,13 @@ const isProcessHost = (productId: string) =>
 // parte, não conta como produto composto e não entra em "Usado em"
 const DRAFT_PREFIX = 'orcamento:'
 const isDraft = (productId: string) => productId.startsWith(DRAFT_PREFIX)
+// Variação do produto (03/10/2026): outra composição, cópia independente,
+// com id "<produto>::v:<id>". Não é cadastro: não aparece nas listas
+const VARIANT_SEP = '::v:'
+const isVariant = (productId: string) => productId.includes(VARIANT_SEP)
+const baseOf = (productId: string) => productId.split(VARIANT_SEP)[0]
 const isHidden = (productId: string) =>
-  isProcessHost(productId) || isDraft(productId)
+  isProcessHost(productId) || isDraft(productId) || isVariant(productId)
 
 /* ---------------------------------------------------------------------------
  * O fluxo (FL-1): cada etapa depende de nenhuma, uma ou várias anteriores
@@ -2578,6 +2583,88 @@ export const copyCompositionFrom = async ({
     })),
   }))
   target.blocks.push(...copied)
+  return ok(null)
+}
+
+/* ---------------------------------------------------------------------------
+ * Variações como cópias independentes (03/10/2026). A variação nasce igual
+ * à composição de onde foi criada e, daí em diante, as duas não se falam
+ * ------------------------------------------------------------------------- */
+
+export const getProductVariants = async ({
+  productId,
+}: {
+  productId: string
+}) =>
+  ok({
+    baseProductId: baseOf(productId),
+    variants: findOrCreate(baseOf(productId)).variants || [],
+  })
+
+export const createProductVariant = async ({
+  productId,
+  name,
+}: {
+  // O produto (ou a variação) que está na tela: a cópia parte dele
+  productId: string
+  name: string
+}) => {
+  if (!name.trim()) return fail('Dê um nome à variação (P, M, G…)')
+  syncLinks()
+  const base = findOrCreate(baseOf(productId))
+  const source = findOrCreate(productId)
+  base.variants = base.variants || []
+  if (
+    base.variants.some(
+      (item) => item.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    )
+  ) {
+    return fail('Já existe uma variação com esse nome')
+  }
+  const id = `v${uid()}`
+  const variantProductId = `${base.productId}${VARIANT_SEP}${id}`
+  // Cópia inteira: etapas, linhas, campos, fórmulas, faixas e valor de venda
+  const copy: ProductAssembly = {
+    ...structuredClone(source),
+    productId: variantProductId,
+    variants: undefined,
+    variations: [],
+  }
+  assemblies.push(copy)
+  base.variants.push({ id, name: name.trim() })
+  return ok(variantProductId)
+}
+
+export const renameProductVariant = async ({
+  productId,
+  variantId,
+  name,
+}: {
+  productId: string
+  variantId: string
+  name: string
+}) => {
+  if (!name.trim()) return fail('Dê um nome à variação')
+  const base = findOrCreate(baseOf(productId))
+  const variant = (base.variants || []).find((item) => item.id === variantId)
+  if (!variant) return fail('Variação não encontrada')
+  variant.name = name.trim()
+  return ok(null)
+}
+
+export const removeProductVariant = async ({
+  productId,
+  variantId,
+}: {
+  productId: string
+  variantId: string
+}) => {
+  const base = findOrCreate(baseOf(productId))
+  const index = assemblies.findIndex(
+    (item) => item.productId === `${base.productId}${VARIANT_SEP}${variantId}`,
+  )
+  if (index >= 0) assemblies.splice(index, 1)
+  base.variants = (base.variants || []).filter((item) => item.id !== variantId)
   return ok(null)
 }
 

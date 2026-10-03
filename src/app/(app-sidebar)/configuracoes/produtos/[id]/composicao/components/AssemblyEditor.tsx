@@ -11,7 +11,7 @@ import Image from 'next/image'
 // custa este produto na medida em que ele é vendido, e se o preço cobre.
 
 // React
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 // UI
@@ -37,6 +37,16 @@ import {
 } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
+import { TooltipProvider } from '@/components/ui/tooltip'
+import {
+  Dialog,
+  DialogBody,
+  DialogTitle,
+  DialogFooter,
+  DialogHeader,
+  DialogContent,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -105,6 +115,10 @@ import {
   addVariationBlock,
   removeVariationBlock,
   addProductFormula,
+  getProductVariants,
+  createProductVariant,
+  renameProductVariant,
+  removeProductVariant,
   linkBlock,
   unlinkBlock,
   replaceBlockProcess,
@@ -305,16 +319,24 @@ const toFlowNode = (
 
 // `embedded`: dentro do diálogo do produto (CP-17) o cartão "Produto" some,
 // porque unidade, valor e medidas já são os campos da aba Produto
-export function AssemblyEditor({
-  productId,
-  embedded = false,
-  topbar,
-}: {
+type EditorProps = {
   productId: string
   embedded?: boolean
   // Na página, o editor desenha o Topbar para pôr a Situação no canto
   // superior direito da tela (pedido do time, 03/10/2026)
   topbar?: { title: string; supportText?: string; previousPage?: string }
+}
+
+function AssemblyEditorBody({
+  productId,
+  embedded = false,
+  topbar,
+  variantTabs,
+  topbarExtra,
+}: EditorProps & {
+  // As abas de variação e o botão "+ Variação", desenhados pelo invólucro
+  variantTabs?: ReactNode
+  topbarExtra?: ReactNode
 }) {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
@@ -1528,43 +1550,51 @@ export function AssemblyEditor({
           supportText={topbar.supportText}
           previousPage={topbar.previousPage}
           primaryCta={
-            <PermissionGate
-              permissions={EDIT}
-              fallback={<Badge variant={status.variant}>{status.text}</Badge>}
-            >
-              {/* Situação no canto superior direito da tela (IP-14) */}
-              <Select
-                value={assembly.status}
-                onValueChange={(value) =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { status: value as AssemblyStatus },
-                    }),
-                    assemblyStatusObj[value as AssemblyStatus].text,
-                  )
-                }
+            <div className="flex items-center gap-2">
+              {topbarExtra}
+              <PermissionGate
+                permissions={EDIT}
+                fallback={<Badge variant={status.variant}>{status.text}</Badge>}
               >
-                <SelectTrigger
-                  aria-label="Situação"
-                  title={status.help}
-                  className="h-11 w-[220px]"
+                {/* Situação no canto superior direito da tela (IP-14) */}
+                <Select
+                  value={assembly.status}
+                  onValueChange={(value) =>
+                    run(
+                      updateAssembly({
+                        productId,
+                        values: { status: value as AssemblyStatus },
+                      }),
+                      assemblyStatusObj[value as AssemblyStatus].text,
+                    )
+                  }
                 >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(assemblyStatusObj) as AssemblyStatus[]).map(
-                    (key) => (
-                      <SelectItem key={key} value={key}>
-                        {assemblyStatusObj[key].text}
-                      </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
-            </PermissionGate>
+                  <SelectTrigger
+                    aria-label="Situação"
+                    title={status.help}
+                    className="h-11 w-[220px]"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(assemblyStatusObj) as AssemblyStatus[]).map(
+                      (key) => (
+                        <SelectItem key={key} value={key}>
+                          {assemblyStatusObj[key].text}
+                        </SelectItem>
+                      ),
+                    )}
+                  </SelectContent>
+                </Select>
+              </PermissionGate>
+            </div>
           }
         />
+      )}
+
+      {/* As variações como abas (03/10/2026): Padrão e as cópias */}
+      {variantTabs && (
+        <div className={cn(embedded && 'order-first')}>{variantTabs}</div>
       )}
 
       {!embedded && (
@@ -2711,5 +2741,231 @@ export function AssemblyEditor({
         }}
       />
     </div>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * As variações do produto (P, M, G…) como abas (decisão de 03/10/2026). A
+ * variação nasce como cópia da composição aberta e, depois, as duas são
+ * independentes. Cada aba é outra composição, com o mesmo editor
+ * ------------------------------------------------------------------------- */
+
+export function AssemblyEditor(props: EditorProps) {
+  const { productId } = props
+  const queryClient = useQueryClient()
+  const alertDialog = useAlertDialog()
+  const { hasPermission } = usePermissions()
+  const canEdit = hasPermission(EDIT[0])
+  const [activeId, setActiveId] = useState(productId)
+  const [variantDialog, setVariantDialog] = useState<
+    { kind: 'new' } | { kind: 'rename'; id: string; name: string } | null
+  >(null)
+  const [variantName, setVariantName] = useState('')
+
+  useEffect(() => {
+    setActiveId(productId)
+  }, [productId])
+
+  const { data: variantsRes } = useQuery({
+    queryKey: ['product-variants', productId],
+    queryFn: () => getProductVariants({ productId }),
+  })
+  const variants = variantsRes?.data?.variants || []
+  const variantIdOf = (id: string) => `${productId}::v:${id}`
+  const activeVariant = variants.find(
+    (item) => variantIdOf(item.id) === activeId,
+  )
+  const refreshVariants = () =>
+    queryClient.invalidateQueries({ queryKey: ['product-variants', productId] })
+
+  const submitVariant = async () => {
+    if (!variantDialog) return
+    if (variantDialog.kind === 'new') {
+      const res = await createProductVariant({
+        productId: activeId,
+        name: variantName,
+      })
+      if (!res.success || !res.data) return toast.error(res.message)
+      toast.success(`Variação ${variantName.trim()} criada como cópia`)
+      await refreshVariants()
+      setActiveId(res.data)
+    } else {
+      const res = await renameProductVariant({
+        productId,
+        variantId: variantDialog.id,
+        name: variantName,
+      })
+      if (!res.success) return toast.error(res.message)
+      await refreshVariants()
+    }
+    setVariantDialog(null)
+  }
+
+  const removeVariant = (variant: { id: string; name: string }) =>
+    alertDialog.open({
+      title: `Remover a variação ${variant.name}?`,
+      description:
+        'A composição desta variação some. As outras variações e a composição padrão não mudam.',
+      confirmLabel: 'Remover',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeProductVariant({
+          productId,
+          variantId: variant.id,
+        })
+        if (!res.success) throw new Error(res.message)
+        if (activeId === variantIdOf(variant.id)) setActiveId(productId)
+        await refreshVariants()
+      },
+      toastMsg: {
+        success: 'Variação removida',
+        error: 'Erro ao remover a variação',
+      },
+    })
+
+  const tab = (id: string, label: string, isActive: boolean) => (
+    <button
+      key={id}
+      type="button"
+      aria-pressed={isActive}
+      onClick={() => setActiveId(id)}
+      className={cn(
+        'rounded-full border px-3.5 py-1.5 text-sm transition-colors',
+        isActive
+          ? 'border-brand-500 bg-brand-25 font-medium text-brand-700'
+          : 'border-gray-200 text-gray-600 hover:bg-gray-50',
+      )}
+    >
+      {label}
+    </button>
+  )
+
+  const addButton = canEdit ? (
+    <Button
+      type="button"
+      size="md"
+      variant="neutralOutline"
+      LeftIcon={IconCirclePlus}
+      onClick={() => {
+        setVariantName('')
+        setVariantDialog({ kind: 'new' })
+      }}
+    >
+      Variação
+    </Button>
+  ) : null
+
+  // Sem variação, não há abas: a tela fica como sempre foi
+  const tabs =
+    variants.length > 0 ? (
+      <div className="flex flex-wrap items-center gap-2">
+        {tab(productId, 'Padrão', activeId === productId)}
+        {variants.map((variant) =>
+          tab(
+            variantIdOf(variant.id),
+            variant.name,
+            activeId === variantIdOf(variant.id),
+          ),
+        )}
+        {activeVariant && canEdit && (
+          <TooltipProvider>
+            <ActionButton
+              Icon={IconPencil}
+              variant="neutralGhost"
+              tooltip={`Renomear ${activeVariant.name}`}
+              onClick={() => {
+                setVariantName(activeVariant.name)
+                setVariantDialog({
+                  kind: 'rename',
+                  id: activeVariant.id,
+                  name: activeVariant.name,
+                })
+              }}
+            />
+            <ActionButton
+              Icon={IconTrash}
+              variant="errorGhost"
+              tooltip={`Remover ${activeVariant.name}`}
+              onClick={() => removeVariant(activeVariant)}
+            />
+          </TooltipProvider>
+        )}
+        {props.embedded && addButton}
+      </div>
+    ) : props.embedded && addButton ? (
+      <div className="flex justify-end">{addButton}</div>
+    ) : null
+
+  return (
+    <>
+      <AssemblyEditorBody
+        key={activeId}
+        {...props}
+        productId={activeId}
+        variantTabs={tabs}
+        topbarExtra={addButton}
+      />
+      <Dialog
+        open={!!variantDialog}
+        onOpenChange={(open) => {
+          if (!open) setVariantDialog(null)
+        }}
+      >
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <div className="flex items-center gap-4">
+              <FeaturedIcon variant="neutralOutline" Icon={IconCirclePlus} />
+              <div>
+                <DialogTitle>
+                  {variantDialog?.kind === 'rename'
+                    ? 'Renomear variação'
+                    : 'Nova variação'}
+                </DialogTitle>
+                <DialogDescription>
+                  {variantDialog?.kind === 'rename'
+                    ? 'O nome aparece na aba e na escolha do vendedor.'
+                    : `A variação nasce como cópia do que está montado em ${activeVariant ? activeVariant.name : 'Padrão'}: etapas, recursos, campos do orçamento, fórmulas, faixas e valor de venda. Depois de criada, as duas são independentes: mudar uma não muda a outra.`}
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <DialogBody>
+            <div className="flex flex-col">
+              <Label htmlFor="variant-name" className="mb-2">
+                Nome da variação
+              </Label>
+              <Input
+                id="variant-name"
+                autoFocus
+                autoComplete="off"
+                placeholder="Ex.: P, M, G, GG"
+                value={variantName}
+                onChange={(event) => setVariantName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') submitVariant()
+                }}
+              />
+            </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setVariantDialog(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              disabled={!variantName.trim()}
+              onClick={submitVariant}
+            >
+              {variantDialog?.kind === 'rename' ? 'Salvar' : 'Criar variação'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
