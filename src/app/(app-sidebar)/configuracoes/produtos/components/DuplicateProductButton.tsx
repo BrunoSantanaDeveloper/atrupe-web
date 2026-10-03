@@ -13,6 +13,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 // Actions
 import { getItemOld, createItemNew } from '@/actions/_cruds'
 import { copyCompositionFrom } from '@/actions/product-assembly'
+import { productBodyFrom } from './productBody'
 
 // Third-party
 import { toast } from 'sonner'
@@ -38,36 +39,16 @@ export function DuplicateProductButton({ productId, name, onDone }: Props) {
       const source = await getItemOld({ route: 'productRoute', id: productId })
       if (!source?.id) throw new Error('Produto não encontrado')
 
-      // O mesmo corpo que o diálogo do produto envia ao criar
+      // O mesmo corpo que o diálogo do produto envia ao criar, sem os ids
+      // dos itens, que são do produto de origem
       const body = {
-        name: `${source.name} (cópia)`,
-        code: source.code ? `${source.code}-COPIA` : undefined,
-        categoryId: source.categoryId ?? source.category?.id ?? null,
-        sectorId: source.sectorId ?? source.sector?.id ?? null,
-        technicalDescription: source.technicalDescription ?? '',
-        allowEditValues: source.allowEditValues ?? true,
-        allowEditDescription: source.allowEditDescription ?? true,
-        imageUrl: source.imageUrl || null,
-        imageSize: source.imageSize || null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        items: (source.items || []).map((item: any) => ({
-          name: item.name,
-          unitKind: item.unitKind,
-          unitCost: item.unitCost,
-          salePrice: item.salePrice,
-          width: item.width ?? null,
-          height: item.height ?? null,
-          length: item.length ?? null,
-          weight: item.weight ?? null,
-          volume: item.volume ?? null,
-          distance: item.distance ?? null,
-          duration: item.duration ?? null,
-        })),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        productionStages: (source.productionStages || []).map((stage: any) => ({
-          id: stage.id,
-          isActive: stage.isActive ?? stage.isAcive ?? false,
-        })),
+        ...productBodyFrom(source, {
+          name: `${source.name} (cópia)`,
+          code: source.code ? `${source.code}-COPIA` : undefined,
+        }),
+        items: productBodyFrom(source).items.map(
+          ({ id: _id, ...item }: { id?: string }) => item,
+        ),
       }
 
       const created = await createItemNew({ route: '/product', data: body })

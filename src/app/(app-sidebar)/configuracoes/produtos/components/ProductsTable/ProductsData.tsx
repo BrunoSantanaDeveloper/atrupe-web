@@ -33,21 +33,40 @@ import { SearchParamsType } from '@/types/coreTypes'
 import type { TabNavType } from '@/components/common/Topbar'
 
 // Actions
-import { getDataOld } from '@/actions/_cruds'
+import { getDataOld, getItemOld, updateItemNew } from '@/actions/_cruds'
+import { productBodyFrom, rawMeasureOf } from '../productBody'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
-import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  convertRawToUnitCost,
+  convertUnitCostToRaw,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
+import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
+import {
+  unitSymbol,
+  type UnitKind,
+} from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
-import { getComposedProductIds } from '@/actions/product-assembly'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import {
+  getAssembly,
+  updateAssembly,
+  getComposedProductIds,
+} from '@/actions/product-assembly'
 import { Badge } from '@/components/ui/badge'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import { IconReceiptTax, IconStack2 } from '@tabler/icons-react'
+import {
+  IconReceiptTax,
+  IconStack2,
+  IconCurrencyReal,
+} from '@tabler/icons-react'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -62,6 +81,84 @@ interface Props extends SearchParamsType {
 export function ProductsData({ searchParams, tabs }: Props) {
   const [openDialog, setOpenDialog] = useState('')
   const [selectedProductId, setSelectedProductId] = useState<string>('')
+  const queryClient = useQueryClient()
+  // Precificar o produto pela lista (03/10/2026): o mesmo modal dos
+  // materiais. O custo vem da composição, quando existir; o preço gravado é
+  // o valor de venda do cadastro
+  const [pricing, setPricing] = useState<PricingItem | undefined>()
+  const [pricingUnitKind, setPricingUnitKind] = useState('UNITY')
+  const openPricing = async (product: ProductListType) => {
+    const unitKind = product?.items?.[0]?.unitKind || 'UNITY'
+    setPricingUnitKind(unitKind)
+    const price = Math.round(
+      convertRawToUnitCost(unitKind, Number(product?.unitCost || 0)),
+    )
+    const assembly = await getAssembly({ productId: product.id })
+    const computed = assembly?.data
+    const cost =
+      computed && computed.blocks.length && computed.cost > 0
+        ? Math.round(computed.cost / Math.max(computed.saleAmount || 1, 0.0001))
+        : null
+    setPricing({
+      id: product.id,
+      name: product.name,
+      code: product.code,
+      sector: product.sectorName || '',
+      unit: unitSymbol[unitKind as UnitKind] || unitKind,
+      cost,
+      costUpdatedAt: null,
+      rule: 'FIXED',
+      price: price || null,
+      margin:
+        cost !== null && price
+          ? Math.round(((price - cost) / price) * 1000) / 10
+          : null,
+      status:
+        cost === null
+          ? 'NO_COST'
+          : !price
+            ? 'PENDING'
+            : price < cost
+              ? 'BELOW_COST'
+              : 'PRICED',
+    })
+  }
+  // Grava o valor de venda no cadastro do produto (API) e espelha no mock da
+  // composição, para o comparativo preço × custo continuar certo
+  const saveProductPrice = async ({ price }: { price: number }) => {
+    if (!pricing) return { success: false, message: 'Produto não encontrado' }
+    const source = await getItemOld({ route: 'productRoute', id: pricing.id })
+    if (!source?.id)
+      return { success: false, message: 'Produto não encontrado' }
+    const body = productBodyFrom(source)
+    if (!body.items.length) {
+      return { success: false, message: 'O produto não tem unidade de venda' }
+    }
+    const first = body.items[0]
+    const rawUnitCost = convertUnitCostToRaw(first.unitKind, price)
+    body.items[0] = {
+      ...first,
+      unitCost: rawUnitCost,
+      salePrice: Math.round(rawUnitCost * rawMeasureOf(source.items?.[0])),
+    }
+    const result = await updateItemNew({
+      route: `/product/${pricing.id}`,
+      data: body,
+    })
+    if (!result.success)
+      return {
+        success: false,
+        message: result.message || 'Erro ao gravar o preço',
+      }
+    await updateAssembly({
+      productId: pricing.id,
+      values: { unitPrice: price },
+    })
+    queryClient.invalidateQueries({ queryKey: ['product-list'] })
+    queryClient.invalidateQueries({ queryKey: ['product', pricing.id] })
+    queryClient.invalidateQueries({ queryKey: ['assembly', pricing.id] })
+    return { success: true, message: '' }
+  }
   const [selectedProductName, setSelectedProductName] = useState<string>('')
 
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -337,6 +434,15 @@ export function ProductsData({ searchParams, tabs }: Props) {
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >
+                          <ActionButton
+                            Icon={IconCurrencyReal}
+                            tooltip={`Precificar ${product?.name}`}
+                            onClick={() => {
+                              openPricing(product).catch(() =>
+                                toast.error('Erro ao abrir a precificação'),
+                              )
+                            }}
+                          />
                           {/* Duplicar: outro produto com os mesmos dados e a
                               mesma composição, aberto para edição */}
                           <DuplicateProductButton
@@ -375,6 +481,18 @@ export function ProductsData({ searchParams, tabs }: Props) {
         )}
       </CardContent>
 
+      <EditPriceModal
+        group="products"
+        item={pricing}
+        open={!!pricing}
+        onOpenChange={() => setPricing(undefined)}
+        onSave={saveProductPrice}
+        priceTiers={
+          pricing
+            ? { productId: pricing.id, unitKind: pricingUnitKind }
+            : undefined
+        }
+      />
       <NewProduct
         open={openDialog === 'new-product'}
         onOpenChange={() => setOpenDialog('')}

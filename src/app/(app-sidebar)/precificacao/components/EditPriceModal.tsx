@@ -34,6 +34,7 @@ import { updateItemPrice, getPricingSummary } from '@/actions/pricing'
 
 // Hooks / Store / Consts
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { ProductPriceTiers } from '@/app/(app-sidebar)/configuracoes/produtos/components/ProductPriceTiers'
 
 // Third-party
 import { toast } from 'sonner'
@@ -53,13 +54,29 @@ interface Props {
   item?: PricingItem
   open: boolean
   onOpenChange: () => void
+  // Quem grava o preço, quando não é o mock da Precificação: o produto da
+  // lista grava no cadastro (API). Devolve { success, message }
+  onSave?: (values: {
+    rule: PriceRule
+    price: number
+  }) => Promise<{ success: boolean; message: string }>
+  // No produto, a tabela por faixa de quantidade (FQ-1) fica aqui, junto do
+  // preço (orientação do time, 03/10/2026)
+  priceTiers?: { productId: string; unitKind: string }
 }
 
 const toNumber = (text: string) => Number(text.replace(',', '.')) || 0
 const percentText = (value: number | null) =>
   value === null ? '-' : `${value.toFixed(1).replace('.', ',')}%`
 
-export function EditPriceModal({ group, item, open, onOpenChange }: Props) {
+export function EditPriceModal({
+  group,
+  item,
+  open,
+  onOpenChange,
+  onSave,
+  priceTiers,
+}: Props) {
   const queryClient = useQueryClient()
   const [rule, setRule] = useState<PriceRule>('VARIABLE')
   // Em texto, para a pessoa digitar com vírgula
@@ -173,12 +190,14 @@ export function EditPriceModal({ group, item, open, onOpenChange }: Props) {
 
   const { mutate, isPending } = useMutation({
     mutationFn: () =>
-      updateItemPrice({
-        group,
-        id: item?.id || '',
-        rule,
-        price: effectivePrice || 0,
-      }),
+      onSave
+        ? onSave({ rule, price: effectivePrice || 0 })
+        : updateItemPrice({
+            group,
+            id: item?.id || '',
+            rule,
+            price: effectivePrice || 0,
+          }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       toast.success('Preço salvo')
@@ -350,9 +369,10 @@ export function EditPriceModal({ group, item, open, onOpenChange }: Props) {
               </div>
 
               {cost === null && (
-                <p className="text-sm text-error-700">
-                  Este item ainda não tem custo. Informe o custo no cadastro
-                  para precificar.
+                <p className="text-sm text-gray">
+                  {rule === 'VARIABLE'
+                    ? 'Sem custo não há como calcular o preço pelo lucro. Use o preço fixo, ou monte a composição para o custo aparecer.'
+                    : 'Sem custo, o resumo não mostra a margem. O preço fixo pode ser gravado mesmo assim.'}
                 </p>
               )}
             </div>
@@ -418,6 +438,15 @@ export function EditPriceModal({ group, item, open, onOpenChange }: Props) {
               </div>
             </div>
           </div>
+          {priceTiers && (
+            <div className="mt-6 border-t border-gray-100 pt-5">
+              <ProductPriceTiers
+                productId={priceTiers.productId}
+                unitKind={priceTiers.unitKind}
+                basePriceCents={effectivePrice || 0}
+              />
+            </div>
+          )}
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
@@ -429,7 +458,7 @@ export function EditPriceModal({ group, item, open, onOpenChange }: Props) {
             type="button"
             RightIcon={IconCircleCheck}
             isLoading={isPending}
-            disabled={cost === null || !effectivePrice}
+            disabled={!effectivePrice || (rule === 'VARIABLE' && cost === null)}
             onClick={() => mutate()}
           >
             Salvar

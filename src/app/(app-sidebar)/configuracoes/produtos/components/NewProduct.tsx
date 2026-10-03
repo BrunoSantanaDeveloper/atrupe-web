@@ -35,11 +35,7 @@ import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
-import {
-  UnitCostInput,
-  convertRawToUnitCost,
-} from '@/components/common/form/global-inputs/products/UnitCostInput'
-import { ProductPriceTiers } from './ProductPriceTiers'
+import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 
@@ -80,7 +76,6 @@ import { useSector } from '@/hooks/queries/useSector'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
-import { FeatureGate } from '@/components/common/FeatureGate'
 import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -584,27 +579,6 @@ function NewProductModal({
                                 </div>
                               </div>
                             )}
-
-                          {/* Preço por faixa de quantidade (FQ-1): tabela de
-                              preço, do LITE em diante, no produto já salvo */}
-                          {editMode && productId && (
-                            <FeatureGate
-                              features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
-                            >
-                              <div className="w-full border-t border-gray-100 pt-4">
-                                <ProductPriceTiers
-                                  productId={productId}
-                                  unitKind={watch('items.0.unitKind')}
-                                  basePriceCents={Math.round(
-                                    convertRawToUnitCost(
-                                      watch('items.0.unitKind'),
-                                      Number(watch('items.0.unitCost') || 0),
-                                    ),
-                                  )}
-                                />
-                              </div>
-                            </FeatureGate>
-                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&
