@@ -51,6 +51,7 @@ import {
 // Hooks / Store / Consts
 import { taskStatusObj } from '@/consts/productionManager'
 import { resourceKindObj } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { toast } from 'sonner'
@@ -202,9 +203,18 @@ export function TaskDetailDialog({
                 {task.consumption.map((line, index) => (
                   <TableRow key={index}>
                     <TableCell className="text-sm text-gray">
-                      {resourceKindObj[
-                        line.kind as keyof typeof resourceKindObj
-                      ] || line.kind}
+                      {line.kind in resourceKindObj ? (
+                        <ResourceKindLabel
+                          kind={line.kind as keyof typeof resourceKindObj}
+                          label={
+                            resourceKindObj[
+                              line.kind as keyof typeof resourceKindObj
+                            ]
+                          }
+                        />
+                      ) : (
+                        line.kind
+                      )}
                     </TableCell>
                     <TableCell className="text-sm text-gray-800">
                       {line.resource}

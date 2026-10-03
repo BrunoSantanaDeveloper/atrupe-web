@@ -195,6 +195,12 @@ export type AssemblyLine = {
   // Se a opcional já vem marcada no orçamento; é também o que o custo e o
   // sugerido da composição consideram
   optionalDefault?: boolean
+  // O campo do orçamento que a fórmula lê como "campo extra" (IP-4): por
+  // nome, porque o processo não conhece o produto. O produto cria o campo
+  // com esse nome se ainda não tiver, e o vendedor preenche um valor só
+  fieldName?: string
+  // A fórmula do produto que a linha usa, quando o tipo é 'CUSTOM'
+  formulaId?: string
   // Aproveitamento de folha (AP-3, AP-4), na linha que escolhe a folha:
   // margem da borda e espaçamento entre peças, em milímetros; e se cobra a
   // folha inteira ou só o que foi aproveitado
@@ -285,6 +291,16 @@ export type AssemblySeed = {
   allowEditDescription?: boolean
 }
 
+// Campo do orçamento (IP-4, IP-6): declarado uma vez no produto, lido pelas
+// linhas que precisam dele e preenchido pelo vendedor na venda. Substitui o
+// campo extra de cada etapa do legado (decidido em 03/10/2026)
+export type QuoteField = { id: string; name: string; defaultValue: number }
+
+// Fórmula do produto (IP-2, decidida em 03/10/2026): a conta escrita por quem
+// monta, só para este produto, lendo medidas, tempo e os campos do orçamento
+// dele. Entra na lista de tipos de cálculo das linhas deste produto
+export type ProductFormula = { id: string; name: string; expression: string }
+
 export type ProductAssembly = {
   productId: string
   name: string
@@ -305,12 +321,18 @@ export type ProductAssembly = {
   technicalDescription: string
   blocks: AssemblyBlock[]
   variations: ProductVariation[]
+  fields?: QuoteField[]
+  formulas?: ProductFormula[]
 }
 
 // O que o servidor devolve depois de calcular (SEG-1)
 export type ComputedLine = AssemblyLine & {
   // Mudada na variação que está sendo vista (PV-2)
   variationOverride: boolean
+  // O valor do campo do orçamento que a fórmula leu; null quando não lê
+  extraValue: number | null
+  // O nome da fórmula do produto, quando a linha usa uma
+  formulaName: string | null
   sheetYield: SheetYield | null
   selected: ResourceOption | null
   quantity: number | null
@@ -378,6 +400,10 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
   area: number
   blocks: ComputedBlock[]
   resourceSummary: ResourceSummary[]
+  // Os campos do orçamento e em que etapas cada um é lido
+  fields: (QuoteField & { usedBy: string[] })[]
+  // As fórmulas do produto, onde são usadas e se calculam na medida padrão
+  formulas: (ProductFormula & { usedBy: string[]; error: string | null })[]
   cost: number
   // A soma do preço de venda de cada recurso, como o "valor sugerido" do
   // legado (IP-25). Não muda o valor de venda: adotá-lo é decisão do usuário
@@ -487,6 +513,12 @@ export type NewLineValues = {
   minimum: number | null
   optional: boolean
   optionalDefault: boolean
+  // O campo do orçamento que a fórmula lê, quando o tipo de cálculo pede;
+  // o padrão só é usado se o campo ainda não existir no produto
+  fieldName?: string
+  fieldDefault?: number
+  // A fórmula do produto, quando o tipo é 'CUSTOM'
+  formulaId?: string
 }
 
 /* ---------------------------------------------------------------------------
@@ -496,7 +528,8 @@ export type NewLineValues = {
 
 export type SaleChoice = { blockId: string; lineId: string; optionId: string }
 export type SaleListEntry = SaleChoice & { quantity: number }
-export type SaleExtra = { blockId: string; value: number }
+// `fieldId` é o campo do produto; "block:<id>" é o campo extra legado da etapa
+export type SaleExtra = { fieldId: string; value: number }
 export type SaleTime = { blockId: string; minutes: number }
 export type SaleOptional = {
   blockId: string
@@ -507,9 +540,9 @@ export type SaleOptional = {
 export type SaleForm = {
   // As etapas, para a observação de produção de cada uma (MS-13)
   stages: { blockId: string; name: string; sector: string }[]
-  // Campos extras nomeados de cada etapa (nº de letras, distância dos ilhoses)
+  // Os campos do orçamento do produto (nº de letras, distância dos ilhoses)
   extras: {
-    blockId: string
+    fieldId: string
     name: string
     kind: ExtraFieldKind
     defaultValue: number
@@ -630,6 +663,8 @@ export const formulaInputs: { [key in FormulaKey]: FormulaInput[] } = {
   AREA_EXTRA: ['área', 'campo extra'],
   PER_AREA_EXTRA: ['área', 'campo extra', 'quantidade'],
   SHEET_YIELD: ['folha', 'largura', 'altura', 'quantidade'],
+  // O que a fórmula do produto lê está na expressão dela
+  CUSTOM: [],
 }
 
 // Biblioteca de composições prontas (IP-7): curadoria do Atrupe, importada

@@ -44,7 +44,9 @@ export type QuotationLine = {
 // O que o vendedor preencheu num produto com composição (IP-36): campos
 // extras, escolhas e listas. O resumo é o que aparece na linha do item
 export type ItemComposition = {
-  extras: { blockId: string; value: number }[]
+  // `fieldId` é o campo do orçamento do produto (IP-4); "block:<id>" é o
+  // campo extra legado da etapa
+  extras: { fieldId: string; value: number }[]
   // Tempo das etapas que pedem, em minutos (digitado em h:mm, IP-33)
   times: { blockId: string; minutes: number }[]
   choices: { blockId: string; lineId: string; optionId: string }[]

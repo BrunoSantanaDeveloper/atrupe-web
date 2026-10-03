@@ -52,7 +52,6 @@ import {
 import {
   formulaInputs,
   quantityModeObj,
-  extraFieldKindObj,
   type FormulaInput,
   type ComputedLine,
   type ComputedBlock,
@@ -60,6 +59,7 @@ import {
 } from '../../../[id]/composicao/assembly'
 import type { ResourceKind } from '../../types'
 import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
+import { ProductFields } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields'
 
 // Actions
 import {
@@ -81,10 +81,11 @@ import { useMoney } from '@/hooks/useMoney'
 import { usePermissions } from '@/hooks/usePermissions'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import {
-  formulaObj,
+  formulaLabel,
   resourceKindObj,
   dimensionRuleObj,
 } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { toast } from 'sonner'
@@ -119,14 +120,18 @@ const amount = (value: number, unit: string) => {
 }
 
 // O campo que a fórmula consome está zerado na simulação? (IP-35)
-const zeroInput = (input: FormulaInput, block: ComputedBlock) => {
+const zeroInput = (
+  input: FormulaInput,
+  block: ComputedBlock,
+  line?: ComputedLine,
+) => {
   const { measure: m, rules } = block
   if (input === 'quantidade') return !m.quantity
   if (input === 'largura') return !m.width
   if (input === 'altura') return !m.height
   if (input === 'área' || input === 'perímetro') return !m.width || !m.height
-  if (input === 'campo extra')
-    return rules.extraField === 'NONE' || !rules.extraFieldDefault
+  // O campo do orçamento que a linha lê (IP-4); no processo vale o padrão
+  if (input === 'campo extra') return line ? !line.extraValue : false
   if (input === 'tempo') return !rules.timeField || !rules.timeFieldDefault
   return false
 }
@@ -270,9 +275,6 @@ export function ProcessEditor({
     quantityModeObj[rules.quantityMode],
     rules.followsBase ? 'acompanha a quantidade da base' : 'uma vez por pedido',
     dimensionRuleObj[rules.dimension],
-    rules.extraField === 'NONE'
-      ? null
-      : `campo extra "${rules.extraFieldName}" (${extraFieldKindObj[rules.extraField].toLowerCase()})`,
     rules.timeField ? 'com campo tempo' : null,
     rules.descriptionEditable ? 'vendedor pode renomear' : null,
   ]
@@ -511,6 +513,17 @@ export function ProcessEditor({
               )}
             </CardHeader>
             <CardContent>
+              {/* Os botões de acrescentar ficam no topo, antes da tabela,
+                  como na etapa do produto (03/10/2026) */}
+              <PermissionGate permissions={EDIT}>
+                <div className="px-6 pb-4">
+                  <ResourceKindButtons
+                    onPick={(lineKind) =>
+                      setDialog({ kind: 'newLine', lineKind })
+                    }
+                  />
+                </div>
+              </PermissionGate>
               <Table className="min-w-[860px]">
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -537,7 +550,10 @@ export function ProcessEditor({
                             {line.name}
                           </p>
                           <p className="text-xs text-gray">
-                            {resourceKindObj[line.kind]}
+                            <ResourceKindLabel
+                              kind={line.kind}
+                              label={resourceKindObj[line.kind]}
+                            />
                           </p>
                           {line.optional && (
                             <Badge className="mt-1" variant="neutralLight">
@@ -631,7 +647,7 @@ export function ProcessEditor({
                         <TableCell className="text-sm text-gray">
                           {line.mode === 'LIST'
                             ? 'Informado na venda'
-                            : formulaObj[line.formula]?.label}
+                            : formulaLabel(line.formula, line.fieldName)}
                           {line.mode !== 'LIST' &&
                             formulaInputs[line.formula]?.length > 0 && (
                               <span className="mt-1 flex flex-wrap gap-1">
@@ -640,12 +656,14 @@ export function ProcessEditor({
                                     key={input}
                                     className={cn(
                                       'rounded px-1.5 py-0.5 text-[11px]',
-                                      zeroInput(input, block)
+                                      zeroInput(input, block, line)
                                         ? 'bg-error-50 text-error-700'
                                         : 'bg-gray-100 text-gray-600',
                                     )}
                                   >
-                                    {input}
+                                    {input === 'campo extra'
+                                      ? line.fieldName || 'campo'
+                                      : input}
                                   </span>
                                 ))}
                               </span>
@@ -730,15 +748,6 @@ export function ProcessEditor({
                   )}
                 </TableBody>
               </Table>
-              <PermissionGate permissions={EDIT}>
-                <div className="px-6 pb-2 pt-4">
-                  <ResourceKindButtons
-                    onPick={(lineKind) =>
-                      setDialog({ kind: 'newLine', lineKind })
-                    }
-                  />
-                </div>
-              </PermissionGate>
             </CardContent>
             {block.setupMinutes > 0 && (
               <CardFooter className="text-sm text-gray">
@@ -747,6 +756,14 @@ export function ProcessEditor({
             )}
           </Card>
         )}
+
+        {/* Os campos que as linhas do processo leem (IP-4): o produto que
+            incluir o processo ganha estes campos */}
+        <ProductFields
+          productId={hostId}
+          fields={detail.fields}
+          description="Os valores que o vendedor informa e que as linhas deste processo leem. O produto que incluir o processo ganha estes campos, uma vez cada."
+        />
 
         {/* 4. Onde o processo está: os produtos acompanham a montagem (CP-21) */}
         {show('usage') && (
@@ -874,6 +891,7 @@ export function ProcessEditor({
         block={dialog?.kind === 'newLine' ? block : undefined}
         initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}
         resources={resourcesRes?.data?.resources || []}
+        fields={detail.fields}
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
           setDialog(null)
@@ -885,6 +903,7 @@ export function ProcessEditor({
       />
       <LineDialog
         line={dialog?.kind === 'line' ? lineOf(dialog.lineId) : undefined}
+        fields={detail.fields}
         ownStage
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {

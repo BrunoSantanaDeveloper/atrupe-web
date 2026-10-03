@@ -36,6 +36,7 @@ import { getSaleComposition } from '@/actions/product-assembly'
 
 // Hooks / Store / Consts
 import { resourceKindObj } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -195,7 +196,10 @@ export function CompositionReport({ item, onOpenChange }: Props) {
                             {line.name}
                           </p>
                           <p className="text-xs text-gray">
-                            {resourceKindObj[line.kind]}
+                            <ResourceKindLabel
+                              kind={line.kind}
+                              label={resourceKindObj[line.kind]}
+                            />
                           </p>
                         </TableCell>
                         <TableCell className="text-sm">

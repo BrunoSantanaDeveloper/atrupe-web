@@ -85,6 +85,7 @@ import {
 // Hooks / Store / Consts
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { resourceKindObj } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
 // Third-party
 import { toast } from 'sonner'
@@ -575,7 +576,10 @@ export function QuotationComposeModal({
                               {line.name !== line.resource
                                 ? `${line.name} · `
                                 : ''}
-                              {resourceKindObj[line.kind]}
+                              <ResourceKindLabel
+                                kind={line.kind}
+                                label={resourceKindObj[line.kind]}
+                              />
                             </p>
                           </TableCell>
                           <TableCell className="whitespace-nowrap text-right text-sm">

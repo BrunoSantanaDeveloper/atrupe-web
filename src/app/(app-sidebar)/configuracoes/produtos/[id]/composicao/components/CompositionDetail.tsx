@@ -7,7 +7,6 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { AssemblyEditor } from './AssemblyEditor'
-import { ProductFields } from './ProductFields'
 import { FeatureGate } from '@/components/common/FeatureGate'
 
 // Actions
@@ -73,10 +72,6 @@ export function CompositionDetail({ id }: Props) {
 
         <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
           <AssemblyEditor productId={product.id} />
-        </FeatureGate>
-
-        <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
-          <ProductFields productId={product.id} fields={product.fields} />
         </FeatureGate>
       </div>
     </TooltipProvider>

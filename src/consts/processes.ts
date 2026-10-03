@@ -49,8 +49,8 @@ export const formulaObj: {
     help: 'Consumo × altura do item × quantidade.',
   },
   PER_EXTRA: {
-    label: 'Por campo extra',
-    help: 'Consumo × valor de um campo extra × quantidade.',
+    label: 'Por {campo}',
+    help: 'Consumo × valor de um {campo} × quantidade.',
   },
   PER_TIME: {
     label: 'Por tempo',
@@ -58,58 +58,123 @@ export const formulaObj: {
   },
   // A conta do ilhós: perímetro ÷ espaçamento = quantas peças (CP-14)
   PER_PERIMETER_DIV_EXTRA: {
-    label: 'Por perímetro ÷ campo extra',
-    help: 'Perímetro do item ÷ valor do campo extra × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
+    label: 'Por perímetro ÷ {campo}',
+    help: 'Perímetro do item ÷ valor do {campo} × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
   },
   TIME_TIMES_EXTRA: {
-    label: 'Tempo × campo extra',
-    help: 'Tempo informado × valor do campo extra. Não multiplica pela quantidade.',
+    label: 'Tempo × {campo}',
+    help: 'Tempo informado × valor do {campo}. Não multiplica pela quantidade.',
   },
   EQUAL_TIME: {
     label: 'Igual ao tempo',
     help: 'Usa o tempo informado, uma vez só.',
   },
   PER_WIDTH_EXTRA: {
-    label: 'Por largura × campo extra',
-    help: 'Consumo × largura × campo extra × quantidade.',
+    label: 'Por largura × {campo}',
+    help: 'Consumo × largura × {campo} × quantidade.',
   },
   PER_HEIGHT_EXTRA: {
-    label: 'Por altura × campo extra',
-    help: 'Consumo × altura × campo extra × quantidade.',
+    label: 'Por altura × {campo}',
+    help: 'Consumo × altura × {campo} × quantidade.',
   },
   EXTRA_ONLY: {
-    label: 'Por campo extra, uma vez',
-    help: 'Consumo × campo extra. Não multiplica pela quantidade.',
+    label: 'Por {campo}, uma vez',
+    help: 'Consumo × {campo}. Não multiplica pela quantidade.',
   },
   PER_AREA_DIV_EXTRA: {
-    label: 'Por m² ÷ campo extra',
-    help: 'Consumo × área × quantidade ÷ campo extra. Ex.: peças que cabem numa chapa.',
+    label: 'Por m² ÷ {campo}',
+    help: 'Consumo × área × quantidade ÷ {campo}. Ex.: peças que cabem numa chapa.',
   },
   PER_PERIMETER_EXTRA: {
-    label: 'Por perímetro × campo extra',
-    help: 'Consumo × perímetro × quantidade × campo extra.',
+    label: 'Por perímetro × {campo}',
+    help: 'Consumo × perímetro × quantidade × {campo}.',
   },
   DIV_EXTRA: {
-    label: 'Dividido pelo campo extra',
-    help: 'Consumo ÷ campo extra, uma vez.',
+    label: 'Dividido por {campo}',
+    help: 'Consumo ÷ {campo}, uma vez.',
   },
   AREA_EXTRA: {
-    label: 'Por m² × campo extra, uma vez',
-    help: 'Consumo × área × campo extra. Não multiplica pela quantidade.',
+    label: 'Por m² × {campo}, uma vez',
+    help: 'Consumo × área × {campo}. Não multiplica pela quantidade.',
   },
   PER_AREA_EXTRA: {
-    label: 'Por m² × campo extra',
-    help: 'Consumo × área × quantidade × campo extra.',
+    label: 'Por m² × {campo}',
+    help: 'Consumo × área × quantidade × {campo}.',
   },
   SHEET_YIELD: {
     label: 'Por aproveitamento de folha',
     help: 'Quantas peças cabem na folha, nas duas posições, e quantas folhas são precisas. A folha tem a medida do material.',
   },
+  // A conta escrita no produto (IP-2): o seletor mostra o nome dela
+  CUSTOM: {
+    label: 'Fórmula do produto',
+    help: 'Consumo × o resultado da fórmula escrita neste produto.',
+  },
 }
 
-export const formulaOptions = (Object.keys(formulaObj) as FormulaKey[]).map(
-  (key) => ({ value: key, label: formulaObj[key].label }),
-)
+// O "campo extra" não existe mais como conceito (03/10/2026): o tipo de
+// cálculo que lê um valor informado no orçamento nomeia o campo do produto
+// ("Por perímetro ÷ distância entre ilhoses"). Sem campo criado, esses tipos
+// não aparecem
+export const FIELD_TOKEN = '{campo}'
+
+export const formulaUsesField = (key: FormulaKey) =>
+  formulaObj[key].label.includes(FIELD_TOKEN) ||
+  formulaObj[key].help.includes(FIELD_TOKEN)
+
+const withField = (text: string, fieldName?: string | null) =>
+  text.split(FIELD_TOKEN).join(fieldName || 'campo')
+
+export const formulaLabel = (key: FormulaKey, fieldName?: string | null) =>
+  withField(formulaObj[key].label, fieldName)
+
+export const formulaHelp = (key: FormulaKey, fieldName?: string | null) =>
+  withField(formulaObj[key].help, fieldName)
+
+// O valor do seletor: a fórmula e, quando ela lê um campo, qual campo; na
+// fórmula do produto, qual fórmula
+export const formulaChoiceValue = (
+  key: FormulaKey,
+  fieldName?: string | null,
+  formulaId?: string | null,
+) =>
+  key === 'CUSTOM'
+    ? `CUSTOM::${formulaId || ''}`
+    : fieldName
+      ? `${key}::${fieldName}`
+      : key
+
+export const parseFormulaChoice = (
+  value: string,
+): { formula: FormulaKey; fieldName?: string; formulaId?: string } => {
+  const [key, ...rest] = value.split('::')
+  const suffix = rest.length ? rest.join('::') : undefined
+  if (key === 'CUSTOM') return { formula: 'CUSTOM', formulaId: suffix }
+  return { formula: key as FormulaKey, fieldName: suffix }
+}
+
+// As fórmulas pela medida, para cada campo do produto as que leem campo e,
+// por fim, as fórmulas escritas no produto
+export const formulaOptionsFor = (
+  fields: { name: string }[],
+  formulas: { id: string; name: string }[] = [],
+) => {
+  const keys = Object.keys(formulaObj) as FormulaKey[]
+  const plain = keys
+    .filter((key) => key !== 'CUSTOM' && !formulaUsesField(key))
+    .map((key) => ({ value: key, label: formulaObj[key].label }))
+  const byField = fields.flatMap((field) =>
+    keys.filter(formulaUsesField).map((key) => ({
+      value: formulaChoiceValue(key, field.name),
+      label: formulaLabel(key, field.name),
+    })),
+  )
+  const custom = formulas.map((formula) => ({
+    value: formulaChoiceValue('CUSTOM', null, formula.id),
+    label: `Fórmula · ${formula.name}`,
+  }))
+  return [...plain, ...byField, ...custom]
+}
 
 export const dimensionRuleObj: { [key in DimensionRule]: string } = {
   NONE: 'Sem dimensão',

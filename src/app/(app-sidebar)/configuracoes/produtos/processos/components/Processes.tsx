@@ -36,6 +36,7 @@ import { getProcessList } from '@/actions/product-assembly'
 
 // Hooks / Store / Consts
 import { resourceKindObj } from '@/consts/processes'
+import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 import { quantityModeObj } from '../../[id]/composicao/assembly'
 
 // Third-party
@@ -171,7 +172,10 @@ export function Processes({ searchParams }: SearchParamsType) {
                                   <div className="flex flex-wrap gap-1">
                                     {process.kinds.map((kind) => (
                                       <Badge key={kind} variant="neutralLight">
-                                        {resourceKindObj[kind]}
+                                        <ResourceKindLabel
+                                          kind={kind}
+                                          label={resourceKindObj[kind]}
+                                        />
                                       </Badge>
                                     ))}
                                   </div>

@@ -273,13 +273,9 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: 'register:supplier:view',
       },
       // Produtos, materiais e processos são cadastros do dia a dia, não
-      // configuração: ficavam escondidos em abas dentro de Configurações
-      {
-        icon: IconBoxSeam,
-        title: 'Produtos',
-        path: '/configuracoes/produtos',
-        permission: 'product_settings:products:view',
-      },
+      // configuração: ficavam escondidos em abas dentro de Configurações.
+      // Ordem pedida pelo time (03/10/2026): materiais → processos →
+      // produtos, a ordem em que a composição é montada
       {
         icon: IconPackages,
         title: 'Materiais',
@@ -295,6 +291,12 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'product_settings:products:view',
         requiredModule: 'cost_base',
+      },
+      {
+        icon: IconBoxSeam,
+        title: 'Produtos',
+        path: '/configuracoes/produtos',
+        permission: 'product_settings:products:view',
       },
       /* {
         icon: IconSquareRoundedPlusFilled,

@@ -1,6 +1,12 @@
 'use client'
 
-// React
+// Os campos do orçamento pertencem ao PRODUTO, não a cada etapa (IP-4). No
+// legado, "número de letras" aparecia três vezes, com três nomes e três
+// valores diferentes, e nada acusava a divergência. Aqui o campo é declarado
+// uma vez; a linha cuja fórmula lê um campo aponta para ele pelo nome, e o
+// vendedor preenche um valor só (IP-6). Desde 03/10/2026 isso substitui o
+// campo extra da etapa.
+
 import { useState } from 'react'
 
 // UI
@@ -9,26 +15,24 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   Card,
-  CardHeader,
   CardTitle,
+  CardHeader,
   CardFooter,
   CardContent,
   CardDescription,
 } from '@/components/ui/card'
-
-// Components
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Types
-import type { ProductField } from '../types'
+import type { QuoteField } from '../assembly'
 
 // Actions
 import {
   addProductField,
   removeProductField,
   updateProductField,
-} from '@/actions/compositions'
+} from '@/actions/product-assembly'
 
 // Third-party
 import { toast } from 'sonner'
@@ -37,21 +41,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 // Icons
 import { IconPlus, IconTrash } from '@tabler/icons-react'
 
+const EDIT = ['product_settings:products:edit']
+
 interface Props {
   productId: string
-  fields: ProductField[]
+  fields: (QuoteField & { usedBy: string[] })[]
+  // O processo usa o mesmo card com outra explicação
+  description?: string
 }
 
-// Os campos do orçamento pertencem ao PRODUTO, não a cada processo (IP-4).
-// No legado, "número de letras" aparecia três vezes, com três nomes e três
-// valores diferentes, e nada acusava a divergência.
-export function ProductFields({ productId, fields }: Props) {
+export function ProductFields({ productId, fields, description }: Props) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [defaultValue, setDefaultValue] = useState('')
 
   const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['composition', productId] })
+    queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
 
   const { mutate: add, isPending } = useMutation({
     mutationFn: () =>
@@ -62,7 +67,6 @@ export function ProductFields({ productId, fields }: Props) {
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
-
       toast.success('Campo acrescentado')
       setName('')
       setDefaultValue('')
@@ -75,19 +79,20 @@ export function ProductFields({ productId, fields }: Props) {
     mutationFn: (fieldId: string) => removeProductField({ productId, fieldId }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
-
       toast.success('Campo removido')
       invalidate()
     },
     onError: () => toast.error('Erro ao remover o campo'),
   })
 
-  const { mutate: rename } = useMutation({
-    mutationFn: ({ fieldId, value }: { fieldId: string; value: string }) =>
-      updateProductField({ productId, fieldId, name: value }),
+  const { mutate: update } = useMutation({
+    mutationFn: (values: {
+      fieldId: string
+      name?: string
+      defaultValue?: number
+    }) => updateProductField({ productId, ...values }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
-
       invalidate()
     },
   })
@@ -97,12 +102,11 @@ export function ProductFields({ productId, fields }: Props) {
       <CardHeader>
         <CardTitle>Campos do orçamento</CardTitle>
         <CardDescription>
-          Além de largura, altura e quantidade, estes são os valores que o
-          vendedor informa. Cada um existe uma vez e vale para todas as etapas
-          que precisam dele.
+          {description ||
+            'Além de largura, altura e quantidade, estes são os valores que o vendedor informa. Crie o campo aqui e ele passa a aparecer nos tipos de cálculo das linhas ("Por perímetro ÷ nome do campo"). Cada um existe uma vez e vale para todas as etapas que precisam dele.'}
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-6 pb-6 space-y-3">
+      <CardContent className="space-y-3 px-6 pb-6">
         {fields.length ? (
           fields.map((field) => (
             <div
@@ -115,15 +119,28 @@ export function ProductFields({ productId, fields }: Props) {
                 aria-label={`Nome do campo ${field.name}`}
                 onBlur={(event) => {
                   const value = event.target.value.trim()
-
                   if (value && value !== field.name) {
-                    rename({ fieldId: field.id, value })
+                    update({ fieldId: field.id, name: value })
                   }
                 }}
               />
-              <span className="text-sm text-gray">
-                valor padrão {field.defaultValue}
-              </span>
+              <label className="flex items-center gap-2 text-sm text-gray">
+                valor padrão
+                <Input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  className="w-[110px]"
+                  defaultValue={field.defaultValue}
+                  aria-label={`Valor padrão de ${field.name}`}
+                  onBlur={(event) => {
+                    const value = Number(event.target.value || 0)
+                    if (value !== field.defaultValue) {
+                      update({ fieldId: field.id, defaultValue: value })
+                    }
+                  }}
+                />
+              </label>
               <div className="flex flex-1 flex-wrap items-center gap-1">
                 {field.usedBy.length ? (
                   field.usedBy.map((step) => (
@@ -135,9 +152,10 @@ export function ProductFields({ productId, fields }: Props) {
                   <Badge variant="warningLight">nenhuma etapa usa</Badge>
                 )}
               </div>
-              <PermissionGate permissions={['product_settings:products:edit']}>
+              <PermissionGate permissions={EDIT}>
                 <ActionButton
                   Icon={IconTrash}
+                  variant="errorGhost"
                   tooltip={`Remover ${field.name}`}
                   onClick={() => remove(field.id)}
                 />
@@ -146,40 +164,43 @@ export function ProductFields({ productId, fields }: Props) {
           ))
         ) : (
           <p className="text-sm text-gray">
-            Este produto ainda não tem campos próprios. Eles aparecem sozinhos
-            quando uma etapa precisa de um valor, e podem ser acrescentados aqui
-            quando a conta for do produto.
+            Nenhum campo ainda. Crie um campo aqui (nº de letras, perímetro,
+            distância entre ilhoses) e os tipos de cálculo que leem esse valor
+            passam a aparecer nas linhas.
           </p>
         )}
 
-        <PermissionGate permissions={['product_settings:products:edit']}>
+        <PermissionGate permissions={EDIT}>
           <div className="flex flex-wrap items-end gap-3 pt-2">
-            <div className="space-y-1.5">
-              <label htmlFor="field-name" className="text-sm font-medium">
+            <div className="flex flex-col">
+              <label htmlFor="field-name" className="mb-2 text-sm font-medium">
                 Novo campo
               </label>
               <Input
                 id="field-name"
+                autoComplete="off"
                 value={name}
                 className="w-full sm:w-[220px]"
                 placeholder="Ex.: Número de letras"
                 onChange={(event) => setName(event.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="field-value" className="text-sm font-medium">
+            <div className="flex flex-col">
+              <label htmlFor="field-value" className="mb-2 text-sm font-medium">
                 Valor padrão
               </label>
               <Input
                 id="field-value"
                 type="number"
                 min={0}
+                step="0.01"
                 className="w-[140px]"
                 value={defaultValue}
                 onChange={(event) => setDefaultValue(event.target.value)}
               />
             </div>
             <Button
+              type="button"
               LeftIcon={IconPlus}
               isLoading={isPending}
               disabled={!name}
@@ -191,7 +212,7 @@ export function ProductFields({ productId, fields }: Props) {
         </PermissionGate>
       </CardContent>
       <CardFooter className="text-sm text-gray">
-        No orçamento, o vendedor vê só estes campos — a composição, as etapas e
+        No orçamento, o vendedor vê só estes campos. A composição, as etapas e
         os insumos ficam fora da tela dele.
       </CardFooter>
     </Card>

@@ -12,6 +12,8 @@
 import type {
   SaleRules,
   AssemblyLine,
+  QuoteField,
+  ProductFormula,
   AssemblyBlock,
   AssemblyMeasure,
   ComputedLine,
@@ -40,6 +42,11 @@ import type {
   ComposedItemView,
   NextStepCandidates,
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
+import {
+  evaluateFormula,
+  formulaUsesName,
+  type FormulaVars,
+} from '@/lib/formula'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
@@ -415,6 +422,7 @@ const catalog: Template[] = [
         selectedId: 'mo-Produção',
         perUnit: 1,
         formula: 'PER_PERIMETER_DIV_EXTRA',
+        fieldName: 'Distância entre ilhoses (m)',
         lossPercent: 0,
         minimum: null,
       },
@@ -428,6 +436,7 @@ const catalog: Template[] = [
         selectedId: 'ilhos',
         perUnit: 1,
         formula: 'PER_PERIMETER_DIV_EXTRA',
+        fieldName: 'Distância entre ilhoses (m)',
         lossPercent: 0,
         minimum: null,
       },
@@ -1376,6 +1385,109 @@ const syncLinks = () =>
 // A composição nasce com o que o cadastro do produto já tem (CP-16). Só a
 // primeira vez: depois que alguém mexeu (etapa, valor, nome), a semente não
 // sobrescreve mais
+/* ---------------------------------------------------------------------------
+ * Campos do orçamento (IP-4): do produto, lidos pelas linhas pelo nome
+ * ------------------------------------------------------------------------- */
+
+const fieldKey = (name: string) => name.trim().toLowerCase()
+
+const findField = (assembly: ProductAssembly, name: string) =>
+  (assembly.fields || []).find(
+    (field) => fieldKey(field.name) === fieldKey(name),
+  )
+
+// Garante o campo que a linha lê e devolve ele
+const ensureField = (
+  assembly: ProductAssembly,
+  name: string,
+  defaultValue = 0,
+) => {
+  assembly.fields = assembly.fields || []
+  const found = findField(assembly, name)
+  if (found) return found
+  const field: QuoteField = { id: `f${uid()}`, name: name.trim(), defaultValue }
+  assembly.fields.push(field)
+  return field
+}
+
+// Toda linha que lê um campo garante que ele exista no produto: vale para o
+// processo incluído, a biblioteca importada e os exemplos. O padrão vem do
+// campo extra legado da etapa, quando houver
+const ensureFields = (assembly: ProductAssembly) => {
+  assembly.blocks.forEach((block) => {
+    const rules = block.localRules ?? block.originalRules
+    block.lines.forEach((line) => {
+      if (!line.fieldName) return
+      ensureField(
+        assembly,
+        line.fieldName,
+        rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault,
+      )
+    })
+  })
+}
+
+// Em que etapas cada campo é lido: pela linha que aponta para ele ou pela
+// fórmula do produto que o cita
+const fieldUsage = (assembly: ProductAssembly) =>
+  (assembly.fields || []).map((field) => ({
+    ...field,
+    usedBy: assembly.blocks
+      .filter((block) =>
+        block.lines.some((line) => {
+          if (
+            line.fieldName &&
+            fieldKey(line.fieldName) === fieldKey(field.name)
+          )
+            return true
+          if (line.formula !== 'CUSTOM' || !line.formulaId) return false
+          const formula = (assembly.formulas || []).find(
+            (item) => item.id === line.formulaId,
+          )
+          return !!formula && formulaUsesName(formula.expression, field.name)
+        }),
+      )
+      .map((block) => block.localName || block.name),
+  }))
+
+/* ---------------------------------------------------------------------------
+ * Fórmulas do produto (IP-2): a conta escrita, só deste produto
+ * ------------------------------------------------------------------------- */
+
+// O que a fórmula pode ler nesta etapa: as medidas, o tempo e os campos
+const formulaVars = (
+  assembly: ProductAssembly,
+  measure: AssemblyMeasure,
+  time: number | null,
+): FormulaVars => ({
+  largura: measure.width,
+  altura: measure.height,
+  área: measure.width * measure.height,
+  perímetro: 2 * (measure.width + measure.height),
+  quantidade: measure.quantity,
+  tempo: time ?? 0,
+  ...Object.fromEntries(
+    (assembly.fields || []).map((field) => [field.name, field.defaultValue]),
+  ),
+})
+
+// Onde cada fórmula é usada, e se ela calcula na medida padrão do produto
+const formulaUsage = (assembly: ProductAssembly) =>
+  (assembly.formulas || []).map((formula) => ({
+    ...formula,
+    usedBy: assembly.blocks
+      .filter((block) =>
+        block.lines.some(
+          (line) => line.formula === 'CUSTOM' && line.formulaId === formula.id,
+        ),
+      )
+      .map((block) => block.localName || block.name),
+    error: evaluateFormula(
+      formula.expression,
+      formulaVars(assembly, assembly.measure, 0),
+    ).error,
+  }))
+
 const untouched = (assembly: ProductAssembly) =>
   assembly.name === 'Produto' &&
   assembly.unitPrice === null &&
@@ -1416,6 +1528,8 @@ const findOrCreate = (productId: string, seed?: AssemblySeed) => {
       technicalDescription: '',
       blocks: [],
       variations: [],
+      fields: [],
+      formulas: [],
     }
     assemblies.push(found)
   }
@@ -1593,6 +1707,7 @@ const compute = (
   // Parte dentro de parte tem limite: evita laço se alguém se incluir
   depth = 0,
 ): ComputedAssembly => {
+  ensureFields(source)
   const assembly = applyVariation(source, variation)
   // Sem preço próprio, a variação vale o preço do produto (PV-4); com
   // tabela por faixa, vale a faixa da quantidade (FQ-1)
@@ -1708,14 +1823,36 @@ const compute = (
 
       // A lista é preenchida pelo vendedor: aqui não tem quantidade (IP-8).
       // A opcional desmarcada fica fora da conta (IP-28)
+      // O campo do orçamento que esta linha lê (IP-4); sem ele, vale o campo
+      // extra legado da etapa
+      const lineExtra = line.fieldName
+        ? (findField(assembly, line.fieldName)?.defaultValue ?? extra)
+        : extra
+      // A fórmula do produto (IP-2): consumo × o resultado dela nesta etapa
+      const custom =
+        line.formula === 'CUSTOM'
+          ? (assembly.formulas || []).find(
+              (item) => item.id === line.formulaId,
+            ) || null
+          : null
+      const customValue = custom
+        ? evaluateFormula(
+            custom.expression,
+            formulaVars(assembly, blockMeasure, time),
+          ).value
+        : null
       const raw =
         line.mode === 'LIST' || (line.optional && !line.optionalDefault)
           ? null
-          : line.formula === 'SHEET_YIELD'
-            ? sheetYield
-              ? sheetYield.charged * calcLine.perUnit
-              : null
-            : lineQuantity(calcLine, blockMeasure, extra, time)
+          : line.formula === 'CUSTOM'
+            ? customValue === null
+              ? null
+              : customValue * calcLine.perUnit
+            : line.formula === 'SHEET_YIELD'
+              ? sheetYield
+                ? sheetYield.charged * calcLine.perUnit
+                : null
+              : lineQuantity(calcLine, blockMeasure, lineExtra, time)
 
       let qty =
         raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
@@ -1732,6 +1869,9 @@ const compute = (
         variationOverride: !!variation?.overrides.some(
           (item) => item.blockId === block.id && item.lineId === line.id,
         ),
+        extraValue:
+          line.fieldName || rules.extraField !== 'NONE' ? lineExtra : null,
+        formulaName: custom?.name ?? null,
         selected,
         quantity: qty,
         minimumApplied,
@@ -1868,6 +2008,8 @@ const compute = (
   return {
     ...assembly,
     area,
+    fields: fieldUsage(assembly),
+    formulas: formulaUsage(assembly),
     blocks,
     resourceSummary,
     cost,
@@ -2106,11 +2248,18 @@ export const addAssemblyLine = async ({
   blockId: string
   values: NewLineValues
 }) => {
-  const block = findOrCreate(productId).blocks.find(
-    (item) => item.id === blockId,
-  )
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
   if (!block) return fail('Etapa não encontrada')
   if (!values.name.trim()) return fail('Informe o nome da linha')
+  const fieldName = values.fieldName?.trim() || undefined
+  if (fieldName) ensureField(assembly, fieldName, values.fieldDefault ?? 0)
+  if (
+    values.formula === 'CUSTOM' &&
+    !(assembly.formulas || []).some((item) => item.id === values.formulaId)
+  ) {
+    return fail('Escolha a fórmula do produto')
+  }
 
   const map = resourceMap()
   const options = values.optionIds
@@ -2144,10 +2293,238 @@ export const addAssemblyLine = async ({
     minimum: list ? null : values.minimum,
     optional: values.optional,
     optionalDefault: values.optional ? values.optionalDefault : undefined,
+    fieldName,
+    formulaId: values.formula === 'CUSTOM' ? values.formulaId : undefined,
     overridden: false,
     // Numa etapa vinda de processo, a linha a mais é só deste produto
     addedHere: block.processId !== null,
   })
+  return ok(null)
+}
+
+// Os campos do orçamento são do PRODUTO (IP-4, IP-6): um nome, um valor,
+// um lugar para preencher. A linha aponta para o campo pelo nome
+export const addProductField = async ({
+  productId,
+  name,
+  defaultValue,
+}: {
+  productId: string
+  name: string
+  defaultValue: number
+}) => {
+  if (!name?.trim()) return fail('Informe o nome do campo')
+  const assembly = findOrCreate(productId)
+  if (findField(assembly, name)) {
+    return fail('Já existe um campo com esse nome neste produto')
+  }
+  ensureField(assembly, name, defaultValue)
+  return ok(null)
+}
+
+export const updateProductField = async ({
+  productId,
+  fieldId,
+  name,
+  defaultValue,
+}: {
+  productId: string
+  fieldId: string
+  name?: string
+  defaultValue?: number
+}) => {
+  const assembly = findOrCreate(productId)
+  const field = (assembly.fields || []).find((item) => item.id === fieldId)
+  if (!field) return fail('Campo não encontrado')
+  if (name !== undefined) {
+    if (!name.trim()) return fail('Informe o nome do campo')
+    const other = findField(assembly, name)
+    if (other && other.id !== field.id) {
+      return fail('Já existe um campo com esse nome neste produto')
+    }
+    // As linhas que leem o campo acompanham o nome novo
+    assembly.blocks.forEach((block) =>
+      block.lines.forEach((line) => {
+        if (
+          line.fieldName &&
+          fieldKey(line.fieldName) === fieldKey(field.name)
+        ) {
+          line.fieldName = name.trim()
+        }
+      }),
+    )
+    field.name = name.trim()
+  }
+  if (defaultValue !== undefined) field.defaultValue = defaultValue
+  return ok(null)
+}
+
+export const removeProductField = async ({
+  productId,
+  fieldId,
+}: {
+  productId: string
+  fieldId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const field = (assembly.fields || []).find((item) => item.id === fieldId)
+  if (!field) return fail('Campo não encontrado')
+  const usedBy =
+    fieldUsage(assembly).find((item) => item.id === fieldId)?.usedBy || []
+  if (usedBy.length) {
+    return fail(
+      `Este campo é lido em ${usedBy.join(', ')}. Troque o campo nessas linhas antes de removê-lo`,
+    )
+  }
+  assembly.fields = (assembly.fields || []).filter(
+    (item) => item.id !== fieldId,
+  )
+  return ok(null)
+}
+
+// As fórmulas são do PRODUTO (IP-2, 03/10/2026): a conta depende dos campos
+// dele, então não vira cadastro da empresa. Para reaproveitar, copia-se a
+// composição de outro produto
+export const addProductFormula = async ({
+  productId,
+  name,
+  expression,
+}: {
+  productId: string
+  name: string
+  expression: string
+}) => {
+  if (!name?.trim()) return fail('Dê um nome à fórmula')
+  const assembly = findOrCreate(productId)
+  const check = evaluateFormula(
+    expression,
+    formulaVars(assembly, assembly.measure, 0),
+  )
+  if (check.error) return fail(check.error)
+  if (
+    (assembly.formulas || []).some(
+      (item) => item.name.trim().toLowerCase() === name.trim().toLowerCase(),
+    )
+  ) {
+    return fail('Já existe uma fórmula com esse nome neste produto')
+  }
+  const formula: ProductFormula = {
+    id: `fx${uid()}`,
+    name: name.trim(),
+    expression: expression.trim(),
+  }
+  assembly.formulas = [...(assembly.formulas || []), formula]
+  return ok(formula.id)
+}
+
+export const updateProductFormula = async ({
+  productId,
+  formulaId,
+  name,
+  expression,
+}: {
+  productId: string
+  formulaId: string
+  name?: string
+  expression?: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const formula = (assembly.formulas || []).find(
+    (item) => item.id === formulaId,
+  )
+  if (!formula) return fail('Fórmula não encontrada')
+  if (name !== undefined && !name.trim()) return fail('Dê um nome à fórmula')
+  if (expression !== undefined) {
+    const check = evaluateFormula(
+      expression,
+      formulaVars(assembly, assembly.measure, 0),
+    )
+    if (check.error) return fail(check.error)
+    formula.expression = expression.trim()
+  }
+  if (name !== undefined) formula.name = name.trim()
+  return ok(null)
+}
+
+export const removeProductFormula = async ({
+  productId,
+  formulaId,
+}: {
+  productId: string
+  formulaId: string
+}) => {
+  const assembly = findOrCreate(productId)
+  const usedBy =
+    formulaUsage(assembly).find((item) => item.id === formulaId)?.usedBy || []
+  if (usedBy.length) {
+    return fail(
+      `Esta fórmula é usada em ${usedBy.join(', ')}. Troque o tipo de cálculo nessas linhas antes de removê-la`,
+    )
+  }
+  assembly.formulas = (assembly.formulas || []).filter(
+    (item) => item.id !== formulaId,
+  )
+  return ok(null)
+}
+
+// Copiar a composição de outro produto (pedido do time, 03/10/2026): as
+// etapas, os campos e as fórmulas vêm juntos, com ids novos. O que já
+// existia no produto fica; o copiado entra depois, como caminho próprio
+export const copyCompositionFrom = async ({
+  productId,
+  sourceProductId,
+}: {
+  productId: string
+  sourceProductId: string
+}) => {
+  if (productId === sourceProductId) return fail('Escolha outro produto')
+  syncLinks()
+  const source = assemblies.find((item) => item.productId === sourceProductId)
+  if (!source || !source.blocks.length) {
+    return fail('Esse produto não tem composição para copiar')
+  }
+  const target = findOrCreate(productId)
+  ensureFields(source)
+  ;(source.fields || []).forEach((field) =>
+    ensureField(target, field.name, field.defaultValue),
+  )
+  const formulaIds = new Map<string, string>()
+  ;(source.formulas || []).forEach((formula) => {
+    const existing = (target.formulas || []).find(
+      (item) =>
+        item.name.trim().toLowerCase() === formula.name.trim().toLowerCase(),
+    )
+    if (existing && existing.expression === formula.expression) {
+      formulaIds.set(formula.id, existing.id)
+      return
+    }
+    const copy: ProductFormula = {
+      id: `fx${uid()}`,
+      name: existing ? `${formula.name} (cópia)` : formula.name,
+      expression: formula.expression,
+    }
+    target.formulas = [...(target.formulas || []), copy]
+    formulaIds.set(formula.id, copy.id)
+  })
+  const blockIds = new Map(
+    source.blocks.map((block) => [block.id, `b${uid()}`]),
+  )
+  const copied: AssemblyBlock[] = source.blocks.map((block) => ({
+    ...structuredClone(block),
+    id: blockIds.get(block.id) as string,
+    dependsOn: block.dependsOn.map((id) => blockIds.get(id) || id),
+    baseBlockId: block.baseBlockId
+      ? blockIds.get(block.baseBlockId) || null
+      : null,
+    lines: block.lines.map((line) => ({
+      ...structuredClone(line),
+      id: `l${uid()}`,
+      formulaId: line.formulaId
+        ? formulaIds.get(line.formulaId) || line.formulaId
+        : undefined,
+    })),
+  }))
+  target.blocks.push(...copied)
   return ok(null)
 }
 
@@ -2393,8 +2770,12 @@ export const updateAssemblyLine = async ({
       | 'sheetMargin'
       | 'sheetGap'
       | 'chargeWholeSheets'
+      | 'fieldName'
+      | 'formulaId'
     >
   > & {
+    // Padrão do campo do orçamento, se ele ainda não existir no produto
+    fieldDefault?: number
     // Consumo, perda e mínimo por opção (IP-26); vazio volta ao da linha
     optionValues?: {
       id: string
@@ -2404,16 +2785,20 @@ export const updateAssemblyLine = async ({
     }[]
   }
 }) => {
-  const block = findOrCreate(productId).blocks.find(
-    (item) => item.id === blockId,
-  )
+  const assembly = findOrCreate(productId)
+  const block = assembly.blocks.find((item) => item.id === blockId)
   const line = block?.lines.find((item) => item.id === lineId)
   if (!line) return fail('Linha não encontrada')
 
   // Trocar a opção escolhida não é ajuste: é o uso normal da linha
   const onlyChoice = Object.keys(values).every((key) => key === 'selectedId')
-  const { optionValues, ...lineValues } = values
+  const { optionValues, fieldDefault, ...lineValues } = values
   Object.assign(line, lineValues)
+  if ('fieldName' in lineValues) {
+    line.fieldName = lineValues.fieldName?.trim() || undefined
+    if (line.fieldName) ensureField(assembly, line.fieldName, fieldDefault ?? 0)
+  }
+  if (line.formula !== 'CUSTOM') line.formulaId = undefined
   // Lista nova: a mesma lista de opções pode ser de outros produtos
   if (optionValues) {
     line.options = line.options.map((option) => {
@@ -2670,6 +3055,18 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
     optionals: [],
     lists: [],
   }
+  // Os campos do produto, uma vez só, na ordem em que foram declarados (IP-6)
+  ensureFields(assembly)
+  fieldUsage(assembly)
+    .filter((field) => field.usedBy.length)
+    .forEach((field) =>
+      form.extras.push({
+        fieldId: field.id,
+        name: field.name,
+        kind: 'DECIMAL',
+        defaultValue: field.defaultValue,
+      }),
+    )
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
     if (rules.timeField) {
@@ -2679,9 +3076,14 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
         defaultMinutes: rules.timeFieldDefault || 0,
       })
     }
-    if (rules.extraField !== 'NONE') {
+    // Legado: etapa com campo extra próprio e nenhuma linha lendo um campo
+    // do produto. Some quando as linhas passarem a apontar para o campo
+    if (
+      rules.extraField !== 'NONE' &&
+      !block.lines.some((line) => line.fieldName)
+    ) {
       form.extras.push({
-        blockId: block.id,
+        fieldId: `block:${block.id}`,
         name: rules.extraFieldName || block.name,
         kind: rules.extraField,
         defaultValue: rules.extraFieldDefault,
@@ -2758,8 +3160,14 @@ export const getSaleComposition = async ({
 
   // Cópia: o que o vendedor escolheu vale só para esta venda
   const source: ProductAssembly = structuredClone({ ...original, measure })
+  // O que o vendedor informou nos campos do produto vale nesta venda
+  ensureFields(source)
+  extras.forEach((item) => {
+    const field = (source.fields || []).find((f) => f.id === item.fieldId)
+    if (field) field.defaultValue = item.value
+  })
   source.blocks.forEach((block) => {
-    const extra = extras.find((item) => item.blockId === block.id)
+    const extra = extras.find((item) => item.fieldId === `block:${block.id}`)
     if (extra) {
       block.localRules = {
         ...(block.localRules ?? block.originalRules),
@@ -2817,9 +3225,19 @@ export const getSaleComposition = async ({
           block.rules.timeField
             ? `tempo ${minutesText(block.rules.timeFieldDefault || 0)}`
             : null,
-          block.rules.extraField === 'NONE'
+          block.rules.extraField === 'NONE' ||
+          block.lines.some((line) => line.fieldName)
             ? null
             : `${block.rules.extraFieldName}: ${block.rules.extraFieldDefault}`,
+          ...Array.from(
+            new Set(
+              block.lines
+                .filter((line) => line.fieldName)
+                .map((line) => line.fieldName as string),
+            ),
+          ).map(
+            (name) => `${name}: ${findField(source, name)?.defaultValue ?? 0}`,
+          ),
         ]
           .filter(Boolean)
           .join(' · ') || null,
@@ -3255,6 +3673,8 @@ export const getProcessDetail = async ({
     meta: entry.meta,
     category: processCategory(entry.block, entry.meta),
     block: computed.blocks[0],
+    // Os campos que as linhas do processo leem (IP-4)
+    fields: computed.fields,
     cost: computed.cost,
     sale: computed.suggestedPrice,
     resourceSummary: computed.resourceSummary,
