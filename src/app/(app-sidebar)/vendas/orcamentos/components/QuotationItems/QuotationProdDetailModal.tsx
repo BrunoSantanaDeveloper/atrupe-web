@@ -43,7 +43,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
-import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  UnitCostInput,
+  convertUnitCostToRaw,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
 import {
   defaultProductValues,
   productSchema,
@@ -53,7 +56,7 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 import { toast } from 'sonner'
 import { parseCurrencyToBrl, cn } from '@/lib/utils'
 import { useParams } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { QuotationItemType } from '@/types/sales/quotation'
 
 import { QUOTATION_DATA_QUERY_KEY } from '../../[quotationId]/components/Quotation'
@@ -61,6 +64,7 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { SaleCompositionFields } from './SaleCompositionFields'
 import { saveItemComposition } from '@/actions/quotation-composition'
+import { getPriceTiers } from '@/actions/product-assembly'
 import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
 interface Props {
@@ -280,6 +284,40 @@ export function QuotationProdDetailModal({
     // para novos itens, então não precisamos multiplicar novamente
     return total
   }, [calculateSalesValue, watch])
+
+  // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
+  // e muda o valor por unidade do item simples conforme a quantidade
+  const tierProductId = product?.id || data?.id || null
+  const { data: tiersRes } = useQuery({
+    enabled: !!tierProductId && open,
+    staleTime: 60_000,
+    queryKey: ['price-tiers', tierProductId],
+    queryFn: () => getPriceTiers({ productId: tierProductId as string }),
+  })
+  const tiers = tiersRes?.data || []
+  const itemQuantity = Number(watch('items.0.quantity') || 1)
+  const itemUnitKind = watch('items.0.unitKind')
+  const activeTier =
+    tiers.length && (watch('items') || []).length === 1
+      ? [...tiers]
+          .sort((a, b) => b.from - a.from)
+          .find((tier) => itemQuantity >= tier.from) || null
+      : null
+  const baseUnitCost = product?.items?.[0]?.unitCost ?? null
+  useEffect(() => {
+    if (!tiers.length || (watch('items') || []).length !== 1) return
+    const target =
+      activeTier !== null
+        ? convertUnitCostToRaw(itemUnitKind, activeTier.unitPrice)
+        : baseUnitCost
+    if (target === null || target === undefined) return
+    if (Number(watch('items.0.unitCost')) === target) return
+    setValue('items.0.unitCost', target)
+    const { total, measurementValue } = calculateSalesValue(0)
+    setValue('items.0.salePrice', total)
+    setValue('items.0.measurementValue', measurementValue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [itemQuantity, activeTier?.from, tiers.length])
 
   if (!open) return null
 
@@ -550,6 +588,13 @@ export function QuotationProdDetailModal({
                           width="flex-[1_0_130px]"
                         />
                       </PermissionGate>
+                      {index === 0 && tiers.length > 0 && (
+                        <p className="w-full text-xs text-gray">
+                          {activeTier
+                            ? `Preço da faixa a partir de ${activeTier.from}: R$ ${(activeTier.unitPrice / 100).toFixed(2).replace('.', ',')} por unidade de venda.`
+                            : `Abaixo de ${Math.min(...tiers.map((tier) => tier.from))} vale o valor de venda do produto.`}
+                        </p>
+                      )}
                     </div>
                   )
                 })}

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 
 // PROVISÓRIO nos dados: lê `src/actions/product-assembly.ts`, que também faz
 // o cálculo (SEG-1).
@@ -27,6 +28,13 @@ import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { EmptyState } from '@/components/ui/empty-state'
@@ -41,16 +49,14 @@ import {
 } from '@/components/ui/card'
 
 // Components
+import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   LineDialog,
-  RulesDialog,
   NewLineDialog,
   OptionsDialog,
-  LibraryDialog,
-  CopyCompositionDialog,
   type LineValues,
 } from './AssemblyDialogs'
 import { PriceTiersCard } from './PriceTiersCard'
@@ -63,6 +69,10 @@ import {
 
 // Types
 import {
+  type QuantityMode,
+  type SaleRules,
+  quantityModeObj,
+  TASK_TYPES,
   unitKindObj,
   unitSymbol,
   unitSaleLabel,
@@ -94,10 +104,7 @@ import {
   getPartCandidates,
   addVariationBlock,
   removeVariationBlock,
-  getLibrary,
-  importFromLibrary,
   addProductFormula,
-  copyCompositionFrom,
   linkBlock,
   unlinkBlock,
   replaceBlockProcess,
@@ -126,9 +133,13 @@ import {
   assemblyStatusObj,
   assemblyOverrideObj,
 } from '@/consts/productAssembly'
-import { formulaLabel, resourceKindObj } from '@/consts/processes'
+import {
+  formulaLabel,
+  resourceKindObj,
+  dimensionRuleOptions,
+} from '@/consts/processes'
 import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
-import type { ResourceKind } from '../../../processos/types'
+import type { ResourceKind, DimensionRule } from '../../../processos/types'
 import { ResourceKindButtons } from './ResourceKindButtons'
 import { ProductFields } from './ProductFields'
 import { ProductFormulas } from './ProductFormulas'
@@ -146,15 +157,14 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 import {
   IconLink,
   IconTrash,
-  IconBooks,
-  IconCopy,
+  IconPackage,
   IconPencil,
   IconSearch,
   IconUnlink,
   IconReplace,
-  IconSettings,
   IconCirclePlus,
   IconCircleCheck,
+  IconClock,
   IconChevronUp,
   IconChevronDown,
   IconArrowBackUp,
@@ -225,7 +235,8 @@ const zeroInput = (
         ? !line.extraValue
         : rules.extraField === 'NONE' || !rules.extraFieldDefault
     case 'tempo':
-      return !rules.timeField || !rules.timeFieldDefault
+      // O tempo informado na venda, ou o padrão da linha
+      return !rules.timeFieldDefault && !line?.perUnit
     default:
       return false
   }
@@ -246,11 +257,8 @@ type Dialog =
   // Trocar ou escolher o processo que preenche a etapa (FL-6)
   | { kind: 'swap'; block: ComputedBlock }
   | { kind: 'line'; block: ComputedBlock; line: ComputedLine }
-  | { kind: 'rules'; block: ComputedBlock }
   | { kind: 'newLine'; block: ComputedBlock; lineKind?: ResourceKind }
   | { kind: 'options'; blockId: string; lineId: string }
-  | { kind: 'library' }
-  | { kind: 'copy' }
   | null
 
 // A caixa do fluxo a partir da etapa calculada
@@ -300,9 +308,13 @@ const toFlowNode = (
 export function AssemblyEditor({
   productId,
   embedded = false,
+  topbar,
 }: {
   productId: string
   embedded?: boolean
+  // Na página, o editor desenha o Topbar para pôr a Situação no canto
+  // superior direito da tela (pedido do time, 03/10/2026)
+  topbar?: { title: string; supportText?: string; previousPage?: string }
 }) {
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
@@ -318,6 +330,11 @@ export function AssemblyEditor({
   // O fluxo nasce recolhido (03/10/2026): a composição é a lista de etapas,
   // na ordem da produção; o desenho só abre para quem quer mudar a ordem
   const [flowOpen, setFlowOpen] = useState(false)
+  // O bloco Produto já vem resolvido do cadastro: nasce recolhido, com um
+  // resumo em linha, e abre para quem precisar mexer (03/10/2026)
+  const [productOpen, setProductOpen] = useState(false)
+  // A etapa em renomeação: o nome é editado no próprio título (03/10/2026)
+  const [renamingId, setRenamingId] = useState<string | null>(null)
   // Hora da última gravação, para a tela dizer que já salvou (IP-40: cada
   // ação grava; não há botão Salvar na composição)
   const [savedAt, setSavedAt] = useState<Date | null>(null)
@@ -371,11 +388,6 @@ export function AssemblyEditor({
     queryFn: () => getAssemblyResources(),
   })
 
-  const { data: libraryRes } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['assembly-library'],
-    queryFn: () => getLibrary(),
-  })
   const { data: partsRes } = useQuery({
     queryKey: ['assembly-parts', productId],
     queryFn: () => getPartCandidates({ productId }),
@@ -433,14 +445,24 @@ export function AssemblyEditor({
 
   // A composição vazia já nasce com a etapa do setor do produto (pedido do
   // time, 03/10/2026): a tela abre direto nos botões Máquina · Material ·
-  // Mão de obra. Uma vez por abertura; se a pessoa remover a etapa, fica o
-  // estado vazio com "começa em outro setor"
+  // Mão de obra. Vale sempre que a composição estiver vazia, inclusive quando
+  // o mock zera com a tela aberta; só não vale depois de a pessoa remover a
+  // última etapa de propósito, quando fica o estado vazio com "começa em
+  // outro setor"
   const { hasPermission } = usePermissions()
   const canEdit = hasPermission(EDIT[0])
   const autoStage = useRef(false)
+  const emptiedByUser = useRef(false)
   useEffect(() => {
-    if (autoStage.current || !assembly || !canEdit) return
-    if (assembly.blocks.length > 0 || assembly.activeVariation) return
+    if (!assembly || !canEdit) return
+    if (assembly.blocks.length > 0) {
+      // Com etapa na tela, a próxima composição vazia pode nascer de novo
+      autoStage.current = false
+      emptiedByUser.current = false
+      return
+    }
+    if (autoStage.current || emptiedByUser.current || assembly.activeVariation)
+      return
     // Espera o cadastro e os setores, para a etapa nascer no setor certo
     if (isCatalogId && (!catalogFetched || !companySectors)) return
     autoStage.current = true
@@ -505,11 +527,6 @@ export function AssemblyEditor({
         : []
     }
     return [
-      {
-        label: 'Configurar etapa',
-        icon: IconSettings,
-        onSelect: () => setDialog({ kind: 'rules', block }),
-      },
       ...(block.part
         ? []
         : [
@@ -607,6 +624,8 @@ export function AssemblyEditor({
       cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
+        // Remover a última etapa é decisão da pessoa: não recriar sozinho
+        if (assembly.blocks.length === 1) emptiedByUser.current = true
         const res = await removeAssemblyBlock({ productId, blockId: block.id })
         if (!res.success) throw new Error(res.message)
         await refresh()
@@ -642,6 +661,29 @@ export function AssemblyEditor({
     if (!names.length) return 'Começa o produto'
     return `Depois de ${names.join(' e ')}`
   }
+
+  // As regras da etapa ficam nos seletores do cabeçalho (03/10/2026): na
+  // etapa montada no produto gravam nela; na vinda de processo viram ajuste
+  // local, marcado "alterado neste produto"
+  const saveStage = (
+    block: ComputedBlock,
+    patch: Partial<SaleRules>,
+    extra: { name?: string; taskType?: string } = {},
+    message = 'Etapa configurada',
+  ) =>
+    run(
+      setBlockLocalRules({
+        productId,
+        blockId: block.id,
+        rules: Object.keys(patch).length
+          ? { ...block.rules, ...patch }
+          : block.processId === null
+            ? block.originalRules
+            : block.localRules,
+        ...extra,
+      }),
+      message,
+    )
 
   const measureText = (block: ComputedBlock) => {
     const { rules, measure: m } = block
@@ -696,7 +738,7 @@ export function AssemblyEditor({
   const ownStageEmpty = (
     <EmptyState
       title={`Monte a etapa de ${ownSector.toLowerCase()}`}
-      description="É nela que entram a máquina, o material e a mão de obra. Enquanto não houver composição, o produto segue vendido pelo preço cadastrado."
+      description="Sem composição, o produto segue vendido pelo preço cadastrado."
       action={
         <div className="flex flex-col items-center gap-3">
           {/* Uma ação só: a etapa do setor do produto, já aberta
@@ -750,6 +792,32 @@ export function AssemblyEditor({
       assembly.fields.map((field) => [field.name, field.defaultValue]),
     ),
   }
+  // As referências do material das linhas de uma etapa (MT-10.1): nome e
+  // valor em metros, para os botões e o teste do diálogo da fórmula
+  const lineRefsOf = (blocks: ComputedBlock[]) => {
+    const refs: { [name: string]: number } = {}
+    blocks.forEach((block) =>
+      block.lines.forEach((line) => {
+        const selected = line.selected
+        if (!selected) return
+        if (selected.profile) {
+          refs[`${line.name} · X`] = selected.profile.x / 1000
+          refs[`${line.name} · Y`] = selected.profile.y / 1000
+        }
+        if (selected.sheet) {
+          refs[`${line.name} · largura`] = selected.sheet.width
+          refs[`${line.name} · altura`] = selected.sheet.height
+        }
+        if (selected.weight) refs[`${line.name} · peso`] = selected.weight
+      }),
+    )
+    return refs
+  }
+  const dialogBlock =
+    dialog?.kind === 'newLine' || dialog?.kind === 'line' ? dialog.block : null
+  const dialogRefs = lineRefsOf(dialogBlock ? [dialogBlock] : [])
+  const allRefs = lineRefsOf(assembly.blocks)
+
   const createFormula = async (values: {
     name: string
     expression: string
@@ -790,6 +858,47 @@ export function AssemblyEditor({
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="neutralLight">{item.sector}</Badge>
                 <Badge variant="blueLight">{dependsText(item)}</Badge>
+                {/* O tipo de tarefa que a etapa gera na produção (IP-23),
+                    junto do setor */}
+                {!inVariation && (
+                  <PermissionGate
+                    permissions={EDIT}
+                    fallback={
+                      <Badge variant="neutralLight">
+                        tarefa: {item.taskType.toLowerCase()}
+                      </Badge>
+                    }
+                  >
+                    <Select
+                      value={item.taskType}
+                      onValueChange={(value) =>
+                        saveStage(
+                          item,
+                          {},
+                          { taskType: value },
+                          'Tipo de tarefa alterado',
+                        )
+                      }
+                    >
+                      <SelectTrigger
+                        aria-label="Tipo de tarefa na produção"
+                        className="h-6 w-auto gap-1 rounded-full border-gray-200 bg-gray-50 px-2 text-xs"
+                      >
+                        <span className="text-gray">tarefa:</span>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from(
+                          new Set([item.taskType, ...TASK_TYPES]),
+                        ).map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </PermissionGate>
+                )}
                 {item.processId && (
                   <Badge variant="neutralLight">Processo cadastrado</Badge>
                 )}
@@ -807,16 +916,146 @@ export function AssemblyEditor({
                   </Badge>
                 )}
               </div>
-              <CardTitle className="text-base">{item.name}</CardTitle>
-              <CardDescription>
-                {measureText(item)}
-                {` · tarefa: ${item.taskType.toLowerCase()}`}
-                {blockFields.length
-                  ? ` · ${blockFields.length === 1 ? 'campo' : 'campos'}: ${blockFields.join(', ')}`
-                  : item.rules.extraField !== 'NONE'
-                    ? ` · ${item.rules.extraFieldName}: ${num(item.rules.extraFieldDefault)}`
-                    : ''}
-              </CardDescription>
+              {/* O nome edita no título; a engrenagem e o diálogo
+                  "Configurar" saíram (03/10/2026) */}
+              {renamingId === item.id ? (
+                <Input
+                  autoFocus
+                  aria-label="Nome da etapa"
+                  className="h-9 max-w-sm text-base font-semibold"
+                  defaultValue={item.name}
+                  onBlur={(event) => {
+                    setRenamingId(null)
+                    const value = event.target.value.trim()
+                    if (value && value !== item.name) {
+                      saveStage(item, {}, { name: value }, 'Etapa renomeada')
+                    }
+                  }}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') event.currentTarget.blur()
+                    if (event.key === 'Escape') setRenamingId(null)
+                  }}
+                />
+              ) : (
+                <PermissionGate
+                  permissions={EDIT}
+                  fallback={
+                    <CardTitle className="text-base">{item.name}</CardTitle>
+                  }
+                >
+                  <button
+                    type="button"
+                    className="group flex items-center gap-2 text-left"
+                    title="Renomear etapa"
+                    onClick={() => setRenamingId(item.id)}
+                  >
+                    <CardTitle className="text-base">{item.name}</CardTitle>
+                    <IconPencil
+                      size={14}
+                      aria-hidden="true"
+                      className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
+                    />
+                  </button>
+                </PermissionGate>
+              )}
+              {/* Quantidade, relação com a base e medida: as regras da etapa
+                  no lugar onde a medida já aparecia (03/10/2026) */}
+              <PermissionGate
+                permissions={EDIT}
+                fallback={
+                  <CardDescription>
+                    {measureText(item)}
+                    {` · tarefa: ${item.taskType.toLowerCase()}`}
+                  </CardDescription>
+                }
+              >
+                {inVariation ? (
+                  <CardDescription>{measureText(item)}</CardDescription>
+                ) : (
+                  <div className="flex flex-wrap items-center gap-1.5 text-sm text-gray">
+                    <Select
+                      value={item.rules.quantityMode}
+                      onValueChange={(value) =>
+                        saveStage(item, { quantityMode: value as QuantityMode })
+                      }
+                    >
+                      <SelectTrigger
+                        aria-label="Quantidade"
+                        className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.keys(quantityModeObj) as QuantityMode[])
+                          .filter(
+                            (key) =>
+                              key !== 'AREA_RATIO' || item.dependsOn.length,
+                          )
+                          .map((key) => (
+                            <SelectItem key={key} value={key}>
+                              {quantityModeObj[key]}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    {item.dependsOn.length > 0 && (
+                      <Select
+                        value={item.rules.followsBase ? 'FOLLOWS' : 'ONCE'}
+                        onValueChange={(value) =>
+                          saveStage(item, { followsBase: value === 'FOLLOWS' })
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Em relação à base"
+                          className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="FOLLOWS">
+                            Acompanha a quantidade da base
+                          </SelectItem>
+                          <SelectItem value="ONCE">
+                            Uma vez por pedido
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                    <Select
+                      value={item.rules.dimension}
+                      onValueChange={(value) =>
+                        saveStage(item, { dimension: value as DimensionRule })
+                      }
+                    >
+                      <SelectTrigger
+                        aria-label="Medida"
+                        className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {dimensionRuleOptions
+                          .filter(
+                            (option) =>
+                              option.value !== 'SAME_AS_PARENT' ||
+                              item.dependsOn.length,
+                          )
+                          .map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-xs">
+                      = {measureText(item)}
+                      {blockFields.length
+                        ? ` · ${blockFields.length === 1 ? 'campo' : 'campos'}: ${blockFields.join(', ')}`
+                        : ''}
+                    </span>
+                  </div>
+                )}
+              </PermissionGate>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -869,18 +1108,8 @@ export function AssemblyEditor({
             {!inVariation && (
               <PermissionGate permissions={EDIT}>
                 <div className="flex gap-1">
-                  <ActionButton
-                    Icon={IconCirclePlus}
-                    variant="neutralGhost"
-                    tooltip="Etapa seguinte"
-                    onClick={() => setDialog({ kind: 'next', after: item })}
-                  />
-                  <ActionButton
-                    Icon={IconSettings}
-                    variant="neutralGhost"
-                    tooltip="Configurar etapa"
-                    onClick={() => setDialog({ kind: 'rules', block: item })}
-                  />
+                  {/* A etapa seguinte entra pela linha "Nova etapa depois
+                      de…" embaixo do card; o "+" daqui repetia a função */}
                   <ActionButton
                     Icon={IconTrash}
                     variant="errorGhost"
@@ -1038,10 +1267,11 @@ export function AssemblyEditor({
                             <p className="text-sm">
                               {/* Estas fórmulas usam o tempo da etapa, não o
                                 consumo (IP-32) */}
-                              {item.rules.timeField &&
-                              (line.formula === 'EQUAL_TIME' ||
-                                line.formula === 'PER_TIME')
-                                ? `tempo da etapa (${amount(item.rules.timeFieldDefault || 0, 'min')})`
+                              {line.formula === 'EQUAL_TIME' ||
+                              line.formula === 'PER_TIME'
+                                ? item.rules.timeFieldDefault
+                                  ? `tempo informado (${amount(item.rules.timeFieldDefault, 'min')})`
+                                  : `tempo padrão ${amount(line.effective.perUnit, 'min')}`
                                 : amount(line.effective.perUnit, unit)}
                             </p>
                             {(line.effective.lossPercent > 0 ||
@@ -1291,270 +1521,414 @@ export function AssemblyEditor({
     <div className="flex flex-col gap-5">
       {/* 1. O produto: a cobrança é a do cadastro do START (IP-17) —
           unidade comercial, valor de venda e padrão de medidas */}
+      {!embedded && topbar && (
+        <Topbar
+          review="new"
+          title={topbar.title}
+          supportText={topbar.supportText}
+          previousPage={topbar.previousPage}
+          primaryCta={
+            <PermissionGate
+              permissions={EDIT}
+              fallback={<Badge variant={status.variant}>{status.text}</Badge>}
+            >
+              {/* Situação no canto superior direito da tela (IP-14) */}
+              <Select
+                value={assembly.status}
+                onValueChange={(value) =>
+                  run(
+                    updateAssembly({
+                      productId,
+                      values: { status: value as AssemblyStatus },
+                    }),
+                    assemblyStatusObj[value as AssemblyStatus].text,
+                  )
+                }
+              >
+                <SelectTrigger
+                  aria-label="Situação"
+                  title={status.help}
+                  className="h-11 w-[220px]"
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(assemblyStatusObj) as AssemblyStatus[]).map(
+                    (key) => (
+                      <SelectItem key={key} value={key}>
+                        {assemblyStatusObj[key].text}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </Select>
+            </PermissionGate>
+          }
+        />
+      )}
+
       {!embedded && (
         <Card>
-          <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-            <div>
+          <button
+            type="button"
+            aria-expanded={productOpen}
+            onClick={() => setProductOpen((open) => !open)}
+            className="flex w-full items-center justify-between gap-4 rounded-t-xl px-6 py-4 text-left hover:bg-gray-50"
+          >
+            <div className="min-w-0">
               <CardTitle>Produto</CardTitle>
-              <CardDescription>
-                Os mesmos campos do cadastro do produto. A composição acrescenta
-                o custo e o preço sugerido.
+              <CardDescription className="truncate">
+                {productOpen
+                  ? 'Os mesmos campos do cadastro do produto. A composição acrescenta o custo e o preço sugerido.'
+                  : [
+                      unitKindObj[assembly.unitKind],
+                      assembly.unitPrice === null
+                        ? 'sem valor de venda'
+                        : `${money(assembly.unitPrice)} por ${unitSymbol[assembly.unitKind]}`,
+                      `${num(saved.quantity)} × ${num(saved.width)} × ${num(saved.height)} m`,
+                      productDimensionObj[assembly.dimension].toLowerCase(),
+                      assembly.fields.length
+                        ? `${assembly.fields.length} ${assembly.fields.length === 1 ? 'campo do orçamento' : 'campos do orçamento'}`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
               </CardDescription>
             </div>
-            <PermissionGate permissions={EDIT}>
-              <div className="w-full sm:w-[260px]">
-                <SelectBasic
-                  name="assembly-status"
-                  label="Situação"
-                  options={toOptions(
-                    Object.fromEntries(
-                      Object.entries(assemblyStatusObj).map(([key, value]) => [
-                        key,
-                        value.text,
-                      ]),
-                    ) as { [key in AssemblyStatus]: string },
+            {productOpen ? (
+              <IconChevronUp size={20} className="shrink-0 text-gray" />
+            ) : (
+              <IconChevronDown size={20} className="shrink-0 text-gray" />
+            )}
+          </button>
+          {productOpen && (
+            <CardContent className="px-6 pb-5 pt-1">
+              {/* O mesmo desenho do item do orçamento (pedido do time,
+                03/10/2026): imagem à esquerda; à direita unidade, quantidade
+                e medidas, depois área, valor por unidade e valor de venda */}
+              <div className="flex flex-col gap-5 md:flex-row">
+                <div className="relative h-[180px] w-full shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 md:w-[240px]">
+                  {catalogProduct?.imageUrl ? (
+                    <Image
+                      src={catalogProduct.imageUrl}
+                      alt={assembly.name}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-gray">
+                      <IconPackage size={28} aria-hidden="true" />
+                      <span className="text-xs">
+                        A imagem é a do cadastro do produto
+                      </span>
+                    </div>
                   )}
-                  value={assembly.status}
-                  onChange={(value) =>
-                    run(
-                      updateAssembly({
-                        productId,
-                        values: { status: value as AssemblyStatus },
-                      }),
-                      assemblyStatusObj[value as AssemblyStatus].text,
-                    )
-                  }
-                />
-                <p className="mt-1 text-xs text-gray">{status.help}</p>
-              </div>
-            </PermissionGate>
-          </CardHeader>
-          <CardContent className="space-y-6 px-6 pb-6">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <SelectBasic
-                name="assembly-unit"
-                label="Unidade comercial"
-                options={toOptions(unitKindObj)}
-                value={assembly.unitKind}
-                onChange={(value) =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { unitKind: value as UnitKind },
-                    }),
-                  )
-                }
-              />
-              <PermissionGate permissions={['values:values:view']}>
-                {/* A mesma estrutura do SelectBasic ao lado: rótulo com mb-2 e
-                    campo de 44 px, para as três colunas alinharem */}
-                <div className="flex flex-col">
-                  <Label htmlFor="assembly-unit-price" className="mb-2">
-                    {unitSaleLabel[assembly.unitKind]}
-                    {variation ? ` · ${variation.name}` : ''}
-                  </Label>
-                  <Input
-                    key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
-                    id="assembly-unit-price"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    startAdornment={<span className="text-sm">R$</span>}
-                    placeholder={
-                      variation && assembly.unitPrice !== null
-                        ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
-                        : ''
-                    }
-                    defaultValue={
-                      variation
-                        ? variation.unitPrice === null
-                          ? ''
-                          : variation.unitPrice / 100
-                        : assembly.unitPrice === null
-                          ? ''
-                          : assembly.unitPrice / 100
-                    }
-                    onBlur={(event) => {
-                      const value =
-                        event.target.value === ''
-                          ? null
-                          : Math.round(Number(event.target.value) * 100)
-                      run(
-                        variation
-                          ? setVariationPrice({
-                              productId,
-                              variationId: variation.id,
-                              unitPrice: value,
-                            })
-                          : updateAssembly({
-                              productId,
-                              values: { unitPrice: value },
-                            }),
-                      )
-                    }}
-                  />
                 </div>
-              </PermissionGate>
-              <SelectBasic
-                name="assembly-dimension"
-                label="Medida no orçamento"
-                options={toOptions(productDimensionObj)}
-                value={assembly.dimension}
-                onChange={(value) =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { dimension: value as ProductDimension },
-                    }),
-                  )
-                }
-              />
-            </div>
 
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-gray-700">
-                Padrão de medidas do produto
-              </h4>
-              <div className="grid grid-cols-2 gap-4 rounded-xl border border-blue-light-300 bg-blue-light-50 p-6 md:grid-cols-5">
-                <div className="space-y-2">
-                  <Label htmlFor="measure-quantity">Quantidade</Label>
-                  <Input
-                    id="measure-quantity"
-                    type="number"
-                    min={0}
-                    step="1"
-                    value={measure.quantity}
-                    onChange={(event) =>
-                      setMeasure((current) =>
-                        current
-                          ? {
-                              ...current,
-                              quantity: Number(event.target.value) || 0,
-                            }
-                          : current,
-                      )
-                    }
-                  />
-                </div>
-                {assembly.unitKind !== 'AREA' &&
-                  assembly.unitKind !== 'UNITY' && (
-                    <div className="space-y-2">
-                      <Label htmlFor="assembly-unit-amount">
-                        {unitAmountLabel[assembly.unitKind]} (
-                        {unitSymbol[assembly.unitKind]})
+                <div className="min-w-0 flex-1 space-y-4">
+                  <div
+                    className={cn(
+                      'grid grid-cols-2 gap-4',
+                      assembly.unitKind !== 'AREA' &&
+                        assembly.unitKind !== 'UNITY'
+                        ? 'lg:grid-cols-5'
+                        : 'lg:grid-cols-4',
+                    )}
+                  >
+                    <SelectBasic
+                      name="assembly-unit"
+                      label="Unidade comercial"
+                      options={toOptions(unitKindObj)}
+                      value={assembly.unitKind}
+                      onChange={(value) =>
+                        run(
+                          updateAssembly({
+                            productId,
+                            values: { unitKind: value as UnitKind },
+                          }),
+                        )
+                      }
+                    />
+                    <div className="flex flex-col">
+                      <Label htmlFor="measure-quantity" className="mb-2">
+                        Quantidade
                       </Label>
                       <Input
-                        key={`amount-${assembly.unitAmount}`}
-                        id="assembly-unit-amount"
+                        id="measure-quantity"
                         type="number"
                         min={0}
-                        step="0.01"
-                        defaultValue={assembly.unitAmount}
-                        onBlur={(event) =>
-                          run(
-                            updateAssembly({
-                              productId,
-                              values: {
-                                unitAmount: Number(event.target.value) || 0,
-                              },
-                            }),
+                        step="1"
+                        value={measure.quantity}
+                        onChange={(event) =>
+                          setMeasure((current) =>
+                            current
+                              ? {
+                                  ...current,
+                                  quantity: Number(event.target.value) || 0,
+                                }
+                              : current,
                           )
                         }
                       />
                     </div>
-                  )}
-                {(
-                  [
-                    [
-                      'width',
-                      assembly.unitKind === 'AREA'
-                        ? 'Largura (m)'
-                        : 'Largura da peça (m)',
-                    ],
-                    [
-                      'height',
-                      assembly.unitKind === 'AREA'
-                        ? 'Altura (m)'
-                        : 'Altura da peça (m)',
-                    ],
-                  ] as const
-                ).map(([key, label]) => (
-                  <div key={key} className="space-y-2">
-                    <Label htmlFor={`measure-${key}`}>{label}</Label>
-                    <Input
-                      id={`measure-${key}`}
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      value={measure[key]}
-                      onChange={(event) =>
-                        setMeasure((current) =>
-                          current
-                            ? {
-                                ...current,
-                                [key]: Number(event.target.value) || 0,
-                              }
-                            : current,
-                        )
-                      }
-                    />
+                    {assembly.unitKind !== 'AREA' &&
+                      assembly.unitKind !== 'UNITY' && (
+                        <div className="flex flex-col">
+                          <Label
+                            htmlFor="assembly-unit-amount"
+                            className="mb-2"
+                          >
+                            {unitAmountLabel[assembly.unitKind]}
+                          </Label>
+                          <Input
+                            key={`amount-${assembly.unitAmount}`}
+                            id="assembly-unit-amount"
+                            type="number"
+                            min={0}
+                            step="0.01"
+                            endAdornment={
+                              <span className="text-sm text-gray">
+                                {unitSymbol[assembly.unitKind]}
+                              </span>
+                            }
+                            defaultValue={assembly.unitAmount}
+                            onBlur={(event) =>
+                              run(
+                                updateAssembly({
+                                  productId,
+                                  values: {
+                                    unitAmount: Number(event.target.value) || 0,
+                                  },
+                                }),
+                              )
+                            }
+                          />
+                        </div>
+                      )}
+                    <div className="flex flex-col">
+                      <Label htmlFor="measure-width" className="mb-2">
+                        Largura
+                      </Label>
+                      <Input
+                        id="measure-width"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        endAdornment={
+                          <span className="text-sm text-gray">m</span>
+                        }
+                        value={measure.width}
+                        onChange={(event) =>
+                          setMeasure((current) =>
+                            current
+                              ? {
+                                  ...current,
+                                  width: Number(event.target.value) || 0,
+                                }
+                              : current,
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <Label htmlFor="measure-height" className="mb-2">
+                        Altura
+                      </Label>
+                      <Input
+                        id="measure-height"
+                        type="number"
+                        min={0}
+                        step="0.01"
+                        endAdornment={
+                          <span className="text-sm text-gray">m</span>
+                        }
+                        value={measure.height}
+                        onChange={(event) =>
+                          setMeasure((current) =>
+                            current
+                              ? {
+                                  ...current,
+                                  height: Number(event.target.value) || 0,
+                                }
+                              : current,
+                          )
+                        }
+                      />
+                    </div>
                   </div>
-                ))}
-                {assembly.unitKind === 'AREA' && (
-                  <div className="space-y-2">
-                    <Label>Área total</Label>
-                    <p className="flex h-11 items-center text-sm text-gray-800">
-                      {num(assembly.saleAmount)} m²
-                    </p>
-                  </div>
-                )}
-                <PermissionGate permissions={['values:values:view']}>
-                  <div className="space-y-2">
-                    <Label>Valor</Label>
-                    <p className="flex h-11 items-center text-base font-semibold text-gray-900">
-                      {money(assembly.priceForMeasure)}
-                    </p>
-                  </div>
-                </PermissionGate>
-              </div>
-              {assembly.unitKind !== 'AREA' && (
-                <p className="mt-2 text-sm text-gray">
-                  Largura e altura da peça não mudam o valor de venda: servem
-                  para calcular a composição.
-                </p>
-              )}
-            </div>
 
-            <PermissionGate permissions={EDIT}>
-              <div className="flex flex-wrap gap-6">
-                {(
-                  [
-                    ['allowEditValues', 'Permitir editar valor'],
-                    ['allowEditDescription', 'Permitir editar descrição'],
-                  ] as const
-                ).map(([key, label]) => (
-                  <label
-                    key={key}
-                    className="flex items-center gap-3 text-sm font-medium"
-                  >
-                    <Switch
-                      checked={assembly[key]}
-                      onCheckedChange={(checked) =>
+                  <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+                    {assembly.unitKind === 'AREA' && (
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Área total</Label>
+                        <Input
+                          value={`${num(assembly.saleAmount)} m²`}
+                          disabled
+                        />
+                      </div>
+                    )}
+                    <PermissionGate permissions={['values:values:view']}>
+                      <div className="flex flex-col">
+                        <Label htmlFor="assembly-unit-price" className="mb-2">
+                          {unitSaleLabel[assembly.unitKind]}
+                          {variation ? ` · ${variation.name}` : ''}
+                        </Label>
+                        <Input
+                          key={`${assembly.unitKind}-${assembly.unitPrice}-${variation?.id}-${variation?.unitPrice}`}
+                          id="assembly-unit-price"
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          startAdornment={<span className="text-sm">R$</span>}
+                          placeholder={
+                            variation && assembly.unitPrice !== null
+                              ? `O do produto: ${(assembly.unitPrice / 100).toFixed(2)}`
+                              : '0,00'
+                          }
+                          defaultValue={
+                            variation
+                              ? variation.unitPrice === null
+                                ? ''
+                                : variation.unitPrice / 100
+                              : assembly.unitPrice === null
+                                ? ''
+                                : assembly.unitPrice / 100
+                          }
+                          onBlur={(event) => {
+                            const value =
+                              event.target.value === ''
+                                ? null
+                                : Math.round(Number(event.target.value) * 100)
+                            run(
+                              variation
+                                ? setVariationPrice({
+                                    productId,
+                                    variationId: variation.id,
+                                    unitPrice: value,
+                                  })
+                                : updateAssembly({
+                                    productId,
+                                    values: { unitPrice: value },
+                                  }),
+                            )
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-col">
+                        <Label className="mb-2">Valor de venda</Label>
+                        <Input
+                          value={money(assembly.priceForMeasure)}
+                          disabled
+                          className="font-semibold text-gray-900"
+                        />
+                      </div>
+                    </PermissionGate>
+                  </div>
+
+                  <div className="grid grid-cols-1 items-end gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+                    <SelectBasic
+                      name="assembly-dimension"
+                      label="Medida no orçamento"
+                      options={toOptions(productDimensionObj)}
+                      value={assembly.dimension}
+                      onChange={(value) =>
                         run(
                           updateAssembly({
                             productId,
-                            values: { [key]: checked },
+                            values: { dimension: value as ProductDimension },
                           }),
                         )
                       }
-                      aria-label={label}
                     />
-                    {label}
-                  </label>
-                ))}
+                    <PermissionGate permissions={EDIT}>
+                      <div className="flex flex-wrap gap-5 pb-3">
+                        {(
+                          [
+                            ['allowEditValues', 'Permitir editar valor'],
+                            [
+                              'allowEditDescription',
+                              'Permitir editar descrição',
+                            ],
+                            ['allowRenameStages', 'Permitir renomear etapas'],
+                          ] as const
+                        ).map(([key, label]) => (
+                          <label
+                            key={key}
+                            className="flex items-center gap-2 text-sm font-medium"
+                          >
+                            <Switch
+                              checked={assembly[key] ?? true}
+                              onCheckedChange={(checked) =>
+                                run(
+                                  updateAssembly({
+                                    productId,
+                                    values: { [key]: checked },
+                                  }),
+                                )
+                              }
+                              aria-label={label}
+                            />
+                            {label}
+                          </label>
+                        ))}
+                      </div>
+                    </PermissionGate>
+                  </div>
+                  {assembly.unitKind !== 'AREA' && (
+                    <p className="text-sm text-gray">
+                      Largura e altura não mudam o valor de venda: servem para
+                      calcular a composição.
+                    </p>
+                  )}
+                </div>
               </div>
-            </PermissionGate>
-          </CardContent>
+
+              {/* Os campos do orçamento (IP-4, IP-6) ficam junto de largura,
+                  altura e quantidade: são as entradas do produto na venda
+                  (orientação do time, 03/10/2026) */}
+              <div className="mt-5 border-t border-gray-100 pt-5">
+                <ProductFields
+                  bare
+                  productId={productId}
+                  fields={assembly.fields}
+                />
+              </div>
+
+              {/* O descritivo técnico é campo do cadastro do START (IP-24) */}
+              <div className="mt-5 space-y-2">
+                <Label htmlFor="technical-description">
+                  Descritivo técnico
+                </Label>
+                <Textarea
+                  id="technical-description"
+                  rows={2}
+                  placeholder="Aparece na proposta impressa, abaixo do nome do produto."
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                />
+                <PermissionGate permissions={EDIT}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="neutralOutline"
+                    disabled={description === assembly.technicalDescription}
+                    onClick={() =>
+                      run(
+                        updateAssembly({
+                          productId,
+                          values: { technicalDescription: description },
+                        }),
+                        'Descritivo salvo',
+                      )
+                    }
+                  >
+                    Salvar descritivo
+                  </Button>
+                </PermissionGate>
+              </div>
+            </CardContent>
+          )}
           {measureChanged && (
             <CardFooter className="flex-wrap justify-between gap-3">
               <p className="text-sm text-gray">
@@ -1847,47 +2221,19 @@ export function AssemblyEditor({
                 : 'Cada etapa é o trabalho de um setor, com a máquina, o material e a mão de obra que ele usa. A ordem das etapas é a ordem da produção.'}
             </CardDescription>
           </div>
-          {!inVariation && (
-            <div className="flex items-center gap-3">
-              {/* Não há botão Salvar: cada alteração grava na hora (IP-40) */}
-              <PermissionGate permissions={EDIT}>
-                <span className="inline-flex items-center gap-1.5 text-sm text-gray">
-                  <IconCircleCheck
-                    size={16}
-                    aria-hidden="true"
-                    className="text-success-600"
-                  />
-                  {savedAt
-                    ? `Salvo às ${savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
-                    : 'Cada alteração é salva na hora'}
-                </span>
-              </PermissionGate>
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  size="md"
-                  variant="neutralOutline"
-                  LeftIcon={IconCopy}
-                  onClick={() => setDialog({ kind: 'copy' })}
-                >
-                  Copiar de outro produto
-                </Button>
-              </PermissionGate>
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  type="button"
-                  size="md"
-                  variant="neutralOutline"
-                  LeftIcon={IconBooks}
-                  onClick={() => setDialog({ kind: 'library' })}
-                >
-                  Biblioteca
-                </Button>
-              </PermissionGate>
-            </div>
-          )}
         </CardHeader>
         <CardContent className="space-y-3 px-6 pb-6">
+          {/* No diálogo do produto não há o bloco Produto: os campos do
+              orçamento abrem a composição */}
+          {embedded && (
+            <div className="border-b border-gray-100 pb-5">
+              <ProductFields
+                bare
+                productId={productId}
+                fields={assembly.fields}
+              />
+            </div>
+          )}
           {assembly.blocks.length === 0 ? (
             <PermissionGate permissions={EDIT} fallback={readOnlyEmpty}>
               {ownStageEmpty}
@@ -1915,6 +2261,19 @@ export function AssemblyEditor({
                 )}
               </div>
             ))
+          )}
+          {/* Fórmulas do produto: recurso avançado. A porta de entrada é
+              "Nova fórmula…" no tipo de cálculo da linha; a lista só aparece
+              depois da primeira, aqui dentro da Composição (03/10/2026) */}
+          {assembly.formulas.length > 0 && (
+            <ProductFormulas
+              bare
+              productId={productId}
+              fields={assembly.fields}
+              formulas={assembly.formulas}
+              lineRefs={Object.keys(allRefs)}
+              testVars={{ ...testVars, ...allRefs }}
+            />
           )}
         </CardContent>
       </Card>
@@ -2072,64 +2431,24 @@ export function AssemblyEditor({
         </Card>
       )}
 
-      {/* 4. O texto técnico que vai para a proposta (IP-24) */}
-      {!embedded && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Descritivo técnico</CardTitle>
-            <CardDescription>
-              Aparece na proposta impressa, abaixo do nome do produto.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 px-6 pb-6">
-            <Textarea
-              aria-label="Descritivo técnico"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-            />
-            <PermissionGate permissions={EDIT}>
-              <Button
-                type="button"
-                variant="neutralOutline"
-                disabled={description === assembly.technicalDescription}
-                onClick={() =>
-                  run(
-                    updateAssembly({
-                      productId,
-                      values: { technicalDescription: description },
-                    }),
-                    'Descritivo salvo',
-                  )
-                }
-              >
-                Salvar descritivo
-              </Button>
-            </PermissionGate>
-          </CardContent>
-        </Card>
-      )}
-
       {/* Rodapé da página (pedido do time, 03/10/2026): mesmo com a gravação
           por ação (IP-40), a pessoa precisa de um Salvar e um Fechar para não
           ficar perdida. Salvar grava o que ainda estiver pendente (o
           descritivo) e volta para a lista; Fechar avisa se houver pendência.
           No diálogo do produto o rodapé já existe */}
-      {/* Os campos do orçamento (IP-4, IP-6): do produto, lidos pelas linhas */}
-      <ProductFields productId={productId} fields={assembly.fields} />
-      <ProductFormulas
-        productId={productId}
-        fields={assembly.fields}
-        formulas={assembly.formulas}
-        testVars={testVars}
-      />
 
       {!embedded && (
         <Card className="sticky bottom-0 z-10">
           <CardContent className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
-            <p className="text-sm text-gray">
+            {/* A gravação é por ação (IP-40): a situação aparece só aqui,
+                com o relógio, para não repetir no cabeçalho (03/10/2026) */}
+            <p className="inline-flex items-center gap-1.5 text-sm text-gray">
+              <IconClock size={16} aria-hidden="true" />
               {pendingDescription
-                ? 'As etapas já estão gravadas. O descritivo técnico ainda não foi salvo.'
-                : 'Tudo o que está nesta tela já está gravado.'}
+                ? 'Descritivo técnico ainda não salvo. O resto já está gravado.'
+                : savedAt
+                  ? `Salvo automaticamente às ${savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+                  : 'Salvo automaticamente a cada alteração'}
             </p>
             <div className="flex gap-3">
               <Button
@@ -2300,7 +2619,8 @@ export function AssemblyEditor({
         resources={resources?.resources || []}
         fields={assembly.fields}
         formulas={assembly.formulas}
-        testVars={testVars}
+        lineRefs={Object.keys(dialogRefs)}
+        testVars={{ ...testVars, ...dialogRefs }}
         onCreateFormula={createFormula}
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
@@ -2310,31 +2630,6 @@ export function AssemblyEditor({
           run(
             addAssemblyLine({ productId, blockId: target.id, values }),
             'Recurso acrescentado à etapa',
-          )
-        }}
-      />
-      <CopyCompositionDialog
-        open={dialog?.kind === 'copy'}
-        products={partsRes?.data || []}
-        onOpenChange={() => setDialog(null)}
-        onPick={(sourceProductId) => {
-          setDialog(null)
-          run(
-            copyCompositionFrom({ productId, sourceProductId }),
-            'Composição copiada: etapas, campos e fórmulas',
-          )
-        }}
-      />
-      <LibraryDialog
-        open={dialog?.kind === 'library'}
-        entries={libraryRes?.data || []}
-        hasStages={assembly.blocks.length > 0}
-        onOpenChange={() => setDialog(null)}
-        onImport={(libraryId) => {
-          setDialog(null)
-          run(
-            importFromLibrary({ productId, libraryId }),
-            'Composição importada — ajuste ao seu jeito de produzir',
           )
         }}
       />
@@ -2381,7 +2676,8 @@ export function AssemblyEditor({
         line={dialog?.kind === 'line' ? dialog.line : undefined}
         fields={assembly.fields}
         formulas={assembly.formulas}
-        testVars={testVars}
+        lineRefs={Object.keys(dialogRefs)}
+        testVars={{ ...testVars, ...dialogRefs }}
         onCreateFormula={createFormula}
         onOpenChange={() => setDialog(null)}
         variationName={variation?.name}
@@ -2411,25 +2707,6 @@ export function AssemblyEditor({
               values,
             }),
             'Recurso ajustado neste produto',
-          )
-        }}
-      />
-      <RulesDialog
-        block={dialog?.kind === 'rules' ? dialog.block : undefined}
-        onOpenChange={() => setDialog(null)}
-        onSave={(rules, name, taskType) => {
-          if (dialog?.kind !== 'rules') return
-          const target = dialog.block
-          setDialog(null)
-          run(
-            setBlockLocalRules({
-              productId,
-              blockId: target.id,
-              rules,
-              name,
-              taskType,
-            }),
-            'Etapa configurada',
           )
         }}
       />

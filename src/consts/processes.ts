@@ -52,9 +52,11 @@ export const formulaObj: {
     label: 'Por {campo}',
     help: 'Consumo × valor de um {campo} × quantidade.',
   },
+  // O tempo é da linha de mão de obra: o consumo é o tempo padrão e o
+  // vendedor pode mudar no orçamento (03/10/2026, sai o "campo tempo")
   PER_TIME: {
-    label: 'Por tempo',
-    help: 'Tempo informado × quantidade.',
+    label: 'Tempo informado pelo vendedor',
+    help: 'O vendedor informa o tempo no orçamento; o consumo é o tempo padrão. × quantidade do item.',
   },
   // A conta do ilhós: perímetro ÷ espaçamento = quantas peças (CP-14)
   PER_PERIMETER_DIV_EXTRA: {
@@ -62,12 +64,12 @@ export const formulaObj: {
     help: 'Perímetro do item ÷ valor do {campo} × consumo × quantidade. Ex.: ilhoses a cada 50 cm.',
   },
   TIME_TIMES_EXTRA: {
-    label: 'Tempo × {campo}',
-    help: 'Tempo informado × valor do {campo}. Não multiplica pela quantidade.',
+    label: 'Tempo informado × {campo}',
+    help: 'O tempo informado pelo vendedor × valor de {campo}. Não multiplica pela quantidade.',
   },
   EQUAL_TIME: {
-    label: 'Igual ao tempo',
-    help: 'Usa o tempo informado, uma vez só.',
+    label: 'Tempo informado, uma vez',
+    help: 'O tempo informado pelo vendedor, sem multiplicar pela quantidade.',
   },
   PER_WIDTH_EXTRA: {
     label: 'Por largura × {campo}',

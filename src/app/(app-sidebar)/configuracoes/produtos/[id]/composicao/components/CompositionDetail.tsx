@@ -5,7 +5,6 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
-import { Topbar } from '@/components/common/Topbar'
 import { AssemblyEditor } from './AssemblyEditor'
 import { FeatureGate } from '@/components/common/FeatureGate'
 
@@ -63,15 +62,17 @@ export function CompositionDetail({ id }: Props) {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <Topbar
-          review="new"
-          title={title}
-          previousPage="/configuracoes/produtos"
-          supportText={support.filter(Boolean).join(' · ')}
-        />
-
+        {/* O Topbar é desenhado pelo editor, que põe a Situação no canto
+            superior direito da tela */}
         <FeatureGate features={[FEATURES.COSTS.COST_BASE]}>
-          <AssemblyEditor productId={product.id} />
+          <AssemblyEditor
+            productId={product.id}
+            topbar={{
+              title: title || 'Produto',
+              supportText: support.filter(Boolean).join(' · '),
+              previousPage: '/configuracoes/produtos',
+            }}
+          />
         </FeatureGate>
       </div>
     </TooltipProvider>

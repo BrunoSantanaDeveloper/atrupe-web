@@ -223,6 +223,7 @@ export function FormulaDialog({
   open,
   initial,
   fields,
+  lineRefs = [],
   testVars,
   onOpenChange,
   onSave,
@@ -230,6 +231,9 @@ export function FormulaDialog({
   open: boolean
   initial?: FormulaValues
   fields: QuoteField[]
+  // As referências do material das outras linhas ("montante · X"), quando
+  // o material tem perfil ou chapa (MT-10.1)
+  lineRefs?: string[]
   // Os valores da medida padrão e dos campos, para o teste ao vivo
   testVars: { [name: string]: number }
   onOpenChange: (open: boolean) => void
@@ -347,6 +351,21 @@ export function FormulaDialog({
                 </div>
               </>
             )}
+            {lineRefs.length > 0 && (
+              <>
+                <p className="pt-1 text-xs font-medium uppercase tracking-wide text-gray">
+                  Material das outras linhas
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {lineRefs.map((ref) => chip(ref))}
+                </div>
+                <p className="text-xs text-gray">
+                  X e Y são os lados do perfil escolhido na linha, em metros; o
+                  peso é por unidade de venda do material. Se o vendedor trocar
+                  o material, a fórmula acompanha.
+                </p>
+              </>
+            )}
             <p className="pt-1 text-xs font-medium uppercase tracking-wide text-gray">
               Operações
             </p>
@@ -396,97 +415,6 @@ export function FormulaDialog({
             }}
           >
             {initial ? 'Salvar fórmula' : 'Criar fórmula'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-/* ---------------------------------------------------------------------------
- * Copiar a composição de outro produto (03/10/2026): o jeito de reaproveitar
- * etapas, campos e fórmulas, já que a fórmula é de cada produto
- * ------------------------------------------------------------------------- */
-
-export function CopyCompositionDialog({
-  open,
-  products,
-  onOpenChange,
-  onPick,
-}: {
-  open: boolean
-  products: { productId: string; name: string; code: string; stages: number }[]
-  onOpenChange: (open: boolean) => void
-  onPick: (productId: string) => void
-}) {
-  const [search, setSearch] = useState('')
-  useEffect(() => {
-    if (open) setSearch('')
-  }, [open])
-  const visible = products.filter((item) =>
-    `${item.name} ${item.code}`
-      .toLowerCase()
-      .includes(search.trim().toLowerCase()),
-  )
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px]">
-        <DialogHeader>
-          <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
-            <div>
-              <DialogTitle>Copiar de outro produto</DialogTitle>
-              <DialogDescription>
-                As etapas, os campos do orçamento e as fórmulas do produto
-                escolhido entram neste produto, como cópia. Mudar aqui não muda
-                lá.
-              </DialogDescription>
-            </div>
-          </div>
-        </DialogHeader>
-        <DialogBody className="space-y-3">
-          <Input
-            aria-label="Buscar produto"
-            autoComplete="off"
-            placeholder="Buscar pelo nome ou código"
-            startAdornment={<IconSearch size={16} aria-hidden="true" />}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <div className="max-h-[320px] space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2">
-            {visible.length ? (
-              visible.map((item) => (
-                <button
-                  key={item.productId}
-                  type="button"
-                  className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left hover:bg-gray-50"
-                  onClick={() => onPick(item.productId)}
-                >
-                  <span className="text-sm text-gray-800">
-                    {item.name}
-                    {item.code ? (
-                      <span className="text-gray"> · {item.code}</span>
-                    ) : null}
-                  </span>
-                  <span className="text-xs text-gray">
-                    {item.stages} {item.stages === 1 ? 'etapa' : 'etapas'}
-                  </span>
-                </button>
-              ))
-            ) : (
-              <p className="p-2 text-sm text-gray">
-                Nenhum outro produto com composição.
-              </p>
-            )}
-          </div>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => onOpenChange(false)}
-          >
-            Cancelar
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -573,6 +501,7 @@ export function NewLineDialog({
   resources,
   fields = [],
   formulas = [],
+  lineRefs = [],
   testVars = {},
   onCreateFormula,
   initialKind = 'LABOR',
@@ -585,6 +514,7 @@ export function NewLineDialog({
   fields?: QuoteField[]
   // As fórmulas escritas no produto (IP-2) e como criar uma nova daqui
   formulas?: ProductFormula[]
+  lineRefs?: string[]
   testVars?: { [name: string]: number }
   onCreateFormula?: (values: FormulaValues) => Promise<string | null>
   // O botão que abriu o diálogo já diz o tipo: Máquina, Material, Mão de
@@ -884,6 +814,7 @@ export function NewLineDialog({
                 <FormulaDialog
                   open={formulaOpen}
                   fields={fields}
+                  lineRefs={lineRefs}
                   testVars={testVars}
                   onOpenChange={setFormulaOpen}
                   onSave={async (formulaValues) => {
@@ -1045,6 +976,7 @@ export function LineDialog({
   line,
   fields = [],
   formulas = [],
+  lineRefs = [],
   testVars = {},
   onCreateFormula,
   variationName,
@@ -1055,6 +987,7 @@ export function LineDialog({
   line?: ComputedLine
   fields?: QuoteField[]
   formulas?: ProductFormula[]
+  lineRefs?: string[]
   testVars?: { [name: string]: number }
   onCreateFormula?: (values: FormulaValues) => Promise<string | null>
   // Na variação só o consumo muda: o 4x4 passa a folha duas vezes (PV-7)
@@ -1170,6 +1103,7 @@ export function LineDialog({
             <FormulaDialog
               open={formulaOpen}
               fields={fields}
+              lineRefs={lineRefs}
               testVars={testVars}
               onOpenChange={setFormulaOpen}
               onSave={async (formulaValues) => {
@@ -2048,10 +1982,12 @@ export function LibraryDialog({
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconBooks} />
             <div>
-              <DialogTitle>Biblioteca de composições</DialogTitle>
+              <DialogTitle>Biblioteca de produtos</DialogTitle>
               <DialogDescription>
-                Composições prontas, com etapas e recursos. Importe e ajuste ao
-                seu jeito de produzir.
+                Produtos com a composição de referência: etapas, materiais e
+                tempos de quem já produz. Escolha um, cadastre o seu produto a
+                partir dele e revise a composição, que é ponto de partida, não o
+                seu custo.
               </DialogDescription>
             </div>
           </div>

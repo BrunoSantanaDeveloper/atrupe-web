@@ -10,13 +10,7 @@ import { useState } from 'react'
 // UI
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardTitle,
-  CardHeader,
-  CardContent,
-  CardDescription,
-} from '@/components/ui/card'
+import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormulaDialog, type FormulaValues } from './AssemblyDialogs'
@@ -44,14 +38,21 @@ interface Props {
   productId: string
   fields: QuoteField[]
   formulas: (ProductFormula & { usedBy: string[]; error: string | null })[]
+  // "montante · X": o material das linhas, para a fórmula ler (MT-10.1)
+  lineRefs?: string[]
   testVars: { [name: string]: number }
+  // Como seção dentro do card Composição (03/10/2026): recurso avançado,
+  // que só aparece depois da primeira fórmula criada pela linha
+  bare?: boolean
 }
 
 export function ProductFormulas({
   productId,
   fields,
   formulas,
+  lineRefs = [],
   testVars,
+  bare = false,
 }: Props) {
   const queryClient = useQueryClient()
   const [dialog, setDialog] = useState<
@@ -90,99 +91,128 @@ export function ProductFormulas({
     return true
   }
 
+  const header = (
+    <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="min-w-0 flex-1 basis-80">
+        {bare ? (
+          <p className="text-sm font-semibold text-gray-700">
+            Fórmulas do produto
+          </p>
+        ) : (
+          <CardTitle>Fórmulas do produto</CardTitle>
+        )}
+        <p className="text-sm text-gray">
+          Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê as
+          medidas, o tempo e os campos do orçamento deste produto e passa a
+          aparecer nos tipos de cálculo das linhas. Vale só neste produto.
+        </p>
+      </div>
+      <PermissionGate permissions={EDIT}>
+        <Button
+          type="button"
+          size={bare ? 'sm' : 'md'}
+          variant="neutralOutline"
+          LeftIcon={IconPlus}
+          onClick={() => setDialog({ kind: 'new' })}
+        >
+          Nova fórmula
+        </Button>
+      </PermissionGate>
+    </div>
+  )
+
+  const dialogNode = (
+    <FormulaDialog
+      open={!!dialog}
+      initial={
+        dialog?.kind === 'edit'
+          ? {
+              name: dialog.formula.name,
+              expression: dialog.formula.expression,
+            }
+          : undefined
+      }
+      fields={fields}
+      lineRefs={lineRefs}
+      testVars={testVars}
+      onOpenChange={(open) => {
+        if (!open) setDialog(null)
+      }}
+      onSave={save}
+    />
+  )
+
+  const list = (
+    <>
+      {formulas.length ? (
+        formulas.map((formula) => (
+          <div
+            key={formula.id}
+            className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3"
+          >
+            <div className="min-w-0 flex-1 basis-64">
+              <p className="text-sm font-medium text-gray-800">
+                {formula.name}
+              </p>
+              <p className="font-mono text-xs text-gray">
+                {formula.expression}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-1">
+              {formula.error ? (
+                <Badge variant="errorLight">{formula.error}</Badge>
+              ) : formula.usedBy.length ? (
+                formula.usedBy.map((step) => (
+                  <Badge key={step} variant="neutralLight">
+                    {step}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="warningLight">nenhuma linha usa</Badge>
+              )}
+            </div>
+            <PermissionGate permissions={EDIT}>
+              <div className="flex gap-1">
+                <ActionButton
+                  Icon={IconPencil}
+                  variant="neutralGhost"
+                  tooltip={`Ajustar ${formula.name}`}
+                  onClick={() => setDialog({ kind: 'edit', formula })}
+                />
+                <ActionButton
+                  Icon={IconTrash}
+                  variant="errorGhost"
+                  tooltip={`Remover ${formula.name}`}
+                  onClick={() => remove(formula.id)}
+                />
+              </div>
+            </PermissionGate>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-gray">
+          Nenhuma fórmula ainda. Ela também pode ser criada de dentro da linha,
+          na última opção do tipo de cálculo.
+        </p>
+      )}
+    </>
+  )
+
+  if (bare) {
+    return (
+      <div className="space-y-3 border-t border-gray-100 pt-5">
+        {header}
+        {list}
+        {dialogNode}
+      </div>
+    )
+  }
+
   return (
     <Card>
-      <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
-        <div className="min-w-0 flex-1 basis-80">
-          <CardTitle>Fórmulas do produto</CardTitle>
-          <CardDescription>
-            Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê
-            as medidas, o tempo e os campos do orçamento deste produto e passa a
-            aparecer nos tipos de cálculo das linhas. Vale só neste produto.
-          </CardDescription>
-        </div>
-        <PermissionGate permissions={EDIT}>
-          <Button
-            type="button"
-            size="md"
-            variant="neutralOutline"
-            LeftIcon={IconPlus}
-            onClick={() => setDialog({ kind: 'new' })}
-          >
-            Nova fórmula
-          </Button>
-        </PermissionGate>
-      </CardHeader>
-      <CardContent className="space-y-3 px-6 pb-6">
-        {formulas.length ? (
-          formulas.map((formula) => (
-            <div
-              key={formula.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3"
-            >
-              <div className="min-w-0 flex-1 basis-64">
-                <p className="text-sm font-medium text-gray-800">
-                  {formula.name}
-                </p>
-                <p className="font-mono text-xs text-gray">
-                  {formula.expression}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-1">
-                {formula.error ? (
-                  <Badge variant="errorLight">{formula.error}</Badge>
-                ) : formula.usedBy.length ? (
-                  formula.usedBy.map((step) => (
-                    <Badge key={step} variant="neutralLight">
-                      {step}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="warningLight">nenhuma linha usa</Badge>
-                )}
-              </div>
-              <PermissionGate permissions={EDIT}>
-                <div className="flex gap-1">
-                  <ActionButton
-                    Icon={IconPencil}
-                    variant="neutralGhost"
-                    tooltip={`Ajustar ${formula.name}`}
-                    onClick={() => setDialog({ kind: 'edit', formula })}
-                  />
-                  <ActionButton
-                    Icon={IconTrash}
-                    variant="errorGhost"
-                    tooltip={`Remover ${formula.name}`}
-                    onClick={() => remove(formula.id)}
-                  />
-                </div>
-              </PermissionGate>
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray">
-            Nenhuma fórmula ainda. Ela também pode ser criada de dentro da
-            linha, na última opção do tipo de cálculo.
-          </p>
-        )}
-      </CardContent>
-      <FormulaDialog
-        open={!!dialog}
-        initial={
-          dialog?.kind === 'edit'
-            ? {
-                name: dialog.formula.name,
-                expression: dialog.formula.expression,
-              }
-            : undefined
-        }
-        fields={fields}
-        testVars={testVars}
-        onOpenChange={(open) => {
-          if (!open) setDialog(null)
-        }}
-        onSave={save}
-      />
+      <CardHeader>{header}</CardHeader>
+      <CardContent className="space-y-3 px-6 pb-6">{list}</CardContent>
+      {dialogNode}
     </Card>
   )
 }

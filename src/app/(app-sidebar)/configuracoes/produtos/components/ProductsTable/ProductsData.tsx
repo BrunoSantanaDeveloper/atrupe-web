@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
+import { DuplicateProductButton } from '../DuplicateProductButton'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
 import { BulkNcmDialog } from '../ProductFiscalData/BulkNcmDialog'
 import { TablePagination } from '@/components/common/TablePagination'
@@ -336,6 +337,16 @@ export function ProductsData({ searchParams, tabs }: Props) {
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >
+                          {/* Duplicar: outro produto com os mesmos dados e a
+                              mesma composição, aberto para edição */}
+                          <DuplicateProductButton
+                            productId={product?.id}
+                            name={product?.name}
+                            onDone={(newId) => {
+                              setSelectedProductId(newId)
+                              setOpenDialog('edit-product')
+                            }}
+                          />
                           <NewProductTriggerButton
                             editMode
                             onOpenChange={() => {

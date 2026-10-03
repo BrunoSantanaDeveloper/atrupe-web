@@ -48,9 +48,17 @@ interface Props {
   fields: (QuoteField & { usedBy: string[] })[]
   // O processo usa o mesmo card com outra explicação
   description?: string
+  // Como seção dentro de outro card (o bloco Produto da composição,
+  // 03/10/2026): os campos ficam junto de largura, altura e quantidade
+  bare?: boolean
 }
 
-export function ProductFields({ productId, fields, description }: Props) {
+export function ProductFields({
+  productId,
+  fields,
+  description,
+  bare = false,
+}: Props) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [defaultValue, setDefaultValue] = useState('')
@@ -97,120 +105,138 @@ export function ProductFields({ productId, fields, description }: Props) {
     },
   })
 
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Campos do orçamento</CardTitle>
-        <CardDescription>
-          {description ||
-            'Além de largura, altura e quantidade, estes são os valores que o vendedor informa. Crie o campo aqui e ele passa a aparecer nos tipos de cálculo das linhas ("Por perímetro ÷ nome do campo"). Cada um existe uma vez e vale para todas as etapas que precisam dele.'}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3 px-6 pb-6">
-        {fields.length ? (
-          fields.map((field) => (
-            <div
-              key={field.id}
-              className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3"
-            >
-              <Input
-                className="w-full sm:w-[220px]"
-                defaultValue={field.name}
-                aria-label={`Nome do campo ${field.name}`}
-                onBlur={(event) => {
-                  const value = event.target.value.trim()
-                  if (value && value !== field.name) {
-                    update({ fieldId: field.id, name: value })
-                  }
-                }}
-              />
-              <label className="flex items-center gap-2 text-sm text-gray">
-                valor padrão
-                <Input
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  className="w-[110px]"
-                  defaultValue={field.defaultValue}
-                  aria-label={`Valor padrão de ${field.name}`}
-                  onBlur={(event) => {
-                    const value = Number(event.target.value || 0)
-                    if (value !== field.defaultValue) {
-                      update({ fieldId: field.id, defaultValue: value })
-                    }
-                  }}
-                />
-              </label>
-              <div className="flex flex-1 flex-wrap items-center gap-1">
-                {field.usedBy.length ? (
-                  field.usedBy.map((step) => (
-                    <Badge key={step} variant="neutralLight">
-                      {step}
-                    </Badge>
-                  ))
-                ) : (
-                  <Badge variant="warningLight">nenhuma etapa usa</Badge>
-                )}
-              </div>
-              <PermissionGate permissions={EDIT}>
-                <ActionButton
-                  Icon={IconTrash}
-                  variant="errorGhost"
-                  tooltip={`Remover ${field.name}`}
-                  onClick={() => remove(field.id)}
-                />
-              </PermissionGate>
-            </div>
-          ))
-        ) : (
-          <p className="text-sm text-gray">
-            Nenhum campo ainda. Crie um campo aqui (nº de letras, perímetro,
-            distância entre ilhoses) e os tipos de cálculo que leem esse valor
-            passam a aparecer nas linhas.
-          </p>
-        )}
+  const title = 'Campos do orçamento'
+  const help =
+    description ||
+    'Além de largura, altura e quantidade, estes são os valores que o vendedor informa. Crie o campo aqui e ele passa a aparecer nos tipos de cálculo das linhas ("Por perímetro ÷ nome do campo"). Cada um existe uma vez e vale para todas as etapas que precisam dele.'
 
-        <PermissionGate permissions={EDIT}>
-          <div className="flex flex-wrap items-end gap-3 pt-2">
-            <div className="flex flex-col">
-              <label htmlFor="field-name" className="mb-2 text-sm font-medium">
-                Novo campo
-              </label>
+  const body = (
+    <>
+      {fields.length ? (
+        fields.map((field) => (
+          <div
+            key={field.id}
+            className="flex flex-wrap items-center gap-3 rounded-lg border border-gray-200 p-3"
+          >
+            <Input
+              className="w-full sm:w-[220px]"
+              defaultValue={field.name}
+              aria-label={`Nome do campo ${field.name}`}
+              onBlur={(event) => {
+                const value = event.target.value.trim()
+                if (value && value !== field.name) {
+                  update({ fieldId: field.id, name: value })
+                }
+              }}
+            />
+            <label className="flex items-center gap-2 text-sm text-gray">
+              valor padrão
               <Input
-                id="field-name"
-                autoComplete="off"
-                value={name}
-                className="w-full sm:w-[220px]"
-                placeholder="Ex.: Número de letras"
-                onChange={(event) => setName(event.target.value)}
-              />
-            </div>
-            <div className="flex flex-col">
-              <label htmlFor="field-value" className="mb-2 text-sm font-medium">
-                Valor padrão
-              </label>
-              <Input
-                id="field-value"
                 type="number"
                 min={0}
                 step="0.01"
-                className="w-[140px]"
-                value={defaultValue}
-                onChange={(event) => setDefaultValue(event.target.value)}
+                className="w-[110px]"
+                defaultValue={field.defaultValue}
+                aria-label={`Valor padrão de ${field.name}`}
+                onBlur={(event) => {
+                  const value = Number(event.target.value || 0)
+                  if (value !== field.defaultValue) {
+                    update({ fieldId: field.id, defaultValue: value })
+                  }
+                }}
               />
+            </label>
+            <div className="flex flex-1 flex-wrap items-center gap-1">
+              {field.usedBy.length ? (
+                field.usedBy.map((step) => (
+                  <Badge key={step} variant="neutralLight">
+                    {step}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="warningLight">nenhuma etapa usa</Badge>
+              )}
             </div>
-            <Button
-              type="button"
-              LeftIcon={IconPlus}
-              isLoading={isPending}
-              disabled={!name}
-              onClick={() => add()}
-            >
-              Acrescentar
-            </Button>
+            <PermissionGate permissions={EDIT}>
+              <ActionButton
+                Icon={IconTrash}
+                variant="errorGhost"
+                tooltip={`Remover ${field.name}`}
+                onClick={() => remove(field.id)}
+              />
+            </PermissionGate>
           </div>
-        </PermissionGate>
-      </CardContent>
+        ))
+      ) : (
+        <p className="text-sm text-gray">
+          Nenhum campo ainda. Crie um campo aqui (nº de letras, perímetro,
+          distância entre ilhoses) e os tipos de cálculo que leem esse valor
+          passam a aparecer nas linhas.
+        </p>
+      )}
+
+      <PermissionGate permissions={EDIT}>
+        <div className="flex flex-wrap items-end gap-3 pt-2">
+          <div className="flex flex-col">
+            <label htmlFor="field-name" className="mb-2 text-sm font-medium">
+              Novo campo
+            </label>
+            <Input
+              id="field-name"
+              autoComplete="off"
+              value={name}
+              className="w-full sm:w-[220px]"
+              placeholder="Ex.: Número de letras"
+              onChange={(event) => setName(event.target.value)}
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="field-value" className="mb-2 text-sm font-medium">
+              Valor padrão
+            </label>
+            <Input
+              id="field-value"
+              type="number"
+              min={0}
+              step="0.01"
+              className="w-[140px]"
+              value={defaultValue}
+              onChange={(event) => setDefaultValue(event.target.value)}
+            />
+          </div>
+          <Button
+            type="button"
+            LeftIcon={IconPlus}
+            isLoading={isPending}
+            disabled={!name}
+            onClick={() => add()}
+          >
+            Acrescentar
+          </Button>
+        </div>
+      </PermissionGate>
+    </>
+  )
+
+  if (bare) {
+    return (
+      <div className="space-y-3">
+        <div>
+          <p className="text-sm font-semibold text-gray-700">{title}</p>
+          <p className="text-sm text-gray">{help}</p>
+        </div>
+        {body}
+      </div>
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{help}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-3 px-6 pb-6">{body}</CardContent>
       <CardFooter className="text-sm text-gray">
         No orçamento, o vendedor vê só estes campos. A composição, as etapas e
         os insumos ficam fora da tela dele.

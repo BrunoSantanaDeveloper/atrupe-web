@@ -140,6 +140,16 @@ export type ResourceOption = {
   // Papel e chapa têm medida (AP-2), em metros: é o que permite o
   // aproveitamento de folha
   sheet?: { width: number; height: number }
+  // Perfil e barra têm lados (MT-10.1), em milímetros: X é a primeira medida
+  // do catálogo, Y a segunda. A fórmula lê "linha · X" e "linha · Y" (CP-18)
+  profile?: {
+    x: number
+    y: number
+    barLength?: number | null
+  }
+  // Peso em quilos por unidade de venda do material (por m², por metro,
+  // por unidade), como o cadastro guarda
+  weight?: number | null
   // Consumo, perda e mínimo próprios desta opção (IP-26): no mesmo grupo,
   // o ACM usa 1,0 e o PVC 1,2 com mínimo de 0,5. Vazio, vale o da linha
   perUnit?: number
@@ -317,6 +327,9 @@ export type ProductAssembly = {
   unitAmount: number
   allowEditValues: boolean
   allowEditDescription: boolean
+  // O vendedor pode renomear as etapas no orçamento (era regra por etapa,
+  // "descriptionEditable"; passou a ser do produto em 03/10/2026)
+  allowRenameStages?: boolean
   priceTiers: PriceTier[]
   technicalDescription: string
   blocks: AssemblyBlock[]

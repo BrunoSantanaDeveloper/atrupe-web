@@ -35,7 +35,11 @@ import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitOfMeasureField'
 import { MeasurementInput } from '@/components/common/form/global-inputs/products/MeasurementInput'
-import { UnitCostInput } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import {
+  UnitCostInput,
+  convertRawToUnitCost,
+} from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { ProductPriceTiers } from './ProductPriceTiers'
 import { SelectProductGroupWithSectorField } from '@/components/common/form/global-inputs/ProductGroupWithSectorSelectField'
 import { ProductFiscalTab } from './ProductFiscalData/ProductFiscalTab'
 
@@ -76,6 +80,7 @@ import { useSector } from '@/hooks/queries/useSector'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { FEATURES } from '@/consts/features'
+import { FeatureGate } from '@/components/common/FeatureGate'
 import { cn } from '@/lib/utils'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
@@ -89,6 +94,9 @@ interface Props {
   // Aba em que o diálogo abre: depois de criar o produto no PRO ele reabre
   // direto na composição (CP-16: o produto nasce e então ganha composição)
   initialTab?: ProductTab
+  // Valores já preenchidos ao criar (o nome e o descritivo de um item da
+  // biblioteca de produtos, 03/10/2026)
+  initialValues?: Partial<NewProductsFormType>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (product: any) => void
 }
@@ -127,6 +135,7 @@ function NewProductModal({
   open,
   onOpenChange,
   initialTab = 'general',
+  initialValues,
   onSuccess,
 }: Props) {
   const queryClient = useQueryClient()
@@ -237,7 +246,7 @@ function NewProductModal({
     resolver: zodResolver(newProductsSchema),
     // mode: 'onChange',
     values: !editMode
-      ? defaultNewProductValues
+      ? { ...defaultNewProductValues, ...initialValues }
       : {
           ...product,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -575,6 +584,27 @@ function NewProductModal({
                                 </div>
                               </div>
                             )}
+
+                          {/* Preço por faixa de quantidade (FQ-1): tabela de
+                              preço, do LITE em diante, no produto já salvo */}
+                          {editMode && productId && (
+                            <FeatureGate
+                              features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
+                            >
+                              <div className="w-full border-t border-gray-100 pt-4">
+                                <ProductPriceTiers
+                                  productId={productId}
+                                  unitKind={watch('items.0.unitKind')}
+                                  basePriceCents={Math.round(
+                                    convertRawToUnitCost(
+                                      watch('items.0.unitKind'),
+                                      Number(watch('items.0.unitCost') || 0),
+                                    ),
+                                  )}
+                                />
+                              </div>
+                            </FeatureGate>
+                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&

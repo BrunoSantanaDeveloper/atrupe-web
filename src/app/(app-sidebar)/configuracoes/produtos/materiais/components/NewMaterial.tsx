@@ -24,7 +24,12 @@ import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
-import type { Material, MaterialUnit } from '../types'
+import type {
+  Material,
+  MaterialUnit,
+  MaterialShape,
+  MaterialAdvanced,
+} from '../types'
 
 // Actions
 import { createMaterial, updateMaterial } from '@/actions/materials'
@@ -52,10 +57,37 @@ const subcategories = [
   'Lonas',
   'Vinis',
   'Chapas',
+  'Perfis',
   'Tintas',
   'Acabamentos',
   'Brindes',
 ].map((item) => ({ value: item, label: item }))
+
+// Configuração avançada (MT-10.1): o formato diz quais referências o
+// material tem. Perfil e chapa alimentam fórmulas, aproveitamento e plano de
+// corte; os demais levam só o peso, e a lista cresce conforme a necessidade
+const shapes: { value: MaterialShape; label: string }[] = [
+  { value: 'OTHER', label: 'Sem medidas' },
+  { value: 'PROFILE', label: 'Perfil, barra ou tubo' },
+  { value: 'SHEET', label: 'Chapa, folha ou bobina' },
+]
+
+// O peso segue a unidade de venda do material (orientação do time,
+// 03/10/2026): a lona por m², o perfil por metro, o ilhós por unidade
+const weightUnitLabel: { [key: string]: string } = {
+  M2: 'm²',
+  M: 'metro',
+  UN: 'unidade',
+  LT: 'litro',
+  L: 'litro',
+  KM: 'km',
+  HR: 'hora',
+}
+
+const numberOrNull = (value: string) =>
+  value.trim() === '' ? null : Number(value.replace(',', '.'))
+const text = (value: number | null | undefined) =>
+  value === null || value === undefined ? '' : String(value)
 
 interface Props {
   // Com o material informado, o mesmo formulário edita em vez de cadastrar
@@ -81,6 +113,31 @@ export function NewMaterialModal({ material }: Props) {
   const [productionMaterial, setProductionMaterial] = useState(
     material?.productionMaterial ?? true,
   )
+  const [showAdvanced, setShowAdvanced] = useState(!!material?.advanced)
+  const [shape, setShape] = useState<MaterialShape>(
+    material?.advanced?.shape || 'OTHER',
+  )
+  const [adv, setAdv] = useState({
+    x: text(material?.advanced?.x),
+    y: text(material?.advanced?.y),
+    barLength: text(material?.advanced?.barLength),
+    width: text(material?.advanced?.width),
+    height: text(material?.advanced?.height),
+    weight: text(material?.advanced?.weight),
+  })
+  const setAdvField = (key: keyof typeof adv, value: string) =>
+    setAdv((current) => ({ ...current, [key]: value }))
+  const advanced: MaterialAdvanced | undefined = showAdvanced
+    ? {
+        shape,
+        x: numberOrNull(adv.x),
+        y: numberOrNull(adv.y),
+        barLength: numberOrNull(adv.barLength),
+        width: numberOrNull(adv.width),
+        height: numberOrNull(adv.height),
+        weight: numberOrNull(adv.weight),
+      }
+    : undefined
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => {
@@ -92,6 +149,7 @@ export function NewMaterialModal({ material }: Props) {
         directSale,
         productionMaterial,
         cost: Math.round(Number(cost || 0) * 100),
+        advanced,
       }
 
       return material
@@ -224,6 +282,152 @@ export function NewMaterialModal({ material }: Props) {
                 aria-label="Material de produção"
               />
             </div>
+          </div>
+
+          {/* Configuração avançada (MT-10.1, 03/10/2026): X é a primeira
+              medida do catálogo e Y a segunda; a fórmula da composição lê
+              "linha · X" e "linha · Y" do material escolhido. O peso é por
+              unidade de venda do material */}
+          <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+            <label className="flex items-start gap-3">
+              <Switch
+                className="mt-0.5"
+                checked={showAdvanced}
+                onCheckedChange={setShowAdvanced}
+                aria-label="Configuração avançada"
+              />
+              <span>
+                <span className="block text-sm font-medium">
+                  Configuração avançada
+                </span>
+                <span className="block text-sm text-gray">
+                  Medidas e peso que as fórmulas da composição, o aproveitamento
+                  e o plano de corte leem.
+                </span>
+              </span>
+            </label>
+            {showAdvanced && (
+              <div className="space-y-3 pl-12">
+                <SelectBasic
+                  name="shape"
+                  label="Formato"
+                  value={shape}
+                  onChange={(value) => setShape(value as MaterialShape)}
+                  options={shapes}
+                />
+                {shape === 'PROFILE' && (
+                  <>
+                    <p className="text-sm text-gray">
+                      Como está no catálogo: em 50 × 30, X é 50 e Y é 30. Qual
+                      lado entra na conta é escolha de quem escreve a fórmula.
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                      <div className="space-y-1.5">
+                        <label htmlFor="adv-x" className="text-sm font-medium">
+                          X (mm)
+                        </label>
+                        <Input
+                          id="adv-x"
+                          type="number"
+                          min={0}
+                          value={adv.x}
+                          onChange={(event) =>
+                            setAdvField('x', event.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label htmlFor="adv-y" className="text-sm font-medium">
+                          Y (mm)
+                        </label>
+                        <Input
+                          id="adv-y"
+                          type="number"
+                          min={0}
+                          value={adv.y}
+                          onChange={(event) =>
+                            setAdvField('y', event.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label
+                          htmlFor="adv-bar"
+                          className="text-sm font-medium"
+                        >
+                          Barra (mm)
+                        </label>
+                        <Input
+                          id="adv-bar"
+                          type="number"
+                          min={0}
+                          placeholder="6000"
+                          value={adv.barLength}
+                          onChange={(event) =>
+                            setAdvField('barLength', event.target.value)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+                {shape === 'SHEET' && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label htmlFor="adv-w" className="text-sm font-medium">
+                        Largura (mm)
+                      </label>
+                      <Input
+                        id="adv-w"
+                        type="number"
+                        min={0}
+                        value={adv.width}
+                        onChange={(event) =>
+                          setAdvField('width', event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label htmlFor="adv-h" className="text-sm font-medium">
+                        Altura (mm)
+                      </label>
+                      <Input
+                        id="adv-h"
+                        type="number"
+                        min={0}
+                        value={adv.height}
+                        onChange={(event) =>
+                          setAdvField('height', event.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+                {unit !== 'KG' && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <label
+                        htmlFor="adv-weight"
+                        className="text-sm font-medium"
+                      >
+                        Peso por {weightUnitLabel[unit as string] || 'unidade'}{' '}
+                        (kg)
+                      </label>
+                      <Input
+                        id="adv-weight"
+                        type="number"
+                        min={0}
+                        step="0.001"
+                        value={adv.weight}
+                        onChange={(event) =>
+                          setAdvField('weight', event.target.value)
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <p className="text-sm text-gray">

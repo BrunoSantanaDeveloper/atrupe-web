@@ -27,10 +27,19 @@ import {
 } from '@/components/ui/dialog'
 
 // Types
-import type { Material } from '../types'
+import type { Material, MaterialVariation } from '../types'
+import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { createMaterialVariations } from '@/actions/materials'
+import {
+  createMaterialVariations,
+  updateMaterialVariation,
+} from '@/actions/materials'
+
+// Components
+import { ActionButton } from '@/components/common/ActionButton'
+import { EditPriceModal } from '@/app/(app-sidebar)/precificacao/components/EditPriceModal'
+import { materialUnitSymbol } from '@/actions/materials-data'
 
 // Hooks / Store / Consts
 
@@ -42,7 +51,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPalette } from '@tabler/icons-react'
+import { IconPalette, IconCurrencyReal } from '@tabler/icons-react'
 
 interface Props {
   material?: Material
@@ -65,14 +74,42 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
   const [brands, setBrands] = useState('')
   const [colors, setColors] = useState('')
   const [cost, setCost] = useState('')
-  const [price, setPrice] = useState('')
+  // A variação sendo precificada, no mesmo modal da Precificação (DC-6)
+  const [pricing, setPricing] = useState<PricingItem | undefined>()
 
   useEffect(() => {
     setBrands('')
     setColors('')
     setCost('')
-    setPrice('')
   }, [material])
+
+  // O preço segue o padrão dos materiais (MT-3, PR-2): informa-se o custo e
+  // o preço sai do modal de precificação, preço variável pelo markup ou fixo
+  const pricingItemOf = (variation: MaterialVariation): PricingItem => ({
+    id: `mat:${material?.id}:${variation.id}`,
+    name: `${material?.name} · ${variation.brand} ${variation.color}`.trim(),
+    code: material?.code || '',
+    sector: material?.sector || '',
+    unit: material ? materialUnitSymbol(material.unit) : '',
+    cost: variation.cost,
+    costUpdatedAt: null,
+    rule: material?.priceRule || 'VARIABLE',
+    price: variation.price,
+    margin:
+      variation.cost !== null && variation.price
+        ? Math.round(
+            ((variation.price - variation.cost) / variation.price) * 1000,
+          ) / 10
+        : null,
+    status:
+      variation.cost === null
+        ? 'NO_COST'
+        : !variation.price
+          ? 'PENDING'
+          : variation.price < variation.cost
+            ? 'BELOW_COST'
+            : 'PRICED',
+  })
 
   const brandList = splitList(brands)
   const colorList = splitList(colors)
@@ -85,7 +122,8 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
         brands: brandList,
         colors: colorList,
         cost: Math.round(Number(cost || 0) * 100),
-        price: price ? Math.round(Number(price) * 100) : null,
+        // O preço vem depois, pelo modal de precificação (MT-3)
+        price: null,
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
@@ -98,6 +136,29 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
     },
     onError: () => toast.error('Erro ao criar as variações'),
   })
+
+  // Custo e preço são alterados linha a linha, direto na tabela (MT-4). Em
+  // branco, o valor fica sem definição
+  const { mutate: updateValues } = useMutation({
+    mutationFn: (values: {
+      variationId: string
+      cost: number | null
+      price: number | null
+    }) =>
+      updateMaterialVariation({ materialId: material?.id || '', ...values }),
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+      toast.success('Variação atualizada')
+      queryClient.invalidateQueries({ queryKey: ['materials'] })
+    },
+    onError: () => toast.error('Erro ao atualizar a variação'),
+  })
+  const toCents = (value: string) =>
+    value.trim() === ''
+      ? null
+      : Math.round(Number(value.replace(',', '.')) * 100)
+  const toReais = (value: number | null) =>
+    value === null ? '' : String(value / 100)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -156,20 +217,10 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
                 onChange={(event) => setCost(event.target.value)}
               />
             </div>
-            <div className="space-y-1.5">
-              <label htmlFor="variation-price" className="text-sm font-medium">
-                Preço de venda (opcional)
-              </label>
-              <Input
-                id="variation-price"
-                type="number"
-                min={0}
-                step="0.01"
-                startAdornment={<span className="text-sm">R$</span>}
-                value={price}
-                onChange={(event) => setPrice(event.target.value)}
-              />
-            </div>
+            <p className="self-end pb-3 text-sm text-gray">
+              O preço de venda de cada combinação sai da precificação, na tabela
+              abaixo.
+            </p>
           </div>
 
           {combinations > 0 && (
@@ -185,12 +236,13 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
-                    <TableHead className="w-[34%]">Marca</TableHead>
-                    <TableHead className="w-[30%]">Cor</TableHead>
-                    <TableHead className="w-[18%] text-right">Custo</TableHead>
-                    <TableHead className="w-[18%] text-right">
+                    <TableHead className="w-[20%]">Marca</TableHead>
+                    <TableHead className="w-[16%]">Cor</TableHead>
+                    <TableHead className="w-[30%]">Custo</TableHead>
+                    <TableHead className="w-[24%] text-right">
                       Preço de venda
                     </TableHead>
+                    <TableHead className="w-[10%]" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -200,13 +252,59 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
                         {variation.brand}
                       </TableCell>
                       <TableCell>{variation.color}</TableCell>
-                      <TableCell className="text-right">
-                        {variation.cost === null ? '-' : money(variation.cost)}
+                      <TableCell>
+                        <Input
+                          type="number"
+                          min={0}
+                          step="0.01"
+                          startAdornment={<span className="text-sm">R$</span>}
+                          aria-label={`Custo de ${variation.brand} ${variation.color}`}
+                          title={
+                            variation.cost === null ? '' : money(variation.cost)
+                          }
+                          defaultValue={toReais(variation.cost)}
+                          onBlur={(event) => {
+                            const cost = toCents(event.target.value)
+                            if (cost !== variation.cost) {
+                              updateValues({
+                                variationId: variation.id,
+                                cost,
+                                price: variation.price,
+                              })
+                            }
+                          }}
+                        />
                       </TableCell>
                       <TableCell className="text-right">
-                        {variation.price === null
-                          ? '-'
-                          : money(variation.price)}
+                        {variation.price === null ? (
+                          <span className="text-sm text-gray">Sem preço</span>
+                        ) : (
+                          <>
+                            <span className="text-sm text-gray-900">
+                              {money(variation.price)}
+                            </span>
+                            {variation.cost !== null && (
+                              <span className="block text-xs text-gray">
+                                margem{' '}
+                                {(
+                                  ((variation.price - variation.cost) /
+                                    variation.price) *
+                                  100
+                                )
+                                  .toFixed(1)
+                                  .replace('.', ',')}
+                                %
+                              </span>
+                            )}
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <ActionButton
+                          Icon={IconCurrencyReal}
+                          tooltip={`Precificar ${variation.brand} ${variation.color}`}
+                          onClick={() => setPricing(pricingItemOf(variation))}
+                        />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -230,6 +328,15 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
           </Button>
         </DialogFooter>
       </DialogContent>
+      <EditPriceModal
+        group="materials"
+        item={pricing}
+        open={!!pricing}
+        onOpenChange={() => {
+          setPricing(undefined)
+          queryClient.invalidateQueries({ queryKey: ['materials'] })
+        }}
+      />
     </Dialog>
   )
 }

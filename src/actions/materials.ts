@@ -7,111 +7,13 @@
 import type {
   Material,
   MaterialUnit,
+  MaterialAdvanced,
   MaterialVariation,
 } from '@/app/(app-sidebar)/configuracoes/produtos/materiais/types'
 
-const materials: Material[] = [
-  {
-    id: 'lona-440',
-    code: 'MAT-01',
-    name: 'Lona 440',
-    sector: 'Impressão',
-    subcategory: 'Lonas',
-    unit: 'M2',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'VARIABLE',
-    cost: null,
-    price: null,
-    variations: [
-      {
-        id: 'v1',
-        brand: 'Marca X',
-        color: 'Branca',
-        cost: 1250,
-        price: 2800,
-      },
-      {
-        id: 'v2',
-        brand: 'Marca X',
-        color: 'Preta',
-        cost: 1250,
-        price: 2800,
-      },
-      {
-        id: 'v3',
-        brand: 'Marca Y',
-        color: 'Branca',
-        cost: 1420,
-        price: 3100,
-      },
-    ],
-    active: true,
-  },
-  {
-    id: 'mdf-10',
-    code: 'MAT-02',
-    name: 'MDF 10 mm',
-    sector: 'Marcenaria',
-    subcategory: 'Chapas',
-    unit: 'UN',
-    directSale: true,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: null,
-    price: null,
-    variations: [
-      { id: 'v4', brand: 'Marca Y', color: 'Branco', cost: 8900, price: 9500 },
-      { id: 'v5', brand: 'Marca Y', color: 'Cru', cost: 8200, price: 9000 },
-    ],
-    active: true,
-  },
-  {
-    id: 'mdf-15',
-    code: 'MAT-03',
-    name: 'MDF 15 mm',
-    sector: 'Marcenaria',
-    subcategory: 'Chapas',
-    unit: 'UN',
-    directSale: true,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: 11200,
-    price: 12500,
-    variations: [],
-    active: true,
-  },
-  {
-    id: 'ilhos',
-    code: 'MAT-04',
-    name: 'Ilhós',
-    sector: 'Produção',
-    subcategory: 'Acabamentos',
-    unit: 'UN',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'FIXED',
-    cost: 12,
-    price: null,
-    variations: [],
-    active: true,
-  },
-  {
-    id: 'tinta-sublimatica',
-    code: 'MAT-05',
-    name: 'Tinta sublimática',
-    sector: 'Impressão',
-    subcategory: 'Tintas',
-    unit: 'LT',
-    directSale: false,
-    productionMaterial: true,
-    priceRule: 'VARIABLE',
-    cost: 28000,
-    price: null,
-    variations: [],
-    active: true,
-  },
-]
+// Os dados ficam num módulo comum: a composição lê os materiais daqui para
+// a lista de recursos e para as medidas do perfil nas fórmulas
+import { materials } from './materials-data'
 
 export const getMaterials = async ({
   filters,
@@ -146,6 +48,7 @@ export const createMaterial = async ({
   cost,
   directSale,
   productionMaterial,
+  advanced,
 }: {
   name: string
   sector: string
@@ -154,6 +57,7 @@ export const createMaterial = async ({
   cost: number
   directSale: boolean
   productionMaterial: boolean
+  advanced?: MaterialAdvanced
 }) => {
   if (!name?.trim()) {
     return { success: false, data: null, message: 'Informe o nome do material' }
@@ -173,6 +77,7 @@ export const createMaterial = async ({
     price: null,
     variations: [],
     active: true,
+    advanced,
   }
 
   materials.push(material)

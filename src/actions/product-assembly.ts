@@ -47,6 +47,7 @@ import {
   formulaUsesName,
   type FormulaVars,
 } from '@/lib/formula'
+import { materialResources } from './materials-data'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
@@ -756,12 +757,20 @@ assemblies.push({
 
 // O quadro de metalon é uma parte (IP-9): produto que não se vende sozinho e
 // entra na composição de outros — a placa em lona com quadro de ferro
-const metalon = (id: string, name: string, unitCost: number) => ({
+const metalon = (
+  id: string,
+  name: string,
+  unitCost: number,
+  x: number,
+  y: number,
+) => ({
   id,
   name,
   unit: 'm',
   unitCost,
   unitSale: unitCost * 2,
+  // Lados do perfil (MT-10.1), para a fórmula descontar o certo
+  profile: { x, y, barLength: 6000 },
 })
 
 assemblies.push({
@@ -799,8 +808,8 @@ assemblies.push({
           kind: 'MATERIAL',
           mode: 'CHOOSE',
           options: [
-            metalon('metalon20', 'Metalon 20 × 20', 1000),
-            metalon('metalon30', 'Metalon 30 × 30', 1600),
+            metalon('metalon20', 'Metalon 20 × 20', 1000, 20, 20),
+            metalon('metalon30', 'Metalon 30 × 30', 1600, 30, 30),
           ],
           selectedId: 'metalon20',
           perUnit: 1,
@@ -1455,10 +1464,37 @@ const fieldUsage = (assembly: ProductAssembly) =>
  * ------------------------------------------------------------------------- */
 
 // O que a fórmula pode ler nesta etapa: as medidas, o tempo e os campos
+// As referências do material escolhido em cada linha (MT-10.1, CP-18):
+// "montante · X" e "montante · Y" em metros, para a travessa descontar o
+// lado do perfil que estiver na linha, seja ele qual for
+const lineRefVars = (blocks: AssemblyBlock[]): FormulaVars => {
+  const vars: FormulaVars = {}
+  blocks.forEach((block) =>
+    block.lines.forEach((line) => {
+      const selected =
+        line.options.find((option) => option.id === line.selectedId) ||
+        line.options[0]
+      if (!selected) return
+      if (selected.profile) {
+        vars[`${line.name} · X`] = selected.profile.x / 1000
+        vars[`${line.name} · Y`] = selected.profile.y / 1000
+      }
+      if (selected.sheet) {
+        vars[`${line.name} · largura`] = selected.sheet.width
+        vars[`${line.name} · altura`] = selected.sheet.height
+      }
+      if (selected.weight) vars[`${line.name} · peso`] = selected.weight
+    }),
+  )
+  return vars
+}
+
 const formulaVars = (
   assembly: ProductAssembly,
   measure: AssemblyMeasure,
   time: number | null,
+  // A etapa que está calculando; sem ela, as linhas de todas as etapas
+  block?: AssemblyBlock,
 ): FormulaVars => ({
   largura: measure.width,
   altura: measure.height,
@@ -1469,6 +1505,7 @@ const formulaVars = (
   ...Object.fromEntries(
     (assembly.fields || []).map((field) => [field.name, field.defaultValue]),
   ),
+  ...lineRefVars(block ? [block] : assembly.blocks),
 })
 
 // Onde cada fórmula é usada, e se ela calcula na medida padrão do produto
@@ -1487,6 +1524,11 @@ const formulaUsage = (assembly: ProductAssembly) =>
       formulaVars(assembly, assembly.measure, 0),
     ).error,
   }))
+
+// A etapa tem linha cujo tipo de cálculo é o tempo informado pelo vendedor
+const TIME_FORMULAS = ['PER_TIME', 'EQUAL_TIME', 'TIME_TIMES_EXTRA']
+const blockHasTimeLine = (block: AssemblyBlock) =>
+  block.lines.some((line) => TIME_FORMULAS.includes(line.formula))
 
 const untouched = (assembly: ProductAssembly) =>
   assembly.name === 'Produto' &&
@@ -1756,7 +1798,12 @@ const compute = (
 
     const blockMeasure = { quantity, ...size }
     const extra = rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault
-    const time = rules.timeField ? rules.timeFieldDefault || 0 : null
+    // O tempo é das linhas de mão de obra com tipo "tempo informado": sem
+    // valor informado na venda, vale o consumo da linha (tempo padrão)
+    const time =
+      (rules.timeField || blockHasTimeLine(block)) && rules.timeFieldDefault
+        ? rules.timeFieldDefault
+        : null
 
     const lines: ComputedLine[] = block.lines.map((line) => {
       const selected =
@@ -1838,7 +1885,7 @@ const compute = (
       const customValue = custom
         ? evaluateFormula(
             custom.expression,
-            formulaVars(assembly, blockMeasure, time),
+            formulaVars(assembly, blockMeasure, time, block),
           ).value
         : null
       const raw =
@@ -2130,6 +2177,7 @@ export const updateAssembly = async ({
       | 'unitAmount'
       | 'allowEditValues'
       | 'allowEditDescription'
+      | 'allowRenameStages'
       | 'technicalDescription'
     >
   >
@@ -2192,6 +2240,11 @@ const resourceMap = () => {
       }),
     ),
   )
+  // Os materiais do cadastro, com as medidas do perfil e da chapa
+  materialResources().forEach((resource) => {
+    if (!map.has(resource.id))
+      map.set(resource.id, { ...resource, kind: 'MATERIAL' })
+  })
   return map
 }
 
@@ -2467,9 +2520,9 @@ export const removeProductFormula = async ({
   return ok(null)
 }
 
-// Copiar a composição de outro produto (pedido do time, 03/10/2026): as
-// etapas, os campos e as fórmulas vêm juntos, com ids novos. O que já
-// existia no produto fica; o copiado entra depois, como caminho próprio
+// Duplicar produto (03/10/2026): a composição do produto de origem vai para
+// o produto novo — etapas, campos e fórmulas, com ids novos, como cópia
+// independente. Chamado pelo botão Duplicar da lista de produtos
 export const copyCompositionFrom = async ({
   productId,
   sourceProductId,
@@ -2996,6 +3049,10 @@ export const clearVariationLine = async ({
 }
 
 // Tabela de preço por faixa (FQ-1). Vazia, vale o valor de venda do produto
+// A tabela por faixa do produto, para o cadastro (LITE) e para a venda
+export const getPriceTiers = async ({ productId }: { productId: string }) =>
+  ok<PriceTier[]>(findOrCreate(productId).priceTiers)
+
 export const setPriceTiers = async ({
   productId,
   tiers,
@@ -3069,11 +3126,14 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
     )
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
-    if (rules.timeField) {
+    if (rules.timeField || blockHasTimeLine(block)) {
+      const timeLine = block.lines.find((line) =>
+        TIME_FORMULAS.includes(line.formula),
+      )
       form.times.push({
         blockId: block.id,
         name: `Tempo · ${block.localName || block.name}`,
-        defaultMinutes: rules.timeFieldDefault || 0,
+        defaultMinutes: rules.timeFieldDefault || timeLine?.perUnit || 0,
       })
     }
     // Legado: etapa com campo extra próprio e nenhuma linha lendo um campo
