@@ -96,8 +96,8 @@ function ProcessRow({
         </span>
         <span className="block text-xs text-gray">{process.sector}</span>
       </span>
-      {process.role === 'FINISHING' && (
-        <Badge variant="neutralLight">Acabamento</Badge>
+      {process.afterBase === 'INHERIT' && (
+        <Badge variant="neutralLight">Herda a medida da base</Badge>
       )}
     </button>
   )
@@ -216,9 +216,7 @@ export function NextStepDialog({
                   {usual.length > 0 && (
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-gray-800">
-                        {candidates.bySector
-                          ? `Acabamentos do setor${afterName ? ` de ${afterName.toLowerCase()}` : ''}`
-                          : `Costumam vir depois de ${afterName?.toLowerCase() || 'esta etapa'}`}
+                        {`Costumam vir depois de ${afterName?.toLowerCase() || 'esta etapa'}`}
                       </p>
                       {usual.map((process) => (
                         <ProcessRow

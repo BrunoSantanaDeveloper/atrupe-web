@@ -11,6 +11,7 @@
 // Types
 import type {
   SaleRules,
+  AfterBase,
   AssemblyLine,
   QuoteField,
   ProductFormula,
@@ -101,12 +102,21 @@ const finishingRules: SaleRules = {
   descriptionEditable: false,
 }
 
+// O processo não sabe se é base ou acabamento: isso é a posição dele no
+// produto (FL-2, 03/10/2026). Ele só diz o que prefere quando entra depois
+// de outra etapa: herdar a medida da base ou pedir a própria
 type Template = Omit<
   AssemblyBlock,
-  'id' | 'dependsOn' | 'baseBlockId' | 'localRules' | 'lines' | 'processId'
+  | 'id'
+  | 'dependsOn'
+  | 'baseBlockId'
+  | 'localRules'
+  | 'lines'
+  | 'processId'
+  | 'role'
 > & {
   processId: string
-  finishingOf: string | null
+  afterBase: AfterBase
   lines: Omit<AssemblyLine, 'id' | 'overridden'>[]
 }
 
@@ -161,8 +171,7 @@ const catalog: Template[] = [
     processId: 'impressao-digital',
     name: 'Impressão digital',
     sector: 'Gráfica',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 10,
     sectorHourCost: HOUR['Gráfica'],
     taskType: 'Impressão',
@@ -220,12 +229,15 @@ const catalog: Template[] = [
     processId: 'corte-guilhotina',
     name: 'Corte na guilhotina',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Gráfica',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: { ...finishingRules, followsBase: false },
+    originalRules: {
+      ...baseRules,
+      followsBase: false,
+      descriptionEditable: false,
+    },
     lines: [
       {
         name: 'Tempo de corte',
@@ -244,8 +256,7 @@ const catalog: Template[] = [
     processId: 'impressao-solvente',
     name: 'Impressão solvente',
     sector: 'Impressão',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 10,
     sectorHourCost: HOUR['Impressão'],
     taskType: 'Impressão',
@@ -296,12 +307,11 @@ const catalog: Template[] = [
     processId: 'acabamento-banner',
     name: 'Acabamento de banner',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 10,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Tempo por banner',
@@ -365,12 +375,11 @@ const catalog: Template[] = [
     processId: 'bainha',
     name: 'Bainha',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 10,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Tempo por metro de bainha',
@@ -402,14 +411,14 @@ const catalog: Template[] = [
     processId: 'ilhos',
     name: 'Ilhós',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
     // O campo extra do ilhós é o espaçamento, com casas decimais (IP-19)
     originalRules: {
-      ...finishingRules,
+      ...baseRules,
+      descriptionEditable: false,
       extraField: 'DECIMAL',
       extraFieldName: 'Distância entre ilhoses (m)',
       extraFieldDefault: 0.5,
@@ -447,12 +456,11 @@ const catalog: Template[] = [
     processId: 'laminacao',
     name: 'Laminação',
     sector: 'Produção',
-    role: 'FINISHING',
-    finishingOf: 'Impressão',
+    afterBase: 'INHERIT',
     setupMinutes: 5,
     sectorHourCost: HOUR['Produção'],
     taskType: 'Produção',
-    originalRules: finishingRules,
+    originalRules: { ...baseRules, descriptionEditable: false },
     lines: [
       {
         name: 'Filme',
@@ -484,8 +492,7 @@ const catalog: Template[] = [
     processId: 'arte',
     name: 'Criação da arte',
     sector: 'Criação',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 0,
     sectorHourCost: HOUR['Criação'],
     taskType: 'Criação',
@@ -517,8 +524,7 @@ const catalog: Template[] = [
     processId: 'instalacao',
     name: 'Instalação',
     sector: 'Instalação',
-    role: 'BASE',
-    finishingOf: null,
+    afterBase: 'OWN',
     setupMinutes: 0,
     sectorHourCost: HOUR['Instalação'],
     taskType: 'Instalação',
@@ -564,19 +570,41 @@ const catalog: Template[] = [
   },
 ]
 
+// A regra de medida nasce da posição da etapa no produto (decidido em
+// 03/10/2026). Depois de outra etapa, o processo que prefere herdar passa a
+// usar a medida da base e a quantidade dela; o que prefere a própria entra
+// como está. Começando um caminho, pede medida e quantidade próprias
+const rulesByPosition = (
+  rules: SaleRules,
+  afterBase: AfterBase,
+  dependsOn: string[],
+): SaleRules => {
+  if (dependsOn.length && afterBase === 'INHERIT') {
+    return { ...rules, dimension: 'SAME_AS_PARENT', quantityMode: 'HIDDEN_ONE' }
+  }
+  if (rules.dimension !== 'SAME_AS_PARENT') return { ...rules }
+  return {
+    ...rules,
+    dimension: 'FREE_SIZE',
+    quantityMode:
+      rules.quantityMode === 'HIDDEN_ONE' ? 'FREE' : rules.quantityMode,
+  }
+}
+
 const fromTemplate = (
   template: Template,
   // As etapas de que esta depende (FL-1). A primeira é a referência de
   // medida (MS-5)
   dependsOn: string[],
 ): AssemblyBlock => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { finishingOf, lines, ...rest } = template
+  const { afterBase, lines, ...rest } = template
   return {
     ...rest,
     id: `b${uid()}`,
+    role: dependsOn.length ? 'FINISHING' : 'BASE',
     dependsOn: [...dependsOn],
     baseBlockId: dependsOn[0] ?? null,
+    originalRules: rulesByPosition(rest.originalRules, afterBase, dependsOn),
     localRules: null,
     lines: lines.map((line) => ({
       ...structuredClone(line),
@@ -596,7 +624,7 @@ const fromTemplate = (
  * ------------------------------------------------------------------------- */
 
 type ProcessMeta = {
-  finishingOf: string | null
+  afterBase: AfterBase
   sellerInstructions: string
   active: boolean
 }
@@ -608,11 +636,12 @@ const processStore = new Map<
 >()
 
 catalog.forEach((template) => {
-  const { finishingOf, lines, processId, ...rest } = template
+  const { afterBase, lines, processId, ...rest } = template
   processStore.set(processId, {
     block: {
       ...rest,
       id: `p-${processId}`,
+      role: 'BASE',
       processId: null,
       dependsOn: [],
       baseBlockId: null,
@@ -623,7 +652,7 @@ catalog.forEach((template) => {
         overridden: false,
       })),
     },
-    meta: { finishingOf, sellerInstructions: '', active: true },
+    meta: { afterBase, sellerInstructions: '', active: true },
   })
 })
 
@@ -653,7 +682,7 @@ const templateOf = (processId: string): Template | undefined => {
   return {
     ...entry.block,
     processId,
-    finishingOf: entry.meta.finishingOf,
+    afterBase: entry.meta.afterBase,
     lines: entry.block.lines,
   } as Template
 }
@@ -2160,8 +2189,7 @@ export const getProcessCatalog = async () =>
         id: item.processId,
         name: item.name,
         sector: item.sector,
-        role: item.role,
-        finishingOf: item.finishingOf,
+        afterBase: item.afterBase,
       }),
     ),
   )
@@ -2843,8 +2871,7 @@ export const getNextStepCandidates = async ({
     id: item.processId,
     name: item.name,
     sector: item.sector,
-    role: item.role,
-    finishingOf: item.finishingOf,
+    afterBase: item.afterBase,
   })
   const all = processTemplates()
     .map(toItem)
@@ -2852,19 +2879,14 @@ export const getNextStepCandidates = async ({
       (a, b) =>
         a.sector.localeCompare(b.sector) || a.name.localeCompare(b.name),
     )
-  if (!block) return ok<NextStepCandidates>({ usual: [], all, bySector: false })
+  if (!block) return ok<NextStepCandidates>({ usual: [], all })
 
+  // Só as marcações valem (FL-7, 03/10/2026). Sem marcação, a lista inteira,
+  // agrupada por setor; o "acabamento do setor" do legado saiu
   const marked = block.processId
     ? all.filter((item) => usualNext.has(pairKey(block.processId!, item.id)))
     : []
-  if (marked.length) {
-    return ok<NextStepCandidates>({ usual: marked, all, bySector: false })
-  }
-  // Sem marcação, valem os acabamentos do setor da etapa, como no legado
-  const bySector = all.filter(
-    (item) => item.role === 'FINISHING' && item.finishingOf === block.sector,
-  )
-  return ok<NextStepCandidates>({ usual: bySector, all, bySector: true })
+  return ok<NextStepCandidates>({ usual: marked, all })
 }
 
 export const moveAssemblyBlock = async ({
@@ -3672,10 +3694,10 @@ export const getLibrary = async () =>
         .filter((item): item is Template => !!item)
       return {
         ...entry,
-        stages: templates.map((item) => ({
+        stages: templates.map((item, index) => ({
           name: item.name,
           sector: item.sector,
-          role: item.role,
+          role: index ? 'FINISHING' : 'BASE',
         })),
         resources: templates.reduce((sum, item) => sum + item.lines.length, 0),
       }
@@ -3702,7 +3724,6 @@ export const importFromLibrary = async ({
     const template = templateOf(processId)
     if (!template) return
     const block = fromTemplate(template, previous ? [previous.id] : [])
-    if (!previous && block.role === 'FINISHING') block.role = 'BASE'
     insertBlock(assembly, block)
     previous = block
   })
@@ -3759,14 +3780,18 @@ export const removeVariationBlock = async ({
  * Tela de Processos (MS-11)
  * ------------------------------------------------------------------------- */
 
-// Acabamento, serviço de máquina ou primário: sai do que o processo tem, não
-// é campo a digitar (MS-7)
-const processCategory = (block: AssemblyBlock, meta: ProcessMeta) =>
-  meta.finishingOf
-    ? `Acabamento de ${meta.finishingOf.toLowerCase()}`
-    : block.lines.some((line) => line.kind === 'MACHINE')
-      ? 'Serviço de máquina'
-      : 'Primário'
+// A categoria sai do que o processo tem, não é campo a digitar (MS-7). Desde
+// 03/10/2026 "acabamento de" é lido das ligações "costuma vir depois de"
+// (FL-7); sem ligação, serviço de máquina ou primário
+const processCategory = (processId: string, block: AssemblyBlock) => {
+  const before = Array.from(processStore.entries())
+    .filter(([id]) => usualNext.has(pairKey(id, processId)))
+    .map(([, entry]) => entry.block.name)
+  if (before.length) return `Depois de ${before.join(', ')}`
+  return block.lines.some((line) => line.kind === 'MACHINE')
+    ? 'Serviço de máquina'
+    : 'Primário'
+}
 
 const usedIn = (processId: string) =>
   assemblies
@@ -3788,8 +3813,8 @@ export const getProcessList = async () =>
       id,
       name: block.name,
       sector: block.sector,
-      category: processCategory(block, meta),
-      finishingOf: meta.finishingOf,
+      category: processCategory(id, block),
+      afterBase: meta.afterBase,
       taskType: block.taskType,
       setupMinutes: block.setupMinutes,
       rules: block.originalRules,
@@ -3818,7 +3843,7 @@ export const getProcessDetail = async ({
     id: processId,
     hostId: host.productId,
     meta: entry.meta,
-    category: processCategory(entry.block, entry.meta),
+    category: processCategory(processId, entry.block),
     block: computed.blocks[0],
     // Os campos que as linhas do processo leem (IP-4)
     fields: computed.fields,
@@ -3833,11 +3858,11 @@ export const getProcessDetail = async ({
 export const createProcessDef = async ({
   name,
   sector,
-  finishingOf,
+  afterBase = 'INHERIT',
 }: {
   name: string
   sector: string
-  finishingOf: string | null
+  afterBase?: AfterBase
 }) => {
   if (!name.trim()) return fail('Informe o nome do processo')
   const processId = `proc-${uid()}`
@@ -3846,19 +3871,19 @@ export const createProcessDef = async ({
     processId: null,
     name: name.trim(),
     sector,
-    role: finishingOf ? 'FINISHING' : 'BASE',
+    role: 'BASE',
     dependsOn: [],
     baseBlockId: null,
     setupMinutes: 0,
     sectorHourCost: HOUR[sector] || 1800,
     taskType: sector,
-    originalRules: finishingOf ? { ...finishingRules } : { ...baseRules },
+    originalRules: { ...baseRules },
     localRules: null,
     lines: [],
   }
   processStore.set(processId, {
     block,
-    meta: { finishingOf, sellerInstructions: '', active: true },
+    meta: { afterBase, sellerInstructions: '', active: true },
   })
   assemblies.push(processWrapper(processId, block))
   return ok(processId)
@@ -3871,7 +3896,7 @@ export const updateProcessMeta = async ({
   processId: string
   values: {
     sector?: string
-    finishingOf?: string | null
+    afterBase?: AfterBase
     setupMinutes?: number
     sellerInstructions?: string
     active?: boolean
@@ -3884,10 +3909,7 @@ export const updateProcessMeta = async ({
     block.sector = values.sector
     block.sectorHourCost = HOUR[values.sector] || block.sectorHourCost
   }
-  if (values.finishingOf !== undefined) {
-    meta.finishingOf = values.finishingOf
-    block.role = values.finishingOf ? 'FINISHING' : 'BASE'
-  }
+  if (values.afterBase) meta.afterBase = values.afterBase
   if (values.setupMinutes !== undefined) {
     block.setupMinutes = Math.max(0, values.setupMinutes)
   }
@@ -3912,8 +3934,7 @@ const neighborsOf = (processId: string, direction: 'before' | 'after') =>
         id: item.processId,
         name: item.name,
         sector: item.sector,
-        role: item.role,
-        finishingOf: item.finishingOf,
+        afterBase: item.afterBase,
         usual: usualNext.has(
           direction === 'after'
             ? pairKey(processId, item.processId)

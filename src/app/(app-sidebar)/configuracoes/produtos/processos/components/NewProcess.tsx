@@ -28,6 +28,8 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
+import { afterBaseOptions } from '@/consts/processes'
+import type { AfterBase } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ProcessEditor } from '../[id]/components/ProcessEditor'
 
@@ -97,10 +99,14 @@ export function ProcessDialog({
   const [activeTab, setActiveTab] = useState<ProcessTab>(initialTab)
   const [name, setName] = useState('')
   const [sector, setSector] = useState('')
-  const [finishingOf, setFinishingOf] = useState('none')
+  const [afterBase, setAfterBase] = useState<AfterBase>('INHERIT')
   const [saving, setSaving] = useState(false)
 
-  const { data: resourcesRes } = useQuery({
+  const {
+    data: resourcesRes,
+    isError: resourcesError,
+    refetch: refetchResources,
+  } = useQuery({
     staleTime: Infinity,
     queryKey: ['assembly-resources'],
     queryFn: () => getAssemblyResources(),
@@ -110,6 +116,10 @@ export function ProcessDialog({
     () => resourcesRes?.data?.sectors || [],
     [resourcesRes],
   )
+  // A lista vem de uma ação do servidor; no dev, a primeira chamada compila
+  // e demora. Enquanto isso, o campo diz que está carregando, em vez de
+  // parecer travado. Se falhou, dá para tentar de novo sem fechar o diálogo
+  const sectorsLoading = open && !resourcesRes && !resourcesError
 
   // Em edição, o título e a situação vêm do processo; as seções são do editor
   const { data: detailRes } = useQuery({
@@ -124,7 +134,7 @@ export function ProcessDialog({
     setActiveTab(initialTab)
     setName('')
     setSector(sectors[0] || '')
-    setFinishingOf('none')
+    setAfterBase('INHERIT')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialTab])
 
@@ -137,7 +147,7 @@ export function ProcessDialog({
     const res = await createProcessDef({
       name,
       sector,
-      finishingOf: finishingOf === 'none' ? null : finishingOf,
+      afterBase,
     })
     setSaving(false)
     if (!res.success || !res.data) return toast.error(res.message)
@@ -249,6 +259,14 @@ export function ProcessDialog({
                     <SelectBasic
                       name="process-sector"
                       label="Setor"
+                      placeholder={
+                        sectorsLoading ? 'Carregando setores…' : 'Setor'
+                      }
+                      emptyMessage={
+                        sectorsLoading
+                          ? 'Carregando setores…'
+                          : 'Nenhum setor disponível'
+                      }
                       className="flex-[1_0_190px]"
                       options={sectors.map((item) => ({
                         value: item,
@@ -258,26 +276,33 @@ export function ProcessDialog({
                       onChange={(value) => value && setSector(String(value))}
                     />
                     <SelectBasic
-                      name="process-finishing"
-                      label="É acabamento de"
+                      name="process-after-base"
+                      label="Quando entra depois de outra etapa"
                       className="flex-[1_0_190px]"
-                      options={[
-                        { value: 'none', label: 'Não é acabamento' },
-                        ...sectors.map((item) => ({
-                          value: item,
-                          label: item,
-                        })),
-                      ]}
-                      value={finishingOf}
+                      options={afterBaseOptions}
+                      value={afterBase}
                       onChange={(value) =>
-                        value && setFinishingOf(String(value))
+                        value && setAfterBase(value as AfterBase)
                       }
                     />
+                    {resourcesError && (
+                      <p className="w-full text-sm text-error-700">
+                        Não foi possível carregar os setores.{' '}
+                        <button
+                          type="button"
+                          className="underline"
+                          onClick={() => refetchResources()}
+                        >
+                          Tentar de novo
+                        </button>
+                      </p>
+                    )}
                     <p className="w-full text-sm text-gray">
-                      O acabamento é oferecido ao lado da etapa do setor de que
-                      ele é acabamento, e herda a medida dela. Recursos, tempo e
-                      regras de venda entram na aba Composição, depois de
-                      salvar.
+                      Se o processo é um acabamento, ele herda a medida e a
+                      quantidade da etapa anterior. Começando um produto, pede
+                      as próprias. Recursos, tempo e regras de venda entram na
+                      aba Composição, depois de salvar; as etapas que costumam
+                      vir antes e depois, na aba Uso.
                     </p>
                   </div>
                 )}

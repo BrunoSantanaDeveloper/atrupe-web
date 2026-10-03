@@ -43,21 +43,34 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   LineDialog,
-  RulesDialog,
   NewLineDialog,
   OptionsDialog,
 } from '../../../[id]/composicao/components/AssemblyDialogs'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import {
+  Select,
+  SelectItem,
+  SelectValue,
+  SelectContent,
+  SelectTrigger,
+} from '@/components/ui/select'
+import { DurationInput } from '@/components/common/DurationInput'
+import { sectorIconByName } from '@/consts/sectors'
 
 // Types
 import {
+  TASK_TYPES,
   formulaInputs,
   quantityModeObj,
+  type SaleRules,
+  type QuantityMode,
   type FormulaInput,
   type ComputedLine,
   type ComputedBlock,
   type AssemblyMeasure,
+  type AfterBase,
 } from '../../../[id]/composicao/assembly'
-import type { ResourceKind } from '../../types'
+import type { ResourceKind, DimensionRule } from '../../types'
 import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
 import { ProductFields } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields'
 
@@ -83,7 +96,8 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 import {
   formulaLabel,
   resourceKindObj,
-  dimensionRuleObj,
+  dimensionRuleOptions,
+  afterBaseOptions,
 } from '@/consts/processes'
 import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 
@@ -96,12 +110,7 @@ import {
 } from '@tanstack/react-query'
 
 // Icons
-import {
-  IconTrash,
-  IconPencil,
-  IconSettings,
-  IconListDetails,
-} from '@tabler/icons-react'
+import { IconTrash, IconPencil, IconListDetails } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -137,7 +146,6 @@ const zeroInput = (
 }
 
 type Dialog =
-  | { kind: 'rules' }
   | { kind: 'newLine'; lineKind?: ResourceKind }
   | { kind: 'line'; lineId: string }
   | { kind: 'options'; lineId: string }
@@ -163,9 +171,11 @@ export function ProcessEditor({
   const alertDialog = useAlertDialog()
   const [measure, setMeasure] = useState<AssemblyMeasure>()
   const [dialog, setDialog] = useState<Dialog>(null)
+  // O nome do processo edita no título da etapa, como no produto
+  const [renaming, setRenaming] = useState(false)
   const [meta, setMeta] = useState({
     sector: '',
-    finishingOf: 'none',
+    afterBase: 'INHERIT' as AfterBase,
     setupMinutes: 0,
     sellerInstructions: '',
   })
@@ -211,7 +221,7 @@ export function ProcessEditor({
       setMeasure(detail.measure)
       setMeta({
         sector: detail.block.sector,
-        finishingOf: detail.meta.finishingOf || 'none',
+        afterBase: detail.meta.afterBase,
         setupMinutes: detail.block.setupMinutes,
         sellerInstructions: detail.meta.sellerInstructions,
       })
@@ -244,7 +254,7 @@ export function ProcessEditor({
     block.lines.find((line) => line.id === lineId)
   const metaChanged =
     meta.sector !== block.sector ||
-    meta.finishingOf !== (detail.meta.finishingOf || 'none') ||
+    meta.afterBase !== detail.meta.afterBase ||
     meta.setupMinutes !== block.setupMinutes ||
     meta.sellerInstructions !== detail.meta.sellerInstructions
 
@@ -271,15 +281,39 @@ export function ProcessEditor({
     })
 
   const rules = block.rules
-  const rulesText = [
-    quantityModeObj[rules.quantityMode],
-    rules.followsBase ? 'acompanha a quantidade da base' : 'uma vez por pedido',
-    dimensionRuleObj[rules.dimension],
-    rules.timeField ? 'com campo tempo' : null,
-    rules.descriptionEditable ? 'vendedor pode renomear' : null,
-  ]
-    .filter(Boolean)
-    .join(' · ')
+  const SectorIcon = sectorIconByName(block.sector)
+
+  // As regras da etapa ficam nos seletores do cabeçalho, como no produto
+  // (03/10/2026): no processo elas são as regras originais, que os produtos
+  // acompanham (CP-21)
+  const saveStage = (
+    patch: Partial<SaleRules>,
+    extra: { name?: string; taskType?: string } = {},
+    message = 'Processo configurado',
+  ) =>
+    run(
+      setBlockLocalRules({
+        productId: hostId,
+        blockId: block.id,
+        rules: Object.keys(patch).length
+          ? { ...rules, ...patch }
+          : block.originalRules,
+        ...extra,
+      }),
+      message,
+    )
+
+  const measureText = (() => {
+    const m = block.measure
+    const qty = `${num(m.quantity)} ${m.quantity === 1 ? 'unidade' : 'unidades'}`
+    if (rules.dimension === 'NONE') {
+      return rules.followsBase ? qty : 'uma vez por pedido'
+    }
+    const size = `${num(m.width)} × ${num(m.height)} m`
+    return rules.dimension === 'SAME_AS_PARENT'
+      ? `${qty} · mesma medida da base (${size})`
+      : `${qty} · ${size}`
+  })()
 
   return (
     <TooltipProvider>
@@ -292,17 +326,6 @@ export function ProcessEditor({
             supportText={`${detail.category} · ${block.sector}${
               detail.meta.active ? '' : ' · inativo'
             }`}
-            primaryCta={
-              <PermissionGate permissions={EDIT}>
-                <Button
-                  variant="neutralOutline"
-                  LeftIcon={IconSettings}
-                  onClick={() => setDialog({ kind: 'rules' })}
-                >
-                  Nome, tarefa e regras de venda
-                </Button>
-              </PermissionGate>
-            }
           />
         )}
 
@@ -318,23 +341,12 @@ export function ProcessEditor({
               <Card className={cn(!embedded && 'lg:col-span-2')}>
                 <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
                   <div>
-                    <CardTitle>Configuração</CardTitle>
+                    <CardTitle>Processo</CardTitle>
                     <CardDescription>
-                      Tarefa na produção: {block.taskType.toLowerCase()} ·{' '}
-                      {rulesText}
+                      Os mesmos campos do cadastro do processo. O que a etapa
+                      usa fica na Composição.
                     </CardDescription>
                   </div>
-                  {embedded && (
-                    <PermissionGate permissions={EDIT}>
-                      <Button
-                        variant="neutralOutline"
-                        LeftIcon={IconSettings}
-                        onClick={() => setDialog({ kind: 'rules' })}
-                      >
-                        Nome, tarefa e regras de venda
-                      </Button>
-                    </PermissionGate>
-                  )}
                 </CardHeader>
                 <CardContent className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-3">
                   <SelectBasic
@@ -354,33 +366,29 @@ export function ProcessEditor({
                     }
                   />
                   <SelectBasic
-                    name="process-finishing"
-                    label="É acabamento de"
-                    options={[
-                      { value: 'none', label: 'Não é acabamento' },
-                      ...sectors.map((item) => ({ value: item, label: item })),
-                    ]}
-                    value={meta.finishingOf}
+                    name="process-after-base"
+                    label="Quando entra depois de outra etapa"
+                    options={afterBaseOptions}
+                    value={meta.afterBase}
                     onChange={(value) =>
                       value &&
                       setMeta((current) => ({
                         ...current,
-                        finishingOf: String(value),
+                        afterBase: value as AfterBase,
                       }))
                     }
                   />
-                  <div className="space-y-2">
-                    <Label htmlFor="process-setup">Preparo (min)</Label>
-                    <Input
+                  <div className="flex flex-col">
+                    <Label htmlFor="process-setup" className="mb-2">
+                      Preparo (h:mm)
+                    </Label>
+                    <DurationInput
                       id="process-setup"
-                      type="number"
-                      min={0}
-                      step="1"
                       value={meta.setupMinutes}
-                      onChange={(event) =>
+                      onChange={(minutes) =>
                         setMeta((current) => ({
                           ...current,
-                          setupMinutes: Number(event.target.value) || 0,
+                          setupMinutes: minutes ?? 0,
                         }))
                       }
                     />
@@ -401,6 +409,16 @@ export function ProcessEditor({
                       }
                     />
                   </div>
+                  {/* Os campos do orçamento junto do processo, como no bloco
+                      Produto da composição (IP-4) */}
+                  <div className="border-t border-gray-100 pt-4 sm:col-span-3">
+                    <ProductFields
+                      bare
+                      productId={hostId}
+                      fields={detail.fields}
+                      description="Os valores que o vendedor informa e que as linhas deste processo leem. O produto que incluir o processo ganha estes campos, uma vez cada."
+                    />
+                  </div>
                 </CardContent>
                 <PermissionGate permissions={EDIT}>
                   <CardFooter className="flex-wrap justify-between gap-3">
@@ -417,10 +435,7 @@ export function ProcessEditor({
                             processId: id,
                             values: {
                               sector: meta.sector,
-                              finishingOf:
-                                meta.finishingOf === 'none'
-                                  ? null
-                                  : meta.finishingOf,
+                              afterBase: meta.afterBase,
                               setupMinutes: meta.setupMinutes,
                               sellerInstructions: meta.sellerInstructions,
                             },
@@ -429,7 +444,7 @@ export function ProcessEditor({
                         )
                       }
                     >
-                      Salvar configuração
+                      Salvar processo
                     </Button>
                   </CardFooter>
                 </PermissionGate>
@@ -498,10 +513,11 @@ export function ProcessEditor({
         {show('resources') && (
           <Card>
             <CardHeader>
-              <CardTitle>Recursos e tempo</CardTitle>
+              <CardTitle>Composição</CardTitle>
               <CardDescription>
-                Recurso único, escolha de um (o vendedor escolhe entre opções de
-                mesma unidade) ou lista para o vendedor preencher.
+                A etapa de um setor: a máquina, o material e a mão de obra que
+                ele usa, cada um com o seu tipo de cálculo. O produto que
+                incluir o processo acompanha esta montagem.
               </CardDescription>
               {/* Antes de mexer, quem edita sabe o alcance da mudança (CP-21) */}
               {detail.usedIn.length > 0 && (
@@ -513,6 +529,186 @@ export function ProcessEditor({
               )}
             </CardHeader>
             <CardContent>
+              {/* O cabeçalho da etapa, igual ao da composição do produto
+                  (03/10/2026): setor em destaque, tarefa, nome editável e as
+                  regras de venda nos seletores */}
+              <div className="flex flex-wrap items-start gap-3 px-6 pb-4">
+                <FeaturedIcon variant="light" Icon={SectorIcon} />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant="neutralLight">{block.sector}</Badge>
+                    <Badge variant="blueLight">
+                      {detail.meta.afterBase === 'INHERIT'
+                        ? 'Depois de outra etapa, herda a medida da base'
+                        : 'Depois de outra etapa, pede medida própria'}
+                    </Badge>
+                    <PermissionGate
+                      permissions={EDIT}
+                      fallback={
+                        <Badge variant="neutralLight">
+                          tarefa: {block.taskType.toLowerCase()}
+                        </Badge>
+                      }
+                    >
+                      <Select
+                        value={block.taskType}
+                        onValueChange={(value) =>
+                          saveStage(
+                            {},
+                            { taskType: value },
+                            'Tipo de tarefa alterado',
+                          )
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Tipo de tarefa na produção"
+                          className="h-6 w-auto gap-1 rounded-full border-gray-200 bg-gray-50 px-2 text-xs"
+                        >
+                          <span className="text-gray">tarefa:</span>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from(
+                            new Set([block.taskType, ...TASK_TYPES]),
+                          ).map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </PermissionGate>
+                  </div>
+                  {renaming ? (
+                    <Input
+                      autoFocus
+                      aria-label="Nome do processo"
+                      className="h-9 max-w-sm text-base font-semibold"
+                      defaultValue={block.name}
+                      onBlur={(event) => {
+                        setRenaming(false)
+                        const value = event.target.value.trim()
+                        if (value && value !== block.name) {
+                          saveStage({}, { name: value }, 'Processo renomeado')
+                        }
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter') event.currentTarget.blur()
+                        if (event.key === 'Escape') setRenaming(false)
+                      }}
+                    />
+                  ) : (
+                    <PermissionGate
+                      permissions={EDIT}
+                      fallback={
+                        <p className="text-base font-semibold text-gray-900">
+                          {block.name}
+                        </p>
+                      }
+                    >
+                      <button
+                        type="button"
+                        className="group flex items-center gap-2 text-left"
+                        title="Renomear processo"
+                        onClick={() => setRenaming(true)}
+                      >
+                        <span className="text-base font-semibold text-gray-900">
+                          {block.name}
+                        </span>
+                        <IconPencil
+                          size={14}
+                          aria-hidden="true"
+                          className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
+                        />
+                      </button>
+                    </PermissionGate>
+                  )}
+                  <PermissionGate
+                    permissions={EDIT}
+                    fallback={
+                      <p className="text-sm text-gray">{measureText}</p>
+                    }
+                  >
+                    <div className="flex flex-wrap items-center gap-1.5 text-sm text-gray">
+                      <Select
+                        value={rules.quantityMode}
+                        onValueChange={(value) =>
+                          saveStage({ quantityMode: value as QuantityMode })
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Quantidade"
+                          className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(Object.keys(quantityModeObj) as QuantityMode[])
+                            // "Área da base ÷ área deste" só faz sentido
+                            // dentro do produto, depois de uma base
+                            .filter((key) => key !== 'AREA_RATIO')
+                            .map((key) => (
+                              <SelectItem key={key} value={key}>
+                                {quantityModeObj[key]}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={rules.followsBase ? 'FOLLOWS' : 'ONCE'}
+                        onValueChange={(value) =>
+                          saveStage({ followsBase: value === 'FOLLOWS' })
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Em relação à base"
+                          className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="FOLLOWS">
+                            Acompanha a quantidade da base
+                          </SelectItem>
+                          <SelectItem value="ONCE">
+                            Uma vez por pedido
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Select
+                        value={rules.dimension}
+                        onValueChange={(value) =>
+                          saveStage({ dimension: value as DimensionRule })
+                        }
+                      >
+                        <SelectTrigger
+                          aria-label="Medida"
+                          className="h-7 w-auto gap-1 rounded-full border-gray-200 bg-white px-2.5 text-xs"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {dimensionRuleOptions
+                            // A medida da base é dada pela posição no
+                            // produto, não pelo processo (03/10/2026)
+                            .filter(
+                              (option) => option.value !== 'SAME_AS_PARENT',
+                            )
+                            .map((option) => (
+                              <SelectItem
+                                key={option.value}
+                                value={option.value}
+                              >
+                                {option.label}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                      <span className="text-xs">= {measureText}</span>
+                    </div>
+                  </PermissionGate>
+                </div>
+              </div>
               {/* Os botões de acrescentar ficam no topo, antes da tabela,
                   como na etapa do produto (03/10/2026) */}
               <PermissionGate permissions={EDIT}>
@@ -615,10 +811,11 @@ export function ProcessEditor({
                           ) : (
                             <>
                               <p className="text-sm">
-                                {rules.timeField &&
-                                (line.formula === 'EQUAL_TIME' ||
-                                  line.formula === 'PER_TIME')
-                                  ? `tempo da etapa (${amount(rules.timeFieldDefault || 0, 'min')})`
+                                {line.formula === 'EQUAL_TIME' ||
+                                line.formula === 'PER_TIME'
+                                  ? rules.timeFieldDefault
+                                    ? `tempo informado (${amount(rules.timeFieldDefault, 'min')})`
+                                    : `tempo padrão ${amount(line.effective.perUnit, 'min')}`
                                   : amount(line.effective.perUnit, unit)}
                               </p>
                               {(line.effective.lossPercent > 0 ||
@@ -751,19 +948,11 @@ export function ProcessEditor({
             </CardContent>
             {block.setupMinutes > 0 && (
               <CardFooter className="text-sm text-gray">
-                Preparo: {block.setupMinutes} min, uma vez por pedido
+                Preparo: {amount(block.setupMinutes, 'min')}, uma vez por pedido
               </CardFooter>
             )}
           </Card>
         )}
-
-        {/* Os campos que as linhas do processo leem (IP-4): o produto que
-            incluir o processo ganha estes campos */}
-        <ProductFields
-          productId={hostId}
-          fields={detail.fields}
-          description="Os valores que o vendedor informa e que as linhas deste processo leem. O produto que incluir o processo ganha estes campos, uma vez cada."
-        />
 
         {/* 4. Onde o processo está: os produtos acompanham a montagem (CP-21) */}
         {show('usage') && (
@@ -870,23 +1059,6 @@ export function ProcessEditor({
         )}
       </div>
 
-      <RulesDialog
-        block={dialog?.kind === 'rules' ? block : undefined}
-        onOpenChange={() => setDialog(null)}
-        onSave={(newRules, name, taskType) => {
-          setDialog(null)
-          run(
-            setBlockLocalRules({
-              productId: hostId,
-              blockId: block.id,
-              rules: newRules,
-              name,
-              taskType,
-            }),
-            'Processo configurado',
-          )
-        }}
-      />
       <NewLineDialog
         block={dialog?.kind === 'newLine' ? block : undefined}
         initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}

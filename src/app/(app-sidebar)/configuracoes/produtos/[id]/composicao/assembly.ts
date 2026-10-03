@@ -460,13 +460,17 @@ export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
 }
 
 // Um processo do catálogo, para adicionar ao produto
+// O que o processo prefere quando entra depois de outra etapa (decidido em
+// 03/10/2026): herdar a medida e a quantidade da base, ou pedir as próprias.
+// Começando um caminho, ele sempre pede as próprias. Substitui o "é
+// acabamento de" do legado (MS-2, CP-12)
+export type AfterBase = 'INHERIT' | 'OWN'
+
 export type ProcessCatalogItem = {
   id: string
   name: string
   sector: string
-  role: BlockRole
-  // Setor da base de que ele é acabamento
-  finishingOf: string | null
+  afterBase: AfterBase
 }
 
 // O que "+ etapa seguinte" oferece (FL-7): primeiro os processos marcados
@@ -475,8 +479,6 @@ export type ProcessCatalogItem = {
 export type NextStepCandidates = {
   usual: ProcessCatalogItem[]
   all: ProcessCatalogItem[]
-  // true quando os usuais vieram do setor, por falta de marcação
-  bySector: boolean
 }
 
 // A marcação "costuma vir depois de" entre dois processos (FL-7), vista de

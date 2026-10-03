@@ -4,6 +4,7 @@ import type {
   ResourceKind,
   DimensionRule,
 } from '@/app/(app-sidebar)/configuracoes/produtos/processos/types'
+import type { AfterBase } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 export const resourceKindObj: { [key in ResourceKind]: string } = {
   MACHINE: 'Máquina',
@@ -190,3 +191,12 @@ export const dimensionRuleObj: { [key in DimensionRule]: string } = {
 export const dimensionRuleOptions = (
   Object.keys(dimensionRuleObj) as DimensionRule[]
 ).map((rule) => ({ value: rule, label: dimensionRuleObj[rule] }))
+
+// O que o processo prefere quando entra depois de outra etapa (03/10/2026)
+export const afterBaseObj: { [key in AfterBase]: string } = {
+  INHERIT: 'Herda a medida da base',
+  OWN: 'Pede medida própria',
+}
+export const afterBaseOptions = (Object.keys(afterBaseObj) as AfterBase[]).map(
+  (key) => ({ value: key, label: afterBaseObj[key] }),
+)
