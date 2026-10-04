@@ -196,6 +196,7 @@ export function FixedExpensesFilter({
             'fixed_expense', então nenhum cargo recebia este botão */}
         <PermissionGate permissions={['financial:fixed_expense:edit']}>
           <Button
+            variant="neutralOutline"
             LeftIcon={IconPlus}
             onClick={handlePostSelectedExpenses}
             disabled={selectedIds.length === 0}

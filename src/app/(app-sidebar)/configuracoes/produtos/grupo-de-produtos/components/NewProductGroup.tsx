@@ -22,6 +22,7 @@ import { DangerActionProductGroupDialog } from './DangerActionProductGroupDialog
 import { useState } from 'react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const newProductsGroupSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -119,7 +120,13 @@ export function NewProductGroup({
         {open && (
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editMode ? 'Editar' : 'Novo'} grupo</DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon
+                  variant="neutralOutline"
+                  Icon={editMode ? IconPencil : IconPlus}
+                />
+                <DialogTitle>{editMode ? 'Editar' : 'Novo'} grupo</DialogTitle>
+              </div>
             </DialogHeader>
             <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
               <Form {...form}>

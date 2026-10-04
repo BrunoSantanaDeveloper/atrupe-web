@@ -30,6 +30,7 @@ import { createItem } from '@/actions/_cruds'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // interface Props extends SearchParamsType {}
 
@@ -86,7 +87,10 @@ export function NewItemDialog() {
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <DialogHeader>
-              <DialogTitle>Novo perfil</DialogTitle>
+              <div className="flex items-center gap-4">
+                <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+                <DialogTitle>Novo perfil</DialogTitle>
+              </div>
               <DialogDescription hidden></DialogDescription>
             </DialogHeader>
             <DialogBody>

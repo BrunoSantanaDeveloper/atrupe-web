@@ -413,7 +413,7 @@ export function CreditLimit() {
             </div>
 
             <DialogFooter className="gap-2">
-              <Button variant="outline" onClick={handleClose}>
+              <Button variant="neutralOutline" onClick={handleClose}>
                 Cancelar
               </Button>
               <Button onClick={handleValidateAllTabs}>Salvar</Button>

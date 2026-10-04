@@ -387,7 +387,7 @@ export function NewClientModal({
             )}
 
             <DialogClose asChild>
-              <Button type="button" variant="outline">
+              <Button type="button" variant="neutralOutline">
                 Cancelar
               </Button>
             </DialogClose>

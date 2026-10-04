@@ -285,9 +285,9 @@ export function FinancialFlow({ searchParams }: Props) {
           </div>
         }
       />
-      <div className="space-y-2.5">
+      <div>
         <Card>
-          {/* FIlter */}
+          {/* Filtro */}
           <TableFiltersHeader searchParams={searchParams}>
             <FinancialFlowFilter searchParams={searchParams} />
           </TableFiltersHeader>
@@ -304,9 +304,7 @@ export function FinancialFlow({ searchParams }: Props) {
             <Separator />
             <TransactionsTotalsCard searchParams={searchParams} />
           </CardContent>
-        </Card>
-        {/* Table */}
-        <Card>
+          {/* Table */}
           <FinancialFlowData
             searchParams={searchParams}
             showTotals={showTotals}

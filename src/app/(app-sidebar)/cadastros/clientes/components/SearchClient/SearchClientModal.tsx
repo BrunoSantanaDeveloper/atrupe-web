@@ -83,7 +83,7 @@ export function SearchClientModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[400px]">
+        <DialogContent className="sm:max-w-[400px]">
           <DialogHeader className="border-none">
             <div className="flex flex-col items-center gap-4">
               <FeaturedIcon

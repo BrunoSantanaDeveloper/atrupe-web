@@ -634,7 +634,7 @@ export function QuotationComposeModal({
               Salvar como produto
             </Button>
             <div className="space-x-2">
-              <Button type="button" variant="outline" onClick={close}>
+              <Button type="button" variant="neutralOutline" onClick={close}>
                 Cancelar
               </Button>
               <Button

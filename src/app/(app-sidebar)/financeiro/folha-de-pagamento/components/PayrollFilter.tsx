@@ -193,6 +193,7 @@ export function PayrollFilter({
       <div className="flex items-end w-full sm:w-auto">
         <PermissionGate permissions={['financial:payroll:edit']}>
           <Button
+            variant="neutralOutline"
             LeftIcon={IconPlus}
             onClick={handlePostSelectedPayroll}
             disabled={selectedIds.length === 0}

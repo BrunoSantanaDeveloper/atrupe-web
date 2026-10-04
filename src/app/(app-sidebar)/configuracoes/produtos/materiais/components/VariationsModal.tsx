@@ -315,7 +315,7 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>
-            <Button type="button" variant="outline">
+            <Button type="button" variant="neutralOutline">
               Fechar
             </Button>
           </DialogClose>

@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck, IconPencil } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -36,6 +36,7 @@ import type { QuotationStatusType } from '@/types/settings/quotationStatus'
 // Actions
 import { createItem, updateItem } from '@/actions/_cruds'
 import { Badge } from '@/components/ui/badge'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props {
   editMode?: boolean
@@ -100,7 +101,13 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
       )}
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
-          <DialogTitle>{editMode ? 'Editar' : 'Novo'} status</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={editMode ? IconPencil : IconPlus}
+            />
+            <DialogTitle>{editMode ? 'Editar' : 'Novo'} status</DialogTitle>
+          </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>

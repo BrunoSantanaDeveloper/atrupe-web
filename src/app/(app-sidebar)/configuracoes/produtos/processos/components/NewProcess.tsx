@@ -338,7 +338,9 @@ export function ProcessDialog({
               <PermissionGate permissions={EDIT}>
                 <Button
                   type="button"
-                  variant={detail.meta.active ? 'error' : 'default'}
+                  variant={
+                    detail.meta.active ? 'errorOutline' : 'successOutline'
+                  }
                   onClick={toggleActive}
                 >
                   {detail.meta.active ? 'Inativar' : 'Reativar'}

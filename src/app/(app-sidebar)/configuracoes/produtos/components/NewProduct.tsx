@@ -764,7 +764,7 @@ function NewProductModal({
                 >
                   <Button
                     type="button"
-                    variant={isActive ? 'error' : 'default'}
+                    variant={isActive ? 'errorOutline' : 'successOutline'}
                     onClick={handleToggleStatus}
                   >
                     {isActive ? 'Inativar' : 'Ativar'}

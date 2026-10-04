@@ -96,7 +96,7 @@ export function ItemForm({
         <Button
           size="sm"
           type="button"
-          variant="outline"
+          variant="neutralOutline"
           LeftIcon={IconX}
           onClick={onCancel}
         >

@@ -34,6 +34,8 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { RankingItem } from './RankingBarChart'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { IconChartBar } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -56,7 +58,10 @@ export function RankingExpandedDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconChartBar} />
+            <DialogTitle>{title}</DialogTitle>
+          </div>
           <DialogDescription>
             {items.length} {items.length === 1 ? 'item' : 'itens'} no período
             selecionado

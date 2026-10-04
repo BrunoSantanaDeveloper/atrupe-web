@@ -28,13 +28,14 @@ import {
 } from '../types'
 
 // Icons
-import { IconPrinter } from '@tabler/icons-react'
+import { IconPrinter, IconSearch } from '@tabler/icons-react'
 
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const money = (value: number) => formatCurrencyToBrl(value)
 const brDate = (iso: string) => iso.split('-').reverse().join('/')
@@ -153,12 +154,15 @@ export function CashDayDetail({
     <Dialog open={!!day} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[760px]">
         <DialogHeader>
-          <DialogTitle className="flex flex-wrap items-center gap-2">
-            {account.name} · {brDate(day.date)}
-            <Badge variant={cashControlStatusObj[day.status].variant}>
-              {cashControlStatusObj[day.status].text}
-            </Badge>
-          </DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
+            <DialogTitle className="flex flex-wrap items-center gap-2">
+              {account.name} · {brDate(day.date)}
+              <Badge variant={cashControlStatusObj[day.status].variant}>
+                {cashControlStatusObj[day.status].text}
+              </Badge>
+            </DialogTitle>
+          </div>
           <DialogDescription>
             Caixa nº {day.number} · {accountKindLabel[account.kind]} · aberto
             por {day.openedBy} às {hora(day.openedAt)}

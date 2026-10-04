@@ -20,7 +20,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 
 // Icons
-import { IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck, IconSettings } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -35,6 +35,7 @@ import type { SellerProfileType } from '@/types/settings/sellerProfile'
 // Actions
 import { updateItem } from '@/actions/_cruds'
 import { FormSwitch } from '@/components/common/form/FormSwitch'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -88,7 +89,10 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Configurar perfil do vendedor</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
+            <DialogTitle>Configurar perfil do vendedor</DialogTitle>
+          </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>
         <DialogBody>

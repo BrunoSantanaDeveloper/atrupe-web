@@ -284,7 +284,7 @@ export function PDV() {
                   <PermissionGate permissions={['financial:pdv:edit']}>
                     <Button
                       type="button"
-                      variant="error"
+                      variant="errorOutline"
                       LeftIcon={IconTrendingDown}
                       onClick={() => setDialog('sangria')}
                     >
@@ -292,7 +292,7 @@ export function PDV() {
                     </Button>
                     <Button
                       type="button"
-                      variant="success"
+                      variant="successOutline"
                       LeftIcon={IconTrendingUp}
                       onClick={() => setDialog('suprimento')}
                     >

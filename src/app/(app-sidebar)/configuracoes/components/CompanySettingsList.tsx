@@ -45,7 +45,7 @@ export function CompanySettingsList({
       {settings.map((setting, index) => (
         <div key={index} className="space-y-4">
           {setting.category ? (
-            <h1 className="text-gray-800 font-semibold text-lg">
+            <h1 className="text-gray-900 font-semibold text-lg">
               {setting.category}
             </h1>
           ) : null}

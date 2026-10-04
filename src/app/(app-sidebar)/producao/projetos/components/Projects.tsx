@@ -5,7 +5,7 @@
 // URL (?status=), como pede o design.md.
 
 // React / Next
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 
 // UI
 import {
@@ -33,7 +33,6 @@ import type { ProjectStatus } from '../../gerenciador/manager'
 import { getProjects } from '@/actions/production-manager'
 
 // Hooks / Store / Consts
-import { updateFilterParam } from '@/lib/filter-utils'
 import { projectStatusObj } from '@/consts/productionManager'
 
 // Third-party
@@ -43,7 +42,6 @@ import { useQuery } from '@tanstack/react-query'
 import { IconSearch, IconListCheck } from '@tabler/icons-react'
 
 // Utils
-import { cn } from '@/lib/utils'
 
 const date = (value: string) =>
   new Date(`${value}T12:00:00`).toLocaleDateString('pt-BR')
@@ -56,7 +54,6 @@ const tabs: { value: ProjectStatus; label: string }[] = [
 ]
 
 export function Projects() {
-  const router = useRouter()
   const params = useSearchParams()
   const status = (params.get('status') as ProjectStatus) || 'PRODUCTION'
 
@@ -74,36 +71,15 @@ export function Projects() {
           review="new"
           title="Projetos"
           supportText="As vendas em produção, com as tarefas de cada item"
+          paramName="status"
+          activeTab={status}
+          tabs={tabs.map((tab) => ({
+            value: tab.value,
+            tab: tab.value,
+            label: tab.label,
+            count: all.filter((item) => item.status === tab.value).length,
+          }))}
         />
-
-        <div className="flex flex-wrap gap-2">
-          {tabs.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() =>
-                updateFilterParam(
-                  'status',
-                  tab.value === 'PRODUCTION' ? 'all' : tab.value,
-                  { router, params },
-                )
-              }
-              className={cn(
-                'flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium',
-                status === tab.value
-                  ? 'border-brand-600 text-gray-900'
-                  : 'border-transparent text-gray hover:text-gray-700',
-              )}
-            >
-              {tab.label}
-              <Badge
-                variant={status === tab.value ? 'successLight' : 'neutralLight'}
-              >
-                {all.filter((item) => item.status === tab.value).length}
-              </Badge>
-            </button>
-          ))}
-        </div>
 
         <Card>
           {isLoading ? (

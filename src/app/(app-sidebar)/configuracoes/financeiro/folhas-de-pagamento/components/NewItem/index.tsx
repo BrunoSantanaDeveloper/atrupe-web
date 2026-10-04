@@ -24,7 +24,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 
 // Icons
-import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck, IconPencil } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -37,6 +37,7 @@ import { createItemNew, updateItemNew } from '@/actions/_cruds'
 
 // Types
 import type { PayrollSetupItemType } from '@/types/settings/payroll'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props {
   editMode?: boolean
@@ -109,7 +110,15 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
       )}
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>{editMode ? 'Editar custo' : 'Novo custo'}</DialogTitle>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={editMode ? IconPencil : IconPlus}
+            />
+            <DialogTitle>
+              {editMode ? 'Editar custo' : 'Novo custo'}
+            </DialogTitle>
+          </div>
           <DialogDescription hidden={!editMode}>
             {editMode
               ? 'Referência e operação são alteradas em "Gerenciar itens de custo", pois valem para todos os colaboradores.'

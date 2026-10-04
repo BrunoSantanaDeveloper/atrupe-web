@@ -215,7 +215,7 @@ export function NewPaymentCondition({
           <Button LeftIcon={IconPlus}>Nova condição de pagamento</Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[672px]">
+      <DialogContent className="sm:max-w-[672px]">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">

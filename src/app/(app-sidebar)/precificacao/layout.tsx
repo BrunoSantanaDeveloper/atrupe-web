@@ -49,7 +49,11 @@ export default function PricingLayout({ children }: Props) {
             title="Precificação"
             supportText="Custo, preço praticado e margem de cada recurso"
           />
-          <Tabs value={segment || 'resumo'} className="overflow-x-auto">
+          <Tabs
+            value={segment || 'resumo'}
+            variant="pill"
+            className="overflow-x-auto"
+          >
             <TabsList>
               {pricingTabs.map((tab) => (
                 <TabsTrigger key={tab.tab} value={tab.tab} asChild>

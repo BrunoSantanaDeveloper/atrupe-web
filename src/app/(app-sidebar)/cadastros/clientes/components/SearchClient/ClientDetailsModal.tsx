@@ -61,7 +61,7 @@ export function ClientDetailsModal({
 }: ClientDetailsModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[830px]">
+      <DialogContent className="sm:max-w-[830px]">
         <DialogHeader className="border-none">
           <div className="flex items-center justify-between mb-6 border-b pb-4">
             <div className="flex items-center gap-3">
@@ -223,7 +223,7 @@ export function ClientDetailsModalWithNewClient({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[830px]">
+        <DialogContent className="sm:max-w-[830px]">
           <DialogHeader className="border-none">
             <div className="flex items-center justify-between mb-6 border-b pb-4">
               <div className="flex items-center gap-3">
