@@ -16,11 +16,11 @@ import {
   IconPuzzle,
   IconQuestionMark,
   IconLayoutGridAdd,
+  IconLoader2,
 } from '@tabler/icons-react'
 import { useQuotation } from '@/contexts/quotationContext'
 import { sectorIcons } from '@/consts/sectors'
 import { FEATURES } from '@/consts/features'
-import { Loader2 } from 'lucide-react'
 
 interface QuotationCategorySelectorModalProps {
   open: boolean
@@ -123,7 +123,7 @@ export function QuotationCategorySelectorModal({
           >
             {isLoading ? (
               <div className="col-span-full flex items-center justify-center py-8">
-                <Loader2 className="text-gray size-6 animate-spin" />
+                <IconLoader2 className="text-gray size-6 animate-spin" />
               </div>
             ) : (
               sortedData?.map((option) => (

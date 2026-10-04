@@ -1,13 +1,16 @@
 import React from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowRight } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 
 import { DialogFooter } from '@/components/ui/dialog'
 
-import { IconUser, IconBuildingCommunity } from '@tabler/icons-react'
+import {
+  IconUser,
+  IconBuildingCommunity,
+  IconArrowRight,
+} from '@tabler/icons-react'
 import { useNewClientStore } from '../../store/useNewClientStore'
 import { newClientSchema, NewClientFormType, defaultValues } from './schema'
 import { PersonFields } from './PersonFields'
@@ -128,7 +131,7 @@ export function NewClientForm() {
             type="submit"
             className="gap-2"
             form="new-client"
-            RightIcon={ArrowRight}
+            RightIcon={IconArrowRight}
             // disabled={Object.keys(form.formState.errors).length > 0}
             // disabled={!form.formState.isValid}
           >

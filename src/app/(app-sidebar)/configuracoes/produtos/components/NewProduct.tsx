@@ -21,7 +21,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Components
-import { LucideIcon } from '@/components/LucideIcon'
 import { ProductionStages } from './ProductionStages'
 import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -61,6 +60,7 @@ import {
   IconPencil,
   IconReceiptTax,
   IconHierarchy2,
+  IconTrash,
 } from '@tabler/icons-react'
 
 // Action
@@ -597,7 +597,7 @@ function NewProductModal({
                                   handleRemoveCompositionProducts(index)
                                 }
                               >
-                                <LucideIcon icon="Trash2" className="size-5" />
+                                <IconTrash className="size-5" />
                               </Button>
                             )}
                             <FormInput

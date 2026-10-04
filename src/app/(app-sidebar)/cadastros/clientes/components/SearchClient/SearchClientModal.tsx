@@ -14,7 +14,6 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconSearch } from '@tabler/icons-react'
-import { TextSearchIcon } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState } from 'react'
@@ -40,7 +39,7 @@ export function SearchClientTriggerButton({
       tooltip="Consultar dados de cliente"
       size="iconMd"
       variant="neutralOutline"
-      Icon={TextSearchIcon}
+      Icon={IconSearch}
       onClick={() => onOpenChange(true)}
     />
   )
@@ -90,7 +89,7 @@ export function SearchClientModal({
                 variant="successBorderedLight"
                 size="lg"
                 rounded
-                Icon={TextSearchIcon}
+                Icon={IconSearch}
               />
 
               <DialogTitle className="pr-0">

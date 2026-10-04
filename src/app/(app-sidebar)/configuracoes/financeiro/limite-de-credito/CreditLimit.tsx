@@ -14,12 +14,11 @@ import {
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight, IconAlertTriangle } from '@tabler/icons-react'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Form } from '@/components/ui/form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertTriangle } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Accordion, AccordionTrigger } from '@/components/ui/accordion'
 import { AccordionContent, AccordionItem } from '@radix-ui/react-accordion'
@@ -328,7 +327,7 @@ export function CreditLimit() {
                           <Separator />
                           <CardContent className="p-6">
                             <Alert className="bg-warning-50 border border-warning-50 mb-6">
-                              <AlertTriangle
+                              <IconAlertTriangle
                                 size={20}
                                 className="stroke-warning-600"
                               />
