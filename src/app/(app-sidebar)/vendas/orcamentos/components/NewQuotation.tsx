@@ -31,11 +31,7 @@ import { ClientContactSelect } from '@/components/common/form/global-inputs/Clie
 import { SelectContactSourceField } from '@/components/common/form/global-inputs/ContactSourcesSelectField'
 
 // Icons
-import {
-  IconCirclePlus,
-  IconArrowRight,
-  IconReportMoney,
-} from '@tabler/icons-react'
+import { IconPlus, IconArrowRight, IconReportMoney } from '@tabler/icons-react'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Hooks
@@ -341,7 +337,7 @@ export function NewQuotationTriggerButton({
     <PermissionGate permissions={['sale:quotation:create']}>
       <Button
         type="button"
-        LeftIcon={IconCirclePlus}
+        LeftIcon={IconPlus}
         onClick={() => onOpenChange(true)}
       >
         Novo<span className="hidden sm:inline"> orçamento</span>

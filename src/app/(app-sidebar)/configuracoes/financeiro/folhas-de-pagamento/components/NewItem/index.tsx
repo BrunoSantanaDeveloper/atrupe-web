@@ -24,7 +24,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
 
 // Icons
-import { IconCirclePlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -102,7 +102,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       {!editMode && (
         <DialogTrigger asChild>
-          <Button type="button" LeftIcon={IconCirclePlus}>
+          <Button type="button" LeftIcon={IconPlus}>
             Novo item de custo
           </Button>
         </DialogTrigger>

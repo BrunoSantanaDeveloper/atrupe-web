@@ -22,7 +22,7 @@ import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCirclePlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -93,7 +93,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       {!editMode && (
         <DialogTrigger asChild>
-          <Button type="button" LeftIcon={IconCirclePlus}>
+          <Button type="button" LeftIcon={IconPlus}>
             Novo status
           </Button>
         </DialogTrigger>

@@ -56,7 +56,7 @@ import {
 // Icons
 import {
   IconPackage,
-  IconCirclePlus,
+  IconPlus,
   IconCircleCheck,
   IconPencil,
   IconReceiptTax,
@@ -656,7 +656,7 @@ function NewProductModal({
                           >
                             <FeaturedIcon
                               variant="light"
-                              Icon={IconCirclePlus}
+                              Icon={IconPlus}
                               rounded
                             />
                             <p className="text-sm text-gray-600 font-medium">
@@ -824,7 +824,7 @@ export function NewProductTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'default'}
       size={editMode ? 'icon' : 'default'}
-      RightIcon={editMode ? IconPencil : IconCirclePlus}
+      RightIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo produto'}

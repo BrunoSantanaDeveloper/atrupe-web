@@ -20,7 +20,7 @@ import { itemNotesSchema, type ItemNotesType } from './schema'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 // Icons
-import { IconCircleCheck, IconPackage } from '@tabler/icons-react'
+import { IconCircleCheck, IconMessage } from '@tabler/icons-react'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -80,7 +80,7 @@ export function ItemNotesDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
             <DialogTitle>{rowData?.description}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

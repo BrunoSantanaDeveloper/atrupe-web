@@ -2,7 +2,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { Button } from '@/components/ui/button'
-import { IconCirclePlus, IconTrash } from '@tabler/icons-react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import { NewClientFormType } from '../schema'
 import { MaskPhoneNumber } from '@/lib/utils'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -107,7 +107,7 @@ export function ResponsibilitiesTab() {
       ))}
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddResponsible}>
-          <FeaturedIcon variant="light" Icon={IconCirclePlus} rounded />
+          <FeaturedIcon variant="light" Icon={IconPlus} rounded />
           Adicionar responsável
         </Button>
       </div>

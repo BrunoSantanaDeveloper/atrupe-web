@@ -52,7 +52,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   IconPencil,
   IconListCheck,
-  IconCirclePlus,
+  IconPlus,
   IconHierarchy2,
   IconCircleCheck,
   IconPackages,
@@ -385,7 +385,7 @@ export function NewProcessTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'default'}
       size={editMode ? 'icon' : 'default'}
-      RightIcon={editMode ? IconPencil : IconCirclePlus}
+      RightIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo processo'}

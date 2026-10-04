@@ -32,7 +32,7 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconSquarePlus } from '@tabler/icons-react'
+import { IconPencil, IconPlus } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 
 interface Props extends SearchParamsType {
@@ -141,7 +141,7 @@ export function TableData({ tabs, searchParams }: Props) {
                                               ]}
                                             >
                                               <ActionButton
-                                                Icon={IconSquarePlus}
+                                                Icon={IconPlus}
                                                 tooltip="Adicionar subcategoria"
                                                 onClick={() => {
                                                   setOpenDialog('create')

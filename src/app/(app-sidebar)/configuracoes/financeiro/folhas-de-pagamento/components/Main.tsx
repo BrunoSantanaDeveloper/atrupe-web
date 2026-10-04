@@ -63,7 +63,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconPlus,
-  IconMinus,
+  IconTrash,
   IconPencil,
   IconChevronDown,
   IconChevronRight,
@@ -250,8 +250,8 @@ export function Main() {
                   onClick={() => setEditing(item)}
                 />
                 <ActionButton
-                  Icon={IconMinus}
-                  variant="neutralGhost"
+                  Icon={IconTrash}
+                  variant="errorGhost"
                   tooltip={`Tirar ${item.name} deste colaborador`}
                   onClick={() => removeItem(item)}
                 />

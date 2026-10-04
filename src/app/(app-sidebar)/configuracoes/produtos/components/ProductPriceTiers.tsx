@@ -34,7 +34,7 @@ import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconTrash, IconCirclePlus } from '@tabler/icons-react'
+import { IconTrash, IconPlus } from '@tabler/icons-react'
 
 const EDIT = ['product_settings:products:edit']
 
@@ -101,7 +101,7 @@ export function ProductPriceTiers({
               type="button"
               size="sm"
               variant="neutralOutline"
-              LeftIcon={IconCirclePlus}
+              LeftIcon={IconPlus}
               onClick={() =>
                 persist([
                   ...tiers,

@@ -43,7 +43,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   IconPencil,
   IconCircleCheck,
-  IconCalendarPlus,
+  IconPlus,
   IconCalendarMonth,
 } from '@tabler/icons-react'
 
@@ -183,7 +183,7 @@ function NewFixedExpenseModal({
               <DialogHeader>
                 <DialogTitle>
                   <div className="flex items-center gap-4">
-                    <FeaturedIcon variant="error" Icon={IconCalendarPlus} />
+                    <FeaturedIcon variant="error" Icon={IconPlus} />
                     <span>
                       {editMode ? 'Editar despesa fixa' : 'Nova despesa fixa'}
                     </span>
@@ -306,7 +306,7 @@ export function NewFixedExpenseTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'error'}
       size={editMode ? 'icon' : 'default'}
-      LeftIcon={editMode ? IconPencil : IconCalendarPlus}
+      LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Nova despesa fixa'}

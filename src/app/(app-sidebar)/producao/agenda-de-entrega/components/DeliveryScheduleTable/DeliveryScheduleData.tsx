@@ -58,9 +58,8 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 import {
   IconSearch,
   IconPrinter,
-  IconMoneybag,
-  IconMessage,
   IconRefreshDot,
+  IconMessage,
   IconCircleCheck,
   IconQuestionMark,
   IconCalendarRepeat,
@@ -353,7 +352,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       >
                                         <ActionButton
                                           variant="neutralLight"
-                                          Icon={IconMoneybag}
+                                          Icon={IconRefreshDot}
                                           badge="errorLight"
                                           tooltip="Faturar"
                                           onClick={() => {

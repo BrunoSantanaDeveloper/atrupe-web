@@ -1,4 +1,4 @@
-import { IconCirclePlus } from '@tabler/icons-react'
+import { IconPlus } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useNewClientStore } from '../store/useNewClientStore'
 
@@ -9,7 +9,7 @@ const NewClientTriggerButton = () => {
       type="button"
       variant="outline"
       onClick={onToggleModalVisibility}
-      LeftIcon={IconCirclePlus}
+      LeftIcon={IconPlus}
     >
       Pré-cadastro de cliente
     </Button>

@@ -24,7 +24,8 @@ import {
   IconEraser,
   IconSettings,
   IconPlus,
-  IconPower,
+  IconBan,
+  IconRestore,
 } from '@tabler/icons-react'
 
 // Actions
@@ -149,7 +150,7 @@ export function Main() {
                             variant={
                               item?.isActive ? 'errorLight' : 'successLight'
                             }
-                            Icon={IconPower}
+                            Icon={item?.isActive ? IconBan : IconRestore}
                             tooltip={
                               item?.isActive ? 'Inativar série' : 'Ativar série'
                             }

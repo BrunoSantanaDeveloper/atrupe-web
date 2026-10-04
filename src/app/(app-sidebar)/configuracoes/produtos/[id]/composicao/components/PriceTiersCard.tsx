@@ -47,7 +47,7 @@ import { useMoney } from '@/hooks/useMoney'
 import { toast } from 'sonner'
 
 // Icons
-import { IconTrash, IconCirclePlus } from '@tabler/icons-react'
+import { IconTrash, IconPlus } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -230,7 +230,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
           <Button
             type="button"
             variant="neutralOutline"
-            LeftIcon={IconCirclePlus}
+            LeftIcon={IconPlus}
             onClick={() =>
               setTiers((current) => [
                 ...current,

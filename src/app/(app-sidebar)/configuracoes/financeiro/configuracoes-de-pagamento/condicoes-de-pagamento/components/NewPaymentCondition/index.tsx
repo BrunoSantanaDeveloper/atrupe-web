@@ -39,11 +39,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import {
-  IconCalculator,
-  IconCircleCheck,
-  IconCirclePlus,
-} from '@tabler/icons-react'
+import { IconCalculator, IconCircleCheck, IconPlus } from '@tabler/icons-react'
 
 interface Props {
   editMode?: boolean
@@ -216,7 +212,7 @@ export function NewPaymentCondition({
     <Dialog open={editMode ? open : showDialog} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {!editMode && (
-          <Button LeftIcon={IconCirclePlus}>Nova condição de pagamento</Button>
+          <Button LeftIcon={IconPlus}>Nova condição de pagamento</Button>
         )}
       </DialogTrigger>
       <DialogContent className="max-w-[672px]">

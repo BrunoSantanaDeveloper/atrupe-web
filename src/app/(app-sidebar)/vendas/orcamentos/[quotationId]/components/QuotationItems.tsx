@@ -49,10 +49,10 @@ import {
   IconCopy,
   IconCoin,
   IconPhoto,
-  IconTrashX,
+  IconTrash,
   IconPencil,
   IconMessage,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
   IconCornerDownRight,
 } from '@tabler/icons-react'
@@ -400,7 +400,7 @@ export function QuotationItems({ data }: Props) {
                                     permissions={['sale:quotation:delete']}
                                   >
                                     <ActionButton
-                                      Icon={IconTrashX}
+                                      Icon={IconTrash}
                                       tooltip="Excluir item"
                                       onClick={() => {
                                         setOpenDialog('delete')
@@ -556,7 +556,7 @@ export function QuotationItems({ data }: Props) {
                                     permissions={['sale:quotation:delete']}
                                   >
                                     <ActionButton
-                                      Icon={IconTrashX}
+                                      Icon={IconTrash}
                                       tooltip="Excluir item"
                                       onClick={() => {
                                         setOpenDialog('delete')
@@ -726,7 +726,7 @@ export function QuotationItems({ data }: Props) {
                                 permissions={['sale:quotation:delete']}
                               >
                                 <ActionButton
-                                  Icon={IconTrashX}
+                                  Icon={IconTrash}
                                   tooltip="Excluir item"
                                   onClick={() => removeComposed(item)}
                                   disabled={actionDisabled('delete', status)}
@@ -784,7 +784,7 @@ export function QuotationItems({ data }: Props) {
                 variant={
                   actionDisabled('addItem', status) ? 'neutralLight' : 'light'
                 }
-                Icon={IconCirclePlus}
+                Icon={IconPlus}
                 rounded
               />
               <p className="text-sm text-gray-600 font-medium">

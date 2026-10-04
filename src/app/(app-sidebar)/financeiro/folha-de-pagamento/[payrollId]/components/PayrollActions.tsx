@@ -31,7 +31,7 @@ import { updateItemNew, getItem } from '@/actions/_cruds'
 
 // Icons
 import {
-  IconRestore,
+  IconArrowBackUp,
   IconPrinter,
   IconCircleCheck,
   IconAlertTriangle,
@@ -162,7 +162,7 @@ export function PayrollActions({ data }: Props) {
             </DialogClose>
             <Button
               type="button"
-              RightIcon={IconCircleCheck}
+              RightIcon={IconPrinter}
               isLoading={isLoadingPDF}
               onClick={() => handleGeneratePDF(data, showSignature)}
             >
@@ -195,7 +195,7 @@ export function PayrollActions({ data }: Props) {
           session?.user?.role === 'Admin' && (
             <PermissionGate permissions={['financial:payroll:delete']}>
               <CustomButton
-                icon={IconRestore}
+                icon={IconArrowBackUp}
                 title="Reabrir folha"
                 iconVariant="lightBlueBorderedLight"
                 onClick={handleTogglePayroll}

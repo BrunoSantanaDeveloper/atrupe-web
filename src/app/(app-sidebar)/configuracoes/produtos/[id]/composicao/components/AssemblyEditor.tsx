@@ -176,7 +176,7 @@ import {
   IconSearch,
   IconUnlink,
   IconReplace,
-  IconCirclePlus,
+  IconPlus,
   IconCircleCheck,
   IconClock,
   IconChevronUp,
@@ -768,7 +768,7 @@ function AssemblyEditorBody({
               várias etapas fica num link discreto */}
           <Button
             type="button"
-            LeftIcon={IconCirclePlus}
+            LeftIcon={IconPlus}
             onClick={() =>
               run(
                 addOwnBlock({
@@ -1100,7 +1100,7 @@ function AssemblyEditorBody({
                 <div className="flex gap-1">
                   {!item.variationOnly && (
                     <ActionButton
-                      Icon={IconCirclePlus}
+                      Icon={IconPlus}
                       variant="neutralGhost"
                       tooltip={`Etapa seguinte só em ${variation?.name}`}
                       onClick={() => setDialog({ kind: 'next', after: item })}
@@ -2086,7 +2086,7 @@ function AssemblyEditorBody({
                   <Button
                     type="button"
                     variant="neutralOutline"
-                    LeftIcon={IconCirclePlus}
+                    LeftIcon={IconPlus}
                     onClick={() => setNewVariation('')}
                   >
                     Nova variação
@@ -2282,7 +2282,7 @@ function AssemblyEditorBody({
                       type="button"
                       variant="neutralOutline"
                       className="h-11 w-full border-dashed"
-                      LeftIcon={IconCirclePlus}
+                      LeftIcon={IconPlus}
                       onClick={() => addStageAfter(item)}
                     >
                       Nova etapa depois de {item.name}
@@ -2846,7 +2846,7 @@ export function AssemblyEditor(props: EditorProps) {
       type="button"
       size="md"
       variant="neutralOutline"
-      LeftIcon={IconCirclePlus}
+      LeftIcon={IconPlus}
       onClick={() => {
         setVariantName('')
         setVariantDialog({ kind: 'new' })
@@ -2915,7 +2915,7 @@ export function AssemblyEditor(props: EditorProps) {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCirclePlus} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <div>
                 <DialogTitle>
                   {variantDialog?.kind === 'rename'

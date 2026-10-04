@@ -44,11 +44,7 @@ import {
 } from './schema'
 
 // Icons
-import {
-  IconCopyPlus,
-  IconArrowRight,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconCopy, IconArrowRight, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -119,7 +115,7 @@ export function DuplicateDialog(props: Props) {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <ActionButton
-            Icon={IconCopyPlus}
+            Icon={IconCopy}
             tooltip="Duplicar orçamento"
             className={cn(
               buttonVariants({ variant: 'neutralLight', size: 'icon' }),
@@ -133,7 +129,7 @@ export function DuplicateDialog(props: Props) {
         <DialogContent className="sm:max-w-[695px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCopyPlus} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
               <DialogTitle>Duplicar orçamento</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>

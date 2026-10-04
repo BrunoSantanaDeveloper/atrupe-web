@@ -74,7 +74,7 @@ import {
   IconUsers,
   IconPencil,
   IconRestore,
-  IconCirclePlus,
+  IconPlus,
   IconListNumbers,
 } from '@tabler/icons-react'
 
@@ -148,7 +148,7 @@ export function ProductionSettings() {
           primaryCta={
             <PermissionGate permissions={EDIT}>
               <Button
-                LeftIcon={IconCirclePlus}
+                LeftIcon={IconPlus}
                 onClick={() =>
                   setDialog(
                     tab === 'tipos' ? { kind: 'type' } : { kind: 'manager' },

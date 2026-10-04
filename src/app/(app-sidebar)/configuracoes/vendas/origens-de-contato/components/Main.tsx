@@ -24,7 +24,7 @@ import { DeleteAlertDialog } from './Actions/Delete'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Icons
-import { IconTrash, IconPencil, IconSquarePlus } from '@tabler/icons-react'
+import { IconTrash, IconPencil, IconPlus } from '@tabler/icons-react'
 
 // Hooks
 import {
@@ -70,10 +70,7 @@ export function Main() {
         title="Origens de contato"
         previousPage="/configuracoes/vendas"
         primaryCta={
-          <Button
-            onClick={() => setOpenDialog('new')}
-            LeftIcon={IconSquarePlus}
-          >
+          <Button onClick={() => setOpenDialog('new')} LeftIcon={IconPlus}>
             Nova origem
           </Button>
         }

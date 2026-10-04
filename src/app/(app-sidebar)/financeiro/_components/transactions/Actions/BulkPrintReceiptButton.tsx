@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog'
 
 // Icons
-import { IconCircleCheck, IconPrinter } from '@tabler/icons-react'
+import { IconPrinter } from '@tabler/icons-react'
 
 // Components
 
@@ -121,7 +121,7 @@ export function BulkPrintReceiptButton({ installmentIds, onSuccess }: Props) {
             </DialogClose>
             <Button
               type="button"
-              RightIcon={IconCircleCheck}
+              RightIcon={IconPrinter}
               isLoading={isLoading}
               onClick={handlePrint}
             >

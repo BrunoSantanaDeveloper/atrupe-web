@@ -8,11 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  IconCircleCheck,
-  IconCirclePlus,
-  IconPencil,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconPlus, IconPencil } from '@tabler/icons-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -208,7 +204,7 @@ export function NewProductGroupTriggerButton({
       type="button"
       variant={editMode ? 'neutralGhost' : 'default'}
       size={editMode ? 'icon' : 'default'}
-      LeftIcon={editMode ? IconPencil : IconCirclePlus}
+      LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo grupo'}

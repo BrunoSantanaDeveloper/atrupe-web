@@ -56,7 +56,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconBan,
-  IconPlayerPlay,
+  IconRestore,
   IconPencil,
   IconChartPie,
   IconCurrencyReal,
@@ -180,7 +180,7 @@ export function AssetDetail({ id }: Props) {
                   onClick={() => setEditing(true)}
                 />
                 <ActionButton
-                  Icon={asset.status === 'INACTIVE' ? IconPlayerPlay : IconBan}
+                  Icon={asset.status === 'INACTIVE' ? IconRestore : IconBan}
                   tooltip={
                     asset.status === 'INACTIVE'
                       ? 'Reativar patrimônio'

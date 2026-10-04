@@ -29,7 +29,7 @@ import { NewClientForm } from './NewClientForm'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconCirclePlus, IconPencil, IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil } from '@tabler/icons-react'
 
 import {
   newClientSchema,
@@ -434,7 +434,7 @@ export function NewClientTriggerButton({
       type="button"
       size={editMode ? 'icon' : 'default'}
       variant={editMode ? 'neutralGhost' : 'default'}
-      LeftIcon={editMode ? IconPencil : IconCirclePlus}
+      LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo cliente'}

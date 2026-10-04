@@ -22,7 +22,7 @@ import { schema, type FormType } from './schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import { IconNotes, IconCircleCheck } from '@tabler/icons-react'
+import { IconMessage, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -79,7 +79,7 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconNotes} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">Observação</DialogTitle>
               <DialogDescription className="truncate">

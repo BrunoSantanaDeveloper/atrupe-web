@@ -36,7 +36,7 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 import {
   IconTrash,
   IconPencil,
-  IconCirclePlus,
+  IconPlus,
   IconRefreshDot,
   IconCircleCheck,
   IconCornerRightDown,
@@ -381,11 +381,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                           })
                         }}
                       >
-                        <FeaturedIcon
-                          variant="light"
-                          Icon={IconCirclePlus}
-                          rounded
-                        />
+                        <FeaturedIcon variant="light" Icon={IconPlus} rounded />
                         <p className="text-sm text-gray-600 font-medium">
                           Adicionar parcela
                         </p>

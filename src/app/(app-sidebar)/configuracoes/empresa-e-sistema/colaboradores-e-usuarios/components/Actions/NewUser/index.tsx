@@ -43,7 +43,7 @@ import { cn, getFirstAndLastName } from '@/lib/utils'
 // Icons
 import {
   IconUserPlus,
-  IconUserEdit,
+  IconPencil,
   IconCircleCheck,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
@@ -153,7 +153,7 @@ export function NewUserDialog({
             <div className="flex items-center gap-4">
               <FeaturedIcon
                 variant="neutralOutline"
-                Icon={editMode ? IconUserEdit : IconUserPlus}
+                Icon={editMode ? IconPencil : IconUserPlus}
               />
               <span>{editMode ? 'Editar usuário' : 'Novo usuário'}</span>
             </div>

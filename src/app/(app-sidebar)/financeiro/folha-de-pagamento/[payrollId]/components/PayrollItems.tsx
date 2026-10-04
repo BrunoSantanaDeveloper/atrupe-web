@@ -38,7 +38,7 @@ import {
   IconTrash,
   IconPencil,
   IconPrinter,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
@@ -322,7 +322,7 @@ export function PayrollItems({ data }: Props) {
             >
               <FeaturedIcon
                 variant={data?.status === 'CLOSED' ? 'neutralLight' : 'light'}
-                Icon={IconCirclePlus}
+                Icon={IconPlus}
                 rounded
               />
               <p className="text-sm text-gray-600 font-medium">

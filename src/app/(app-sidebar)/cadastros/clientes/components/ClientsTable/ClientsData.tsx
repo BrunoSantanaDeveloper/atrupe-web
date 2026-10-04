@@ -47,7 +47,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { clientStatusObj } from '@/consts/client'
 
 // Icons
-import { IconEye, IconTrash } from '@tabler/icons-react'
+import { IconSearch, IconTrash } from '@tabler/icons-react'
 import { NewClientModal, NewClientTriggerButton } from '../NewClient'
 
 interface Props extends SearchParamsType {
@@ -229,7 +229,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
                         <PermissionGate permissions={['register:client:view']}>
                           <ActionButton
                             link={`/cadastros/clientes/${client?.id}/dados`}
-                            Icon={IconEye}
+                            Icon={IconSearch}
                             tooltip="Detalhes"
                           />
                         </PermissionGate>

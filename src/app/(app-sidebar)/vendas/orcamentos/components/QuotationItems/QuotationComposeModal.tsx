@@ -102,7 +102,7 @@ import {
   IconUnlink,
   IconPuzzle,
   IconReplace,
-  IconCirclePlus,
+  IconPlus,
 } from '@tabler/icons-react'
 
 // Utils
@@ -513,7 +513,7 @@ export function QuotationComposeModal({
                       action={
                         <Button
                           type="button"
-                          LeftIcon={IconCirclePlus}
+                          LeftIcon={IconPlus}
                           onClick={() =>
                             setDialog({ kind: 'next', after: null })
                           }

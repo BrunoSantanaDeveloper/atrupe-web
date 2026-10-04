@@ -64,7 +64,6 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 // previsto; para cima, com parte recebida), o ciclo é mudar as parcelas
 import {
   IconTrash,
-  IconTrashX,
   IconThumbUp,
   IconUserCheck,
   IconThumbDown,
@@ -631,7 +630,7 @@ export function PDV() {
                                 permissions={['financial:pdv:delete']}
                               >
                                 <ActionButton
-                                  Icon={IconTrashX}
+                                  Icon={IconTrash}
                                   variant="errorGhost"
                                   tooltip="Descartar e lançar perda"
                                   onClick={() => setDiscarding(sale)}

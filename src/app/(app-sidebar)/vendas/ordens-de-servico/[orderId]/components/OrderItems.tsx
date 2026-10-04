@@ -39,10 +39,10 @@ import {
   IconCopy,
   IconCoin,
   IconPhoto,
-  IconTrashX,
+  IconTrash,
   IconPencil,
   IconMessage,
-  IconCirclePlus,
+  IconPlus,
   IconLayoutGrid,
   IconCornerDownRight,
 } from '@tabler/icons-react'
@@ -289,7 +289,7 @@ export function OrderItems({ data }: Props) {
                                       permissions={['sale:order:edit']}
                                     >
                                       <ActionButton
-                                        Icon={IconTrashX}
+                                        Icon={IconTrash}
                                         tooltip="Excluir item"
                                         onClick={() => {
                                           setOpenDialog('delete')
@@ -424,7 +424,7 @@ export function OrderItems({ data }: Props) {
                                       />
                                     </PermissionGate>
                                     <ActionButton
-                                      Icon={IconTrashX}
+                                      Icon={IconTrash}
                                       tooltip="Excluir item"
                                       disabled
                                     />
@@ -542,11 +542,7 @@ export function OrderItems({ data }: Props) {
             className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
             disabled
           >
-            <FeaturedIcon
-              variant="neutralLight"
-              Icon={IconCirclePlus}
-              rounded
-            />
+            <FeaturedIcon variant="neutralLight" Icon={IconPlus} rounded />
             <p className="text-sm text-gray-600 font-medium">Adicionar item</p>
           </Button>
         </CardFooter>

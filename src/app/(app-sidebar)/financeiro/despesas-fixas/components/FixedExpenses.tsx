@@ -51,7 +51,7 @@ import { fixedExpensesRecurringTypeObj } from '@/consts/fixedExpenses'
 // Icons
 import {
   IconPlus,
-  IconMinus,
+  IconTrash,
   IconSearch,
   IconRefreshDot,
 } from '@tabler/icons-react'
@@ -432,7 +432,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                   >
                                     <ActionButton
                                       Icon={IconRefreshDot}
-                                      tooltip="Editar"
+                                      tooltip="Editar parcelas"
                                       disabled={isGenerating?.includes(
                                         item?.payables?.[0]?.id,
                                       )}
@@ -447,7 +447,8 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
                                     ]}
                                   >
                                     <ActionButton
-                                      Icon={IconMinus}
+                                      Icon={IconTrash}
+                                      variant="errorGhost"
                                       tooltip="Remover"
                                       isLoading={isGenerating?.includes(
                                         item?.payables?.[0]?.id,

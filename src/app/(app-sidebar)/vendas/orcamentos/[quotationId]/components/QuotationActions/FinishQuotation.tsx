@@ -36,10 +36,9 @@ import { cn } from '@/lib/utils'
 // Icons
 import {
   IconLoader2,
-  IconArrowRight,
   IconCircleCheck,
   IconAlertTriangle,
-  IconProgressCheck,
+  IconPrinter,
 } from '@tabler/icons-react'
 import { QUOTATION_DATA_QUERY_KEY } from '../Quotation'
 import { PaymentConditionsDialog } from './PaymentConditions'
@@ -149,7 +148,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
         canFinishDirectly ? (
           <AlertDialog open={open} onOpenChange={setOpen}>
             <CustomButton
-              icon={IconProgressCheck}
+              icon={IconCircleCheck}
               title="Concluir orçamento"
               iconVariant="lightBlueBorderedLight"
               onClick={handleFinish}
@@ -206,7 +205,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
             <AlertDialogCancel onClick={handleClose}>Fechar</AlertDialogCancel>
             <Button
               type="button"
-              RightIcon={IconArrowRight}
+              RightIcon={IconPrinter}
               onClick={() => setOpenPrint(true)}
             >
               Imprimir

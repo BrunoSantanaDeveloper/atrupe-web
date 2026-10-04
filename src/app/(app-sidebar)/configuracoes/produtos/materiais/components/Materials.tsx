@@ -59,7 +59,7 @@ import {
   IconBoxSeam,
   IconPalette,
   IconCurrencyReal,
-  IconPlayerPlay,
+  IconRestore,
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react'
@@ -300,7 +300,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           Icon={
                                             material.active
                                               ? IconBan
-                                              : IconPlayerPlay
+                                              : IconRestore
                                           }
                                           tooltip={
                                             material.active

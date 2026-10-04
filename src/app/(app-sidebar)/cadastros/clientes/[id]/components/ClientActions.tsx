@@ -7,11 +7,7 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
-import {
-  IconCirclePlus,
-  IconCircleMinus,
-  IconArrowsExchange,
-} from '@tabler/icons-react'
+import { IconRestore, IconBan, IconArrowsExchange } from '@tabler/icons-react'
 
 // Types
 import type { ClientInfoType } from '@/types/cadastros/client'
@@ -120,7 +116,7 @@ export function ClientActions({ params, data, entityType }: Props) {
           {(status === 'ACTIVE' || status === 'PROSPECT') && (
             <Button
               variant="error"
-              LeftIcon={IconCircleMinus}
+              LeftIcon={IconBan}
               onClick={() => handleActiveToggle('inactive')}
             >
               Inativar cadastro
@@ -130,7 +126,7 @@ export function ClientActions({ params, data, entityType }: Props) {
           {status === 'INACTIVE' && (
             <Button
               variant="success"
-              LeftIcon={IconCirclePlus}
+              LeftIcon={IconRestore}
               onClick={() => handleActiveToggle('active')}
             >
               Ativar cadastro

@@ -25,11 +25,7 @@ import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 
 // Icons
-import {
-  IconPencil,
-  IconCirclePlus,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconPencil, IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -107,7 +103,7 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
     <Dialog open={openDialog} onOpenChange={handleOpenChange}>
       {!editMode && (
         <DialogTrigger asChild>
-          <Button LeftIcon={IconCirclePlus}>Novo cargo</Button>
+          <Button LeftIcon={IconPlus}>Novo cargo</Button>
         </DialogTrigger>
       )}
       <DialogContent className="sm:max-w-[600px]">
@@ -116,7 +112,7 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
             <div className="flex items-center gap-4">
               <FeaturedIcon
                 variant="neutralOutline"
-                Icon={editMode ? IconPencil : IconCirclePlus}
+                Icon={editMode ? IconPencil : IconPlus}
               />
               <span>{editMode ? 'Editar cargo' : 'Novo cargo'}</span>
             </div>

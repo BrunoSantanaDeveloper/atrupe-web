@@ -18,7 +18,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
 import {
-  IconCirclePlus,
+  IconPlus,
   IconBuildingCommunity,
   IconPencil,
 } from '@tabler/icons-react'
@@ -254,7 +254,7 @@ export function NewSupplierTriggerButton({
       type="button"
       size={editMode ? 'icon' : 'default'}
       variant={editMode ? 'neutralGhost' : 'default'}
-      LeftIcon={editMode ? IconPencil : IconCirclePlus}
+      LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
       {editMode ? '' : 'Novo Fornecedor'}
