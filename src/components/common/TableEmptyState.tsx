@@ -36,7 +36,7 @@ export function FilteredDataEmpty({
             variant="borderedLight"
             rounded
           />
-          <p className="font-semibold text-lg mt-4 mb-1">{title}</p>
+          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
           <p className="text-sm text-gray">{description}</p>
         </div>
         <div className="flex gap-3 justify-center">
@@ -63,7 +63,7 @@ interface TotalEmptyProps {
 
 export function ListDataTotalEmpty({
   icon = IconSearch,
-  title = 'Sem itens cadastrados',
+  title = 'Nenhum item cadastrado',
   description = 'Cadastre seu primeiro item',
   cta,
 }: TotalEmptyProps) {
@@ -72,7 +72,7 @@ export function ListDataTotalEmpty({
       <div className="max-w-[352px] text-center space-y-6">
         <div>
           <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
-          <p className="font-semibold text-lg mt-4 mb-1">{title}</p>
+          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
           <p className="text-sm text-gray">{description}</p>
         </div>
         {cta || null}
@@ -88,14 +88,14 @@ interface StatusEmptyProps {
 
 export function ListDataStatusEmpty({
   icon = IconSearch,
-  title = 'Status vazio',
+  title = 'Nenhum registro neste status',
 }: StatusEmptyProps) {
   return (
     <div className="flex justify-center items-center h-[calc(100vh-150px)]">
       <div className="max-w-[352px] text-center space-y-6">
         <div>
           <FeaturedIcon Icon={icon} size="xl" variant="borderedLight" rounded />
-          <p className="font-semibold text-lg mt-4 mb-1">{title}</p>
+          <p className="font-semibold text-base mt-4 mb-1">{title}</p>
         </div>
       </div>
     </div>

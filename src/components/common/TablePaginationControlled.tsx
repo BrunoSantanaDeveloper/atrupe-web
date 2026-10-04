@@ -2,7 +2,10 @@
 import { Button } from '../ui/button'
 
 // Icon Imports
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import {
+  IconArrowLeft as ArrowLeft,
+  IconArrowRight as ArrowRight,
+} from '@tabler/icons-react'
 
 interface Props {
   page?: number

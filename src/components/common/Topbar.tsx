@@ -96,7 +96,7 @@ export function Topbar({
               <h1
                 title={review ? REVIEW_LEGEND[review] : undefined}
                 className={cn(
-                  'text-gray-800 font-semibold text-lg',
+                  'text-gray-900 font-semibold text-lg',
                   classNames?.title,
                   reviewTextClass(review),
                 )}
@@ -124,7 +124,7 @@ export function Topbar({
         </div>
       </div>
       {tabs?.length ? (
-        <Tabs value={activeTab} className="overflow-x-auto">
+        <Tabs value={activeTab} variant="pill" className="overflow-x-auto">
           <TabsList>
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.tab} asChild>
@@ -133,7 +133,7 @@ export function Topbar({
                   {tab?.count && tab?.count > 0 ? (
                     <Badge
                       variant={activeTab === tab.tab ? 'light' : 'neutralLight'}
-                      className="ml-2"
+                      className="ml-2 font-semibold"
                     >
                       {tab.count}
                     </Badge>
