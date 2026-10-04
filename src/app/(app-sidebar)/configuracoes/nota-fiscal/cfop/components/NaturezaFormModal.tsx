@@ -138,7 +138,7 @@ export function NaturezaFormModal({
       <DialogContent className="max-w-3xl h-[90vh] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle>
-            {isEditing ? 'Editar Natureza' : 'Nova Natureza'}
+            {isEditing ? 'Editar Natureza' : 'Nova natureza'}
           </DialogTitle>
           <DialogDescription>
             {isEditing

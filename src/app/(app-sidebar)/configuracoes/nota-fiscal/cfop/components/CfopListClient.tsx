@@ -76,7 +76,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao criar CFOP')
         return
       }
-      toast.success('CFOP criado com sucesso!')
+      toast.success('CFOP criado')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {
@@ -97,7 +97,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao atualizar CFOP')
         return
       }
-      toast.success('CFOP atualizado com sucesso!')
+      toast.success('CFOP atualizado')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {
@@ -117,7 +117,7 @@ export function CfopListClient() {
         toast.error(result.message || 'Erro ao excluir CFOP')
         return
       }
-      toast.success('CFOP excluído com sucesso!')
+      toast.success('CFOP excluído')
       queryClient.invalidateQueries({ queryKey: ['cfops'] })
     },
     onError: (error) => {

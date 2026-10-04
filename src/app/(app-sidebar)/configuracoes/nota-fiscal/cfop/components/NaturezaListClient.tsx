@@ -84,7 +84,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       }
       // Some APIs return the object directly on success, check structure if needed.
       // Assuming standard wrapper or direct object.
-      toast.success('Natureza criada com sucesso!')
+      toast.success('Natureza criada')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
@@ -101,7 +101,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       })
     },
     onSuccess: (result) => {
-      toast.success('Natureza atualizada com sucesso!')
+      toast.success('Natureza atualizada')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
@@ -117,7 +117,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       })
     },
     onSuccess: (result) => {
-      toast.success('Natureza excluída com sucesso!')
+      toast.success('Natureza excluída')
       queryClient.invalidateQueries({ queryKey: ['natures'] })
     },
     onError: (error) => {
