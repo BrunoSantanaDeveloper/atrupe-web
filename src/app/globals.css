@@ -109,6 +109,7 @@
     --gray-300: rgba(208, 213, 221, 1);
     --gray-400: rgba(152, 162, 179, 1);
     --gray-50: rgba(249, 250, 251, 1);
+    --gray-60: rgba(233, 235, 240, 1); /* divisórias da sidebar (design.md §2.1) */
     --gray-500: rgba(102, 112, 133, 1);
     --gray-600: rgba(71, 84, 103, 1);
     --gray-700: rgba(52, 64, 84, 1);
@@ -198,6 +199,7 @@
     --shadow-sm: 0px 1px 2px 0px rgba(16, 24, 40, 0.06), 0px 1px 3px 0px rgba(16, 24, 40, 0.1);
     --shadow-xl: 0px 8px 8px -4px rgba(16, 24, 40, 0.03), 0px 20px 24px -4px rgba(16, 24, 40, 0.08);
     --shadow-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
+    --shadow-sm-strong: 0px 1px 3px 0px rgba(16, 24, 40, 0.1), 0px 1px 2px -1px rgba(0, 0, 0, 0.1); /* aba segmentada ativa (design.md §2.5) */
     --shadow-xs-focused-4px-error-100: 0px 0px 0px 4px rgba(254, 228, 226, 1), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
     --shadow-xs-focused-4px-gray-100: 0px 0px 0px 4px rgba(242, 244, 247, 1), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
     --shadow-xs-focused-4px-primary-100: 0px 0px 0px 4px rgba(244, 235, 255, 1), 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
