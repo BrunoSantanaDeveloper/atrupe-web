@@ -9,7 +9,7 @@
  *
  * Usado em:
  * - ProductFiscalDataDialog (configuração fiscal standalone)
- * - NewProduct.tsx (aba "Dados Fiscais" dentro do modal de produto)
+ * - NewProduct.tsx (aba "Dados fiscais" dentro do modal de produto)
  * - InvoiceItemConfigDialog (configuração fiscal do item da NF)
  */
 

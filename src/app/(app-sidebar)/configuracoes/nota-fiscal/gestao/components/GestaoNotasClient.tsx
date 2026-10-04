@@ -45,7 +45,7 @@ export function GestaoNotasClient() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconFileDescription className="size-5" />
-              Notas Fiscais de Servico (NFS-e)
+              Notas fiscais de serviço (NFS-e)
             </CardTitle>
           </CardHeader>
           <CardContent>

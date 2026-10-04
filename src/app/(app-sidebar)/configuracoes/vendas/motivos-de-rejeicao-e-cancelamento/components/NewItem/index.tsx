@@ -93,7 +93,7 @@ export function NewItemDialog({
     await mutation
       .mutateAsync(body)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Motivo salvo')
         handleOpenChange(false)
       })
       .catch((err) => {

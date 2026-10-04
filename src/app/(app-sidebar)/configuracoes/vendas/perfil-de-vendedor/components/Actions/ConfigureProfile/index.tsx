@@ -71,7 +71,7 @@ export function ConfigureProfileDialog({ open, setOpen, rowData }: Props) {
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Perfil configurado')
         handleOpenChange(false)
       })
       .catch((err) => {

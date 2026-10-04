@@ -72,7 +72,7 @@ export function ClientActions({ params, data, entityType }: Props) {
     await alertDialog.open({
       title: `Deseja ${type === 'active' ? 'ativar' : 'inativar'} o cadastro?`,
       description: '',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: type === 'active' ? 'success' : 'error',
       confirmLabel: type === 'active' ? 'Ativar' : 'Inativar',
       onConfirm: async () => {

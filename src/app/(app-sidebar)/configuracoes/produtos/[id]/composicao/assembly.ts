@@ -39,15 +39,15 @@ export const unitKindObj: { [key in UnitKind]: string } = {
   AREA: 'Metro Quadrado (m²)',
 }
 
-// "Valor de venda m²", como no START (UnitCostInput)
+// "Preço de venda m²", como no START (UnitCostInput)
 export const unitSaleLabel: { [key in UnitKind]: string } = {
-  AREA: 'Valor de venda m²',
-  LENGTH: 'Valor de venda metro',
-  CAPACITY: 'Valor de venda litro',
-  WEIGHT: 'Valor de venda kg',
-  DISTANCE: 'Valor de venda km',
-  DURATION: 'Valor de venda hora',
-  UNITY: 'Valor de venda unitário',
+  AREA: 'Preço de venda m²',
+  LENGTH: 'Preço de venda metro',
+  CAPACITY: 'Preço de venda litro',
+  WEIGHT: 'Preço de venda kg',
+  DISTANCE: 'Preço de venda km',
+  DURATION: 'Preço de venda hora',
+  UNITY: 'Preço de venda unitário',
 }
 
 export const unitSymbol: { [key in UnitKind]: string } = {
@@ -321,7 +321,7 @@ export type ProductAssembly = {
   status: AssemblyStatus
   dimension: ProductDimension
   unitKind: UnitKind
-  // Valor de venda por unidade comercial, como no START
+  // Preço de venda por unidade comercial, como no START
   unitPrice: number | null
   // Padrão de medidas: no m², largura × altura; nas outras unidades, a
   // quantidade nelas (3 m, 2 kg). Largura e altura também alimentam a

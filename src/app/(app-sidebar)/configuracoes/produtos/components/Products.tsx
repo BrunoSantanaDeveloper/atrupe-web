@@ -126,11 +126,11 @@ const PRODUCT_FISCAL_EXPORT_COLUMNS: ExportColumn<ProductListType>[] = [
     getValue: (product) => product.fiscalData?.cofinsCst,
   },
   {
-    header: 'Codigo servico',
+    header: 'Código do serviço',
     getValue: (product) => product.fiscalData?.codigoServico,
   },
   {
-    header: 'Aliquota ISS',
+    header: 'Alíquota ISS',
     type: 'percent',
     getValue: (product) => product.fiscalData?.aliquotaIss,
   },
@@ -334,7 +334,7 @@ export function Products({ searchParams }: SearchParamsType) {
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Sem produtos para o status: ${statusLabel}`}
+                  title={`Nenhum produto para o status: ${statusLabel}`}
                   icon={IconPackageOff}
                 />
               ) : (
@@ -348,7 +348,7 @@ export function Products({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconPackageOff}
-                title="Sem produtos cadastrados"
+                title="Nenhum produto cadastrado"
                 description="Cadastre seu primeiro produto"
                 cta={
                   <NewProduct

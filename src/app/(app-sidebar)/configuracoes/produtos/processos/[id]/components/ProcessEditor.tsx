@@ -852,7 +852,7 @@ export function ProcessEditor({
                                   <span
                                     key={input}
                                     className={cn(
-                                      'rounded px-1.5 py-0.5 text-[11px]',
+                                      'rounded px-1.5 py-0.5 text-xs',
                                       zeroInput(input, block, line)
                                         ? 'bg-error-50 text-error-700'
                                         : 'bg-gray-100 text-gray-600',

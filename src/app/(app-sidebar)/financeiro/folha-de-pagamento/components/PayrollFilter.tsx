@@ -148,7 +148,7 @@ export function PayrollFilter({
         selectedIds.length > 1
           ? `Deseja lançar as ${selectedIds.length} folhas de pagamento selecionadas?`
           : 'Deseja lançar a folha de pagamento selecionada?',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmLabel: 'Lançar',
       toastMsg: undefined,
       onConfirm: async () => {

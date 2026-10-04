@@ -8,7 +8,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { ParamsType } from '@/types/coreTypes'
 
 export const metadata: Metadata = {
-  title: 'Folha de Pagamento',
+  title: 'Folha de pagamento',
   description: 'Detalhes da folha de pagamento do colaborador',
 }
 

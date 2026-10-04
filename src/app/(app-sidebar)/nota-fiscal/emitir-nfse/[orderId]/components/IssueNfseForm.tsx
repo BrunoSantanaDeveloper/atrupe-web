@@ -567,7 +567,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
       }
 
       setPreviewOpen(false)
-      toast.success('NFS-e emitida com sucesso!')
+      toast.success('NFS-e emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =

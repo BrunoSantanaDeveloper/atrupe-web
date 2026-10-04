@@ -59,7 +59,7 @@ export function DepreciationData({ assets }: Props) {
             <TableHead className="w-[12%] text-right">Já depreciado</TableHead>
             <TableHead className="w-[10%] text-right">Valor restante</TableHead>
             <TableHead className="w-[14%]">Vida útil</TableHead>
-            <TableHead className="w-[12%]">Situação</TableHead>
+            <TableHead className="w-[12%]">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

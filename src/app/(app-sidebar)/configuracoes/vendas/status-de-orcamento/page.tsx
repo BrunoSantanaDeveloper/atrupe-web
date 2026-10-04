@@ -17,7 +17,7 @@ export default function QuotationStatusPage() {
       features={[FEATURES.SALES.QUOTATION_STATUS_CONFIGURATION]}
       fallback={
         <UpgradeFallback
-          title="Configuração de Status de Orçamento"
+          title="Status de orçamento"
           description="A configuração de status de orçamento não está incluída no seu plano atual. Faça upgrade para personalizar os status dos seus orçamentos."
         />
       }

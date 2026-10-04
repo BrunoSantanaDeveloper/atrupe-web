@@ -100,7 +100,7 @@ export function CancelNfeDialog({
         throw new Error(result.message || `Erro ao cancelar ${docLabel}`)
       }
 
-      toast.success(`${docLabel} cancelada com sucesso!`)
+      toast.success(`${docLabel} cancelada`)
 
       // Cancelamento aceito fora do prazo regular de 24 horas: o backend
       // devolve o aviso porque a SEFAZ pode cobrar penalidade, e quem cancelou

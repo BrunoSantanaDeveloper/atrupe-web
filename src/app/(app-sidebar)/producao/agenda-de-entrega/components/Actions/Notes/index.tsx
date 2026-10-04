@@ -66,7 +66,7 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
 
   const onSubmit = async (data: FormType) => {
     await mutation.mutateAsync(data).then(() => {
-      toast.success('Observações salvas!')
+      toast.success('Observações salvas')
       setOpen('')
     })
   }

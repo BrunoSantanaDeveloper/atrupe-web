@@ -95,7 +95,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Sem despesas fixas para o status: ${statusLabel}`}
+                  title={`Nenhuma despesa fixa para o status: ${statusLabel}`}
                   icon={IconPackageOff}
                 />
               ) : (
@@ -106,7 +106,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconCalendarDollar}
-                title="Sem despesas fixas cadastradas"
+                title="Nenhuma despesa fixa cadastrada"
                 description="Cadastre sua primeira despesa fixa"
                 cta={
                   <PermissionGate

@@ -324,7 +324,7 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
             disabled={!combinations || !cost}
             onClick={() => mutate()}
           >
-            {isPending ? 'Criando...' : 'Criar variações'}
+            {isPending ? 'Cadastrando...' : 'Cadastrar variações'}
           </Button>
         </DialogFooter>
       </DialogContent>

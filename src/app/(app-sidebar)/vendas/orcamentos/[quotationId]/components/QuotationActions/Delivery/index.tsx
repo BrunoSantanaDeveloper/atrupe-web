@@ -214,7 +214,7 @@ export function DeliveryDialog({ quotationData }: Props) {
       queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
       handleOpenChange(false)
     } catch (error) {
-      toast.error('Erro ao salvar informações de entrega!')
+      toast.error('Erro ao salvar informações de entrega')
     }
   }
 

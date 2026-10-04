@@ -136,7 +136,7 @@ export function CreditLimit() {
         queryKey: ['credit-limit'],
       })
 
-      toast.success('Limite de crédito atualizado!')
+      toast.success('Limite de crédito atualizado')
       setOpen(false)
       handleClose()
     } catch (error) {

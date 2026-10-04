@@ -160,7 +160,7 @@ export function InvoicyConfigForm() {
       <div className="flex items-center gap-4">
         <FeaturedIcon variant="outline" Icon={IconSettings} />
         <div>
-          <h2 className="text-lg font-semibold">Configurações Gerais</h2>
+          <h2 className="text-lg font-semibold">Configurações gerais</h2>
           <p className="text-sm text-gray-500">
             Configure as séries, numeração e padrões fiscais para emissão de
             notas fiscais
@@ -312,7 +312,7 @@ export function InvoicyConfigForm() {
             <div>
               <h3 className="font-semibold text-base">Envio ao Cliente</h3>
               <p className="text-sm text-gray-500">
-                Configure o envio automatico dos documentos fiscais quando a
+                Configure o envio automático dos documentos fiscais quando a
                 NF-e for autorizada.
               </p>
             </div>
@@ -353,8 +353,8 @@ export function InvoicyConfigForm() {
               {form.formState.isSubmitting
                 ? 'Salvando...'
                 : configData
-                  ? 'Atualizar Configuração'
-                  : 'Salvar Configuração'}
+                  ? 'Salvar'
+                  : 'Salvar'}
             </Button>
           </div>
         </form>

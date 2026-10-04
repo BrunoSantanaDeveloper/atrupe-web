@@ -153,7 +153,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                       <TableHead className="w-[14%] text-right">
                         Depreciação mensal
                       </TableHead>
-                      <TableHead className="w-[14%]">Situação</TableHead>
+                      <TableHead className="w-[14%]">Status</TableHead>
                       <TableHead className="w-[6%]" />
                     </TableRow>
                   </TableHeader>

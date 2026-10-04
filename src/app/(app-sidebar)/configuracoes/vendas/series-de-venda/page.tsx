@@ -4,7 +4,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 export function metadata() {
   return {
-    title: 'Séries de Venda',
+    title: 'Séries de venda',
   }
 }
 

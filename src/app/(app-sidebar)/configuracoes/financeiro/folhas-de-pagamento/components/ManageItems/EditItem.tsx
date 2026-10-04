@@ -69,7 +69,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       return
     }
 
-    toast.success('Item de custo atualizado!')
+    toast.success('Item de custo atualizado')
     queryClient.invalidateQueries()
     handleOpenChange(false)
   }

@@ -76,7 +76,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
 
   if (isLoading) {
     return (
-      <Card className="rounded-xl">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base font-semibold text-gray-700">
             {tab === 'receitas' ? 'Receitas' : 'Despesas'}
@@ -100,7 +100,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
 
   if (!data || data.length === 0) {
     return (
-      <Card className="rounded-xl">
+      <Card>
         <CardHeader>
           <CardTitle className="text-base font-semibold text-gray-700">
             {tab === 'receitas' ? 'Receitas' : 'Despesas'}
@@ -118,7 +118,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
   }
 
   return (
-    <Card className="rounded-xl">
+    <Card>
       <CardHeader>
         <CardTitle className="text-base font-semibold text-gray-700">
           {tab === 'receitas' ? 'Receitas' : 'Despesas'}

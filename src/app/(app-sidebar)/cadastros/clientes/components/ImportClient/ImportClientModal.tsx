@@ -177,9 +177,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
     }
 
     // Sucesso! Importação completa
-    toast.success(
-      `${processResult.data.successRows} cliente(s) importado(s) com sucesso!`,
-    )
+    toast.success(`${processResult.data.successRows} cliente(s) importado(s)`)
 
     // Invalidar queries para recarregar a lista
     await queryClient.invalidateQueries({ queryKey: ['clients'] })

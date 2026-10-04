@@ -179,10 +179,10 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
 
     if (result.success) {
       queryClient.invalidateQueries()
-      toast.success('Parcelas salvas!')
+      toast.success('Parcelas salvas')
       handleOpenChange(false)
     } else {
-      toast.error('Ocorreu um erro!')
+      toast.error('Ocorreu um erro')
     }
   }
 

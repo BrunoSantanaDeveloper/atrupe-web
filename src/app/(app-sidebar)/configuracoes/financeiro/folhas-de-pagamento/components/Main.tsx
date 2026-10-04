@@ -143,7 +143,7 @@ export function Main() {
       description:
         'O item continua cadastrado na empresa e pode ser acrescentado de novo. O valor informado aqui é perdido.',
       confirmLabel: 'Tirar',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       onConfirm: async () => {
         const res = await setPayrollItem(employeeId, item.id, false)

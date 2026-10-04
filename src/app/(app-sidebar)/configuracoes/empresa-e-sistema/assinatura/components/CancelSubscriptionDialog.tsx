@@ -88,7 +88,7 @@ export function CancelSubscriptionDialog({
         return
       }
 
-      toast.success('Assinatura cancelada com sucesso.')
+      toast.success('Assinatura cancelada.')
       queryClient.invalidateQueries({ queryKey: ['subscription-active'] })
       handleClose()
     } catch {

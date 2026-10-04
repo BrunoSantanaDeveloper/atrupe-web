@@ -201,7 +201,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
     })
 
     if (response.success) {
-      toast.success('Lançamento realizado com sucesso')
+      toast.success('Lançamento realizado')
       queryClient.invalidateQueries()
     } else {
       toast.error('Erro ao lançar despesa fixa')

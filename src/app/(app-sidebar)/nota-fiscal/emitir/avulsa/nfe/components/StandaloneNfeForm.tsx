@@ -618,7 +618,7 @@ export function StandaloneNfeForm() {
       }
 
       setPreviewOpen(false)
-      toast.success('NF-e emitida com sucesso!')
+      toast.success('NF-e emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao emitir NF-e'

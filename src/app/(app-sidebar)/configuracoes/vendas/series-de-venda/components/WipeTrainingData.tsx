@@ -40,9 +40,7 @@ export function WipeTrainingDataAlertDialog(props: Props) {
     mutationFn: () => deleteItem('saleSeriesRoute', `purge/${rowData?.id}`),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success(
-        'Todos os dados referentes à série de venda foram apagados!',
-      )
+      toast.success('Todos os dados referentes à série de venda foram apagados')
       handleOpenChange(false)
     },
     onError: () => {
@@ -83,7 +81,7 @@ export function WipeTrainingDataAlertDialog(props: Props) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <Button
               type="button"
               variant="error"

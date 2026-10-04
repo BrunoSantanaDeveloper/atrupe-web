@@ -626,7 +626,7 @@ function AssemblyEditorBody({
       description:
         'As etapas e os recursos já estão gravados. Só o descritivo técnico digitado ainda não foi salvo.',
       confirmLabel: 'Sair',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       onConfirm: async () => {
         router.push(PRODUCTS_PATH)
       },
@@ -1343,7 +1343,7 @@ function AssemblyEditorBody({
                                         : `A fórmula usa ${label}`
                                     }
                                     className={cn(
-                                      'rounded px-1.5 py-0.5 text-[11px]',
+                                      'rounded px-1.5 py-0.5 text-xs',
                                       zero
                                         ? 'bg-error-50 text-error-700'
                                         : 'bg-gray-100 text-gray-600',
@@ -1570,7 +1570,7 @@ function AssemblyEditorBody({
                   }
                 >
                   <SelectTrigger
-                    aria-label="Situação"
+                    aria-label="Status"
                     title={status.help}
                     className="h-11 w-[220px]"
                   >
@@ -1846,7 +1846,7 @@ function AssemblyEditorBody({
                         />
                       </div>
                       <div className="flex flex-col">
-                        <Label className="mb-2">Valor de venda</Label>
+                        <Label className="mb-2">Preço de venda</Label>
                         <Input
                           value={money(assembly.priceForMeasure)}
                           disabled
@@ -2009,7 +2009,7 @@ function AssemblyEditorBody({
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray">Valor de venda nesta medida</p>
+                <p className="text-xs text-gray">Preço de venda nesta medida</p>
                 <p className="text-2xl font-semibold text-gray-900">
                   {money(assembly.priceForMeasure)}
                 </p>
@@ -2153,7 +2153,7 @@ function AssemblyEditorBody({
                           Custo
                         </TableHead>
                         <TableHead className="w-[20%] text-right">
-                          Valor de venda
+                          Preço de venda
                         </TableHead>
                         <TableHead className="w-[20%] text-right">
                           Margem
@@ -2961,7 +2961,9 @@ export function AssemblyEditor(props: EditorProps) {
               disabled={!variantName.trim()}
               onClick={submitVariant}
             >
-              {variantDialog?.kind === 'rename' ? 'Salvar' : 'Criar variação'}
+              {variantDialog?.kind === 'rename'
+                ? 'Salvar'
+                : 'Cadastrar variação'}
             </Button>
           </DialogFooter>
         </DialogContent>

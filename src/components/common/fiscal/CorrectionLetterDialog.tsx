@@ -144,7 +144,7 @@ export function CorrectionLetterDialog({
       if (!result.success) {
         throw new Error(result.message || 'Erro ao enviar carta de correção')
       }
-      toast.success('Carta de correção enviada com sucesso!')
+      toast.success('Carta de correção enviada')
       onOpenChange(false)
       setCorrectionText('')
       setErrorMsg('')
@@ -215,7 +215,7 @@ export function CorrectionLetterDialog({
         a.click()
         document.body.removeChild(a)
         window.URL.revokeObjectURL(url)
-        toast.success('XML baixado com sucesso!')
+        toast.success('XML baixado')
       } else {
         toast.error(result.message || 'Erro ao obter XML da carta de correção.')
       }

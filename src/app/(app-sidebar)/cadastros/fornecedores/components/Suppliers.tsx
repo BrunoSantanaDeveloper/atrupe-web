@@ -45,7 +45,7 @@ const SUPPLIER_EXPORT_COLUMNS: ExportColumn<ListSuppliersDataType>[] = [
     key: 'name',
   },
   {
-    header: 'Razao social',
+    header: 'Razão social',
     key: 'corporateName',
   },
   {
@@ -61,11 +61,11 @@ const SUPPLIER_EXPORT_COLUMNS: ExportColumn<ListSuppliersDataType>[] = [
     key: 'cnpj',
   },
   {
-    header: 'Inscricao estadual',
+    header: 'Inscrição estadual',
     key: 'stateRegistration',
   },
   {
-    header: 'Email',
+    header: 'E-mail',
     key: 'email',
   },
   {
@@ -187,7 +187,7 @@ export function Suppliers({ searchParams }: SearchParamsType) {
                 fileName="fornecedores"
                 getData={getExportSuppliers}
                 sheetName="Fornecedores"
-                emptyMessage="Nenhum fornecedor disponivel para exportacao"
+                emptyMessage="Nenhum fornecedor disponível para exportação"
               />
             </PermissionGate>
             {/* O grupo faz parte do cadastro de fornecedor: mesma
@@ -233,7 +233,7 @@ export function Suppliers({ searchParams }: SearchParamsType) {
           ) : (
             <ListDataTotalEmpty
               icon={IconBuildingCommunity}
-              title="Sem fornecedores cadastrados"
+              title="Nenhum fornecedor cadastrado"
               description="Cadastre seu primeiro fornecedor"
               cta={
                 <PermissionGate permissions={['register:supplier:create']}>

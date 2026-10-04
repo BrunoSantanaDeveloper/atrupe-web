@@ -7,7 +7,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Relatório de Vendas',
+    title: 'Relatório de vendas',
   }
 }
 

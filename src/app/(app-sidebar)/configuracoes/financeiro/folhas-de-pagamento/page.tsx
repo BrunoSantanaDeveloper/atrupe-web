@@ -4,7 +4,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 
 export function metadata() {
   return {
-    title: 'Folha de pagamento - Config.',
+    title: 'Folha de pagamento',
   }
 }
 

@@ -14,7 +14,7 @@ export function PaymentConditions({ searchParams }: SearchParamsType) {
   return (
     <div className="space-y-5">
       <Topbar
-        title="Condições de Pagamento"
+        title="Condições de pagamento"
         previousPage="/configuracoes/financeiro"
         primaryCta={
           <PermissionGate

@@ -41,7 +41,7 @@ const EDIT = ['product_settings:products:edit']
 interface Props {
   productId: string
   unitKind: string
-  // Valor de venda por unidade do produto, em centavos, para a primeira faixa
+  // Preço de venda por unidade do produto, em centavos, para a primeira faixa
   // nascer com ele
   basePriceCents: number
 }
@@ -127,7 +127,7 @@ export function ProductPriceTiers({
                   A partir de (quantidade)
                 </TableHead>
                 <TableHead className="w-[45%]">
-                  Valor de venda por {unit}
+                  Preço de venda por {unit}
                 </TableHead>
                 <TableHead className="w-[15%]" />
               </TableRow>
@@ -157,7 +157,7 @@ export function ProductPriceTiers({
                         type="number"
                         min={0}
                         step="0.01"
-                        aria-label="Valor de venda da faixa"
+                        aria-label="Preço de venda da faixa"
                         startAdornment={<span className="text-sm">R$</span>}
                         value={tier.unitPrice / 100}
                         onChange={(event) =>

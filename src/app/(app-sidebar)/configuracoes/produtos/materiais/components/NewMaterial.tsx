@@ -446,7 +446,7 @@ export function NewMaterialModal({ material }: Props) {
             disabled={!name}
             onClick={() => mutate()}
           >
-            {isEdit ? 'Salvar alterações' : 'Cadastrar material'}
+            {isEdit ? 'Salvar' : 'Cadastrar material'}
           </Button>
         </DialogFooter>
       </DialogContent>

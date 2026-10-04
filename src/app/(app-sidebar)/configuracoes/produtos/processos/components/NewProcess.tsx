@@ -352,7 +352,7 @@ export function ProcessDialog({
               variant="neutralOutline"
               onClick={() => onOpenChange(false)}
             >
-              {editMode ? 'Fechar' : 'Cancelar'}
+              Cancelar
             </Button>
             {!editMode && (
               <Button

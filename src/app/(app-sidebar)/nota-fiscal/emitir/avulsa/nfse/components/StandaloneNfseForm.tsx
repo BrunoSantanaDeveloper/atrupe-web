@@ -533,7 +533,7 @@ export function StandaloneNfseForm() {
       }
 
       setPreviewOpen(false)
-      toast.success('NFS-e avulsa emitida com sucesso!')
+      toast.success('NFS-e avulsa emitida')
       router.push('/nota-fiscal/emitir?tab=gestao')
     } catch (err) {
       const message =

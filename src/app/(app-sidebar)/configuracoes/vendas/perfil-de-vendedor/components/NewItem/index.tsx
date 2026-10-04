@@ -67,7 +67,7 @@ export function NewItemDialog() {
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Perfil salvo')
         handleOpenChange(false)
       })
       .catch((err) => {

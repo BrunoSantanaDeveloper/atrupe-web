@@ -89,7 +89,7 @@ export function NewItemDialog({
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Categoria salva')
         handleOpenChange(false)
       })
       .catch((err) => {

@@ -366,7 +366,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
                 <TableHead>Produto</TableHead>
                 <TableHead>Setor</TableHead>
                 {showNcmColumn && <TableHead>NCM</TableHead>}
-                {canSeeValues && <TableHead>P.V.</TableHead>}
+                {canSeeValues && <TableHead>Preço de venda</TableHead>}
                 <TableHead className="w-[100px]"></TableHead>
               </TableRow>
             </TableHeader>

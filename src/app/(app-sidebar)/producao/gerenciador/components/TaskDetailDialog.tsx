@@ -411,7 +411,7 @@ export function TaskDetailDialog({
               />
               <SelectBasic
                 name="task-status"
-                label="Situação"
+                label="Status"
                 className="w-[220px]"
                 options={(Object.keys(taskStatusObj) as TaskStatus[]).map(
                   (key) => ({
@@ -431,7 +431,7 @@ export function TaskDetailDialog({
                 onClick={() =>
                   run(
                     setTaskStatus({ id: task.id, status, stepIndex }),
-                    'Situação alterada',
+                    'Status alterado',
                   )
                 }
               >

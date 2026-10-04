@@ -63,7 +63,7 @@ export function NewEmployeeDialog() {
       createItem({ route: 'employeeRoute', data }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Colaborador criado!')
+      toast.success('Colaborador criado')
       if (insertAnother) {
         reset(defaultValues)
         handleOpenChange(true)

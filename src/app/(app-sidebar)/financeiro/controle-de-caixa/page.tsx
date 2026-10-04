@@ -12,7 +12,7 @@ import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
-    title: 'Controle de Caixa',
+    title: 'Controle de caixa',
   }
 }
 

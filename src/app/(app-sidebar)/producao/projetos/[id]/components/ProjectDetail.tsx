@@ -132,7 +132,7 @@ export function ProjectDetail({ id }: { id: string }) {
           : status === 'DONE'
             ? 'Concluir'
             : 'Cancelar projeto',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: status === 'CANCELED' ? 'error' : 'primary',
       onConfirm: async () => {
         const res = await setProjectStatus({ id, status })
@@ -189,7 +189,7 @@ export function ProjectDetail({ id }: { id: string }) {
             </CardHeader>
             <CardContent className="space-y-2 px-6 pb-6 text-sm">
               <p className="flex justify-between">
-                <span className="text-gray">Situação</span>
+                <span className="text-gray">Status</span>
                 <Badge variant={projectStatusObj[project.status].variant}>
                   {projectStatusObj[project.status].text}
                 </Badge>
@@ -269,7 +269,7 @@ export function ProjectDetail({ id }: { id: string }) {
                   <TableHead className="w-[10%]">Código</TableHead>
                   <TableHead className="w-[24%]">Etapa</TableHead>
                   <TableHead className="w-[22%]">Tipo · etapa atual</TableHead>
-                  <TableHead className="w-[16%]">Situação</TableHead>
+                  <TableHead className="w-[16%]">Status</TableHead>
                   <TableHead className="w-[14%] text-right">
                     Estimado · realizado
                   </TableHead>

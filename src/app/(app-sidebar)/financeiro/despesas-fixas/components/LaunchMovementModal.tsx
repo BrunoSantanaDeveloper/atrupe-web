@@ -120,7 +120,7 @@ export function LaunchMovementModal({
       return
     }
 
-    toast.success('Lançamento realizado com sucesso')
+    toast.success('Lançamento realizado')
     queryClient.invalidateQueries()
     reset()
     onOpenChange(false)

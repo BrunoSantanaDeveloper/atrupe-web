@@ -20,7 +20,7 @@ export function SupplierSummary({ data }: Props) {
       <DetailCard title="Resumo" icon={IconFileInvoice}>
         <DetailCardRowItem>
           <TextSupportingText
-            supporting="Razão Social"
+            supporting="Razão social"
             text={data?.general?.name}
           />
           {data?.general?.cnpj ? (

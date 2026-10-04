@@ -114,7 +114,7 @@ function EditableDateField({
       return
     }
 
-    toast.success('Data atualizada com sucesso!')
+    toast.success('Data atualizada')
     queryClient.invalidateQueries({ queryKey: [QUOTATION_DATA_QUERY_KEY] })
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
@@ -301,7 +301,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
                     text={data?.client?.email || '-'}
                   />
                   <TextSupportingText
-                    supporting="Telefone Cliente"
+                    supporting="Telefone do cliente"
                     text={data?.client?.phoneNumber || '-'}
                   />
                   <TextSupportingText

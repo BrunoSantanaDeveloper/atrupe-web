@@ -71,7 +71,7 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
   const margin = revenue ? Math.round((result / revenue) * 1000) / 10 : 0
 
   const summary = [
-    { label: 'Valor de venda', value: revenue },
+    { label: 'Preço de venda', value: revenue },
     { label: 'Custo de produção', value: -productionCost },
     {
       label: `Comissão do vendedor (${SELLER_COMMISSION}%)`,

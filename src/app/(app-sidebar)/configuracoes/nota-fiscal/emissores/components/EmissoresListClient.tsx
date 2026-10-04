@@ -173,7 +173,7 @@ export function EmissoresListClient() {
       return result
     },
     onSuccess: () => {
-      toast.success('Emissor configurado com sucesso!')
+      toast.success('Emissor configurado')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
@@ -204,7 +204,7 @@ export function EmissoresListClient() {
       return result
     },
     onSuccess: () => {
-      toast.success('Emissor atualizado com sucesso!')
+      toast.success('Emissor atualizado')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setModalOpen(false)
@@ -228,7 +228,7 @@ export function EmissoresListClient() {
         toast.error(result.message || 'Erro ao excluir emissor')
         return
       }
-      toast.success('Configuração removida com sucesso!')
+      toast.success('Configuração removida')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
       setDeleteEmissor(null)
@@ -252,7 +252,7 @@ export function EmissoresListClient() {
         toast.error(result.message || 'Erro ao definir padrão')
         return
       }
-      toast.success('Definido como padrão!')
+      toast.success('Definido como padrão')
       queryClient.invalidateQueries({ queryKey: ['emissores'] })
       queryClient.invalidateQueries({ queryKey: ['fiscal-onboarding-status'] })
     },
@@ -274,7 +274,7 @@ export function EmissoresListClient() {
     },
     onSuccess: (result) => {
       if (result.success && result.data?.success) {
-        toast.success('Autenticação validada!')
+        toast.success('Autenticação validada')
       } else {
         toast.error(result.message || 'Falha na autenticação.')
       }

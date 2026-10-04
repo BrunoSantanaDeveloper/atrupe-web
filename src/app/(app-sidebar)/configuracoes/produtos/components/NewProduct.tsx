@@ -327,7 +327,7 @@ function NewProductModal({
           throw new Error(result.message)
         }
 
-        toast.success('Produto atualizado com sucesso!')
+        toast.success('Produto atualizado')
       } else {
         const result = await createItemNew({
           route: '/product',
@@ -339,7 +339,7 @@ function NewProductModal({
         }
         createdProduct = result.data
 
-        toast.success('Produto criado com sucesso!')
+        toast.success('Produto criado')
       }
 
       // Save fiscal data if fiscal tab is shown and productId is available
@@ -393,7 +393,7 @@ function NewProductModal({
   }
 
   // O Tabs desmonta a aba inativa, então o <form id="new-product"> não existe no
-  // DOM enquanto "Dados Fiscais" está aberta e um submit nativo não encontraria
+  // DOM enquanto "Dados fiscais" está aberta e um submit nativo não encontraria
   // o formulário. Disparar o handleSubmit direto salva a partir de qualquer aba.
   const handleSave = handleSubmit(onSubmit, () => {
     // Os campos inválidos estão na aba Produto — traz o usuário até eles

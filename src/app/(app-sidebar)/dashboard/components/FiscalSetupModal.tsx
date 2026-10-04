@@ -140,7 +140,7 @@ export function FiscalSetupModal() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setCertificateFile(acceptedFiles[0])
-      toast.success('Certificado carregado!')
+      toast.success('Certificado carregado')
     }
   }, [])
 
@@ -228,7 +228,7 @@ export function FiscalSetupModal() {
         }
         if (data.numero) form.setValue('numero', data.numero)
         if (data.complemento) form.setValue('complemento', data.complemento)
-        toast.success('Dados da empresa preenchidos!', { id: 'cnpj-fetch' })
+        toast.success('Dados da empresa preenchidos', { id: 'cnpj-fetch' })
       } else {
         toast.dismiss('cnpj-fetch')
       }
@@ -277,7 +277,7 @@ export function FiscalSetupModal() {
         if (rd.status === 'ACTIVE') {
           setFormStatus('success')
           setResultMessage(rd.message)
-          toast.success('Módulo fiscal ativado!')
+          toast.success('Módulo fiscal ativado')
           await queryClient.invalidateQueries()
           setTimeout(() => {
             setOpen(false)
@@ -497,16 +497,16 @@ export function FiscalSetupModal() {
                         <Label htmlFor="m-razao">Razão Social *</Label>
                         <Input
                           id="m-razao"
-                          placeholder="Razão Social"
+                          placeholder="Razão social"
                           {...form.register('razaoSocial', { required: true })}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <Label htmlFor="m-fantasia">Nome Fantasia</Label>
+                          <Label htmlFor="m-fantasia">Nome fantasia</Label>
                           <Input
                             id="m-fantasia"
-                            placeholder="Nome Fantasia"
+                            placeholder="Nome fantasia"
                             {...form.register('nomeFantasia')}
                           />
                         </div>

@@ -63,10 +63,10 @@ export function TransacionNotesDialog({ open, type, rowData, setOpen }: Props) {
 
     if (result.success) {
       queryClient.invalidateQueries()
-      toast.success('Observações salvas!')
+      toast.success('Observações salvas')
       setOpen('')
     } else {
-      toast.error('Ocorreu um erro!')
+      toast.error('Ocorreu um erro')
     }
   }
 

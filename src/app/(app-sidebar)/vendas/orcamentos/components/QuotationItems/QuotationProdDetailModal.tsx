@@ -392,7 +392,7 @@ export function QuotationProdDetailModal({
         })
       }
       handleToggleModal(false)
-      toast.success('Produto editado com sucesso!')
+      toast.success('Produto editado')
       queryClient.invalidateQueries({
         queryKey: ['quotation-item-compositions'],
       })
@@ -582,7 +582,7 @@ export function QuotationProdDetailModal({
                         <FormBrlInput<ProductsFormType>
                           disabled={!canEditValue}
                           name={`items.${index}.salePrice`}
-                          label="Valor de venda"
+                          label="Preço de venda"
                           placeholder="0,00"
                           startAdornment={<>R$</>}
                           width="flex-[1_0_130px]"

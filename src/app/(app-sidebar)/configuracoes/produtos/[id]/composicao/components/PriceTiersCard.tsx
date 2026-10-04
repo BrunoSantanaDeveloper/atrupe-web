@@ -120,7 +120,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
               <TableRow className="bg-gray-50">
                 <TableHead className="w-[22%]">A partir de</TableHead>
                 <TableHead className="w-[24%]">
-                  Valor de venda por {unit}
+                  Preço de venda por {unit}
                 </TableHead>
                 <TableHead className="w-[20%] text-right">
                   Custo por {unit} nessa quantidade
@@ -160,7 +160,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                           type="number"
                           min={0}
                           step="0.01"
-                          aria-label="Valor de venda"
+                          aria-label="Preço de venda"
                           startAdornment={<span className="text-sm">R$</span>}
                           value={tier.unitPrice / 100}
                           onChange={(event) =>

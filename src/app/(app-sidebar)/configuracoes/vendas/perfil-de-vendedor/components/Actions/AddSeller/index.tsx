@@ -59,7 +59,7 @@ export function AddSellerDialog({ open, setOpen, rowData }: Props) {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Sucesso!')
+      toast.success('Vendedor adicionado')
       handleOpenChange(false)
     },
     onError: (err) => {

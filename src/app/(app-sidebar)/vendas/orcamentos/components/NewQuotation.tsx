@@ -201,7 +201,7 @@ export function NewQuotationModal({
     }
 
     handleToggleModal(false)
-    toast.success('Orçamento criado com sucesso!')
+    toast.success('Orçamento criado')
     queryClient.invalidateQueries({ queryKey: ['quotation-list'] })
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
@@ -318,7 +318,7 @@ export function NewQuotationModal({
                 isLoading={form.formState.isSubmitting}
                 RightIcon={IconArrowRight}
               >
-                {!editMode ? 'Criar orçamento' : 'Salvar edição'}
+                {!editMode ? 'Cadastrar orçamento' : 'Salvar'}
               </Button>
             </div>
           </DialogFooter>

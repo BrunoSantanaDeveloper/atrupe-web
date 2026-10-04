@@ -286,7 +286,7 @@ export function ImportMaterialsDialog({
                       <TableHead className="w-[14%] text-right">
                         Custo
                       </TableHead>
-                      <TableHead className="w-[16%]">Situação</TableHead>
+                      <TableHead className="w-[16%]">Status</TableHead>
                       <TableHead className="w-[28%]">Entra como</TableHead>
                     </TableRow>
                   </TableHeader>

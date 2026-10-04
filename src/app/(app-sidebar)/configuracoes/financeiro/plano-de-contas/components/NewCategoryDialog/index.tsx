@@ -86,7 +86,7 @@ export function NewCategoryDialog({
         : createItem({ route: 'accountsPlanRoute', data }),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Sucesso!')
+      toast.success('Sucesso')
       handleOpenChange(false)
     },
     onError: () => {

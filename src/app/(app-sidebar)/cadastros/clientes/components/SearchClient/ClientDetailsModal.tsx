@@ -82,11 +82,11 @@ export function ClientDetailsModal({
             {clientData.documentType === 'CNPJ' ? (
               <>
                 <TextSupportingText
-                  supporting="Razão Social"
+                  supporting="Razão social"
                   text={clientData.legalName}
                 />
                 <TextSupportingText
-                  supporting="Nome Fantasia"
+                  supporting="Nome fantasia"
                   text={clientData.name}
                 />
               </>
@@ -94,7 +94,7 @@ export function ClientDetailsModal({
               <>
                 <TextSupportingText supporting="Nome" text={clientData.name} />
                 <TextSupportingText
-                  supporting="Data de Nascimento"
+                  supporting="Data de nascimento"
                   text={formatBirthdate(clientData.birthdate)}
                 />
               </>
@@ -244,11 +244,11 @@ export function ClientDetailsModalWithNewClient({
               {clientData.documentType === 'CNPJ' ? (
                 <>
                   <TextSupportingText
-                    supporting="Razão Social"
+                    supporting="Razão social"
                     text={clientData.legalName}
                   />
                   <TextSupportingText
-                    supporting="Nome Fantasia"
+                    supporting="Nome fantasia"
                     text={clientData.name}
                   />
                 </>
@@ -259,7 +259,7 @@ export function ClientDetailsModalWithNewClient({
                     text={clientData.name}
                   />
                   <TextSupportingText
-                    supporting="Data de Nascimento"
+                    supporting="Data de nascimento"
                     text={formatBirthdate(clientData.birthdate)}
                   />
                 </>

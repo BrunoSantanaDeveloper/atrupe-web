@@ -107,7 +107,7 @@ export function TableData({ tabs, searchParams }: Props) {
         description: `Seu plano permite apenas ${userLimit} usuário${
           userLimit > 1 ? 's' : ''
         }. Para criar mais usuários, faça upgrade do seu plano.`,
-        confirmLabel: 'Fazer Upgrade',
+        confirmLabel: 'Fazer upgrade',
         cancelLabel: 'Entendi',
         iconVariant: 'warningBorderedLight',
         onConfirm: () => {

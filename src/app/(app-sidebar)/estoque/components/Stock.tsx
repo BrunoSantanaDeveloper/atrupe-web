@@ -138,7 +138,7 @@ export function Stock({ searchParams }: SearchParamsType) {
                       <TableHead className="w-[14%] text-right">
                         Última entrada
                       </TableHead>
-                      <TableHead className="w-[16%]">Situação</TableHead>
+                      <TableHead className="w-[16%]">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>

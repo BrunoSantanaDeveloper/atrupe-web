@@ -68,7 +68,7 @@ export function ManageItemsDialog() {
       title: 'Excluir item de custo',
       description: `O item "${item.name}" deixará de existir na folha de todos os colaboradores. Essa ação não pode ser desfeita.`,
       confirmLabel: 'Excluir',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       toastMsg: {
         loading: 'Excluindo item de custo...',

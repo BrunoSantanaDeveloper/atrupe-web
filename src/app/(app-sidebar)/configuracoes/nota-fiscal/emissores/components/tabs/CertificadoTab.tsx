@@ -92,7 +92,7 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
         toast.error(result.message || 'Erro ao atualizar certificado')
         return
       }
-      toast.success('Certificado atualizado com sucesso!')
+      toast.success('Certificado atualizado')
       handleRemove()
       setHasCertificate(true)
     } catch {

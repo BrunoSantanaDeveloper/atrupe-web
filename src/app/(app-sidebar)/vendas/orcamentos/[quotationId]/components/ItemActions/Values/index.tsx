@@ -245,13 +245,13 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
     try {
       const result = await mutation.mutateAsync(data)
       if (result.success) {
-        toast.success('Valores atualizados!')
+        toast.success('Valores atualizados')
         setOpen('')
       } else {
         toast.error(result.message || 'Erro ao atualizar os valores!')
       }
     } catch (error) {
-      toast.error('Erro ao atualizar os valores!')
+      toast.error('Erro ao atualizar os valores')
     }
   }
 

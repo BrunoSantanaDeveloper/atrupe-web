@@ -84,14 +84,14 @@ export function NewProductGroup({
         await queryClient.invalidateQueries({
           queryKey: ['productGroup', groupId],
         })
-        toast.success('Grupo editado com sucesso!')
+        toast.success('Grupo editado')
       } else {
         await createItem({
           route: 'productGroupRoute',
           data: { ...data, kind: 'PRODUCT' },
         })
 
-        toast.success('Grupo criado com sucesso!')
+        toast.success('Grupo criado')
       }
 
       await queryClient.invalidateQueries({

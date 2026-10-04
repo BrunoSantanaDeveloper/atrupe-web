@@ -82,7 +82,7 @@ const FINANCIAL_FLOW_EXPORT_COLUMNS: ExportColumn<FinancialFlowExportType>[] = [
     getValue: getTransactionPerson,
   },
   {
-    header: 'Descricao',
+    header: 'Descrição',
     key: 'description',
   },
   {
@@ -94,7 +94,7 @@ const FINANCIAL_FLOW_EXPORT_COLUMNS: ExportColumn<FinancialFlowExportType>[] = [
     getValue: (transaction) => transaction.subCategory?.name,
   },
   {
-    header: 'Status da movimentacao',
+    header: 'Status da movimentação',
     getValue: (transaction) =>
       FINANCIAL_FLOW_STATUS_LABELS[transaction.status] || transaction.status,
   },
@@ -182,7 +182,7 @@ const FINANCIAL_FLOW_EXPORT_COLUMNS: ExportColumn<FinancialFlowExportType>[] = [
     getValue: (transaction) => (transaction.totalPaid || 0) / 100,
   },
   {
-    header: 'Periodo de referencia',
+    header: 'Período de referência',
     key: 'period',
     type: 'date',
   },
@@ -274,7 +274,7 @@ export function FinancialFlow({ searchParams }: Props) {
                 getData={getExportFinancialFlow}
                 sheetName="Fluxo financeiro"
                 disabled={!hasFiltersApplied}
-                emptyMessage="Nenhuma movimentacao financeira disponivel para exportacao"
+                emptyMessage="Nenhuma movimentacao financeira disponível para exportação"
               />
             </PermissionGate>
             <TopActions

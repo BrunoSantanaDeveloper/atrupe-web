@@ -139,7 +139,7 @@ export function CfopConfigForm() {
         return
       }
 
-      toast.success('Configuração salva com sucesso!')
+      toast.success('Configuração salva')
       queryClient.invalidateQueries({ queryKey: ['invoicy-config'] })
     } catch (error) {
       toast.error('Erro ao salvar configuração')
@@ -228,9 +228,7 @@ export function CfopConfigForm() {
               RightIcon={IconDeviceFloppy}
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting
-                ? 'Salvando...'
-                : 'Salvar Configuração'}
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar'}
             </Button>
           </div>
         </form>

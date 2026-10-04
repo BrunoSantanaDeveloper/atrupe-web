@@ -148,7 +148,7 @@ export function FixedExpensesFilter({
         selectedIds.length > 1
           ? `Deseja lançar as ${selectedIds.length} despesas fixas selecionadas?`
           : 'Deseja lançar a despesa fixa selecionada?',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmLabel: 'Lançar',
       toastMsg: undefined,
       onConfirm: async () => {

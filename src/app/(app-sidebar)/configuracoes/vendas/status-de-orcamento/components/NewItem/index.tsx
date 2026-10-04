@@ -75,7 +75,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
     await mutation
       .mutateAsync(data)
       .then(() => {
-        toast.success('Sucesso!')
+        toast.success('Status salvo')
         handleOpenChange(false)
       })
       .catch((err) => {

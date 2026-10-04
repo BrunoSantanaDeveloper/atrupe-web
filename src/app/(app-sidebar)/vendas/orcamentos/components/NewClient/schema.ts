@@ -4,7 +4,7 @@ import * as z from 'zod'
 const baseSchema = z.object({
   type: z.enum(['PERSON', 'COMPANY']),
   name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.union([z.string().email('Email inválido'), z.literal('')]),
+  email: z.union([z.string().email('E-mail inválido'), z.literal('')]),
   category: z.string(),
   phone: z.string(),
   mobile: z.string(),

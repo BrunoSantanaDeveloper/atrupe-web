@@ -60,14 +60,14 @@ export function CompanyFields() {
 
       <FormInput<NewClientFormType>
         name="name"
-        label="Nome Fantasia"
+        label="Nome fantasia"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
       />
 
       <FormInput<NewClientFormType>
         name="corporateName"
-        label="Razão Social"
+        label="Razão social"
         width="flex-[1_0_300px]"
         placeholder="Digite aqui"
       />
@@ -81,7 +81,7 @@ export function CompanyFields() {
 
       <FormInput<NewClientFormType>
         name="email"
-        label="Email"
+        label="E-mail"
         type="email"
         width="flex-[1_0_250px]"
         placeholder="Digite aqui"

@@ -106,7 +106,7 @@ export function Step5() {
     <div className="space-y-6">
       {/* Dados fiscais cadastrais */}
       <div>
-        <p className="text-sm font-medium text-gray-700 mb-3">Dados Fiscais</p>
+        <p className="text-sm font-medium text-gray-700 mb-3">Dados fiscais</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormInput
             name="fiscal.cnae"

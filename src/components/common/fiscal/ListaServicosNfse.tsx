@@ -553,7 +553,7 @@ export function ListaServicosManagerDialog({
                 isLoading={salvando}
                 RightIcon={editandoId ? IconPencil : IconPlus}
               >
-                {editandoId ? 'Salvar alterações' : 'Adicionar'}
+                {editandoId ? 'Salvar' : 'Adicionar'}
               </Button>
             </div>
           </div>

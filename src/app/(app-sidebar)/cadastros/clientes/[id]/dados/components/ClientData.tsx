@@ -41,7 +41,7 @@ export function ClientData({ data }: Props) {
         <DetailCard title="Resumo" icon={IconFileInvoice}>
           <DetailCardRowItem>
             <TextSupportingText
-              supporting="Razão Social"
+              supporting="Razão social"
               text={data.general.name}
             />
             {data.general.cnpj ? (
@@ -94,7 +94,7 @@ export function ClientData({ data }: Props) {
 
       {/* Dados Fiscais */}
       {data.general && (
-        <DetailCard title="Dados Fiscais" icon={IconReceiptTax}>
+        <DetailCard title="Dados fiscais" icon={IconReceiptTax}>
           <DetailCardRowItem showSeparator={false}>
             <TextSupportingText
               supporting="Inscrição Estadual (IE)"

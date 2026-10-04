@@ -114,7 +114,7 @@ function SelectPaymentMethodCreateField<T extends FieldValues>({
       fieldOnChangeRef.current(newId)
       additionalOnChange?.(newId, newName)
     }
-    toast.success('Forma de pagamento criada com sucesso')
+    toast.success('Forma de pagamento criada')
     setNewMethodName('')
     setCreateDialogOpen(false)
   }

@@ -228,7 +228,7 @@ export function Main() {
           ) : (
             <Card>
               <div className="py-4 px-6 text-sm text-gray">
-                Nenhuma serie de venda encontrada
+                Nenhuma série de venda encontrada
               </div>
             </Card>
           )}

@@ -183,7 +183,7 @@ export function Materials({ searchParams }: SearchParamsType) {
           ) : !materials.length ? (
             <ListDataTotalEmpty
               icon={IconBoxSeam}
-              title="Nenhum material criado"
+              title="Nenhum material cadastrado"
               description="Cadastre seu primeiro material"
             />
           ) : (

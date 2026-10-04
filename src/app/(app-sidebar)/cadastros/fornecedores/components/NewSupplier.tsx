@@ -170,7 +170,7 @@ export function NewSupplier({
         return
       }
 
-      toast.success('Fornecedor atualizado com sucesso!')
+      toast.success('Fornecedor atualizado')
       queryClient.invalidateQueries()
     } else {
       const res = await createItemNew({
@@ -183,7 +183,7 @@ export function NewSupplier({
         return
       }
 
-      toast.success('Fornecedor criado com sucesso!')
+      toast.success('Fornecedor criado')
       queryClient.invalidateQueries()
     }
 
@@ -233,7 +233,7 @@ export function NewSupplier({
               </Button>
             </DialogTrigger>
             <Button type="submit" form="new-supplier" isLoading={isSubmitting}>
-              {editMode ? 'Salvar alterações' : 'Criar fornecedor'}
+              {editMode ? 'Salvar' : 'Cadastrar fornecedor'}
             </Button>
           </div>
         </DialogFooter>
@@ -257,7 +257,7 @@ export function NewSupplierTriggerButton({
       LeftIcon={editMode ? IconPencil : IconPlus}
       onClick={() => onOpenChange(true)}
     >
-      {editMode ? '' : 'Novo Fornecedor'}
+      {editMode ? '' : 'Novo fornecedor'}
     </Button>
   )
 }

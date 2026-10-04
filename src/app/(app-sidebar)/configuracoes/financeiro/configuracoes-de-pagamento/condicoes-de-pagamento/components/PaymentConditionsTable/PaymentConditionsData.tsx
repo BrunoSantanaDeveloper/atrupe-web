@@ -75,7 +75,7 @@ export function PaymentConditionsData({ searchParams }: Props) {
     await alertDialog.open({
       title: `Deseja inativar a condição de pagamento?`,
       description: '',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'error',
       confirmLabel: 'Inativar',
       onConfirm: async () => {

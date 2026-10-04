@@ -122,7 +122,7 @@ export function NewGroupModal() {
             disabled={!name}
             onClick={() => mutate()}
           >
-            {isPending ? 'Criando...' : 'Criar grupo'}
+            {isPending ? 'Cadastrando...' : 'Cadastrar grupo'}
           </Button>
         </DialogFooter>
       </DialogContent>

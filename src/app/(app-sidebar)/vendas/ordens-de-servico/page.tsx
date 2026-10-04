@@ -7,7 +7,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Ordens de Serviço',
+    title: 'Ordens de serviço',
   }
 }
 

@@ -12,7 +12,7 @@ import { FEATURES } from '@/consts/features'
 
 export function metadata() {
   return {
-    title: 'Motivos de Rejeição e Cancelamento',
+    title: 'Motivos de rejeição e cancelamento',
   }
 }
 
@@ -26,7 +26,7 @@ export default function Page({ searchParams }: SearchParamsType) {
       requireAll={false}
       fallback={
         <UpgradeFallback
-          title="Motivos de Rejeição e Cancelamento"
+          title="Motivos de rejeição e cancelamento"
           description="A configuração de motivos de rejeição e cancelamento não está incluída no seu plano atual. Faça upgrade para personalizar os motivos dos seus orçamentos e ordens de serviço."
         />
       }

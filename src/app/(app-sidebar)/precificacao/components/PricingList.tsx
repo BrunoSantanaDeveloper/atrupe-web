@@ -147,7 +147,7 @@ export function PricingList({
                     <TableHead className="w-[10%] text-right">
                       Margem atual
                     </TableHead>
-                    <TableHead className="w-[14%]">Situação</TableHead>
+                    <TableHead className="w-[14%]">Status</TableHead>
                     <TableHead className="w-[6%]" />
                   </TableRow>
                 </TableHeader>

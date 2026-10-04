@@ -531,7 +531,7 @@ export function AccountDialog({
             Cancelar
           </Button>
           <Button type="button" isLoading={saving} onClick={save}>
-            {isNew ? 'Criar conta' : 'Salvar'}
+            {isNew ? 'Cadastrar conta' : 'Salvar'}
           </Button>
         </DialogFooter>
       </DialogContent>

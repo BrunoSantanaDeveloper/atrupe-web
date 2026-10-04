@@ -74,7 +74,7 @@ export function DangerActionCompanyModal(props: Props) {
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel>Voltar</AlertDialogCancel>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleInactive}
             className={buttonVariants({

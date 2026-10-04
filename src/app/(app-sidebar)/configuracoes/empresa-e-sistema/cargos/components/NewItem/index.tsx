@@ -78,7 +78,7 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
         handleOpenChange(false)
       }
       reset()
-      toast.success('Sucesso!')
+      toast.success('Cargo salvo')
     },
     onError: (error) => {
       console.error(error)

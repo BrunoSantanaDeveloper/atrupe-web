@@ -290,7 +290,7 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
         queryKey: ['role-permissions', rowData?.id],
       })
       queryClient.invalidateQueries({ queryKey: ['roles'] })
-      toast.success('Permissões salvas!')
+      toast.success('Permissões salvas')
       handleOpenChange(false)
     },
     onError: () => {

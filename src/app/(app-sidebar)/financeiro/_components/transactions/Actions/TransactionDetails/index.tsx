@@ -95,7 +95,7 @@ export function TransactionDetailsDialog({
       description:
         'Tem certeza que deseja desfazer o cancelamento desta movimentação?',
       confirmLabel: 'Desfazer cancelamento',
-      cancelLabel: 'Voltar',
+      cancelLabel: 'Cancelar',
       confirmVariant: 'default',
       onConfirm: async () => {
         const result = await createItemNew({

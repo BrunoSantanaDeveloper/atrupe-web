@@ -345,7 +345,7 @@ export function EditOrderInfoDialog({
               isLoading={form.formState.isSubmitting}
               RightIcon={IconCircleCheck}
             >
-              Salvar alterações
+              Salvar
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -85,7 +85,7 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
       updateItem('sectorRoute', `${rowData?.id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries()
-      toast.success('Setor atualizado!')
+      toast.success('Setor atualizado')
       handleOpenChange(false)
     },
     onError: () => {

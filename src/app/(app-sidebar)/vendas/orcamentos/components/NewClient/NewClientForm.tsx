@@ -95,7 +95,7 @@ export function NewClientForm() {
 
     onClientCreated?.(newClient)
 
-    toast.success('Cliente cadastrado com sucesso!')
+    toast.success('Cliente cadastrado')
     handleCleanForm()
     handleToggleModal()
   }

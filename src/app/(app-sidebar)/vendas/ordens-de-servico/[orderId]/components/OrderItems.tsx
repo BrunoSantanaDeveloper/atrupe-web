@@ -137,7 +137,7 @@ export function OrderItems({ data }: Props) {
                       <PermissionGate permissions={['values:values:view']}>
                         <TableHead>Valor un.</TableHead>
                         <TableHead>Desconto</TableHead>
-                        <TableHead>Valor Final</TableHead>
+                        <TableHead>Valor final</TableHead>
                       </PermissionGate>
                       <TableHead></TableHead>
                     </TableRow>

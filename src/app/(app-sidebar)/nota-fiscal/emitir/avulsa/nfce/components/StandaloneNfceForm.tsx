@@ -379,7 +379,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       }
 
       setPreviewOpen(false)
-      toast.success('NFC-e avulsa emitida com sucesso!')
+      toast.success('NFC-e avulsa emitida')
       router.push(
         linkedOrderId
           ? `/nota-fiscal/emitir?tab=gestao&highlight=${result.data?.id}`

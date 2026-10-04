@@ -96,7 +96,7 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty
-                  title={`Sem grupos de produtos para o status: ${statusLabel}`}
+                  title={`Nenhum grupo de produtos para o status: ${statusLabel}`}
                   icon={IconPackageOff}
                 />
               ) : (
@@ -107,7 +107,7 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
             ) : (
               <ListDataTotalEmpty
                 icon={IconPackageOff}
-                title="Sem grupos de produtos cadastrados"
+                title="Nenhum grupo de produtos cadastrado"
                 description="Cadastre seu primeiro grupo de produtos"
                 cta={
                   <NewProductGroupTriggerButton

@@ -410,7 +410,7 @@ export function NewClientModal({
               {editMode
                 ? isSubmitting
                   ? 'Atualizando...'
-                  : 'Salvar edição'
+                  : 'Salvar'
                 : isSubmitting
                   ? 'Cadastrando...'
                   : 'Cadastrar cliente'}

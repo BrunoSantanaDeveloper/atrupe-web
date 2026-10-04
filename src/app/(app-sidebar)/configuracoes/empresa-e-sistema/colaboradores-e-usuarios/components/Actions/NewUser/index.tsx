@@ -170,7 +170,7 @@ export function NewUserDialog({
             >
               <FormInput name="name" label="Usuário" width="w-full" />
 
-              <FormInput name="email" label="Email" width="w-full" />
+              <FormInput name="email" label="E-mail" width="w-full" />
 
               <div className="flex flex-wrap gap-5 w-full">
                 <div className="flex-[1_0_200px] space-y-2">

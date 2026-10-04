@@ -80,7 +80,7 @@ export function NewContactModal({
       return
     }
 
-    toast.success('Responsável criado com sucesso!')
+    toast.success('Responsável criado')
     handleToggleModal(false)
     onContactCreated({ id: res.data?.id, name: formData.name })
   }
@@ -121,7 +121,7 @@ export function NewContactModal({
               />
               <FormInput<NewContactFormType>
                 name="email"
-                label="Email"
+                label="E-mail"
                 width="flex-[1_0_200px]"
               />
               <FormInput<NewContactFormType>
