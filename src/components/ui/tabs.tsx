@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import * as TabsPrimitive from '@radix-ui/react-tabs'
-import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
 
@@ -76,7 +75,7 @@ const TabsList = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
 >(({ className, ...props }, ref) => {
-  const { variant, sizing } = React.useContext(TabsContext)
+  const { variant } = React.useContext(TabsContext)
 
   // The 'vertical' flex arrangement for Pill variant when orientation=vertical is handled by class
   const isVertical = props['aria-orientation'] === 'vertical'
@@ -87,16 +86,14 @@ const TabsList = React.forwardRef<
       className={cn(
         // Variant Underline
         variant === 'underline' &&
-          'flex w-full items-center justify-start border-b border-[#eaecf0] overflow-x-auto overflow-y-hidden',
+          'flex w-full items-center justify-start border-b border-gray-200 overflow-x-auto overflow-y-hidden',
 
         // Variant Pill (Segmented Control)
         variant === 'pill' &&
-          'inline-flex items-center justify-center rounded-md bg-[#eaecf0] p-1 text-[#667085]',
+          'inline-flex items-center justify-center gap-1 rounded-lg bg-gray-200 p-1 text-gray',
         variant === 'pill' &&
           isVertical &&
           'flex-col items-stretch h-auto w-auto min-w-[153px]',
-        variant === 'pill' && !isVertical && sizing === 'default' && 'h-11',
-        variant === 'pill' && !isVertical && sizing === 'sm' && 'h-10',
 
         className,
       )}
@@ -129,22 +126,22 @@ const TabsTrigger = React.forwardRef<
         // === VARIANT: UNDERLINE ===
         variant === 'underline' && [
           'group inline-flex items-center justify-center relative px-5 py-4 gap-2 border-b-[3px] border-transparent',
-          'text-[13px] font-semibold text-[#667085] bg-transparent whitespace-nowrap',
-          'hover:text-[#344054]',
+          'text-sm font-semibold text-gray bg-transparent whitespace-nowrap',
+          'hover:text-gray-700',
           'focus-visible:outline-none transition-colors disabled:pointer-events-none disabled:opacity-50',
 
           // data-[state=active] bg
-          'data-[state=active]:bg-[#fcfcfd]',
+          'data-[state=active]:bg-gray-25',
 
           // Intent: Gray (Default Untitled UI)
           intent === 'gray' &&
-            'data-[state=active]:border-[#d0d5dd] data-[state=active]:text-[#101828]',
+            'data-[state=active]:border-gray-300 data-[state=active]:text-gray-900',
           // Intent: Success (Figma sample 38cf8f)
           intent === 'success' &&
-            'data-[state=active]:border-[#14b375] data-[state=active]:text-[#38cf8f]',
+            'data-[state=active]:border-brand-400 data-[state=active]:text-brand-300',
           // Intent: Brand/Dark (Figma sample 084C36)
           intent === 'dark' &&
-            'data-[state=active]:border-[#14b375] data-[state=active]:text-[#084C36]',
+            'data-[state=active]:border-brand-400 data-[state=active]:text-brand-800',
           // Intent: Brand
           intent === 'brand' &&
             'data-[state=active]:border-brand data-[state=active]:text-brand-700',
@@ -153,17 +150,17 @@ const TabsTrigger = React.forwardRef<
         // === VARIANT: PILL ===
         variant === 'pill' && [
           'group inline-flex items-center justify-center whitespace-nowrap rounded px-3 transition-all',
-          'text-sm font-medium text-[#667085]',
+          'text-sm font-medium text-gray',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1',
-          'disabled:pointer-events-none disabled:opacity-50 hover:text-[#344054]',
+          'disabled:pointer-events-none disabled:opacity-50 hover:text-gray-700',
 
           // Sizing
           sizing === 'default' && 'h-[34px] py-1.5',
           sizing === 'sm' && 'h-7 py-1',
 
           // data-[state=active] styling
-          'data-[state=active]:bg-white data-[state=active]:text-[#101828]',
-          'data-[state=active]:shadow-[0px_1px_3px_0_rgba(16,24,40,0.1),_0px_1px_2px_0_rgba(16,24,40,0.06)]',
+          'data-[state=active]:bg-white data-[state=active]:text-gray-700',
+          'data-[state=active]:shadow-sm-strong',
         ],
 
         className,
@@ -197,23 +194,23 @@ const TabsTrigger = React.forwardRef<
                 'flex items-center justify-center rounded-full text-xs font-semibold px-1.5 transition-colors',
 
                 // Underline Inactive
-                variant === 'underline' && 'bg-[#eaecf0] text-[#1d2939]',
+                variant === 'underline' && 'bg-gray-200 text-gray-800',
 
                 // Underline Active Intended Colors
                 variant === 'underline' &&
                   intent === 'success' &&
-                  'group-data-[state=active]:bg-[#ecfdf4] group-data-[state=active]:text-[#38cf8f]',
+                  'group-data-[state=active]:bg-brand-25 group-data-[state=active]:text-brand-300',
                 variant === 'underline' &&
                   intent === 'dark' &&
-                  'group-data-[state=active]:bg-[#ecfdf4] group-data-[state=active]:text-[#38cf8f]',
+                  'group-data-[state=active]:bg-brand-25 group-data-[state=active]:text-brand-300',
                 variant === 'underline' &&
                   (intent === 'gray' || intent === 'brand') &&
-                  'group-data-[state=active]:bg-[#cae1ff] group-data-[state=active]:text-brand-700', // adjust if needed
+                  'group-data-[state=active]:bg-brand-50 group-data-[state=active]:text-brand-700',
 
                 // Pill Badge
-                variant === 'pill' && 'bg-[#eaecf0] text-[#344054]',
+                variant === 'pill' && 'bg-gray-200 text-gray-700',
                 variant === 'pill' &&
-                  'group-data-[state=active]:bg-[#d2f9e3] group-data-[state=active]:text-[#085d40]',
+                  'group-data-[state=active]:bg-brand-50 group-data-[state=active]:text-brand-700',
               )}
             >
               {badge}
