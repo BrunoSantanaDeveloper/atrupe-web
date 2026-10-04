@@ -56,9 +56,9 @@ const buttonVariants = cva(
           'text-gray hover:bg-gray-100 hover:text-gray-600 active:bg-gray-50 active:text-gray',
 
         input:
-          'justify-start text-left font-normal border border-gray-300 bg-white shadow-sm text-gray-600 focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand cursor-text transition-all duration-200 ease-in-out',
+          'justify-start text-left font-normal border border-gray-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 cursor-text transition-all duration-200 ease-in-out',
         inputError:
-          'justify-start text-left font-normal border border-error bg-white shadow-sm text-gray-600 focus-visible:ring-offset-0 focus-visible:ring-1 focus-visible:ring-error focus-visible:border-error cursor-text transition-all duration-200 ease-in-out',
+          'justify-start text-left font-normal border border-error-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-error-100 focus-visible:border-error-300 cursor-text transition-all duration-200 ease-in-out',
 
         link: 'text-gray-900 underline-offset-4 hover:underline',
 
@@ -94,8 +94,8 @@ const buttonVariants = cva(
       size: {
         default: 'h-11 px-4 text-sm',
         md: 'h-10 px-3 text-sm',
-        sm: 'h-8 px-2 text-xs',
-        lg: 'h-14 px-6 text-base',
+        sm: 'h-8 px-2 text-sm',
+        lg: 'h-14 px-6 text-sm',
         icon: 'h-10 w-10 p-2.5',
         iconMd: 'h-11 w-11 p-2',
         iconSm: 'h-8 min-w-8 max-w-8 p-1.5',

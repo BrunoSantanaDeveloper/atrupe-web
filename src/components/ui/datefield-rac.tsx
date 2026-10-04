@@ -62,7 +62,7 @@ function DateSegment({ className, ...props }: DateSegmentProps) {
 }
 
 const dateInputStyle =
-  'flex h-11 w-full rounded-lg border border-gray-300 bg-white shadow-sm px-3.5 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-brand focus-visible:border-brand disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out'
+  'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out'
 // 'relative inline-flex h-9 w-full items-center overflow-hidden whitespace-nowrap rounded-md border border-gray-200 bg-white px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none data-focus-within:border-gray-950 data-focus-within:ring-gray-950/50 data-focus-within:ring-[3px] data-focus-within:has-aria-invalid:ring-red-500/20 dark:data-focus-within:has-aria-invalid:ring-red-500/40 data-focus-within:has-aria-invalid:border-red-500 dark:border-gray-800 dark:bg-gray-950 dark:data-focus-within:border-gray-300 dark:data-focus-within:ring-gray-300/50 dark:data-focus-within:has-aria-invalid:ring-red-900/20 dark:dark:data-focus-within:has-aria-invalid:ring-red-900/40 dark:data-focus-within:has-aria-invalid:border-red-900'
 
 interface DateInputProps extends DateInputPropsRac {

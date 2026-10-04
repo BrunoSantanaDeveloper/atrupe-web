@@ -197,6 +197,7 @@ export function CodigoServicoCombobox({
           id={id}
           type="button"
           variant="input"
+          size="md"
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
