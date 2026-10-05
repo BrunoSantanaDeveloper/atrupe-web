@@ -127,8 +127,12 @@ export function QuotationProdDetailModal({
   const queryClient = useQueryClient()
   const { quotationData, openChangeModal } = useQuotation()
   // const { data: unitOfMeasure } = useUnitOfMeasure()
+  // Na edição, o produto é o do item (originalProductId); o productId do
+  // contexto é o último produto escolhido para adicionar, e carregava as
+  // regras e as escolhas de outro produto (corrigido em 05/10/2026)
   const { data: product, isLoading } = useProductDetail(
-    quotationData.productId || '',
+    (editMode ? data?.product?.originalProductId : quotationData.productId) ||
+      '',
   )
 
   const { quotationId } = params
@@ -287,7 +291,7 @@ export function QuotationProdDetailModal({
 
   // Preço por faixa de quantidade (FQ-1, FQ-2): a faixa vale para o total,
   // e muda o valor por unidade do item simples conforme a quantidade
-  const tierProductId = product?.id || data?.id || null
+  const tierProductId = product?.id || data?.product?.originalProductId || null
   const { data: tiersRes } = useQuery({
     enabled: !!tierProductId && open,
     staleTime: 60_000,
