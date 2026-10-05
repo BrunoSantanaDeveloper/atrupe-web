@@ -3061,6 +3061,49 @@ export const setBlockLocalRules = async ({
  * Variações (PV-1 a PV-7)
  * ------------------------------------------------------------------------- */
 
+// Variações simples do produto, já no START (PV-6, decidido em 05/10/2026):
+// nome e preço por unidade de venda, para não cadastrar o mesmo produto várias
+// vezes (P, M, G; 4x0, 4x1, 4x4). São as mesmas `variations` que a composição
+// do PRO aprofunda, então quem sobe de plano encontra o que já cadastrou
+export const getProductVariations = async ({
+  productId,
+}: {
+  productId: string
+}) =>
+  ok(
+    findOrCreate(productId).variations.map(({ id, name, unitPrice }) => ({
+      id,
+      name,
+      unitPrice,
+    })),
+  )
+
+export const saveProductVariations = async ({
+  productId,
+  variations,
+}: {
+  productId: string
+  variations: { id?: string; name: string; unitPrice: number | null }[]
+}) => {
+  const names = variations.map((item) => item.name.trim())
+  if (names.some((name) => !name)) return fail('Dê um nome para cada variação')
+  if (new Set(names.map((name) => name.toLowerCase())).size !== names.length)
+    return fail('Duas variações com o mesmo nome')
+  const assembly = findOrCreate(productId)
+  assembly.variations = variations.map((item) => {
+    const existing = item.id
+      ? assembly.variations.find((current) => current.id === item.id)
+      : undefined
+    return {
+      ...(existing || { overrides: [] }),
+      id: existing?.id || `v${uid()}`,
+      name: item.name.trim(),
+      unitPrice: item.unitPrice,
+    }
+  })
+  return ok(null)
+}
+
 export const addVariation = async ({
   productId,
   name,

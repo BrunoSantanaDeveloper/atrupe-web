@@ -64,7 +64,7 @@ import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { SaleCompositionFields } from './SaleCompositionFields'
 import { saveItemComposition } from '@/actions/quotation-composition'
-import { getPriceTiers } from '@/actions/product-assembly'
+import { getPriceTiers, getProductVariations } from '@/actions/product-assembly'
 import type { ItemComposition } from '../../[quotationId]/composicao/types'
 
 interface Props {
@@ -304,7 +304,43 @@ export function QuotationProdDetailModal({
           .find((tier) => itemQuantity >= tier.from) || null
       : null
   const baseUnitCost = product?.items?.[0]?.unitCost ?? null
+
+  // Variações do produto (PV-6, já no START): o vendedor escolhe uma, e o
+  // preço e o nome do item seguem a escolha. Com variação escolhida, as faixas
+  // do produto não se aplicam
+  const { data: variationsRes } = useQuery({
+    enabled: !!product?.id && open && !editMode,
+    staleTime: 60_000,
+    queryKey: ['product-variations', product?.id],
+    queryFn: () => getProductVariations({ productId: product?.id as string }),
+  })
+  const variations =
+    (watch('items') || []).length === 1 ? variationsRes?.data || [] : []
+  const [variationId, setVariationId] = React.useState<string | null>(null)
   useEffect(() => {
+    if (open) setVariationId(null)
+  }, [open, product?.id])
+  const chooseVariation = (id: string) => {
+    const variation = variations.find((item) => item.id === id)
+    if (!variation) return
+    setVariationId(id)
+    const target =
+      variation.unitPrice !== null
+        ? convertUnitCostToRaw(itemUnitKind, variation.unitPrice)
+        : baseUnitCost
+    if (target !== null && target !== undefined) {
+      setValue('items.0.unitCost', target)
+      const { total, measurementValue } = calculateSalesValue(0)
+      setValue('items.0.salePrice', total)
+      setValue('items.0.measurementValue', measurementValue)
+    }
+    if (product?.name) {
+      setValue('description', `${product.name} · ${variation.name}`)
+    }
+  }
+
+  useEffect(() => {
+    if (variationId) return
     if (!tiers.length || (watch('items') || []).length !== 1) return
     const target =
       activeTier !== null
@@ -332,6 +368,10 @@ export function QuotationProdDetailModal({
     product?.allowEditDescription || data?.allowEditDescription
 
   async function onSubmit(data: ProductsFormType) {
+    if (!editMode && variations.length > 0 && !variationId) {
+      toast.error('Escolha a variação do produto')
+      return
+    }
     // Função auxiliar para omitir campos undefined (null é mantido para limpar campos no backend)
     // eslint-disable-next-line
     const omitUndefined = (obj: Record<string, any>) => {
@@ -481,6 +521,44 @@ export function QuotationProdDetailModal({
                   placeholder="Digite aqui"
                   disabled={!canEditDescription}
                 />
+                {variations.length > 0 && (
+                  <div className="w-full space-y-2">
+                    <p className="text-sm font-medium text-gray-700">
+                      Variação
+                    </p>
+                    <div
+                      role="radiogroup"
+                      aria-label="Variação"
+                      className="flex flex-wrap gap-2"
+                    >
+                      {variations.map((variation) => {
+                        const selected = variationId === variation.id
+                        return (
+                          <button
+                            key={variation.id}
+                            type="button"
+                            role="radio"
+                            aria-checked={selected}
+                            onClick={() => chooseVariation(variation.id)}
+                            className={cn(
+                              'h-10 rounded-lg border px-4 text-sm font-medium transition-colors',
+                              selected
+                                ? 'border-brand bg-success-25 text-brand-700'
+                                : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400',
+                            )}
+                          >
+                            {variation.name}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {!variationId && (
+                      <p className="text-xs text-gray">
+                        Escolha a variação para o preço e o nome do item.
+                      </p>
+                    )}
+                  </div>
+                )}
                 {items?.fields?.length > 1 && (
                   <>
                     <FormInput<ProductsFormType>
@@ -588,7 +666,7 @@ export function QuotationProdDetailModal({
                           width="flex-[1_0_130px]"
                         />
                       </PermissionGate>
-                      {index === 0 && tiers.length > 0 && (
+                      {index === 0 && tiers.length > 0 && !variationId && (
                         <p className="w-full text-xs text-gray">
                           {activeTier
                             ? `Preço da faixa a partir de ${activeTier.from}: R$ ${(activeTier.unitPrice / 100).toFixed(2).replace('.', ',')} por unidade de venda.`

@@ -22,6 +22,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 
 // Components
 import { ProductionStages } from './ProductionStages'
+import { ProductVariations } from './ProductVariations'
 import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -579,6 +580,28 @@ function NewProductModal({
                                 </div>
                               </div>
                             )}
+
+                          {/* Variações já no START (PV-6, 05/10/2026). No PRO
+                              elas vivem na aba Composição */}
+                          {!showCompositionTab && (
+                            <div className="w-full rounded-xl border border-gray-200 p-4">
+                              {editMode && productId ? (
+                                <ProductVariations
+                                  productId={productId}
+                                  unitKind={watch('items.0.unitKind')}
+                                />
+                              ) : (
+                                <p className="text-sm text-gray">
+                                  <span className="font-medium text-gray-700">
+                                    Variações
+                                  </span>{' '}
+                                  · Tamanhos ou cores do mesmo produto (P, M, G;
+                                  4x0, 4x4) entram depois de salvar, na edição
+                                  do produto.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </>
                       )}
                       {items?.fields?.length > 1 &&
