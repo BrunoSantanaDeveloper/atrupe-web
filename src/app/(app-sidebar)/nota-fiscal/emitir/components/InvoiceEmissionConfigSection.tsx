@@ -487,7 +487,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                   <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
                     Destino operacao
                   </p>
-                  <p className="min-h-11 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700">
+                  <p className="min-h-10 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700">
                     {getDestinoLabel(data.emissao.destinoOperacao)}
                   </p>
                 </div>

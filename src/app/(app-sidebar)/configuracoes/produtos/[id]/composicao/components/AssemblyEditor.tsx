@@ -1572,7 +1572,7 @@ function AssemblyEditorBody({
                   <SelectTrigger
                     aria-label="Status"
                     title={status.help}
-                    className="h-11 w-[220px]"
+                    className="h-10 w-[220px]"
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -2281,7 +2281,7 @@ function AssemblyEditorBody({
                     <Button
                       type="button"
                       variant="neutralOutline"
-                      className="h-11 w-full border-dashed"
+                      className="w-full border-dashed"
                       LeftIcon={IconPlus}
                       onClick={() => addStageAfter(item)}
                     >

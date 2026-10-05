@@ -302,7 +302,7 @@ export function InvoiceDeliveryAddressSection({
                         >
                           <SelectTrigger
                             id="select-delivery-address"
-                            className="w-full max-w-xl bg-white h-11"
+                            className="w-full max-w-xl bg-white h-10"
                           >
                             <SelectValue placeholder="-- Digitar endereço personalizado --" />
                           </SelectTrigger>
@@ -427,7 +427,7 @@ export function InvoiceDeliveryAddressSection({
                           >
                             <SelectTrigger
                               id="delivery-estado"
-                              className="bg-white h-11"
+                              className="bg-white h-10"
                             >
                               <SelectValue placeholder="Selecione o estado" />
                             </SelectTrigger>

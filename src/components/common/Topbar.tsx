@@ -72,7 +72,7 @@ export function Topbar({
     <div className="space-y-3">
       <div
         className={cn(
-          'flex flex-wrap justify-between gap-2 rounded-lg min-h-11',
+          'flex flex-wrap justify-between gap-2 rounded-lg min-h-10',
           label && 'bg-brand-200 px-6',
           classNames?.label,
         )}

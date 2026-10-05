@@ -278,7 +278,7 @@ function PartRow({
       {isCash ? (
         <div className="flex-[1_0_336px] space-y-2">
           <p className="text-sm font-medium">Conta</p>
-          <p className="flex h-11 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700">
+          <p className="flex h-10 items-center rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm text-gray-700">
             Gaveta do caixa · vai para a conta Caixa no fechamento
           </p>
         </div>
