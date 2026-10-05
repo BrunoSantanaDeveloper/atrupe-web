@@ -17,11 +17,8 @@ import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
-// Hooks / Store
-import { useAlertDialog } from '@/store/useAlertDialog'
-
 // Components
-import { Topbar } from '@/components/common/Topbar'
+import { Topbar, type TabNavType } from '@/components/common/Topbar'
 import { ReviewTodo } from '@/components/common/ReviewTodo'
 import { NewMaterialModal } from './NewMaterial'
 import { VariationsModal } from './VariationsModal'
@@ -38,7 +35,7 @@ import type { Material } from '../types'
 import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import { getMaterials, setMaterialActive } from '@/actions/materials'
+import { getMaterials } from '@/actions/materials'
 import { materialUnitSymbol } from '@/actions/materials-data'
 
 // Hooks / Store / Consts
@@ -49,20 +46,23 @@ import { assetUnitShort } from '@/consts/assets'
 import { useMoney } from '@/hooks/useMoney'
 
 // Third-party
-import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconBan,
   IconUpload,
   IconBoxSeam,
-  IconPalette,
   IconCurrencyReal,
-  IconRestore,
   IconChevronDown,
   IconChevronRight,
 } from '@tabler/icons-react'
+
+// Ativo e inativo são abas, como em Produtos (design.md da raiz, listagem).
+// Inativar e reativar ficam no modal de edição (decisão de 05/10/2026)
+const tabs: TabNavType[] = [
+  { value: 'ativos', tab: 'ativos', label: 'Ativos' },
+  { value: 'inativos', tab: 'inativos', label: 'Inativos' },
+]
 
 // Sem custo ou preço mostra `-`, nunca R$ 0,00 (design.md §7)
 export function Materials({ searchParams }: SearchParamsType) {
@@ -70,7 +70,7 @@ export function Materials({ searchParams }: SearchParamsType) {
   const money = useMoney()
   const formatValue = (value: number | null) => money(value)
   const queryClient = useQueryClient()
-  const alertDialog = useAlertDialog()
+  const status = searchParams?.status || 'ativos'
   const [expanded, setExpanded] = useState<string[]>([])
   const [variations, setVariations] = useState<Material>()
   const [importing, setImporting] = useState(false)
@@ -111,36 +111,6 @@ export function Materials({ searchParams }: SearchParamsType) {
 
   const materials = data?.data || []
 
-  // Material com histórico é inativado, não excluído: continua nas
-  // composições e vendas antigas, só some das listas de escolha
-  const toggleActive = (material: Material) =>
-    alertDialog.open({
-      title: material.active
-        ? `Inativar ${material.name}?`
-        : `Reativar ${material.name}?`,
-      description: material.active
-        ? 'Ele deixa de aparecer para escolher em composições e vendas. O que já o usa continua como está.'
-        : 'Ele volta a aparecer nas listas de escolha.',
-      confirmLabel: material.active ? 'Inativar' : 'Reativar',
-      onConfirm: async () => {
-        const response = await setMaterialActive({
-          id: material.id,
-          active: !material.active,
-        })
-
-        if (!response.success) {
-          toast.error(response.message)
-
-          return
-        }
-
-        toast.success(
-          material.active ? 'Material inativado' : 'Material reativado',
-        )
-        queryClient.invalidateQueries({ queryKey: ['materials'] })
-      },
-    })
-
   const sectors = Array.from(
     new Set(materials.map((material) => material.sector)),
   )
@@ -159,6 +129,9 @@ export function Materials({ searchParams }: SearchParamsType) {
           review="new"
           title="Materiais"
           supportText="Insumos usados na composição dos produtos e na revenda"
+          tabs={tabs}
+          activeTab={status}
+          paramName="status"
           primaryCta={
             <PermissionGate permissions={['product_settings:products:edit']}>
               <NewMaterialModal />
@@ -181,11 +154,19 @@ export function Materials({ searchParams }: SearchParamsType) {
           {isLoading ? (
             <TableSkeleton cols={7} rows={8} />
           ) : !materials.length ? (
-            <ListDataTotalEmpty
-              icon={IconBoxSeam}
-              title="Nenhum material cadastrado"
-              description="Cadastre seu primeiro material"
-            />
+            status === 'inativos' ? (
+              <ListDataTotalEmpty
+                icon={IconBoxSeam}
+                title="Nenhum material inativo"
+                description="Para inativar um material, desligue a chave Ativo na edição dele"
+              />
+            ) : (
+              <ListDataTotalEmpty
+                icon={IconBoxSeam}
+                title="Nenhum material cadastrado"
+                description="Cadastre seu primeiro material"
+              />
+            )
           ) : (
             <>
               <CardContent>
@@ -295,29 +276,19 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           'product_settings:products:edit',
                                         ]}
                                       >
+                                        {/* Duas ações por linha (05/10/2026):
+                                            editar (cadastro, variações e
+                                            ativo) e R$. Sem variação o R$ abre
+                                            o modal de preço; com variação, o
+                                            custo e o preço vivem em cada
+                                            combinação, então abre a tabela
+                                            delas (MT-3) */}
                                         <NewMaterialModal material={material} />
-                                        <ActionButton
-                                          Icon={
-                                            material.active
-                                              ? IconBan
-                                              : IconRestore
-                                          }
-                                          tooltip={
-                                            material.active
-                                              ? `Inativar ${material.name}`
-                                              : `Reativar ${material.name}`
-                                          }
-                                          onClick={() => toggleActive(material)}
-                                        />
-                                        {/* Todo material tem o R$: sem variação
-                                            abre o modal de preço; com variação,
-                                            o preço vive em cada combinação, então
-                                            abre a tabela delas (MT-3) */}
                                         <ActionButton
                                           Icon={IconCurrencyReal}
                                           tooltip={
                                             material.variations.length
-                                              ? `Precificar as variações de ${material.name}`
+                                              ? `Custo e preço das variações de ${material.name}`
                                               : `Precificar ${material.name}`
                                           }
                                           onClick={() =>
@@ -326,13 +297,6 @@ export function Materials({ searchParams }: SearchParamsType) {
                                               : setPricing(
                                                   pricingItemOf(material),
                                                 )
-                                          }
-                                        />
-                                        <ActionButton
-                                          Icon={IconPalette}
-                                          tooltip={`Variações de ${material.name}`}
-                                          onClick={() =>
-                                            setVariations(material)
                                           }
                                         />
                                       </PermissionGate>

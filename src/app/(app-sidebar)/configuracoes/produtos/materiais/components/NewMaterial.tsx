@@ -4,6 +4,7 @@
 import { useState } from 'react'
 
 // UI
+import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
@@ -32,7 +33,11 @@ import type {
 } from '../types'
 
 // Actions
-import { createMaterial, updateMaterial } from '@/actions/materials'
+import {
+  createMaterial,
+  updateMaterial,
+  createMaterialVariations,
+} from '@/actions/materials'
 
 // Hooks / Store / Consts
 import { assetUnitOptions } from '@/consts/assets'
@@ -43,6 +48,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconPlus, IconPencil } from '@tabler/icons-react'
+
+const splitList = (value: string) =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
 
 const sectors = [
   'Impressão',
@@ -94,12 +105,24 @@ interface Props {
   material?: Material
 }
 
-// Marca e cor entram depois, como variações (MT-2); espessura e tamanho viram
-// materiais diferentes.
+// Marca e cor são variações (MT-2), cadastradas aqui na edição; espessura e
+// tamanho viram materiais diferentes. Ativo e inativo também vivem aqui
+// (decisão de 05/10/2026): a linha da lista fica só com editar e R$.
 export function NewMaterialModal({ material }: Props) {
   const queryClient = useQueryClient()
   const isEdit = Boolean(material)
   const [open, setOpen] = useState(false)
+  // Material com histórico é inativado, não excluído: continua nas
+  // composições e vendas antigas, só some das listas de escolha
+  const [active, setActive] = useState(material?.active ?? true)
+  // Variações novas: marca × cor, com o mesmo custo em cada combinação
+  // (MT-3, MT-4). O preço sai depois, pelo R$ da lista
+  const [brands, setBrands] = useState('')
+  const [colors, setColors] = useState('')
+  const [variationCost, setVariationCost] = useState('')
+  const brandList = splitList(brands)
+  const colorList = splitList(colors)
+  const combinations = brandList.length * colorList.length
   const [name, setName] = useState(material?.name || '')
   const [sector, setSector] = useState(material?.sector || sectors[0].value)
   const [subcategory, setSubcategory] = useState(
@@ -153,13 +176,22 @@ export function NewMaterialModal({ material }: Props) {
       }
 
       return material
-        ? updateMaterial({ id: material.id, ...values })
+        ? updateMaterial({ id: material.id, ...values, active })
         : createMaterial(values)
     },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      toast.success(isEdit ? 'Material atualizado' : 'Material cadastrado')
+      const activeChanged = isEdit && material?.active !== active
+      toast.success(
+        activeChanged
+          ? active
+            ? 'Material reativado'
+            : 'Material inativado'
+          : isEdit
+            ? 'Material atualizado'
+            : 'Material cadastrado',
+      )
       queryClient.invalidateQueries({ queryKey: ['materials'] })
 
       if (!isEdit) {
@@ -175,6 +207,30 @@ export function NewMaterialModal({ material }: Props) {
           ? 'Erro ao atualizar o material'
           : 'Erro ao cadastrar o material',
       ),
+  })
+
+  const { mutate: addVariations, isPending: isAddingVariations } = useMutation({
+    mutationFn: () =>
+      createMaterialVariations({
+        materialId: material?.id || '',
+        brands: brandList,
+        colors: colorList,
+        cost: Math.round(Number(variationCost || 0) * 100),
+        // O preço vem depois, pelo modal de precificação (MT-3)
+        price: null,
+      }),
+    onSuccess: (response) => {
+      if (!response.success) return toast.error(response.message)
+
+      toast.success(
+        `${response.data} ${response.data === 1 ? 'variação criada' : 'variações criadas'}`,
+      )
+      setBrands('')
+      setColors('')
+      setVariationCost('')
+      queryClient.invalidateQueries({ queryKey: ['materials'] })
+    },
+    onError: () => toast.error('Erro ao criar as variações'),
   })
 
   return (
@@ -282,6 +338,22 @@ export function NewMaterialModal({ material }: Props) {
                 aria-label="Material de produção"
               />
             </div>
+            {isEdit && (
+              <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
+                <div>
+                  <p className="text-sm font-medium">Ativo</p>
+                  <p className="text-sm text-gray">
+                    Desligado, deixa de aparecer para escolher em composições e
+                    vendas. O que já o usa continua como está.
+                  </p>
+                </div>
+                <Switch
+                  checked={active}
+                  onCheckedChange={setActive}
+                  aria-label="Ativo"
+                />
+              </div>
+            )}
           </div>
 
           {/* Configuração avançada (MT-10.1, 03/10/2026): X é a primeira
@@ -430,10 +502,93 @@ export function NewMaterialModal({ material }: Props) {
             )}
           </div>
 
-          <p className="text-sm text-gray">
-            Marca e cor entram depois, como variações. Espessuras e tamanhos
-            diferentes são materiais diferentes.
-          </p>
+          {/* Variações (MT-2, MT-3, MT-4): cadastro aqui, custo e preço de
+              cada combinação pelo R$ da lista */}
+          {isEdit && material ? (
+            <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+              <div>
+                <p className="text-sm font-medium">Variações</p>
+                <p className="text-sm text-gray">
+                  Marcas e cores separadas por vírgula. O sistema cria uma
+                  combinação para cada marca × cor, com o mesmo custo, e a venda
+                  passa a exigir a escolha da variação.
+                </p>
+              </div>
+              {material.variations.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {material.variations.map((variation) => (
+                    <Badge key={variation.id} variant="neutralLight">
+                      {variation.brand} · {variation.color}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div className="space-y-1.5">
+                  <label htmlFor="brands" className="text-sm font-medium">
+                    Marcas
+                  </label>
+                  <Input
+                    id="brands"
+                    value={brands}
+                    placeholder="Marca X, Marca Y"
+                    onChange={(event) => setBrands(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="colors" className="text-sm font-medium">
+                    Cores
+                  </label>
+                  <Input
+                    id="colors"
+                    value={colors}
+                    placeholder="Branca, Preta"
+                    onChange={(event) => setColors(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label
+                    htmlFor="variation-cost"
+                    className="text-sm font-medium"
+                  >
+                    Custo de cada combinação
+                  </label>
+                  <Input
+                    id="variation-cost"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    startAdornment={<span className="text-sm">R$</span>}
+                    value={variationCost}
+                    onChange={(event) => setVariationCost(event.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm text-gray">
+                  {combinations > 0
+                    ? `Serão criadas ${combinations} combinações (${brandList.length} marcas × ${colorList.length} cores).`
+                    : 'Custo e preço de cada combinação ficam no R$ da lista.'}
+                </p>
+                <Button
+                  type="button"
+                  variant="neutralOutline"
+                  LeftIcon={IconPlus}
+                  isLoading={isAddingVariations}
+                  disabled={!combinations || !variationCost}
+                  onClick={() => addVariations()}
+                >
+                  Cadastrar variações
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-gray">
+              Marca e cor entram depois do cadastro, como variações, na edição
+              do material. Espessuras e tamanhos diferentes são materiais
+              diferentes.
+            </p>
+          )}
         </DialogBody>
         <DialogFooter>
           <DialogClose asChild>

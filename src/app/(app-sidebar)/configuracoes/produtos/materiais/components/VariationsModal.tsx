@@ -1,7 +1,7 @@
 'use client'
 
 // React / Next
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 // UI
 import { Input } from '@/components/ui/input'
@@ -31,10 +31,7 @@ import type { Material, MaterialVariation } from '../types'
 import type { PricingItem } from '@/app/(app-sidebar)/precificacao/types'
 
 // Actions
-import {
-  createMaterialVariations,
-  updateMaterialVariation,
-} from '@/actions/materials'
+import { updateMaterialVariation } from '@/actions/materials'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -51,7 +48,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPalette, IconCurrencyReal } from '@tabler/icons-react'
+import { IconCurrencyReal } from '@tabler/icons-react'
 
 interface Props {
   material?: Material
@@ -59,29 +56,15 @@ interface Props {
   onOpenChange: () => void
 }
 
-const splitList = (value: string) =>
-  value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean)
-
-// Marca × cor formam o cruzamento; o custo nasce repetido e é alterado linha a
-// linha (MT-3 e MT-4). Ao existir variação, o preço do material deixa de valer.
+// Custo e preço das variações, aberto pelo R$ da lista (05/10/2026). O custo
+// nasce repetido e é alterado linha a linha (MT-3 e MT-4); o preço sai do modal
+// de precificação. As marcas e cores são cadastradas na edição do material.
 export function VariationsModal({ material, open, onOpenChange }: Props) {
   // Custo e preço só para quem tem a permissão de valores (§9)
   const money = useMoney()
   const queryClient = useQueryClient()
-  const [brands, setBrands] = useState('')
-  const [colors, setColors] = useState('')
-  const [cost, setCost] = useState('')
   // A variação sendo precificada, no mesmo modal da Precificação (DC-6)
   const [pricing, setPricing] = useState<PricingItem | undefined>()
-
-  useEffect(() => {
-    setBrands('')
-    setColors('')
-    setCost('')
-  }, [material])
 
   // O preço segue o padrão dos materiais (MT-3, PR-2): informa-se o custo e
   // o preço sai do modal de precificação, preço variável pelo markup ou fixo
@@ -109,32 +92,6 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
           : variation.price < variation.cost
             ? 'BELOW_COST'
             : 'PRICED',
-  })
-
-  const brandList = splitList(brands)
-  const colorList = splitList(colors)
-  const combinations = brandList.length * colorList.length
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () =>
-      createMaterialVariations({
-        materialId: material?.id || '',
-        brands: brandList,
-        colors: colorList,
-        cost: Math.round(Number(cost || 0) * 100),
-        // O preço vem depois, pelo modal de precificação (MT-3)
-        price: null,
-      }),
-    onSuccess: (response) => {
-      if (!response.success) return toast.error(response.message)
-
-      toast.success(
-        `${response.data} ${response.data === 1 ? 'variação criada' : 'variações criadas'}`,
-      )
-      queryClient.invalidateQueries({ queryKey: ['materials'] })
-      onOpenChange()
-    },
-    onError: () => toast.error('Erro ao criar as variações'),
   })
 
   // Custo e preço são alterados linha a linha, direto na tabela (MT-4). Em
@@ -165,74 +122,22 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[720px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPalette} />
-            <DialogTitle>Variações de {material?.name}</DialogTitle>
+            <FeaturedIcon variant="neutralOutline" Icon={IconCurrencyReal} />
+            <DialogTitle>Custo e preço de {material?.name}</DialogTitle>
             <DialogDescription className="sr-only">
-              Cadastre as marcas e cores do material.
+              Custo e preço de venda de cada variação do material.
             </DialogDescription>
           </div>
         </DialogHeader>
         <DialogBody className="space-y-5">
           <p className="text-sm text-gray">
-            Informe as marcas e as cores separadas por vírgula. O sistema cria
-            uma linha por combinação, com o mesmo valor, e você altera as que
-            forem diferentes. A partir daí, a venda passa a exigir a escolha da
-            variação.
+            O custo é alterado direto na tabela. O preço de venda sai da
+            precificação, pelo R$ de cada linha. Para incluir marcas e cores,
+            use a edição do material.
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="brands" className="text-sm font-medium">
-                Marcas
-              </label>
-              <Input
-                id="brands"
-                value={brands}
-                placeholder="Marca X, Marca Y"
-                onChange={(event) => setBrands(event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="colors" className="text-sm font-medium">
-                Cores
-              </label>
-              <Input
-                id="colors"
-                value={colors}
-                placeholder="Branca, Preta"
-                onChange={(event) => setColors(event.target.value)}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <label htmlFor="variation-cost" className="text-sm font-medium">
-                Custo de cada combinação
-              </label>
-              <Input
-                id="variation-cost"
-                type="number"
-                min={0}
-                step="0.01"
-                startAdornment={<span className="text-sm">R$</span>}
-                value={cost}
-                onChange={(event) => setCost(event.target.value)}
-              />
-            </div>
-            <p className="self-end pb-3 text-sm text-gray">
-              O preço de venda de cada combinação sai da precificação, na tabela
-              abaixo.
-            </p>
-          </div>
-
-          {combinations > 0 && (
-            <p className="text-sm text-gray">
-              Serão criadas <strong>{combinations}</strong> combinações (
-              {brandList.length} marcas × {colorList.length} cores).
-            </p>
-          )}
 
           {material && material.variations.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium">Variações já cadastradas</p>
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-50">
@@ -319,13 +224,6 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
               Fechar
             </Button>
           </DialogClose>
-          <Button
-            isLoading={isPending}
-            disabled={!combinations || !cost}
-            onClick={() => mutate()}
-          >
-            {isPending ? 'Cadastrando...' : 'Cadastrar variações'}
-          </Button>
         </DialogFooter>
       </DialogContent>
       <EditPriceModal
