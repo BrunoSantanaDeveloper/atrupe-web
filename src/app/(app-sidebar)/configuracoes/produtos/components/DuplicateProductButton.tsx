@@ -8,6 +8,7 @@
 import { useState } from 'react'
 
 // Components
+import { Button } from '@/components/ui/button'
 import { ActionButton } from '@/components/common/ActionButton'
 
 // Actions
@@ -27,9 +28,16 @@ interface Props {
   name: string
   // Recebe o id do produto novo, para a lista abri-lo em edição
   onDone?: (newProductId: string) => void
+  // Botão com texto, no rodapé da edição do produto (05/10/2026)
+  asButton?: boolean
 }
 
-export function DuplicateProductButton({ productId, name, onDone }: Props) {
+export function DuplicateProductButton({
+  productId,
+  name,
+  onDone,
+  asButton,
+}: Props) {
   const queryClient = useQueryClient()
   const [busy, setBusy] = useState(false)
 
@@ -83,6 +91,20 @@ export function DuplicateProductButton({ productId, name, onDone }: Props) {
     } finally {
       setBusy(false)
     }
+  }
+
+  if (asButton) {
+    return (
+      <Button
+        type="button"
+        variant="neutralOutline"
+        LeftIcon={IconCopy}
+        isLoading={busy}
+        onClick={duplicate}
+      >
+        Duplicar
+      </Button>
+    )
   }
 
   return (

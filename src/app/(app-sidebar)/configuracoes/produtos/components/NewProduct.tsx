@@ -13,6 +13,7 @@ import {
   DialogDescription,
   DialogBody,
 } from '@/components/ui/dialog'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 // Components
 import { ProductionStages } from './ProductionStages'
 import { ProductVariations } from './ProductVariations'
+import { DuplicateProductButton } from './DuplicateProductButton'
 import { AssemblyEditor } from '../[id]/composicao/components/AssemblyEditor'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { FormInput } from '@/components/common/form/FormInput'
@@ -62,6 +64,7 @@ import {
   IconReceiptTax,
   IconHierarchy2,
   IconTrash,
+  IconArrowsMaximize,
 } from '@tabler/icons-react'
 
 // Action
@@ -95,6 +98,9 @@ interface Props {
   initialValues?: Partial<NewProductsFormType>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSuccess?: (product: any) => void
+  // Duplicar fica no rodapé da edição (05/10/2026): recebe o id da cópia,
+  // para o diálogo passar a editá-la
+  onDuplicated?: (newProductId: string) => void
 }
 
 const defaultItemFields = [
@@ -133,6 +139,7 @@ function NewProductModal({
   initialTab = 'general',
   initialValues,
   onSuccess,
+  onDuplicated,
 }: Props) {
   const queryClient = useQueryClient()
   const {
@@ -720,6 +727,17 @@ function NewProductModal({
                     {editMode && productId ? (
                       <TooltipProvider>
                         <div className="space-y-5">
+                          {/* A composição mora aqui; a tela cheia é a mesma,
+                              com mais espaço (05/10/2026) */}
+                          <div className="flex justify-end">
+                            <Link
+                              href={`/configuracoes/produtos/${productId}/composicao`}
+                              className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:underline"
+                            >
+                              <IconArrowsMaximize size={16} />
+                              Abrir em tela cheia
+                            </Link>
+                          </div>
                           <AssemblyEditor productId={productId} embedded />
                           {canShowProductionStages && (
                             <Form {...form}>
@@ -792,6 +810,18 @@ function NewProductModal({
                   >
                     {isActive ? 'Inativar' : 'Ativar'}
                   </Button>
+                </PermissionGate>
+              )}
+              {editMode && productId && (
+                <PermissionGate
+                  permissions={['product_settings:products:edit']}
+                >
+                  <DuplicateProductButton
+                    asButton
+                    productId={productId}
+                    name={product?.name || 'Produto'}
+                    onDone={onDuplicated}
+                  />
                 </PermissionGate>
               )}
             </div>
