@@ -104,6 +104,95 @@ bun dev
 
 A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
+## 💻 Rodando em outro computador
+
+Checklist para continuar o trabalho numa máquina nova. O que está no Git é o
+código e a documentação; o que **não** está e precisa ser copiado à mão são
+as credenciais (`.env.local`) e o navegador do Playwright.
+
+### Repositórios e branches
+
+| Remoto | Onde | Para quê |
+|---|---|---|
+| `origin` | `github.com/Maicol-Atrupe/Atrupe-OpenSpec` (fork do Maicol) | onde o trabalho é commitado e enviado |
+| `upstream` | `github.com/BrunoSantanaDeveloper/atrupe-web` (produção) | só leitura; o push está desativado de propósito |
+
+Branches do fork, do mais antigo ao mais novo (cada um nasce do anterior):
+
+1. `base-de-custos-rateios-2026-09-29` — base de custos e rateios
+2. `orcamento-fluxo-2026-10-01` — fluxo de etapas do orçamento (FL-1..FL-13)
+3. `revisao-layout-2026-10-03` — **branch atual de trabalho**: revisão de
+   layout, materiais, variações, orçamento. Revisado pelo
+   [PR #1](https://github.com/Maicol-Atrupe/Atrupe-OpenSpec/pull/1) para o
+   branch 2.
+
+Nunca trabalhe direto na `main` do fork nem na `main` do upstream.
+
+### Passo a passo
+
+```bash
+# 1. Clonar o fork e apontar o upstream (só leitura)
+git clone https://github.com/Maicol-Atrupe/Atrupe-OpenSpec.git
+cd Atrupe-OpenSpec
+git remote add upstream https://github.com/BrunoSantanaDeveloper/atrupe-web.git
+git remote set-url --push upstream ENVIO-DESATIVADO-repositorio-de-producao
+
+# 2. Entrar no branch de trabalho
+git checkout revisao-layout-2026-10-03
+
+# 3. Node e dependências (a referência é Node 26 e npm 11; Node 18+ funciona)
+#    Com nvm: nvm install 26 && nvm use 26
+npm ci          # instala exatamente o que está no package-lock.json
+
+# 4. Variáveis de ambiente
+cp .env.example .env.local
+#    Depois COPIE do computador antigo os valores que não estão no exemplo:
+#    AUTH_SECRET, E2E_USER_EMAIL/PASSWORD, E2E_ADMIN_EMAIL/PASSWORD,
+#    LEGACY_USER/PASSWORD. O .env.local nunca vai para o Git.
+
+# 5. Navegador do Playwright (para as capturas e os testes)
+npx playwright install chromium
+
+# 6. Subir
+npm run dev     # http://localhost:3000
+```
+
+### Conferindo que está tudo certo
+
+- `npx tsc --noEmit -p .` só pode acusar os erros de imagens `.png` ausentes,
+  que já existem na base.
+- `npx eslint <arquivo>` nos arquivos que você mexer; o husky roda o
+  `lint-staged` em todo commit.
+- Entre no sistema com a conta `E2E_USER_EMAIL` (empresa de teste, LITE na
+  API). O menu lateral só mostra os módulos do PRO/ELITE/FULL se
+  `NEXT_PUBLIC_DEV_FEATURES` estiver preenchida, e o plano exibido vem de
+  `DEV_PLAN_NAME`.
+- Vitrines para conferir telas sem depender da API: `/sandbox/fluxo` (fluxo
+  de etapas e modal Composição) e `/sandbox/orcamento` (itens do orçamento
+  com um orçamento de mentira).
+
+### O que é provisório e vive só na memória do servidor
+
+Enquanto o backend não tem os endpoints (lista em
+[`openspec/analise/backend-pendente.md`](openspec/analise/backend-pendente.md)),
+o PRO e parte do LITE leem **dados de exemplo em memória** em
+`src/actions/*.ts`: materiais, composição, variações, itens montados no
+orçamento e o que foi acrescentado dentro de um item. Tudo isso **some quando
+o `npm run dev` reinicia** e não é compartilhado entre computadores.
+
+### Trabalhando com o Claude Code
+
+A memória do assistente (preferências, histórico das decisões com o Maicol,
+fornecedores) fica fora do repositório, em
+`~/.claude/projects/<pasta-do-projeto>/memory/` do computador antigo. Para
+continuar com o mesmo contexto na máquina nova, copie essa pasta para o mesmo
+caminho relativo. As permissões locais do Claude ficam em
+`.claude/settings.local.json`, que também não vai para o Git.
+
+As regras de negócio e as decisões do produto estão todas em
+[`openspec/`](openspec/), que **é** versionado: é a fonte de verdade,
+independente do computador.
+
 ## 📁 Estrutura do Projeto (deprecated)
 
 ```
