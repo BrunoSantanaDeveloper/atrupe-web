@@ -39,6 +39,7 @@ import { useForm } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
+import { useCompany } from '@/hooks/queries/useCompany'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useNewClientStore } from '../store/useNewClientStore'
 import { useContactSources } from '@/hooks/queries/useContactSources'
@@ -68,6 +69,7 @@ export function NewQuotationModal({
   const { data: sellers } = useSeller()
   const { data: series } = useSerie(true)
   const { data: contactSources } = useContactSources()
+  const { data: companies } = useCompany()
   const { canManageMultipleCompanies } = usePlanFeatures()
   const { setOnClientCreated } = useNewClientStore()
 
@@ -211,6 +213,11 @@ export function NewQuotationModal({
   // @ts-expect-error any
   const clientId = form.watch('clientId')?.value
 
+  // O campo Empresa só faz sentido com mais de um CNPJ ativo; com um só,
+  // o orçamento já nasce na empresa da sessão (companyId do defaultValues)
+  const hasMultipleCompanies =
+    canManageMultipleCompanies() && (companies?.length ?? 0) > 1
+
   return (
     <PermissionGate
       permissions={['sale:quotation:create', 'sale:quotation:edit']}
@@ -273,7 +280,7 @@ export function NewQuotationModal({
                   clientId={clientId}
                   disabled={!clientId}
                 />
-                {canManageMultipleCompanies() && (
+                {hasMultipleCompanies && (
                   <SelectCompanyField<QuotationFormType>
                     name="companyId"
                     label="Empresa"
