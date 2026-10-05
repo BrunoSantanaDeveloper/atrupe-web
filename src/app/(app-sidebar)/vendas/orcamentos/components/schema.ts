@@ -6,7 +6,11 @@ import { z } from 'zod'
  */
 export const quotationSchema = z
   .object({
-    companyId: z.string(),
+    // O campo só aparece em conta multiempresa; a mensagem é o que o aviso
+    // de formulário inválido mostra quando ele falha escondido.
+    companyId: z.string({
+      required_error: 'empresa do orçamento não identificada',
+    }),
     clientId: z
       .object({
         label: z.string().optional(),

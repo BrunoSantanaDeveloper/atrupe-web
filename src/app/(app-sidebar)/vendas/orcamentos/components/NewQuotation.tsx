@@ -40,7 +40,7 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Hooks
-import { useForm } from 'react-hook-form'
+import { useForm, type FieldErrors } from 'react-hook-form'
 import { useSession } from 'next-auth/react'
 import { useSerie } from '@/hooks/queries/useSerie'
 import { useSeller } from '@/hooks/queries/useSeller'
@@ -96,15 +96,19 @@ export function NewQuotationModal({
   useEffect(() => {
     if (data && open) {
       form.reset({
-        companyId: data?.company?.id,
+        // `company` é a subempresa fiscal, que o documento migrado não tinha;
+        // sem ela o zod barrava o salvar em silêncio. A empresa do documento
+        // vale no lugar.
+        companyId: data?.company?.id ?? data?.companyId,
         // Venda rápida pode não ter cliente.
         clientId: (data?.client
           ? { label: data.client.name, value: data.client.id }
           : null) as unknown as string,
         contactId: data?.contact?.id || '',
-        description: data?.description,
+        // Descrição nula (migrado sem referência) barrava do mesmo jeito.
+        description: data?.description ?? '',
         contactSourceId: data?.contactSource?.id ?? '',
-        seriesId: data?.serie.id || '',
+        seriesId: data?.serie?.id || '',
         sellerId: data?.seller?.id || '',
         quickSale: !!data?.quickSale,
       })
@@ -162,6 +166,17 @@ export function NewQuotationModal({
   }, [contactSources, form, editMode, open])
 
   const { handleSubmit } = form
+
+  // Campo inválido fora da tela (empresa, descrição) travava o salvar sem
+  // dizer nada: nenhum request, nenhum aviso. Agora o motivo aparece.
+  const onInvalid = (errors: FieldErrors<QuotationFormType>) => {
+    const primeiro = Object.values(errors).find((erro) => erro?.message)
+    toast.error(
+      primeiro?.message
+        ? `Não foi possível salvar: ${primeiro.message}`
+        : 'Não foi possível salvar: verifique os campos do formulário.',
+    )
+  }
 
   const handleToggleModal = (open: boolean) => {
     if (!open) {
@@ -249,7 +264,7 @@ export function NewQuotationModal({
             <Form {...form}>
               <form
                 id="new-quotation"
-                onSubmit={handleSubmit(onSubmit)}
+                onSubmit={handleSubmit(onSubmit, onInvalid)}
                 className="flex flex-wrap gap-5"
                 noValidate
               >

@@ -157,6 +157,8 @@ export type QuotationPaymentConditionsType = {
 // TODO : separar entre listagem e detalhes
 export type QuotationType = {
   id: string
+  /** Empresa dona do documento; `company` abaixo é a subempresa fiscal. */
+  companyId: string
   orderId: string
   quotationNumber: number
   contactSource?: { id: string; name: string }
