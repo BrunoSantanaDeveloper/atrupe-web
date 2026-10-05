@@ -28,7 +28,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
-import { afterBaseOptions } from '@/consts/processes'
+import { afterBaseObj } from '@/consts/processes'
 import type { AfterBase } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ProcessEditor } from '../[id]/components/ProcessEditor'
@@ -53,9 +53,13 @@ import {
   IconPencil,
   IconListCheck,
   IconPlus,
+  IconLink,
+  IconCircle,
+  IconPackages,
   IconHierarchy2,
   IconCircleCheck,
-  IconPackages,
+  IconRulerMeasure,
+  IconCircleCheckFilled,
 } from '@tabler/icons-react'
 
 // Utils
@@ -74,6 +78,14 @@ interface Props {
 }
 
 const EDIT = ['product_settings:products:edit']
+
+// As duas preferências como cartões de regra, no desenho do modal de
+// precificação (openspec/design.md): o texto de apoio diz quando usar cada
+// uma, com "acabamento" e "serviço principal" como exemplos (05/10/2026)
+const afterBaseCards: { value: AfterBase; Icon: typeof IconLink }[] = [
+  { value: 'INHERIT', Icon: IconLink },
+  { value: 'OWN', Icon: IconRulerMeasure },
+]
 
 // O que só existe depois de salvar, como na aba Composição do produto novo
 function AfterSave({ title, text }: { title: string; text: string }) {
@@ -246,8 +258,10 @@ export function ProcessDialog({
                   // Os três campos de abertura, na ordem em que fazem
                   // sentido (MS-1). O resto se monta depois de salvar
                   <div className="flex flex-wrap gap-4">
-                    <div className="flex-[1_0_400px] space-y-2">
-                      <Label htmlFor="process-name">Nome do processo</Label>
+                    <div className="flex flex-[1_0_400px] flex-col">
+                      <Label htmlFor="process-name" className="mb-2">
+                        Nome do processo
+                      </Label>
                       <Input
                         id="process-name"
                         autoFocus
@@ -275,16 +289,63 @@ export function ProcessDialog({
                       value={sector}
                       onChange={(value) => value && setSector(String(value))}
                     />
-                    <SelectBasic
-                      name="process-after-base"
-                      label="Quando entra depois de outra etapa"
-                      className="flex-[1_0_190px]"
-                      options={afterBaseOptions}
-                      value={afterBase}
-                      onChange={(value) =>
-                        value && setAfterBase(value as AfterBase)
-                      }
-                    />
+                    <div className="flex w-full flex-col">
+                      <Label className="mb-2">
+                        Quando entra depois de outra etapa
+                      </Label>
+                      <div
+                        role="radiogroup"
+                        aria-label="Quando entra depois de outra etapa"
+                        className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+                      >
+                        {afterBaseCards.map(({ value, Icon }) => {
+                          const selected = afterBase === value
+                          return (
+                            <button
+                              key={value}
+                              type="button"
+                              role="radio"
+                              aria-checked={selected}
+                              onClick={() => setAfterBase(value)}
+                              className={cn(
+                                'flex items-start gap-3 rounded-lg border bg-white p-3 text-left transition-colors',
+                                selected
+                                  ? 'border-brand bg-success-25'
+                                  : 'border-gray-200 hover:border-gray-300',
+                              )}
+                            >
+                              <FeaturedIcon
+                                variant={selected ? 'light' : 'neutralOutline'}
+                                size="sm"
+                                rounded
+                                Icon={Icon}
+                              />
+                              <span className="flex-1">
+                                <span className="block text-sm font-medium text-gray-900">
+                                  {afterBaseObj[value].label}
+                                </span>
+                                <span className="block text-sm text-gray">
+                                  {afterBaseObj[value].help}
+                                </span>
+                              </span>
+                              {selected ? (
+                                <IconCircleCheckFilled
+                                  size={20}
+                                  className="shrink-0 text-brand-600"
+                                  aria-hidden="true"
+                                />
+                              ) : (
+                                <IconCircle
+                                  size={20}
+                                  className="shrink-0 text-gray-300"
+                                  aria-hidden="true"
+                                />
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
                     {resourcesError && (
                       <p className="w-full text-sm text-error-700">
                         Não foi possível carregar os setores.{' '}
@@ -298,11 +359,10 @@ export function ProcessDialog({
                       </p>
                     )}
                     <p className="w-full text-sm text-gray">
-                      Se o processo é um acabamento, ele herda a medida e a
-                      quantidade da etapa anterior. Começando um produto, pede
-                      as próprias. Recursos, tempo e regras de venda entram na
-                      aba Composição, depois de salvar; as etapas que costumam
-                      vir antes e depois, na aba Uso.
+                      Começando um produto, o processo sempre pede medida e
+                      quantidade próprias. Recursos, tempo e regras de venda
+                      entram na aba Composição, depois de salvar; as etapas que
+                      costumam vir antes e depois, na aba Uso.
                     </p>
                   </div>
                 )}

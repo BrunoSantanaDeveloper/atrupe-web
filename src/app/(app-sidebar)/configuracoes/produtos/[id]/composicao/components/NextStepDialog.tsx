@@ -40,6 +40,7 @@ import { IconPlus, IconSearch } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
+import { afterBaseObj } from '@/consts/processes'
 
 export type PartCandidate = {
   productId: string
@@ -97,7 +98,7 @@ function ProcessRow({
         <span className="block text-xs text-gray">{process.sector}</span>
       </span>
       {process.afterBase === 'INHERIT' && (
-        <Badge variant="neutralLight">Herda a medida da base</Badge>
+        <Badge variant="neutralLight">{afterBaseObj.INHERIT.label}</Badge>
       )}
     </button>
   )

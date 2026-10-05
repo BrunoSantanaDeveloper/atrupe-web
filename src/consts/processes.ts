@@ -192,11 +192,21 @@ export const dimensionRuleOptions = (
   Object.keys(dimensionRuleObj) as DimensionRule[]
 ).map((rule) => ({ value: rule, label: dimensionRuleObj[rule] }))
 
-// O que o processo prefere quando entra depois de outra etapa (03/10/2026)
-export const afterBaseObj: { [key in AfterBase]: string } = {
-  INHERIT: 'Herda a medida da base',
-  OWN: 'Pede medida própria',
+// O que o processo prefere quando entra depois de outra etapa (03/10/2026).
+// "Acabamento" e "serviço principal" são exemplos para entender a escolha,
+// não um tipo: base ou acabamento é a posição no produto (05/10/2026)
+export const afterBaseObj: {
+  [key in AfterBase]: { label: string; help: string }
+} = {
+  INHERIT: {
+    label: 'Acompanha a base',
+    help: 'Como um acabamento: herda a medida e a quantidade da etapa anterior.',
+  },
+  OWN: {
+    label: 'Medida própria',
+    help: 'Como um serviço principal ou uma instalação: pede medida e quantidade ao vendedor, mesmo vindo depois de outra etapa.',
+  },
 }
 export const afterBaseOptions = (Object.keys(afterBaseObj) as AfterBase[]).map(
-  (key) => ({ value: key, label: afterBaseObj[key] }),
+  (key) => ({ value: key, label: afterBaseObj[key].label }),
 )
