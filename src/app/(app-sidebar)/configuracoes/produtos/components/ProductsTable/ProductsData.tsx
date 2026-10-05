@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 // Components
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
+import { DuplicateProductButton } from '../DuplicateProductButton'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
 import { BulkNcmDialog } from '../ProductFiscalData/BulkNcmDialog'
 import { TablePagination } from '@/components/common/TablePagination'
@@ -61,7 +62,11 @@ import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import { IconReceiptTax, IconCurrencyReal } from '@tabler/icons-react'
+import {
+  IconReceiptTax,
+  IconStack2,
+  IconCurrencyReal,
+} from '@tabler/icons-react'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -419,8 +424,13 @@ export function ProductsData({ searchParams, tabs }: Props) {
                   <TableCell>
                     <div className="flex justify-end gap-1">
                       <TooltipProvider>
-                        {/* Duas ações por linha (05/10/2026): editar, que
-                            tem a composição, o duplicar e o inativar, e R$ */}
+                        {showComposition && (
+                          <ActionButton
+                            Icon={IconStack2}
+                            tooltip={`Composição de ${product?.name}`}
+                            link={`/configuracoes/produtos/${product?.id}/composicao`}
+                          />
+                        )}
                         <PermissionGate
                           permissions={['product_settings:products:edit']}
                         >
@@ -431,6 +441,16 @@ export function ProductsData({ searchParams, tabs }: Props) {
                               openPricing(product).catch(() =>
                                 toast.error('Erro ao abrir a precificação'),
                               )
+                            }}
+                          />
+                          {/* Duplicar: outro produto com os mesmos dados e a
+                              mesma composição, aberto para edição */}
+                          <DuplicateProductButton
+                            productId={product?.id}
+                            name={product?.name}
+                            onDone={(newId) => {
+                              setSelectedProductId(newId)
+                              setOpenDialog('edit-product')
                             }}
                           />
                           <NewProductTriggerButton
@@ -504,10 +524,6 @@ export function ProductsData({ searchParams, tabs }: Props) {
         open={openDialog === 'edit-product' || openDialog === 'compose-product'}
         editMode
         productId={selectedProductId}
-        onDuplicated={(newId) => {
-          setSelectedProductId(newId)
-          setOpenDialog('edit-product')
-        }}
         initialTab={
           openDialog === 'compose-product' ? 'composition' : 'general'
         }
