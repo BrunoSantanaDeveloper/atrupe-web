@@ -523,7 +523,7 @@ export function NewMaterialModal({ material }: Props) {
                   ))}
                 </div>
               )}
-              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:items-end">
                 <div className="space-y-1.5">
                   <label htmlFor="brands" className="text-sm font-medium">
                     Marcas
@@ -551,7 +551,7 @@ export function NewMaterialModal({ material }: Props) {
                     htmlFor="variation-cost"
                     className="text-sm font-medium"
                   >
-                    Custo de cada combinação
+                    Custo por combinação
                   </label>
                   <Input
                     id="variation-cost"
