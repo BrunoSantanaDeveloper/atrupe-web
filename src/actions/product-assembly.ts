@@ -3061,6 +3061,79 @@ export const setBlockLocalRules = async ({
  * Variações (PV-1 a PV-7)
  * ------------------------------------------------------------------------- */
 
+// Onde um material é usado (05/10/2026): inativar o material o tira das
+// composições, então a tela mostra a lista antes de confirmar
+const usesMaterial = (optionId: string, materialId: string) =>
+  optionId === `mat:${materialId}` || optionId.startsWith(`mat:${materialId}:`)
+
+const blocksOf = (assembly: ProductAssembly) => [
+  ...assembly.blocks,
+  ...assembly.variations.flatMap((variation) => variation.extraBlocks || []),
+]
+
+export const getMaterialUsage = async ({
+  materialId,
+}: {
+  materialId: string
+}) => {
+  const usage: { kind: 'PRODUCT' | 'PROCESS'; name: string; stage: string }[] =
+    []
+  processStore.forEach(({ block }) => {
+    if (
+      block.lines.some((line) =>
+        line.options.some((option) => usesMaterial(option.id, materialId)),
+      )
+    )
+      usage.push({ kind: 'PROCESS', name: block.name, stage: block.sector })
+  })
+  assemblies
+    .filter((assembly) => !assembly.productId.includes(VARIANT_SEP))
+    .forEach((assembly) => {
+      blocksOf(assembly).forEach((block) => {
+        if (
+          block.lines.some((line) =>
+            line.options.some((option) => usesMaterial(option.id, materialId)),
+          )
+        )
+          usage.push({
+            kind: 'PRODUCT',
+            name: assembly.name,
+            stage: block.localName || block.name,
+          })
+      })
+    })
+  return ok(usage)
+}
+
+// Tira o material das linhas: sai das opções; se era o escolhido, a linha
+// passa para a próxima opção; linha sem opção nenhuma sai da etapa
+export const removeMaterialFromCompositions = async ({
+  materialId,
+}: {
+  materialId: string
+}) => {
+  const strip = (block: AssemblyBlock) => {
+    block.lines = block.lines
+      .map((line) => {
+        const options = line.options.filter(
+          (option) => !usesMaterial(option.id, materialId),
+        )
+        if (options.length === line.options.length) return line
+        return {
+          ...line,
+          options,
+          selectedId: options.some((option) => option.id === line.selectedId)
+            ? line.selectedId
+            : options[0]?.id || '',
+        }
+      })
+      .filter((line) => line.options.length > 0)
+  }
+  processStore.forEach(({ block }) => strip(block))
+  assemblies.forEach((assembly) => blocksOf(assembly).forEach(strip))
+  return ok(null)
+}
+
 // Variações simples do produto, já no START (PV-6, decidido em 05/10/2026):
 // nome e preço por unidade de venda, para não cadastrar o mesmo produto várias
 // vezes (P, M, G; 4x0, 4x1, 4x4). São as mesmas `variations` que a composição

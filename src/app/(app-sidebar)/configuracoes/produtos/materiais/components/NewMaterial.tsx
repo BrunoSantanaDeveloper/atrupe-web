@@ -32,6 +32,9 @@ import type {
   MaterialAdvanced,
 } from '../types'
 
+// Components
+import { InactivateMaterialDialog } from './InactivateMaterialDialog'
+
 // Actions
 import {
   createMaterial,
@@ -106,15 +109,15 @@ interface Props {
 }
 
 // Marca e cor são variações (MT-2), cadastradas aqui na edição; espessura e
-// tamanho viram materiais diferentes. Ativo e inativo também vivem aqui
-// (decisão de 05/10/2026): a linha da lista fica só com editar e R$.
+// tamanho viram materiais diferentes. Inativar e reativar também vivem aqui,
+// num botão do rodapé (05/10/2026): a linha da lista fica com editar e R$.
 export function NewMaterialModal({ material }: Props) {
   const queryClient = useQueryClient()
   const isEdit = Boolean(material)
   const [open, setOpen] = useState(false)
-  // Material com histórico é inativado, não excluído: continua nas
-  // composições e vendas antigas, só some das listas de escolha
-  const [active, setActive] = useState(material?.active ?? true)
+  // Material com histórico é inativado, não excluído; ao inativar, sai das
+  // composições, com a lista e a confirmação no diálogo próprio
+  const [statusOpen, setStatusOpen] = useState(false)
   // Variações novas: marca × cor, com o mesmo custo em cada combinação
   // (MT-3, MT-4). O preço sai depois, pelo R$ da lista
   const [brands, setBrands] = useState('')
@@ -180,22 +183,13 @@ export function NewMaterialModal({ material }: Props) {
       }
 
       return material
-        ? updateMaterial({ id: material.id, ...values, active })
+        ? updateMaterial({ id: material.id, ...values })
         : createMaterial(values)
     },
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
 
-      const activeChanged = isEdit && material?.active !== active
-      toast.success(
-        activeChanged
-          ? active
-            ? 'Material reativado'
-            : 'Material inativado'
-          : isEdit
-            ? 'Material atualizado'
-            : 'Material cadastrado',
-      )
+      toast.success(isEdit ? 'Material atualizado' : 'Material cadastrado')
       queryClient.invalidateQueries({ queryKey: ['materials'] })
 
       if (!isEdit) {
@@ -342,22 +336,6 @@ export function NewMaterialModal({ material }: Props) {
                 aria-label="Material de produção"
               />
             </div>
-            {isEdit && (
-              <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-200 p-3">
-                <div>
-                  <p className="text-sm font-medium">Ativo</p>
-                  <p className="text-sm text-gray">
-                    Desligado, deixa de aparecer para escolher em composições e
-                    vendas. O que já o usa continua como está.
-                  </p>
-                </div>
-                <Switch
-                  checked={active}
-                  onCheckedChange={setActive}
-                  aria-label="Ativo"
-                />
-              </div>
-            )}
           </div>
 
           {/* Configuração avançada (MT-10.1, 03/10/2026): X é a primeira
@@ -614,21 +592,42 @@ export function NewMaterialModal({ material }: Props) {
             </p>
           )}
         </DialogBody>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="neutralOutline">
-              Cancelar
+        <DialogFooter className="sm:justify-between">
+          <div>
+            {isEdit && material && (
+              <Button
+                type="button"
+                variant={material.active ? 'errorOutline' : 'successOutline'}
+                onClick={() => setStatusOpen(true)}
+              >
+                {material.active ? 'Inativar' : 'Reativar'}
+              </Button>
+            )}
+          </div>
+          <div className="flex gap-4">
+            <DialogClose asChild>
+              <Button type="button" variant="neutralOutline">
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button
+              isLoading={isPending}
+              disabled={!name}
+              onClick={() => mutate()}
+            >
+              {isEdit ? 'Salvar' : 'Cadastrar material'}
             </Button>
-          </DialogClose>
-          <Button
-            isLoading={isPending}
-            disabled={!name}
-            onClick={() => mutate()}
-          >
-            {isEdit ? 'Salvar' : 'Cadastrar material'}
-          </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
+      {isEdit && material && (
+        <InactivateMaterialDialog
+          material={material}
+          open={statusOpen}
+          onOpenChange={setStatusOpen}
+          onDone={() => setOpen(false)}
+        />
+      )}
     </Dialog>
   )
 }
