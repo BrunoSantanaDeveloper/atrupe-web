@@ -71,10 +71,13 @@ import {
 // Actions
 import { createItem } from '@/actions/_cruds'
 import {
+  getItemLines,
+  removeItemLine,
   getComposedItems,
   getItemCompositions,
   removeComposedItem,
 } from '@/actions/quotation-composition'
+import { AddToItem } from './AddToItem'
 import {
   CompositionReport,
   type ReportTarget,
@@ -139,6 +142,34 @@ export function QuotationItems({ data }: Props) {
     enabled: !!data?.id,
   })
   const composed = composedRes?.data || []
+
+  // O que foi acrescentado dentro de cada item (ORC-5). Provisório, no mock,
+  // até a API guardar as linhas no item (backend-pendente.md)
+  const { data: linesRes } = useQuery({
+    queryKey: ['quotation-item-lines', data?.id],
+    queryFn: () => getItemLines({ quotationId: String(data?.id) }),
+    enabled: !!data?.id,
+  })
+  const linesOf = (item: QuotationItemType) => linesRes?.data?.[item.id] || []
+  const [addingTo, setAddingTo] = useState<string | null>(null)
+  const removeLine = (item: QuotationItemType, lineId: string, name: string) =>
+    alertDialog.open({
+      title: `Retirar ${name}?`,
+      description: `Sai de ${item.description}.`,
+      confirmLabel: 'Retirar',
+      cancelLabel: 'Cancelar',
+      confirmVariant: 'error',
+      onConfirm: async () => {
+        const res = await removeItemLine({
+          quotationId: String(data?.id),
+          itemId: item.id,
+          lineId,
+        })
+        if (!res.success) throw new Error(res.message)
+        queryClient.invalidateQueries({ queryKey: ['quotation-item-lines'] })
+      },
+      toastMsg: { success: 'Retirado do item', error: 'Erro ao retirar' },
+    })
 
   const removeComposed = (item: ComposedItemSummary) =>
     alertDialog.open({
@@ -239,6 +270,11 @@ export function QuotationItems({ data }: Props) {
                   const parts = item.product?.compositions || []
                   const single = parts.length === 1 ? parts[0] : null
                   const chosen = compositionOf(item)
+                  const added = linesOf(item)
+                  const addedTotal = added.reduce(
+                    (sum, line) => sum + line.price,
+                    0,
+                  )
                   const discount = Math.max(
                     0,
                     item?.totalValue - item?.finalValue,
@@ -310,6 +346,11 @@ export function QuotationItems({ data }: Props) {
                           </TableCell>
                           <TableCell className="py-4 text-sm text-gray">
                             {formatCurrencyToBrl(item?.finalValue)}
+                            {addedTotal > 0 && (
+                              <span className="block text-xs text-brand-700">
+                                + {formatCurrencyToBrl(addedTotal)} acrescentado
+                              </span>
+                            )}
                           </TableCell>
                         </PermissionGate>
                         <TableCell className="py-4">
@@ -399,7 +440,84 @@ export function QuotationItems({ data }: Props) {
                                     </PermissionGate>
                                   </li>
                                 ))}
+                                {added.map((line) => (
+                                  <li
+                                    key={line.id}
+                                    className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-sm"
+                                  >
+                                    <Badge
+                                      variant={
+                                        line.kind === 'LOOSE'
+                                          ? 'warningLight'
+                                          : 'blueLight'
+                                      }
+                                    >
+                                      {line.kind === 'LOOSE'
+                                        ? 'Terceirizado'
+                                        : line.sector || 'Processo'}
+                                    </Badge>
+                                    <span className="font-medium text-gray-800">
+                                      {line.name}
+                                    </span>
+                                    {line.tags.map((tag) => (
+                                      <span key={tag} className="text-gray">
+                                        {tag}
+                                      </span>
+                                    ))}
+                                    <PermissionGate
+                                      permissions={['values:values:view']}
+                                    >
+                                      <span className="ml-auto font-medium text-gray-800">
+                                        {formatCurrencyToBrl(line.price)}
+                                      </span>
+                                    </PermissionGate>
+                                    <PermissionGate
+                                      permissions={['sale:quotation:edit']}
+                                    >
+                                      <TooltipProvider>
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          variant="errorGhost"
+                                          size="iconSm"
+                                          tooltip={`Retirar ${line.name}`}
+                                          onClick={() =>
+                                            removeLine(item, line.id, line.name)
+                                          }
+                                          disabled={actionDisabled(
+                                            'edit',
+                                            status,
+                                          )}
+                                        />
+                                      </TooltipProvider>
+                                    </PermissionGate>
+                                  </li>
+                                ))}
                               </ul>
+
+                              {addedTotal > 0 && (
+                                <p className="text-xs text-gray">
+                                  O que foi acrescentado ainda não soma no total
+                                  do orçamento nem nas condições de pagamento.
+                                </p>
+                              )}
+
+                              {addingTo === item.id && (
+                                <AddToItem
+                                  quotationId={String(data?.id)}
+                                  itemId={item.id}
+                                  itemName={item.description}
+                                  measure={{
+                                    quantity: item.product?.quantity || 1,
+                                    width: single?.width
+                                      ? single.width / 1000
+                                      : 1,
+                                    height: single?.height
+                                      ? single.height / 1000
+                                      : 1,
+                                  }}
+                                  onClose={() => setAddingTo(null)}
+                                />
+                              )}
 
                               {chosen?.summary?.length ? (
                                 <div className="flex flex-wrap items-center gap-2">
@@ -438,6 +556,31 @@ export function QuotationItems({ data }: Props) {
                               ) : null}
 
                               <div className="flex flex-wrap gap-2">
+                                {addingTo !== item.id && (
+                                  <FeatureGate
+                                    features={[
+                                      FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
+                                    ]}
+                                  >
+                                    <PermissionGate
+                                      permissions={['sale:quotation:edit']}
+                                    >
+                                      <Button
+                                        type="button"
+                                        size="sm"
+                                        variant="light"
+                                        LeftIcon={IconPlus}
+                                        onClick={() => setAddingTo(item.id)}
+                                        disabled={actionDisabled(
+                                          'edit',
+                                          status,
+                                        )}
+                                      >
+                                        Acrescentar a este item
+                                      </Button>
+                                    </PermissionGate>
+                                  </FeatureGate>
+                                )}
                                 <PermissionGate
                                   permissions={['sale:quotation:edit']}
                                 >

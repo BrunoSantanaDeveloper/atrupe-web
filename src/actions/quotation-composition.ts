@@ -531,6 +531,64 @@ export const removeQuotationItem = async ({
 }
 
 /* ---------------------------------------------------------------------------
+ * O que se acrescenta DENTRO de um item já lançado (ORC-5, 05/10/2026): como
+ * no legado, o item é um recipiente aberto, que recebe processos e
+ * terceirizados depois de lançado. Provisório: fica aqui, por item, até a API
+ * guardar as linhas no item e recalcular o valor dele (backend-pendente.md)
+ * ------------------------------------------------------------------------- */
+
+const itemLines = new Map<string, QuotationLine[]>()
+
+export const getItemLines = async ({
+  quotationId,
+}: {
+  quotationId: string
+}) => {
+  const data: Record<string, QuotationLine[]> = {}
+  itemLines.forEach((lines, key) => {
+    const [quotation, itemId] = key.split('::')
+    if (quotation === quotationId) data[itemId] = lines
+  })
+  return { success: true, data, message: '' }
+}
+
+export const addItemLine = async ({
+  quotationId,
+  itemId,
+  line,
+}: {
+  quotationId: string
+  itemId: string
+  line: Omit<QuotationLine, 'id'>
+}) => {
+  if (!line.name.trim())
+    return { success: false, data: null, message: 'Informe o que acrescentar' }
+  const key = `${quotationId}::${itemId}`
+  itemLines.set(key, [
+    ...(itemLines.get(key) || []),
+    { ...line, id: newId('line') },
+  ])
+  return { success: true, data: null, message: '' }
+}
+
+export const removeItemLine = async ({
+  quotationId,
+  itemId,
+  lineId,
+}: {
+  quotationId: string
+  itemId: string
+  lineId: string
+}) => {
+  const key = `${quotationId}::${itemId}`
+  itemLines.set(
+    key,
+    (itemLines.get(key) || []).filter((line) => line.id !== lineId),
+  )
+  return { success: true, data: null, message: '' }
+}
+
+/* ---------------------------------------------------------------------------
  * Composição do item no orçamento do sistema (IP-36, ORC-3). O item é gravado
  * pela API de sempre; o que o vendedor escolheu na composição fica aqui até a
  * API receber o campo `composition` no item (backend-pendente.md)
