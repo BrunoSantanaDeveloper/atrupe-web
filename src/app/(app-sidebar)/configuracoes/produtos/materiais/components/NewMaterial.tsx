@@ -148,6 +148,9 @@ export function NewMaterialModal({ material }: Props) {
     height: text(material?.advanced?.height),
     weight: text(material?.advanced?.weight),
   })
+  const [wholeSheets, setWholeSheets] = useState(
+    material?.advanced?.wholeSheets !== false,
+  )
   const setAdvField = (key: keyof typeof adv, value: string) =>
     setAdv((current) => ({ ...current, [key]: value }))
   const advanced: MaterialAdvanced | undefined = showAdvanced
@@ -159,6 +162,7 @@ export function NewMaterialModal({ material }: Props) {
         width: numberOrNull(adv.width),
         height: numberOrNull(adv.height),
         weight: numberOrNull(adv.weight),
+        ...(shape === 'SHEET' ? { wholeSheets } : {}),
       }
     : undefined
 
@@ -444,36 +448,56 @@ export function NewMaterialModal({ material }: Props) {
                   </>
                 )}
                 {shape === 'SHEET' && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <label htmlFor="adv-w" className="text-sm font-medium">
-                        Largura (mm)
-                      </label>
-                      <Input
-                        id="adv-w"
-                        type="number"
-                        min={0}
-                        value={adv.width}
-                        onChange={(event) =>
-                          setAdvField('width', event.target.value)
-                        }
-                      />
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label htmlFor="adv-w" className="text-sm font-medium">
+                          Largura (mm)
+                        </label>
+                        <Input
+                          id="adv-w"
+                          type="number"
+                          min={0}
+                          value={adv.width}
+                          onChange={(event) =>
+                            setAdvField('width', event.target.value)
+                          }
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label htmlFor="adv-h" className="text-sm font-medium">
+                          Altura (mm)
+                        </label>
+                        <Input
+                          id="adv-h"
+                          type="number"
+                          min={0}
+                          value={adv.height}
+                          onChange={(event) =>
+                            setAdvField('height', event.target.value)
+                          }
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label htmlFor="adv-h" className="text-sm font-medium">
-                        Altura (mm)
-                      </label>
-                      <Input
-                        id="adv-h"
-                        type="number"
-                        min={0}
-                        value={adv.height}
-                        onChange={(event) =>
-                          setAdvField('height', event.target.value)
-                        }
+                    {/* AP-4 (05/10/2026): o padrão da cobrança fica no
+                      material; a etapa do produto pode trocar */}
+                    <label className="flex items-start justify-between gap-4">
+                      <span>
+                        <span className="block text-sm font-medium">
+                          Cobrar a folha inteira
+                        </span>
+                        <span className="block text-sm text-gray">
+                          Desligado, o aproveitamento cobra só a fração usada,
+                          como no ACM. A etapa do produto pode trocar.
+                        </span>
+                      </span>
+                      <Switch
+                        checked={wholeSheets}
+                        onCheckedChange={setWholeSheets}
+                        aria-label="Cobrar a folha inteira"
                       />
-                    </div>
-                  </div>
+                    </label>
+                  </>
                 )}
                 {unit !== 'KG' && (
                   <div className="grid grid-cols-2 gap-3">

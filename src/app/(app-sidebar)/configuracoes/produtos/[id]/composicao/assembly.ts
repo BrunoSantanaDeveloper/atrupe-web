@@ -139,7 +139,7 @@ export type ResourceOption = {
   unitSale?: number
   // Papel e chapa têm medida (AP-2), em metros: é o que permite o
   // aproveitamento de folha
-  sheet?: { width: number; height: number }
+  sheet?: { width: number; height: number; wholeSheets?: boolean }
   // Perfil e barra têm lados (MT-10.1), em milímetros: X é a primeira medida
   // do catálogo, Y a segunda. A fórmula lê "linha · X" e "linha · Y" (CP-18)
   profile?: {

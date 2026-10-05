@@ -474,7 +474,9 @@ export function QuotationComposeModal({
                 </div>
                 {attention && (
                   <p className="text-sm text-warning-700">
-                    Sem nenhuma etapa, o orçamento não pode ser concluído.
+                    Sem nenhuma etapa, o item fica marcado &quot;Exige
+                    atenção&quot;. O orçamento segue, mas sem custo nem
+                    produção.
                   </p>
                 )}
               </div>

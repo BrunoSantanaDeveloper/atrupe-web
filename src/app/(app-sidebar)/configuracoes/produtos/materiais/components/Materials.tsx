@@ -152,7 +152,7 @@ export function Materials({ searchParams }: SearchParamsType) {
         />
         <Card>
           {isLoading ? (
-            <TableSkeleton cols={7} rows={8} />
+            <TableSkeleton cols={6} rows={8} />
           ) : !materials.length ? (
             status === 'inativos' ? (
               <ListDataTotalEmpty
@@ -174,10 +174,9 @@ export function Materials({ searchParams }: SearchParamsType) {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-[4%]" />
-                      <TableHead className="w-[26%] min-w-[200px]">
+                      <TableHead className="w-[40%] min-w-[200px]">
                         Material
                       </TableHead>
-                      <TableHead className="w-[14%]">Subcategoria</TableHead>
                       <TableHead className="w-[10%]">Unidade</TableHead>
                       <TableHead className="w-[14%]">Uso</TableHead>
                       <TableHead className="w-[12%] text-right">
@@ -193,18 +192,41 @@ export function Materials({ searchParams }: SearchParamsType) {
                     {sectors.map((sector) => (
                       <Fragment key={sector}>
                         <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={8}>
+                          <TableCell colSpan={7}>
                             <span className="font-medium">{sector}</span>
                           </TableCell>
                         </TableRow>
+                        {/* Setor › subcategoria (05/10/2026): dentro do
+                            setor, os materiais vêm agrupados pela
+                            subcategoria */}
                         {materials
                           .filter((material) => material.sector === sector)
-                          .map((material) => {
+                          .sort((a, b) =>
+                            (a.subcategory || '').localeCompare(
+                              b.subcategory || '',
+                            ),
+                          )
+                          .map((material, index, list) => {
+                            const subcategoryStarts =
+                              index === 0 ||
+                              list[index - 1].subcategory !==
+                                material.subcategory
                             const isExpanded = expanded.includes(material.id)
                             const hasVariations = material.variations.length > 0
 
                             return (
                               <Fragment key={material.id}>
+                                {subcategoryStarts && material.subcategory && (
+                                  <TableRow className="hover:bg-transparent">
+                                    <TableCell />
+                                    <TableCell
+                                      colSpan={6}
+                                      className="py-2 text-xs font-medium uppercase tracking-wide text-gray"
+                                    >
+                                      {material.subcategory}
+                                    </TableCell>
+                                  </TableRow>
+                                )}
                                 <TableRow>
                                   <TableCell>
                                     {hasVariations && (
@@ -233,7 +255,6 @@ export function Materials({ searchParams }: SearchParamsType) {
                                         ` · ${material.variations.length} variações`}
                                     </p>
                                   </TableCell>
-                                  <TableCell>{material.subcategory}</TableCell>
                                   <TableCell>
                                     {assetUnitShort[material.unit]}
                                   </TableCell>
@@ -310,7 +331,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                       className="bg-gray-50"
                                     >
                                       <TableCell />
-                                      <TableCell colSpan={4}>
+                                      <TableCell colSpan={3}>
                                         <span className="text-sm font-medium">
                                           {variation.brand} · {variation.color}
                                         </span>

@@ -197,6 +197,7 @@ export const materialResources = () =>
               sheet: {
                 width: advanced.width / 1000,
                 height: advanced.height / 1000,
+                wholeSheets: advanced.wholeSheets !== false,
               },
             }
           : {}),

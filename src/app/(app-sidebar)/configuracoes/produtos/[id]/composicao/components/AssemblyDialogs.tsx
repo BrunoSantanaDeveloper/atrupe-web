@@ -1274,7 +1274,7 @@ export function LineDialog({
                     </span>
                     <span className="block text-sm text-gray">
                       Desligado, cobra só a fração aproveitada — quando a sobra
-                      volta para o estoque.
+                      volta para o estoque. O padrão vem do material.
                     </span>
                   </span>
                   <Switch

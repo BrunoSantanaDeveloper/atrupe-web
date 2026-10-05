@@ -30,6 +30,9 @@ export type MaterialAdvanced = {
   // Chapa, folha, bobina
   width?: number | null
   height?: number | null
+  // Cobrar a folha inteira ou só a fração aproveitada (AP-4, 05/10/2026).
+  // Padrão: inteira; a etapa do produto pode trocar
+  wholeSheets?: boolean
   // Peso em quilos POR UNIDADE DE VENDA do material (orientação do time,
   // 03/10/2026): a lona vendida por m² tem peso por m², o perfil vendido por
   // metro tem peso por metro, o ilhós tem peso por unidade

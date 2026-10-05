@@ -1882,7 +1882,10 @@ const compute = (
             {
               marginMm: sheetLine?.sheetMargin,
               gapMm: sheetLine?.sheetGap,
-              wholeSheets: sheetLine?.chargeWholeSheets,
+              // A linha manda; sem escolha na linha, vale o material (AP-4)
+              wholeSheets:
+                sheetLine?.chargeWholeSheets ??
+                referenceSheet.sheet?.wholeSheets,
             },
           )
         : null

@@ -21,6 +21,7 @@ import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQu
 import { CustomButton } from '@/components/common/CustomButton'
 
 // Third-party
+import { toast } from 'sonner'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Type
@@ -72,6 +73,8 @@ export function FinishQuotation({ data, canFinish }: Props) {
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
     enabled: !!data?.id,
   })
+  // Item sem etapa não bloqueia mais a conclusão (MS-12, 05/10/2026): é a
+  // saída do dia a dia, e o aviso fica no item
   const composedAttention = !!composedRes?.data?.some((item) => item.attention)
 
   // Se tiver pendente de configurar as condições de pagamento, abrir o modal direto antes de concluir
@@ -98,13 +101,9 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   const handleFinish = async () => {
     if (composedAttention) {
-      setOpen(true)
-      setAlertDialog({
-        title: 'Item exige atenção',
-        description:
-          'Há um item de composição sem nenhuma etapa. Monte as etapas ou exclua o item antes de concluir o orçamento.',
-      })
-      return
+      toast.warning(
+        'Há um item sem etapas. O orçamento segue, mas monte a composição depois para o custo e a produção.',
+      )
     }
 
     setLoading(true)

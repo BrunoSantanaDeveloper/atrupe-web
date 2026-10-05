@@ -674,7 +674,7 @@ export function QuotationItems({ data }: Props) {
                           </div>
                           <p className="mt-1 text-xs font-normal text-gray">
                             {item.attention
-                              ? 'Sem nenhuma etapa. Monte as etapas ou exclua o item para concluir o orçamento.'
+                              ? 'Sem nenhuma etapa. O orçamento segue, mas monte as etapas depois para ter custo e produção.'
                               : item.description ||
                                 `${item.stages} ${item.stages === 1 ? 'etapa' : 'etapas'} · ${item.sectors.join(', ')}`}
                           </p>
