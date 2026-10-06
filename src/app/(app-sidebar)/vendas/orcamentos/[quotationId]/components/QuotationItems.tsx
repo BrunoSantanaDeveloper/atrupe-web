@@ -307,6 +307,12 @@ export function QuotationItems({ data }: Props) {
                     0,
                     item?.totalValue - item?.finalValue,
                   )
+                  // A diferença para mais é valor agregado (ALT-25): fica
+                  // embutida no valor do item e só aparece na tela interna
+                  const surcharge = Math.max(
+                    0,
+                    item?.finalValue - item?.totalValue,
+                  )
                   const toggle = () =>
                     setAccordionValue((current = []) =>
                       current.includes(key)
@@ -373,9 +379,18 @@ export function QuotationItems({ data }: Props) {
                             )}
                           </TableCell>
                           <TableCell className="py-4 text-warning-600 text-nowrap">
-                            {discount > 0
-                              ? `-${formatCurrencyToBrl(discount)}`
-                              : '-'}
+                            {discount > 0 ? (
+                              `-${formatCurrencyToBrl(discount)}`
+                            ) : surcharge > 0 ? (
+                              <span
+                                className="text-success-700"
+                                title="Valor agregado: diferença para mais sobre o preço base"
+                              >
+                                +{formatCurrencyToBrl(surcharge)}
+                              </span>
+                            ) : (
+                              '-'
+                            )}
                           </TableCell>
                           <TableCell className="py-4 text-sm text-gray">
                             {formatCurrencyToBrl(item?.finalValue)}
