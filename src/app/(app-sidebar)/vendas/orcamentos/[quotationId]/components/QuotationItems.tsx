@@ -33,9 +33,9 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { QuotationItemsModal } from '../../components/QuotationItems/QuotationItemsModal'
+import { MaterialItemDialog } from '../../components/QuotationItems/MaterialItemDialog'
 import { QuotationComposeModal } from '../../components/QuotationItems/QuotationComposeModal'
 import { QuotationProdDetailModal } from '../../components/QuotationItems/QuotationProdDetailModal'
-import { QuotationCategorySelectorModal } from '../../components/QuotationItems/QuotationCategorySelectorModal'
 
 // Icons
 import {
@@ -49,6 +49,7 @@ import {
   IconMessage,
   IconPlus,
   IconLayoutGrid,
+  IconAlertTriangle,
 } from '@tabler/icons-react'
 
 // Type
@@ -86,6 +87,7 @@ import type { ComposedItemSummary } from '../composicao/types'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { FEATURES } from '@/consts/features'
 import { useAlertDialog } from '@/store/useAlertDialog'
+import { useInactiveQuotationItems } from '@/hooks/queries/useInactiveQuotationItems'
 
 interface Props {
   data: QuotationType
@@ -111,7 +113,7 @@ export function QuotationItems({ data }: Props) {
   useEffect(() => {
     if (!shouldOpenAdd || actionDisabled('addItem', status)) return
 
-    openChangeModal(true, 'sectorSelector')
+    openChangeModal(true, 'productsList')
     router.replace(pathname, { scroll: false })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldOpenAdd, status])
@@ -136,6 +138,12 @@ export function QuotationItems({ data }: Props) {
   const alertDialog = useAlertDialog()
   const [composeTarget, setComposeTarget] =
     useState<ComposedItemSummary | null>(null)
+  const [materialTarget, setMaterialTarget] =
+    useState<ComposedItemSummary | null>(null)
+
+  // Produto inativado depois de lançado (PAD-7): o item fica marcado, o bloco
+  // avisa e a aprovação é travada até trocar ou retirar o item
+  const { inactiveItems, isItemInactive } = useInactiveQuotationItems(data)
   const { data: composedRes } = useQuery({
     queryKey: ['composed-items', data?.id],
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
@@ -242,6 +250,26 @@ export function QuotationItems({ data }: Props) {
           </div>
         </CardHeader>
         <CardContent className="pb-0">
+          {inactiveItems.length > 0 && (
+            <div
+              role="alert"
+              className="mb-4 flex items-start gap-3 rounded-lg border border-warning-300 bg-warning-50 px-4 py-3 text-sm text-warning-700"
+            >
+              <IconAlertTriangle className="mt-0.5 size-5 shrink-0" />
+              <div>
+                <p className="font-medium">
+                  {inactiveItems.length === 1
+                    ? 'Um item tem produto inativado'
+                    : `${inactiveItems.length} itens têm produto inativado`}
+                  . O orçamento não pode ser aprovado até o item ser trocado ou
+                  retirado.
+                </p>
+                <p className="text-warning-600">
+                  {inactiveItems.map((item) => item.description).join(' · ')}
+                </p>
+              </div>
+            </div>
+          )}
           {items?.length || composed.length ? (
             <>
               <Table>
@@ -306,6 +334,11 @@ export function QuotationItems({ data }: Props) {
                               aria-hidden="true"
                             />
                             <span>{item?.description || '-'}</span>
+                            {isItemInactive(item) && (
+                              <Badge status variant="warningLight">
+                                Produto inativo
+                              </Badge>
+                            )}
                             {item?.notes ? (
                               <IconMessage
                                 className="size-4 shrink-0 text-warning-600"
@@ -449,12 +482,16 @@ export function QuotationItems({ data }: Props) {
                                       variant={
                                         line.kind === 'LOOSE'
                                           ? 'warningLight'
-                                          : 'blueLight'
+                                          : line.kind === 'PART'
+                                            ? 'successLight'
+                                            : 'blueLight'
                                       }
                                     >
                                       {line.kind === 'LOOSE'
                                         ? 'Terceirizado'
-                                        : line.sector || 'Processo'}
+                                        : line.kind === 'PART'
+                                          ? 'Item pronto'
+                                          : line.sector || 'Processo'}
                                     </Badge>
                                     <span className="font-medium text-gray-800">
                                       {line.name}
@@ -464,6 +501,24 @@ export function QuotationItems({ data }: Props) {
                                         {tag}
                                       </span>
                                     ))}
+                                    {/* Se a linha acompanha a medida do item
+                                        ou tem medida própria (05/10/2026):
+                                        decide o que é recalculado ao mudar
+                                        o item */}
+                                    {line.followsBase !== undefined && (
+                                      <span
+                                        className="text-xs text-gray"
+                                        title={
+                                          line.followsBase
+                                            ? 'Recalculada quando a medida do item muda'
+                                            : 'Fica como está quando a medida do item muda'
+                                        }
+                                      >
+                                        {line.followsBase
+                                          ? 'acompanha a base'
+                                          : 'medida própria'}
+                                      </span>
+                                    )}
                                     <PermissionGate
                                       permissions={['values:values:view']}
                                     >
@@ -653,7 +708,11 @@ export function QuotationItems({ data }: Props) {
                       <TableCell className="pl-14 py-6 text-sm font-medium">
                         <div className="flex flex-wrap items-center gap-2">
                           <span>{item.name}</span>
-                          <Badge variant="blueLight">Composição</Badge>
+                          {item.origin === 'MATERIAL' ? (
+                            <Badge variant="warningLight">Material</Badge>
+                          ) : (
+                            <Badge variant="blueLight">Composição</Badge>
+                          )}
                           {item.attention && (
                             <Badge status variant="warningLight">
                               Exige atenção
@@ -679,12 +738,13 @@ export function QuotationItems({ data }: Props) {
                           : '-'}
                       </TableCell>
                       <TableCell className="py-4 text-sm text-gray text-nowrap">
-                        {item.quantity} un
+                        {item.quantity} {item.unit || 'un'}
                       </TableCell>
                       <PermissionGate permissions={['values:values:view']}>
                         <TableCell className="py-4 text-sm text-gray">
                           {formatCurrencyToBrl(
-                            Math.round(item.price / (item.quantity || 1)),
+                            item.unitPrice ??
+                              Math.round(item.price / (item.quantity || 1)),
                           )}
                         </TableCell>
                         <TableCell className="text-warning-600 text-nowrap py-4">
@@ -704,6 +764,11 @@ export function QuotationItems({ data }: Props) {
                                 Icon={IconPencil}
                                 tooltip="Editar item"
                                 onClick={() => {
+                                  if (item.origin === 'MATERIAL') {
+                                    setMaterialTarget(item)
+                                    openChangeModal(true, 'materialItem')
+                                    return
+                                  }
                                   setComposeTarget(item)
                                   openChangeModal(true, 'composeItem')
                                 }}
@@ -764,7 +829,7 @@ export function QuotationItems({ data }: Props) {
               type="button"
               variant="none"
               className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
-              onClick={() => openChangeModal(true, 'sectorSelector')}
+              onClick={() => openChangeModal(true, 'productsList')}
               disabled={actionDisabled('addItem', status)}
             >
               <FeaturedIcon
@@ -781,12 +846,18 @@ export function QuotationItems({ data }: Props) {
           </PermissionGate>
         </CardFooter>
       </Card>
-      {/* Modal de adicionar item */}
-      <QuotationCategorySelectorModal
-        open={modalType === 'sectorSelector'}
-        onSelect={() => openChangeModal(true, 'productsList')}
-      />
+      {/* Modal de adicionar item: busca primeiro, setores como filtro (ORC-1) */}
       <QuotationItemsModal open={modalType === 'productsList'} />
+      {/* O material de venda direta (ORG-1): criar e editar a quantidade */}
+      <MaterialItemDialog
+        open={modalType === 'materialItem'}
+        quotationId={String(data?.id)}
+        editing={materialTarget}
+        onClose={() => {
+          openChangeModal(false)
+          setMaterialTarget(null)
+        }}
+      />
       <QuotationProdDetailModal open={modalType === 'productDetail'} />
       <QuotationProdDetailModal
         open={modalType === 'productDetailEdit'}
