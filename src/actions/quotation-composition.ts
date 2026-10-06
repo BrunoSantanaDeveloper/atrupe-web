@@ -574,6 +574,49 @@ export const removeQuotationItem = async ({
 
 const itemLines = new Map<string, QuotationLine[]>()
 
+// A vitrine (src/app/sandbox/orcamento) nasce com linhas acrescentadas na
+// Fachada, uma de cada tipo, para o desenho ser conferido sem a API
+itemLines.set('vitrine-orcamento::item-fachada', [
+  {
+    id: 'vitrine-line-1',
+    kind: 'PROCESS',
+    name: 'Ilhós',
+    sector: 'Produção',
+    tags: ['1 un', '2 × 1 m'],
+    cost: 1200,
+    price: 2440,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+    processId: 'ilhos',
+    measure: { quantity: 1, width: 2, height: 1 },
+    followsBase: true,
+  },
+  {
+    id: 'vitrine-line-2',
+    kind: 'PART',
+    name: 'Instalação · diária',
+    sector: 'Instalação',
+    tags: ['1 un'],
+    cost: 0,
+    price: 38000,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+    productId: 'instalacao-dia',
+    measure: { quantity: 1, width: 1, height: 1 },
+  },
+  {
+    id: 'vitrine-line-3',
+    kind: 'LOOSE',
+    name: 'Letra caixa',
+    sector: 'Terceirizado · Letras & Cia',
+    tags: ['terceirizado'],
+    cost: 20000,
+    price: 36364,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+  },
+])
+
 export const getItemLines = async ({
   quotationId,
 }: {
@@ -744,7 +787,29 @@ type ComposedRecord = ComposedItemSummary & {
   lines: QuotationLine[]
 }
 
-const composedItems: ComposedRecord[] = []
+const composedItems: ComposedRecord[] = [
+  // A vitrine mostra um material de venda direta como item (ORG-1)
+  {
+    id: 'vitrine-material',
+    origin: 'MATERIAL',
+    quotationId: 'vitrine-orcamento',
+    draftId: '',
+    materialId: 'mdf-10',
+    variationId: 'v4',
+    unit: 'un',
+    unitPrice: 9500,
+    name: 'MDF 10 mm · Marca Y · Branco',
+    description: 'Material · Marcenaria',
+    quantity: 2,
+    width: 0,
+    height: 0,
+    lines: [],
+    stages: 0,
+    sectors: ['Marcenaria'],
+    price: 19000,
+    attention: false,
+  },
+]
 
 const resolveLines = async (
   draftId: string,
