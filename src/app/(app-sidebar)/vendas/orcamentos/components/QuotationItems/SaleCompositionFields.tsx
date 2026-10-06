@@ -4,7 +4,9 @@
 // tempo, campos extras, escolhas, opcionais e listas. O resto da composição
 // fica por dentro, e abre como relatório de consulta. Serve ao formulário da
 // tela de itens e ao modal do produto no orçamento — é o mesmo formulário
-// para criar e editar (ORC-4).
+// para criar e editar (ORC-4). Desde 05/10/2026: o campo inteiro recusa
+// decimal (IP-19) e as instruções ao vendedor dos processos aparecem como
+// texto de apoio, só leitura (CP-13).
 
 // React
 import { useEffect, useState } from 'react'
@@ -51,6 +53,10 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
   const [optionals, setOptionals] = useState(initial?.optionals || [])
   const [notes, setNotes] = useState(initial?.notes || [])
   const [showNotes, setShowNotes] = useState(!!initial?.notes?.length)
+  // O campo inteiro que recebeu decimal (IP-19): o aviso fica no campo
+  const [fieldErrors, setFieldErrors] = useState<{ [fieldId: string]: string }>(
+    {},
+  )
 
   useEffect(() => {
     if (!saleForm || initial) return
@@ -215,19 +221,36 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
                   type="number"
                   min={0}
                   step={extra.kind === 'INTEGER' ? '1' : '0.01'}
+                  inputMode={extra.kind === 'INTEGER' ? 'numeric' : 'decimal'}
                   value={String(extraValue(extra.fieldId))}
-                  onChange={(event) =>
+                  onChange={(event) => {
+                    const value = Number(event.target.value || 0)
+                    // Campo inteiro recusa decimal (IP-19): o valor não entra
+                    if (extra.kind === 'INTEGER' && !Number.isInteger(value)) {
+                      setFieldErrors((current) => ({
+                        ...current,
+                        [extra.fieldId]: 'Só número inteiro',
+                      }))
+                      return
+                    }
+                    setFieldErrors((current) => {
+                      const next = { ...current }
+                      delete next[extra.fieldId]
+                      return next
+                    })
                     setExtras((current) => [
                       ...current.filter(
                         (item) => item.fieldId !== extra.fieldId,
                       ),
-                      {
-                        fieldId: extra.fieldId,
-                        value: Number(event.target.value || 0),
-                      },
+                      { fieldId: extra.fieldId, value },
                     ])
-                  }
+                  }}
                 />
+                {fieldErrors[extra.fieldId] && (
+                  <p className="text-xs text-error-700">
+                    {fieldErrors[extra.fieldId]}
+                  </p>
+                )}
               </div>
             ))}
             {saleForm.choices.map((choice) => (
@@ -285,6 +308,22 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
               <span className="font-medium text-gray-800">{optional.name}</span>
               <span className="text-gray">· {optional.stage}</span>
             </label>
+          ))}
+        </div>
+      )}
+
+      {/* Instruções ao vendedor dos processos deste produto (CP-13): o que
+          perguntar ao cliente e o que conferir antes de fechar. Só leitura */}
+      {!!saleForm.instructions?.length && (
+        <div className="space-y-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-gray">
+            Instruções para o vendedor
+          </p>
+          {saleForm.instructions.map((instruction) => (
+            <p key={instruction.blockId} className="text-sm text-gray-700">
+              <span className="font-medium">{instruction.stage}:</span>{' '}
+              {instruction.text}
+            </p>
           ))}
         </div>
       )}

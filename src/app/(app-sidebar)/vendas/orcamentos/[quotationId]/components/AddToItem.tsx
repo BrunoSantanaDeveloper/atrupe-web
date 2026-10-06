@@ -187,6 +187,18 @@ export function AddToItem({
             Nasce com a medida do item. Mude se este processo usa outra medida,
             como a instalação de uma parte só.
           </p>
+          {/* Instruções ao vendedor do processo escolhido (CP-13): texto de
+              apoio, só leitura */}
+          {detail?.meta.sellerInstructions?.trim() && (
+            <div className="rounded-lg border border-gray-200 bg-white px-3 py-2">
+              <p className="text-xs font-medium uppercase tracking-wide text-gray">
+                Instruções para o vendedor
+              </p>
+              <p className="text-sm text-gray-700">
+                {detail.meta.sellerInstructions}
+              </p>
+            </div>
+          )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div className="space-y-1.5">
               <label htmlFor="add-qty" className="text-sm font-medium">
