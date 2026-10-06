@@ -435,7 +435,38 @@ const emptyLine = (kind: ResourceKind): NewLineValues => ({
   optionalDefault: true,
   fieldName: '',
   fieldDefault: 0,
+  people: 1,
 })
+
+// Pessoas na mão de obra (IP-13, decidido em 05/10/2026): quantas trabalham
+// ao mesmo tempo. Multiplica o tempo da linha: duas pessoas por 30 minutos
+// são 60 minutos de mão de obra. Inteiro, padrão 1
+function PeopleField({
+  id,
+  value,
+  onChange,
+}: {
+  id: string
+  value: number
+  onChange: (people: number) => void
+}) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor={id}>Pessoas</Label>
+      <Input
+        id={id}
+        type="number"
+        min={1}
+        step="1"
+        inputMode="numeric"
+        value={value}
+        onChange={(event) =>
+          onChange(Math.max(1, Math.round(Number(event.target.value) || 1)))
+        }
+      />
+    </div>
+  )
+}
 
 // Opcional é escolha do vendedor (a cantoneira do quadro com lona); linha sem
 // recurso é outra coisa — erro de cadastro, que o sistema não deixa criar
@@ -830,12 +861,7 @@ export function NewLineDialog({
                   }}
                 />
               )}
-              <div
-                className={cn(
-                  'grid grid-cols-1 gap-4',
-                  isTime ? 'sm:grid-cols-2' : 'sm:grid-cols-3',
-                )}
-              >
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div className="space-y-2">
                   <Label htmlFor="new-line-per-unit">
                     {isTime
@@ -908,7 +934,20 @@ export function NewLineDialog({
                     />
                   )}
                 </div>
+                {values.kind === 'LABOR' && (
+                  <PeopleField
+                    id="new-line-people"
+                    value={values.people || 1}
+                    onChange={(people) => set('people', people)}
+                  />
+                )}
               </div>
+              {values.kind === 'LABOR' && (
+                <p className="-mt-2 text-sm text-gray">
+                  Pessoas multiplicam o tempo: duas pessoas por 30 minutos são
+                  60 minutos de mão de obra.
+                </p>
+              )}
             </>
           )}
           <OptionalFields
@@ -956,6 +995,8 @@ export type LineValues = {
   fieldDefault?: number
   // A fórmula do produto, quando o tipo é 'CUSTOM' (IP-2)
   formulaId?: string
+  // Pessoas na mão de obra (IP-13)
+  people?: number
   // Aproveitamento de folha (AP-3, AP-4)
   sheetMargin?: number
   sheetGap?: number
@@ -1019,6 +1060,7 @@ export function LineDialog({
         fieldName: line.fieldName || '',
         fieldDefault: line.extraValue ?? 0,
         formulaId: line.formulaId,
+        people: line.kind === 'LABOR' ? line.people || 1 : undefined,
         sheetMargin: line.sheetMargin,
         sheetGap: line.sheetGap,
         chargeWholeSheets: line.chargeWholeSheets,
@@ -1119,12 +1161,7 @@ export function LineDialog({
               }}
             />
           )}
-          <div
-            className={cn(
-              'grid grid-cols-1 gap-4',
-              isTime ? 'sm:grid-cols-2' : 'sm:grid-cols-3',
-            )}
-          >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div className="space-y-2">
               <Label htmlFor="line-per-unit">
                 {isTime ? 'Tempo (h:mm)' : `Consumo (${unit})`}
@@ -1214,10 +1251,19 @@ export function LineDialog({
                 </div>
               </>
             )}
+            {line?.kind === 'LABOR' && (
+              <PeopleField
+                id="line-people"
+                value={values.people || 1}
+                onChange={(people) =>
+                  setValues((current) => ({ ...current, people }))
+                }
+              />
+            )}
           </div>
           <p className="text-sm text-gray">
             {isTime
-              ? 'O tempo mínimo impede que a peça pequena saia com tempo irreal: o preparo que existe mesmo para uma unidade.'
+              ? 'O tempo mínimo impede que a peça pequena saia com tempo irreal: o preparo que existe mesmo para uma unidade. Pessoas multiplicam o tempo.'
               : 'A perda é somada ao consumo (a sobra do corte). O mínimo impede que a peça pequena saia com custo irreal.'}
           </p>
           {!variationName &&

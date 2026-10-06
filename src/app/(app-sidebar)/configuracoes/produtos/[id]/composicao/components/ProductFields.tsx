@@ -5,7 +5,9 @@
 // valores diferentes, e nada acusava a divergência. Aqui o campo é declarado
 // uma vez; a linha cuja fórmula lê um campo aponta para ele pelo nome, e o
 // vendedor preenche um valor só (IP-6). Desde 03/10/2026 isso substitui o
-// campo extra da etapa.
+// campo extra da etapa. Cada campo diz se aceita fração (IP-19, 05/10/2026):
+// inteiro por padrão (nº de letras, ilhoses); fracionado quando marcado
+// (metros).
 
 import { useState } from 'react'
 
@@ -13,6 +15,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import {
   Card,
   CardTitle,
@@ -51,20 +54,33 @@ interface Props {
   // Como seção dentro de outro card (o bloco Produto da composição,
   // 03/10/2026): os campos ficam junto de largura, altura e quantidade
   bare?: boolean
+  // O processo lê outra consulta: avisa para ela recarregar
+  onSaved?: () => void | Promise<unknown>
 }
+
+// Campo inteiro recusa decimal na simulação (IP-19)
+const integerError = (allowsFraction: boolean | undefined, value: number) =>
+  !allowsFraction && !Number.isInteger(value)
+    ? 'Campo inteiro: sem decimais. Ligue "Aceita fração" se precisar.'
+    : null
 
 export function ProductFields({
   productId,
   fields,
   description,
   bare = false,
+  onSaved,
 }: Props) {
   const queryClient = useQueryClient()
   const [name, setName] = useState('')
   const [defaultValue, setDefaultValue] = useState('')
+  const [allowsFraction, setAllowsFraction] = useState(false)
+  const [valueError, setValueError] = useState<string | null>(null)
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
+  const invalidate = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
+    await onSaved?.()
+  }
 
   const { mutate: add, isPending } = useMutation({
     mutationFn: () =>
@@ -72,12 +88,15 @@ export function ProductFields({
         productId,
         name,
         defaultValue: Number(defaultValue || 0),
+        allowsFraction,
       }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       toast.success('Campo acrescentado')
       setName('')
       setDefaultValue('')
+      setAllowsFraction(false)
+      setValueError(null)
       invalidate()
     },
     onError: () => toast.error('Erro ao acrescentar o campo'),
@@ -98,12 +117,15 @@ export function ProductFields({
       fieldId: string
       name?: string
       defaultValue?: number
+      allowsFraction?: boolean
     }) => updateProductField({ productId, ...values }),
     onSuccess: (response) => {
       if (!response.success) return toast.error(response.message)
       invalidate()
     },
   })
+
+  const newValueError = integerError(allowsFraction, Number(defaultValue || 0))
 
   const title = 'Campos do orçamento'
   const help =
@@ -132,20 +154,47 @@ export function ProductFields({
             <label className="flex items-center gap-2 text-sm text-gray">
               valor padrão
               <Input
+                key={`${field.id}-${field.allowsFraction ? 'dec' : 'int'}-${field.defaultValue}`}
                 type="number"
                 min={0}
-                step="0.01"
+                step={field.allowsFraction ? '0.01' : '1'}
                 className="w-[110px]"
                 defaultValue={field.defaultValue}
                 aria-label={`Valor padrão de ${field.name}`}
                 onBlur={(event) => {
                   const value = Number(event.target.value || 0)
+                  const error = integerError(field.allowsFraction, value)
+                  if (error) {
+                    toast.error(`${field.name}: ${error}`)
+                    event.target.value = String(field.defaultValue)
+                    return
+                  }
                   if (value !== field.defaultValue) {
                     update({ fieldId: field.id, defaultValue: value })
                   }
                 }}
               />
             </label>
+            {/* Inteiro ou fracionado (IP-19): o padrão é inteiro */}
+            <PermissionGate
+              permissions={EDIT}
+              fallback={
+                <Badge variant="neutralLight">
+                  {field.allowsFraction ? 'aceita fração' : 'inteiro'}
+                </Badge>
+              }
+            >
+              <label className="flex items-center gap-2 text-sm text-gray">
+                <Switch
+                  checked={!!field.allowsFraction}
+                  onCheckedChange={(checked) =>
+                    update({ fieldId: field.id, allowsFraction: checked })
+                  }
+                  aria-label={`${field.name} aceita fração`}
+                />
+                Aceita fração
+              </label>
+            </PermissionGate>
             <div className="flex flex-1 flex-wrap items-center gap-1">
               {field.usedBy.length ? (
                 field.usedBy.map((step) => (
@@ -198,22 +247,42 @@ export function ProductFields({
               id="field-value"
               type="number"
               min={0}
-              step="0.01"
+              step={allowsFraction ? '0.01' : '1'}
               className="w-[140px]"
               value={defaultValue}
-              onChange={(event) => setDefaultValue(event.target.value)}
+              onChange={(event) => {
+                setDefaultValue(event.target.value)
+                setValueError(null)
+              }}
             />
           </div>
+          <label className="flex h-10 items-center gap-2 text-sm text-gray">
+            <Switch
+              checked={allowsFraction}
+              onCheckedChange={setAllowsFraction}
+              aria-label="O novo campo aceita fração"
+            />
+            Aceita fração
+          </label>
           <Button
             type="button"
             LeftIcon={IconPlus}
             isLoading={isPending}
-            disabled={!name}
+            disabled={!name || !!newValueError}
             onClick={() => add()}
           >
             Acrescentar
           </Button>
         </div>
+        {(newValueError || valueError) && (
+          <p className="text-sm text-error-700">
+            {newValueError || valueError}
+          </p>
+        )}
+        <p className="text-xs text-gray">
+          Inteiro por padrão (nº de letras, ilhoses): a venda recusa decimal.
+          Ligue &quot;Aceita fração&quot; para medidas (metros).
+        </p>
       </PermissionGate>
     </>
   )
