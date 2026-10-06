@@ -70,6 +70,7 @@ import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Consts
+import { useSectorColor } from '@/hooks/useSectorColor'
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
 
@@ -78,6 +79,7 @@ interface Props extends SearchParamsType {
 }
 
 export function DeliveryScheduleData({ searchParams, tabs }: Props) {
+  const colorOf = useSectorColor()
   const [openDialog, setOpenDialog] = useState('')
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
@@ -279,6 +281,22 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                         : 'neutralLight'
                                                     }
                                                     className="p-2"
+                                                    // A cor do setor no ícone
+                                                    // da etapa (área 9 §4.14)
+                                                    style={
+                                                      stage?.status === 'DONE'
+                                                        ? undefined
+                                                        : {
+                                                            color: colorOf({
+                                                              id: stage?.stage
+                                                                ?.id,
+                                                              name: stage?.stage
+                                                                ?.name,
+                                                              icon: stage?.stage
+                                                                ?.icon,
+                                                            }),
+                                                          }
+                                                    }
                                                   />
                                                 </StageStatusDropdown>
                                               )

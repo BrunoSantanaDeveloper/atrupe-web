@@ -51,7 +51,6 @@ import {
   NewLineDialog,
   OptionsDialog,
 } from '../../../[id]/composicao/components/AssemblyDialogs'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Select,
   SelectItem,
@@ -60,7 +59,7 @@ import {
   SelectTrigger,
 } from '@/components/ui/select'
 import { DurationInput } from '@/components/common/DurationInput'
-import { sectorIconByName } from '@/consts/sectors'
+import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Types
 import {
@@ -424,7 +423,6 @@ export function ProcessEditor({
     })
 
   const rules = block.rules
-  const SectorIcon = sectorIconByName(block.sector)
 
   // As regras da etapa ficam nos seletores do cabeçalho, como no produto
   // (03/10/2026): no processo elas são as regras originais, que os produtos
@@ -696,7 +694,7 @@ export function ProcessEditor({
                   (03/10/2026): setor em destaque, tarefa, nome editável e as
                   regras de venda nos seletores */}
               <div className="flex flex-wrap items-start gap-3 px-6 pb-4">
-                <FeaturedIcon variant="light" Icon={SectorIcon} />
+                <SectorIcon name={block.sector} size="lg" />
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="neutralLight">{block.sector}</Badge>
