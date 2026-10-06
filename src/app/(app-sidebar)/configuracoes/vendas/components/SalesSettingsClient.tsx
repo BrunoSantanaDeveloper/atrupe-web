@@ -14,6 +14,7 @@ import {
   IconTransactionDollar,
   IconAlertSquareRounded,
   IconRoute,
+  IconTruckDelivery,
 } from '@tabler/icons-react'
 
 // Hooks / Consts
@@ -50,6 +51,20 @@ export function SalesSettingsClient() {
           link: `${defaultPath}/series-de-venda`,
           permission: 'sales_settings:series:view',
         },
+        // O markup padrão do terceirizado avulso (MS-16, T-4), do LITE em
+        // diante, junto do "Acrescentar a este item"
+        ...(hasFeature(FEATURES.PRODUCTS.PRODUCT_COMPOSITION)
+          ? [
+              {
+                title: 'Terceirizado avulso',
+                icon: IconTruckDelivery,
+                description:
+                  'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
+                link: `${defaultPath}/terceirizados`,
+                permission: 'sales_settings:series:view',
+              },
+            ]
+          : []),
         {
           title: 'Origens de contato',
           icon: IconRoute,
