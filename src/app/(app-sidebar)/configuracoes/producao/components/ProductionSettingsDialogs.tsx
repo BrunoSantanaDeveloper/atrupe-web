@@ -1,7 +1,8 @@
 'use client'
 
-// Diálogos da configuração da produção: gerenciador, acesso dos
-// colaboradores, inativar com destino, tipo de tarefa e as etapas dele.
+// Diálogos da configuração da produção: gerenciador (setor, controle de
+// tempo, intervalo), acesso dos colaboradores, inativar com destino, tipo
+// de tarefa (sem cor: usa a do setor), as etapas dele e os veículos.
 
 // React
 import { useEffect, useState } from 'react'
@@ -23,27 +24,24 @@ import { Switch } from '@/components/ui/switch'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
+import { SectorIcon } from '@/components/common/SectorIcon'
 import { ActionButton } from '@/components/common/ActionButton'
 import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import type {
+  Vehicle,
   TaskType,
   TimeMode,
   ReleaseRule,
   Collaborator,
-  ManagerModel,
   ProductionFlow,
   ProductionManager,
 } from '@/app/(app-sidebar)/producao/gerenciador/manager'
 
 // Hooks / Store / Consts
-import {
-  timeModeObj,
-  releaseRuleObj,
-  managerModelObj,
-  TASK_TYPE_COLORS,
-} from '@/consts/productionManager'
+import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
+import { timeModeObj, releaseRuleObj } from '@/consts/productionManager'
 
 // Icons
 import {
@@ -51,6 +49,7 @@ import {
   IconPlus,
   IconUsers,
   IconTrash,
+  IconTruck,
   IconPencil,
   IconArrowUp,
   IconArrowDown,
@@ -62,14 +61,16 @@ import {
 import { cn } from '@/lib/utils'
 
 /* ---------------------------------------------------------------------------
- * Gerenciador
+ * Gerenciador: um setor de trabalho, com o jeito de capturar o tempo (GP-43)
+ * e o intervalo entre tarefas (GP-20)
  * ------------------------------------------------------------------------- */
 
 export type ManagerValues = {
   name: string
+  sector: string
   flowId: string
-  model: ManagerModel
   timeMode: TimeMode
+  intervalMinutes: number
 }
 
 export function ManagerDialog({
@@ -85,27 +86,34 @@ export function ManagerDialog({
   onOpenChange: (open: boolean) => void
   onSave: (values: ManagerValues) => void
 }) {
+  const { sectors } = useCompanySectors()
   const [values, setValues] = useState<ManagerValues>({
     name: '',
+    sector: '',
     flowId: '',
-    model: 'SIMPLE',
     timeMode: 'PLAY_STOP',
+    intervalMinutes: 0,
   })
 
   useEffect(() => {
     if (open) {
       setValues({
         name: manager?.name || '',
+        sector: manager?.sector || '',
         flowId: manager?.flowId || flows[0]?.id || '',
-        model: manager?.model || 'SIMPLE',
         timeMode: manager?.timeMode || 'PLAY_STOP',
+        intervalMinutes: manager?.intervalMinutes || 0,
       })
     }
   }, [open, manager, flows])
 
+  const sectorOptions = Array.from(
+    new Set([...(sectors || []), values.sector].filter(Boolean)),
+  )
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon
@@ -117,8 +125,8 @@ export function ManagerDialog({
                 {manager ? `Editar ${manager.name}` : 'Novo gerenciador'}
               </DialogTitle>
               <DialogDescription>
-                O gerenciador é um setor de trabalho, com a fila dele e o jeito
-                de controlar o tempo.
+                O gerenciador é o setor na produção: a fila dele, o jeito de
+                capturar o tempo e a cor, que vem do cadastro de setores.
               </DialogDescription>
             </div>
           </div>
@@ -139,6 +147,29 @@ export function ManagerDialog({
                 }
               />
             </div>
+            <div className="flex items-end gap-2">
+              <SelectBasic
+                name="manager-sector"
+                label="Setor"
+                className="flex-1"
+                options={sectorOptions.map((name) => ({
+                  value: name,
+                  label: name,
+                }))}
+                value={values.sector}
+                onChange={(value) =>
+                  value &&
+                  setValues((current) => ({
+                    ...current,
+                    sector: String(value),
+                    name: current.name || String(value),
+                  }))
+                }
+              />
+              {values.sector && (
+                <SectorIcon name={values.sector} size="lg" className="mb-0.5" />
+              )}
+            </div>
             <SelectBasic
               name="manager-flow"
               label="Fluxo de produção"
@@ -152,32 +183,26 @@ export function ManagerDialog({
                 setValues((current) => ({ ...current, flowId: String(value) }))
               }
             />
-          </div>
-          <div className="space-y-2">
-            <Label>Modelo</Label>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {(Object.keys(managerModelObj) as ManagerModel[]).map((model) => (
-                <button
-                  key={model}
-                  type="button"
-                  onClick={() =>
-                    setValues((current) => ({ ...current, model }))
-                  }
-                  className={cn(
-                    'rounded-lg border p-3 text-left',
-                    values.model === model
-                      ? 'border-brand-500 bg-brand-25 ring-1 ring-brand-500'
-                      : 'border-gray-200 hover:border-gray-300',
-                  )}
-                >
-                  <span className="block text-sm font-medium text-gray-800">
-                    {managerModelObj[model].text}
-                  </span>
-                  <span className="block text-xs text-gray">
-                    {managerModelObj[model].help}
-                  </span>
-                </button>
-              ))}
+            <div className="space-y-2">
+              <Label htmlFor="manager-interval">
+                Intervalo entre tarefas (min)
+              </Label>
+              <Input
+                id="manager-interval"
+                type="number"
+                min={0}
+                value={values.intervalMinutes}
+                onChange={(event) =>
+                  setValues((current) => ({
+                    ...current,
+                    intervalMinutes: Number(event.target.value) || 0,
+                  }))
+                }
+              />
+              <p className="text-xs text-gray">
+                Troca de material, limpeza. Não é o preparo da tarefa: quem já
+                embute a troca no preparo deixa zero.
+              </p>
             </div>
           </div>
           <div className="space-y-2">
@@ -211,14 +236,14 @@ export function ManagerDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="outline"
+            variant="neutralOutline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
           </Button>
           <Button
             type="button"
-            disabled={!values.name.trim() || !values.flowId}
+            disabled={!values.name.trim() || !values.sector || !values.flowId}
             onClick={() => onSave(values)}
           >
             Salvar
@@ -262,9 +287,8 @@ export function UsersDialog({
             <div>
               <DialogTitle>Quem acessa {manager.name}</DialogTitle>
               <DialogDescription>
-                Quem tem acesso aparece na coluna de colaboradores do
-                gerenciador. &quot;Só as atribuídas&quot; vê apenas as tarefas
-                dele.
+                O operador vê as tarefas do setor ou só as atribuídas a ele; o
+                gerente de produção vê tudo, em qualquer gerenciador.
               </DialogDescription>
             </div>
           </div>
@@ -277,17 +301,21 @@ export function UsersDialog({
             >
               <span className="text-sm font-medium text-gray-800">
                 {person.name}
+                {person.role === 'MANAGER' && (
+                  <span className="font-normal text-gray"> · gerente</span>
+                )}
               </span>
               <SelectBasic
                 name={`access-${person.id}`}
                 label=""
                 className="w-[220px]"
+                disabled={person.role === 'MANAGER'}
                 options={[
                   { value: 'NONE', label: 'Sem acesso' },
                   { value: 'ALL', label: 'Todas as tarefas' },
                   { value: 'ASSIGNED', label: 'Só as atribuídas a ele' },
                 ]}
-                value={accessOf(person.id)}
+                value={person.role === 'MANAGER' ? 'ALL' : accessOf(person.id)}
                 onChange={(value) =>
                   value &&
                   onChange(person.id, value as 'NONE' | 'ALL' | 'ASSIGNED')
@@ -299,7 +327,7 @@ export function UsersDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="outline"
+            variant="neutralOutline"
             onClick={() => onOpenChange(false)}
           >
             Fechar
@@ -345,8 +373,8 @@ export function InactivateManagerDialog({
             <div>
               <DialogTitle>Inativar {manager.name}?</DialogTitle>
               <DialogDescription>
-                As etapas que passam por ele vão para outro gerenciador —
-                nenhuma tarefa fica sem lugar.
+                As etapas que passam por ele vão para outro gerenciador. Nenhuma
+                tarefa fica sem lugar.
               </DialogDescription>
             </div>
           </div>
@@ -366,14 +394,14 @@ export function InactivateManagerDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="outline"
+            variant="neutralOutline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
           </Button>
           <Button
             type="button"
-            variant="error"
+            variant="errorOutline"
             disabled={!destination}
             onClick={() => onConfirm(destination)}
           >
@@ -386,12 +414,11 @@ export function InactivateManagerDialog({
 }
 
 /* ---------------------------------------------------------------------------
- * Tipo de tarefa (GP-12, GP-13)
+ * Tipo de tarefa (GP-12, GP-13): sem cor própria, usa a do setor
  * ------------------------------------------------------------------------- */
 
 export type TaskTypeValues = {
   name: string
-  color: string
   release: ReleaseRule
   timeControl: boolean
   managerId?: string
@@ -412,7 +439,6 @@ export function TaskTypeDialog({
 }) {
   const [values, setValues] = useState<TaskTypeValues>({
     name: '',
-    color: TASK_TYPE_COLORS[0],
     release: 'WITH_BASE',
     timeControl: true,
   })
@@ -421,7 +447,6 @@ export function TaskTypeDialog({
     if (open) {
       setValues({
         name: taskType?.name || '',
-        color: taskType?.color || TASK_TYPE_COLORS[0],
         release: taskType?.release || 'WITH_BASE',
         timeControl: taskType?.timeControl ?? true,
         managerId: taskType ? undefined : managers.find((m) => m.active)?.id,
@@ -441,7 +466,8 @@ export function TaskTypeDialog({
               </DialogTitle>
               <DialogDescription>
                 É o &quot;tipo de tarefa&quot; das etapas da composição: diz por
-                quais gerenciadores a tarefa passa e quando ela é liberada.
+                quais gerenciadores a tarefa passa e quando ela é liberada. A
+                cor é a do setor de cada etapa.
               </DialogDescription>
             </div>
           </div>
@@ -481,26 +507,6 @@ export function TaskTypeDialog({
             )}
           </div>
           <div className="space-y-2">
-            <Label>Cor na fila</Label>
-            <div className="flex flex-wrap gap-2">
-              {TASK_TYPE_COLORS.map((color) => (
-                <button
-                  key={color}
-                  type="button"
-                  aria-label={`Cor ${color}`}
-                  onClick={() =>
-                    setValues((current) => ({ ...current, color }))
-                  }
-                  className={cn(
-                    'size-8 rounded-full border-2',
-                    values.color === color ? 'border-gray-900' : 'border-white',
-                  )}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="space-y-2">
             <Label>Quando a tarefa é liberada</Label>
             <div className="space-y-2">
               {(Object.keys(releaseRuleObj) as ReleaseRule[]).map((rule) => (
@@ -533,7 +539,7 @@ export function TaskTypeDialog({
                 Controla tempo
               </span>
               <span className="block text-sm text-gray">
-                O relógio mede o tempo realizado das tarefas deste tipo.
+                O relógio mede o tempo apontado das tarefas deste tipo.
               </span>
             </span>
             <Switch
@@ -548,7 +554,7 @@ export function TaskTypeDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="outline"
+            variant="neutralOutline"
             onClick={() => onOpenChange(false)}
           >
             Cancelar
@@ -602,8 +608,7 @@ export function StepsDialog({
   }, [taskType?.id])
 
   if (!taskType) return null
-  const managerName = (id: string) =>
-    managers.find((item) => item.id === id)?.name || '-'
+  const managerOf = (id: string) => managers.find((item) => item.id === id)
 
   return (
     <Dialog open={!!taskType} onOpenChange={onOpenChange}>
@@ -615,62 +620,63 @@ export function StepsDialog({
               <DialogTitle>Etapas de {taskType.name}</DialogTitle>
               <DialogDescription>
                 A tarefa passa pelas etapas nesta ordem. Cada etapa pode estar
-                num gerenciador diferente — a impressão na Impressão, o refile
-                na Produção.
+                num gerenciador diferente: a impressão na Impressão, o refile na
+                Produção.
               </DialogDescription>
             </div>
           </div>
         </DialogHeader>
         <DialogBody className="space-y-4">
           <div className="divide-y divide-gray-100 rounded-lg border border-gray-200">
-            {taskType.steps.map((item, index) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-3 px-4 py-2"
-              >
-                <span className="text-sm text-gray-800">
-                  <span className="mr-2 font-semibold">{index + 1}º</span>
-                  {item.name}
-                  <span className="text-gray">
-                    {' '}
-                    · {managerName(item.managerId)}
+            {taskType.steps.map((item, index) => {
+              const manager = managerOf(item.managerId)
+              return (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between gap-3 px-4 py-2"
+                >
+                  <span className="flex items-center gap-2 text-sm text-gray-800">
+                    <span className="font-semibold">{index + 1}º</span>
+                    {manager && <SectorIcon name={manager.sector} size="sm" />}
+                    {item.name}
+                    <span className="text-gray">· {manager?.name || '-'}</span>
                   </span>
-                </span>
-                <div className="flex gap-1">
-                  <ActionButton
-                    Icon={IconArrowUp}
-                    variant="neutralGhost"
-                    tooltip="Subir"
-                    disabled={index === 0}
-                    onClick={() => onMove(item.id, 'UP')}
-                  />
-                  <ActionButton
-                    Icon={IconArrowDown}
-                    variant="neutralGhost"
-                    tooltip="Descer"
-                    disabled={index === taskType.steps.length - 1}
-                    onClick={() => onMove(item.id, 'DOWN')}
-                  />
-                  <ActionButton
-                    Icon={IconPencil}
-                    variant="neutralGhost"
-                    tooltip="Editar etapa"
-                    onClick={() => {
-                      setEditing(item.id)
-                      setName(item.name)
-                      setManagerId(item.managerId)
-                    }}
-                  />
-                  <ActionButton
-                    Icon={IconTrash}
-                    variant="errorGhost"
-                    tooltip="Remover etapa"
-                    disabled={taskType.steps.length <= 1}
-                    onClick={() => onRemove(item.id)}
-                  />
+                  <div className="flex gap-1">
+                    <ActionButton
+                      Icon={IconArrowUp}
+                      variant="neutralGhost"
+                      tooltip="Subir"
+                      disabled={index === 0}
+                      onClick={() => onMove(item.id, 'UP')}
+                    />
+                    <ActionButton
+                      Icon={IconArrowDown}
+                      variant="neutralGhost"
+                      tooltip="Descer"
+                      disabled={index === taskType.steps.length - 1}
+                      onClick={() => onMove(item.id, 'DOWN')}
+                    />
+                    <ActionButton
+                      Icon={IconPencil}
+                      variant="neutralGhost"
+                      tooltip="Editar etapa"
+                      onClick={() => {
+                        setEditing(item.id)
+                        setName(item.name)
+                        setManagerId(item.managerId)
+                      }}
+                    />
+                    <ActionButton
+                      Icon={IconTrash}
+                      variant="errorGhost"
+                      tooltip="Remover etapa"
+                      disabled={taskType.steps.length <= 1}
+                      onClick={() => onRemove(item.id)}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <form
@@ -719,7 +725,7 @@ export function StepsDialog({
                 LeftIcon={editing ? IconPencil : IconPlus}
                 disabled={!name.trim() || !managerId}
               >
-                {editing ? 'Salvar etapa' : 'Acrescentar etapa'}
+                {editing ? 'Salvar etapa' : 'Adicionar etapa'}
               </Button>
               {editing && (
                 <Button
@@ -736,10 +742,93 @@ export function StepsDialog({
         <DialogFooter>
           <Button
             type="button"
-            variant="outline"
+            variant="neutralOutline"
             onClick={() => onOpenChange(false)}
           >
             Fechar
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+/* ---------------------------------------------------------------------------
+ * Veículo da frota (VS-7)
+ * ------------------------------------------------------------------------- */
+
+export function VehicleDialog({
+  open,
+  vehicle,
+  onOpenChange,
+  onSave,
+}: {
+  open: boolean
+  vehicle?: Vehicle
+  onOpenChange: (open: boolean) => void
+  onSave: (values: { name: string; plate: string }) => void
+}) {
+  const [name, setName] = useState('')
+  const [plate, setPlate] = useState('')
+
+  useEffect(() => {
+    if (open) {
+      setName(vehicle?.name || '')
+      setPlate(vehicle?.plate || '')
+    }
+  }, [open, vehicle])
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <div className="flex items-center gap-4">
+            <FeaturedIcon variant="neutralOutline" Icon={IconTruck} />
+            <div>
+              <DialogTitle>
+                {vehicle ? `Editar ${vehicle.name}` : 'Novo veículo'}
+              </DialogTitle>
+              <DialogDescription>
+                A instalação e a entrega ocupam o veículo na agenda: horário, km
+                e quem sai.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <DialogBody className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="vehicle-name">Nome</Label>
+            <Input
+              id="vehicle-name"
+              placeholder="Ex.: Fiorino"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="vehicle-plate">Placa</Label>
+            <Input
+              id="vehicle-plate"
+              placeholder="ABC-1D23"
+              value={plate}
+              onChange={(event) => setPlate(event.target.value)}
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="neutralOutline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="button"
+            disabled={!name.trim()}
+            onClick={() => onSave({ name, plate })}
+          >
+            {vehicle ? 'Salvar' : 'Cadastrar veículo'}
           </Button>
         </DialogFooter>
       </DialogContent>
