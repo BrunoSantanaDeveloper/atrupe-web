@@ -92,6 +92,9 @@ export type Quotation = {
   reference: string
   client: string
   items: QuotationItem[]
+  // Situação do orçamento no mock (PAD-7, 05/10/2026): só os abertos são
+  // afetados quando um produto é inativado. Sem valor, conta como aberto
+  status?: 'OPEN' | 'APPROVED' | 'CLOSED'
 }
 
 // Opções oferecidas ao acrescentar, conforme o nível (ORC-5)

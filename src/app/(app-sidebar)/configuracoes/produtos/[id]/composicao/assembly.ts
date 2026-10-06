@@ -211,12 +211,21 @@ export type AssemblyLine = {
   fieldName?: string
   // A fórmula do produto que a linha usa, quando o tipo é 'CUSTOM'
   formulaId?: string
+  // Mão de obra: quantas pessoas trabalham ao mesmo tempo (IP-13, decidido
+  // em 05/10/2026). Multiplica o tempo da linha; padrão 1
+  people?: number
   // Aproveitamento de folha (AP-3, AP-4), na linha que escolhe a folha:
   // margem da borda e espaçamento entre peças, em milímetros; e se cobra a
   // folha inteira ou só o que foi aproveitado
   sheetMargin?: number
   sheetGap?: number
   chargeWholeSheets?: boolean
+}
+
+export type AssemblyMeasure = {
+  quantity: number
+  width: number
+  height: number
 }
 
 export type BlockRole = 'BASE' | 'FINISHING'
@@ -257,12 +266,9 @@ export type AssemblyBlock = {
   originalRules: SaleRules
   localRules: SaleRules | null
   lines: AssemblyLine[]
-}
-
-export type AssemblyMeasure = {
-  quantity: number
-  width: number
-  height: number
+  // Medida fixa da etapa, que ignora as regras: é a base simulada na tela do
+  // processo (§9.1, 06/10/2026). Não é gravada em produto
+  fixedMeasure?: AssemblyMeasure
 }
 
 // Variação do produto (PV-1 a PV-7): P, M, G; 4x0, 4x4; com ou sem
@@ -304,12 +310,27 @@ export type AssemblySeed = {
 // Campo do orçamento (IP-4, IP-6): declarado uma vez no produto, lido pelas
 // linhas que precisam dele e preenchido pelo vendedor na venda. Substitui o
 // campo extra de cada etapa do legado (decidido em 03/10/2026)
-export type QuoteField = { id: string; name: string; defaultValue: number }
+export type QuoteField = {
+  id: string
+  name: string
+  defaultValue: number
+  // Aceita fração (IP-19, decidido em 05/10/2026): desligado, o campo é um
+  // número inteiro (nº de letras, ilhoses) e recusa decimal na venda e na
+  // simulação; ligado, aceita fração (metros)
+  allowsFraction?: boolean
+}
 
 // Fórmula do produto (IP-2, decidida em 03/10/2026): a conta escrita por quem
 // monta, só para este produto, lendo medidas, tempo e os campos do orçamento
-// dele. Entra na lista de tipos de cálculo das linhas deste produto
-export type ProductFormula = { id: string; name: string; expression: string }
+// dele. Entra na lista de tipos de cálculo das linhas deste produto. O
+// processo também tem as suas (05/10/2026): o produto que o inclui recebe
+// uma cópia, marcada com o processo de origem, que acompanha a dele (CP-21)
+export type ProductFormula = {
+  id: string
+  name: string
+  expression: string
+  processId?: string
+}
 
 // Variação do produto na lista do produto base (03/10/2026)
 export type ProductVariantRef = { id: string; name: string }
@@ -343,6 +364,10 @@ export type ProductAssembly = {
   // (decisão de 03/10/2026, no lugar da herança da PV-2). Cada uma é outra
   // composição, com id "<produto>::v:<id>"; esta lista fica no produto base
   variants?: ProductVariantRef[]
+  // Produto inativado no cadastro (PAD-7, 05/10/2026): continua como parte
+  // onde já é usado, marcado "produto inativo"; não é oferecido como parte
+  // nova. O cadastro (API) é a fonte; o mock guarda a marca para a composição
+  inactive?: boolean
 }
 
 // O que o servidor devolve depois de calcular (SEG-1)
@@ -402,6 +427,11 @@ export type ComputedBlock = Omit<AssemblyBlock, 'lines'> & {
   partSetupMinutes: number
   // Etapa que só a variação vista tem (PV-7)
   variationOnly: boolean
+  // O processo de onde a etapa veio foi inativado (PAD-7): a etapa fica, e
+  // a tela avisa
+  processInactive: boolean
+  // A parte é um produto inativado no cadastro (PAD-7)
+  partInactive: boolean
 }
 
 // Cada recurso uma vez, somado de todas as etapas (IP-34): a lista do que o
@@ -414,6 +444,9 @@ export type ResourceSummary = {
   quantity: number
   cost: number
   sale: number
+  // Mão de obra: o maior número de pessoas entre as linhas somadas (IP-13);
+  // a quantidade já é o tempo multiplicado por elas
+  people?: number
 }
 
 export type ComputedAssembly = Omit<ProductAssembly, 'blocks'> & {
@@ -520,8 +553,23 @@ export type ComposedItemView = {
 export type AssemblyResource = ResourceOption & { kind: ResourceKind }
 
 export type AssemblyResources = {
+  // Os setores de exemplo do mock: a tela usa o cadastro de setores da
+  // empresa e cai aqui só quando ele não responde (05/10/2026)
   sectors: string[]
+  // "Como este setor vende" (29/09/2026, área 8 §3.13): 'hora', ou a unidade
+  // do equipamento (m², metro, unidade, km). A composição não oferece mão de
+  // obra de setor que vende por equipamento
+  sectorSales: { [sector: string]: string }
   resources: AssemblyResource[]
+}
+
+// O setor vende a produção do equipamento, e não horas
+export const sellsByEquipment = (
+  sectorSales: { [sector: string]: string } | undefined,
+  sector: string,
+) => {
+  const unit = sectorSales?.[sector]
+  return !!unit && unit !== 'hora'
 }
 
 export type NewLineValues = {
@@ -541,6 +589,8 @@ export type NewLineValues = {
   fieldDefault?: number
   // A fórmula do produto, quando o tipo é 'CUSTOM'
   formulaId?: string
+  // Pessoas na mão de obra (IP-13); padrão 1
+  people?: number
 }
 
 /* ---------------------------------------------------------------------------
@@ -600,6 +650,9 @@ export type SaleForm = {
     stage: string
     options: { id: string; name: string; unit: string }[]
   }[]
+  // Instruções ao vendedor dos processos usados (CP-13, 05/10/2026): texto
+  // de apoio, só leitura, no item do orçamento
+  instructions: { blockId: string; stage: string; text: string }[]
 }
 
 export type SaleCompositionReport = {

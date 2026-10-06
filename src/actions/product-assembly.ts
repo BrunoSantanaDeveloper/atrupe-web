@@ -77,6 +77,20 @@ const HOUR_SALE: { [sector: string]: number } = {
 }
 const salePerMinute = (sector: string) => (HOUR_SALE[sector] || 6000) / 60
 
+// "Como este setor vende" (decidido em 29/09/2026, área 8 §3.13): hora, ou a
+// unidade do equipamento. No setor que vende por equipamento o impressor já
+// está dentro do m² da máquina, então a composição não oferece a mão de obra
+// dele. Até o cadastro de setores ganhar o campo (área 2, MO-2), o mock diz
+const SECTOR_SALES: { [sector: string]: string } = {
+  Criação: 'hora',
+  Impressão: 'm²',
+  Produção: 'hora',
+  Instalação: 'hora',
+  Gráfica: 'hora',
+}
+const sellsByEquipment = (sector: string) =>
+  !!SECTOR_SALES[sector] && SECTOR_SALES[sector] !== 'hora'
+
 // O preço de venda do recurso; sem ele, o custo com o markup de referência
 const unitSaleOf = (option: ResourceOption) =>
   option.unitSale ?? option.unitCost * REFERENCE_MARKUP
@@ -635,6 +649,16 @@ const processStore = new Map<
   { block: AssemblyBlock; meta: ProcessMeta }
 >()
 
+// Instruções ao vendedor de exemplo (CP-13): o que perguntar ao cliente e o
+// que conferir antes de fechar. Aparecem no item do orçamento (05/10/2026)
+const SAMPLE_INSTRUCTIONS: { [processId: string]: string } = {
+  ilhos:
+    'Confirme com o cliente a distância entre os ilhoses: a cada 50 cm é o padrão; a cada 30 cm para lonas expostas ao vento.',
+  instalacao:
+    'Pergunte a altura do local e se há acesso para escada ou andaime. Combine a data antes de fechar.',
+  arte: 'Pergunte se o cliente leva a arte pronta (PDF) ou se a criação é nossa.',
+}
+
 catalog.forEach((template) => {
   const { afterBase, lines, processId, ...rest } = template
   processStore.set(processId, {
@@ -652,7 +676,11 @@ catalog.forEach((template) => {
         overridden: false,
       })),
     },
-    meta: { afterBase, sellerInstructions: '', active: true },
+    meta: {
+      afterBase,
+      sellerInstructions: SAMPLE_INSTRUCTIONS[processId] || '',
+      active: true,
+    },
   })
 })
 
@@ -1470,6 +1498,40 @@ const ensureFields = (assembly: ProductAssembly) => {
   })
 }
 
+// A fórmula do processo chega ao produto que o inclui (05/10/2026): a linha
+// vinda do processo aponta para a fórmula pelo id, então o produto recebe
+// uma cópia, marcada com o processo, que acompanha a dele a cada leitura
+// (CP-21). A cópia fica mesmo se o processo apagar a fórmula: a linha
+// continua calculando
+const ensureFormulas = (assembly: ProductAssembly) => {
+  if (isProcessHost(assembly.productId)) return
+  assembly.formulas = assembly.formulas || []
+  assembly.blocks.forEach((block) => {
+    const processId = block.processId
+    if (!processId) return
+    const host = assemblies.find(
+      (item) => item.productId === PROCESS_PREFIX + processId,
+    )
+    block.lines.forEach((line) => {
+      if (line.formula !== 'CUSTOM' || !line.formulaId) return
+      const source = (host?.formulas || []).find(
+        (item) => item.id === line.formulaId,
+      )
+      const copy = assembly.formulas!.find((item) => item.id === line.formulaId)
+      if (copy) {
+        if (source && copy.processId === processId) {
+          copy.name = source.name
+          copy.expression = source.expression
+        }
+        return
+      }
+      if (source) {
+        assembly.formulas!.push({ ...source, processId })
+      }
+    })
+  })
+}
+
 // Em que etapas cada campo é lido: pela linha que aponta para ele ou pela
 // fórmula do produto que o cita
 const fieldUsage = (assembly: ProductAssembly) =>
@@ -1784,6 +1846,7 @@ const compute = (
   depth = 0,
 ): ComputedAssembly => {
   ensureFields(source)
+  ensureFormulas(source)
   const assembly = applyVariation(source, variation)
   // Sem preço próprio, a variação vale o preço do produto (PV-4); com
   // tabela por faixa, vale a faixa da quantidade (FQ-1)
@@ -1830,7 +1893,9 @@ const compute = (
             ) * baseQuantity
           : baseQuantity
 
-    const blockMeasure = { quantity, ...size }
+    // A etapa de medida fixa (a base simulada do processo, §9.1) ignora as
+    // regras: a medida é a dela
+    const blockMeasure = block.fixedMeasure ?? { quantity, ...size }
     const extra = rules.extraField === 'NONE' ? 0 : rules.extraFieldDefault
     // O tempo é das linhas de mão de obra com tipo "tempo informado": sem
     // valor informado na venda, vale o consumo da linha (tempo padrão)
@@ -1938,8 +2003,14 @@ const compute = (
                 : null
               : lineQuantity(calcLine, blockMeasure, lineExtra, time)
 
+      // Pessoas na mão de obra (IP-13): duas pessoas por 30 minutos são 60
+      // minutos de mão de obra
+      const people =
+        line.kind === 'LABOR' ? Math.max(1, Math.round(line.people || 1)) : 1
       let qty =
-        raw === null ? null : raw * (1 + (calcLine.lossPercent || 0) / 100)
+        raw === null
+          ? null
+          : raw * people * (1 + (calcLine.lossPercent || 0) / 100)
       const minimumApplied =
         qty !== null && calcLine.minimum !== null && qty < calcLine.minimum
       if (qty !== null && calcLine.minimum !== null) {
@@ -1949,6 +2020,7 @@ const compute = (
 
       return {
         ...line,
+        people: line.kind === 'LABOR' ? people : undefined,
         sheetYield,
         variationOverride: !!variation?.overrides.some(
           (item) => item.blockId === block.id && item.lineId === line.id,
@@ -1995,6 +2067,11 @@ const compute = (
       variationOnly: !!variation?.extraBlocks?.some(
         (item) => item.id === block.id,
       ),
+      // Inativar não tira a etapa do produto (PAD-7): ela fica marcada
+      processInactive:
+        !!block.processId &&
+        processStore.get(block.processId)?.meta.active === false,
+      partInactive: !!partSource?.inactive,
       part: part
         ? {
             productId: part.productId,
@@ -2038,6 +2115,9 @@ const compute = (
       current.quantity = round(current.quantity + entry.quantity, 3)
       current.cost += entry.cost
       current.sale += entry.sale
+      if (entry.people) {
+        current.people = Math.max(current.people || 1, entry.people)
+      }
     } else {
       summary.set(entry.id, { ...entry })
     }
@@ -2067,6 +2147,7 @@ const compute = (
         quantity: line.quantity,
         cost: line.cost || 0,
         sale: line.sale || 0,
+        people: line.kind === 'LABOR' ? line.people : undefined,
       })
     })
   })
@@ -2287,7 +2368,16 @@ const resourceMap = () => {
 export const getAssemblyResources = async () =>
   ok({
     sectors: Object.keys(HOUR),
-    resources: Array.from(resourceMap().values()),
+    sectorSales: { ...SECTOR_SALES },
+    // A mão de obra do setor que vende por equipamento não é oferecida
+    // (29/09/2026): o impressor já está dentro do m² da máquina
+    resources: Array.from(resourceMap().values()).filter(
+      (resource) =>
+        !(
+          resource.kind === 'LABOR' &&
+          sellsByEquipment(resource.id.replace(/^mo-/, ''))
+        ),
+    ),
   })
 
 // A etapa montada no próprio produto: o trabalho de um setor, com os
@@ -2384,6 +2474,10 @@ export const addAssemblyLine = async ({
     optionalDefault: values.optional ? values.optionalDefault : undefined,
     fieldName,
     formulaId: values.formula === 'CUSTOM' ? values.formulaId : undefined,
+    people:
+      values.kind === 'LABOR'
+        ? Math.max(1, Math.round(values.people || 1))
+        : undefined,
     overridden: false,
     // Numa etapa vinda de processo, a linha a mais é só deste produto
     addedHere: block.processId !== null,
@@ -2393,21 +2487,38 @@ export const addAssemblyLine = async ({
 
 // Os campos do orçamento são do PRODUTO (IP-4, IP-6): um nome, um valor,
 // um lugar para preencher. A linha aponta para o campo pelo nome
+// Campo inteiro recusa decimal (IP-19): na venda, na simulação e no padrão
+const integerCheck = (
+  field: Pick<QuoteField, 'name' | 'allowsFraction'>,
+  value: number,
+) =>
+  !field.allowsFraction && !Number.isInteger(value)
+    ? `${field.name} é um número inteiro. Ligue "Aceita fração" se o campo puder ter decimais`
+    : null
+
 export const addProductField = async ({
   productId,
   name,
   defaultValue,
+  allowsFraction = false,
 }: {
   productId: string
   name: string
   defaultValue: number
+  allowsFraction?: boolean
 }) => {
   if (!name?.trim()) return fail('Informe o nome do campo')
   const assembly = findOrCreate(productId)
   if (findField(assembly, name)) {
     return fail('Já existe um campo com esse nome neste produto')
   }
-  ensureField(assembly, name, defaultValue)
+  const error = integerCheck(
+    { name: name.trim(), allowsFraction },
+    defaultValue,
+  )
+  if (error) return fail(error)
+  const field = ensureField(assembly, name, defaultValue)
+  field.allowsFraction = allowsFraction
   return ok(null)
 }
 
@@ -2416,15 +2527,26 @@ export const updateProductField = async ({
   fieldId,
   name,
   defaultValue,
+  allowsFraction,
 }: {
   productId: string
   fieldId: string
   name?: string
   defaultValue?: number
+  allowsFraction?: boolean
 }) => {
   const assembly = findOrCreate(productId)
   const field = (assembly.fields || []).find((item) => item.id === fieldId)
   if (!field) return fail('Campo não encontrado')
+  if (allowsFraction !== undefined) {
+    field.allowsFraction = allowsFraction
+    // Voltando a inteiro, o padrão com fração é arredondado
+    if (!allowsFraction) field.defaultValue = Math.round(field.defaultValue)
+  }
+  if (defaultValue !== undefined) {
+    const error = integerCheck(field, defaultValue)
+    if (error) return fail(error)
+  }
   if (name !== undefined) {
     if (!name.trim()) return fail('Informe o nome do campo')
     const other = findField(assembly, name)
@@ -2937,6 +3059,7 @@ export const updateAssemblyLine = async ({
       | 'chargeWholeSheets'
       | 'fieldName'
       | 'formulaId'
+      | 'people'
     >
   > & {
     // Padrão do campo do orçamento, se ele ainda não existir no produto
@@ -2964,6 +3087,12 @@ export const updateAssemblyLine = async ({
     if (line.fieldName) ensureField(assembly, line.fieldName, fieldDefault ?? 0)
   }
   if (line.formula !== 'CUSTOM') line.formulaId = undefined
+  if ('people' in lineValues) {
+    line.people =
+      line.kind === 'LABOR'
+        ? Math.max(1, Math.round(lineValues.people || 1))
+        : undefined
+  }
   // Lista nova: a mesma lista de opções pode ser de outros produtos
   if (optionValues) {
     line.options = line.options.map((option) => {
@@ -3339,21 +3468,35 @@ export const getSaleForm = async ({ productId }: { productId: string }) => {
     choices: [],
     optionals: [],
     lists: [],
+    instructions: [],
   }
   // Os campos do produto, uma vez só, na ordem em que foram declarados (IP-6)
   ensureFields(assembly)
+  ensureFormulas(assembly)
   fieldUsage(assembly)
     .filter((field) => field.usedBy.length)
     .forEach((field) =>
       form.extras.push({
         fieldId: field.id,
         name: field.name,
-        kind: 'DECIMAL',
+        // Inteiro por padrão; fracionado quando o campo aceita (IP-19)
+        kind: field.allowsFraction ? 'DECIMAL' : 'INTEGER',
         defaultValue: field.defaultValue,
       }),
     )
   assembly.blocks.forEach((block) => {
     const rules = block.localRules ?? block.originalRules
+    // As instruções ao vendedor do processo da etapa (CP-13)
+    const instructions = block.processId
+      ? processStore.get(block.processId)?.meta.sellerInstructions.trim()
+      : ''
+    if (instructions) {
+      form.instructions.push({
+        blockId: block.id,
+        stage: block.localName || block.name,
+        text: instructions,
+      })
+    }
     if (rules.timeField || blockHasTimeLine(block)) {
       const timeLine = block.lines.find((line) =>
         TIME_FORMULAS.includes(line.formula),
@@ -3672,6 +3815,8 @@ export const getPartCandidates = async ({ productId }: { productId: string }) =>
         (item) =>
           item.productId !== productId &&
           !isHidden(item.productId) &&
+          // Produto inativo não é oferecido como parte nova (PAD-7)
+          !item.inactive &&
           item.blocks.length,
       )
       .map((item) => ({
@@ -3742,6 +3887,37 @@ export const addPartBlock = async ({
   }
   insertBlock(assembly, block, insertBefore)
   return ok(block.id)
+}
+
+// Onde o produto é parte (PAD-7, 05/10/2026): a lista que o diálogo de
+// inativar mostra antes de confirmar
+export const getProductUsage = async ({ productId }: { productId: string }) =>
+  ok(
+    assemblies
+      .filter((item) => !isHidden(item.productId))
+      .flatMap((item) =>
+        blocksOf(item)
+          .filter((block) => block.partProductId === productId)
+          .map((block) => ({
+            productId: item.productId,
+            name: item.name,
+            stage: block.localName || block.name,
+          })),
+      ),
+  )
+
+// Inativar o produto no cadastro marca, aqui, os produtos onde ele é parte:
+// a etapa fica, com o aviso "produto inativo". Reativar tira a marca
+export const setProductActive = async ({
+  productId,
+  active,
+}: {
+  productId: string
+  active: boolean
+}) => {
+  const assembly = findOrCreate(productId)
+  assembly.inactive = active ? undefined : true
+  return ok(null)
 }
 
 // Os produtos que já têm composição (CP-17): alimenta o filtro "com / sem
@@ -3926,6 +4102,23 @@ const usedIn = (processId: string) =>
     )
     .map((item) => ({ productId: item.productId, name: item.name }))
 
+// Os produtos que usam o processo, pela etapa (PAD-7): o diálogo de inativar
+// mostra a lista antes de confirmar. A etapa não sai do produto
+export const getProcessUsage = async ({ processId }: { processId: string }) =>
+  ok(
+    assemblies
+      .filter((item) => !isHidden(item.productId))
+      .flatMap((item) =>
+        blocksOf(item)
+          .filter((block) => block.processId === processId)
+          .map((block) => ({
+            productId: item.productId,
+            name: item.name,
+            stage: block.localName || block.name,
+          })),
+      ),
+  )
+
 export const getProcessList = async () =>
   ok(
     Array.from(processStore.entries()).map(([id, { block, meta }]) => ({
@@ -3950,26 +4143,77 @@ export const getProcessList = async () =>
 export const getProcessDetail = async ({
   processId,
   measure,
+  baseMeasure,
 }: {
   processId: string
   measure?: AssemblyMeasure
+  // Simular o processo depois de outra etapa (§9.1, construído em
+  // 06/10/2026): a medida e a quantidade da base. Com ela, "acompanha a
+  // quantidade da base", "mesma medida da base" e "quantas cabem na base"
+  // entram na conta, exatamente como no produto; `measure` passa a ser a
+  // medida própria do processo, usada quando as regras pedem
+  baseMeasure?: AssemblyMeasure
 }) => {
   const entry = processStore.get(processId)
   if (!entry) return fail('Processo não encontrado')
   const host = findOrCreate(PROCESS_PREFIX + processId)
-  const computed = compute({ ...host, measure: measure ?? host.measure })
+  const own = measure ?? host.measure
+  let source: ProductAssembly = { ...host, measure: own }
+  if (baseMeasure) {
+    // Uma base sem custo, com a medida fixa, e o processo depois dela com as
+    // regras que teria no produto (rulesByPosition)
+    const base: AssemblyBlock = {
+      id: 'sim-base',
+      processId: null,
+      name: 'Etapa anterior',
+      sector: host.blocks[0].sector,
+      role: 'BASE',
+      dependsOn: [],
+      baseBlockId: null,
+      setupMinutes: 0,
+      sectorHourCost: 0,
+      taskType: 'Produção',
+      originalRules: { ...baseRules },
+      localRules: null,
+      lines: [],
+      fixedMeasure: baseMeasure,
+    }
+    const block = host.blocks[0]
+    source = {
+      ...host,
+      measure: own,
+      blocks: [
+        base,
+        {
+          ...block,
+          role: 'FINISHING',
+          dependsOn: [base.id],
+          baseBlockId: base.id,
+          originalRules: rulesByPosition(
+            block.originalRules,
+            entry.meta.afterBase,
+            [base.id],
+          ),
+        },
+      ],
+    }
+  }
+  const computed = compute(source)
+  const block = computed.blocks.find((item) => item.id !== 'sim-base')!
   return ok({
     id: processId,
     hostId: host.productId,
     meta: entry.meta,
     category: processCategory(processId, entry.block),
-    block: computed.blocks[0],
+    block,
     // Os campos que as linhas do processo leem (IP-4)
     fields: computed.fields,
-    cost: computed.cost,
-    sale: computed.suggestedPrice,
+    // As fórmulas escritas no processo (IP-2, 05/10/2026)
+    formulas: computed.formulas,
+    cost: block.cost,
+    sale: block.sale,
     resourceSummary: computed.resourceSummary,
-    measure: measure ?? host.measure,
+    measure: own,
     usedIn: usedIn(processId),
   })
 }

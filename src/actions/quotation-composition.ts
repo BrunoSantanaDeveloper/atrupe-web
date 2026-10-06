@@ -256,6 +256,35 @@ const find = (quotationId: string) => {
   return created
 }
 
+// Quais orçamentos abertos usam este produto (PAD-7, regra do Maicol em
+// 05/10/2026): inativar ou excluir um produto marca os orçamentos abertos que
+// o têm, e eles não podem ser aprovados até o item ser trocado ou retirado.
+// O bloqueio da aprovação é da rotina do orçamento; esta função responde a
+// lista para ela e para o diálogo de inativar. Aberto é o que não foi
+// aprovado nem fechado
+export const getOpenQuotationsUsingProduct = async ({
+  productId,
+}: {
+  productId: string
+}) =>
+  ({
+    success: true,
+    message: '',
+    data: quotations
+      .filter((quotation) => !quotation.status || quotation.status === 'OPEN')
+      .flatMap((quotation) =>
+        quotation.items
+          .filter((item) => item.productId === productId)
+          .map((item) => ({
+            quotationId: quotation.id,
+            reference: quotation.reference,
+            client: quotation.client,
+            itemId: item.id,
+            itemName: item.name,
+          })),
+      ),
+  }) as const
+
 export const getQuotation = async ({ id }: { id: string }) => {
   return { success: true, data: find(id), message: '' }
 }
