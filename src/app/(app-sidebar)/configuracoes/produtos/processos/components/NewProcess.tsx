@@ -2,6 +2,8 @@
 
 // O diálogo do processo, no mesmo desenho do diálogo do produto: abas
 // Processo · Composição · Uso, cabeçalho, rodapé e reabertura depois de criar.
+// Em edição, o Salvar do rodapé grava o card Processo (PAD-5, 05/10/2026) e
+// o Inativar abre o "onde é usado" (PAD-7), como no produto e no material.
 // Processo e produto são a mesma coisa vista de dois lugares — o trabalho de
 // um setor com máquina, material e mão de obra — e por isso se cadastram do
 // mesmo jeito (design.md §17: funções semelhantes, telas iguais).
@@ -31,18 +33,17 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import { afterBaseObj } from '@/consts/processes'
 import type { AfterBase } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { ProcessEditor } from '../[id]/components/ProcessEditor'
+import {
+  ProcessEditor,
+  type ProcessSaveHandle,
+} from '../[id]/components/ProcessEditor'
+import { InactivateProcessDialog } from './InactivateProcessDialog'
 
 // Actions
-import {
-  createProcessDef,
-  getProcessDetail,
-  updateProcessMeta,
-  getAssemblyResources,
-} from '@/actions/product-assembly'
+import { createProcessDef, getProcessDetail } from '@/actions/product-assembly'
 
 // Hooks / Store
-import { useAlertDialog } from '@/store/useAlertDialog'
+import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
 
 // Third-party
 import { toast } from 'sonner'
@@ -107,31 +108,27 @@ export function ProcessDialog({
   onCreated,
 }: Props) {
   const queryClient = useQueryClient()
-  const alertDialog = useAlertDialog()
   const [activeTab, setActiveTab] = useState<ProcessTab>(initialTab)
   const [name, setName] = useState('')
   const [sector, setSector] = useState('')
   const [afterBase, setAfterBase] = useState<AfterBase>('INHERIT')
   const [saving, setSaving] = useState(false)
+  // O que o card Processo tem pendente e como gravar (PAD-5)
+  const [saveHandle, setSaveHandle] = useState<ProcessSaveHandle | null>(null)
+  const [inactivateOpen, setInactivateOpen] = useState(false)
 
+  // Os setores da empresa, do cadastro de setores (05/10/2026). Enquanto a
+  // lista carrega, o campo diz isso em vez de parecer travado; se falhou,
+  // dá para tentar de novo sem fechar o diálogo
   const {
-    data: resourcesRes,
+    sectors: sectorNames,
+    isLoading: sectorsLoading,
     isError: resourcesError,
-    refetch: refetchResources,
-  } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['assembly-resources'],
-    queryFn: () => getAssemblyResources(),
-    enabled: open,
-  })
-  const sectors = useMemo(
-    () => resourcesRes?.data?.sectors || [],
-    [resourcesRes],
-  )
-  // A lista vem de uma ação do servidor; no dev, a primeira chamada compila
-  // e demora. Enquanto isso, o campo diz que está carregando, em vez de
-  // parecer travado. Se falhou, dá para tentar de novo sem fechar o diálogo
-  const sectorsLoading = open && !resourcesRes && !resourcesError
+  } = useCompanySectors()
+  const sectors = useMemo(() => sectorNames, [sectorNames])
+  const ready = editMode && !!processId
+  const refetchResources = () =>
+    queryClient.invalidateQueries({ queryKey: ['sectors'] })
 
   // Em edição, o título e a situação vêm do processo; as seções são do editor
   const { data: detailRes } = useQuery({
@@ -169,43 +166,14 @@ export function ProcessDialog({
     onCreated?.(res.data)
   }
 
-  // Processo usado em produto é inativado, não excluído (regra geral)
-  const toggleActive = () => {
-    if (!detail) return
-    const active = detail.meta.active
-    alertDialog.open({
-      title: active
-        ? `Inativar ${detail.block.name}?`
-        : `Reativar ${detail.block.name}?`,
-      description: active
-        ? `Ele deixa de aparecer para escolher nas composições.${
-            detail.usedIn.length
-              ? ` Os ${detail.usedIn.length} produtos que já o usam continuam como estão.`
-              : ''
-          }`
-        : 'Ele volta a aparecer nas listas de escolha.',
-      confirmLabel: active ? 'Inativar' : 'Reativar',
-      cancelLabel: 'Cancelar',
-      confirmVariant: active ? 'error' : 'primary',
-      onConfirm: async () => {
-        const res = await updateProcessMeta({
-          processId: detail.id,
-          values: { active: !active },
-        })
-        if (!res.success) throw new Error(res.message)
-        await Promise.all([
-          queryClient.invalidateQueries({ queryKey: ['process-list'] }),
-          queryClient.invalidateQueries({ queryKey: ['process-detail'] }),
-        ])
-      },
-      toastMsg: {
-        success: active ? 'Processo inativado' : 'Processo reativado',
-        error: 'Não foi possível alterar o processo',
-      },
-    })
+  // Em edição, o Salvar do rodapé grava o card Processo e fecha, como o
+  // produto (PAD-5). Sem nada pendente, só fecha
+  const saveEdit = async () => {
+    setSaving(true)
+    const done = saveHandle ? await saveHandle.save() : true
+    setSaving(false)
+    if (done) onOpenChange(false)
   }
-
-  const ready = editMode && !!processId
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -251,9 +219,21 @@ export function ProcessDialog({
             </div>
 
             <ScrollArea className="flex-1 max-h-[calc(100vh-280px)]">
-              <TabsContent value="general" className="mt-0 p-6">
+              {/* Em edição a aba fica montada mesmo inativa: o que foi
+                  digitado no card Processo sobrevive à troca de aba até o
+                  Salvar do rodapé (PAD-5) */}
+              <TabsContent
+                value="general"
+                className="mt-0 p-6 data-[state=inactive]:hidden"
+                forceMount={ready || undefined}
+              >
                 {ready ? (
-                  <ProcessEditor id={processId!} embedded section="config" />
+                  <ProcessEditor
+                    id={processId!}
+                    embedded
+                    section="config"
+                    onSaveHandle={setSaveHandle}
+                  />
                 ) : (
                   // Os três campos de abertura, na ordem em que fazem
                   // sentido (MS-1). O resto se monta depois de salvar
@@ -401,7 +381,7 @@ export function ProcessDialog({
                   variant={
                     detail.meta.active ? 'errorOutline' : 'successOutline'
                   }
-                  onClick={toggleActive}
+                  onClick={() => setInactivateOpen(true)}
                 >
                   {detail.meta.active ? 'Inativar' : 'Reativar'}
                 </Button>
@@ -416,7 +396,7 @@ export function ProcessDialog({
             >
               Cancelar
             </Button>
-            {!editMode && (
+            {!editMode ? (
               <Button
                 type="button"
                 RightIcon={IconCircleCheck}
@@ -426,10 +406,33 @@ export function ProcessDialog({
               >
                 Salvar
               </Button>
+            ) : (
+              <PermissionGate permissions={EDIT}>
+                <Button
+                  type="button"
+                  RightIcon={IconCircleCheck}
+                  isLoading={saving}
+                  disabled={!ready}
+                  onClick={saveEdit}
+                >
+                  Salvar
+                </Button>
+              </PermissionGate>
             )}
           </div>
         </DialogFooter>
       </DialogContent>
+      {ready && detail && (
+        <InactivateProcessDialog
+          process={{
+            id: detail.id,
+            name: detail.block.name,
+            active: detail.meta.active,
+          }}
+          open={inactivateOpen}
+          onOpenChange={setInactivateOpen}
+        />
+      )}
     </Dialog>
   )
 }

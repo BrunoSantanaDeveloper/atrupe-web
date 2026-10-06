@@ -44,6 +44,11 @@ interface Props {
   // Como seção dentro do card Composição (03/10/2026): recurso avançado,
   // que só aparece depois da primeira fórmula criada pela linha
   bare?: boolean
+  // O processo usa o mesmo card com outro título e explicação (05/10/2026)
+  title?: string
+  description?: string
+  // O processo lê outra consulta: avisa para ela recarregar
+  onSaved?: () => void | Promise<unknown>
 }
 
 export function ProductFormulas({
@@ -53,14 +58,19 @@ export function ProductFormulas({
   lineRefs = [],
   testVars,
   bare = false,
+  title = 'Fórmulas do produto',
+  description = 'Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê as medidas, o tempo e os campos do orçamento deste produto e passa a aparecer nos tipos de cálculo das linhas. Vale só neste produto.',
+  onSaved,
 }: Props) {
   const queryClient = useQueryClient()
   const [dialog, setDialog] = useState<
     { kind: 'new' } | { kind: 'edit'; formula: ProductFormula } | null
   >(null)
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
+  const invalidate = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['assembly', productId] })
+    await onSaved?.()
+  }
 
   const { mutate: remove } = useMutation({
     mutationFn: (formulaId: string) =>
@@ -95,17 +105,11 @@ export function ProductFormulas({
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0 flex-1 basis-80">
         {bare ? (
-          <p className="text-sm font-semibold text-gray-700">
-            Fórmulas do produto
-          </p>
+          <p className="text-sm font-semibold text-gray-700">{title}</p>
         ) : (
-          <CardTitle>Fórmulas do produto</CardTitle>
+          <CardTitle>{title}</CardTitle>
         )}
-        <p className="text-sm text-gray">
-          Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê as
-          medidas, o tempo e os campos do orçamento deste produto e passa a
-          aparecer nos tipos de cálculo das linhas. Vale só neste produto.
-        </p>
+        <p className="text-sm text-gray">{description}</p>
       </div>
       <PermissionGate permissions={EDIT}>
         <Button
@@ -159,6 +163,9 @@ export function ProductFormulas({
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-1">
+              {formula.processId && (
+                <Badge variant="blueLight">veio do processo</Badge>
+              )}
               {formula.error ? (
                 <Badge variant="errorLight">{formula.error}</Badge>
               ) : formula.usedBy.length ? (

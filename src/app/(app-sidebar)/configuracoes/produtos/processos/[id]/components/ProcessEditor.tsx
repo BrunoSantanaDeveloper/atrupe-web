@@ -4,11 +4,15 @@
 // linhas de recurso único, escolha ou lista, opções com consumo próprio,
 // regras de venda, tempo e tipo de tarefa —, com uma simulação na medida e
 // os produtos que o usam. Os diálogos são os mesmos da composição, para o
-// processo e o produto se comportarem igual.
+// processo e o produto se comportarem igual. Desde 06/10/2026 o card
+// Processo não tem botão próprio: salva no rodapé do diálogo ou da página,
+// como o produto (PAD-5); a Simulação é o mesmo card do produto (PAD-6) e
+// aceita uma base simulada (§9.1); as fórmulas entram pelas linhas (IP-2).
 
 // React / Next
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
 
 // UI
 import {
@@ -23,6 +27,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
@@ -69,10 +74,13 @@ import {
   type ComputedBlock,
   type AssemblyMeasure,
   type AfterBase,
+  sellsByEquipment,
 } from '../../../[id]/composicao/assembly'
 import type { ResourceKind, DimensionRule } from '../../types'
 import { ResourceKindButtons } from '../../../[id]/composicao/components/ResourceKindButtons'
+import { SimulationCard } from '../../../[id]/composicao/components/SimulationCard'
 import { ProductFields } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFields'
+import { ProductFormulas } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/components/ProductFormulas'
 
 // Actions
 import {
@@ -83,6 +91,7 @@ import {
   getProcessDetail,
   removeLineOption,
   updateProcessMeta,
+  addProductFormula,
   removeAssemblyLine,
   setBlockLocalRules,
   updateAssemblyLine,
@@ -92,6 +101,7 @@ import {
 // Hooks / Store / Consts
 import { useMoney } from '@/hooks/useMoney'
 import { usePermissions } from '@/hooks/usePermissions'
+import { useCompanySectors } from '@/hooks/queries/useCompanySectors'
 import { useAlertDialog } from '@/store/useAlertDialog'
 import {
   formulaLabel,
@@ -110,7 +120,13 @@ import {
 } from '@tanstack/react-query'
 
 // Icons
-import { IconTrash, IconPencil, IconListDetails } from '@tabler/icons-react'
+import {
+  IconClock,
+  IconTrash,
+  IconPencil,
+  IconCircleCheck,
+  IconListDetails,
+} from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -153,6 +169,15 @@ type Dialog =
 
 export type ProcessSection = 'config' | 'resources' | 'usage'
 
+// O que o rodapé precisa para salvar o card Processo (PAD-5): se há algo
+// pendente e a ação de gravar. O diálogo e a página chamam no Salvar
+export type ProcessSaveHandle = {
+  dirty: boolean
+  save: () => Promise<boolean>
+}
+
+const PROCESSES_PATH = '/configuracoes/produtos/processos'
+
 // `embedded`: dentro do diálogo do processo (mesmo desenho do diálogo do
 // produto, design.md §17). Cada aba monta uma seção: Processo (config),
 // Composição (recursos e simulação) e Uso (usado em, fluxo dos produtos)
@@ -160,17 +185,25 @@ export function ProcessEditor({
   id,
   embedded = false,
   section,
+  onSaveHandle,
 }: {
   id: string
   embedded?: boolean
   section?: ProcessSection
+  // O diálogo recebe o handle e põe o Salvar no rodapé dele (PAD-5)
+  onSaveHandle?: (handle: ProcessSaveHandle | null) => void
 }) {
   const show = (part: ProcessSection) => !section || section === part
   const money = useMoney()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const alertDialog = useAlertDialog()
   const [measure, setMeasure] = useState<AssemblyMeasure>()
+  // A base simulada (§9.1): a medida e a quantidade da etapa anterior, para
+  // ver "acompanha a base", "mesma medida" e "quantas cabem" na conta
+  const [baseMeasure, setBaseMeasure] = useState<AssemblyMeasure | null>(null)
   const [dialog, setDialog] = useState<Dialog>(null)
+  const [savedAt, setSavedAt] = useState<Date | null>(null)
   // O nome do processo edita no título da etapa, como no produto
   const [renaming, setRenaming] = useState(false)
   const [meta, setMeta] = useState({
@@ -181,8 +214,13 @@ export function ProcessEditor({
   })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['process-detail', id, measure],
-    queryFn: () => getProcessDetail({ processId: id, measure }),
+    queryKey: ['process-detail', id, measure, baseMeasure],
+    queryFn: () =>
+      getProcessDetail({
+        processId: id,
+        measure,
+        baseMeasure: baseMeasure ?? undefined,
+      }),
     placeholderData: keepPreviousData,
   })
   const { data: resourcesRes } = useQuery({
@@ -190,6 +228,8 @@ export function ProcessEditor({
     queryKey: ['assembly-resources'],
     queryFn: () => getAssemblyResources(),
   })
+  // Os setores da empresa, do cadastro de setores (05/10/2026)
+  const { sectors } = useCompanySectors()
   // As etapas seguintes usuais, vistas dos dois lados (FL-7)
   const { data: usualRes } = useQuery({
     queryKey: ['usual-next', id],
@@ -232,6 +272,7 @@ export function ProcessEditor({
     Promise.all([
       queryClient.invalidateQueries({ queryKey: ['process-detail', id] }),
       queryClient.invalidateQueries({ queryKey: ['process-list'] }),
+      queryClient.invalidateQueries({ queryKey: ['sale-form'] }),
     ])
 
   const run = async (
@@ -241,22 +282,124 @@ export function ProcessEditor({
     const res = await action
     if (!res.success) return toast.error(res.message)
     if (success) toast.success(success)
+    setSavedAt(new Date())
     await refresh()
   }
+
+  // O card Processo não tem botão próprio (PAD-5): o que mudou nele é
+  // gravado pelo Salvar do rodapé, do diálogo ou da página
+  const metaChanged =
+    !!detail &&
+    !!block &&
+    (meta.sector !== block.sector ||
+      meta.afterBase !== detail.meta.afterBase ||
+      meta.setupMinutes !== block.setupMinutes ||
+      meta.sellerInstructions !== detail.meta.sellerInstructions)
+  const saveMeta = useMemo(
+    () => async () => {
+      if (!metaChanged) return true
+      const res = await updateProcessMeta({
+        processId: id,
+        values: {
+          sector: meta.sector,
+          afterBase: meta.afterBase,
+          setupMinutes: meta.setupMinutes,
+          sellerInstructions: meta.sellerInstructions,
+        },
+      })
+      if (!res.success) {
+        toast.error(res.message)
+        return false
+      }
+      toast.success('Processo salvo')
+      setSavedAt(new Date())
+      await refresh()
+      return true
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [metaChanged, meta, id],
+  )
+  useEffect(() => {
+    if (!onSaveHandle || !show('config')) return
+    onSaveHandle({ dirty: metaChanged, save: saveMeta })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [metaChanged, saveMeta])
 
   if (isLoading || !detail || !block || !measure) {
     return <Skeleton className="h-[480px] w-full" />
   }
 
   const hostId = detail.hostId
-  const sectors = resourcesRes?.data?.sectors || []
   const lineOf = (lineId: string) =>
     block.lines.find((line) => line.id === lineId)
-  const metaChanged =
-    meta.sector !== block.sector ||
-    meta.afterBase !== detail.meta.afterBase ||
-    meta.setupMinutes !== block.setupMinutes ||
-    meta.sellerInstructions !== detail.meta.sellerInstructions
+
+  // "Como este setor vende" (29/09/2026): setor que vende por equipamento
+  // não tem linha de mão de obra; o impressor já está dentro do m²
+  const sectorSales = resourcesRes?.data?.sectorSales
+  const laborBlocked = sellsByEquipment(sectorSales, block.sector)
+    ? `${block.sector} vende por ${sectorSales?.[block.sector]}: quem trabalha nele já está dentro do custo do equipamento. Não há linha de mão de obra deste setor; o acabamento feito por outro setor entra pela mão de obra dele.`
+    : undefined
+
+  // O que a fórmula do processo pode ler (IP-2): as medidas simuladas, os
+  // campos do processo e o material das outras linhas (MT-10.1)
+  const lineRefs: { [name: string]: number } = {}
+  block.lines.forEach((line) => {
+    const selected = line.selected
+    if (!selected) return
+    if (selected.profile) {
+      lineRefs[`${line.name} · X`] = selected.profile.x / 1000
+      lineRefs[`${line.name} · Y`] = selected.profile.y / 1000
+    }
+    if (selected.sheet) {
+      lineRefs[`${line.name} · largura`] = selected.sheet.width
+      lineRefs[`${line.name} · altura`] = selected.sheet.height
+    }
+    if (selected.weight) lineRefs[`${line.name} · peso`] = selected.weight
+  })
+  const testVars: { [name: string]: number } = {
+    largura: block.measure.width,
+    altura: block.measure.height,
+    área: block.measure.width * block.measure.height,
+    perímetro: 2 * (block.measure.width + block.measure.height),
+    quantidade: block.measure.quantity,
+    tempo: 0,
+    ...Object.fromEntries(
+      detail.fields.map((field) => [field.name, field.defaultValue]),
+    ),
+    ...lineRefs,
+  }
+  const createFormula = async (values: {
+    name: string
+    expression: string
+  }) => {
+    const res = await addProductFormula({ productId: hostId, ...values })
+    if (!res.success) {
+      toast.error(res.message)
+      return null
+    }
+    toast.success('Fórmula criada')
+    await refresh()
+    return res.data
+  }
+
+  // Salvar e Fechar da página (como na composição do produto): o que pode
+  // estar pendente é o card Processo; as linhas gravam por ação (IP-40)
+  const savePage = async () => {
+    if (await saveMeta()) router.push(PROCESSES_PATH)
+  }
+  const closePage = () => {
+    if (!metaChanged) return router.push(PROCESSES_PATH)
+    alertDialog.open({
+      title: 'Sair sem salvar o processo?',
+      description:
+        'As linhas da composição já estão gravadas. Só o que foi mudado no card Processo ainda não foi salvo.',
+      confirmLabel: 'Sair',
+      cancelLabel: 'Cancelar',
+      onConfirm: async () => {
+        router.push(PROCESSES_PATH)
+      },
+    })
+  }
 
   const removeLine = (line: ComputedLine) =>
     alertDialog.open({
@@ -314,6 +457,21 @@ export function ProcessEditor({
       ? `${qty} · mesma medida da base (${size})`
       : `${qty} · ${size}`
   })()
+
+  // As regras herdadas aplicadas na simulação (§9.1): com a base ligada, o
+  // cabeçalho explica de onde veio a quantidade e a medida
+  const baseText = baseMeasure
+    ? [
+        rules.followsBase
+          ? `quantidade da base (${num(baseMeasure.quantity)})`
+          : rules.quantityMode === 'AREA_RATIO'
+            ? 'quantas cabem na base'
+            : 'quantidade própria',
+        rules.dimension === 'SAME_AS_PARENT'
+          ? `medida da base (${num(baseMeasure.width)} × ${num(baseMeasure.height)} m)`
+          : 'medida própria',
+      ].join(' · ')
+    : null
 
   return (
     <TooltipProvider>
@@ -416,95 +574,100 @@ export function ProcessEditor({
                       bare
                       productId={hostId}
                       fields={detail.fields}
+                      onSaved={refresh}
                       description="Os valores que o vendedor informa e que as linhas deste processo leem. O produto que incluir o processo ganha estes campos, uma vez cada."
                     />
                   </div>
                 </CardContent>
-                <PermissionGate permissions={EDIT}>
-                  <CardFooter className="flex-wrap justify-between gap-3">
-                    <p className="text-sm text-gray">
-                      O preparo entra uma vez por pedido, com o custo-hora do
-                      setor.
-                    </p>
-                    <Button
-                      type="button"
-                      disabled={!metaChanged}
-                      onClick={() =>
-                        run(
-                          updateProcessMeta({
-                            processId: id,
-                            values: {
-                              sector: meta.sector,
-                              afterBase: meta.afterBase,
-                              setupMinutes: meta.setupMinutes,
-                              sellerInstructions: meta.sellerInstructions,
-                            },
-                          }),
-                          'Processo salvo',
-                        )
-                      }
-                    >
-                      Salvar processo
-                    </Button>
-                  </CardFooter>
-                </PermissionGate>
+                {/* Sem botão próprio (PAD-5): o Salvar do rodapé grava */}
+                <CardFooter className="text-sm text-gray">
+                  O preparo entra uma vez por pedido, com o custo-hora do setor.
+                  {metaChanged
+                    ? ' O que mudou aqui é gravado pelo Salvar do rodapé.'
+                    : ''}
+                </CardFooter>
               </Card>
             )}
 
-            {/* 2. Simulação: conferir o processo antes de usá-lo */}
+            {/* 2. Simulação (PAD-6): o mesmo card do produto. Com a base
+                ligada, as regras herdadas entram na conta (§9.1) */}
             {(!embedded || show('resources')) && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Simulação</CardTitle>
-                  <CardDescription>
-                    Confira o consumo numa medida. Não grava nada.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 px-6">
-                  <div className="grid grid-cols-3 gap-3">
-                    {(
-                      [
-                        ['quantity', 'Qtd.'],
-                        ['width', 'Larg. (m)'],
-                        ['height', 'Alt. (m)'],
-                      ] as const
-                    ).map(([key, label]) => (
-                      <div key={key} className="space-y-2">
-                        <Label htmlFor={`sim-${key}`}>{label}</Label>
-                        <Input
-                          id={`sim-${key}`}
-                          type="number"
-                          min={0}
-                          step={key === 'quantity' ? '1' : '0.01'}
-                          value={measure[key]}
-                          onChange={(event) =>
-                            setMeasure((current) => ({
-                              ...current!,
-                              [key]: Number(event.target.value) || 0,
-                            }))
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <PermissionGate permissions={['values:values:view']}>
-                    <div className="grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3">
-                      <p>
-                        <span className="block text-xs text-gray">Custo</span>
-                        <span className="text-lg font-semibold text-gray-900">
-                          {money(detail.cost)}
-                        </span>
-                      </p>
-                      <p>
-                        <span className="block text-xs text-gray">Venda</span>
-                        <span className="text-lg font-semibold text-success-700">
-                          {money(detail.sale)}
-                        </span>
-                      </p>
+              <SimulationCard
+                idPrefix="process-sim"
+                description="Confira o consumo numa medida. Não grava nada."
+                measure={measure}
+                onMeasureChange={setMeasure}
+                measureLabel={
+                  baseMeasure ? 'Medida própria do processo' : undefined
+                }
+                results={[
+                  { label: 'Custo', value: money(detail.cost) },
+                  {
+                    label: 'Venda',
+                    value: money(detail.sale),
+                    tone: 'success',
+                  },
+                ]}
+                footer={
+                  baseText ? (
+                    <p className="text-sm text-gray">
+                      Depois da base: {baseText}.
+                    </p>
+                  ) : undefined
+                }
+              >
+                <div className="space-y-3 rounded-lg border border-gray-200 p-3">
+                  <label className="flex items-start gap-3">
+                    <Switch
+                      className="mt-0.5"
+                      checked={!!baseMeasure}
+                      onCheckedChange={(checked) =>
+                        setBaseMeasure(
+                          checked ? { ...block.measure, ...measure } : null,
+                        )
+                      }
+                      aria-label="Simular depois de outra etapa"
+                    />
+                    <span>
+                      <span className="block text-sm font-medium text-gray-800">
+                        Simular depois de outra etapa
+                      </span>
+                      <span className="block text-sm text-gray">
+                        Aplica as regras da etapa: acompanhar a quantidade da
+                        base, usar a medida dela e quantas cabem nela.
+                      </span>
+                    </span>
+                  </label>
+                  {baseMeasure && (
+                    <div className="grid grid-cols-3 gap-3">
+                      {(
+                        [
+                          ['quantity', 'Qtd. da base', '1'],
+                          ['width', 'Larg. da base (m)', '0.01'],
+                          ['height', 'Alt. da base (m)', '0.01'],
+                        ] as const
+                      ).map(([key, label, step]) => (
+                        <div key={key} className="space-y-2">
+                          <Label htmlFor={`sim-base-${key}`}>{label}</Label>
+                          <Input
+                            id={`sim-base-${key}`}
+                            type="number"
+                            min={0}
+                            step={step}
+                            value={baseMeasure[key]}
+                            onChange={(event) =>
+                              setBaseMeasure((current) => ({
+                                ...current!,
+                                [key]: Number(event.target.value) || 0,
+                              }))
+                            }
+                          />
+                        </div>
+                      ))}
                     </div>
-                  </PermissionGate>
-                </CardContent>
-              </Card>
+                  )}
+                </div>
+              </SimulationCard>
             )}
           </div>
         )}
@@ -643,15 +806,16 @@ export function ProcessEditor({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {(Object.keys(quantityModeObj) as QuantityMode[])
-                            // "Área da base ÷ área deste" só faz sentido
-                            // dentro do produto, depois de uma base
-                            .filter((key) => key !== 'AREA_RATIO')
-                            .map((key) => (
+                          {/* "Quantas cabem na base" vale depois de uma
+                              base; a Simulação mostra o efeito com a base
+                              ligada (§9.1) */}
+                          {(Object.keys(quantityModeObj) as QuantityMode[]).map(
+                            (key) => (
                               <SelectItem key={key} value={key}>
                                 {quantityModeObj[key]}
                               </SelectItem>
-                            ))}
+                            ),
+                          )}
                         </SelectContent>
                       </Select>
                       <Select
@@ -714,6 +878,7 @@ export function ProcessEditor({
               <PermissionGate permissions={EDIT}>
                 <div className="px-6 pb-4">
                   <ResourceKindButtons
+                    disabled={laborBlocked ? { LABOR: laborBlocked } : {}}
                     onPick={(lineKind) =>
                       setDialog({ kind: 'newLine', lineKind })
                     }
@@ -838,6 +1003,13 @@ export function ProcessEditor({
                                   desta opção
                                 </p>
                               )}
+                              {/* Pessoas multiplicam o tempo (IP-13) */}
+                              {line.kind === 'LABOR' &&
+                                (line.people || 1) > 1 && (
+                                  <p className="text-xs text-gray">
+                                    × {line.people} pessoas
+                                  </p>
+                                )}
                             </>
                           )}
                         </TableCell>
@@ -945,6 +1117,25 @@ export function ProcessEditor({
                   )}
                 </TableBody>
               </Table>
+              {/* Fórmulas do processo (IP-2, 05/10/2026): recurso avançado,
+                  como no produto. A porta de entrada é "Nova fórmula…" no
+                  tipo de cálculo da linha; a lista aparece depois da
+                  primeira */}
+              {detail.formulas.length > 0 && (
+                <div className="px-6 pt-4">
+                  <ProductFormulas
+                    bare
+                    title="Fórmulas do processo"
+                    description="Quando nenhum tipo de cálculo pronto serve, escreva a conta: ela lê as medidas, a quantidade e os campos do orçamento deste processo e passa a aparecer nos tipos de cálculo das linhas. O produto que incluir o processo recebe a fórmula junto."
+                    productId={hostId}
+                    fields={detail.fields}
+                    formulas={detail.formulas}
+                    lineRefs={Object.keys(lineRefs)}
+                    testVars={testVars}
+                    onSaved={refresh}
+                  />
+                </div>
+              )}
             </CardContent>
             {block.setupMinutes > 0 && (
               <CardFooter className="text-sm text-gray">
@@ -1057,6 +1248,41 @@ export function ProcessEditor({
             </CardContent>
           </Card>
         )}
+        {/* Rodapé da página, como na composição do produto (PAD-5): Salvar
+            grava o card Processo e volta para a lista; Fechar avisa se
+            houver pendência. No diálogo o rodapé é o dele */}
+        {!embedded && (
+          <Card className="sticky bottom-0 z-10">
+            <CardContent className="flex flex-wrap items-center justify-between gap-3 px-6 py-4">
+              <p className="inline-flex items-center gap-1.5 text-sm text-gray">
+                <IconClock size={16} aria-hidden="true" />
+                {metaChanged
+                  ? 'O card Processo ainda não foi salvo. As linhas já estão gravadas.'
+                  : savedAt
+                    ? `Salvo automaticamente às ${savedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+                    : 'As linhas gravam a cada alteração'}
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  type="button"
+                  variant="neutralOutline"
+                  onClick={closePage}
+                >
+                  Fechar
+                </Button>
+                <PermissionGate permissions={EDIT}>
+                  <Button
+                    type="button"
+                    RightIcon={IconCircleCheck}
+                    onClick={savePage}
+                  >
+                    Salvar
+                  </Button>
+                </PermissionGate>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       <NewLineDialog
@@ -1064,6 +1290,10 @@ export function ProcessEditor({
         initialKind={dialog?.kind === 'newLine' ? dialog.lineKind : undefined}
         resources={resourcesRes?.data?.resources || []}
         fields={detail.fields}
+        formulas={detail.formulas}
+        lineRefs={Object.keys(lineRefs)}
+        testVars={testVars}
+        onCreateFormula={createFormula}
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
           setDialog(null)
@@ -1076,6 +1306,10 @@ export function ProcessEditor({
       <LineDialog
         line={dialog?.kind === 'line' ? lineOf(dialog.lineId) : undefined}
         fields={detail.fields}
+        formulas={detail.formulas}
+        lineRefs={Object.keys(lineRefs)}
+        testVars={testVars}
+        onCreateFormula={createFormula}
         ownStage
         onOpenChange={() => setDialog(null)}
         onSave={(values) => {
