@@ -674,7 +674,7 @@ export default function SubscriptionPage() {
                   <CardContent className="p-4">
                     <p className="text-sm text-brand-800 font-medium">
                       Seu plano{' '}
-                      <span className="font-bold">
+                      <span className="font-semibold">
                         {activeSubscription.plan?.name}
                       </span>{' '}
                       está ativo. Selecione os módulos adicionais que deseja
@@ -1010,6 +1010,7 @@ export default function SubscriptionPage() {
                         <div className="flex gap-2">
                           <Input
                             placeholder="Ex: BEMVINDO20"
+                            // eslint-disable-next-line no-restricted-syntax -- cupom é digitado em maiúsculas
                             className="h-9 text-sm uppercase"
                             value={couponCode}
                             onChange={(e) =>
@@ -1088,7 +1089,7 @@ export default function SubscriptionPage() {
                       <div className="flex items-center gap-1">
                         <IconCoin className="text-blue" />
                         <div className="flex items-baseline gap-1">
-                          <span className="text-gray-700 font-bold text-lg">
+                          <span className="type-kpi-value">
                             {formatCurrencyToBrl(finalPrice)}
                           </span>
                           <span className="text-sm text-gray">/mês</span>

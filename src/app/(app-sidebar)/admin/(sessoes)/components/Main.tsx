@@ -97,9 +97,7 @@ export function Main() {
             <IconCircleCheck className="text-green-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
-              {sessions.length}
-            </div>
+            <div className="type-kpi-value">{sessions.length}</div>
             <p className="text-xs text-gray">Ativos nos últimos 5 minutos</p>
           </CardContent>
         </Card>
@@ -110,7 +108,7 @@ export function Main() {
             <IconBuildingCommunity className="text-purple-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
+            <div className="type-kpi-value">
               {new Set(sessions.map((s) => s.companyId)).size}
             </div>
             <p className="text-xs text-gray">Empresas com usuários ativos</p>
@@ -123,9 +121,7 @@ export function Main() {
             <IconClock className="text-blue-400" />
           </CardHeader>
           <CardContent className="p-6">
-            <div className="text-2xl font-bold text-gray-700">
-              {totalSessions}
-            </div>
+            <div className="type-kpi-value">{totalSessions}</div>
             <p className="text-xs text-gray">Sessões ativas no momento</p>
           </CardContent>
         </Card>

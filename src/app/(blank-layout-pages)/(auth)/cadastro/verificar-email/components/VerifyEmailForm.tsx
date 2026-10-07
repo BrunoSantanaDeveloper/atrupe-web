@@ -204,7 +204,7 @@ export function VerifyEmailForm() {
           </div>
           <p className="text-sm text-amber-800">
             Token de verificação:{' '}
-            <span className="font-mono font-bold text-lg tracking-widest text-amber-900">
+            <span className="font-mono font-semibold text-lg tracking-widest text-amber-900">
               {verificationToken}
             </span>
           </p>

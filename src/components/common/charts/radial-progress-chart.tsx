@@ -104,7 +104,7 @@ export function RadialProgressChart({
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + (centerSubLabel ? -4 : 4)}
-                          className="fill-gray-900 text-2xl font-bold"
+                          className="fill-gray-900 type-kpi-value"
                         >
                           {centerLabel}
                         </tspan>

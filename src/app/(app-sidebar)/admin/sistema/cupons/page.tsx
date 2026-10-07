@@ -361,11 +361,11 @@ export default function AdminCouponsPage() {
                       </td>
                       <td className="p-4">
                         {coupon.discountType === 'PERCENT' ? (
-                          <span className="font-bold text-gray-800">
+                          <span className="font-semibold text-gray-800">
                             {coupon.discountValue}%
                           </span>
                         ) : (
-                          <span className="font-bold text-gray-800">
+                          <span className="font-semibold text-gray-800">
                             {formatCurrencyToBrl(coupon.discountValue)}
                           </span>
                         )}
@@ -500,6 +500,7 @@ export default function AdminCouponsPage() {
                     required
                     placeholder="Ex: BLACK50"
                     disabled={!!editingCoupon}
+                    // eslint-disable-next-line no-restricted-syntax -- código do cupom é digitado em maiúsculas
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 uppercase font-mono text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none disabled:bg-gray-50 disabled:text-gray-400"
                     value={code}
                     onChange={(e) => setCode(e.target.value.toUpperCase())}
@@ -805,7 +806,7 @@ export default function AdminCouponsPage() {
                       <td className="p-3 text-right text-green-600 font-semibold">
                         -{formatCurrencyToBrl(usage.discountApplied)}
                       </td>
-                      <td className="p-3 text-right font-bold text-gray-800">
+                      <td className="p-3 text-right font-semibold text-gray-800">
                         {formatCurrencyToBrl(usage.finalValue)}
                       </td>
                     </tr>

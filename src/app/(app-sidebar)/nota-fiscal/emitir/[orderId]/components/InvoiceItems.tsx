@@ -265,7 +265,7 @@ export function InvoiceItems({
                             </TableCell>
                             <TableCell
                               numeric
-                              className="px-4 py-4 text-gray-900 font-bold text-sm align-top"
+                              className="px-4 py-4 type-body-strong align-top"
                             >
                               {formatCurrency(item.totalValue)}
                             </TableCell>

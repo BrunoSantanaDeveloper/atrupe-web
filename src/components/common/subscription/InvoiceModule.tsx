@@ -45,7 +45,7 @@ export function InvoiceModule({
             />
             <span className="text-base font-semibold">Módulo NF</span>
           </div>
-          <span className="text-xl font-bold text-emerald-900">
+          <span className="type-kpi-value text-emerald-900">
             R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{' '}
             <span className="text-base font-normal text-muted-foreground">
               /mês

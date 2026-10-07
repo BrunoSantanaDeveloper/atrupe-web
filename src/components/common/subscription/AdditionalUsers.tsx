@@ -56,7 +56,7 @@ export function AdditionalUsers({
                 className="text-center"
               />
             </div>
-            <span className="text-xl font-bold text-emerald-900 min-w-[100px] text-right">
+            <span className="type-kpi-value text-emerald-900 min-w-[100px] text-right">
               R${' '}
               {calculateAdditionalCost().toLocaleString('pt-BR', {
                 minimumFractionDigits: 2,

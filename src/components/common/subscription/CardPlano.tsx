@@ -57,7 +57,7 @@ export function CardPlano({ plan, isSelected, onSelect }: CardPlanoProps) {
           )}
         </div>
         <span
-          className={`text-xl font-bold ${
+          className={`type-kpi-value ${
             isAvailable ? 'text-emerald-900' : 'text-gray-400'
           }`}
         >

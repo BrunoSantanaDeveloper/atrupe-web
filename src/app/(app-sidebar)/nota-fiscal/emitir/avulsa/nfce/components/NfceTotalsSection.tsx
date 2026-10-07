@@ -57,9 +57,7 @@ export function NfceTotalsSection({
           <span className="text-sm font-semibold text-gray-900">
             Valor total da nota
           </span>
-          <span className="text-xl font-bold text-gray-900">
-            {formatCurrency(totalNota)}
-          </span>
+          <span className="type-kpi-value">{formatCurrency(totalNota)}</span>
         </div>
 
         <Separator className="my-2" />

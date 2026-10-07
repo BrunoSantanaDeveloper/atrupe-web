@@ -258,6 +258,7 @@ export const BankCard = React.forwardRef<HTMLDivElement, BankCardProps>(
 
         <p
           className={cn(
+            // eslint-disable-next-line no-restricted-syntax -- bandeira impressa no cartão em maiúsculas
             'absolute left-4 top-32 text-xs font-semibold uppercase z-10',
             bottomDataColor,
           )}

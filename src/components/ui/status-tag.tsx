@@ -18,7 +18,7 @@ const statusTagWrapperVariants = cva(
 )
 
 const statusTabVariants = cva(
-  'flex justify-center items-center font-bold text-white tracking-wide z-10 relative left-[-2px] top-[2px]',
+  'flex justify-center items-center font-semibold text-white tracking-wide z-10 relative left-[-2px] top-[2px]',
   {
     variants: {
       variant: {

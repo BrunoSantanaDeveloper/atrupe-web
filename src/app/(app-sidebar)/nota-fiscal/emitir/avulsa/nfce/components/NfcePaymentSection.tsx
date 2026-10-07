@@ -222,19 +222,19 @@ export function NfcePaymentSection({
             </div>
             <div className="p-3 bg-green-50/40 rounded-lg">
               <div className="type-eyebrow text-green-700">Total Pago</div>
-              <div className="text-base font-bold text-green-700 mt-1">
+              <div className="type-body-strong text-green-700 mt-1">
                 {formatCurrency(totalPago)}
               </div>
             </div>
             <div className="p-3 bg-blue-50/40 rounded-lg">
               <div className="type-eyebrow text-blue-700">Restante</div>
-              <div className="text-base font-bold text-blue-700 mt-1">
+              <div className="type-body-strong text-blue-700 mt-1">
                 {formatCurrency(restante)}
               </div>
             </div>
             <div className="p-3 bg-amber-50/40 rounded-lg">
               <div className="type-eyebrow text-amber-700">Troco</div>
-              <div className="text-base font-bold text-amber-700 mt-1">
+              <div className="type-body-strong text-amber-700 mt-1">
                 {formatCurrency(valorTroco)}
               </div>
             </div>

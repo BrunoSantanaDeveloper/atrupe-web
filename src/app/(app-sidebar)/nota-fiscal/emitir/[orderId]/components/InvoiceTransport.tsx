@@ -287,6 +287,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                             updateTransport('uf', e.target.value)
                           }
                           maxLength={2}
+                          // eslint-disable-next-line no-restricted-syntax -- UF é digitada em maiúsculas
                           className="uppercase"
                         />
                       </div>

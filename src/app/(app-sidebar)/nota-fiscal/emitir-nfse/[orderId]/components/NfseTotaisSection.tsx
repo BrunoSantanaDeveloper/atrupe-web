@@ -47,14 +47,14 @@ export function NfseTotaisSection({
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6">
                 <div className="space-y-1">
                   <p className="type-label">Valor total dos serviços</p>
-                  <p className="text-xl font-bold text-brand-600">
+                  <p className="type-kpi-value text-brand-600">
                     {formatCurrency(servicesTotal)}
                   </p>
                 </div>
                 {issRetido && (
                   <div className="space-y-1">
                     <p className="type-label">ISS retido ({aliquotaIss}%)</p>
-                    <p className="text-xl font-bold text-error-600">
+                    <p className="type-kpi-value text-error-600">
                       -
                       {formatCurrency(
                         servicesTotal * ((aliquotaIss || 0) / 100),
@@ -65,7 +65,7 @@ export function NfseTotaisSection({
                 {issRetido && (
                   <div className="space-y-1">
                     <p className="type-label">Líquido a pagar</p>
-                    <p className="text-xl font-bold text-success-600">
+                    <p className="type-kpi-value text-success-600">
                       {formatCurrency(
                         servicesTotal * (1 - (aliquotaIss || 0) / 100),
                       )}
