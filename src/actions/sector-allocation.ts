@@ -3,8 +3,8 @@
 // PROVISÓRIO: a API ainda não tem o critério do rateio do setor entre os
 // equipamentos (BC-3, BC-3.1, BC-4). Estas actions devolvem dados de exemplo
 // em memória, no mesmo formato `{ success, data, message }` das actions reais.
-// Rota esperada: `GET/PUT /cost-base/sector/:id/allocation`
-// (openspec/analise/backend-pendente.md).
+// Rotas esperadas: `GET /cost-base/sector/allocation` e
+// `PUT /cost-base/sector/:id/allocation` (openspec/analise/backend-pendente.md).
 
 // Types
 import type {
