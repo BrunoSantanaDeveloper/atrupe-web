@@ -2009,22 +2009,20 @@ function AssemblyEditorBody({
           <Card>
             <CardContent className="grid grid-cols-2 gap-4 px-6 py-5 md:grid-cols-4">
               <div>
-                <p className="text-xs text-gray">Custo nesta medida</p>
-                <p className="text-2xl font-semibold text-gray-900">
-                  {money(assembly.cost)}
-                </p>
+                <p className="type-kpi-label">Custo nesta medida</p>
+                <p className="type-kpi-value">{money(assembly.cost)}</p>
               </div>
               <div>
-                <p className="text-xs text-gray">Preço de venda nesta medida</p>
-                <p className="text-2xl font-semibold text-gray-900">
+                <p className="type-kpi-label">Preço de venda nesta medida</p>
+                <p className="type-kpi-value">
                   {money(assembly.priceForMeasure)}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-gray">
+                <p className="type-kpi-label">
                   Sugerido pela composição · por {unitSymbol[assembly.unitKind]}
                 </p>
-                <p className="text-2xl font-semibold text-gray-900">
+                <p className="type-kpi-value">
                   {money(assembly.suggestedUnitPrice)}
                 </p>
                 <p className="text-xs text-gray">

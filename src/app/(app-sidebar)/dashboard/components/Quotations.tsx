@@ -85,8 +85,8 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
             : items.map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
                   <item.icon size={20} className="text-gray" />
-                  <span className="text-sm text-gray">{item.label}</span>
-                  <span className="text-lg font-semibold">{item.value}</span>
+                  <span className="type-kpi-label">{item.label}</span>
+                  <span className="type-kpi-value">{item.value}</span>
                 </div>
               ))}
         </div>

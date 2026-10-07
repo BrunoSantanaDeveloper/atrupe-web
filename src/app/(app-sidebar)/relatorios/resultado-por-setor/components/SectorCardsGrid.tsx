@@ -65,8 +65,8 @@ function GeneralCard({ total }: { total: number }) {
       </div>
       <Separator />
       <div className="flex items-center justify-between mt-8">
-        <span className="text-sm font-semibold text-gray-700">Resultado</span>
-        <span className="text-lg font-semibold text-success-700">
+        <span className="type-kpi-label">Resultado</span>
+        <span className="type-kpi-value text-success-700">
           {formatCurrencyToBrl(total)}
         </span>
       </div>

@@ -490,14 +490,14 @@ export function ProcessEditor({
                   <PermissionGate permissions={['values:values:view']}>
                     <div className="grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-3">
                       <p>
-                        <span className="block text-xs text-gray">Custo</span>
-                        <span className="text-lg font-semibold text-gray-900">
+                        <span className="block type-kpi-label">Custo</span>
+                        <span className="type-kpi-value">
                           {money(detail.cost)}
                         </span>
                       </p>
                       <p>
-                        <span className="block text-xs text-gray">Venda</span>
-                        <span className="text-lg font-semibold text-success-700">
+                        <span className="block type-kpi-label">Venda</span>
+                        <span className="type-kpi-value text-success-700">
                           {money(detail.sale)}
                         </span>
                       </p>

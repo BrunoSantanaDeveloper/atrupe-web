@@ -123,10 +123,8 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
                     Icon={card.icon}
                   />
                   <div className="min-w-0">
-                    <p className="text-xs text-gray truncate">{card.label}</p>
-                    <p className="text-lg font-semibold text-gray-900 truncate">
-                      {card.value}
-                    </p>
+                    <p className="type-kpi-label truncate">{card.label}</p>
+                    <p className="type-kpi-value truncate">{card.value}</p>
                     <p className="text-xs text-gray truncate">{card.detail}</p>
                   </div>
                 </div>
