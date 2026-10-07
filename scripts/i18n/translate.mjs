@@ -1,4 +1,4 @@
-// Tradução automática dos textos novos ou alterados (regra IN-5, 07/10/2026).
+// Tradução automática dos textos novos ou alterados (regra IN-7, 07/10/2026).
 // 1. relê as telas (extract.mjs);
 // 2. manda ao Claude só o que está sem tradução, com o glossário do ramo;
 // 3. confere as variáveis ({nome}) de cada tradução e grava src/i18n/traducoes.json;

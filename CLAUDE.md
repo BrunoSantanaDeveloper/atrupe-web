@@ -1,6 +1,6 @@
 # Regras para quem desenvolve no front do Atrupe
 
-## Idioma: toda mudança de texto atualiza as traduções (IN-5, 07/10/2026)
+## Idioma: toda mudança de texto atualiza as traduções (IN-7, 07/10/2026)
 
 O Atrupe tem uma biblioteca de idiomas em `src/i18n/` (português, espanhol e inglês). Ela precisa acompanhar o sistema. Por isso, **em toda tarefa que cria uma tela ou um recurso, ou que muda um texto ou um termo do sistema**, antes de terminar:
 

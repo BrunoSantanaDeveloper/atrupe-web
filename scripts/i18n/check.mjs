@@ -1,4 +1,4 @@
-// Confere se as traduções acompanham as telas (regra IN-5, 07/10/2026).
+// Confere se as traduções acompanham as telas (regra IN-7, 07/10/2026).
 // Relê o código, sem alterar nada, e lista:
 //   - textos novos ou alterados que ainda não têm tradução;
 //   - traduções de textos que não existem mais (obsoletas).

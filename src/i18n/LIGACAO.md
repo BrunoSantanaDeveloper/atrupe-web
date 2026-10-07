@@ -44,7 +44,7 @@ Escrito em 07/10/2026 para quem integra o front (Bruno). A biblioteca foi prepar
 - **O que o cliente digita** (nome de produto, setor, plano de contas) não se traduz.
 - **Documentos impressos** (proposta, ordem de serviço): o idioma pode ser o do cliente final, não o do usuário. Decisão em aberto (IN-4).
 
-## Manter as traduções em dia (regra IN-5)
+## Manter as traduções em dia (regra IN-7)
 
 Decidido em 07/10/2026: **todo recurso novo e todo termo alterado atualizam a tradução junto**, sem depender de alguém lembrar.
 
