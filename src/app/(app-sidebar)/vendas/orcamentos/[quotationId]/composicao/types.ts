@@ -39,6 +39,15 @@ export type QuotationLine = {
   // Data em que o cálculo foi resolvido, e o retrato dele
   resolvedAt: string
   resolved: ResolvedResource[]
+  // De onde a linha veio, para recalcular (06/10/2026): o processo ou o
+  // produto do catálogo que a originou
+  processId?: string
+  productId?: string
+  // A medida usada no cálculo desta linha, em metros
+  measure?: { quantity: number; width: number; height: number }
+  // Acompanha a base: nasceu com a medida do item e é recalculada quando a
+  // medida do item muda. Com medida própria, fica como está
+  followsBase?: boolean
 }
 
 // O que o vendedor preencheu num produto com composição (IP-36): campos
@@ -122,8 +131,19 @@ export type AddOption = {
 // retrato da venda com o custo fica no servidor, para o resultado previsto
 export type ComposedItemSummary = {
   id: string
-  // O produto técnico onde o fluxo do item foi montado (product-assembly)
+  // De onde o item veio: montado na hora (ORC-11) ou um material de venda
+  // direta escolhido na busca (ORG-1, 06/10/2026). Os dois ficam no mesmo
+  // registro porque a API só aceita produto no item
+  origin: 'COMPOSED' | 'MATERIAL'
+  // O produto técnico onde o fluxo do item foi montado (product-assembly).
+  // Vazio no item de material
   draftId: string
+  // O material e a variação vendidos, no item de material
+  materialId?: string
+  variationId?: string | null
+  // Unidade e preço por unidade do material, em centavos
+  unit?: string
+  unitPrice?: number
   name: string
   description: string
   quantity: number

@@ -39,7 +39,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
 
 // Libs
-import { parseCurrencyToBrl } from '@/lib/utils'
+import { cn, parseCurrencyToBrl } from '@/lib/utils'
 import { QUOTATION_DATA_QUERY_KEY } from '../../Quotation'
 
 interface Props {
@@ -353,13 +353,26 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
                   </Button>
                 </div>
               </div>
-              {surcharge > 0 && (
-                <p className="w-full rounded-lg bg-success-50 px-4 py-2 text-sm text-success-700">
-                  Valor agregado: + R$ {parseCurrencyToBrl(surcharge)} (
-                  {surchargePercent.toFixed(1)}%) sobre o valor base. Não conta
-                  como desconto.
+              {/* ALT-25: a diferença para mais sobre o preço base é o valor
+                  agregado. Fica embutido no valor do item: aparece aqui, no
+                  registro, e não como linha própria na proposta */}
+              <div className="flex w-full flex-col gap-1">
+                <p className="text-sm font-medium text-gray-700">
+                  Valor agregado
                 </p>
-              )}
+                <p
+                  className={cn(
+                    'rounded-lg px-4 py-2 text-sm',
+                    surcharge > 0
+                      ? 'bg-success-50 text-success-700'
+                      : 'bg-gray-50 text-gray',
+                  )}
+                >
+                  {surcharge > 0
+                    ? `+ R$ ${parseCurrencyToBrl(surcharge)} (${surchargePercent.toFixed(1)}%) sobre o valor base. Fica embutido no valor do item e não conta como desconto.`
+                    : 'Nenhum. Suba o valor total para registrar um acréscimo; ele fica embutido no valor do item, sem linha própria na proposta.'}
+                </p>
+              </div>
             </form>
           </Form>
         </DialogBody>

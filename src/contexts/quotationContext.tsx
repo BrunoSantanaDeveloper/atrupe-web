@@ -1,18 +1,20 @@
 import { createContext, useContext, useState, ReactNode } from 'react'
 
 export type ModalType =
-  | 'sectorSelector'
   | 'productsList'
   | 'productDetail'
   | 'productDetailEdit'
   // O item montado na hora, quando não existe produto pronto (ORC-11)
   | 'composeItem'
+  // O material de venda direta escolhido na busca (ORG-1)
+  | 'materialItem'
   | null
 
 interface QuotationData {
   sectorId: string | null
   categoryId: string | null
   productId: string | null
+  materialId: string | null
 }
 
 interface QuotationContextType {
@@ -32,6 +34,7 @@ export const QuotationProvider = ({ children }: { children: ReactNode }) => {
     sectorId: null,
     categoryId: null,
     productId: null,
+    materialId: null,
   })
 
   const openChangeModal = (open: boolean, type?: ModalType) => {

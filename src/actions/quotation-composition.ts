@@ -14,7 +14,10 @@ import type {
 } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/composicao/types'
 
 // Actions
-import { resolveComposedItem } from './product-assembly'
+import { getProcessDetail, resolveComposedItem } from './product-assembly'
+
+// Os materiais de venda direta entram na busca do orçamento (ORG-1)
+import { materials } from './materials-data'
 
 /* ---------------------------------------------------------------------------
  * O item montado na hora (ORC-11): o vendedor monta o fluxo com o mesmo
@@ -25,6 +28,9 @@ import { resolveComposedItem } from './product-assembly'
 
 const newId = (prefix: string) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+
+const num = (value: number) =>
+  value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
 
 const quotations: Quotation[] = [
   {
@@ -568,6 +574,49 @@ export const removeQuotationItem = async ({
 
 const itemLines = new Map<string, QuotationLine[]>()
 
+// A vitrine (src/app/sandbox/orcamento) nasce com linhas acrescentadas na
+// Fachada, uma de cada tipo, para o desenho ser conferido sem a API
+itemLines.set('vitrine-orcamento::item-fachada', [
+  {
+    id: 'vitrine-line-1',
+    kind: 'PROCESS',
+    name: 'Ilhós',
+    sector: 'Produção',
+    tags: ['1 un', '2 × 1 m'],
+    cost: 1200,
+    price: 2440,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+    processId: 'ilhos',
+    measure: { quantity: 1, width: 2, height: 1 },
+    followsBase: true,
+  },
+  {
+    id: 'vitrine-line-2',
+    kind: 'PART',
+    name: 'Instalação · diária',
+    sector: 'Instalação',
+    tags: ['1 un'],
+    cost: 0,
+    price: 38000,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+    productId: 'instalacao-dia',
+    measure: { quantity: 1, width: 1, height: 1 },
+  },
+  {
+    id: 'vitrine-line-3',
+    kind: 'LOOSE',
+    name: 'Letra caixa',
+    sector: 'Terceirizado · Letras & Cia',
+    tags: ['terceirizado'],
+    cost: 20000,
+    price: 36364,
+    resolvedAt: '2026-10-06T09:00:00',
+    resolved: [],
+  },
+])
+
 export const getItemLines = async ({
   quotationId,
 }: {
@@ -599,6 +648,87 @@ export const addItemLine = async ({
   ])
   return { success: true, data: null, message: '' }
 }
+
+// Mudar a medida de um item já composto (decisão de 05/10/2026): as linhas
+// que acompanham a base são recalculadas com a medida nova; as de medida
+// própria ficam como estão. Diferente do legado, que avisava e não mexia
+export const recalculateItemLines = async ({
+  quotationId,
+  itemId,
+  measure,
+}: {
+  quotationId: string
+  itemId: string
+  measure: { quantity: number; width: number; height: number }
+}) => {
+  const key = `${quotationId}::${itemId}`
+  const lines = itemLines.get(key) || []
+  let changed = 0
+  const next: QuotationLine[] = []
+  for (const line of lines) {
+    if (!line.followsBase) {
+      next.push(line)
+      continue
+    }
+    if (line.kind === 'PROCESS' && line.processId) {
+      const res = await getProcessDetail({
+        processId: line.processId,
+        measure,
+      })
+      if (!res.success || !res.data) {
+        next.push(line)
+        continue
+      }
+      changed += 1
+      next.push({
+        ...line,
+        measure,
+        tags: measureTags(measure),
+        cost: res.data.cost ?? 0,
+        price: res.data.sale ?? 0,
+        resolvedAt: new Date().toISOString(),
+      })
+      continue
+    }
+    if (line.kind === 'PART' && line.measure) {
+      // A parte do catálogo: o preço por unidade de venda vale para a
+      // medida nova (preço ÷ medida antiga × medida nova)
+      const before = partMeasure(line.measure)
+      const after = partMeasure(measure)
+      const unitPrice = before > 0 ? line.price / before : 0
+      changed += 1
+      next.push({
+        ...line,
+        measure,
+        tags: measureTags(measure),
+        price: Math.round(unitPrice * after),
+        cost: Math.round((before > 0 ? line.cost / before : 0) * after),
+        resolvedAt: new Date().toISOString(),
+      })
+      continue
+    }
+    next.push(line)
+  }
+  itemLines.set(key, next)
+  return { success: true, data: { changed }, message: '' }
+}
+
+const measureTags = (measure: {
+  quantity: number
+  width: number
+  height: number
+}) => [
+  `${num(measure.quantity)} un`,
+  `${num(measure.width)} × ${num(measure.height)} m`,
+]
+
+// A parte do catálogo vendida por área cobra quantidade × área; por unidade,
+// só a quantidade. A linha guarda a medida; a unidade está nas etiquetas
+const partMeasure = (measure: {
+  quantity: number
+  width: number
+  height: number
+}) => measure.quantity * (measure.width || 1) * (measure.height || 1)
 
 export const removeItemLine = async ({
   quotationId,
@@ -657,10 +787,29 @@ type ComposedRecord = ComposedItemSummary & {
   lines: QuotationLine[]
 }
 
-const composedItems: ComposedRecord[] = []
-
-const num = (value: number) =>
-  value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
+const composedItems: ComposedRecord[] = [
+  // A vitrine mostra um material de venda direta como item (ORG-1)
+  {
+    id: 'vitrine-material',
+    origin: 'MATERIAL',
+    quotationId: 'vitrine-orcamento',
+    draftId: '',
+    materialId: 'mdf-10',
+    variationId: 'v4',
+    unit: 'un',
+    unitPrice: 9500,
+    name: 'MDF 10 mm · Marca Y · Branco',
+    description: 'Material · Marcenaria',
+    quantity: 2,
+    width: 0,
+    height: 0,
+    lines: [],
+    stages: 0,
+    sectors: ['Marcenaria'],
+    price: 19000,
+    attention: false,
+  },
+]
 
 const resolveLines = async (
   draftId: string,
@@ -698,7 +847,7 @@ const summaryOf = ({ quotationId, lines, ...summary }: ComposedRecord) =>
 const buildRecord = async (
   base: Omit<
     ComposedRecord,
-    'stages' | 'sectors' | 'price' | 'attention' | 'lines'
+    'origin' | 'stages' | 'sectors' | 'price' | 'attention' | 'lines'
   >,
 ): Promise<ComposedRecord> => {
   const lines = await resolveLines(base.draftId, {
@@ -708,12 +857,189 @@ const buildRecord = async (
   })
   return {
     ...base,
+    origin: 'COMPOSED',
     lines,
     stages: lines.length,
     sectors: Array.from(new Set(lines.map((line) => line.sector))),
     price: lines.reduce((sum, line) => sum + line.price, 0),
     attention: lines.length === 0,
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * Material de venda direta como item do orçamento (ORG-1, decisão de
+ * 05/10/2026): aparece na busca junto dos produtos, marcado como material, e
+ * vira item simples com a unidade e o preço do material (ou da variação).
+ * Como a API só aceita produto no item, fica aqui, no mesmo registro dos
+ * itens montados na hora, com a origem marcada (backend-pendente.md)
+ * ------------------------------------------------------------------------- */
+
+const UNIT_LABEL: Record<string, string> = {
+  HR: 'h',
+  M2: 'm²',
+  M: 'm',
+  KM: 'km',
+  UN: 'un',
+  KG: 'kg',
+  LT: 'l',
+}
+
+export type DirectSaleMaterial = {
+  id: string
+  code: string
+  name: string
+  sector: string
+  unit: string
+  // Preço por unidade de venda, em centavos; vazio quando só as variações
+  // têm preço
+  price: number | null
+  variations: { id: string; name: string; price: number | null }[]
+}
+
+export const getDirectSaleMaterials = async () => {
+  const data: DirectSaleMaterial[] = materials
+    .filter((material) => material.active && material.directSale)
+    .map((material) => ({
+      id: material.id,
+      code: material.code,
+      name: material.name,
+      sector: material.sector,
+      unit: UNIT_LABEL[material.unit] || material.unit.toLowerCase(),
+      price: material.price,
+      variations: material.variations.map((variation) => ({
+        id: variation.id,
+        name: [variation.brand, variation.color].filter(Boolean).join(' · '),
+        price: variation.price,
+      })),
+    }))
+  return { success: true, data, message: '' }
+}
+
+const materialRecord = ({
+  id,
+  quotationId,
+  material,
+  variationId,
+  quantity,
+}: {
+  id: string
+  quotationId: string
+  material: DirectSaleMaterial
+  variationId: string | null
+  quantity: number
+}): ComposedRecord | null => {
+  const variation = variationId
+    ? material.variations.find((item) => item.id === variationId)
+    : null
+  const unitPrice = variation?.price ?? material.price
+  if (unitPrice === null || unitPrice === undefined) return null
+  return {
+    id,
+    origin: 'MATERIAL',
+    quotationId,
+    draftId: '',
+    materialId: material.id,
+    variationId,
+    unit: material.unit,
+    unitPrice,
+    name: variation ? `${material.name} · ${variation.name}` : material.name,
+    description: `Material · ${material.sector}`,
+    quantity: Math.max(1, quantity),
+    width: 0,
+    height: 0,
+    lines: [],
+    stages: 0,
+    sectors: [material.sector],
+    price: Math.round(unitPrice * Math.max(1, quantity)),
+    attention: false,
+  }
+}
+
+export const addMaterialItem = async ({
+  quotationId,
+  materialId,
+  variationId = null,
+  quantity,
+}: {
+  quotationId: string
+  materialId: string
+  variationId?: string | null
+  quantity: number
+}) => {
+  const material = (await getDirectSaleMaterials()).data.find(
+    (item) => item.id === materialId,
+  )
+  if (!material) {
+    return { success: false, data: null, message: 'Material não encontrado' }
+  }
+  if (material.variations.length && !variationId) {
+    return {
+      success: false,
+      data: null,
+      message: 'Escolha a variação do material',
+    }
+  }
+  const record = materialRecord({
+    id: newId('item'),
+    quotationId,
+    material,
+    variationId,
+    quantity,
+  })
+  if (!record) {
+    return {
+      success: false,
+      data: null,
+      message: 'Este material está sem preço de venda',
+    }
+  }
+  composedItems.push(record)
+  return { success: true, data: summaryOf(record), message: '' }
+}
+
+export const updateMaterialItem = async ({
+  quotationId,
+  itemId,
+  variationId = null,
+  quantity,
+}: {
+  quotationId: string
+  itemId: string
+  variationId?: string | null
+  quantity: number
+}) => {
+  const index = composedItems.findIndex(
+    (item) =>
+      item.quotationId === quotationId &&
+      item.id === itemId &&
+      item.origin === 'MATERIAL',
+  )
+  if (index < 0) {
+    return { success: false, data: null, message: 'Item não encontrado' }
+  }
+  const current = composedItems[index]
+  const material = (await getDirectSaleMaterials()).data.find(
+    (item) => item.id === current.materialId,
+  )
+  if (!material) {
+    return { success: false, data: null, message: 'Material não encontrado' }
+  }
+  const record = materialRecord({
+    id: current.id,
+    quotationId,
+    material,
+    variationId: variationId ?? current.variationId ?? null,
+    quantity,
+  })
+  if (!record) {
+    return {
+      success: false,
+      data: null,
+      message: 'Este material está sem preço de venda',
+    }
+  }
+  composedItems[index] = record
+  return { success: true, data: summaryOf(record), message: '' }
 }
 
 export const addComposedItem = async ({

@@ -37,6 +37,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { usePermissions } from '@/hooks/usePermissions'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormCheckbox } from '@/components/common/form/FormCheckbox'
+import { FormRadio } from '@/components/common/form/FormRadio'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -58,6 +59,33 @@ import {
 // Store
 import { getItem } from '@/actions/_cruds'
 
+// O nível de detalhe da proposta (IP-12, decisão de 05/10/2026): o padrão é
+// "detalhado com valores"; sem valores é a ficha de produção. Quem imprime
+// pode trocar; o nível com valores só existe para quem vê valores (SEG-6)
+export type ProposalDetailLevel = 'resumo' | 'lista' | 'valores'
+
+export const PROPOSAL_DETAIL_LEVELS: {
+  value: ProposalDetailLevel
+  label: string
+  help: string
+}[] = [
+  {
+    value: 'resumo',
+    label: 'Sem detalhes',
+    help: 'Nome do item, descritivo técnico e preço final.',
+  },
+  {
+    value: 'lista',
+    label: 'Detalhado sem valores',
+    help: 'O que compõe cada item, sem preço por parte.',
+  },
+  {
+    value: 'valores',
+    label: 'Detalhado com valores',
+    help: 'O que compõe cada item, com o preço de cada parte.',
+  },
+]
+
 export type PrintOptionsType = {
   showImages: boolean
   showDimensions: boolean
@@ -66,7 +94,12 @@ export type PrintOptionsType = {
   showTotalValue: boolean
   showPaymentDelivery: boolean
   showItemsDetails: boolean
+  // Os valores de cada parte no detalhamento; ausente, vale true (as outras
+  // telas que imprimem não escolhem nível)
+  showDetailValues?: boolean
   showSignature?: boolean
+  // O nível escolhido no diálogo; vira showItemsDetails + showDetailValues
+  detailLevel?: ProposalDetailLevel
 }
 
 interface Props {
@@ -104,6 +137,19 @@ export function PrintQuotationDialog({
   const { hasPermission } = usePermissions()
   const hasValuesPermission = hasPermission('values:values:view')
 
+  // Os níveis que este plano e esta permissão permitem
+  const canDetail = canShowQuotationItemDetails()
+  const levels = PROPOSAL_DETAIL_LEVELS.filter(
+    (level) =>
+      level.value === 'resumo' ||
+      (canDetail && (level.value !== 'valores' || hasValuesPermission)),
+  )
+  const defaultLevel: ProposalDetailLevel = !canDetail
+    ? 'resumo'
+    : hasValuesPermission
+      ? 'valores'
+      : 'lista'
+
   const form = useForm<PrintOptionsType>({
     defaultValues: {
       showImages: true,
@@ -112,8 +158,10 @@ export function PrintQuotationDialog({
       showFinalValue: hasValuesPermission,
       showTotalValue: hasValuesPermission,
       showPaymentDelivery: true,
-      showItemsDetails: canShowQuotationItemDetails(),
+      showItemsDetails: canDetail,
+      showDetailValues: hasValuesPermission,
       showSignature: true,
+      detailLevel: defaultLevel,
     },
   })
 
@@ -196,7 +244,14 @@ export function PrintQuotationDialog({
     })
   }
 
-  const onSubmit = async (formData: PrintOptionsType) => {
+  const onSubmit = async (rawData: PrintOptionsType) => {
+    // O nível de detalhe vira as duas chaves que o PDF lê
+    const level = rawData.detailLevel || defaultLevel
+    const formData: PrintOptionsType = {
+      ...rawData,
+      showItemsDetails: level !== 'resumo',
+      showDetailValues: level === 'valores' && hasValuesPermission,
+    }
     try {
       setIsLoading(true)
       const res = await getItem({
@@ -370,16 +425,34 @@ export function PrintQuotationDialog({
                     name="showPaymentDelivery"
                     label="Exibir especificações de pagamento e entrega"
                   />
-                  {canShowQuotationItemDetails() && (
-                    <FormCheckbox<PrintOptionsType>
-                      name="showItemsDetails"
-                      label="Exibir detalhamento dos itens de venda"
-                    />
-                  )}
                   <FormCheckbox<PrintOptionsType>
                     name="showSignature"
                     label="Exibir assinatura digital"
                   />
+                </div>
+                <Separator className="my-5" />
+                {/* O nível de detalhe (IP-12): padrão "detalhado com valores"
+                    para quem vê valores. O detalhamento usa o nome de venda
+                    de cada parte, nunca nomes internos */}
+                <div className="space-y-4">
+                  <p className="font-semibold text-gray-700">
+                    Nível de detalhe dos itens
+                  </p>
+                  {levels.length > 1 ? (
+                    <FormRadio<PrintOptionsType>
+                      name="detailLevel"
+                      className="[&_[role=radiogroup]]:flex-col [&_[role=radiogroup]]:items-start [&_[role=radiogroup]]:gap-3"
+                      items={levels.map((level) => ({
+                        value: level.value,
+                        label: `${level.label} · ${level.help}`,
+                      }))}
+                    />
+                  ) : (
+                    <p className="text-sm text-gray">
+                      Sem detalhes: nome do item, descritivo técnico e preço
+                      final. O detalhamento dos itens faz parte de outro plano.
+                    </p>
+                  )}
                 </div>
               </form>
             </Form>
