@@ -6,7 +6,8 @@ import { useState } from 'react'
 // Components
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 
@@ -34,7 +35,11 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld, deleteItemNew } from '@/actions/_cruds'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 // Store
@@ -68,8 +73,10 @@ export function ClientsData({ searchParams, tabs }: Props) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   const filters = { ...searchParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['client-list', searchParams],
     queryFn: () => getDataOld({ route: 'clientRoute', filters }),
   })
@@ -149,133 +156,150 @@ export function ClientsData({ searchParams, tabs }: Props) {
             </Button>
           </div>
         )}
-        {isLoading ? (
-          <TableSkeleton />
-        ) : hasData ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[4%] pr-0">
-                  <Checkbox
-                    checked={isAllProspectsSelected}
-                    onCheckedChange={handleToggleSelectAll}
-                    disabled={prospectClients.length === 0}
-                    aria-label="Selecionar todos os pré-cadastros"
-                  />
-                </TableHead>
-                <TableHead className="w-[2%]"></TableHead>
-                <TableHead className="w-[34%]">Cliente</TableHead>
-                <TableHead className="w-[20%]">Grupo</TableHead>
-                <TableHead className="w-[20%]">Contato</TableHead>
-                <TableHead className="w-[10%]">Status</TableHead>
-                <TableHead className="w-[10%]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {clients.map((client) => (
-                <TableRow
-                  key={client.id}
-                  data-state={
-                    selectedClients.includes(client.id) ? 'selected' : undefined
-                  }
-                >
-                  <TableCell className="pr-0">
-                    {client.status === 'PROSPECT' ? (
-                      <Checkbox
-                        checked={selectedClients.includes(client.id)}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            setSelectedClients([...selectedClients, client.id])
-                          } else {
-                            setSelectedClients(
-                              selectedClients.filter((id) => id !== client.id),
-                            )
-                          }
-                        }}
-                        aria-label={`Selecionar cliente ${client.name}`}
-                      />
-                    ) : null}
-                  </TableCell>
-                  <TableCell className="text-sm text-gray ">
-                    {client?.type === 'COMPANY' ? 'PJ' : 'PF'}
-                  </TableCell>
-                  <TableCell className="font-semibold">
-                    {client?.name}
-                  </TableCell>
-                  <TableCell className="text-gray">
-                    {client?.categoryRelation?.name || '-'}
-                  </TableCell>
-                  <TableCell>
-                    <p>{client?.phoneNumber || '-'}</p>
-                    <p className="text-sm text-gray">{client?.email || '-'}</p>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      status
-                      variant={clientStatusObj[client?.status]?.variant}
-                      className="text-nowrap"
-                    >
-                      {clientStatusObj[client?.status]?.text}
-                    </Badge>
-                    {showResponsible && (
-                      <p className="mt-1 text-sm text-gray italic">
-                        {client?.responsible?.name || 'Sem Responsável'}
-                      </p>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <TooltipProvider>
-                        <PermissionGate permissions={['register:client:view']}>
-                          <ActionButton
-                            link={`/cadastros/clientes/${client?.id}/dados`}
-                            Icon={IconSearch}
-                            tooltip="Detalhes"
-                          />
-                        </PermissionGate>
-                        <PermissionGate permissions={['register:client:edit']}>
-                          <NewClientTriggerButton
-                            editMode
-                            onOpenChange={() => {
-                              setSelectedClientId(client?.id)
-                              setOpenDialog('edit-client')
-                            }}
-                          />
-                        </PermissionGate>
-                        {client.status === 'PROSPECT' && (
-                          <PermissionGate
-                            permissions={['register:client:delete']}
-                          >
-                            <ActionButton
-                              Icon={IconTrash}
-                              tooltip="Excluir"
-                              variant="errorGhost"
-                              onClick={() => handleDelete([client.id])}
-                            />
-                          </PermissionGate>
-                        )}
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[4%] pr-0">
+                    <Checkbox
+                      checked={isAllProspectsSelected}
+                      onCheckedChange={handleToggleSelectAll}
+                      disabled={prospectClients.length === 0}
+                      aria-label="Selecionar todos os pré-cadastros"
+                    />
+                  </TableHead>
+                  <TableHead className="w-[2%]"></TableHead>
+                  <TableHead className="w-[34%]">Cliente</TableHead>
+                  <TableHead className="w-[20%]">Grupo</TableHead>
+                  <TableHead className="w-[20%]">Contato</TableHead>
+                  <TableHead className="w-[10%]">Status</TableHead>
+                  <TableHead className="w-[10%]"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <FilteredDataEmpty
-            title="Cliente não encontrado"
-            description="Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo cliente"
-            cta={
-              <PermissionGate permissions={['register:client:create']}>
-                <NewClientTriggerButton
-                  onOpenChange={() => {
-                    setOpenDialog('new-client')
-                  }}
-                />
-              </PermissionGate>
-            }
-          />
-        )}
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableSkeletonRows cols={7} />
+                ) : (
+                  clients.map((client) => (
+                    <TableRow
+                      key={client.id}
+                      data-state={
+                        selectedClients.includes(client.id)
+                          ? 'selected'
+                          : undefined
+                      }
+                    >
+                      <TableCell className="pr-0">
+                        {client.status === 'PROSPECT' ? (
+                          <Checkbox
+                            checked={selectedClients.includes(client.id)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setSelectedClients([
+                                  ...selectedClients,
+                                  client.id,
+                                ])
+                              } else {
+                                setSelectedClients(
+                                  selectedClients.filter(
+                                    (id) => id !== client.id,
+                                  ),
+                                )
+                              }
+                            }}
+                            aria-label={`Selecionar cliente ${client.name}`}
+                          />
+                        ) : null}
+                      </TableCell>
+                      <TableCell className="text-sm text-gray ">
+                        {client?.type === 'COMPANY' ? 'PJ' : 'PF'}
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {client?.name}
+                      </TableCell>
+                      <TableCell className="text-gray">
+                        {client?.categoryRelation?.name || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <p>{client?.phoneNumber || '-'}</p>
+                        <p className="text-sm text-gray">
+                          {client?.email || '-'}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          status
+                          variant={clientStatusObj[client?.status]?.variant}
+                          className="text-nowrap"
+                        >
+                          {clientStatusObj[client?.status]?.text}
+                        </Badge>
+                        {showResponsible && (
+                          <p className="mt-1 text-sm text-gray italic">
+                            {client?.responsible?.name || 'Sem Responsável'}
+                          </p>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            <PermissionGate
+                              permissions={['register:client:view']}
+                            >
+                              <ActionButton
+                                link={`/cadastros/clientes/${client?.id}/dados`}
+                                Icon={IconSearch}
+                                tooltip="Detalhes"
+                              />
+                            </PermissionGate>
+                            <PermissionGate
+                              permissions={['register:client:edit']}
+                            >
+                              <NewClientTriggerButton
+                                editMode
+                                onOpenChange={() => {
+                                  setSelectedClientId(client?.id)
+                                  setOpenDialog('edit-client')
+                                }}
+                              />
+                            </PermissionGate>
+                            {client.status === 'PROSPECT' && (
+                              <PermissionGate
+                                permissions={['register:client:delete']}
+                              >
+                                <ActionButton
+                                  Icon={IconTrash}
+                                  tooltip="Excluir"
+                                  variant="errorGhost"
+                                  onClick={() => handleDelete([client.id])}
+                                />
+                              </PermissionGate>
+                            )}
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          ) : (
+            <FilteredDataEmpty
+              title="Cliente não encontrado"
+              description="Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo cliente"
+              cta={
+                <PermissionGate permissions={['register:client:create']}>
+                  <NewClientTriggerButton
+                    onOpenChange={() => {
+                      setOpenDialog('new-client')
+                    }}
+                  />
+                </PermissionGate>
+              }
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       <NewClientModal
         open={openDialog === 'new-client'}
@@ -295,6 +319,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

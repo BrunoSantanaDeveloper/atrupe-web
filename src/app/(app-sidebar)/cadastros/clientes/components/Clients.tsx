@@ -5,7 +5,6 @@ import { useState } from 'react'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
@@ -21,6 +20,7 @@ import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -171,6 +171,7 @@ export function Clients({ searchParams }: SearchParamsType) {
         tabs={tabs}
         activeTab={searchParams?.status || 'todos'}
         paramName="status"
+        countsLoading={isLoading}
         primaryCta={
           <TooltipProvider>
             <PermissionGate permissions={['register:client:export']}>
@@ -217,7 +218,7 @@ export function Clients({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              <ListSkeleton cols={7} filters={2} />
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

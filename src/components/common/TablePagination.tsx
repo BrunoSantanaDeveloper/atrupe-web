@@ -1,3 +1,8 @@
+'use client'
+
+// React
+import { useEffect, useState } from 'react'
+
 // UI component Imports
 import {
   Pagination,
@@ -12,14 +17,24 @@ interface TablePaginationProps {
   searchParams?: { [key: string]: string }
   lastPage?: number
   activeVariant?: 'brand' | 'success' | 'dark'
+  // Primeira carga: reserva a altura da paginação, sem mostrar "1"
+  isLoading?: boolean
 }
 
 export function TablePagination({
   searchParams,
   lastPage = 1,
   activeVariant = 'brand',
+  isLoading,
 }: TablePaginationProps) {
   const currentPage = Number(searchParams?.page) || 1
+
+  // Página marcada no clique, antes de a página nova chegar
+  // (design/openspec/changes/microinteracoes, Decisão 5)
+  const [selectedPage, setSelectedPage] = useState(currentPage)
+  useEffect(() => {
+    setSelectedPage(currentPage)
+  }, [currentPage])
 
   const searchParamsObject = new URLSearchParams(searchParams)
 
@@ -63,6 +78,8 @@ export function TablePagination({
 
   const paginationItems = getPaginationItems()
 
+  if (isLoading) return <div aria-hidden="true" className="h-10" />
+
   return (
     <Pagination>
       <PaginationContent className="w-full justify-center gap-2 flex-nowrap overflow-x-auto scrollbar-thin scrollbar-thumb-rounded-md scrollbar-thumb-gray-300">
@@ -72,6 +89,7 @@ export function TablePagination({
               currentPage > 1 ? buildUrlWithPageParam(currentPage - 1) : '#'
             }
             scroll={false}
+            onClick={() => currentPage > 1 && setSelectedPage(currentPage - 1)}
             className={currentPage <= 1 ? 'pointer-events-none opacity-50' : ''}
           />
         </PaginationItem>
@@ -88,8 +106,9 @@ export function TablePagination({
               <PaginationItem key={page}>
                 <PaginationLink
                   href={buildUrlWithPageParam(page as number)}
-                  isActive={currentPage === page}
+                  isActive={selectedPage === page}
                   scroll={false}
+                  onClick={() => setSelectedPage(page as number)}
                   activeVariant={activeVariant}
                 >
                   {page}
@@ -106,6 +125,9 @@ export function TablePagination({
                 : '#'
             }
             scroll={false}
+            onClick={() =>
+              currentPage < lastPage && setSelectedPage(currentPage + 1)
+            }
             className={
               currentPage === lastPage ? 'pointer-events-none opacity-50' : ''
             }
