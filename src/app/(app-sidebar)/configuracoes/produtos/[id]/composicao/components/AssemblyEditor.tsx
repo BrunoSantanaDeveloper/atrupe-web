@@ -143,7 +143,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 // Hooks / Store / Consts
 import { useSector } from '@/hooks/queries/useSector'
 import { usePermissions } from '@/hooks/usePermissions'
-import { sectorIconByName } from '@/consts/sectors'
+import { SectorIcon } from '@/components/common/SectorIcon'
 import {
   assemblyStatusObj,
   assemblyOverrideObj,
@@ -860,7 +860,6 @@ function AssemblyEditorBody({
   }
 
   const stageDetail = (item: ComputedBlock) => {
-    const SectorIcon = sectorIconByName(item.sector)
     // Os campos do orçamento que as linhas desta etapa leem (IP-4)
     const blockFields = Array.from(
       new Set(
@@ -879,8 +878,9 @@ function AssemblyEditorBody({
       >
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div className="flex min-w-0 items-start gap-3">
-            {/* O setor em destaque: é ele que diz onde a etapa é produzida */}
-            <FeaturedIcon variant="light" Icon={SectorIcon} />
+            {/* O setor em destaque, na cor dele: é ele que diz onde a etapa
+                é produzida (área 9 §4.14) */}
+            <SectorIcon name={item.sector} size="lg" />
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="neutralLight">{item.sector}</Badge>

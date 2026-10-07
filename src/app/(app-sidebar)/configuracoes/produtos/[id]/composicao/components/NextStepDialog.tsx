@@ -33,7 +33,7 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 import type { NextStepCandidates, ProcessCatalogItem } from '../assembly'
 
 // Hooks / Store / Consts
-import { sectorIconByName } from '@/consts/sectors'
+import { SectorIcon } from '@/components/common/SectorIcon'
 
 // Icons
 import { IconPlus, IconSearch } from '@tabler/icons-react'
@@ -81,16 +81,13 @@ function ProcessRow({
   process: ProcessCatalogItem
   onPick: () => void
 }) {
-  const Icon = sectorIconByName(process.sector)
   return (
     <button
       type="button"
       onClick={onPick}
       className="flex w-full items-center gap-3 rounded-lg border border-gray-200 px-3 py-2.5 text-left hover:border-brand-300 hover:bg-brand-25"
     >
-      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-600">
-        <Icon className="size-4" aria-hidden="true" />
-      </span>
+      <SectorIcon name={process.sector} />
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-medium text-gray-800">
           {process.name}
@@ -417,7 +414,6 @@ export function LinkStageDialog({
         <DialogBody className="space-y-2">
           {options.length ? (
             options.map((stage) => {
-              const Icon = sectorIconByName(stage.sector)
               return (
                 <button
                   key={stage.id}
@@ -425,9 +421,7 @@ export function LinkStageDialog({
                   onClick={() => onPick(stage.id)}
                   className="flex w-full items-center gap-3 rounded-lg border border-gray-200 px-3 py-2.5 text-left hover:border-brand-300 hover:bg-brand-25"
                 >
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-600">
-                    <Icon className="size-4" aria-hidden="true" />
-                  </span>
+                  <SectorIcon name={stage.sector} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium text-gray-800">
                       {stage.name}
