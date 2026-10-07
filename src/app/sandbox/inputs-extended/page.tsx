@@ -18,7 +18,7 @@ export const dynamic = 'force-dynamic'
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
       {children}
     </h2>
   )
@@ -26,7 +26,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function StateLabel({ label }: { label: string }) {
   return (
-    <p className="text-[11px] font-semibold text-[#98A2B3] uppercase tracking-wider mb-3">
+    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
       {label}
     </p>
   )
@@ -95,10 +95,10 @@ export default function InputsExtendedSandboxPage() {
       <div className="max-w-7xl mx-auto px-6 space-y-20">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             FormInput Extended — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Novos componentes: <code>OtpInput</code> ·{' '}
             <code>FormInput variant=textarea</code> ·{' '}
             <code>RichTextToolbar</code>
@@ -118,7 +118,7 @@ export default function InputsExtendedSandboxPage() {
               <div className="grid grid-cols-6 gap-4">
                 {TEXTAREA_STATES.map((s) => (
                   <div key={s.state}>
-                    <p className="text-[10px] font-semibold text-[#98A2B3] uppercase mb-2">
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase mb-2">
                       {s.label}
                     </p>
                     <FormInput
@@ -143,7 +143,7 @@ export default function InputsExtendedSandboxPage() {
               <div className="grid grid-cols-6 gap-4">
                 {TEXTAREA_STATES.map((s) => (
                   <div key={s.state}>
-                    <p className="text-[10px] font-semibold text-[#98A2B3] uppercase mb-2">
+                    <p className="text-[10px] font-semibold text-gray-400 uppercase mb-2">
                       {s.label}
                     </p>
                     <FormInput
@@ -170,7 +170,7 @@ export default function InputsExtendedSandboxPage() {
                       : 'Texto de dica para ajudar o usuário.'
                   return (
                     <div key={s.state}>
-                      <p className="text-[10px] font-semibold text-[#98A2B3] uppercase mb-2">
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase mb-2">
                         {s.label}
                       </p>
                       <FormInput
@@ -219,13 +219,13 @@ export default function InputsExtendedSandboxPage() {
             <div className="space-y-8">
               {(['sm', 'md', 'lg'] as OtpSize[]).map((size) => (
                 <div key={size}>
-                  <p className="text-[11px] text-[#667085] font-semibold uppercase tracking-wide mb-4">
+                  <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide mb-4">
                     Tamanho: {size}
                   </p>
                   <div className="flex flex-wrap gap-10">
                     {/* default (empty) */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         Default (empty)
                       </p>
                       <OtpInput
@@ -238,7 +238,7 @@ export default function InputsExtendedSandboxPage() {
                     </div>
                     {/* filled */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         Filled
                       </p>
                       <OtpInput
@@ -251,7 +251,7 @@ export default function InputsExtendedSandboxPage() {
                     </div>
                     {/* focused — show via state prop */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         Focused (via state)
                       </p>
                       <OtpInput
@@ -264,7 +264,7 @@ export default function InputsExtendedSandboxPage() {
                     </div>
                     {/* disabled */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         Disabled
                       </p>
                       <OtpInput
@@ -277,7 +277,7 @@ export default function InputsExtendedSandboxPage() {
                     </div>
                     {/* error */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         Error
                       </p>
                       <OtpInput
@@ -304,13 +304,13 @@ export default function InputsExtendedSandboxPage() {
               <div className="grid grid-cols-2 gap-10">
                 {OTP_FORMATS.map((format) => (
                   <div key={format} className="space-y-6">
-                    <p className="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">
+                    <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
                       Formato: {format}
                     </p>
 
                     {/* sem label, sem hint */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-2">
+                      <p className="text-[10px] text-gray-400 uppercase mb-2">
                         Sem label · sem hint
                       </p>
                       <OtpInput
@@ -322,7 +322,7 @@ export default function InputsExtendedSandboxPage() {
 
                     {/* com label, sem hint */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-2">
+                      <p className="text-[10px] text-gray-400 uppercase mb-2">
                         Com label · sem hint
                       </p>
                       <OtpInput
@@ -335,7 +335,7 @@ export default function InputsExtendedSandboxPage() {
 
                     {/* com label, com hint */}
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-2">
+                      <p className="text-[10px] text-gray-400 uppercase mb-2">
                         Com label · com hint
                       </p>
                       <OtpInput
@@ -366,7 +366,7 @@ export default function InputsExtendedSandboxPage() {
                 value={otp4}
                 onChange={setOtp4}
               />
-              <p className="text-xs text-[#667085] mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 Valor atual:{' '}
                 <code className="bg-gray-100 px-1 rounded">{otp4 || '—'}</code>
               </p>
@@ -383,7 +383,7 @@ export default function InputsExtendedSandboxPage() {
                 value={otp6}
                 onChange={setOtp6}
               />
-              <p className="text-xs text-[#667085] mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 Valor atual:{' '}
                 <code className="bg-gray-100 px-1 rounded">{otp6 || '—'}</code>
               </p>
@@ -407,12 +407,12 @@ export default function InputsExtendedSandboxPage() {
               {(['bottom-center', 'bottom-left', 'top-center'] as const).map(
                 (pos) => (
                   <div key={pos} className="space-y-8">
-                    <p className="text-[11px] font-semibold text-[#667085] uppercase tracking-wide">
+                    <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">
                       Caret: {pos}
                     </p>
 
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         lg — 32px icons
                       </p>
                       <FloatingToolbar
@@ -424,7 +424,7 @@ export default function InputsExtendedSandboxPage() {
                     </div>
 
                     <div>
-                      <p className="text-[10px] text-[#98A2B3] uppercase mb-3">
+                      <p className="text-[10px] text-gray-400 uppercase mb-3">
                         sm — 28px icons
                       </p>
                       <FloatingToolbar
@@ -439,7 +439,7 @@ export default function InputsExtendedSandboxPage() {
               )}
             </div>
 
-            <p className="text-xs text-[#667085]">
+            <p className="text-xs text-gray-500">
               Ativos:{' '}
               <code className="bg-gray-100 px-1 rounded">
                 {active.join(', ') || '—'}
@@ -452,9 +452,9 @@ export default function InputsExtendedSandboxPage() {
           <div className="space-y-6">
             <StateLabel label="3.2 — Inline light toolbar · inside editor" />
 
-            <div className="bg-white rounded-xl border border-[#EAECF0] shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               {/* Toolbar */}
-              <div className="border-b border-[#F2F4F7] p-3">
+              <div className="border-b border-gray-100 p-3">
                 <InlineToolbar
                   size="lg"
                   textStyleLabel="Normal text"
@@ -465,15 +465,15 @@ export default function InputsExtendedSandboxPage() {
               {/* Mock editor body */}
               <div className="p-4 min-h-[120px]">
                 <textarea
-                  className="w-full h-28 bg-transparent outline-none resize-none text-base text-[#101828] placeholder:text-[#667085]"
+                  className="w-full h-28 bg-transparent outline-none resize-none text-base text-gray-900 placeholder:text-gray-500"
                   placeholder="Comece a digitar aqui..."
                 />
               </div>
             </div>
 
-            <div className="bg-white rounded-xl border border-[#EAECF0] shadow-sm overflow-hidden mt-4">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-4">
               {/* sm variant */}
-              <div className="border-b border-[#F2F4F7] p-2.5">
+              <div className="border-b border-gray-100 p-2.5">
                 <InlineToolbar
                   size="sm"
                   textStyleLabel="Normal text"
@@ -483,7 +483,7 @@ export default function InputsExtendedSandboxPage() {
               </div>
               <div className="p-4 min-h-[100px]">
                 <textarea
-                  className="w-full h-20 bg-transparent outline-none resize-none text-sm text-[#101828] placeholder:text-[#667085]"
+                  className="w-full h-20 bg-transparent outline-none resize-none text-sm text-gray-900 placeholder:text-gray-500"
                   placeholder="Versão sm da toolbar..."
                 />
               </div>

@@ -65,7 +65,7 @@ export function WeeklyRadarChart({ data, title }: WeeklyRadarChartProps) {
           />
           <PolarAngleAxis
             dataKey="day"
-            tick={{ fill: '#667085', fontSize: 12 }}
+            tick={{ fill: 'var(--gray-500)', fontSize: 12 }}
             tickLine={false}
           />
           <ChartTooltip

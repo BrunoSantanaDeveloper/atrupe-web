@@ -22,7 +22,7 @@ export default function TabsSandboxPage() {
             <h2 className="text-2xl font-medium text-[#252e3b] mb-4">
               Underline Tabs
             </h2>
-            <p className="text-sm border-l-4 border-[#14b375] pl-3 mb-8 text-gray-500">
+            <p className="text-sm border-l-4 border-brand-400 pl-3 mb-8 text-gray-500">
               Baseados na hierarquia "Brand / Success / Gray". A aba "Active"
               muda a borda de base e cores do texto baseadas no 'intent'
             </p>
@@ -129,8 +129,8 @@ export default function TabsSandboxPage() {
             </div>
 
             {/* Active Dark Intent Column */}
-            <div className="flex flex-col space-y-6 border border-dashed border-[#14b375] p-6 rounded-lg bg-white relative">
-              <span className="absolute -top-[28px] text-sm text-[#084C36] left-0">
+            <div className="flex flex-col space-y-6 border border-dashed border-brand-400 p-6 rounded-lg bg-white relative">
+              <span className="absolute -top-[28px] text-sm text-brand-800 left-0">
                 Active (Dark intent)
               </span>
 
@@ -329,7 +329,7 @@ export default function TabsSandboxPage() {
               </div>
             </div>
 
-            <div className="border border-dashed border-[#d2b8ea] p-8 flex items-center justify-center rounded-lg space-y-0 bg-[#eaecf0]">
+            <div className="border border-dashed border-[#d2b8ea] p-8 flex items-center justify-center rounded-lg space-y-0 bg-gray-200">
               <div>
                 <p className="text-sm text-gray-500 mb-4">
                   Pill Small Examples

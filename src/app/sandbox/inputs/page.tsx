@@ -58,7 +58,7 @@ const STATES: { state: InputState; label: string; value?: string }[] = [
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 col-span-full">
+    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 col-span-full">
       {title}
     </h2>
   )
@@ -66,7 +66,7 @@ function SectionHeader({ title }: { title: string }) {
 
 function StateLabel({ label }: { label: string }) {
   return (
-    <p className="text-[11px] font-semibold text-[#98A2B3] uppercase tracking-wider mb-2">
+    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
       {label}
     </p>
   )
@@ -83,7 +83,7 @@ function ColHeaders({ variants }: { variants: typeof VARIANTS }) {
       {variants.map((v) => (
         <p
           key={v.variant}
-          className="text-[11px] font-semibold text-[#98A2B3] uppercase tracking-wider text-center"
+          className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider text-center"
         >
           {v.variant}
         </p>
@@ -199,7 +199,7 @@ function InputSection({
 }) {
   return (
     <section className="space-y-6">
-      <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2">
+      <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2">
         {title}
       </h2>
       <ColHeaders variants={variants} />
@@ -240,10 +240,10 @@ export default function InputsSandboxPage() {
       <div className="max-w-7xl mx-auto px-6 space-y-16">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             FormInput — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Mapeamento de todas as variantes e estados do Figma. Colunas:{' '}
             <code>
               text · email · phone · currency · currency-suffix · website · card
@@ -301,11 +301,11 @@ export default function InputsSandboxPage() {
 
         {/* ── Bloco 4: Formulário integrado ─── */}
         <section className="space-y-6">
-          <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2">
+          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2">
             4 — Formulário integrado (exemplo real)
           </h2>
-          <div className="bg-white rounded-xl border border-[#EAECF0] p-8 shadow-sm">
-            <p className="text-base font-semibold text-[#101828] mb-6">
+          <div className="bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+            <p className="text-base font-semibold text-gray-900 mb-6">
               Dados de pagamento
             </p>
             <div className="grid grid-cols-2 gap-6 max-w-2xl">

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/tooltip'
 
 const avatarAddVariants = cva(
-  'relative flex shrink-0 items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f2f4f7] disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  'relative flex shrink-0 items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-100 disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
   {
     variants: {
       size: {
@@ -24,10 +24,10 @@ const avatarAddVariants = cva(
       },
       variant: {
         default:
-          'bg-white border border-[#d0d5dd] border-dashed hover:bg-gray-50 disabled:bg-gray-100',
+          'bg-white border border-gray-300 border-dashed hover:bg-gray-50 disabled:bg-gray-100',
         subtle:
-          'bg-gray-50 border border-[#eaecf0] border-dashed hover:border-[#d0d5dd]',
-        glow: 'bg-white border border-[#d0d5dd] border-dashed shadow-[0_0_0_4px_#f2f4f7]',
+          'bg-gray-50 border border-gray-200 border-dashed hover:border-gray-300',
+        glow: 'bg-white border border-gray-300 border-dashed shadow-[0_0_0_4px_#f2f4f7]',
         unstyled: '',
       },
     },
@@ -73,7 +73,7 @@ const AvatarAddButton = React.forwardRef<
           <TooltipTrigger asChild>{ButtonContent}</TooltipTrigger>
           <TooltipContent
             side="top"
-            className="bg-[#101828] text-white font-semibold text-xs px-3 py-2 border-none drop-shadow-md rounded-lg"
+            className="bg-gray-900 text-white font-semibold text-xs px-3 py-2 border-none drop-shadow-md rounded-lg"
           >
             {tooltipText}
           </TooltipContent>

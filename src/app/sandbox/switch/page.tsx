@@ -10,12 +10,12 @@ export default function SwitchSandboxPage() {
         <h2 className="text-2xl font-medium text-[#252e3b] mb-4">
           Toggle / Switch
         </h2>
-        <p className="text-sm border-l-4 border-[#14b375] pl-3 mb-8 text-gray-500">
+        <p className="text-sm border-l-4 border-brand-400 pl-3 mb-8 text-gray-500">
           Toggles representam dois estados excludentes (On/Off). Padrões Figma:
           Verde principal (Success), Default Size e Small Size.
         </p>
 
-        <div className="flex gap-20 bg-white p-12 rounded-lg border border-dashed border-[#eaecf0]">
+        <div className="flex gap-20 bg-white p-12 rounded-lg border border-dashed border-gray-200">
           {/* Default Sizing Column */}
           <div className="flex flex-col gap-10">
             <h3 className="text-sm font-semibold text-gray-400">
@@ -77,7 +77,7 @@ export default function SwitchSandboxPage() {
                 <Switch id="r1" />
                 <label
                   htmlFor="r1"
-                  className="text-sm font-medium leading-none text-[#344054] cursor-pointer"
+                  className="text-sm font-medium leading-none text-gray-700 cursor-pointer"
                 >
                   Lembrar de mim
                 </label>
@@ -87,7 +87,7 @@ export default function SwitchSandboxPage() {
                 <Switch id="r2" sizing="sm" defaultChecked />
                 <label
                   htmlFor="r2"
-                  className="text-sm font-medium leading-none text-[#344054] cursor-pointer"
+                  className="text-sm font-medium leading-none text-gray-700 cursor-pointer"
                 >
                   Lembrar de mim
                 </label>
@@ -98,11 +98,11 @@ export default function SwitchSandboxPage() {
                 <div className="grid gap-1">
                   <label
                     htmlFor="r3"
-                    className="text-sm font-medium leading-none text-[#344054] cursor-pointer"
+                    className="text-sm font-medium leading-none text-gray-700 cursor-pointer"
                   >
                     Lembrar de mim
                   </label>
-                  <p className="text-sm text-[#667085]">
+                  <p className="text-sm text-gray-500">
                     Salve meus dados de login para a próxima vez.
                   </p>
                 </div>
@@ -113,11 +113,11 @@ export default function SwitchSandboxPage() {
                 <div className="grid gap-1">
                   <label
                     htmlFor="r4"
-                    className="text-sm font-medium leading-none text-[#344054] cursor-pointer text-muted-foreground"
+                    className="text-sm font-medium leading-none text-gray-700 cursor-pointer text-muted-foreground"
                   >
                     Lembrar de mim
                   </label>
-                  <p className="text-sm text-[#667085] opacity-80">
+                  <p className="text-sm text-gray-500 opacity-80">
                     Salve meus dados de login para a próxima vez.
                   </p>
                 </div>

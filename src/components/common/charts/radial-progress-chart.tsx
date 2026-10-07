@@ -79,7 +79,7 @@ export function RadialProgressChart({
             <h3 className="text-sm font-semibold text-gray-900">{title}</h3>
           )}
           {subtitle && (
-            <p className="text-xs font-medium text-[#667085]">{subtitle}</p>
+            <p className="text-xs font-medium text-gray-500">{subtitle}</p>
           )}
         </div>
       )}
@@ -114,7 +114,7 @@ export function RadialProgressChart({
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-[#667085] text-xs font-medium"
+                            className="fill-gray-500 text-xs font-medium"
                           >
                             {centerSubLabel}
                           </tspan>
@@ -130,7 +130,7 @@ export function RadialProgressChart({
 
           <RadialBar
             dataKey="value"
-            background={{ fill: '#F2F4F7' }}
+            background={{ fill: 'var(--gray-100)' }}
             cornerRadius={10}
           />
           <ChartTooltip

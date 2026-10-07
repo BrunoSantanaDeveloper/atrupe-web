@@ -20,6 +20,7 @@ import { Dialog } from '@/components/ui/dialog'
 // Components
 import { Avatar } from '../AvatarComponent'
 import { MyProfileDialog } from './MyProfile'
+import { ThemeToggleGroup } from './ThemeToggleGroup'
 
 // Assets
 import favicon from '@public/logo/logo.png'
@@ -410,6 +411,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                 Perfil
               </span>
             </button>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-b border-gray-200 mt-3 pt-2 pb-3">
+            <span className="text-sm font-semibold text-gray-700">Tema</span>
+            <ThemeToggleGroup />
           </div>
           <div className="border-b border-gray-200 mt-3 pb-2">
             <button

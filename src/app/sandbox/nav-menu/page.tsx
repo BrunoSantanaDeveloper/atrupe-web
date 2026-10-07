@@ -159,7 +159,7 @@ const CtaPlusIcon = (_color: string) => (
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2 mb-6">
+    <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2 mb-6">
       {children}
     </h2>
   )
@@ -167,7 +167,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function StateLabel({ label }: { label: string }) {
   return (
-    <p className="text-[11px] font-semibold text-[#98A2B3] uppercase tracking-wider mb-3">
+    <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-3">
       {label}
     </p>
   )
@@ -183,7 +183,7 @@ function Card({
   return (
     <div>
       <StateLabel label={title} />
-      <div className="bg-white border border-[#EAECF0] rounded-xl shadow-sm p-4 inline-flex">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 inline-flex">
         {children}
       </div>
     </div>
@@ -363,10 +363,10 @@ export default function NavMenuSandboxPage() {
       <div className="max-w-7xl mx-auto px-6 space-y-20">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             NavMenu — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Componentes: <code>NavItem</code> · <code>NavGroup</code> ·{' '}
             <code>NavMenu</code>
           </p>
@@ -538,11 +538,11 @@ export default function NavMenuSandboxPage() {
           <SectionTitle>5 — Interativo · Clique para ativar item</SectionTitle>
 
           <div className="flex gap-8 items-start">
-            <div className="bg-white border border-[#EAECF0] rounded-xl shadow-sm overflow-hidden w-[240px]">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden w-[240px]">
               {/* Mock sidebar header */}
-              <div className="px-4 py-3 border-b border-[#F2F4F7]">
-                <p className="text-sm font-bold text-[#101828]">Atrupe</p>
-                <p className="text-xs text-[#667085]">Menu de navegação</p>
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-bold text-gray-900">Atrupe</p>
+                <p className="text-xs text-gray-500">Menu de navegação</p>
               </div>
               <div className="p-3">
                 <NavMenu
@@ -556,25 +556,25 @@ export default function NavMenuSandboxPage() {
             </div>
 
             <div className="space-y-3 pt-2">
-              <div className="bg-white border border-[#EAECF0] rounded-lg p-4">
-                <p className="text-xs font-semibold text-[#667085] uppercase mb-1">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
                   Item ativo
                 </p>
-                <code className="text-sm font-medium text-[#101828]">
+                <code className="text-sm font-medium text-gray-900">
                   {activeId}
                 </code>
               </div>
               {lastClicked && (
-                <div className="bg-white border border-[#EAECF0] rounded-lg p-4">
-                  <p className="text-xs font-semibold text-[#667085] uppercase mb-1">
+                <div className="bg-white border border-gray-200 rounded-lg p-4">
+                  <p className="text-xs font-semibold text-gray-500 uppercase mb-1">
                     Último clique
                   </p>
-                  <code className="text-sm font-medium text-[#101828]">
+                  <code className="text-sm font-medium text-gray-900">
                     {lastClicked}
                   </code>
                 </div>
               )}
-              <p className="text-xs text-[#98A2B3] max-w-[200px]">
+              <p className="text-xs text-gray-400 max-w-[200px]">
                 Clique nos itens do menu lateral para alterar o estado ativo.
               </p>
             </div>

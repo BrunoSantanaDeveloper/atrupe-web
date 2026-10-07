@@ -40,7 +40,7 @@ export function ActiveUsersAreaChart({
     <div className="flex flex-col gap-4 p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       <div className="flex flex-col items-center justify-center space-y-1 pb-4">
         {subtitle && (
-          <span className="text-xs font-medium text-[#667085]">{subtitle}</span>
+          <span className="text-xs font-medium text-gray-500">{subtitle}</span>
         )}
         {title && (
           <h3 className="text-base font-semibold text-gray-900">{title}</h3>
@@ -82,14 +82,14 @@ export function ActiveUsersAreaChart({
             axisLine={false}
             tickMargin={8}
             tickFormatter={(value) => value.slice(0, 3)}
-            className="text-xs text-[#667085]"
+            className="text-xs text-gray-500"
           />
           <YAxis
             tickLine={false}
             axisLine={false}
             tickMargin={8}
             tickCount={5}
-            className="text-xs text-[#667085]"
+            className="text-xs text-gray-500"
           />
           <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
           <Area

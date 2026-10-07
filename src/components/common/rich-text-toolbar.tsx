@@ -267,7 +267,7 @@ export function FloatingToolbar({
     >
       {isTopCaret && <Caret position="top-center" caretW={caretW} />}
 
-      <div className={cn('flex rounded-lg bg-[#101828]', padding)}>
+      <div className={cn('flex rounded-lg bg-gray-900', padding)}>
         <div className={cn('flex items-center', gap)}>
           {actions.map((action) => {
             const isActive = activeActions.includes(action)
@@ -280,8 +280,8 @@ export function FloatingToolbar({
                 className={cn(
                   'flex items-center justify-center rounded transition-colors',
                   isActive
-                    ? 'bg-[#475467] text-white'
-                    : 'text-[#d0d5dd] hover:text-white hover:bg-[#344054]',
+                    ? 'bg-gray-600 text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-gray-700',
                 )}
                 style={{ width: iconPx, height: iconPx }}
               >
@@ -348,9 +348,9 @@ export function InlineToolbar({
           type="button"
           onClick={onTextStyleChange}
           className={cn(
-            'flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-white border border-[#d0d5dd]',
+            'flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-white border border-gray-300',
             '[box-shadow:0px_1px_2px_0_rgba(16,24,40,0.05)]',
-            'text-base font-medium text-[#101828]',
+            'text-base font-medium text-gray-900',
           )}
         >
           <span>{textStyleLabel}</span>
@@ -371,8 +371,8 @@ export function InlineToolbar({
               className={cn(
                 'flex items-center justify-center rounded transition-colors',
                 isActive
-                  ? 'bg-[#A9F1CC] text-[#085D40]'
-                  : 'text-[#98A2B3] hover:text-[#344054] hover:bg-gray-100',
+                  ? 'bg-brand-100 text-brand-700'
+                  : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100',
               )}
               style={{ width: iconPx, height: iconPx }}
             >

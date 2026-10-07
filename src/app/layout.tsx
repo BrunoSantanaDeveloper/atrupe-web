@@ -51,7 +51,9 @@ export default async function RootLayout({
   const session = await auth()
 
   return (
-    <html lang="pt-BR">
+    // suppressHydrationWarning: o next-themes põe a classe do tema no <html>
+    // antes da hidratação (carregar sem piscar)
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         {/* Google Tag Manager */}
         <Script

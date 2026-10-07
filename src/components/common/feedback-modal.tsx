@@ -176,15 +176,15 @@ export function FeedbackModal({
     primaryAction.intent || (variant === 'danger' ? 'danger' : 'success')
   const primaryColors =
     derivedIntent === 'danger'
-      ? 'bg-[#d92d20] border-[#d92d20] hover:bg-[#b42318] focus:ring-[#FEE4E2]'
-      : 'bg-[#12b76a] border-[#12b76a] hover:bg-[#039855] focus:ring-[#D1FADF]'
+      ? 'bg-error-600 border-error-600 hover:bg-error-700 focus:ring-error-100'
+      : 'bg-success-500 border-success-500 hover:bg-success-600 focus:ring-success-100'
 
   const tertiaryColors =
     tertiaryAction?.intent === 'danger'
-      ? 'bg-[#fef3f2] border-[#fef3f2] text-[#b42318] hover:bg-[#fee4e2]'
+      ? 'bg-error-50 border-error-50 text-error-700 hover:bg-error-100'
       : tertiaryAction?.intent === 'success'
-        ? 'bg-[#ecfdf3] border-[#ecfdf3] text-[#027a48] hover:bg-[#d1fadf]'
-        : 'bg-white border-[#d0d5dd] text-[#344054] hover:bg-gray-50'
+        ? 'bg-success-50 border-success-50 text-success-700 hover:bg-success-100'
+        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
 
   const IconComponent =
     variant === 'success'
@@ -247,13 +247,13 @@ export function FeedbackModal({
               }`}
             >
               <h2
-                className={`text-lg font-semibold text-[#101828] leading-tight ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
+                className={`text-lg font-semibold text-gray-900 leading-tight ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
               >
                 {title}
               </h2>
               {description && (
                 <div
-                  className={`text-sm text-[#667085] leading-normal ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
+                  className={`text-sm text-gray-500 leading-normal ${layout === 'vertical' ? 'text-center' : 'text-left'}`}
                 >
                   {description}
                 </div>
@@ -275,13 +275,13 @@ export function FeedbackModal({
                   <div
                     className={`relative flex items-center justify-center w-4 h-4 rounded border transition-colors ${
                       checkbox.checked
-                        ? 'bg-[#12b76a] border-[#12b76a]'
-                        : 'bg-white border-[#d0d5dd] group-hover:border-[#12b76a]'
+                        ? 'bg-success-500 border-success-500'
+                        : 'bg-white border-gray-300 group-hover:border-success-500'
                     }`}
                   >
                     {checkbox.checked && (
                       <>
-                        <div className="absolute inset-0 bg-[#12b76a] rounded border border-[#12b76a]"></div>
+                        <div className="absolute inset-0 bg-success-500 rounded border border-success-500"></div>
                         <svg
                           width="10"
                           height="8"
@@ -306,7 +306,7 @@ export function FeedbackModal({
                       onChange={(e) => checkbox.onChange(e.target.checked)}
                     />
                   </div>
-                  <span className="text-sm font-medium text-[#344054] select-none">
+                  <span className="text-sm font-medium text-gray-700 select-none">
                     {checkbox.label}
                   </span>
                 </label>
@@ -325,11 +325,11 @@ export function FeedbackModal({
                 <button
                   type="button"
                   onClick={secondaryAction.onClick}
-                  className={`flex justify-center items-center gap-2 px-[18px] py-2.5 rounded-lg bg-white border border-[#d0d5dd] shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-100 ${
+                  className={`flex justify-center items-center gap-2 px-[18px] py-2.5 rounded-lg bg-white border border-gray-300 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-100 ${
                     footerLayout === 'fill' ? 'flex-1' : 'w-full sm:w-auto'
                   } ${reverseActions ? 'order-2' : 'order-3 sm:order-1'}`}
                 >
-                  <span className="text-base font-semibold text-[#344054]">
+                  <span className="text-base font-semibold text-gray-700">
                     {secondaryAction.label}
                   </span>
                 </button>

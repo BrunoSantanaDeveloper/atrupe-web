@@ -1,5 +1,89 @@
 import type { Config } from 'tailwindcss'
 
+// Tema escuro — design/openspec/changes/tema-claro-escuro (Decisões 3 e 6)
+
+// Paletas padrão do Tailwind em uso viram variáveis: no claro valem os valores
+// do Tailwind (nada muda); no escuro, os de globals.css (.dark)
+const TAILWIND_PALETTES = [
+  'red',
+  'green',
+  'amber',
+  'emerald',
+  'yellow',
+  'neutral',
+  'slate',
+  'violet',
+]
+const TAILWIND_SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+
+// Variáveis em canais RGB para manter as classes com opacidade (`/50`)
+const tailwindPaletteColors = Object.fromEntries(
+  TAILWIND_PALETTES.map((name) => [
+    name,
+    Object.fromEntries(
+      TAILWIND_SHADES.map((shade) => [
+        shade,
+        `rgb(var(--${name}-${shade}) / <alpha-value>)`,
+      ]),
+    ),
+  ]),
+)
+
+// Fundo de tom 600–900 é preenchimento sólido (botão, marcação): no escuro
+// mantém a cor do claro pela variável -fill, que só existe em .dark
+const fill = (token: string) => `var(--${token}-fill, var(--${token}))`
+const fillRgb = (token: string) =>
+  `rgb(var(--${token}-fill, var(--${token})) / <alpha-value>)`
+
+// [prefixo da classe, prefixo da variável]
+const SOLID_FILL_FAMILIES = [
+  ['gray-', 'gray-'],
+  ['brand-', 'brand-'],
+  ['error-', 'error-'],
+  ['warning-', 'warning-'],
+  ['success-', 'success-'],
+  ['blue-', 'blue-'],
+  ['indigo-', 'indigo-'],
+  ['purple-', 'purple-'],
+  ['pink-', 'pink-'],
+  ['orange-', 'orange-'],
+  ['ros-', 'ros-'],
+  ['rose-', 'ros-'],
+  ['blue-gray', 'blue-gray'],
+  ['blue-gray-', 'blue-gray'],
+  ['blue-light', 'blue-light'],
+  ['blue-light-', 'blue-light'],
+]
+
+const solidFills = {
+  // `bg-brand` (botão `default`) também é preenchimento: no escuro usa a
+  // primária do tema escuro (--brand-500-fill)
+  brand: fill('brand-500'),
+  'brand-500': fill('brand-500'),
+  // `bg-gray` (botão `neutral`, texto branco) também: mantém o cinza do claro
+  gray: fill('gray-500'),
+  'gray-500': fill('gray-500'),
+  ...Object.fromEntries(
+    SOLID_FILL_FAMILIES.flatMap(([classPrefix, varPrefix]) =>
+      [600, 700, 800, 900].map((shade) => [
+        `${classPrefix}${shade}`,
+        fill(`${varPrefix}${shade}`),
+      ]),
+    ),
+  ),
+  ...Object.fromEntries(
+    TAILWIND_PALETTES.map((name) => [
+      name,
+      Object.fromEntries(
+        [600, 700, 800, 900, 950].map((shade) => [
+          shade,
+          fillRgb(`${name}-${shade}`),
+        ]),
+      ),
+    ]),
+  ),
+}
+
 const config = {
   darkMode: ['class'],
   content: [
@@ -18,10 +102,23 @@ const config = {
       },
     },
     extend: {
+      // `white` como fundo, borda, anel ou divisória é superfície: escurece no
+      // tema escuro. Como cor de texto (`text-white`) continua branco.
+      backgroundColor: {
+        white: 'var(--surface)',
+        ...solidFills,
+      },
       borderColor: {
         DEFAULT: 'var(--gray-500)',
+        white: 'var(--surface)',
       },
+      ringColor: { white: 'var(--surface)' },
+      ringOffsetColor: { white: 'var(--surface)' },
+      divideColor: { white: 'var(--surface)' },
+      // Gradiente segue a regra do fundo: tons 600–900 mantêm a cor do claro
+      gradientColorStops: { white: 'var(--surface)', ...solidFills },
       colors: {
+        ...tailwindPaletteColors,
         black: 'var(--black)',
         'blue-100': 'var(--blue-100)',
         'blue-200': 'var(--blue-200)',

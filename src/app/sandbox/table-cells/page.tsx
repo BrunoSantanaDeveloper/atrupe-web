@@ -54,10 +54,10 @@ export default function TableCellsSandboxPage() {
     <div className="min-h-screen bg-gray-50 py-12 pb-32">
       <div className="max-w-6xl mx-auto px-6 space-y-12">
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             Table Elements — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Visualização de padrões de conteúdo de células isolados e compostos
             em tabelas.
           </p>
@@ -76,7 +76,7 @@ export default function TableCellsSandboxPage() {
               }
             />
             <Table>
-              <TableHeader className="bg-gray-50 border-y border-[#EAECF0]">
+              <TableHeader className="bg-gray-50 border-y border-gray-200">
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-16 pl-6">
                     <Checkbox size="md" />
@@ -99,7 +99,7 @@ export default function TableCellsSandboxPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow className="border-b border-[#EAECF0]">
+                <TableRow className="border-b border-gray-200">
                   <TableCell className="pl-6">
                     <Checkbox size="md" />
                   </TableCell>
@@ -113,13 +113,13 @@ export default function TableCellsSandboxPage() {
                   <TableCell>
                     <Badge
                       variant="success"
-                      className="bg-[#ecfdf3] text-[#027a48] hover:bg-[#ecfdf3] h-6 border-0"
+                      className="bg-success-50 text-success-700 hover:bg-success-50 h-6 border-0"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A] mr-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-success-500 mr-1.5" />
                       Active
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-[#475467]">
+                  <TableCell className="text-sm text-gray-600">
                     Product Designer
                   </TableCell>
                   <TableCell>
@@ -139,7 +139,7 @@ export default function TableCellsSandboxPage() {
                     />
                   </TableCell>
                 </TableRow>
-                <TableRow className="bg-gray-50/50 border-b border-[#EAECF0]">
+                <TableRow className="bg-gray-50/50 border-b border-gray-200">
                   <TableCell className="pl-6">
                     <Checkbox size="md" checked />
                   </TableCell>
@@ -153,13 +153,13 @@ export default function TableCellsSandboxPage() {
                   <TableCell>
                     <Badge
                       variant="success"
-                      className="bg-[#ecfdf3] text-[#027a48] hover:bg-[#ecfdf3] h-6 border-0"
+                      className="bg-success-50 text-success-700 hover:bg-success-50 h-6 border-0"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#12B76A] mr-1.5" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-success-500 mr-1.5" />
                       Active
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-[#475467]">
+                  <TableCell className="text-sm text-gray-600">
                     Product Manager
                   </TableCell>
                   <TableCell>
@@ -187,7 +187,7 @@ export default function TableCellsSandboxPage() {
                   <PaginationItem>
                     <PaginationPrevious
                       href="#"
-                      className="border border-[#D0D5DD] shadow-sm text-sm text-[#344054] hover:bg-gray-50"
+                      className="border border-gray-300 shadow-sm text-sm text-gray-700 hover:bg-gray-50"
                     >
                       Anterior
                     </PaginationPrevious>
@@ -197,7 +197,7 @@ export default function TableCellsSandboxPage() {
                       <PaginationLink
                         href="#"
                         isActive
-                        className="bg-[#d2f9e3] hover:bg-[#bbf0d0] text-[#077550] border-none"
+                        className="bg-brand-50 hover:bg-[#bbf0d0] dark:hover:bg-brand-50 text-brand-600 border-none"
                       >
                         1
                       </PaginationLink>
@@ -205,7 +205,7 @@ export default function TableCellsSandboxPage() {
                     <PaginationItem>
                       <PaginationLink
                         href="#"
-                        className="text-[#667085] hover:bg-gray-50 border-none"
+                        className="text-gray-500 hover:bg-gray-50 border-none"
                       >
                         2
                       </PaginationLink>
@@ -213,18 +213,18 @@ export default function TableCellsSandboxPage() {
                     <PaginationItem>
                       <PaginationLink
                         href="#"
-                        className="text-[#667085] hover:bg-gray-50 border-none"
+                        className="text-gray-500 hover:bg-gray-50 border-none"
                       >
                         3
                       </PaginationLink>
                     </PaginationItem>
                     <PaginationItem>
-                      <PaginationEllipsis className="text-[#667085]" />
+                      <PaginationEllipsis className="text-gray-500" />
                     </PaginationItem>
                     <PaginationItem>
                       <PaginationLink
                         href="#"
-                        className="text-[#667085] hover:bg-gray-50 border-none"
+                        className="text-gray-500 hover:bg-gray-50 border-none"
                       >
                         8
                       </PaginationLink>
@@ -232,7 +232,7 @@ export default function TableCellsSandboxPage() {
                     <PaginationItem>
                       <PaginationLink
                         href="#"
-                        className="text-[#667085] hover:bg-gray-50 border-none"
+                        className="text-gray-500 hover:bg-gray-50 border-none"
                       >
                         9
                       </PaginationLink>
@@ -240,7 +240,7 @@ export default function TableCellsSandboxPage() {
                     <PaginationItem>
                       <PaginationLink
                         href="#"
-                        className="text-[#667085] hover:bg-gray-50 border-none"
+                        className="text-gray-500 hover:bg-gray-50 border-none"
                       >
                         10
                       </PaginationLink>
@@ -249,7 +249,7 @@ export default function TableCellsSandboxPage() {
                   <PaginationItem>
                     <PaginationNext
                       href="#"
-                      className="border border-[#D0D5DD] shadow-sm text-sm text-[#344054] hover:bg-gray-50"
+                      className="border border-gray-300 shadow-sm text-sm text-gray-700 hover:bg-gray-50"
                     >
                       Próximo
                     </PaginationNext>
@@ -261,9 +261,9 @@ export default function TableCellsSandboxPage() {
         </section>
 
         {/* --- DEMONSTRAÇÃO 2: FATURAMENTO & ARQUIVOS --- */}
-        <section className="bg-white border border-[#EAECF0] rounded-xl shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-[#EAECF0]">
-            <h2 className="text-base font-semibold text-[#101828]">
+        <section className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-200">
+            <h2 className="text-base font-semibold text-gray-900">
               Faturamento & Documentos
             </h2>
           </div>
@@ -310,8 +310,8 @@ export default function TableCellsSandboxPage() {
                   <CellFile
                     title="Q1 Performance.csv"
                     subtitle="720 KB"
-                    iconBgColor="bg-[#eef4ff]"
-                    iconColor="text-[#3538cd]"
+                    iconBgColor="bg-indigo-50"
+                    iconColor="text-indigo-700"
                   />
                 </TableCell>
                 <TableCell>
@@ -332,10 +332,10 @@ export default function TableCellsSandboxPage() {
         {/* --- DEMONSTRAÇÃO 3: EMPTY STATES --- */}
         <section className="space-y-6">
           <div className="flex flex-col gap-1">
-            <h2 className="text-xl flex items-center font-semibold text-[#101828]">
+            <h2 className="text-xl flex items-center font-semibold text-gray-900">
               Empty States de Tabela
             </h2>
-            <p className="text-[#667085]">
+            <p className="text-gray-500">
               Demonstração de estados vazios para search, data upload e telas de
               erro integradas na tabela.
             </p>
@@ -358,11 +358,11 @@ export default function TableCellsSandboxPage() {
               }
             />
             {/* Simulation of Filters Bar */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EAECF0] bg-white">
-              <div className="flex border border-[#D0D5DD] rounded-lg overflow-hidden shadow-sm">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
+              <div className="flex border border-gray-300 rounded-lg overflow-hidden shadow-sm">
                 <Button
                   variant="ghost"
-                  className="rounded-none bg-gray-50 border-r border-[#D0D5DD] h-10 px-4"
+                  className="rounded-none bg-gray-50 border-r border-gray-300 h-10 px-4"
                 >
                   View all
                 </Button>
@@ -372,12 +372,12 @@ export default function TableCellsSandboxPage() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#667085]" />
+                  <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                   <input
                     type="text"
                     value="Stripe"
                     readOnly
-                    className="h-10 pl-9 pr-3 rounded-lg border border-[#38CF8F] ring-4 ring-[#F4EBFF] focus:outline-none w-[300px] text-sm font-medium text-[#101828]"
+                    className="h-10 pl-9 pr-3 rounded-lg border border-brand-300 ring-4 ring-[#F4EBFF] focus:outline-none w-[300px] text-sm font-medium text-gray-900"
                   />
                 </div>
                 <Button variant="outline">Filters</Button>
@@ -407,7 +407,7 @@ export default function TableCellsSandboxPage() {
                   <PaginationItem>
                     <PaginationPrevious
                       href="#"
-                      className="border border-[#D0D5DD] shadow-sm text-sm text-[#344054] hover:bg-gray-50"
+                      className="border border-gray-300 shadow-sm text-sm text-gray-700 hover:bg-gray-50"
                     >
                       Anterior
                     </PaginationPrevious>
@@ -415,7 +415,7 @@ export default function TableCellsSandboxPage() {
                   <PaginationItem>
                     <PaginationNext
                       href="#"
-                      className="border border-[#D0D5DD] shadow-sm text-sm text-[#344054] hover:bg-gray-50"
+                      className="border border-gray-300 shadow-sm text-sm text-gray-700 hover:bg-gray-50"
                     >
                       Próximo
                     </PaginationNext>
@@ -452,7 +452,7 @@ export default function TableCellsSandboxPage() {
               }
               action={
                 <>
-                  <Button variant="outline" className="text-[#344054]">
+                  <Button variant="outline" className="text-gray-700">
                     Support article
                   </Button>
                   <Button variant="success">Upload</Button>
@@ -478,7 +478,7 @@ export default function TableCellsSandboxPage() {
               }
               action={
                 <>
-                  <Button variant="outline" className="text-[#344054]">
+                  <Button variant="outline" className="text-gray-700">
                     Contact support
                   </Button>
                   <Button variant="success">Reload page</Button>

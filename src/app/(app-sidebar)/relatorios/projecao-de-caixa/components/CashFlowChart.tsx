@@ -153,13 +153,13 @@ export function CashFlowChart({ searchParams }: SearchParamsType) {
               strokeWidth={2}
               dot={{
                 fill: 'var(--color-balance)',
-                stroke: '#fff',
+                stroke: 'var(--surface)',
                 strokeWidth: 2,
                 r: 4,
               }}
               activeDot={{
                 r: 6,
-                stroke: '#fff',
+                stroke: 'var(--surface)',
                 strokeWidth: 2,
               }}
             />

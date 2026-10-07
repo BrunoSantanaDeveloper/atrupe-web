@@ -32,7 +32,7 @@ const iconContainerVariants = cva(
       },
       theme: {
         default: 'bg-transparent text-gray-500',
-        brand: 'bg-[#A9F1CC] text-[#077550] border border-transparent', // Figma matching
+        brand: 'bg-brand-100 text-brand-600 border border-transparent', // Figma matching
         light: 'bg-white text-gray-700 border border-gray-200 shadow-sm',
       },
     },
@@ -98,14 +98,14 @@ export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
         <div className="flex flex-col items-start flex-grow min-w-0 gap-3">
           <div className="flex flex-col w-full gap-1">
             <div className="flex items-center w-full gap-2">
-              <span className="flex-grow min-w-0 truncate text-base font-semibold text-[#101828]">
+              <span className="flex-grow min-w-0 truncate text-base font-semibold text-gray-900">
                 {title}
               </span>
 
               {/* OPTIONAL BADGE */}
               {badge && (
-                <div className="flex-shrink-0 px-2.5 py-0.5 rounded-2xl bg-[#ecfdf3] mix-blend-multiply">
-                  <span className="text-sm font-medium text-[#027a48]">
+                <div className="flex-shrink-0 px-2.5 py-0.5 rounded-2xl bg-success-50 mix-blend-multiply">
+                  <span className="text-sm font-medium text-success-700">
                     {badge}
                   </span>
                 </div>
@@ -121,7 +121,7 @@ export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
 
             {/* OPTIONAL SUBTITLE */}
             {subtitle && (
-              <span className="w-full text-sm text-[#667085]">{subtitle}</span>
+              <span className="w-full text-sm text-gray-500">{subtitle}</span>
             )}
           </div>
 
@@ -138,7 +138,7 @@ export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
             >
               {typeof action === 'string' ? (
                 <>
-                  <span className="text-sm font-semibold text-[#085d40] group-hover:underline">
+                  <span className="text-sm font-semibold text-brand-700 group-hover:underline">
                     {action}
                   </span>
                   <svg
@@ -147,7 +147,7 @@ export const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>(
                     viewBox="0 0 20 20"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="w-5 h-5 text-[#085d40] transition-transform group-hover:translate-x-1"
+                    className="w-5 h-5 text-brand-700 transition-transform group-hover:translate-x-1"
                   >
                     <path
                       d="M4.16663 10H15.8333M15.8333 10L10 4.16663M15.8333 10L10 15.8333"

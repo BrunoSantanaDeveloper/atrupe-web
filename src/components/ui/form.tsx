@@ -97,7 +97,7 @@ const FormLabel = React.forwardRef<
   return (
     <Label
       ref={ref}
-      className={cn(error && 'text-error dark:text-error-900', className)}
+      className={cn(error && 'text-error', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -142,7 +142,7 @@ const FormDescription = React.forwardRef<
     <p
       ref={ref}
       id={formDescriptionId}
-      className={cn('text-xs text-gray dark:text-gray-400', className)}
+      className={cn('text-xs text-gray', className)}
       {...props}
     />
   )
@@ -166,10 +166,7 @@ const FormMessage = React.forwardRef<
     <p
       ref={ref}
       id={formMessageId}
-      className={cn(
-        'text-xs text-error dark:text-error-900 form-message',
-        className,
-      )}
+      className={cn('text-xs text-error form-message', className)}
       {...props}
     >
       {body === 'Required' ? 'Campo obrigatório' : body}

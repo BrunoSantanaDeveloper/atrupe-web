@@ -185,7 +185,7 @@ export default function FormsSandboxPage() {
             <RadioGroup defaultValue="plan-1" className="flex flex-col gap-4">
               <RadioCard value="plan-1" size="md" alignControl="top-left">
                 <p className="text-base text-left">
-                  <span className="font-medium text-[#084C36]">Basic plan</span>
+                  <span className="font-medium text-brand-800">Basic plan</span>
                   <span className="text-brand-600"> $10/month</span>
                 </p>
                 <p className="text-base text-brand-600 mt-0.5">
@@ -196,7 +196,7 @@ export default function FormsSandboxPage() {
 
               <RadioCard value="plan-2" size="md" alignControl="top-right">
                 <p className="text-base text-left">
-                  <span className="font-medium text-[#084C36]">Pro plan</span>
+                  <span className="font-medium text-brand-800">Pro plan</span>
                   <span className="text-brand-600"> $20/month</span>
                 </p>
                 <p className="text-base text-brand-600 mt-0.5">
@@ -226,12 +226,12 @@ export default function FormsSandboxPage() {
                   </div>
                   <div className="flex flex-col">
                     <p className="text-sm text-left">
-                      <span className="font-medium text-[#344054]">
+                      <span className="font-medium text-gray-700">
                         Olivia Rhye
                       </span>
-                      <span className="text-[#667085]"> @olivia</span>
+                      <span className="text-gray-500"> @olivia</span>
                     </p>
-                    <p className="text-sm text-[#667085]">
+                    <p className="text-sm text-gray-500">
                       Product Manager, Integrations
                     </p>
                   </div>
@@ -245,14 +245,12 @@ export default function FormsSandboxPage() {
                   </div>
                   <div className="flex flex-col">
                     <p className="text-sm text-left">
-                      <span className="font-medium text-[#344054]">
+                      <span className="font-medium text-gray-700">
                         Phoenix Baker
                       </span>
-                      <span className="text-[#667085]"> @phoenix</span>
+                      <span className="text-gray-500"> @phoenix</span>
                     </p>
-                    <p className="text-sm text-[#667085]">
-                      Engineering Manager
-                    </p>
+                    <p className="text-sm text-gray-500">Engineering Manager</p>
                   </div>
                 </div>
               </CheckboxCard>
@@ -273,14 +271,14 @@ export default function FormsSandboxPage() {
                   </div>
                   <div className="flex flex-col gap-2">
                     <div>
-                      <p className="text-sm font-medium text-[#344054]">
+                      <p className="text-sm font-medium text-gray-700">
                         Visa ending in 1234
                       </p>
-                      <p className="text-sm text-[#667085]">Expiry 06/2024</p>
+                      <p className="text-sm text-gray-500">Expiry 06/2024</p>
                     </div>
                     <div className="flex gap-3 text-sm font-semibold">
-                      <span className="text-[#667085]">Set as default</span>
-                      <span className="text-[#085D40]">Edit</span>
+                      <span className="text-gray-500">Set as default</span>
+                      <span className="text-brand-700">Edit</span>
                     </div>
                   </div>
                 </div>
