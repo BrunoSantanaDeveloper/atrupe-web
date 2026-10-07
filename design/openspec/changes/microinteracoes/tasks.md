@@ -22,22 +22,23 @@
 
 ## 4. Listagens
 
-- [ ] 4.1 `FetchingRegion`, `TableSkeletonRows`, `ListSkeleton`; `TablePagination` com `isLoading`
-- [ ] 4.2 Referência em Clientes e Orçamentos
-- [ ] 4.3 Demais listagens: `keepPreviousData` + `FetchingRegion`, cabeçalho real com `TableSkeletonRows`, paginação reservada, `countsLoading`
-- [ ] 4.4 `Skeleton h-[calc(100vh-150px)]`/`h-[480px]` de totais → `ListSkeleton` ou esqueleto com o formato da tela
-- [ ] 4.5 Early returns que escondem o Topbar passam a mantê-lo
-- [ ] 4.6 `TableSkeleton` removido quando não houver mais uso
+- [x] 4.1 `FetchingRegion`, `TableSkeletonRows`, `ListSkeleton`; `TablePagination` com `isLoading`
+- [x] 4.2 Referência em Clientes e Orçamentos
+- [x] 4.3 Demais listagens: `keepPreviousData` + `FetchingRegion`, cabeçalho real com `TableSkeletonRows`, paginação reservada, `countsLoading` (inclui `hooks/queries/useActiveSessions.ts`)
+- [x] 4.4 `Skeleton h-[calc(100vh-150px)]`/`h-[480px]` de totais → `ListSkeleton` ou esqueleto com o formato da tela
+- [x] 4.5 Early returns que escondem o Topbar passam a mantê-lo
+- [x] 4.6 `TableSkeleton` (tabela inteira) só onde não há cabeçalho real; sempre com o `cols` certo
 
 ## 5. Pontuais
 
-- [ ] 5.1 Botões com "Salvando..." e botões de gravação sem retorno passam a usar `isLoading`
-- [ ] 5.2 Mensagem de vazio antes dos dados: `AddToItem.tsx`, `QuotationItems.tsx`
-- [ ] 5.3 Banners que retornam `null` enquanto carregam entram com fade
-- [ ] 5.4 `FiscalModuleGate`: sem loader duplo
+- [x] 5.1 Botões com "Salvando..." e botões de gravação sem retorno passam a usar `isLoading` (`hooks/usePending.ts` onde não há mutation)
+- [x] 5.2 Mensagem de vazio antes dos dados: `AddToItem.tsx`, `QuotationItems.tsx`
+- [x] 5.3 Banners que retornam `null` enquanto carregam entram com fade
+- [x] 5.4 `FiscalModuleGate`: sem loader duplo
 
 ## 6. Conferência
 
-- [ ] 6.1 `tsc` e `lint` limpos
-- [ ] 6.2 Vitrine `/sandbox/microinteracoes` com antes/depois dos primitivos, nos dois temas
-- [ ] 6.3 Conferência visual (claro, escuro, movimento reduzido)
+- [x] 6.1 `tsc` e `lint` limpos
+- [x] 6.2 Vitrine `/sandbox/microinteracoes` com antes/depois dos primitivos, nos dois temas
+- [x] 6.3 Conferência visual (claro, escuro, movimento reduzido)
+- [x] 6.4 Teste e2e `e2e/microinteracoes/microinteracoes.spec.ts` na vitrine (botão, confirmação, listagem, barra de navegação, movimento reduzido)

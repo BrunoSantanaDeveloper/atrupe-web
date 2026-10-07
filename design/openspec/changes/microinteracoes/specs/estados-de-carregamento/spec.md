@@ -37,8 +37,13 @@ página nova aparece.
 ### Requirement: Botão em progresso
 Um botão em progresso MUST manter a cor da sua variante e a sua largura, MUST
 mostrar o indicador de progresso centralizado no lugar do conteúdo e MUST
-bloquear novos cliques. Todo botão que dispara uma gravação MUST indicar
-progresso enquanto ela dura.
+bloquear novos cliques. Todo botão que dispara uma gravação e continua na tela
+enquanto ela dura MUST indicar progresso. Diálogos que fecham no clique e
+gravam em segundo plano dão o retorno pelo aviso (toast) do resultado.
+
+#### Scenario: Confirmar exclusão
+- **WHEN** o usuário confirma uma exclusão no diálogo de confirmação
+- **THEN** o diálogo continua aberto com o botão de confirmar em progresso e fecha quando a exclusão termina
 
 #### Scenario: Salvar
 - **WHEN** o usuário clica em "Salvar" num botão primário

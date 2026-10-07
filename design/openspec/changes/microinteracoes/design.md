@@ -68,6 +68,11 @@ propriedade: o pulso começa quando o fade termina. Overrides de cor existentes
 - Tamanho do spinner pelo `size`: 16 px em `sm`/`iconSm`/`iconXs`/`iconXxs`,
   20 px nos demais.
 - `aria-busy` em progresso.
+- Gravação sem mutation do React Query (ação de servidor com `await` direto):
+  `src/hooks/usePending.ts` guarda a chave da ação em curso para o
+  `isLoading` do botão. Diálogos que fecham no clique e gravam em segundo
+  plano (editor de composição) ficam como estão: o botão não está mais na
+  tela, e o retorno é o aviso do resultado.
 
 ### 4. Overlays
 - `dialog` / `alert-dialog`: `fade` + `zoom-in-95`, entrada `duration-base`
@@ -108,10 +113,15 @@ comportamentos diferentes para a mesma ação.
 - `placeholderData: keepPreviousData` nas queries de lista; `isPlaceholderData`
   liga o `FetchingRegion` (novo, `components/common`): conteúdo com opacidade
   60% e barra fina indeterminada no topo, ambos com 150 ms de atraso.
-- `TableSkeleton` vira `TableSkeletonRows` (só linhas, larguras variadas,
-  `cols`/`rows`), usado dentro do `<TableBody>` da tabela real — o cabeçalho é
-  o real. A estrutura passa a ser `isLoading || hasData ? <Table>…` com o corpo
+- `TableSkeletonRows` (só linhas, larguras variadas, `cols`/`rows`), usado
+  dentro do `<TableBody>` da tabela real — o cabeçalho é o real.
+  `TableSkeleton` (tabela inteira, cabeçalho de esqueleto) fica para onde não
+  há cabeçalho real ainda (colunas que dependem dos dados, `ListSkeleton`). A estrutura passa a ser `isLoading || hasData ? <Table>…` com o corpo
   alternando entre linhas de esqueleto e dados.
+- `keepPreviousData` só nas queries de lista cuja chave muda com filtro,
+  busca, aba ou página; consultas de detalhe e de chave fixa ficam sem ele.
+  Em histórico paginado de um registro, só mantém a página anterior do mesmo
+  registro.
 - `ListSkeleton` (novo): barra de filtros + tabela de esqueleto, para o lugar
   do `Skeleton h-[calc(100vh-150px)]` enquanto os totais carregam.
 - `TablePagination` com `isLoading`: reserva a altura.
