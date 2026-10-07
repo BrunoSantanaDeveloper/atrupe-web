@@ -28,6 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { AiConversation, AiMessage } from '@/types/ai-chat'
@@ -256,7 +257,12 @@ export function AiChatWidget() {
               <ScrollArea className="flex-1 bg-gray-50">
                 <div className="space-y-4 p-5">
                   {loadingMessages ? (
-                    <p className="text-sm text-gray-500">Carregando...</p>
+                    // Esqueleto no formato da conversa
+                    <div className="space-y-4" aria-label="Carregando">
+                      <Skeleton className="ml-auto h-10 w-2/3 rounded-2xl" />
+                      <Skeleton className="h-16 w-3/4 rounded-2xl" />
+                      <Skeleton className="ml-auto h-10 w-1/2 rounded-2xl" />
+                    </div>
                   ) : messages.length ? (
                     messages
                       .filter(

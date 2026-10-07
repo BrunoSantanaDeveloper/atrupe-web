@@ -87,21 +87,24 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
           return
         }
 
+        // O diálogo fica aberto com o botão em progresso até a ação terminar
+        // (design/openspec/changes/microinteracoes, Decisão 4). `toast.promise`
+        // devolve o id do aviso, não a promessa: a ação é aguardada à parte
         set({ isConfirming: true })
         try {
+          const task = Promise.race([
+            onConfirm(),
+            createTimeoutPromise(timeout),
+          ])
           if (toastMsg) {
-            await toast.promise(
-              Promise.race([onConfirm(), createTimeoutPromise(timeout)]),
-              {
-                loading: toastMsg.loading ?? DEFAULT_MESSAGES.loading,
-                success: toastMsg.success ?? DEFAULT_MESSAGES.success,
-                error: (error: Error) =>
-                  error.message || toastMsg.error || DEFAULT_MESSAGES.error,
-              },
-            )
-          } else {
-            await Promise.race([onConfirm(), createTimeoutPromise(timeout)])
+            toast.promise(task, {
+              loading: toastMsg.loading ?? DEFAULT_MESSAGES.loading,
+              success: toastMsg.success ?? DEFAULT_MESSAGES.success,
+              error: (error: Error) =>
+                error.message || toastMsg.error || DEFAULT_MESSAGES.error,
+            })
           }
+          await task
           cleanup()
           resolve(true)
         } catch (error) {
