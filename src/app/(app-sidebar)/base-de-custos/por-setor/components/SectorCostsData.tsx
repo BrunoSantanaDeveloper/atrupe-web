@@ -64,14 +64,18 @@ export function SectorCostsData({ title, sectors, isDistributing }: Props) {
             <TableHead className="w-[12%] text-right">Mão de obra</TableHead>
             <TableHead className="w-[12%] text-right">Patrimônios</TableHead>
             <TableHead className="w-[12%] text-right">Depreciação</TableHead>
-            <TableHead className="w-[12%] text-right">Outros custos</TableHead>
-            <TableHead className="w-[13%] text-right">Custo próprio</TableHead>
+            <TableHead numeric className="w-[12%]">
+              Outros custos
+            </TableHead>
+            <TableHead numeric className="w-[13%]">
+              Custo próprio
+            </TableHead>
             {isDistributing && (
               <>
                 <TableHead className="w-[13%] text-right">
                   Administrativo recebido
                 </TableHead>
-                <TableHead className="w-[13%] text-right">
+                <TableHead numeric className="w-[13%]">
                   Custo total
                 </TableHead>
               </>
@@ -103,27 +107,21 @@ export function SectorCostsData({ title, sectors, isDistributing }: Props) {
                       {sectorAllocationObj[sector.allocationCriterion]}
                     </p>
                   </TableCell>
-                  <TableCell className="text-right">
-                    {formatValue(sector.labor)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatValue(sector.assets)}
-                  </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell numeric>{formatValue(sector.labor)}</TableCell>
+                  <TableCell numeric>{formatValue(sector.assets)}</TableCell>
+                  <TableCell numeric>
                     {formatValue(sector.depreciation)}
                   </TableCell>
-                  <TableCell className="text-right">
-                    {formatValue(sector.other)}
-                  </TableCell>
-                  <TableCell className="text-right font-semibold">
+                  <TableCell numeric>{formatValue(sector.other)}</TableCell>
+                  <TableCell numeric className="font-semibold">
                     {formatValue(sector.ownCost)}
                   </TableCell>
                   {isDistributing && (
                     <>
-                      <TableCell className="text-right">
+                      <TableCell numeric>
                         {formatValue(sector.receivedCost)}
                       </TableCell>
-                      <TableCell className="text-right font-semibold">
+                      <TableCell numeric className="font-semibold">
                         {formatValue(sector.totalCost)}
                       </TableCell>
                     </>
@@ -147,7 +145,7 @@ export function SectorCostsData({ title, sectors, isDistributing }: Props) {
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell numeric>
                           {formatCurrencyToBrl(item.value)}
                         </TableCell>
                       </TableRow>
@@ -169,27 +167,27 @@ export function SectorCostsData({ title, sectors, isDistributing }: Props) {
           <TableRow className="bg-gray-50 hover:bg-gray-50">
             <TableCell />
             <TableCell className="font-medium">Total</TableCell>
-            <TableCell className="text-right">
+            <TableCell numeric>
               {formatCurrencyToBrl(sum(sectors, 'labor'))}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell numeric>
               {formatCurrencyToBrl(sum(sectors, 'assets'))}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell numeric>
               {formatCurrencyToBrl(sum(sectors, 'depreciation'))}
             </TableCell>
-            <TableCell className="text-right">
+            <TableCell numeric>
               {formatCurrencyToBrl(sum(sectors, 'other'))}
             </TableCell>
-            <TableCell className="text-right font-semibold">
+            <TableCell numeric className="font-semibold">
               {formatCurrencyToBrl(sum(sectors, 'ownCost'))}
             </TableCell>
             {isDistributing && (
               <>
-                <TableCell className="text-right">
+                <TableCell numeric>
                   {formatCurrencyToBrl(sum(sectors, 'receivedCost'))}
                 </TableCell>
-                <TableCell className="text-right font-semibold">
+                <TableCell numeric className="font-semibold">
                   {formatCurrencyToBrl(sum(sectors, 'totalCost'))}
                 </TableCell>
               </>

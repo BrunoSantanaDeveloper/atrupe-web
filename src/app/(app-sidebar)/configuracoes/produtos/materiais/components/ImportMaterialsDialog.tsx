@@ -283,7 +283,7 @@ export function ImportMaterialsDialog({
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-[32%]">Na planilha</TableHead>
                       <TableHead className="w-[10%]">Unidade</TableHead>
-                      <TableHead className="w-[14%] text-right">
+                      <TableHead numeric className="w-[14%]">
                         Custo
                       </TableHead>
                       <TableHead className="w-[16%]">Status</TableHead>
@@ -318,7 +318,7 @@ export function ImportMaterialsDialog({
                           <TableCell className="text-sm text-gray">
                             {row.unit || '—'}
                           </TableCell>
-                          <TableCell className="text-right text-sm">
+                          <TableCell numeric className="text-sm">
                             {row.cost === null ? '-' : money(row.cost)}
                           </TableCell>
                           <TableCell>

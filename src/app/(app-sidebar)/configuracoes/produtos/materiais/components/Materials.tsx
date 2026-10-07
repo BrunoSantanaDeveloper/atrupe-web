@@ -179,10 +179,10 @@ export function Materials({ searchParams }: SearchParamsType) {
                       </TableHead>
                       <TableHead className="w-[10%]">Unidade</TableHead>
                       <TableHead className="w-[14%]">Uso</TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Custo
                       </TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Preço de venda
                       </TableHead>
                       <TableHead className="w-[8%]" />
@@ -336,10 +336,10 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           {variation.brand} · {variation.color}
                                         </span>
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.cost)}
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.price)}
                                       </TableCell>
                                       <TableCell />

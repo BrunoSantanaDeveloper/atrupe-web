@@ -727,10 +727,12 @@ export function ProcessEditor({
                     <TableHead className="w-[22%]">Item</TableHead>
                     <TableHead className="w-[13%]">Consumo</TableHead>
                     <TableHead className="w-[17%]">Tipo de cálculo</TableHead>
-                    <TableHead className="w-[10%] text-right">
+                    <TableHead numeric className="w-[10%]">
                       Quantidade
                     </TableHead>
-                    <TableHead className="w-[8%] text-right">Custo</TableHead>
+                    <TableHead numeric className="w-[8%]">
+                      Custo
+                    </TableHead>
                     <TableHead className="w-[8%] text-right">Venda</TableHead>
                     <TableHead className="w-[4%]" />
                   </TableRow>
@@ -876,7 +878,10 @@ export function ProcessEditor({
                             </span>
                           )}
                         </TableCell>
-                        <TableCell className="whitespace-nowrap text-right text-sm font-medium">
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm font-medium"
+                        >
                           <PermissionGate
                             permissions={['values:values:view']}
                             fallback={<span>•••</span>}
@@ -884,7 +889,10 @@ export function ProcessEditor({
                             {money(line.cost)}
                           </PermissionGate>
                         </TableCell>
-                        <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                        <TableCell
+                          numeric
+                          className="whitespace-nowrap text-sm font-medium text-success-700"
+                        >
                           <PermissionGate
                             permissions={['values:values:view']}
                             fallback={<span>•••</span>}

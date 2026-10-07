@@ -270,7 +270,7 @@ export function ProjectDetail({ id }: { id: string }) {
                   <TableHead className="w-[24%]">Etapa</TableHead>
                   <TableHead className="w-[22%]">Tipo · etapa atual</TableHead>
                   <TableHead className="w-[16%]">Status</TableHead>
-                  <TableHead className="w-[14%] text-right">
+                  <TableHead numeric className="w-[14%]">
                     Estimado · realizado
                   </TableHead>
                   <TableHead className="w-[10%]">Quem faz</TableHead>

@@ -146,13 +146,13 @@ export function Comparison({ searchParams }: SearchParamsType) {
                     <TableHead className="w-[34%] min-w-[220px]">
                       Conta
                     </TableHead>
-                    <TableHead className="w-[18%] text-right">
+                    <TableHead numeric className="w-[18%]">
                       Previsto no período
                     </TableHead>
-                    <TableHead className="w-[18%] text-right">
+                    <TableHead numeric className="w-[18%]">
                       Realizado no período
                     </TableHead>
-                    <TableHead className="w-[24%] text-right">
+                    <TableHead numeric className="w-[24%]">
                       Diferença
                     </TableHead>
                   </TableRow>
@@ -190,10 +190,10 @@ export function Comparison({ searchParams }: SearchParamsType) {
                               {account.chartAccount}
                             </p>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {formatValue(account.estimated)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {formatValue(account.actual)}
                           </TableCell>
                           <TableCell className="text-right">
@@ -234,7 +234,7 @@ export function Comparison({ searchParams }: SearchParamsType) {
                                     {source.detail}
                                   </p>
                                 </TableCell>
-                                <TableCell className="text-right" colSpan={2}>
+                                <TableCell numeric colSpan={2}>
                                   {formatCurrencyToBrl(source.value)}
                                 </TableCell>
                               </TableRow>

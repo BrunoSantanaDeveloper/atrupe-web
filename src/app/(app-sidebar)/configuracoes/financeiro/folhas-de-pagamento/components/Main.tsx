@@ -224,13 +224,13 @@ export function Main() {
           </div>
         </div>
       </TableCell>
-      <TableCell className="text-right">
+      <TableCell numeric>
         {item.isSet ? value(item.increase, 'text-success-600') : '—'}
       </TableCell>
-      <TableCell className="text-right">
+      <TableCell numeric>
         {item.isSet ? value(item.discount, 'text-error-600') : '—'}
       </TableCell>
-      <TableCell className="text-right font-medium">
+      <TableCell numeric className="font-medium">
         {item.isSet ? value(itemFinalCost(item), 'text-gray-900') : '—'}
       </TableCell>
       <TableCell>
@@ -378,8 +378,8 @@ export function Main() {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-full">Referência</TableHead>
                       <TableHead className="text-right">Acréscimo</TableHead>
-                      <TableHead className="text-right">Desconto</TableHead>
-                      <TableHead className="text-right">Custo final</TableHead>
+                      <TableHead numeric>Desconto</TableHead>
+                      <TableHead numeric>Custo final</TableHead>
                       <TableHead />
                     </TableRow>
                   </TableHeader>
@@ -417,13 +417,13 @@ export function Main() {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {value(salary.increase, 'text-success-600')}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {value(salary.discount, 'text-error-600')}
                           </TableCell>
-                          <TableCell className="text-right font-medium">
+                          <TableCell numeric className="font-medium">
                             {value(itemFinalCost(salary), 'text-gray-900')}
                           </TableCell>
                           <TableCell>
@@ -460,13 +460,22 @@ export function Main() {
                         <TableCell className="w-full font-semibold text-gray-800">
                           Total
                         </TableCell>
-                        <TableCell className="text-right font-semibold text-success-600">
+                        <TableCell
+                          numeric
+                          className="font-semibold text-success-600"
+                        >
                           {money(totalIncrease(employee))}
                         </TableCell>
-                        <TableCell className="text-right font-semibold text-error-600">
+                        <TableCell
+                          numeric
+                          className="font-semibold text-error-600"
+                        >
                           {money(totalDiscount(employee))}
                         </TableCell>
-                        <TableCell className="text-right text-lg font-semibold text-gray-900">
+                        <TableCell
+                          numeric
+                          className="text-lg font-semibold text-gray-900"
+                        >
                           {money(cost)}
                         </TableCell>
                         <TableCell className="w-20" />

@@ -1184,10 +1184,12 @@ function AssemblyEditorBody({
                   <TableHead className="w-[24%]">Item</TableHead>
                   <TableHead className="w-[12%]">Consumo</TableHead>
                   <TableHead className="w-[16%]">Tipo de cálculo</TableHead>
-                  <TableHead className="w-[10%] text-right">
+                  <TableHead numeric className="w-[10%]">
                     Quantidade
                   </TableHead>
-                  <TableHead className="w-[8%] text-right">Custo</TableHead>
+                  <TableHead numeric className="w-[8%]">
+                    Custo
+                  </TableHead>
                   <TableHead className="w-[8%] text-right">Venda</TableHead>
                   <TableHead className="w-[4%]" />
                 </TableRow>
@@ -1372,7 +1374,7 @@ function AssemblyEditorBody({
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm">
+                      <TableCell numeric className="whitespace-nowrap text-sm">
                         {line.quantity === null
                           ? '-'
                           : amount(line.quantity, unit)}
@@ -1382,7 +1384,10 @@ function AssemblyEditorBody({
                           </span>
                         )}
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm font-medium">
+                      <TableCell
+                        numeric
+                        className="whitespace-nowrap text-sm font-medium"
+                      >
                         <PermissionGate
                           permissions={['values:values:view']}
                           fallback={<span>•••</span>}
@@ -1390,7 +1395,10 @@ function AssemblyEditorBody({
                           {money(line.cost)}
                         </PermissionGate>
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                      <TableCell
+                        numeric
+                        className="whitespace-nowrap text-sm font-medium text-success-700"
+                      >
                         <PermissionGate
                           permissions={['values:values:view']}
                           fallback={<span>•••</span>}
@@ -2147,13 +2155,13 @@ function AssemblyEditorBody({
                     <TableHeader>
                       <TableRow className="bg-gray-50">
                         <TableHead className="w-[40%]">Variação</TableHead>
-                        <TableHead className="w-[20%] text-right">
+                        <TableHead numeric className="w-[20%]">
                           Custo
                         </TableHead>
-                        <TableHead className="w-[20%] text-right">
+                        <TableHead numeric className="w-[20%]">
                           Preço de venda
                         </TableHead>
-                        <TableHead className="w-[20%] text-right">
+                        <TableHead numeric className="w-[20%]">
                           Margem
                         </TableHead>
                       </TableRow>
@@ -2164,10 +2172,8 @@ function AssemblyEditorBody({
                           <TableCell className="font-medium">
                             {item.name}
                           </TableCell>
-                          <TableCell className="text-right">
-                            {money(item.cost)}
-                          </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>{money(item.cost)}</TableCell>
+                          <TableCell numeric>
                             {money(item.priceForMeasure)}
                           </TableCell>
                           <TableCell
@@ -2413,10 +2419,12 @@ function AssemblyEditorBody({
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-[40%]">Recurso</TableHead>
                   <TableHead className="w-[15%]">Tipo</TableHead>
-                  <TableHead className="w-[15%] text-right">
+                  <TableHead numeric className="w-[15%]">
                     Quantidade
                   </TableHead>
-                  <TableHead className="w-[15%] text-right">Custo</TableHead>
+                  <TableHead numeric className="w-[15%]">
+                    Custo
+                  </TableHead>
                   <TableHead className="w-[15%] text-right">Venda</TableHead>
                 </TableRow>
               </TableHeader>
@@ -2432,10 +2440,10 @@ function AssemblyEditorBody({
                         label={resourceKindObj[resource.kind]}
                       />
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm">
+                    <TableCell numeric className="whitespace-nowrap text-sm">
                       {amount(resource.quantity, resource.unit)}
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm">
+                    <TableCell numeric className="whitespace-nowrap text-sm">
                       <PermissionGate
                         permissions={['values:values:view']}
                         fallback={<span>•••</span>}
@@ -2443,7 +2451,10 @@ function AssemblyEditorBody({
                         {money(resource.cost)}
                       </PermissionGate>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-right text-sm font-medium text-success-700">
+                    <TableCell
+                      numeric
+                      className="whitespace-nowrap text-sm font-medium text-success-700"
+                    >
                       <PermissionGate
                         permissions={['values:values:view']}
                         fallback={<span>•••</span>}

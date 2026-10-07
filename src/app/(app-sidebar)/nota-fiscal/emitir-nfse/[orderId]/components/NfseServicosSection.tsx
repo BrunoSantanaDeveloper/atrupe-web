@@ -62,8 +62,8 @@ export function NfseServicosSection({
                   <TableHeader>
                     <TableRow>
                       <TableHead>Descrição</TableHead>
-                      <TableHead className="text-right">Qtd</TableHead>
-                      <TableHead className="text-right">Valor</TableHead>
+                      <TableHead numeric>Qtd</TableHead>
+                      <TableHead numeric>Valor</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -72,10 +72,10 @@ export function NfseServicosSection({
                         <TableCell className="text-sm text-gray-900">
                           {item.description}
                         </TableCell>
-                        <TableCell className="text-sm text-gray-900 text-right">
+                        <TableCell numeric className="text-sm text-gray-900">
                           {item.product?.quantity || 1}
                         </TableCell>
-                        <TableCell className="text-sm text-gray-900 text-right">
+                        <TableCell numeric className="text-sm text-gray-900">
                           {formatCurrency((item.finalValue || 0) / 100)}
                         </TableCell>
                       </TableRow>

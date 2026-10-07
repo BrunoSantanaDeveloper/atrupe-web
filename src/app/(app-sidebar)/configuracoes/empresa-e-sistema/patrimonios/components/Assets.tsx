@@ -206,7 +206,7 @@ export function Assets({ searchParams }: SearchParamsType) {
                                 ? '-'
                                 : `${asset.monthlyProductivity} ${assetUnitShort[asset.unit]}/mês`}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell numeric>
                               {formatValue(asset.monthlyDepreciation)}
                             </TableCell>
                             <TableCell>

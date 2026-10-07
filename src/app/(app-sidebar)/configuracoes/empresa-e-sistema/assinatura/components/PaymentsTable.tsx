@@ -90,7 +90,7 @@ export function PaymentsTable({
               <TableHead>Usuários</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Data de pagamento</TableHead>
-              <TableHead className="text-right">Valor</TableHead>
+              <TableHead numeric>Valor</TableHead>
               <TableHead className="w-24" />
             </TableRow>
           </TableHeader>
@@ -125,7 +125,7 @@ export function PaymentsTable({
                       payment.confirmedDate || payment.paymentDate || undefined,
                     )}
                   </TableCell>
-                  <TableCell className="text-right font-medium">
+                  <TableCell numeric className="font-medium">
                     {formatCurrencyToBrl(payment.value * 100)}
                   </TableCell>
                   <TableCell className="text-right">

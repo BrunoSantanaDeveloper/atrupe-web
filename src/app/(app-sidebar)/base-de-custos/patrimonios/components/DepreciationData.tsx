@@ -47,17 +47,19 @@ export function DepreciationData({ assets }: Props) {
           <TableRow className="bg-gray-50">
             <TableHead className="w-[22%] min-w-[180px]">Patrimônio</TableHead>
             <TableHead className="w-[12%]">Setor</TableHead>
-            <TableHead className="w-[12%] text-right">
+            <TableHead numeric className="w-[12%]">
               Valor aquisição
             </TableHead>
-            <TableHead className="w-[12%] text-right">
+            <TableHead numeric className="w-[12%]">
               Valor depreciável
             </TableHead>
             <TableHead className="w-[12%] text-right">
               Depreciação mensal
             </TableHead>
             <TableHead className="w-[12%] text-right">Já depreciado</TableHead>
-            <TableHead className="w-[10%] text-right">Valor restante</TableHead>
+            <TableHead numeric className="w-[10%]">
+              Valor restante
+            </TableHead>
             <TableHead className="w-[14%]">Vida útil</TableHead>
             <TableHead className="w-[12%]">Status</TableHead>
           </TableRow>
@@ -85,19 +87,19 @@ export function DepreciationData({ assets }: Props) {
                   <TableRow key={asset.id}>
                     <TableCell className="font-medium">{asset.name}</TableCell>
                     <TableCell>{asset.sector}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatCurrencyToBrl(asset.acquisitionValue)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatCurrencyToBrl(asset.depreciableValue)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatValue(asset.monthlyDepreciation)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatCurrencyToBrl(asset.depreciatedValue)}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell numeric>
                       {formatCurrencyToBrl(asset.remainingValue)}
                     </TableCell>
                     <TableCell>
