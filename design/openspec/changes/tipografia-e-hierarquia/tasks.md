@@ -1,152 +1,157 @@
 ## 1. Instrumento de verificação (antes)
 
-- [ ] 1.1 Criar `e2e/ui/capturas.spec.ts`: percorre as rotas estáticas de
+- [x] 1.1 Criar `e2e/ui/capturas.spec.ts`: percorre as rotas estáticas de
       `src/app/(app-sidebar)` com a sessão do `global-setup`, grava
       `test-results/ui/<rota>.png` (1440×900) e `audit.json` com, por rota:
       tamanhos de fonte visíveis e contagem, cabeçalhos `h1`–`h6` com
       tamanho/peso/texto, botões repetidos (mesmo texto ≥ 3), botões sem nome
       acessível, `title=` nativo visível, altura das linhas de `tbody tr`,
-      tamanhos de SVG
-- [ ] 1.2 Rodar e guardar o `audit.json` de referência em
-      `design/evidencia/tipografia-antes.json` (anexar no PR, não versionar PNG)
-- [ ] 1.3 Script `scripts/ui-audit-diff.mjs` que compara dois `audit.json` e
+      tamanhos de SVG. Rodar contra `next dev` (o build de produção mostra
+      "Conta suspensa" para a conta de teste, porque `DEV_IGNORE_BLOCK` só
+      vale em desenvolvimento)
+- [x] 1.2 Rodar e guardar o `audit.json` de referência em
+      `design/evidencia/tipografia-antes.json` (versão enxuta, sem PNG)
+- [x] 1.3 Script `scripts/ui-audit-diff.mjs` que compara dois `audit.json` e
       lista, por rota, os tamanhos de fonte que apareceram/sumiram
 
 ## 2. Escala e utilitários
 
-- [ ] 2.1 Em `tailwind.config.ts`: remover as 72 chaves `fontFamily` mortas
-      (`*-font-family`); manter `fontSize` do Untitled; marcar `base` como
-      alias de `md` (mesmo valor) e registrar regra de lint de aviso para
-      `text-base`
-- [ ] 2.2 Plugin Tailwind `typography-roles` que registra `.type-<papel>` para
-      os 18 papéis da tabela §4.1 do `sistema-visual.md` (tamanho, linha,
-      peso, `letter-spacing`, `text-transform`, `font-variant-numeric` em
-      `kpi-value`/`numeric`, cor por `theme('colors.gray.*')` até os tokens
-      semânticos existirem)
-- [ ] 2.3 `globals.css`: `body { font-feature-settings: "cv11" }` (Inter) e
-      classe `.numeric { font-variant-numeric: tabular-nums }`
-- [ ] 2.4 `src/components/ui/typography.tsx`: `Heading` (`as`, `role`,
-      `className`) e `Text` (`as`, `role`, `className`), tipados com a união
-      dos papéis
-- [ ] 2.5 Vitrine `/sandbox/tipografia`: todos os papéis lado a lado com nome,
+- [x] 2.1 Em `tailwind.config.ts`: remover as 72 chaves `fontFamily` mortas
+      (`*-font-family`, 0 usos); manter `fontSize` do Untitled. `text-base`
+      fica como está (é o mesmo 16/24 de `text-md`); sem regra de lint para
+      ele, porque `no-restricted-syntax` não aceita duas severidades
+- [x] 2.2 Plugin Tailwind `tailwind/typography-roles.ts` que registra
+      `.type-<papel>` a partir de `src/lib/typography-roles.ts` (19 papéis,
+      incluindo `kpi-hero` e `nav-group`): tamanho, linha, peso,
+      `letter-spacing`, `text-transform` no eyebrow, `tabular-nums` nos KPIs,
+      cor pela rampa (`gray-900/700/600`) até os tokens semânticos existirem
+- [x] 2.3 Numerais tabulares: `tabular-nums` em toda `Table` e nos papéis de
+      KPI (o utilitário do Tailwind, sem classe `.numeric` própria). Sem
+      `font-feature-settings: "cv11"`: troca o desenho do "a" da Inter, o
+      que é decisão de marca e não de hierarquia
+- [x] 2.4 `src/components/ui/typography.tsx`: `Heading` (`as`, `variant`,
+      `className`) e `Text` (`as`, `variant`, `className`), tipados com a união
+      dos papéis. A prop é `variant`, não `role`, para não colidir com o
+      atributo ARIA
+- [x] 2.5 Vitrine `/sandbox/tipografia`: todos os papéis lado a lado com nome,
       tamanho e exemplo em contexto (título + subtítulo + card + tabela + KPI)
 
 ## 3. Kit nos papéis
 
-- [ ] 3.1 `common/Topbar.tsx`: `h1` → `type-page-title`; `supportText` →
-      `<p class="type-page-subtitle">`; contêiner `min-h-12`; remover o
-      `title=` com legenda de revisão do `h1` (a remoção completa da marcação
-      fica em `navegacao-e-cabecalhos`)
-- [ ] 3.2 `ui/card.tsx`: `CardTitle` → `h3` + `type-card-title` (sem
+- [x] 3.1 `common/Topbar.tsx`: `h1` → `type-page-title`; `supportText` →
+      `<p class="type-page-subtitle">` abaixo do título (só quando existe);
+      contêiner `min-h-12`; removido o `title=` com legenda de revisão do
+      `h1` (a remoção completa da marcação fica em `navegacao-e-cabecalhos`);
+      voltar ganhou `aria-label`
+- [x] 3.2 `ui/card.tsx`: `CardTitle` → `h3` + `type-card-title` (sem
       `leading-none tracking-tight`); `CardDescription` → `type-secondary`
-- [ ] 3.3 `ui/dialog.tsx`, `ui/sheet.tsx`, `ui/alert-dialog.tsx`: títulos →
-      `type-dialog-title` (sem `leading-none`), descrições → `type-secondary`
-- [ ] 3.4 `ui/table.tsx`: `TableHead` → `type-table-header`; `TableCell` →
-      `type-body`; prop `numeric` em `TableHead`/`TableCell` (alinha à direita
-      + `.numeric`); novo `TableGroupRow` com `colSpan` por contexto do
-      `Table` e texto `type-eyebrow`
-- [ ] 3.5 `ui/form.tsx`, `ui/label.tsx`: `FormLabel` → `type-label` (sem
+- [x] 3.3 `ui/dialog.tsx`, `ui/sheet.tsx`, `ui/alert-dialog.tsx`,
+      `ui/drawer.tsx`: títulos → `type-dialog-title` (sem `leading-none`),
+      descrições → `type-secondary`
+- [x] 3.4 `ui/table.tsx`: `TableHead` → `type-table-header`; `TableCell` →
+      `type-body`; prop `numeric` em `TableHead`/`TableCell` (alinha à
+      direita; a tabela inteira usa `tabular-nums`); novos `TableGroupRow`
+      (eyebrow) e `TableFullRow` com `colSpan` medido pelo `Table` (pelo
+      cabeçalho ou, sem cabeçalho, pela linha de dado mais larga)
+- [x] 3.5 `ui/form.tsx`, `ui/label.tsx`: `FormLabel` → `type-label` (sem
       `leading-none`, sem vermelho no erro); `FormDescription` →
       `type-helper`; `FormMessage` → `type-helper` + cor de erro
-- [ ] 3.6 `ui/empty-state.tsx`, `common/TableEmptyState.tsx`: título →
+- [x] 3.6 `ui/empty-state.tsx`, `common/TableEmptyState.tsx`: título →
       `type-card-title`, descrição → `type-secondary`
-- [ ] 3.7 `ui/badge.tsx`, `ui/status-tag.tsx`: tamanho mínimo 12 px
-      (`type-caption` peso 500); remover `text-[10px]`/`[11px]`
-- [ ] 3.8 `layout/SidebarComponent.tsx`, `layout/MobileSidebar.tsx`: rótulos
-      de módulo deixam de ser `<h3>` (`<span class="type-nav-item">`);
-      subitens `type-nav-item` (14 px) em vez de 12 px; badge fiscal em
-      `type-caption`
-- [ ] 3.9 `common/CustomButton.tsx`: título `type-body-strong`, legenda
+- [x] 3.7 `ui/badge.tsx` já usa 12 px; `ui/status-tag.tsx`,
+      `ui/avatar-label.tsx`, `ui/table-cells.tsx`: `text-[10px]` → `text-xs`
+- [x] 3.8 `layout/SidebarComponent.tsx`, `layout/MobileSidebar.tsx`: os
+      `<h3>` vinham do `Accordion.Header` do Radix; `AccordionTrigger` ganhou
+      `asHeading={false}` (renderiza `div`) e as barras usam essa opção;
+      subitens 14 px em vez de 12 px; badges de contagem 12 px
+- [x] 3.9 `common/CustomButton.tsx`: título `type-body-strong`, legenda
       `type-caption` abaixo (ordem título › legenda)
 
 ## 4. Codemods
 
-- [ ] 4.1 Codemod `cardtitle-override`: remover `text-base|text-gray-700|font-semibold|text-xl|font-bold`
-      de `className` de `CardTitle`/`DialogTitle`/`SheetTitle` (57 + 20
-      ocorrências); manter apenas classes de layout (`flex`, `gap-*`, `pr-*`)
-- [ ] 4.2 Codemod `uppercase-to-eyebrow`: toda `className` com `uppercase`
-      vira `type-eyebrow` removendo `text-xs|text-[10px]|text-[11px]|text-sm|
-      tracking-wide|tracking-wider|font-medium|font-semibold|font-bold|
-      text-gray-\d+` da mesma string (176 ocorrências); revisar por
-      amostragem os 32 `text-xs text-gray-500 font-medium uppercase tracking-wider`
-      e os 11 `text-sm font-bold text-gray-700 uppercase … border-b`
-      (estes viram `section-title` quando são seção de página)
-- [ ] 4.3 Codemod `min-12px`: `text-[10px]`/`text-[11px]` → `type-caption`;
-      `text-[13px]` → `type-body` (inclui os casos da nota fiscal:
-      `InvoiceItems.tsx:211`, `InvoicePayment.tsx:437-467`,
-      `NfseCamposAdicionaisSection.tsx:153`)
-- [ ] 4.4 Codemod `heading-roles`: `<h1 class="text-2xl font-bold …">` e
-      variantes → `<Heading as="h1" role="page-title">` nas 12 páginas que
-      não usam `Topbar`; `<h2 class="text-xl|text-lg …">` → `section-title`;
-      `<h3 class="text-sm font-semibold text-gray-500|400">` →
-      `type-eyebrow` quando é rótulo de grupo, `card-title` quando é título
-- [ ] 4.5 Codemod `kpi-roles`: valores `text-2xl|text-xl font-bold` em cards
-      de resumo → `type-kpi-value`; rótulos → `type-kpi-label` (dashboard,
-      base de custos, relatórios, composição, processos, fluxo financeiro —
-      inclui corrigir `text-lG` em `TransactionsTotals.tsx:120-163`)
-- [ ] 4.6 Codemod `numeric-cells`: `TableHead`/`TableCell` com `text-right`
-      → prop `numeric` (298 ocorrências)
-- [ ] 4.7 Rodar `tsc`, lint e as capturas; comparar `audit.json` com o de
-      referência (nenhuma rota com fonte < 12 px; `h1` 24 px em todas; sem
-      `h3` na sidebar)
+- [x] 4.1 Codemod de títulos de kit: `CardTitle`/`DialogTitle`/`SheetTitle`/
+      `AlertDialogTitle`/`DrawerTitle` perdem as classes de tamanho, peso,
+      cor e caixa; ficam só classes de layout (feito junto com 4.4)
+- [x] 4.2 Codemod `uppercase` → `type-eyebrow` (96 trocas em 27 arquivos;
+      `h2` de seção em caixa alta viraram `type-section-title` pelo 4.4).
+      Revertidos à mão três campos que usam `uppercase` para forçar
+      maiúsculas na digitação; rótulos de campo da nota fiscal voltaram para
+      `type-label` em 5.7
+- [x] 4.3 Codemod `min-12px`: `text-[10px]`/`text-[11px]` → `text-xs` e
+      `text-[13px]` → `text-sm` (só tamanho, para preservar cor e peso
+      definidos ao lado; inclui `InvoiceItems.tsx`, `InvoicePayment.tsx`,
+      `NfseCamposAdicionaisSection.tsx`)
+- [x] 4.4 Codemod de títulos: `h1` → `type-page-title`; `h2` →
+      `type-section-title`; `h3`/`h4` → `type-card-title` ou
+      `type-body-strong` conforme o tamanho original (194 trocas em 119
+      arquivos; `feedback-modal.tsx` à mão)
+- [x] 4.5 KPIs → `type-kpi-value`/`type-kpi-label` (34 valores e 34 rótulos
+      no painel, base de custos, relatórios, composição, processos e fluxo
+      financeiro; corrige `text-lG` em `TransactionsTotals.tsx`)
+- [x] 4.6 Codemod `numeric`: 181 células em 36 arquivos que mostram valor,
+      quantidade ou percentual; as 117 restantes com `text-right` são colunas
+      de ação e ficam como estão
+- [x] 4.7 Rodar `tsc`, lint e as capturas; comparar `audit.json` com o de
+      referência. Resultado (`design/evidencia/tipografia-diff.txt`): nenhum
+      texto abaixo de 12 px nem fora da escala {12, 14, 16, 18, 24, 30};
+      todo `h1` com 24 px (66 rotas); nenhum `h3` na barra lateral. As 13
+      rotas sem `h1` são avisos de plano/módulo não contratado da conta de
+      teste (estoque, nota fiscal), redirecionamentos e um esqueleto de
+      página que não termina (venda rápida) — cabeçalho nesses estados é
+      escopo de `navegacao-e-cabecalhos` e `interacao-e-movimento`
 
 ## 5. Hierarquias invertidas (correções pontuais)
 
-- [ ] 5.1 `configuracoes/financeiro/plano-de-contas/components/TableData.tsx:86-186`:
-      nível 1 em `TableGroupRow`, níveis 2–3 `body-strong`, folha `body`;
-      remover a pintura de linha inteira em success-100/error-100
-- [ ] 5.2 `configuracoes/vendas/perfil-de-vendedor/components/Main.tsx:121-193`:
-      perfil como linha de dado (`body-strong`), vendedores abaixo; sem
-      células vazias
-- [ ] 5.3 `configuracoes/produtos/materiais/components/Materials.tsx:194-227`:
+- [x] 5.1 `configuracoes/financeiro/plano-de-contas/components/TableData.tsx`:
+      nível 1 em `TableGroupRow`, níveis 2–3 `body-strong` com recuo, folha
+      `body`; sai a pintura de linha inteira em success-100/error-100
+- [x] 5.2 `configuracoes/vendas/perfil-de-vendedor/components/Main.tsx`:
+      perfil como linha de dado (`body-strong`, valores `numeric`),
+      vendedores abaixo com recuo; sem células vazias
+- [x] 5.3 `configuracoes/produtos/materiais/components/Materials.tsx`:
       setor em `TableGroupRow`, subcategoria `body-strong` sem caixa alta
-- [ ] 5.4 `configuracoes/financeiro/folhas-de-pagamento/components/Main.tsx:306,469`:
-      nome do colaborador `object-title` só no cabeçalho de detalhe
-      (`PayrollDetail`), `body-strong` na lista; total em `kpi-value`
-- [ ] 5.5 `configuracoes/produtos/[id]/composicao/components/AssemblyEditor.tsx:2007-2033`
-      e `configuracoes/produtos/processos/[id]/components/ProcessEditor.tsx:494,500`:
-      KPIs em `kpi-value`/`kpi-label` (iguais entre si)
-- [ ] 5.6 `(blank-layout-pages)/assinatura/page.tsx:622,694-801`: `h1`
-      `page-title`, `h2` `section-title`
-- [ ] 5.7 `nota-fiscal/emitir/components/InvoiceResultsTable.tsx`,
-      `configuracoes/nota-fiscal/**`: `h2` duplicando o `h1` removido
-      (`EmissoresListClient.tsx:368`, `CfopListClient.tsx:188`); rótulos
-      `uppercase tracking-wider text-xs` em `InvoiceTotalsSection.tsx:79-136`,
-      `InvoiceRecipientSection.tsx:125`, `InvoiceEmissionConfigSection.tsx:126`,
-      `EmissorListItem.tsx:357,643-702`, `AssemblyDialogs.tsx:338-369`,
-      `NextStepDialog.tsx:256` → `type-eyebrow` só quando são rótulos de
-      seção; rótulos de campo voltam para `label`
-- [ ] 5.8 `producao/agenda-de-entrega/.../DeliveryScheduleData.tsx:212`:
-      cabeçalho de data em `TableGroupRow` (eyebrow) em vez de `text-xs`
-      fraco sobre `bg-gray-100`
-- [ ] 5.9 `cadastros/clientes/[id]/components/DetailCard.tsx:29`,
-      `cadastros/fornecedores/[id]/components/DetailCard.tsx`: um único
-      `DetailCard` em `common/`, `CardTitle` padrão
-- [ ] 5.10 Casos de Title Case → sentence case nos rótulos listados em
-      `sistema-visual.md` §2.1 e nos relatórios de módulo ("Pré-Cadastros",
-      "Sem Responsável", "Histórico do Orçamento", "Tipo de Registro",
-      "Emissão de Nota Fiscal", "Valor Comissão", "Valor Total", "Período de
-      Teste", "Valor Padrão" (`ExpensesData.tsx:81`), "Valor Total"
-      (`DiscountAndTotal.tsx:312`), "Valor Comissão"
-      (`PaymentConditions/index.tsx:293`), "Importar Clientes", "Configurações Fiscais",
-      "Dados do Emissor", "Remover Configuração", "Nova Natureza", "Receitas
-      Previstas", "Saldo de Caixa Previsto", "(Total do Cliente)")
+- [x] 5.4 `configuracoes/financeiro/folhas-de-pagamento/components/Main.tsx`:
+      nome do colaborador em `section-title` (abaixo do título da página);
+      total da linha em `body-strong` (24 px dentro de célula ficaria maior
+      que o título)
+- [x] 5.5 `AssemblyEditor.tsx` e `ProcessEditor.tsx`: KPIs em
+      `kpi-value`/`kpi-label` (iguais entre si; feito em 4.5)
+- [x] 5.6 `(blank-layout-pages)/assinatura/page.tsx`: `h1` `page-title`,
+      `h2` `section-title` (feito em 4.4)
+- [x] 5.7 Nota fiscal: `h2` repetindo o `h1` removido em
+      `EmissoresListClient.tsx` (em `CfopListClient.tsx` o `h2` "Tabela de
+      CFOP" é seção legítima de uma página com duas tabelas e ficou); rótulos
+      de campo em `InvoiceTotalsSection`, `InvoiceRecipientSection`,
+      `InvoiceConfigSection`, `InvoiceDeliveryAddressSection`,
+      `InvoicePayment`, `InvoiceEmissionConfigSection`, `EmissorListItem`,
+      `NfseTomadorSection`, `NfseTotaisSection` → `type-label` por extenso
+      ("Outras despesas", "Base do ICMS", "Valor da nota")
+- [x] 5.8 `producao/agenda-de-entrega/.../DeliveryScheduleData.tsx`:
+      data em `TableGroupRow` (corrige também o `colSpan={6}` numa tabela de
+      4 colunas)
+- [x] 5.9 Um único `common/DetailCard.tsx` para cliente e fornecedor
+- [x] 5.10 Title Case → caixa de frase nos rótulos listados (20 arquivos)
 
 ## 6. Títulos de documento
 
-- [ ] 6.1 `lib/metadata.ts`: `pageTitle(...parts)` → "A · B · Atrupe";
-      `layout.tsx` raiz com `title.template = "%s · Atrupe"`
-- [ ] 6.2 Layouts de módulo (`base-de-custos`, `precificacao`, `cadastros/*/[id]`,
-      `configuracoes/*`) com `title.template = "%s · <Módulo>"`
-- [ ] 6.3 Toda `page.tsx` com `metadata.title` próprio (hoje repetido em
-      `base-de-custos/*` e `precificacao/*`); dashboard ganha título "Painel"
+- [x] 6.1 `lib/metadata.ts`: `pageTitle(...parts)` → "A · B"; `layout.tsx`
+      raiz com `title.template = "%s · Atrupe"`
+- [x] 6.2 Os layouts de módulo são componentes de cliente e não exportam
+      `metadata`; o nome do módulo entra pela própria página com
+      `pageTitle('Página', 'Módulo')`
+- [x] 6.3 Base de custos e precificação com título por sub-página
+      ("Mão de obra · Base de custos · Atrupe"); "Painel"; caixa de frase em
+      fluxo financeiro, despesas fixas e notas avulsas
 
 ## 7. Lint e fechamento
 
-- [ ] 7.1 `.eslintrc.json`: `no-restricted-syntax` para `text-\[\d+px\]`,
-      `uppercase` fora de `type-eyebrow`, `leading-none` em `className` de
-      título, `font-bold` fora de `kpi-value`; `text-base` como aviso
-- [ ] 7.2 Rodar as capturas de novo; anexar `tipografia-depois.json` e o diff
-      no PR; conferir que cada rota tem exatamente um `h1`
-- [ ] 7.3 Atualizar `design.md` (raiz do front) §2.2 com a tabela de papéis e
+- [x] 7.1 `.eslintrc.json`: `no-restricted-syntax` para tamanho em pixel,
+      `uppercase` fora de `type-eyebrow` e `font-bold` em `className`
+      (sandbox fora; cinco exceções comentadas). `leading-none` saiu dos
+      títulos à mão; não virou regra porque também é usado em contêineres
+      flex sem texto que quebra
+- [x] 7.2 Capturas de depois em `design/evidencia/tipografia-depois.json` e o
+      diff em `design/evidencia/tipografia-diff.txt`; nenhuma rota com mais
+      de um `h1`. Testes da vitrine em `e2e/ui/tipografia.spec.ts` (7 casos)
+- [x] 7.3 Atualizar `design.md` (raiz do front) §2.2 com a tabela de papéis e
       um ponteiro para `/sandbox/tipografia`

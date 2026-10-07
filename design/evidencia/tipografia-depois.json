@@ -1,0 +1,8812 @@
+[
+ {
+  "route": "/admin",
+  "status": 404,
+  "finalUrl": "/admin",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/academy",
+  "status": 404,
+  "finalUrl": "/admin/academy",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/avaliacao/cadastros-incompletos",
+  "status": 404,
+  "finalUrl": "/admin/avaliacao/cadastros-incompletos",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/avaliacao/contas-trial",
+  "status": 404,
+  "finalUrl": "/admin/avaliacao/contas-trial",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/clientes/acessos",
+  "status": 404,
+  "finalUrl": "/admin/clientes/acessos",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/clientes/gerenciar-contas",
+  "status": 404,
+  "finalUrl": "/admin/clientes/gerenciar-contas",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/sistema/cupons",
+  "status": 404,
+  "finalUrl": "/admin/sistema/cupons",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/sistema/fiscal",
+  "status": 404,
+  "finalUrl": "/admin/sistema/fiscal",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/sistema/integracoes",
+  "status": 404,
+  "finalUrl": "/admin/sistema/integracoes",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/sistema/migracao",
+  "status": 404,
+  "finalUrl": "/admin/sistema/migracao",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/admin/sistema/planos",
+  "status": 404,
+  "finalUrl": "/admin/sistema/planos",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "12px",
+     2
+    ],
+    [
+     "72px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ],
+    [
+     "14px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     1
+    ]
+   ],
+   "buttonCount": 2,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "24x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/base-de-custos",
+  "status": 200,
+  "finalUrl": "/base-de-custos/resumo",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     11
+    ],
+    [
+     "500",
+     10
+    ],
+    [
+     "400",
+     9
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/base-de-custos/comparativo",
+  "status": 200,
+  "finalUrl": "/base-de-custos/comparativo",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Previsto e realizado",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     55
+    ],
+    [
+     "12px",
+     22
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     32
+    ],
+    [
+     "500",
+     28
+    ],
+    [
+     "600",
+     20
+    ]
+   ],
+   "buttonCount": 17,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 5,
+   "rowHeights": [
+    [
+     "73",
+     4
+    ],
+    [
+     "75",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/base-de-custos/despesas-administrativas",
+  "status": 200,
+  "finalUrl": "/base-de-custos/despesas-administrativas",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     116
+    ],
+    [
+     "12px",
+     29
+    ],
+    [
+     "24px",
+     5
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     65
+    ],
+    [
+     "500",
+     58
+    ],
+    [
+     "600",
+     28
+    ]
+   ],
+   "buttonCount": 27,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar critério",
+     12
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     12
+    ],
+    [
+     "20x24",
+     12
+    ],
+    [
+     "16x16",
+     9
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 12,
+   "rowHeights": [
+    [
+     "73",
+     11
+    ],
+    [
+     "89",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/base-de-custos/distribuicao",
+  "status": 200,
+  "finalUrl": "/base-de-custos/distribuicao",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Distribuição dos custos indiretos",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     72
+    ],
+    [
+     "12px",
+     16
+    ],
+    [
+     "24px",
+     5
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     37
+    ],
+    [
+     "500",
+     32
+    ],
+    [
+     "600",
+     26
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     12
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 11,
+   "rowHeights": [
+    [
+     "73",
+     8
+    ],
+    [
+     "53",
+     3
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/base-de-custos/mao-de-obra",
+  "status": 200,
+  "finalUrl": "/base-de-custos/mao-de-obra",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Mão de obra por setor",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     68
+    ],
+    [
+     "12px",
+     15
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     42
+    ],
+    [
+     "500",
+     32
+    ],
+    [
+     "600",
+     12
+    ]
+   ],
+   "buttonCount": 28,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     16
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 8,
+   "rowHeights": [
+    [
+     "73",
+     8
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/base-de-custos/patrimonios",
+  "status": 200,
+  "finalUrl": "/base-de-custos/patrimonios",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Relatório de depreciação",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     87
+    ],
+    [
+     "12px",
+     30
+    ],
+    [
+     "24px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     60
+    ],
+    [
+     "500",
+     44
+    ],
+    [
+     "600",
+     21
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     13
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 8,
+   "rowHeights": [
+    [
+     "103",
+     4
+    ],
+    [
+     "55",
+     3
+    ],
+    [
+     "123",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/base-de-custos/por-setor",
+  "status": 200,
+  "finalUrl": "/base-de-custos/por-setor",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Algo deu errado!",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     3
+    ],
+    [
+     "12px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     4
+    ],
+    [
+     "400",
+     2
+    ]
+   ],
+   "buttonCount": 3,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "16x24",
+     1
+    ],
+    [
+     "28x28",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/base-de-custos/resumo",
+  "status": 200,
+  "finalUrl": "/base-de-custos/resumo",
+  "metrics": {
+   "h1": [
+    "Base de custos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Base de custos",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Custo por setor",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Produtivo e administrativo",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     50
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "24px",
+     7
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "30px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     26
+    ],
+    [
+     "500",
+     24
+    ],
+    [
+     "600",
+     20
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/cadastros/clientes",
+  "status": 200,
+  "finalUrl": "/cadastros/clientes",
+  "metrics": {
+   "h1": [
+    "Clientes"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Clientes",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     12
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     18
+    ],
+    [
+     "500",
+     13
+    ],
+    [
+     "400",
+     10
+    ]
+   ],
+   "buttonCount": 19,
+   "unnamedButtons": 4,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     4
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x20",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "24x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/cadastros/clientes/categorias",
+  "status": 200,
+  "finalUrl": "/cadastros/clientes/categorias",
+  "metrics": {
+   "h1": [
+    "Grupos de clientes"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Grupos de clientes",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     23
+    ],
+    [
+     "12px",
+     10
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     15
+    ],
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 29,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar grupo",
+     8
+    ],
+    [
+     "[aria] Excluir grupo",
+     8
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     17
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 8,
+   "rowHeights": [
+    [
+     "73",
+     8
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/cadastros/fornecedores",
+  "status": 200,
+  "finalUrl": "/cadastros/fornecedores",
+  "metrics": {
+   "h1": [
+    "Fornecedores"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Fornecedores",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     22
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     17
+    ],
+    [
+     "500",
+     11
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 17,
+   "unnamedButtons": 5,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     5
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x20",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/cadastros/fornecedores/categorias",
+  "status": 200,
+  "finalUrl": "/cadastros/fornecedores/categorias",
+  "metrics": {
+   "h1": [
+    "Grupos de fornecedores"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Grupos de fornecedores",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     20
+    ],
+    [
+     "12px",
+     10
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     12
+    ],
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 23,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar grupo",
+     5
+    ],
+    [
+     "[aria] Excluir grupo",
+     5
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     11
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 5,
+   "rowHeights": [
+    [
+     "73",
+     5
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema",
+  "metrics": {
+   "h1": [
+    "Empresa e sistema"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Empresa e sistema",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     23
+    ],
+    [
+     "400",
+     14
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 14,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema",
+  "metrics": {
+   "h1": [
+    "Empresa e sistema"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Empresa e sistema",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     23
+    ],
+    [
+     "400",
+     14
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 14,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/assinatura",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/assinatura",
+  "metrics": {
+   "h1": [
+    "Assinatura"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Assinatura",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     79
+    ],
+    [
+     "12px",
+     26
+    ],
+    [
+     "18px",
+     3
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     44
+    ],
+    [
+     "500",
+     43
+    ],
+    [
+     "600",
+     23
+    ]
+   ],
+   "buttonCount": 16,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "55",
+     5
+    ],
+    [
+     "65",
+     5
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/cargos",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/cargos",
+  "metrics": {
+   "h1": [
+    "Cargos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Cargos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     38
+    ],
+    [
+     "12px",
+     13
+    ],
+    [
+     "16px",
+     4
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     21
+    ],
+    [
+     "400",
+     19
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 44,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar",
+     10
+    ],
+    [
+     "[aria] Permissões do cargo",
+     10
+    ],
+    [
+     "[aria] Excluir",
+     10
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "20x24",
+     31
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 12,
+   "rowHeights": [
+    [
+     "73",
+     10
+    ],
+    [
+     "51",
+     2
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/colaboradores-e-usuarios",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/colaboradores-e-usuarios",
+  "metrics": {
+   "h1": [
+    "Colaboradores e usuários"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Colaboradores e usuários",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     22
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     18
+    ],
+    [
+     "500",
+     10
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 15,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/patrimonios",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/patrimonios",
+  "metrics": {
+   "h1": [
+    "Patrimônios"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Patrimônios",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     52
+    ],
+    [
+     "12px",
+     23
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     36
+    ],
+    [
+     "500",
+     28
+    ],
+    [
+     "600",
+     13
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 8,
+   "rowHeights": [
+    [
+     "73",
+     5
+    ],
+    [
+     "55",
+     3
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/patrimonios/grupos",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/patrimonios/grupos",
+  "metrics": {
+   "h1": [
+    "Grupos de bens equivalentes"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Grupos de bens equivalentes",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Grupos",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     36
+    ],
+    [
+     "12px",
+     15
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     26
+    ],
+    [
+     "500",
+     15
+    ],
+    [
+     "600",
+     13
+    ]
+   ],
+   "buttonCount": 19,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     7
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 3,
+   "rowHeights": [
+    [
+     "73",
+     3
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/empresa-e-sistema/setores",
+  "status": 200,
+  "finalUrl": "/configuracoes/empresa-e-sistema/setores",
+  "metrics": {
+   "h1": [
+    "Configuração de setores"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Configuração de setores",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     30
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     24
+    ],
+    [
+     "600",
+     11
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 45,
+   "unnamedButtons": 19,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     19
+    ],
+    [
+     "[aria] Editar",
+     16
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x20",
+     21
+    ],
+    [
+     "20x24",
+     18
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 16,
+   "rowHeights": [
+    [
+     "73",
+     16
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro",
+  "metrics": {
+   "h1": [
+    "Financeiro"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Financeiro",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     23
+    ],
+    [
+     "400",
+     14
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro/config-despesas-fixas",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro/config-despesas-fixas",
+  "metrics": {
+   "h1": [
+    "Despesas fixas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Despesas fixas",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     10
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     16
+    ],
+    [
+     "400",
+     8
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 14,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro/configuracoes-de-pagamento/condicoes-de-pagamento",
+  "metrics": {
+   "h1": [
+    "Condições de pagamento"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Condições de pagamento",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     27
+    ],
+    [
+     "12px",
+     22
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     24
+    ],
+    [
+     "600",
+     15
+    ],
+    [
+     "400",
+     13
+    ]
+   ],
+   "buttonCount": 24,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[aria] Editar",
+     5
+    ],
+    [
+     "[aria] Desativar",
+     5
+    ],
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     12
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "43",
+     5
+    ],
+    [
+     "73",
+     5
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro/contas-bancarias",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro/contas-bancarias",
+  "metrics": {
+   "h1": [
+    "Contas bancárias"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Contas bancárias",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "12px",
+     42
+    ],
+    [
+     "14px",
+     28
+    ],
+    [
+     "16px",
+     5
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     40
+    ],
+    [
+     "500",
+     18
+    ],
+    [
+     "600",
+     17
+    ],
+    [
+     "700",
+     2
+    ]
+   ],
+   "buttonCount": 24,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[aria] Editar",
+     4
+    ],
+    [
+     "[aria] Inativar conta",
+     4
+    ],
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 8,
+   "svgSizes": [
+    [
+     "20x24",
+     12
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "14x14",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro/folhas-de-pagamento",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro/folhas-de-pagamento",
+  "metrics": {
+   "h1": [
+    "Folha de pagamento"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Folha de pagamento",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     79
+    ],
+    [
+     "12px",
+     28
+    ],
+    [
+     "18px",
+     3
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     61
+    ],
+    [
+     "500",
+     29
+    ],
+    [
+     "600",
+     20
+    ],
+    [
+     "700",
+     1
+    ]
+   ],
+   "buttonCount": 37,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     21
+    ],
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "24x20",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 12,
+   "rowHeights": [
+    [
+     "73",
+     11
+    ],
+    [
+     "52",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/financeiro/plano-de-contas",
+  "status": 200,
+  "finalUrl": "/configuracoes/financeiro/plano-de-contas",
+  "metrics": {
+   "h1": [
+    "Plano de contas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Plano de contas",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     22
+    ],
+    [
+     "12px",
+     10
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     13
+    ],
+    [
+     "500",
+     11
+    ],
+    [
+     "400",
+     10
+    ]
+   ],
+   "buttonCount": 17,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "24x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/importacoes",
+  "status": 200,
+  "finalUrl": "/configuracoes/importacoes",
+  "metrics": {
+   "h1": [
+    "Importações"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Importações",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     23
+    ],
+    [
+     "400",
+     14
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "Importar",
+     6
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/nota-fiscal",
+  "status": 200,
+  "finalUrl": "/configuracoes/nota-fiscal",
+  "metrics": {
+   "h1": [
+    "Configurações fiscais"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Configurações fiscais",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     18
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     15
+    ],
+    [
+     "400",
+     10
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/nota-fiscal/cfop",
+  "status": 200,
+  "finalUrl": "/configuracoes/nota-fiscal/cfop",
+  "metrics": {
+   "h1": [
+    "Natureza de operação e CFOP"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Natureza de operação e CFOP",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H2",
+     "text": "Tabela de CFOP",
+     "size": "18px",
+     "weight": "600"
+    },
+    {
+     "tag": "H2",
+     "text": "Histórico de Natureza",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     18
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     3
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     15
+    ],
+    [
+     "400",
+     12
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 14,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "32x32",
+     3
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/nota-fiscal/emissores",
+  "status": 200,
+  "finalUrl": "/configuracoes/nota-fiscal/emissores",
+  "metrics": {
+   "h1": [
+    "Emissores de nota fiscal"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Emissores de nota fiscal",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "CUNHA MODA PRAIA LTDA Padrão",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     16
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     10
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ],
+    [
+     "12x12",
+     1
+    ],
+    [
+     "18x18",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/nota-fiscal/gestao",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/nota-fiscal/invoicy",
+  "status": 200,
+  "finalUrl": "/configuracoes/nota-fiscal/emissores",
+  "metrics": {
+   "h1": [
+    "Emissores de nota fiscal"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Emissores de nota fiscal",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "CUNHA MODA PRAIA LTDA Padrão",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     16
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     10
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ],
+    [
+     "12x12",
+     1
+    ],
+    [
+     "18x18",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/producao",
+  "status": 200,
+  "finalUrl": "/configuracoes/producao",
+  "metrics": {
+   "h1": [
+    "Produção"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Produção",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     37
+    ],
+    [
+     "12px",
+     21
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     29
+    ],
+    [
+     "500",
+     19
+    ],
+    [
+     "600",
+     12
+    ]
+   ],
+   "buttonCount": 25,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Quem acessa",
+     4
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     12
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 5,
+   "rowHeights": [
+    [
+     "53",
+     1
+    ],
+    [
+     "73",
+     1
+    ],
+    [
+     "81",
+     1
+    ],
+    [
+     "93",
+     1
+    ],
+    [
+     "107",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/produtos",
+  "status": 200,
+  "finalUrl": "/configuracoes/produtos",
+  "metrics": {
+   "h1": [
+    "Produtos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Produtos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     22
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     17
+    ],
+    [
+     "500",
+     10
+    ],
+    [
+     "400",
+     9
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 4,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     4
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x20",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/produtos/grupo-de-produtos",
+  "status": 200,
+  "finalUrl": "/configuracoes/produtos/grupo-de-produtos",
+  "metrics": {
+   "h1": [
+    "Grupos de produtos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Grupos de produtos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     17
+    ],
+    [
+     "400",
+     8
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/produtos/materiais",
+  "status": 200,
+  "finalUrl": "/configuracoes/produtos/materiais",
+  "metrics": {
+   "h1": [
+    "Materiais"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Materiais",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     66
+    ],
+    [
+     "12px",
+     28
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     43
+    ],
+    [
+     "500",
+     29
+    ],
+    [
+     "600",
+     24
+    ]
+   ],
+   "buttonCount": 30,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     16
+    ],
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 16,
+   "rowHeights": [
+    [
+     "37",
+     5
+    ],
+    [
+     "73",
+     5
+    ],
+    [
+     "35",
+     4
+    ],
+    [
+     "81",
+     2
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/produtos/processos",
+  "status": 200,
+  "finalUrl": "/configuracoes/produtos/processos",
+  "metrics": {
+   "h1": [
+    "Processos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Processos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     81
+    ],
+    [
+     "12px",
+     30
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     58
+    ],
+    [
+     "500",
+     42
+    ],
+    [
+     "600",
+     13
+    ]
+   ],
+   "buttonCount": 22,
+   "unnamedButtons": 11,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     11
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "14x14",
+     15
+    ],
+    [
+     "20x20",
+     14
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "20x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 14,
+   "rowHeights": [
+    [
+     "93",
+     7
+    ],
+    [
+     "53",
+     5
+    ],
+    [
+     "73",
+     1
+    ],
+    [
+     "113",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/vendas",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas",
+  "metrics": {
+   "h1": [
+    "Vendas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Vendas",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     23
+    ],
+    [
+     "400",
+     14
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     14
+    ],
+    [
+     "20x20",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/motivos-de-rejeicao-e-cancelamento",
+  "metrics": {
+   "h1": [
+    "Motivos de rejeição e cancelamento"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Motivos de rejeição e cancelamento",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     20
+    ],
+    [
+     "12px",
+     12
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     14
+    ],
+    [
+     "500",
+     13
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 22,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar motivo",
+     4
+    ],
+    [
+     "[aria] Excluir",
+     4
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     11
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 6,
+   "rowHeights": [
+    [
+     "73",
+     4
+    ],
+    [
+     "41",
+     2
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/origens-de-contato",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/origens-de-contato",
+  "metrics": {
+   "h1": [
+    "Origens de contato"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Origens de contato",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     26
+    ],
+    [
+     "12px",
+     11
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     19
+    ],
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 35,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Editar",
+     11
+    ],
+    [
+     "[aria] Excluir",
+     11
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     23
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 12,
+   "rowHeights": [
+    [
+     "73",
+     11
+    ],
+    [
+     "27",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/perfil-de-vendedor",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/perfil-de-vendedor",
+  "metrics": {
+   "h1": [
+    "Perfil de vendedor"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Perfil de vendedor",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     25
+    ],
+    [
+     "12px",
+     13
+    ],
+    [
+     "18px",
+     2
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     16
+    ],
+    [
+     "400",
+     15
+    ],
+    [
+     "500",
+     11
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 2,
+   "rowHeights": [
+    [
+     "73",
+     1
+    ],
+    [
+     "81",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/series-de-venda",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/series-de-venda",
+  "metrics": {
+   "h1": [
+    "Série de vendas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Série de vendas",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "T1 - Treinamento",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "SL - Cortesia/Retrabalho",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "V1 - Vendas Diversas",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     36
+    ],
+    [
+     "12px",
+     34
+    ],
+    [
+     "16px",
+     3
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     31
+    ],
+    [
+     "400",
+     29
+    ],
+    [
+     "600",
+     15
+    ]
+   ],
+   "buttonCount": 21,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ],
+    [
+     "[aria] Inativar série",
+     3
+    ],
+    [
+     "[aria] Configurar",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "20x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/status-de-orcamento",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/status-de-orcamento",
+  "metrics": {
+   "h1": [
+    "Status de orçamento"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Status de orçamento",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     17
+    ],
+    [
+     "12px",
+     13
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     12
+    ],
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     8
+    ]
+   ],
+   "buttonCount": 17,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "20x24",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 2,
+   "rowHeights": [
+    [
+     "73",
+     2
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/configuracoes/vendas/venda-rapida",
+  "status": 200,
+  "finalUrl": "/configuracoes/vendas/venda-rapida",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [
+    [
+     "14px",
+     14
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     10
+    ],
+    [
+     "400",
+     8
+    ],
+    [
+     "500",
+     6
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/dashboard",
+  "status": 200,
+  "finalUrl": "/dashboard",
+  "metrics": {
+   "h1": [
+    "Painel"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Painel",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Resumo financeiro",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Resumo de vendas",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Orçamentos",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Evolução de vendas",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Vendas por vendedor",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Melhores clientes",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     29
+    ],
+    [
+     "12px",
+     22
+    ],
+    [
+     "24px",
+     15
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     34
+    ],
+    [
+     "400",
+     21
+    ],
+    [
+     "500",
+     18
+    ]
+   ],
+   "buttonCount": 16,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     18
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     5
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/estoque",
+  "status": 200,
+  "finalUrl": "/estoque",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H3",
+     "text": "Estoque",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     10
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "28x28",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/estoque/entrada-de-nota",
+  "status": 200,
+  "finalUrl": "/estoque/entrada-de-nota",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H3",
+     "text": "Entrada de nota",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     10
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "28x28",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/financeiro/a-pagar",
+  "status": 200,
+  "finalUrl": "/financeiro/a-pagar",
+  "metrics": {
+   "h1": [
+    "Movimentações a pagar"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Movimentações a pagar",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     42
+    ],
+    [
+     "12px",
+     20
+    ],
+    [
+     "16px",
+     4
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     25
+    ],
+    [
+     "400",
+     22
+    ],
+    [
+     "600",
+     21
+    ]
+   ],
+   "buttonCount": 35,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Detalhes da movimentação",
+     4
+    ],
+    [
+     "[aria] Editar parcelas",
+     4
+    ],
+    [
+     "[aria] Histórico",
+     4
+    ],
+    [
+     "[aria] Movimentação atrasada",
+     4
+    ],
+    [
+     "[aria] Observações",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "20x24",
+     20
+    ],
+    [
+     "16x16",
+     12
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 8,
+   "rowHeights": [
+    [
+     "45",
+     4
+    ],
+    [
+     "73",
+     4
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/a-receber",
+  "status": 200,
+  "finalUrl": "/financeiro/a-receber",
+  "metrics": {
+   "h1": [
+    "Movimentações a receber"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Movimentações a receber",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     72
+    ],
+    [
+     "12px",
+     32
+    ],
+    [
+     "16px",
+     4
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     43
+    ],
+    [
+     "400",
+     40
+    ],
+    [
+     "600",
+     27
+    ]
+   ],
+   "buttonCount": 75,
+   "unnamedButtons": 12,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     12
+    ],
+    [
+     "[aria] Editar parcelas",
+     10
+    ],
+    [
+     "[aria] Observações",
+     10
+    ],
+    [
+     "[aria] Histórico",
+     10
+    ],
+    [
+     "[aria] Detalhes da movimentação",
+     8
+    ],
+    [
+     "[aria] Movimentação atrasada",
+     7
+    ],
+    [
+     "[aria] Movimentação cancelada",
+     4
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "20x24",
+     50
+    ],
+    [
+     "16x16",
+     18
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 20,
+   "rowHeights": [
+    [
+     "45",
+     10
+    ],
+    [
+     "73",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/controle-de-caixa",
+  "status": 200,
+  "finalUrl": "/financeiro/controle-de-caixa",
+  "metrics": {
+   "h1": [
+    "Controle de caixa"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Controle de caixa",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     68
+    ],
+    [
+     "12px",
+     44
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     45
+    ],
+    [
+     "500",
+     39
+    ],
+    [
+     "600",
+     25
+    ],
+    [
+     "700",
+     5
+    ]
+   ],
+   "buttonCount": 35,
+   "unnamedButtons": 2,
+   "repeatedButtons": [
+    [
+     "[aria] Visualizar",
+     4
+    ],
+    [
+     "[aria] Imprimir",
+     4
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     16
+    ],
+    [
+     "20x20",
+     15
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ]
+   ],
+   "tableRows": 11,
+   "rowHeights": [
+    [
+     "65",
+     4
+    ],
+    [
+     "73",
+     4
+    ],
+    [
+     "37",
+     3
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/despesas-fixas",
+  "status": 200,
+  "finalUrl": "/financeiro/despesas-fixas",
+  "metrics": {
+   "h1": [
+    "Despesas fixas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Despesas fixas",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     65
+    ],
+    [
+     "12px",
+     28
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     44
+    ],
+    [
+     "500",
+     36
+    ],
+    [
+     "600",
+     16
+    ]
+   ],
+   "buttonCount": 34,
+   "unnamedButtons": 11,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     11
+    ],
+    [
+     "[aria] Lançar",
+     7
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "20x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 7,
+   "rowHeights": [
+    [
+     "73",
+     7
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/fluxo-financeiro",
+  "status": 200,
+  "finalUrl": "/financeiro/fluxo-financeiro",
+  "metrics": {
+   "h1": [
+    "Fluxo financeiro"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Fluxo financeiro",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     45
+    ],
+    [
+     "12px",
+     21
+    ],
+    [
+     "24px",
+     7
+    ],
+    [
+     "16px",
+     3
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     28
+    ],
+    [
+     "500",
+     27
+    ],
+    [
+     "400",
+     22
+    ]
+   ],
+   "buttonCount": 29,
+   "unnamedButtons": 4,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     4
+    ],
+    [
+     "Todas",
+     3
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "20x20",
+     12
+    ],
+    [
+     "24x24",
+     11
+    ],
+    [
+     "16x16",
+     10
+    ],
+    [
+     "20x24",
+     8
+    ],
+    [
+     "24x20",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 2,
+   "rowHeights": [
+    [
+     "45",
+     1
+    ],
+    [
+     "73",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/folha-de-pagamento",
+  "status": 200,
+  "finalUrl": "/financeiro/folha-de-pagamento",
+  "metrics": {
+   "h1": [
+    "Folha de pagamento"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Folha de pagamento",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     62
+    ],
+    [
+     "12px",
+     23
+    ],
+    [
+     "16px",
+     3
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     44
+    ],
+    [
+     "400",
+     29
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 39,
+   "unnamedButtons": 14,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     14
+    ],
+    [
+     "[aria] Lançar",
+     10
+    ]
+   ],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "20x24",
+     13
+    ],
+    [
+     "20x20",
+     10
+    ],
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "73",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/financeiro/frente-de-caixa",
+  "status": 200,
+  "finalUrl": "/financeiro/frente-de-caixa",
+  "metrics": {
+   "h1": [
+    "Frente de caixa"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Frente de caixa",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     48
+    ],
+    [
+     "12px",
+     20
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     27
+    ],
+    [
+     "500",
+     24
+    ],
+    [
+     "600",
+     17
+    ],
+    [
+     "700",
+     2
+    ]
+   ],
+   "buttonCount": 24,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "20x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 4,
+   "rowHeights": [
+    [
+     "73",
+     2
+    ],
+    [
+     "99",
+     1
+    ],
+    [
+     "119",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir-nfse/consolidado",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir-nfse/consolidado",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir/avulsa",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir/avulsa",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir/avulsa/nfce",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir/avulsa/nfce",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir/avulsa/nfe",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir/avulsa/nfe",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir/avulsa/nfse",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir/avulsa/nfse",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/nota-fiscal/emitir/consolidado",
+  "status": 200,
+  "finalUrl": "/nota-fiscal/emitir/consolidado",
+  "metrics": {
+   "h1": [],
+   "headings": [
+    {
+     "tag": "H2",
+     "text": "Módulo Nota Fiscal não contratado",
+     "size": "18px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     11
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     2
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     12
+    ],
+    [
+     "400",
+     9
+    ],
+    [
+     "500",
+     1
+    ]
+   ],
+   "buttonCount": 13,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/precificacao",
+  "status": 200,
+  "finalUrl": "/precificacao/resumo",
+  "metrics": {
+   "h1": [],
+   "headings": [],
+   "fontSizes": [],
+   "fontWeights": [],
+   "buttonCount": 0,
+   "unnamedButtons": 0,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/precificacao/mao-de-obra",
+  "status": 200,
+  "finalUrl": "/precificacao/mao-de-obra",
+  "metrics": {
+   "h1": [
+    "Precificação"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Precificação",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Mão de obra",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     51
+    ],
+    [
+     "12px",
+     23
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     34
+    ],
+    [
+     "500",
+     26
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 3,
+   "rowHeights": [
+    [
+     "91",
+     2
+    ],
+    [
+     "73",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/precificacao/maquinas",
+  "status": 200,
+  "finalUrl": "/precificacao/maquinas",
+  "metrics": {
+   "h1": [
+    "Precificação"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Precificação",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Máquinas",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     51
+    ],
+    [
+     "12px",
+     23
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     34
+    ],
+    [
+     "500",
+     26
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 3,
+   "rowHeights": [
+    [
+     "93",
+     2
+    ],
+    [
+     "73",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/precificacao/materiais",
+  "status": 200,
+  "finalUrl": "/precificacao/materiais",
+  "metrics": {
+   "h1": [
+    "Precificação"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Precificação",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Materiais",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     114
+    ],
+    [
+     "12px",
+     37
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     83
+    ],
+    [
+     "500",
+     54
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 32,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "20x24",
+     20
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "73",
+     5
+    ],
+    [
+     "93",
+     5
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/precificacao/produtos",
+  "status": 200,
+  "finalUrl": "/precificacao/produtos",
+  "metrics": {
+   "h1": [
+    "Precificação"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Precificação",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Produtos",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     51
+    ],
+    [
+     "12px",
+     23
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     34
+    ],
+    [
+     "500",
+     26
+    ],
+    [
+     "600",
+     17
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 3,
+   "rowHeights": [
+    [
+     "93",
+     2
+    ],
+    [
+     "91",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/precificacao/resumo",
+  "status": 200,
+  "finalUrl": "/precificacao/resumo",
+  "metrics": {
+   "h1": [
+    "Precificação"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Precificação",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Parâmetros de referência",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Precificação por grupo",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     56
+    ],
+    [
+     "12px",
+     38
+    ],
+    [
+     "24px",
+     10
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     69
+    ],
+    [
+     "600",
+     22
+    ],
+    [
+     "500",
+     16
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "16x16",
+     12
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/producao/agenda-de-entrega",
+  "status": 200,
+  "finalUrl": "/producao/agenda-de-entrega",
+  "metrics": {
+   "h1": [
+    "Agenda de entrega"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Agenda de entrega",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     27
+    ],
+    [
+     "12px",
+     13
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     19
+    ],
+    [
+     "500",
+     13
+    ],
+    [
+     "400",
+     11
+    ]
+   ],
+   "buttonCount": 15,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 1,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "24x20",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "18x24",
+     1
+    ]
+   ],
+   "tableRows": 10,
+   "rowHeights": [
+    [
+     "57",
+     10
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/producao/gerenciador",
+  "status": 200,
+  "finalUrl": "/producao/gerenciador",
+  "metrics": {
+   "h1": [
+    "Gerenciador de produção"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Gerenciador de produção",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Colaboradores",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     36
+    ],
+    [
+     "12px",
+     22
+    ],
+    [
+     "24px",
+     5
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "16px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     35
+    ],
+    [
+     "600",
+     18
+    ],
+    [
+     "500",
+     12
+    ]
+   ],
+   "buttonCount": 21,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "16x16",
+     10
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "20x20",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "14x14",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/producao/produtividade",
+  "status": 200,
+  "finalUrl": "/producao/produtividade",
+  "metrics": {
+   "h1": [
+    "Produtividade"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Produtividade",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Por setor",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Por colaborador",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     52
+    ],
+    [
+     "12px",
+     19
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     33
+    ],
+    [
+     "500",
+     29
+    ],
+    [
+     "600",
+     13
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 7,
+   "rowHeights": [
+    [
+     "53",
+     7
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/producao/projetos",
+  "status": 200,
+  "finalUrl": "/producao/projetos",
+  "metrics": {
+   "h1": [
+    "Projetos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Projetos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     32
+    ],
+    [
+     "12px",
+     21
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     23
+    ],
+    [
+     "500",
+     19
+    ],
+    [
+     "600",
+     13
+    ]
+   ],
+   "buttonCount": 12,
+   "unnamedButtons": 2,
+   "repeatedButtons": [],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 2,
+   "rowHeights": [
+    [
+     "79",
+     2
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/relatorios/comissoes",
+  "status": 200,
+  "finalUrl": "/relatorios/comissoes",
+  "metrics": {
+   "h1": [
+    "Comissões"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Comissões",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     29
+    ],
+    [
+     "12px",
+     12
+    ],
+    [
+     "16px",
+     6
+    ],
+    [
+     "24px",
+     4
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     19
+    ],
+    [
+     "400",
+     18
+    ],
+    [
+     "500",
+     15
+    ]
+   ],
+   "buttonCount": 20,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     11
+    ],
+    [
+     "20x20",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "24x20",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/relatorios/dfc",
+  "status": 200,
+  "finalUrl": "/relatorios/dfc",
+  "metrics": {
+   "h1": [
+    "Relatório DFC"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Relatório DFC",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Fluxo de Caixa",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Receitas x Despesas",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     24
+    ],
+    [
+     "12px",
+     19
+    ],
+    [
+     "18px",
+     4
+    ],
+    [
+     "16px",
+     3
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "400",
+     23
+    ],
+    [
+     "600",
+     17
+    ],
+    [
+     "500",
+     11
+    ]
+   ],
+   "buttonCount": 16,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "24x20",
+     2
+    ],
+    [
+     "491x250",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/relatorios/financeiro",
+  "status": 200,
+  "finalUrl": "/relatorios/financeiro",
+  "metrics": {
+   "h1": [
+    "Financeiro"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Financeiro",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Receitas",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     33
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "24px",
+     5
+    ],
+    [
+     "16px",
+     4
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     20
+    ],
+    [
+     "500",
+     17
+    ],
+    [
+     "400",
+     15
+    ]
+   ],
+   "buttonCount": 21,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     12
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     7
+    ],
+    [
+     "24x20",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/relatorios/projecao-de-caixa",
+  "status": 200,
+  "finalUrl": "/relatorios/projecao-de-caixa",
+  "metrics": {
+   "h1": [
+    "Projeção de caixa"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Projeção de caixa",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Projeção de caixa",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     28
+    ],
+    [
+     "12px",
+     13
+    ],
+    [
+     "24px",
+     4
+    ],
+    [
+     "16px",
+     3
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     19
+    ],
+    [
+     "600",
+     16
+    ],
+    [
+     "400",
+     14
+    ]
+   ],
+   "buttonCount": 18,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     11
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     6
+    ],
+    [
+     "24x20",
+     4
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 1,
+   "rowHeights": [
+    [
+     "85",
+     1
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/relatorios/resultado-por-setor",
+  "status": 200,
+  "finalUrl": "/relatorios/resultado-por-setor",
+  "metrics": {
+   "h1": [
+    "Resultados por setor"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Resultados por setor",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "24px",
+     2
+    ],
+    [
+     "16px",
+     2
+    ],
+    [
+     "18px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     14
+    ],
+    [
+     "500",
+     10
+    ],
+    [
+     "400",
+     9
+    ]
+   ],
+   "buttonCount": 15,
+   "unnamedButtons": 3,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     3
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     9
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "20x20",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x24",
+     2
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "24x20",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/relatorios/vendas",
+  "status": 200,
+  "finalUrl": "/relatorios/vendas",
+  "metrics": {
+   "h1": [
+    "Relatório de vendas"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Relatório de vendas",
+     "size": "24px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Evolução de vendas do período",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Aprovadas x Não aprovadas",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Origens dos orçamentos",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Origens das OS",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Produtos mais vendidos",
+     "size": "16px",
+     "weight": "600"
+    },
+    {
+     "tag": "H3",
+     "text": "Melhores clientes",
+     "size": "16px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     39
+    ],
+    [
+     "12px",
+     17
+    ],
+    [
+     "16px",
+     8
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "500",
+     24
+    ],
+    [
+     "600",
+     22
+    ],
+    [
+     "400",
+     20
+    ]
+   ],
+   "buttonCount": 26,
+   "unnamedButtons": 5,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     5
+    ]
+   ],
+   "nativeTitle": 2,
+   "svgSizes": [
+    [
+     "20x20",
+     9
+    ],
+    [
+     "24x24",
+     8
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "24x20",
+     7
+    ],
+    [
+     "20x24",
+     6
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ]
+   ],
+   "tableRows": 5,
+   "rowHeights": [
+    [
+     "65",
+     5
+    ]
+   ]
+  }
+ },
+ {
+  "route": "/vendas/orcamentos",
+  "status": 200,
+  "finalUrl": "/vendas/orcamentos",
+  "metrics": {
+   "h1": [
+    "Orçamentos"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Orçamentos",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     14
+    ],
+    [
+     "400",
+     8
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 15,
+   "unnamedButtons": 4,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     4
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ },
+ {
+  "route": "/vendas/ordens-de-servico",
+  "status": 200,
+  "finalUrl": "/vendas/ordens-de-servico",
+  "metrics": {
+   "h1": [
+    "Ordens de serviço"
+   ],
+   "headings": [
+    {
+     "tag": "H1",
+     "text": "Ordens de serviço",
+     "size": "24px",
+     "weight": "600"
+    }
+   ],
+   "fontSizes": [
+    [
+     "14px",
+     19
+    ],
+    [
+     "12px",
+     9
+    ],
+    [
+     "18px",
+     1
+    ],
+    [
+     "24px",
+     1
+    ]
+   ],
+   "fontWeights": [
+    [
+     "600",
+     14
+    ],
+    [
+     "400",
+     8
+    ],
+    [
+     "500",
+     8
+    ]
+   ],
+   "buttonCount": 15,
+   "unnamedButtons": 4,
+   "repeatedButtons": [
+    [
+     "[sem nome]",
+     4
+    ]
+   ],
+   "nativeTitle": 0,
+   "svgSizes": [
+    [
+     "24x24",
+     10
+    ],
+    [
+     "16x16",
+     8
+    ],
+    [
+     "16x24",
+     3
+    ],
+    [
+     "20x20",
+     3
+    ],
+    [
+     "64x64",
+     1
+    ],
+    [
+     "40x40",
+     1
+    ],
+    [
+     "32x32",
+     1
+    ],
+    [
+     "20x24",
+     1
+    ]
+   ],
+   "tableRows": 0,
+   "rowHeights": []
+  }
+ }
+]

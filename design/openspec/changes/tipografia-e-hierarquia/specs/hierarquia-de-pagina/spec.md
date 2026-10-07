@@ -39,8 +39,10 @@ ser um parágrafo, não um cabeçalho HTML.
 ### Requirement: Níveis de cabeçalho em ordem
 
 Seções de página SHALL usar `h2` com `section-title`; cards SHALL usar `h3` com
-`card-title`; não SHALL haver salto de nível (`h1` → `h3`) nem cabeçalhos HTML
-fora da área de conteúdo (a navegação lateral não usa `h1`–`h6`).
+`card-title`; a navegação lateral SHALL NOT usar `h1`–`h6`, para que a lista de
+títulos da página comece pelo `h1`. (Escolher o nível do título do card pelo
+contexto, evitando `h1` → `h3` sem seção, fica para quando o cabeçalho de
+página padronizado existir — `navegacao-e-cabecalhos`.)
 
 #### Scenario: Leitor de tela lista os cabeçalhos
 
