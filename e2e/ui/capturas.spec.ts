@@ -147,33 +147,47 @@ type Entry = {
 }
 
 const routes = staticRoutes()
-const results: Entry[] = []
+const AUDIT = path.join(OUT, 'audit.json')
 
-test.describe.configure({ mode: 'serial' })
+// Grava a rota no audit.json assim que termina: depois de uma falha o
+// Playwright troca de worker, e um afterAll por worker sobrescreveria o que
+// os anteriores já tinham medido. Rodar de novo uma rota substitui a entrada.
+function record(entry: Entry) {
+  const previous: Entry[] = fs.existsSync(AUDIT)
+    ? JSON.parse(fs.readFileSync(AUDIT, 'utf8'))
+    : []
+  const next = previous
+    .filter((e) => e.route !== entry.route)
+    .concat(entry)
+    .sort((x, y) => x.route.localeCompare(y.route))
+  fs.writeFileSync(AUDIT, JSON.stringify(next, null, 1))
+}
+
+// Sem modo serial: uma rota lenta não pode impedir as outras de rodar.
 
 test.describe('Capturas de UI', () => {
   test.use({ viewport: { width: 1440, height: 900 } })
 
   test.beforeAll(() => fs.mkdirSync(OUT, { recursive: true }))
 
-  test.afterAll(() => {
-    fs.writeFileSync(
-      path.join(OUT, 'audit.json'),
-      JSON.stringify(results, null, 1),
-    )
-  })
-
   for (const route of routes) {
     test(route, async ({ page }) => {
-      test.setTimeout(120_000)
+      test.setTimeout(300_000)
       const entry: Entry = { route }
       const slug = route.replace(/^\//, '').replace(/\//g, '__') || 'raiz'
       try {
         const response = await page.goto(route, {
           waitUntil: 'load',
-          timeout: 90_000,
+          timeout: 240_000,
         })
         entry.status = response?.status()
+        // Telas que buscam dados mostram o título só depois de carregar; sem
+        // esperar, a captura registra "sem h1" por lentidão, não por defeito.
+        await page
+          .locator('main h1')
+          .first()
+          .waitFor({ timeout: 10_000 })
+          .catch(() => undefined)
         await page.waitForTimeout(SETTLE_MS)
         // Rotas que só redirecionam (ex.: /configuracoes) trocam de página no
         // meio da coleta; espera a nova carregar e tenta mais uma vez.
@@ -189,7 +203,7 @@ test.describe('Capturas de UI', () => {
       await page
         .screenshot({ path: path.join(OUT, `${slug}.png`) })
         .catch(() => undefined)
-      results.push(entry)
+      record(entry)
     })
   }
 })

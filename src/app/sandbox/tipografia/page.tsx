@@ -142,6 +142,27 @@ export default function TipografiaSandbox() {
             </TableBody>
           </Table>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Árvore sem cabeçalho</CardTitle>
+            <CardDescription>
+              Como o plano de contas: a linha de grupo mede as colunas pelas
+              linhas de dado.
+            </CardDescription>
+          </CardHeader>
+          <Table data-testid="tabela-sem-cabecalho">
+            <TableBody>
+              <TableGroupRow>Receitas</TableGroupRow>
+              <TableRow>
+                <TableCell className="type-body-strong pl-10">
+                  1.1 Vendas
+                </TableCell>
+                <TableCell numeric>R$ 48.230,00</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Card>
       </section>
     </main>
   )
