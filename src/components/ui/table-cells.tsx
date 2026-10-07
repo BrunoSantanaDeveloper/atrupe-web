@@ -194,7 +194,7 @@ export function CellAvatarGroup({
   const visibleUsers = users.slice(0, max)
   const remainingCount = (total ?? users.length) - visibleUsers.length
 
-  const szClass = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs'
+  const szClass = size === 'sm' ? 'w-6 h-6 text-xs' : 'w-8 h-8 text-xs'
 
   return (
     <div

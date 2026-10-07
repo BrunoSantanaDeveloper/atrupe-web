@@ -32,7 +32,7 @@ const statusTabVariants = cva(
         complete: 'bg-[#7AC31C]',
       },
       size: {
-        sm: 'px-2 py-0.5 text-[10px] rounded-t-md',
+        sm: 'px-2 py-0.5 text-xs rounded-t-md',
         md: 'px-3 py-1 text-xs rounded-t-lg',
         lg: 'px-4 py-1.5 text-sm rounded-t-xl',
       },

@@ -1,19 +1,59 @@
+'use client'
+
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+// Quantas colunas a tabela tem, medido no cabeçalho depois de montar. Linhas
+// de grupo e de estado usam isso para ocupar a largura toda sem que a tela
+// informe um colSpan (que costumava ficar errado quando colunas eram
+// condicionais).
+const TableColumnsContext = React.createContext<number>(1)
+
+function useColumnCount(tableRef: React.RefObject<HTMLTableElement>) {
+  const [count, setCount] = React.useState(1)
+
+  React.useLayoutEffect(() => {
+    const table = tableRef.current
+    if (!table) return
+    const measure = () => {
+      const head = table.tHead?.rows[0] ?? table.rows[0]
+      if (!head) return
+      const total = Array.from(head.cells).reduce(
+        (sum, cell) => sum + cell.colSpan,
+        0,
+      )
+      setCount((prev) => (prev === total ? prev : Math.max(total, 1)))
+    }
+    measure()
+    const observer = new MutationObserver(measure)
+    observer.observe(table, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [tableRef])
+
+  return count
+}
+
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn('w-full caption-bottom text-sm', className)}
-      {...props}
-    />
-  </div>
-))
+>(({ className, ...props }, ref) => {
+  const innerRef = React.useRef<HTMLTableElement>(null)
+  React.useImperativeHandle(ref, () => innerRef.current as HTMLTableElement)
+  const columns = useColumnCount(innerRef)
+
+  return (
+    <TableColumnsContext.Provider value={columns}>
+      <div className="relative w-full overflow-auto">
+        <table
+          ref={innerRef}
+          className={cn('w-full caption-bottom tabular-nums', className)}
+          {...props}
+        />
+      </div>
+    </TableColumnsContext.Provider>
+  )
+})
 Table.displayName = 'Table'
 
 const TableHeader = React.forwardRef<
@@ -73,14 +113,20 @@ const TableRow = React.forwardRef<
 ))
 TableRow.displayName = 'TableRow'
 
+type NumericProps = {
+  /** Coluna de valor, quantidade ou percentual: alinha à direita. */
+  numeric?: boolean
+}
+
 const TableHead = React.forwardRef<
   HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+  React.ThHTMLAttributes<HTMLTableCellElement> & NumericProps
+>(({ className, numeric, ...props }, ref) => (
   <th
     ref={ref}
     className={cn(
-      'h-11 px-6 text-left text-xs align-middle font-medium text-gray [&:has([role=checkbox])]:pr-0',
+      'type-table-header h-11 px-6 text-left align-middle [&:has([role=checkbox])]:pr-0',
+      numeric && 'text-right',
       className,
     )}
     {...props}
@@ -90,12 +136,13 @@ TableHead.displayName = 'TableHead'
 
 const TableCell = React.forwardRef<
   HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
+  React.TdHTMLAttributes<HTMLTableCellElement> & NumericProps
+>(({ className, numeric, ...props }, ref) => (
   <td
     ref={ref}
     className={cn(
-      'py-4 px-6 align-middle [&:has([role=checkbox])]:pr-0 text-gray-900',
+      'type-body py-4 px-6 align-middle [&:has([role=checkbox])]:pr-0',
+      numeric && 'text-right',
       className,
     )}
     {...props}
@@ -103,17 +150,64 @@ const TableCell = React.forwardRef<
 ))
 TableCell.displayName = 'TableCell'
 
+// Linha que separa grupos (setor, mês, categoria). Ocupa todas as colunas.
+const TableGroupRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement> & {
+    cellClassName?: string
+  }
+>(({ className, cellClassName, children, ...props }, ref) => {
+  const columns = React.useContext(TableColumnsContext)
+  return (
+    <tr
+      ref={ref}
+      className={cn('border-b border-gray-100 bg-gray-50', className)}
+      {...props}
+    >
+      <th
+        scope="colgroup"
+        colSpan={columns}
+        className={cn('type-eyebrow px-6 py-2 text-left', cellClassName)}
+      >
+        {children}
+      </th>
+    </tr>
+  )
+})
+TableGroupRow.displayName = 'TableGroupRow'
+
+// Linha única que ocupa todas as colunas (estado vazio, expansão).
+const TableFullRow = React.forwardRef<
+  HTMLTableRowElement,
+  React.HTMLAttributes<HTMLTableRowElement> & { cellClassName?: string }
+>(({ className, cellClassName, children, ...props }, ref) => {
+  const columns = React.useContext(TableColumnsContext)
+  return (
+    <tr ref={ref} className={className} {...props}>
+      <td colSpan={columns} className={cellClassName}>
+        {children}
+      </td>
+    </tr>
+  )
+})
+TableFullRow.displayName = 'TableFullRow'
+
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn('mt-4 text-sm text-gray', className)}
+    className={cn('type-secondary mt-4', className)}
     {...props}
   />
 ))
 TableCaption.displayName = 'TableCaption'
+
+/** Colunas da tabela atual (para quem ainda precisa de colSpan explícito). */
+function useTableColumns() {
+  return React.useContext(TableColumnsContext)
+}
 
 export {
   Table,
@@ -123,5 +217,8 @@ export {
   TableHead,
   TableRow,
   TableCell,
+  TableGroupRow,
+  TableFullRow,
   TableCaption,
+  useTableColumns,
 }
