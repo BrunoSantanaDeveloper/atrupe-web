@@ -3,8 +3,7 @@
 import { useState } from 'react'
 
 // UI
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Components
 import {
@@ -17,6 +16,7 @@ import {
   NewFixedExpenseTriggerButton,
 } from './EditFixedExpense'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -74,6 +74,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
           tabs={tabs}
           activeTab={searchParams?.status || 'ativos'}
           paramName="status"
+          countsLoading={isLoading}
           primaryCta={
             <>
               <PermissionGate
@@ -91,7 +92,10 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              // Esta lista não tem barra de filtros: só a tabela no formato final
+              <CardContent>
+                <TableSkeleton cols={6} />
+              </CardContent>
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

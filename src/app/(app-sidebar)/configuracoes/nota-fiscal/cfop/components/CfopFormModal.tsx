@@ -216,7 +216,7 @@ export function CfopFormModal({
           </Button>
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
             onClick={form.handleSubmit(handleSubmit)}
             className="bg-green-600 hover:bg-green-700 text-white"
             RightIcon={({ className }) => (
@@ -235,7 +235,7 @@ export function CfopFormModal({
               </svg>
             )}
           >
-            {form.formState.isSubmitting ? 'Salvando...' : 'Salvar'}
+            Salvar
           </Button>
         </div>
       </DialogContent>

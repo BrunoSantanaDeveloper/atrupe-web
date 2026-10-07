@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import {
   Table,
   TableBody,
@@ -12,7 +12,8 @@ import {
 } from '@/components/ui/table'
 import { CardContent, CardFooter } from '@/components/ui/card'
 import { TablePagination } from '@/components/common/TablePagination'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -54,8 +55,10 @@ export function ProductsGroupData({ searchParams, tabs }: Props) {
 
   const filters = { ...searchParams, status, kind: 'PRODUCT' }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['product-group-list', searchParams],
     queryFn: () =>
       getDataOld({ route: 'productGroupTotalsRouteBySector', filters }),
@@ -67,62 +70,69 @@ export function ProductsGroupData({ searchParams, tabs }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton />
-        ) : hasData ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead>Nome</TableHead>
-                <TableHead></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {productGroups?.map((group) => (
-                <Fragment key={group.sector}>
-                  <TableRow className="bg-gray-100">
-                    <TableCell colSpan={2}>{group.sector}</TableCell>
-                  </TableRow>
-                  {group?.groups?.map((g) => (
-                    <TableRow key={g.id}>
-                      <TableCell>
-                        <p className="font-medium">{g.name}</p>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <TooltipProvider>
-                            <PermissionGate
-                              permissions={['product_settings:products:edit']}
-                            >
-                              <NewProductGroupTriggerButton
-                                editMode
-                                onOpenChange={() => {
-                                  setOpenDialog('edit-group')
-                                  setGroupId(g.id)
-                                }}
-                              />
-                            </PermissionGate>
-                          </TooltipProvider>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <FilteredDataEmpty
-            title="Grupo de produtos não encontrado"
-            description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo grupo de produtos"
-          />
-        )}
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead>Nome</TableHead>
+                  <TableHead></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableSkeletonRows cols={2} />
+                ) : (
+                  productGroups?.map((group) => (
+                    <Fragment key={group.sector}>
+                      <TableRow className="bg-gray-100">
+                        <TableCell colSpan={2}>{group.sector}</TableCell>
+                      </TableRow>
+                      {group?.groups?.map((g) => (
+                        <TableRow key={g.id}>
+                          <TableCell>
+                            <p className="font-medium">{g.name}</p>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <TooltipProvider>
+                                <PermissionGate
+                                  permissions={[
+                                    'product_settings:products:edit',
+                                  ]}
+                                >
+                                  <NewProductGroupTriggerButton
+                                    editMode
+                                    onOpenChange={() => {
+                                      setOpenDialog('edit-group')
+                                      setGroupId(g.id)
+                                    }}
+                                  />
+                                </PermissionGate>
+                              </TooltipProvider>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </Fragment>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          ) : (
+            <FilteredDataEmpty
+              title="Grupo de produtos não encontrado"
+              description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo grupo de produtos"
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

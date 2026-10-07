@@ -1,6 +1,7 @@
 'use client'
 
 // UI
+import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -58,10 +59,14 @@ export function ContractModal({ open, onOpenChange }: ContractModalProps) {
 
         <DialogBody className="overflow-y-auto px-6 py-4 flex flex-col border border-gray-100 rounded-md bg-gray-50/50 mt-2">
           {isLoading ? (
-            <div className="flex-1 flex items-center justify-center min-h-[40vh]">
-              <span className="text-gray-500 animate-pulse">
-                Carregando contrato...
-              </span>
+            // Linhas de texto no lugar do contrato, no formato do documento
+            <div className="min-h-[40vh] flex-1 space-y-3">
+              <Skeleton className="h-5 w-1/2" />
+              {['w-full', 'w-11/12', 'w-full', 'w-4/5', 'w-full', 'w-2/3'].map(
+                (width, index) => (
+                  <Skeleton key={index} className={`h-4 ${width}`} />
+                ),
+              )}
             </div>
           ) : isError ? (
             <div className="flex-1 flex items-center justify-center min-h-[40vh]">

@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 
@@ -28,6 +27,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 import {
   StepsDialog,
   UsersDialog,
@@ -123,7 +123,47 @@ export function ProductionSettings() {
     return true
   }
 
-  if (isLoading || !config) return <Skeleton className="h-[480px] w-full" />
+  // O Topbar não depende da configuração: aparece já, também na carga
+  const topbar = (
+    <Topbar
+      review="new"
+      title="Produção"
+      supportText="Gerenciadores e tipos de tarefa do gerenciador de produção"
+      paramName="aba"
+      activeTab={tab}
+      tabs={tabs.map((item) => ({
+        value: item.value,
+        tab: item.value,
+        label: item.label,
+      }))}
+      primaryCta={
+        <PermissionGate permissions={EDIT}>
+          <Button
+            LeftIcon={IconPlus}
+            onClick={() =>
+              setDialog(
+                tab === 'tipos' ? { kind: 'type' } : { kind: 'manager' },
+              )
+            }
+          >
+            {tab === 'tipos' ? 'Novo tipo de tarefa' : 'Novo gerenciador'}
+          </Button>
+        </PermissionGate>
+      }
+    />
+  )
+
+  if (isLoading || !config)
+    return (
+      <div className="space-y-5">
+        {topbar}
+        <Card>
+          <CardContent>
+            <TableSkeleton cols={tab === 'tipos' ? 5 : 6} />
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   const { flows, managers, taskTypes, collaborators } = config
   const managerName = (id: string) =>
@@ -138,32 +178,7 @@ export function ProductionSettings() {
   return (
     <TooltipProvider>
       <div className="space-y-5">
-        <Topbar
-          review="new"
-          title="Produção"
-          supportText="Gerenciadores e tipos de tarefa do gerenciador de produção"
-          paramName="aba"
-          activeTab={tab}
-          tabs={tabs.map((item) => ({
-            value: item.value,
-            tab: item.value,
-            label: item.label,
-          }))}
-          primaryCta={
-            <PermissionGate permissions={EDIT}>
-              <Button
-                LeftIcon={IconPlus}
-                onClick={() =>
-                  setDialog(
-                    tab === 'tipos' ? { kind: 'type' } : { kind: 'manager' },
-                  )
-                }
-              >
-                {tab === 'tipos' ? 'Novo tipo de tarefa' : 'Novo gerenciador'}
-              </Button>
-            </PermissionGate>
-          }
-        />
+        {topbar}
 
         {tab === 'gerenciadores' ? (
           <Card>

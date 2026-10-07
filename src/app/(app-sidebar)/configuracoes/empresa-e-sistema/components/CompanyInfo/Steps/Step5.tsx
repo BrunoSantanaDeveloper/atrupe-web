@@ -15,6 +15,7 @@ import {
 
 // UI
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
@@ -28,8 +29,14 @@ export function Step5() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12 text-sm text-gray-400">
-        Carregando...
+      // Mesmo formato do conteúdo do passo: ícone, título, texto e botão
+      <div className="flex flex-col items-center justify-center gap-5 py-10">
+        <Skeleton className="size-14 rounded-full" />
+        <div className="flex flex-col items-center gap-2">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </div>
+        <Skeleton className="h-10 w-40" />
       </div>
     )
   }

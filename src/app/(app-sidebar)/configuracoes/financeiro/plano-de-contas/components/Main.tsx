@@ -2,7 +2,6 @@
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { TableData } from './TableData'
@@ -10,6 +9,7 @@ import { NewCategoryDialog } from './NewCategoryDialog'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -59,6 +59,7 @@ export function Main({ searchParams }: SearchParamsType) {
         previousPage="/configuracoes/financeiro"
         activeTab={searchParams?.status || 'ativos'}
         paramName="status"
+        countsLoading={isLoading}
         primaryCta={
           <PermissionGate
             permissions={['financial_settings:chart_accounts:create']}
@@ -70,7 +71,7 @@ export function Main({ searchParams }: SearchParamsType) {
       <div>
         <Card>
           {isLoading ? (
-            <Skeleton className="h-[calc(100vh-150px)]" />
+            <ListSkeleton cols={3} filters={2} />
           ) : (
             <>
               <TableFiltersHeader searchParams={searchParams}>

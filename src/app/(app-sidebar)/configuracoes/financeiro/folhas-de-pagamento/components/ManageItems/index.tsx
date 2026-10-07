@@ -28,7 +28,7 @@ import {
 // Components
 import { EditItemDialog } from './EditItem'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
@@ -103,9 +103,7 @@ export function ManageItemsDialog() {
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
-          {isLoading ? (
-            <TableSkeleton cols={3} />
-          ) : !templates.length ? (
+          {!isLoading && !templates.length ? (
             <p className="py-6 text-center text-gray-400">
               Nenhum item de custo cadastrado.
             </p>
@@ -120,68 +118,74 @@ export function ManageItemsDialog() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {templates.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell className="text-gray-600">
-                      <div className="flex items-center gap-2">
-                        {item.name}
-                        {item.isBase ? (
-                          <Badge variant="neutralLight">Base</Badge>
-                        ) : null}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          item.type === 'DISCOUNT'
-                            ? 'errorLight'
-                            : 'successLight'
-                        }
-                      >
-                        {item.type === 'DISCOUNT' ? 'Desconto' : 'Acréscimo'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="whitespace-nowrap text-gray-600">
-                      {item.linkedEmployees
-                        ? `${item.linkedEmployees} colaborador${item.linkedEmployees > 1 ? 'es' : ''}`
-                        : 'Ninguém'}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <TooltipProvider>
-                          <ActionButton
-                            tooltip="Editar"
-                            Icon={IconPencil}
-                            onClick={() => {
-                              setRowData(item)
-                              setOpenEdit(true)
-                            }}
-                          />
-                          {/* EC-21: excluir exige :delete. O diálogo inteiro
+                {isLoading ? (
+                  <TableSkeletonRows cols={4} />
+                ) : (
+                  templates.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="text-gray-600">
+                        <div className="flex items-center gap-2">
+                          {item.name}
+                          {item.isBase ? (
+                            <Badge variant="neutralLight">Base</Badge>
+                          ) : null}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            item.type === 'DISCOUNT'
+                              ? 'errorLight'
+                              : 'successLight'
+                          }
+                        >
+                          {item.type === 'DISCOUNT' ? 'Desconto' : 'Acréscimo'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-gray-600">
+                        {item.linkedEmployees
+                          ? `${item.linkedEmployees} colaborador${item.linkedEmployees > 1 ? 'es' : ''}`
+                          : 'Ninguém'}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            <ActionButton
+                              tooltip="Editar"
+                              Icon={IconPencil}
+                              onClick={() => {
+                                setRowData(item)
+                                setOpenEdit(true)
+                              }}
+                            />
+                            {/* EC-21: excluir exige :delete. O diálogo inteiro
                               é aberto com :edit, e sem isto quem só edita
                               também excluía item de custo */}
-                          <PermissionGate
-                            permissions={['financial_settings:payroll:delete']}
-                          >
-                            <ActionButton
-                              tooltip={
-                                item.isBase
-                                  ? 'Item base da folha, não pode ser excluído'
-                                  : item.linkedEmployees
-                                    ? 'Remova o item de todos os colaboradores para excluir'
-                                    : 'Excluir'
-                              }
-                              variant="errorGhost"
-                              Icon={IconTrash}
-                              disabled={!item.canDelete}
-                              onClick={() => handleDelete(item)}
-                            />
-                          </PermissionGate>
-                        </TooltipProvider>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                            <PermissionGate
+                              permissions={[
+                                'financial_settings:payroll:delete',
+                              ]}
+                            >
+                              <ActionButton
+                                tooltip={
+                                  item.isBase
+                                    ? 'Item base da folha, não pode ser excluído'
+                                    : item.linkedEmployees
+                                      ? 'Remova o item de todos os colaboradores para excluir'
+                                      : 'Excluir'
+                                }
+                                variant="errorGhost"
+                                Icon={IconTrash}
+                                disabled={!item.canDelete}
+                                onClick={() => handleDelete(item)}
+                              />
+                            </PermissionGate>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           )}

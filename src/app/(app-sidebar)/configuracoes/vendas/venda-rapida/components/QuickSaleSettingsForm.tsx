@@ -125,16 +125,48 @@ export function QuickSaleSettingsForm() {
     onError: () => toast.error('Erro ao salvar'),
   })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
+  const topbar = (
+    <Topbar
+      review="new"
+      title="Venda rápida"
+      previousPage="/configuracoes/vendas"
+      supportText="A venda de balcão, sem cadastro e sem perguntas"
+    />
+  )
+
+  // O Topbar é fixo e aparece já; embaixo, os cartões no formato da tela
+  if (isLoading)
+    return (
+      <div className="space-y-5">
+        {topbar}
+        <Card>
+          <CardContent className="flex items-start justify-between gap-4 px-6 py-5">
+            <div className="w-full max-w-2xl space-y-2">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-4 w-full" />
+            </div>
+            <Skeleton className="h-6 w-11 rounded-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-64" />
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-4 px-6 pb-6 md:grid-cols-2">
+            {Array.from({ length: 4 }, (_, index) => (
+              <div key={index} className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   return (
     <div className="space-y-5">
-      <Topbar
-        review="new"
-        title="Venda rápida"
-        previousPage="/configuracoes/vendas"
-        supportText="A venda de balcão, sem cadastro e sem perguntas"
-      />
+      {topbar}
 
       <Card>
         <CardContent className="flex flex-wrap items-start justify-between gap-4 px-6 py-5">

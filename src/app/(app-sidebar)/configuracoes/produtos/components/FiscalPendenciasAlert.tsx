@@ -86,13 +86,14 @@ export function FiscalPendenciasAlert() {
   const bloqueiam = dados.bloqueiamEmissao
   const severo = bloqueiam > 0
 
+  // O alerta só existe depois da carga: entra suave em vez de empurrar a tela
   return (
     <>
       <div
         className={
           severo
-            ? 'flex items-center gap-3 rounded-lg border border-error-200 bg-error-50 p-3'
-            : 'flex items-center gap-3 rounded-lg border border-warning-200 bg-warning-50 p-3'
+            ? 'flex items-center gap-3 rounded-lg border border-error-200 bg-error-50 p-3 animate-in fade-in-0 duration-base'
+            : 'flex items-center gap-3 rounded-lg border border-warning-200 bg-warning-50 p-3 animate-in fade-in-0 duration-base'
         }
       >
         <FeaturedIcon

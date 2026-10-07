@@ -7,7 +7,7 @@ import { NewItemDialog } from './NewItem'
 import { Topbar } from '@/components/common/Topbar'
 import { DeleteAlertDialog } from './Actions/Delete'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -63,9 +63,7 @@ export function Main() {
       />
       <div className="space-y-2">
         <Card>
-          {isLoading ? (
-            <TableSkeleton cols={6} />
-          ) : !hasData ? (
+          {!isLoading && !hasData ? (
             <ListDataTotalEmpty
               icon={IconAlertSquareRoundedOff}
               title="Nenhum status cadastrado"
@@ -84,60 +82,64 @@ export function Main() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {statuses.map((item) => (
-                      <Fragment key={item.id}>
-                        <TableRow key={item?.id}>
-                          <TableCell className="font-medium">
-                            {item?.title}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            <Badge
-                              className="text-white"
-                              variant="neutralLight"
-                              style={{
-                                backgroundColor: item?.color,
-                              }}
-                            >
+                    {isLoading ? (
+                      <TableSkeletonRows cols={3} />
+                    ) : (
+                      statuses.map((item) => (
+                        <Fragment key={item.id}>
+                          <TableRow key={item?.id}>
+                            <TableCell className="font-medium">
                               {item?.title}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex justify-end gap-1">
-                              <TooltipProvider>
-                                <PermissionGate
-                                  permissions={[
-                                    'sales_settings:quotation_status:edit',
-                                  ]}
-                                >
-                                  <ActionButton
-                                    Icon={IconPencil}
-                                    tooltip="Editar motivo"
-                                    onClick={() => {
-                                      setOpenDialog('edit')
-                                      setRowData(item)
-                                    }}
-                                  />
-                                </PermissionGate>
-                                <PermissionGate
-                                  permissions={[
-                                    'sales_settings:quotation_status:delete',
-                                  ]}
-                                >
-                                  <ActionButton
-                                    Icon={IconTrash}
-                                    tooltip="Excluir"
-                                    onClick={() => {
-                                      setOpenDialog('delete')
-                                      setRowData(item)
-                                    }}
-                                  />
-                                </PermissionGate>
-                              </TooltipProvider>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      </Fragment>
-                    ))}
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              <Badge
+                                className="text-white"
+                                variant="neutralLight"
+                                style={{
+                                  backgroundColor: item?.color,
+                                }}
+                              >
+                                {item?.title}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  <PermissionGate
+                                    permissions={[
+                                      'sales_settings:quotation_status:edit',
+                                    ]}
+                                  >
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar motivo"
+                                      onClick={() => {
+                                        setOpenDialog('edit')
+                                        setRowData(item)
+                                      }}
+                                    />
+                                  </PermissionGate>
+                                  <PermissionGate
+                                    permissions={[
+                                      'sales_settings:quotation_status:delete',
+                                    ]}
+                                  >
+                                    <ActionButton
+                                      Icon={IconTrash}
+                                      tooltip="Excluir"
+                                      onClick={() => {
+                                        setOpenDialog('delete')
+                                        setRowData(item)
+                                      }}
+                                    />
+                                  </PermissionGate>
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        </Fragment>
+                      ))
+                    )}
                   </TableBody>
                 </Table>
               </CardContent>

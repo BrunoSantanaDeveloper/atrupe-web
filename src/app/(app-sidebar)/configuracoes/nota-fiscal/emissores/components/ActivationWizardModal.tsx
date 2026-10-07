@@ -25,7 +25,6 @@ import {
   IconCircleCheckFilled,
   IconCircleXFilled,
   IconInfoCircle,
-  IconLoader2,
   IconPlugConnected,
 } from '@tabler/icons-react'
 
@@ -301,11 +300,8 @@ export function ActivationWizardModal({
                 variant="ghost"
                 size="sm"
                 onClick={() => readiness.refetch()}
-                disabled={readiness.isFetching}
+                isLoading={readiness.isFetching}
               >
-                {readiness.isFetching && (
-                  <IconLoader2 className="h-4 w-4 mr-2 animate-spin" />
-                )}
                 Reavaliar
               </Button>
             </div>

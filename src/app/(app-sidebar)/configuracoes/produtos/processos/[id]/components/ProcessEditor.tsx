@@ -245,7 +245,59 @@ export function ProcessEditor({
   }
 
   if (isLoading || !detail || !block || !measure) {
-    return <Skeleton className="h-[480px] w-full" />
+    // O Topbar aparece já (o título tem esqueleto próprio) e, embaixo, os
+    // cartões no formato da tela
+    const fields = (count: number) =>
+      Array.from({ length: count }, (_, index) => (
+        <div key={index} className="space-y-2">
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      ))
+    return (
+      <div className="space-y-5">
+        {!embedded && (
+          <Topbar
+            review="new"
+            title=""
+            previousPage="/configuracoes/produtos/processos"
+          />
+        )}
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-5',
+            !embedded && 'lg:grid-cols-3',
+          )}
+        >
+          <Card className={cn(!embedded && 'lg:col-span-2')}>
+            <CardHeader>
+              <Skeleton className="h-5 w-32" />
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 gap-4 px-6 sm:grid-cols-3">
+              {fields(3)}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-32" />
+            </CardHeader>
+            <CardContent className="grid grid-cols-3 gap-3 px-6">
+              {fields(3)}
+            </CardContent>
+          </Card>
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+          </CardHeader>
+          <CardContent className="space-y-3 px-6">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   const hostId = detail.hostId

@@ -4,7 +4,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
 // Components
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { NewProduct, NewProductTriggerButton } from '../NewProduct'
 import { DuplicateProductButton } from '../DuplicateProductButton'
 import { ProductFiscalDataDialog } from '../ProductFiscalData'
@@ -50,7 +51,11 @@ import {
 } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   getAssembly,
@@ -188,8 +193,10 @@ export function ProductsData({ searchParams, tabs }: Props) {
   const { composicao, ...apiParams } = searchParams
   const filters = { ...apiParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['product-list', apiParams],
     queryFn: () => getDataOld({ route: 'productRoute', filters }),
   })
@@ -340,145 +347,158 @@ export function ProductsData({ searchParams, tabs }: Props) {
       )}
 
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton />
-        ) : hasData ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                {canConfigureFiscalData && (
-                  <TableHead className="w-10">
-                    <Checkbox
-                      aria-label="Selecionar todos os produtos desta página"
-                      checked={
-                        allOnPageSelected
-                          ? true
-                          : selectedOnPage.length > 0
-                            ? 'indeterminate'
-                            : false
-                      }
-                      onCheckedChange={(checked) =>
-                        toggleAllOnPage(checked === true)
-                      }
-                    />
-                  </TableHead>
-                )}
-                <TableHead>Produto</TableHead>
-                <TableHead>Setor</TableHead>
-                {showNcmColumn && <TableHead>NCM</TableHead>}
-                {canSeeValues && <TableHead>Preço de venda</TableHead>}
-                <TableHead className="w-[100px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product) => (
-                <TableRow key={product?.id}>
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
                   {canConfigureFiscalData && (
-                    <TableCell className="w-10">
+                    <TableHead className="w-10">
                       <Checkbox
-                        aria-label={`Selecionar ${product?.name}`}
-                        checked={selectedIds.includes(product.id)}
+                        aria-label="Selecionar todos os produtos desta página"
+                        checked={
+                          allOnPageSelected
+                            ? true
+                            : selectedOnPage.length > 0
+                              ? 'indeterminate'
+                              : false
+                        }
                         onCheckedChange={(checked) =>
-                          toggleProduct(product.id, checked === true)
+                          toggleAllOnPage(checked === true)
                         }
                       />
-                    </TableCell>
+                    </TableHead>
                   )}
-                  <TableCell>
-                    <p className="font-medium">
-                      {product?.name}
-                      {showComposition && composed.has(product?.id) && (
-                        <Badge
-                          variant="blueLight"
-                          className="ml-2 align-middle"
-                        >
-                          Com composição
-                        </Badge>
-                      )}
-                    </p>
-                    <p className="text-gray">{product?.code}</p>
-                  </TableCell>
-                  <TableCell className="text-gray-600">
-                    <Badge variant="neutralLight">{product?.sectorName}</Badge>
-                  </TableCell>
-                  {showNcmColumn && (
-                    <TableCell className="text-gray-600">
-                      {product?.fiscalData?.ncm || (
-                        <span className="text-gray-400">—</span>
-                      )}
-                    </TableCell>
-                  )}
-                  {canSeeValues && (
-                    <TableCell className="text-success-700">
-                      {(() => {
-                        const unitKind =
-                          product?.items?.[0]?.unitKind || 'UNITY'
-                        const visualUnitCost = convertRawToUnitCost(
-                          unitKind,
-                          product?.unitCost || 0,
-                        )
-                        return formatCurrencyToBrl(visualUnitCost)
-                      })()}
-                    </TableCell>
-                  )}
-                  <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <TooltipProvider>
-                        {showComposition && (
-                          <ActionButton
-                            Icon={IconStack2}
-                            tooltip={`Composição de ${product?.name}`}
-                            link={`/configuracoes/produtos/${product?.id}/composicao`}
-                          />
-                        )}
-                        <PermissionGate
-                          permissions={['product_settings:products:edit']}
-                        >
-                          <ActionButton
-                            Icon={IconCurrencyReal}
-                            tooltip={`Precificar ${product?.name}`}
-                            onClick={() => {
-                              openPricing(product).catch(() =>
-                                toast.error('Erro ao abrir a precificação'),
-                              )
-                            }}
-                          />
-                          {/* Duplicar: outro produto com os mesmos dados e a
-                              mesma composição, aberto para edição */}
-                          <DuplicateProductButton
-                            productId={product?.id}
-                            name={product?.name}
-                            onDone={(newId) => {
-                              setSelectedProductId(newId)
-                              setOpenDialog('edit-product')
-                            }}
-                          />
-                          <NewProductTriggerButton
-                            editMode
-                            onOpenChange={() => {
-                              setOpenDialog('edit-product')
-                              setSelectedProductId(product?.id)
-                            }}
-                          />
-                        </PermissionGate>
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
+                  <TableHead>Produto</TableHead>
+                  <TableHead>Setor</TableHead>
+                  {showNcmColumn && <TableHead>NCM</TableHead>}
+                  {canSeeValues && <TableHead>Preço de venda</TableHead>}
+                  <TableHead className="w-[100px]"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <FilteredDataEmpty
-            title="Produto não encontrado"
-            description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo produto"
-            cta={
-              <NewProductTriggerButton
-                onOpenChange={() => setOpenDialog('new-product')}
-              />
-            }
-          />
-        )}
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableSkeletonRows
+                    cols={
+                      3 +
+                      Number(canConfigureFiscalData) +
+                      Number(showNcmColumn) +
+                      Number(canSeeValues)
+                    }
+                  />
+                ) : (
+                  products.map((product) => (
+                    <TableRow key={product?.id}>
+                      {canConfigureFiscalData && (
+                        <TableCell className="w-10">
+                          <Checkbox
+                            aria-label={`Selecionar ${product?.name}`}
+                            checked={selectedIds.includes(product.id)}
+                            onCheckedChange={(checked) =>
+                              toggleProduct(product.id, checked === true)
+                            }
+                          />
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <p className="font-medium">
+                          {product?.name}
+                          {showComposition && composed.has(product?.id) && (
+                            <Badge
+                              variant="blueLight"
+                              className="ml-2 align-middle"
+                            >
+                              Com composição
+                            </Badge>
+                          )}
+                        </p>
+                        <p className="text-gray">{product?.code}</p>
+                      </TableCell>
+                      <TableCell className="text-gray-600">
+                        <Badge variant="neutralLight">
+                          {product?.sectorName}
+                        </Badge>
+                      </TableCell>
+                      {showNcmColumn && (
+                        <TableCell className="text-gray-600">
+                          {product?.fiscalData?.ncm || (
+                            <span className="text-gray-400">—</span>
+                          )}
+                        </TableCell>
+                      )}
+                      {canSeeValues && (
+                        <TableCell className="text-success-700">
+                          {(() => {
+                            const unitKind =
+                              product?.items?.[0]?.unitKind || 'UNITY'
+                            const visualUnitCost = convertRawToUnitCost(
+                              unitKind,
+                              product?.unitCost || 0,
+                            )
+                            return formatCurrencyToBrl(visualUnitCost)
+                          })()}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            {showComposition && (
+                              <ActionButton
+                                Icon={IconStack2}
+                                tooltip={`Composição de ${product?.name}`}
+                                link={`/configuracoes/produtos/${product?.id}/composicao`}
+                              />
+                            )}
+                            <PermissionGate
+                              permissions={['product_settings:products:edit']}
+                            >
+                              <ActionButton
+                                Icon={IconCurrencyReal}
+                                tooltip={`Precificar ${product?.name}`}
+                                onClick={() => {
+                                  openPricing(product).catch(() =>
+                                    toast.error('Erro ao abrir a precificação'),
+                                  )
+                                }}
+                              />
+                              {/* Duplicar: outro produto com os mesmos dados e a
+                              mesma composição, aberto para edição */}
+                              <DuplicateProductButton
+                                productId={product?.id}
+                                name={product?.name}
+                                onDone={(newId) => {
+                                  setSelectedProductId(newId)
+                                  setOpenDialog('edit-product')
+                                }}
+                              />
+                              <NewProductTriggerButton
+                                editMode
+                                onOpenChange={() => {
+                                  setOpenDialog('edit-product')
+                                  setSelectedProductId(product?.id)
+                                }}
+                              />
+                            </PermissionGate>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          ) : (
+            <FilteredDataEmpty
+              title="Produto não encontrado"
+              description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre um novo produto"
+              cta={
+                <NewProductTriggerButton
+                  onOpenChange={() => setOpenDialog('new-product')}
+                />
+              }
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
 
       <EditPriceModal
@@ -563,6 +583,7 @@ export function ProductsData({ searchParams, tabs }: Props) {
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

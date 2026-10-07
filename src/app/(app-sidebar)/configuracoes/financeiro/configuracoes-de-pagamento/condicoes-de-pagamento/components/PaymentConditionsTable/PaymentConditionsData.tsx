@@ -21,7 +21,8 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 import { NewPaymentCondition } from '../NewPaymentCondition'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
@@ -36,7 +37,12 @@ import { SearchParamsType } from '@/types/coreTypes'
 import { deleteItemNew, getData } from '@/actions/_cruds'
 
 // Third-party
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Icon
 import { IconCircleX, IconPencil } from '@tabler/icons-react'
@@ -53,7 +59,9 @@ export function PaymentConditionsData({ searchParams }: Props) {
 
   const filters = { ...searchParams, grouped: 'true' }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
     queryKey: ['payment-condition-list', searchParams],
     queryFn: () => getData({ route: '/payment-condition', filters }),
@@ -92,109 +100,114 @@ export function PaymentConditionsData({ searchParams }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Forma de pagamento</TableHead>
-                  <TableHead>Parcelamentos</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paymentConditions.map((group) => (
-                  <Fragment key={group?.paymentMethod?.id}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={5}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {group?.paymentMethod?.name}
-                      </TableCell>
-                    </TableRow>
-                    {group?.conditions?.length
-                      ? group?.conditions?.map((condition) => (
-                          <TableRow key={condition?.id}>
-                            <TableCell className="font-medium">
-                              {condition?.name}
-                            </TableCell>
-                            <TableCell className="text-gray-600">
-                              {condition?.acceptInstallments
-                                ? `${condition?.minInstallments || 1}x ${condition?.maxInstallments ? `a ${condition?.maxInstallments}x` : ''}`
-                                : 'À vista'}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                status
-                                variant={
-                                  condition?.isActive
-                                    ? 'successLight'
-                                    : 'warningLight'
-                                }
-                              >
-                                {condition?.isActive ? 'Ativo' : 'Inativo'}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex justify-end gap-1">
-                                <TooltipProvider>
-                                  <PermissionGate
-                                    permissions={[
-                                      'financial_settings:payment_methods:edit',
-                                    ]}
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Forma de pagamento</TableHead>
+                    <TableHead>Parcelamentos</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={4} />
+                  ) : (
+                    paymentConditions.map((group) => (
+                      <Fragment key={group?.paymentMethod?.id}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={5}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {group?.paymentMethod?.name}
+                          </TableCell>
+                        </TableRow>
+                        {group?.conditions?.length
+                          ? group?.conditions?.map((condition) => (
+                              <TableRow key={condition?.id}>
+                                <TableCell className="font-medium">
+                                  {condition?.name}
+                                </TableCell>
+                                <TableCell className="text-gray-600">
+                                  {condition?.acceptInstallments
+                                    ? `${condition?.minInstallments || 1}x ${condition?.maxInstallments ? `a ${condition?.maxInstallments}x` : ''}`
+                                    : 'À vista'}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge
+                                    status
+                                    variant={
+                                      condition?.isActive
+                                        ? 'successLight'
+                                        : 'warningLight'
+                                    }
                                   >
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar"
-                                      onClick={() => {
-                                        setRowData(condition)
-                                        setOpenDialog('edit')
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconCircleX}
-                                      tooltip="Desativar"
-                                      onClick={() => {
-                                        handleDisablePaymentCondition(
-                                          condition?.id || '',
-                                        )
-                                      }}
-                                    />
-                                  </PermissionGate>
-                                </TooltipProvider>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-            <NewPaymentCondition
-              editMode
-              open={openDialog === 'edit'}
-              setOpen={setOpenDialog}
-              rowData={rowData}
+                                    {condition?.isActive ? 'Ativo' : 'Inativo'}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex justify-end gap-1">
+                                    <TooltipProvider>
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial_settings:payment_methods:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconPencil}
+                                          tooltip="Editar"
+                                          onClick={() => {
+                                            setRowData(condition)
+                                            setOpenDialog('edit')
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconCircleX}
+                                          tooltip="Desativar"
+                                          onClick={() => {
+                                            handleDisablePaymentCondition(
+                                              condition?.id || '',
+                                            )
+                                          }}
+                                        />
+                                      </PermissionGate>
+                                    </TooltipProvider>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              <NewPaymentCondition
+                editMode
+                open={openDialog === 'edit'}
+                setOpen={setOpenDialog}
+                rowData={rowData}
+              />
+            </>
+          ) : (
+            <ListDataTotalEmpty
+              title="Nenhuma condição de pagamento"
+              description="Cadastre sua primeira condição de pagamento"
+              cta={<NewPaymentCondition />}
             />
-          </>
-        ) : (
-          <ListDataTotalEmpty
-            title="Nenhuma condição de pagamento"
-            description="Cadastre sua primeira condição de pagamento"
-            cta={<NewPaymentCondition />}
-          />
-        )}
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage || 1}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

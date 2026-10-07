@@ -14,6 +14,8 @@ import { SubscriptionSummaryCards } from './SubscriptionSummaryCards'
 import { PaymentsTable } from './PaymentsTable'
 import { CancelSubscriptionDialog } from './CancelSubscriptionDialog'
 import { ContractModal } from './ContractModal'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -32,7 +34,7 @@ import { refreshPlanFeatures } from '@/actions/subscription'
 import type { BadgeType, SearchParamsType } from '@/types/coreTypes'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 const statusMap: Record<string, BadgeType> = {
   ACTIVE: { text: 'Ativa', variant: 'successLight' },
@@ -57,8 +59,14 @@ export function SubscriptionManagementClient({
     queryFn: () => getItem({ route: '/subscriptions/active' }),
   })
 
-  const { data: paymentsRes, isLoading: loadingPayments } = useQuery({
+  const {
+    data: paymentsRes,
+    isLoading: loadingPayments,
+    isPlaceholderData: paymentsPlaceholder,
+  } = useQuery({
     staleTime: Infinity,
+    // Trocar de página mantém os pagamentos anteriores até os novos chegarem
+    placeholderData: keepPreviousData,
     queryKey: ['subscription-payments', page],
     queryFn: () =>
       getData({
@@ -175,11 +183,13 @@ export function SubscriptionManagementClient({
         <div className="space-y-5">
           <SubscriptionSummaryCards subscription={subscription} />
 
-          <PaymentsTable
-            payments={payments}
-            lastPage={paymentsLastPage}
-            searchParams={searchParams}
-          />
+          <FetchingRegion isFetching={paymentsPlaceholder}>
+            <PaymentsTable
+              payments={payments}
+              lastPage={paymentsLastPage}
+              searchParams={searchParams}
+            />
+          </FetchingRegion>
 
           <CancelSubscriptionDialog
             open={cancelOpen}
@@ -208,7 +218,9 @@ function SubscriptionSkeleton() {
         ))}
       </div>
       <Card>
-        <Skeleton className="h-[calc(100vh-350px)]" />
+        <CardContent>
+          <TableSkeleton cols={7} rows={5} />
+        </CardContent>
       </Card>
     </div>
   )

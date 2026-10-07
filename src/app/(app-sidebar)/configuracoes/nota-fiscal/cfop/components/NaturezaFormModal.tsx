@@ -216,11 +216,11 @@ export function NaturezaFormModal({
           </Button>
           <Button
             type="submit"
-            disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
             onClick={form.handleSubmit(handleSubmit)}
             RightIcon={IconDeviceFloppy}
           >
-            {form.formState.isSubmitting ? 'Salvando...' : 'Salvar'}
+            Salvar
           </Button>
         </DialogFooter>
       </DialogContent>

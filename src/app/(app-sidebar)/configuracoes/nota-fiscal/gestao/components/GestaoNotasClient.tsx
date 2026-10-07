@@ -33,7 +33,7 @@ export function GestaoNotasClient() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<TableSkeleton />}>
+            <Suspense fallback={<TableSkeleton cols={7} />}>
               <NfeListClient />
             </Suspense>
           </CardContent>
@@ -49,7 +49,7 @@ export function GestaoNotasClient() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Suspense fallback={<TableSkeleton />}>
+            <Suspense fallback={<TableSkeleton cols={8} />}>
               <NfseListClient />
             </Suspense>
           </CardContent>

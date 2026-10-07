@@ -2,8 +2,7 @@
 import { useState } from 'react'
 
 // UI component Imports
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Component Imports
 import {
@@ -11,6 +10,7 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { ProductsGroupData } from './ProductsGroupData'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 
 // Type Imports
@@ -78,6 +78,7 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
           tabs={tabs}
           activeTab={searchParams?.status || 'ativos'}
           paramName="status"
+          countsLoading={isLoading}
           previousPage="/configuracoes/produtos"
           primaryCta={
             <PermissionGate permissions={['product_settings:products:create']}>
@@ -92,7 +93,10 @@ export function ProductsGroup({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              // Esta lista não tem barra de filtros: só a tabela no formato final
+              <CardContent>
+                <TableSkeleton cols={2} />
+              </CardContent>
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

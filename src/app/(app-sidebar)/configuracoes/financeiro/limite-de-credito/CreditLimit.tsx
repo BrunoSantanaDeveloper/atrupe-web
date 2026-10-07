@@ -415,7 +415,12 @@ export function CreditLimit() {
               <Button variant="neutralOutline" onClick={handleClose}>
                 Cancelar
               </Button>
-              <Button onClick={handleValidateAllTabs}>Salvar</Button>
+              <Button
+                onClick={handleValidateAllTabs}
+                isLoading={form.formState.isSubmitting}
+              >
+                Salvar
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

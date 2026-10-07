@@ -6,6 +6,7 @@ import { useState } from 'react'
 // UI
 import { toast } from 'sonner'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,7 +25,7 @@ import { ActivationWizardModal } from './ActivationWizardModal'
 import type { FiscalEnv } from '../lib/fiscal-readiness'
 
 // Icons
-import { IconBuilding, IconLoader2 } from '@tabler/icons-react'
+import { IconBuilding } from '@tabler/icons-react'
 
 // Actions
 import {
@@ -350,15 +351,6 @@ export function EmissoresListClient() {
     setWizardOpen(true)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <IconLoader2 className="w-6 h-6 animate-spin text-gray-400" />
-        <span className="ml-2 text-gray-500">Carregando empresas...</span>
-      </div>
-    )
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -374,7 +366,26 @@ export function EmissoresListClient() {
         {/* Botão Novo Emissor removido pois a lista é baseada em empresas cadastradas */}
       </div>
 
-      {combinedEmissores.length === 0 ? (
+      {isLoading ? (
+        // O título da seção aparece já; as empresas chegam no formato do cartão
+        <div className="space-y-4">
+          {Array.from({ length: 2 }, (_, index) => (
+            <div
+              key={index}
+              className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4"
+            >
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-10 rounded-lg" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+              </div>
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+          ))}
+        </div>
+      ) : combinedEmissores.length === 0 ? (
         <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
           <IconBuilding className="w-12 h-12 mx-auto text-gray-400 mb-4" />
           <h3 className="text-lg font-medium text-gray-700 mb-2">

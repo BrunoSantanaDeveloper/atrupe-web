@@ -152,7 +152,7 @@ export function SellAssetModal({ asset, open, onOpenChange }: Props) {
             </Button>
           </DialogClose>
           <Button isLoading={isPending} onClick={() => mutate()}>
-            {isPending ? 'Registrando...' : 'Registrar venda'}
+            Registrar venda
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -4,7 +4,6 @@ import { useState } from 'react'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
@@ -13,6 +12,7 @@ import {
   ListDataStatusEmpty,
 } from '@/components/common/TableEmptyState'
 import { ProductsData } from './ProductsTable/ProductsData'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { ProductsFilter } from './ProductsTable/ProductsFilter'
 import { NewProduct, NewProductTriggerButton } from './NewProduct'
@@ -234,6 +234,7 @@ export function Products({ searchParams }: SearchParamsType) {
           tabs={tabs}
           activeTab={searchParams?.status || 'ativos'}
           paramName="status"
+          countsLoading={isLoading}
           primaryCta={
             <TooltipProvider>
               <PermissionGate
@@ -330,7 +331,7 @@ export function Products({ searchParams }: SearchParamsType) {
         <div>
           <Card>
             {isLoading ? (
-              <Skeleton className="h-[calc(100vh-150px)]" />
+              <ListSkeleton cols={5} filters={1} />
             ) : totals?.todos && totals?.todos > 0 ? (
               statusEmpty ? (
                 <ListDataStatusEmpty

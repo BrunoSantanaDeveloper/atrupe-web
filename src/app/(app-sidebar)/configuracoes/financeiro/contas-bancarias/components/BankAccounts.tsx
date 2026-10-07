@@ -291,7 +291,29 @@ export function BankAccounts(_: SearchParamsType) {
           />
 
           {isLoading ? (
-            <Skeleton className="h-80 w-full" />
+            // O cartão da explicação e as linhas das contas, no formato final
+            <>
+              <Card>
+                <CardContent className="space-y-2 px-6 py-5">
+                  <Skeleton className="h-4 w-full max-w-xl" />
+                  <Skeleton className="h-4 w-2/3 max-w-md" />
+                </CardContent>
+              </Card>
+              <Card>
+                {Array.from({ length: 3 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-4 border-b border-gray-200 px-6 py-5 last:border-0"
+                  >
+                    <Skeleton className="size-10 shrink-0 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-48" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                  </div>
+                ))}
+              </Card>
+            </>
           ) : (
             <>
               <Card>
