@@ -619,7 +619,7 @@ export default function SubscriptionPage() {
               <IconArrowLeft />
             </Link>
           </Button>
-          <h1 className="text-gray-800 font-semibold text-lg">
+          <h1 className="type-page-title">
             {isAddModuleMode ? 'Adicionar módulo' : 'Assinatura'}
           </h1>
         </div>
@@ -691,9 +691,7 @@ export default function SubscriptionPage() {
               {/* Plano Section — hidden in add-module mode */}
               {!isAddModuleMode && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
-                    Plano
-                  </h2>
+                  <h2 className="type-section-title mb-1">Plano</h2>
                   <p className="text-sm text-gray-600 mb-4">
                     Escolha o plano mais compatível com o seu negócio.
                   </p>
@@ -710,7 +708,7 @@ export default function SubscriptionPage() {
 
               {/* Módulos Adicionais Section */}
               <div>
-                <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                <h2 className="type-section-title mb-1">
                   {isAddModuleMode
                     ? 'Módulos disponíveis'
                     : 'Módulos adicionais'}
@@ -743,7 +741,7 @@ export default function SubscriptionPage() {
               {/* Usuários adicionais Section — hidden in add-module mode */}
               {!isAddModuleMode && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  <h2 className="type-section-title mb-1">
                     Usuários adicionais
                   </h2>
                   <p className="text-sm text-gray-600 mb-4">
@@ -798,7 +796,7 @@ export default function SubscriptionPage() {
               {/* Dados complementares Section — hidden in add-module mode */}
               {!isAddModuleMode && (
                 <div>
-                  <h2 className="text-xl font-semibold text-gray-700 mb-1">
+                  <h2 className="type-section-title mb-1">
                     Dados complementares
                   </h2>
                   <p className="text-sm text-gray-600 mb-4">
@@ -885,7 +883,7 @@ export default function SubscriptionPage() {
               <div className="sticky top-6 space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg text-gray-700">
+                    <CardTitle>
                       {isAddModuleMode
                         ? 'Resumo dos módulos'
                         : 'Resumo da assinatura'}
@@ -1008,9 +1006,7 @@ export default function SubscriptionPage() {
                     {/* Seção de Cupom de Desconto */}
                     <div className="space-y-3 pt-2">
                       <div className="flex flex-col gap-1.5">
-                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                          Cupom de desconto
-                        </span>
+                        <span className="type-eyebrow">Cupom de desconto</span>
                         <div className="flex gap-2">
                           <Input
                             placeholder="Ex: BEMVINDO20"

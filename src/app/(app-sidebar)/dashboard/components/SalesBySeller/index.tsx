@@ -17,9 +17,7 @@ export function DashboardSalesBySeller({
   return (
     <Card className="flex-[1_1_540px]">
       <CardHeader className="flex-row gap-4 justify-between">
-        <CardTitle className="text-gray-700 font-semibold text-base">
-          Vendas por vendedor
-        </CardTitle>
+        <CardTitle>Vendas por vendedor</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <SalesBySellerChart filters={filters} />

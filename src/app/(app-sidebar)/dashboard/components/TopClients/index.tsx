@@ -15,9 +15,7 @@ export function DashboardTopClients({ filters }: DashboardTopClientsProps) {
   return (
     <Card className="flex-[1_1_540px]">
       <CardHeader className="flex-row gap-4 justify-between">
-        <CardTitle className="text-gray-700 font-semibold text-base">
-          Melhores clientes
-        </CardTitle>
+        <CardTitle>Melhores clientes</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <TopClientsChart filters={filters} />

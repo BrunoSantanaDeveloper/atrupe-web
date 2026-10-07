@@ -27,7 +27,7 @@ export function ReviewTodo({ title, rule, children, className }: Props) {
     >
       <div className="flex flex-wrap items-center gap-2">
         {rule ? (
-          <span className="rounded border border-error-300 px-1.5 py-0.5 text-[10px] font-semibold text-error-600">
+          <span className="rounded border border-error-300 px-1.5 py-0.5 text-xs font-semibold text-error-600">
             {rule}
           </span>
         ) : null}

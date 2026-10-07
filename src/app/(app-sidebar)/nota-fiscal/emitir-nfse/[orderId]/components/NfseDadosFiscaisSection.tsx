@@ -56,9 +56,7 @@ export function NfseDadosFiscaisSection({
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Dados Fiscais do Serviço
-              </CardTitle>
+              <CardTitle>Dados Fiscais do Serviço</CardTitle>
             </div>
             <AccordionTrigger
               className={cn(

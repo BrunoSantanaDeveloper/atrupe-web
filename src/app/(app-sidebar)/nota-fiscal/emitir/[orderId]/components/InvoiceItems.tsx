@@ -97,9 +97,7 @@ export function InvoiceItems({
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Itens
-                </CardTitle>
+                <CardTitle>Itens</CardTitle>
                 {filteredItems.length > 0 && (
                   <Badge variant="neutralLight" className="text-xs">
                     {filteredItems.length}
@@ -208,7 +206,7 @@ export function InvoiceItems({
                                   Configurar
                                 </Button>
                               ) : (
-                                <div className="text-[13px] text-gray-500 space-y-0.5 mt-0.5">
+                                <div className="text-sm text-gray-500 space-y-0.5 mt-0.5">
                                   <div>ICMS: {item.cstIcms || '-'}</div>
                                   <div>COFINS: {item.cstCofins || '-'}</div>
                                   <div>PIS: {item.cstPis || '-'}</div>

@@ -34,9 +34,7 @@ function ReadOnlyField({
 }) {
   return (
     <div className="space-y-0.5">
-      <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-        {label}
-      </p>
+      <p className="type-eyebrow">{label}</p>
       <p className="text-sm font-medium text-gray-900">{value || '—'}</p>
     </div>
   )
@@ -103,9 +101,7 @@ export function IdentificacaoTab({ emissor, isEditing }: Props) {
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <IconBuilding className="h-4 w-4 text-gray-500" />
-            <h4 className="text-sm font-semibold text-gray-900">
-              Dados cadastrais da empresa
-            </h4>
+            <h4 className="type-body-strong">Dados cadastrais da empresa</h4>
           </div>
           <Button
             type="button"

@@ -11,9 +11,7 @@ export function DashboardExpenses() {
       <CardHeader>
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="errorLight" Icon={IconTrendingDown} />
-          <CardTitle className="text-gray-700 font-semibold text-base">
-            Despesa
-          </CardTitle>
+          <CardTitle>Despesa</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6">

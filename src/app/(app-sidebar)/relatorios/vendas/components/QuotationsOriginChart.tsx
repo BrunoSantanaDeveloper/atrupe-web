@@ -59,9 +59,7 @@ export function QuotationsOriginChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Origens dos orçamentos
-        </CardTitle>
+        <CardTitle>Origens dos orçamentos</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (

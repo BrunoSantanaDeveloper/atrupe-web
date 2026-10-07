@@ -135,9 +135,7 @@ export function CfopFormModal({
                 <path d="M5 12l14 0" />
               </svg>
             </div>
-            <DialogTitle className="text-lg font-semibold text-gray-900">
-              {isEditing ? 'Editar CFOP' : 'Novo CFOP'}
-            </DialogTitle>
+            <DialogTitle>{isEditing ? 'Editar CFOP' : 'Novo CFOP'}</DialogTitle>
           </div>
           {/* Close button is handled by DialogPrimitive usually, but we can have a custom one if needed. 
                          The default generic DialogContent usually adds a close X. We will rely on that or user can click outside. 

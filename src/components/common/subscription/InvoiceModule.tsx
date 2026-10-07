@@ -31,7 +31,7 @@ export function InvoiceModule({
 
   return (
     <div className="mt-8">
-      <h3 className="font-semibold text-gray-700 mb-1">Nota Fiscal</h3>
+      <h3 className="type-card-title mb-1">Nota Fiscal</h3>
       <p className="text-xs text-muted-foreground mb-2">
         Contrate recursos adicionais para impulsionar o seu plano.
       </p>

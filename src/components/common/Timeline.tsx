@@ -25,9 +25,7 @@ export function Timeline({ events }: Props) {
             <div className="text-xs text-gray">
               {event.date} às {event.time} por {event.author}
             </div>
-            <h3 className="mt-1.5 text-sm font-medium text-gray-800">
-              {event.title}
-            </h3>
+            <h3 className="type-body-strong mt-1.5">{event.title}</h3>
             {event.details && event.details.length > 0 && (
               <ul className="mt-2 space-y-1 text-xs text-gray-600">
                 {event.details.map((detail, detailIndex) => (

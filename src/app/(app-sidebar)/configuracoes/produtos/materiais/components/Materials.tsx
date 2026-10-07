@@ -221,7 +221,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                     <TableCell />
                                     <TableCell
                                       colSpan={6}
-                                      className="py-2 text-xs font-medium uppercase tracking-wide text-gray"
+                                      className="type-eyebrow py-2"
                                     >
                                       {material.subcategory}
                                     </TableCell>

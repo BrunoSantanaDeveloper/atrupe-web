@@ -350,7 +350,7 @@ export default function AdminCouponsPage() {
                       className="hover:bg-gray-50/50 transition-colors text-gray-700"
                     >
                       <td className="p-4 font-semibold text-gray-900">
-                        <span className="bg-orange-50 border border-orange-100 text-orange-700 px-2 py-0.5 rounded uppercase font-mono tracking-wide text-xs">
+                        <span className="type-eyebrow bg-orange-50 border border-orange-100 text-orange-700 px-2 py-0.5 rounded font-mono">
                           {coupon.code}
                         </span>
                         {coupon.description && (
@@ -399,7 +399,7 @@ export default function AdminCouponsPage() {
                         <span className="text-gray-400">
                           /{coupon.maxUses !== null ? coupon.maxUses : '∞'}
                         </span>
-                        <span className="block text-[10px] text-gray-400 mt-0.5">
+                        <span className="block text-xs text-gray-400 mt-0.5">
                           Limite/Empresa: {coupon.maxUsesPerCompany}
                         </span>
                       </td>
@@ -484,7 +484,7 @@ export default function AdminCouponsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[650px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-4">
-            <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-gray-900">
+            <DialogTitle className="flex items-center gap-2.5">
               <IconTicket size={22} className="text-[#FF4201]" />
               <span>{editingCoupon ? 'Editar Cupom' : 'Criar Novo Cupom'}</span>
             </DialogTitle>
@@ -494,9 +494,7 @@ export default function AdminCouponsPage() {
             <DialogBody className="max-h-[70vh] overflow-y-auto space-y-4 pr-1">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Código do Cupom *
-                  </label>
+                  <label className="type-eyebrow">Código do Cupom *</label>
                   <input
                     type="text"
                     required
@@ -509,9 +507,7 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Status
-                  </label>
+                  <label className="type-eyebrow">Status</label>
                   <div className="flex items-center h-10 gap-2">
                     <input
                       type="checkbox"
@@ -531,9 +527,7 @@ export default function AdminCouponsPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-gray-600 uppercase">
-                  Descrição Interna
-                </label>
+                <label className="type-eyebrow">Descrição Interna</label>
                 <input
                   type="text"
                   placeholder="Ex: Promoção de aniversário, cupom de parceiro, etc."
@@ -545,9 +539,7 @@ export default function AdminCouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Tipo de Desconto
-                  </label>
+                  <label className="type-eyebrow">Tipo de Desconto</label>
                   <select
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={discountType}
@@ -561,7 +553,7 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
+                  <label className="type-eyebrow">
                     {discountType === 'PERCENT'
                       ? 'Desconto (%) *'
                       : 'Desconto (R$) *'}
@@ -582,9 +574,7 @@ export default function AdminCouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Duração do Desconto
-                  </label>
+                  <label className="type-eyebrow">Duração do Desconto</label>
                   <select
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
                     value={durationType}
@@ -602,9 +592,7 @@ export default function AdminCouponsPage() {
 
                 {durationType === 'MONTHS' && (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-gray-600 uppercase">
-                      Qtd de Meses *
-                    </label>
+                    <label className="type-eyebrow">Qtd de Meses *</label>
                     <input
                       type="number"
                       required
@@ -621,9 +609,7 @@ export default function AdminCouponsPage() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Limite total de usos
-                  </label>
+                  <label className="type-eyebrow">Limite total de usos</label>
                   <input
                     type="number"
                     min="1"
@@ -635,7 +621,7 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
+                  <label className="type-eyebrow">
                     Limite usos por empresa
                   </label>
                   <input
@@ -650,7 +636,7 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
+                  <label className="type-eyebrow">
                     Valor Mínimo Plano (R$)
                   </label>
                   <input
@@ -666,9 +652,7 @@ export default function AdminCouponsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Início da Validade
-                  </label>
+                  <label className="type-eyebrow">Início da Validade</label>
                   <input
                     type="date"
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
@@ -678,9 +662,7 @@ export default function AdminCouponsPage() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-600 uppercase">
-                    Fim da Validade
-                  </label>
+                  <label className="type-eyebrow">Fim da Validade</label>
                   <input
                     type="date"
                     className="w-full h-10 border border-gray-200 rounded-lg px-3 text-sm focus:border-[#FF4201] focus:ring-1 focus:ring-[#FF4201] outline-none"
@@ -694,7 +676,7 @@ export default function AdminCouponsPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-gray-600 uppercase">
+                  <span className="type-eyebrow">
                     Restrito a Planos Específicos
                   </span>
                   <button
@@ -734,10 +716,7 @@ export default function AdminCouponsPage() {
                   checked={appliesToModules}
                   onChange={(e) => setAppliesToModules(e.target.checked)}
                 />
-                <label
-                  htmlFor="appliesToModules"
-                  className="text-xs font-semibold text-gray-600 uppercase"
-                >
+                <label htmlFor="appliesToModules" className="type-eyebrow">
                   Pode ser aplicado na contratação de módulos adicionais
                 </label>
               </div>
@@ -771,7 +750,7 @@ export default function AdminCouponsPage() {
       <Dialog open={isUsagesOpen} onOpenChange={setIsUsagesOpen}>
         <DialogContent className="sm:max-w-[750px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-4">
-            <DialogTitle className="flex items-center gap-2 text-lg font-bold text-gray-900">
+            <DialogTitle className="flex items-center gap-2">
               <IconEye size={22} className="text-[#FF4201]" />
               <span>
                 Histórico de Usos do Cupom:{' '}
@@ -817,7 +796,7 @@ export default function AdminCouponsPage() {
                       <td className="p-3">
                         {new Date(usage.createdAt).toLocaleString()}
                       </td>
-                      <td className="p-3 font-mono text-[11px] text-gray-600">
+                      <td className="p-3 font-mono text-xs text-gray-600">
                         {usage.companyId}
                       </td>
                       <td className="p-3 text-right">

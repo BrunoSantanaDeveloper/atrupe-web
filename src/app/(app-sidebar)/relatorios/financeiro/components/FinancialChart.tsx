@@ -78,9 +78,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            {tab === 'receitas' ? 'Receitas' : 'Despesas'}
-          </CardTitle>
+          <CardTitle>{tab === 'receitas' ? 'Receitas' : 'Despesas'}</CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <Skeleton className="h-[304px] w-full" />
@@ -102,9 +100,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            {tab === 'receitas' ? 'Receitas' : 'Despesas'}
-          </CardTitle>
+          <CardTitle>{tab === 'receitas' ? 'Receitas' : 'Despesas'}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center h-[384px]">
@@ -120,9 +116,7 @@ export function FinancialChart({ searchParams, tab }: FinancialChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          {tab === 'receitas' ? 'Receitas' : 'Despesas'}
-        </CardTitle>
+        <CardTitle>{tab === 'receitas' ? 'Receitas' : 'Despesas'}</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <ChartContainer

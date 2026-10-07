@@ -961,9 +961,7 @@ function AssemblyEditorBody({
               ) : (
                 <PermissionGate
                   permissions={EDIT}
-                  fallback={
-                    <CardTitle className="text-base">{item.name}</CardTitle>
-                  }
+                  fallback={<CardTitle>{item.name}</CardTitle>}
                 >
                   <button
                     type="button"
@@ -971,7 +969,7 @@ function AssemblyEditorBody({
                     title="Renomear etapa"
                     onClick={() => setRenamingId(item.id)}
                   >
-                    <CardTitle className="text-base">{item.name}</CardTitle>
+                    <CardTitle>{item.name}</CardTitle>
                     <IconPencil
                       size={14}
                       aria-hidden="true"

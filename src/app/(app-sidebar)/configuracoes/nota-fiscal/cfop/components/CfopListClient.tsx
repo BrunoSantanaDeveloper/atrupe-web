@@ -185,7 +185,7 @@ export function CfopListClient() {
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
             <div>
-              <h2 className="text-lg font-semibold">Tabela de CFOP</h2>
+              <h2 className="type-section-title">Tabela de CFOP</h2>
               <p className="text-sm text-gray-500">
                 Gerencie os CFOPs utilizados na emissão de notas fiscais
               </p>
@@ -205,9 +205,7 @@ export function CfopListClient() {
         ) : cfops.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
             <IconArrowsSplit className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-700 mb-2">
-              Nenhum CFOP cadastrado
-            </h3>
+            <h3 className="type-card-title mb-2">Nenhum CFOP cadastrado</h3>
             <p className="text-gray-500 mb-4">
               Adicione CFOPs customizados para usar nas suas notas fiscais
             </p>
@@ -223,16 +221,14 @@ export function CfopListClient() {
                   <th className="px-4 py-3 text-left w-12">
                     {/* Status indicator space or similar if needed */}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Código
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="type-eyebrow px-4 py-3 text-left">Código</th>
+                  <th className="type-eyebrow px-4 py-3 text-left">
                     Descrição
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="type-eyebrow px-4 py-3 text-left">
                     Informações de uso
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-16">
+                  <th className="type-eyebrow px-4 py-3 text-left w-16">
                     Ações
                   </th>
                 </tr>

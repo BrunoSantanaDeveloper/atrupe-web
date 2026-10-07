@@ -21,7 +21,7 @@ export function AdditionalUsers({
 
   return (
     <div className="mt-8">
-      <h3 className="font-semibold text-gray-700 mb-1">Usuários adicionais</h3>
+      <h3 className="type-card-title mb-1">Usuários adicionais</h3>
       <p className="text-xs text-muted-foreground mb-2">
         Adicione quantos usuários quiser ao seu plano.
       </p>

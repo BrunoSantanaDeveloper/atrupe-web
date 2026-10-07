@@ -217,7 +217,7 @@ export function CreditLimit() {
                         (method, methodIndex) => (
                           <div key={method.id}>
                             <div className="w-full bg-gray-100 h-11 px-6 border-gray-200 flex items-center">
-                              <h3 className="font-medium text-gray-500 text-xs">
+                              <h3 className="type-body-strong">
                                 {method.name}
                               </h3>
                             </div>
@@ -261,7 +261,7 @@ export function CreditLimit() {
                         (method, methodIndex) => (
                           <div key={method.id}>
                             <div className="w-full bg-gray-100 h-11 px-6 border-gray-200 flex items-center">
-                              <h3 className="font-medium text-gray-500 text-xs">
+                              <h3 className="type-body-strong">
                                 {method.name}
                               </h3>
                             </div>
@@ -309,9 +309,7 @@ export function CreditLimit() {
                       >
                         <CardHeader>
                           <div className="flex justify-between">
-                            <CardTitle className="text-gray-700 font-semibold text-base">
-                              Opções avançadas
-                            </CardTitle>
+                            <CardTitle>Opções avançadas</CardTitle>
                             <AccordionTrigger
                               className={cn(
                                 buttonVariants({

@@ -23,9 +23,7 @@ export default function NewPasswordPage({
   return (
     <>
       <CardHeader className="p-0 mb-8 text-center">
-        <CardTitle className="text-xl font-bold">
-          Criação de nova senha
-        </CardTitle>
+        <CardTitle>Criação de nova senha</CardTitle>
       </CardHeader>
       <CardContent>
         <NewPassword token={searchParams.token} />

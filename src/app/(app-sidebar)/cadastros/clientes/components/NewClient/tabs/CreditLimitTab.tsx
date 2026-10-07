@@ -74,9 +74,7 @@ export function CreditLimitTab() {
           {paymentMethods.fields.map((method, methodIndex) => (
             <div key={method.id}>
               <div className="w-full bg-gray-100 h-11 px-6 border-gray-200 flex items-center">
-                <h3 className="font-medium text-gray-500 text-xs">
-                  {method.name}
-                </h3>
+                <h3 className="type-body-strong">{method.name}</h3>
               </div>
 
               <div className="">

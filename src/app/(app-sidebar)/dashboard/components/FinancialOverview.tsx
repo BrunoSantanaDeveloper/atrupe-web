@@ -96,9 +96,7 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Resumo financeiro
-        </CardTitle>
+        <CardTitle>Resumo financeiro</CardTitle>
         <PermissionGate
           requireAll
           permissions={['financial:flow:view', 'values:values:view']}

@@ -73,9 +73,7 @@ export function InvoiceRecipientSection({
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconUserCog} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Destinatário / Tomador
-              </CardTitle>
+              <CardTitle>Destinatário / Tomador</CardTitle>
             </div>
             <div className="flex gap-2">
               {/* Botão trocar cliente */}
@@ -122,9 +120,7 @@ export function InvoiceRecipientSection({
                   >
                     {row.map((field, i) => (
                       <div key={i} className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          {field.label}
-                        </p>
+                        <p className="type-eyebrow">{field.label}</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {field.value}
                         </p>

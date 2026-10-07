@@ -42,9 +42,7 @@ export function ActiveUsersAreaChart({
         {subtitle && (
           <span className="text-xs font-medium text-gray-500">{subtitle}</span>
         )}
-        {title && (
-          <h3 className="text-base font-semibold text-gray-900">{title}</h3>
-        )}
+        {title && <h3 className="type-card-title">{title}</h3>}
       </div>
 
       <ChartContainer config={chartConfig} className="w-full h-64">

@@ -88,9 +88,7 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
   return (
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Resumo de vendas
-        </CardTitle>
+        <CardTitle>Resumo de vendas</CardTitle>
         <PermissionGate
           requireAll
           permissions={['reports:sales:view', 'values:values:view']}

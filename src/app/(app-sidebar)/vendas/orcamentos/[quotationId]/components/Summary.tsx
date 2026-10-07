@@ -167,9 +167,7 @@ export function QuotationSummary({ data, onEditClick, editDisabled }: Props) {
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Resumo
-                </CardTitle>
+                <CardTitle>Resumo</CardTitle>
               </div>
               <div className="flex gap-3">
                 <TooltipProvider>

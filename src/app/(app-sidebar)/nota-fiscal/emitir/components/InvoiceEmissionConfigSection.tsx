@@ -123,9 +123,7 @@ function ReadOnlyField({
 }) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-        {label}
-      </p>
+      <p className="type-eyebrow">{label}</p>
       <p className="text-sm font-semibold text-gray-900">{value || '-'}</p>
     </div>
   )
@@ -183,9 +181,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Configuracao de emissao
-              </CardTitle>
+              <CardTitle>Configuracao de emissao</CardTitle>
             </div>
             <AccordionTrigger
               className={cn(
@@ -484,9 +480,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                 </div>
 
                 <div className="space-y-1 self-end">
-                  <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
-                    Destino operacao
-                  </p>
+                  <p className="type-eyebrow">Destino operacao</p>
                   <p className="min-h-10 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700">
                     {getDestinoLabel(data.emissao.destinoOperacao)}
                   </p>

@@ -93,9 +93,7 @@ export function Main() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Usuários Online
-            </CardTitle>
+            <CardTitle>Usuários Online</CardTitle>
             <IconCircleCheck className="text-green-400" />
           </CardHeader>
           <CardContent className="p-6">
@@ -108,9 +106,7 @@ export function Main() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Empresas Online
-            </CardTitle>
+            <CardTitle>Empresas Online</CardTitle>
             <IconBuildingCommunity className="text-purple-400" />
           </CardHeader>
           <CardContent className="p-6">
@@ -123,9 +119,7 @@ export function Main() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total de Sessões Ativas
-            </CardTitle>
+            <CardTitle>Total de Sessões Ativas</CardTitle>
             <IconClock className="text-blue-400" />
           </CardHeader>
           <CardContent className="p-6">

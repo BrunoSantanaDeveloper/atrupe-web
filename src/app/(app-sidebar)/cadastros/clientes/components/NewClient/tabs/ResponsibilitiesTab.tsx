@@ -31,9 +31,7 @@ export function ResponsibilitiesTab() {
       {fields.map((field, index) => (
         <div key={field.id} className="relative space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-md text-gray-700 font-medium">
-              Responsável {index + 1}
-            </h3>
+            <h3 className="type-card-title">Responsável {index + 1}</h3>
             {index > 0 && (
               <Button
                 type="button"

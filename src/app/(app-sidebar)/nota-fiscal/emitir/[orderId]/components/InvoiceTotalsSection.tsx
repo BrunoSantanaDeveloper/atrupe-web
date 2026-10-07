@@ -56,9 +56,7 @@ export function InvoiceTotalsSection({
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Totais
-                </CardTitle>
+                <CardTitle>Totais</CardTitle>
               </div>
               <AccordionTrigger
                 className={cn(
@@ -76,9 +74,7 @@ export function InvoiceTotalsSection({
                   {/* Row 1: Invoice Components */}
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 p-6 border-b border-gray-100">
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                        Valor Prod/Serv
-                      </p>
+                      <p className="type-eyebrow">Valor Prod/Serv</p>
                       <p className="text-sm font-semibold text-brand-600">
                         {formatCurrency(totais.valorProdutos)}
                       </p>
@@ -90,9 +86,7 @@ export function InvoiceTotalsSection({
                       { label: 'Outras desps.', value: totais.outrasDesepesas },
                     ].map((field, i) => (
                       <div key={i} className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          {field.label}
-                        </p>
+                        <p className="type-eyebrow">{field.label}</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {formatOrDash(field.value)}
                         </p>
@@ -112,9 +106,7 @@ export function InvoiceTotalsSection({
                       { label: 'Valor COFINS', value: totais.valorCofins },
                     ].map((field, i) => (
                       <div key={i} className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          {field.label}
-                        </p>
+                        <p className="type-eyebrow">{field.label}</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {formatOrDash(field.value)}
                         </p>
@@ -125,17 +117,13 @@ export function InvoiceTotalsSection({
                   {/* Row 3: Grand Total */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 p-6 bg-gray-50/50">
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                        Total Tributos
-                      </p>
+                      <p className="type-eyebrow">Total Tributos</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {formatOrDash(totais.valorTotalTributos)}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                        Valor da Nota
-                      </p>
+                      <p className="type-eyebrow">Valor da Nota</p>
                       <p className="text-lg font-bold text-brand-600">
                         {formatCurrency(totais.valorNota)}
                       </p>

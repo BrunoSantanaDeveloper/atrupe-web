@@ -199,9 +199,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Pagamento
-                </CardTitle>
+                <CardTitle>Pagamento</CardTitle>
                 {hasDivergence && (
                   <Badge
                     variant="warning"
@@ -350,9 +348,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Duplicatas
-                </CardTitle>
+                <CardTitle>Duplicatas</CardTitle>
               </div>
               <div className="flex gap-3">
                 <Button
@@ -436,9 +432,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-gray-500">
-                              Número
-                            </Label>
+                            <Label className="type-eyebrow">Número</Label>
                             <Input
                               value={dup.numero}
                               onChange={(e) =>
@@ -447,9 +441,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                             />
                           </div>
                           <div className="space-y-1">
-                            <Label className="text-[10px] uppercase text-gray-500">
-                              Vencimento
-                            </Label>
+                            <Label className="type-eyebrow">Vencimento</Label>
                             <Input
                               type="date"
                               value={dup.dataVencimento}
@@ -464,9 +456,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <Label className="text-[10px] uppercase text-gray-500">
-                            Valor
-                          </Label>
+                          <Label className="type-eyebrow">Valor</Label>
                           <Input
                             type="text"
                             inputMode="decimal"

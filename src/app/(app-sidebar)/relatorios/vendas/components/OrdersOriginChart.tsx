@@ -57,9 +57,7 @@ export function OrdersOriginChart({ searchParams }: OrdersOriginChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base font-semibold text-gray-700">
-          Origens das OS
-        </CardTitle>
+        <CardTitle>Origens das OS</CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         {isLoading ? (

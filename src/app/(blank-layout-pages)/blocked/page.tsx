@@ -72,9 +72,7 @@ export default async function BlockedPage() {
                   rounded
                 />
               </div>
-              <CardTitle className="text-lg font-semibold text-gray-700">
-                Conta Suspensa
-              </CardTitle>
+              <CardTitle>Conta Suspensa</CardTitle>
             </CardHeader>
             <CardContent className="p-0 space-y-6">
               <p className="text-gray-600 text-center text-sm">

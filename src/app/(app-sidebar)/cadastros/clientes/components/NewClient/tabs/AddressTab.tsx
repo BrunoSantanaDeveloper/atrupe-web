@@ -45,9 +45,7 @@ export function AddressTab() {
         return (
           <div key={field.id} className="relative space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-md text-gray-700 font-medium">
-                Endereço {index + 1}
-              </h3>
+              <h3 className="type-card-title">Endereço {index + 1}</h3>
               {index > 0 && (
                 <Button
                   type="button"

@@ -11,9 +11,7 @@ export function DashboardRevenues() {
       <CardHeader>
         <div className="flex gap-3 items-center">
           <FeaturedIcon variant="successLight" Icon={IconTrendingUp} />
-          <CardTitle className="text-gray-700 font-semibold text-base">
-            Receita
-          </CardTitle>
+          <CardTitle>Receita</CardTitle>
         </div>
       </CardHeader>
       <CardContent className="p-6">
