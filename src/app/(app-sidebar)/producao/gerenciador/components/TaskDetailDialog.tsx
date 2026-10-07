@@ -31,6 +31,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 
+// Hooks
+import { usePending } from '@/hooks/usePending'
+
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -102,6 +105,7 @@ export function TaskDetailDialog({
   const [status, setStatus] = useState<TaskStatus>('PRODUCTION')
   const [stepIndex, setStepIndex] = useState(0)
   const [worker, setWorker] = useState('')
+  const { pending, track } = usePending()
 
   useEffect(() => {
     if (!task) return
@@ -119,17 +123,26 @@ export function TaskDetailDialog({
 
   if (!task) return null
 
-  const run = async (
-    action: Promise<{ success: boolean; message: string; data?: unknown }>,
+  // `key` diz qual botão fica em progresso enquanto a ação grava
+  const run = (
+    key: string,
+    action: () => Promise<{
+      success: boolean
+      message: string
+      data?: unknown
+    }>,
     success?: string,
-  ) => {
-    const res = await action
-    if (!res.success) return toast.error(res.message)
-    toast.success(
-      typeof res.data === 'string' ? res.data : success || 'Tarefa atualizada',
-    )
-    onChanged()
-  }
+  ) =>
+    track(key, async () => {
+      const res = await action()
+      if (!res.success) return toast.error(res.message)
+      toast.success(
+        typeof res.data === 'string'
+          ? res.data
+          : success || 'Tarefa atualizada',
+      )
+      onChanged()
+    })
 
   const badge = taskStatusBadge(task)
   const working = collaborators.filter(
@@ -287,13 +300,15 @@ export function TaskDetailDialog({
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button
+                    isLoading={pending === 'action-1'}
                     type="button"
                     size="sm"
                     variant="neutralOutline"
                     disabled={!schedule.date || !schedule.minutes}
                     onClick={() =>
                       run(
-                        scheduleTask({ id: task.id, schedule }),
+                        'action-1',
+                        () => scheduleTask({ id: task.id, schedule }),
                         'Tarefa agendada',
                       )
                     }
@@ -302,12 +317,14 @@ export function TaskDetailDialog({
                   </Button>
                   {task.schedule && (
                     <Button
+                      isLoading={pending === 'action-2'}
                       type="button"
                       size="sm"
                       variant="link"
                       onClick={() =>
                         run(
-                          scheduleTask({ id: task.id, schedule: null }),
+                          'action-2',
+                          () => scheduleTask({ id: task.id, schedule: null }),
                           'Agendamento removido',
                         )
                       }
@@ -334,13 +351,16 @@ export function TaskDetailDialog({
                 />
                 <div className="flex flex-wrap gap-2">
                   <Button
+                    isLoading={pending === 'action-3'}
                     type="button"
                     size="sm"
                     variant="neutralOutline"
                     disabled={!worker}
                     onClick={() =>
                       run(
-                        assignTask({ id: task.id, collaboratorId: worker }),
+                        'action-3',
+                        () =>
+                          assignTask({ id: task.id, collaboratorId: worker }),
                         'Tarefa atribuída',
                       )
                     }
@@ -349,6 +369,7 @@ export function TaskDetailDialog({
                   </Button>
                   {task.taskType.timeControl && open && (
                     <Button
+                      isLoading={pending === 'action-4'}
                       type="button"
                       size="sm"
                       variant="neutralOutline"
@@ -356,7 +377,9 @@ export function TaskDetailDialog({
                       disabled={!worker || task.waitingBase}
                       onClick={() =>
                         run(
-                          startWork({ id: task.id, collaboratorId: worker }),
+                          'action-4',
+                          () =>
+                            startWork({ id: task.id, collaboratorId: worker }),
                           'Relógio iniciado',
                         )
                       }
@@ -379,13 +402,15 @@ export function TaskDetailDialog({
                       },
                     )}
                     <Button
+                      isLoading={pending === 'action-5'}
                       type="button"
                       size="sm"
                       variant="errorGhost"
                       LeftIcon={IconPlayerStop}
                       onClick={() =>
                         run(
-                          stopWork({ collaboratorId: person.id }),
+                          'action-5',
+                          () => stopWork({ collaboratorId: person.id }),
                           'Relógio parado',
                         )
                       }
@@ -423,6 +448,7 @@ export function TaskDetailDialog({
                 onChange={(value) => value && setStatus(value as TaskStatus)}
               />
               <Button
+                isLoading={pending === 'action-6'}
                 type="button"
                 variant="neutralOutline"
                 disabled={
@@ -430,7 +456,8 @@ export function TaskDetailDialog({
                 }
                 onClick={() =>
                   run(
-                    setTaskStatus({ id: task.id, status, stepIndex }),
+                    'action-6',
+                    () => setTaskStatus({ id: task.id, status, stepIndex }),
                     'Status alterado',
                   )
                 }
@@ -459,7 +486,10 @@ export function TaskDetailDialog({
                 type="button"
                 RightIcon={IconCircleCheck}
                 disabled={!open || task.waitingBase}
-                onClick={() => run(advanceTask({ id: task.id }))}
+                isLoading={pending === 'advance'}
+                onClick={() =>
+                  run('advance', () => advanceTask({ id: task.id }))
+                }
               >
                 {lastStep ? 'Concluir tarefa' : 'Concluir etapa'}
               </Button>

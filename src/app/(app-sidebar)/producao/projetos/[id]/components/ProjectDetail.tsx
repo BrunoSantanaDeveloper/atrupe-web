@@ -61,6 +61,7 @@ import {
 
 // Hooks / Store / Consts
 import { useAlertDialog } from '@/store/useAlertDialog'
+import { usePending } from '@/hooks/usePending'
 import { projectStatusObj } from '@/consts/productionManager'
 
 // Third-party
@@ -88,6 +89,7 @@ export function ProjectDetail({ id }: { id: string }) {
   const [taskId, setTaskId] = useState<string | null>(null)
   const [deliveryOpen, setDeliveryOpen] = useState(false)
   const [due, setDue] = useState('')
+  const { pending: savingDelivery, track } = usePending()
 
   const { data, isLoading } = useQuery({
     queryKey: ['production-project', id],
@@ -427,13 +429,16 @@ export function ProjectDetail({ id }: { id: string }) {
             <Button
               type="button"
               disabled={!due}
-              onClick={async () => {
-                const res = await changeDelivery({ id, due })
-                if (!res.success) return toast.error(res.message)
-                toast.success('Entrega alterada')
-                setDeliveryOpen(false)
-                await refresh()
-              }}
+              isLoading={!!savingDelivery}
+              onClick={() =>
+                track('delivery', async () => {
+                  const res = await changeDelivery({ id, due })
+                  if (!res.success) return toast.error(res.message)
+                  toast.success('Entrega alterada')
+                  setDeliveryOpen(false)
+                  await refresh()
+                })
+              }
             >
               Salvar
             </Button>

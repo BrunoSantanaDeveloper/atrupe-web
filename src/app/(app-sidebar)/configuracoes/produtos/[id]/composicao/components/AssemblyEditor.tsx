@@ -142,6 +142,7 @@ import { convertRawToUnitCost } from '@/components/common/form/global-inputs/pro
 
 // Hooks / Store / Consts
 import { useSector } from '@/hooks/queries/useSector'
+import { usePending } from '@/hooks/usePending'
 import { usePermissions } from '@/hooks/usePermissions'
 import { sectorIconByName } from '@/consts/sectors'
 import {
@@ -426,6 +427,7 @@ function AssemblyEditorBody({
 
   // A variação vista fica na URL (design.md §8): ?variacao=
   const router = useRouter()
+  const { pending: savingComposition, track } = usePending()
   const params = useSearchParams()
   const variationId = params.get('variacao')
   const setVariation = (id: string | null) =>
@@ -657,17 +659,18 @@ function AssemblyEditorBody({
   // descritivo técnico, que tem campo livre; o resto grava por ação
   const PRODUCTS_PATH = '/configuracoes/produtos'
   const pendingDescription = description !== assembly.technicalDescription
-  const saveComposition = async () => {
-    if (pendingDescription) {
-      const res = await updateAssembly({
-        productId,
-        values: { technicalDescription: description },
-      })
-      if (!res.success) return toast.error(res.message)
-    }
-    toast.success('Composição salva')
-    router.push(PRODUCTS_PATH)
-  }
+  const saveComposition = () =>
+    track('save', async () => {
+      if (pendingDescription) {
+        const res = await updateAssembly({
+          productId,
+          values: { technicalDescription: description },
+        })
+        if (!res.success) return toast.error(res.message)
+      }
+      toast.success('Composição salva')
+      router.push(PRODUCTS_PATH)
+    })
   const closeComposition = () => {
     if (!pendingDescription) return router.push(PRODUCTS_PATH)
     alertDialog.open({
@@ -2542,6 +2545,7 @@ function AssemblyEditorBody({
                   type="button"
                   RightIcon={IconCircleCheck}
                   onClick={saveComposition}
+                  isLoading={!!savingComposition}
                 >
                   Salvar
                 </Button>
