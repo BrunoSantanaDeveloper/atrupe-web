@@ -5,7 +5,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 // Quantas colunas a tabela tem, medido no cabeçalho depois de montar. Linhas
-// de grupo e de estado usam isso para ocupar a largura toda sem que a tela
+// de grupo usam isso para ocupar a largura toda sem que a tela
 // informe um colSpan (que costumava ficar errado quando colunas eram
 // condicionais).
 const TableColumnsContext = React.createContext<number>(1)
@@ -187,22 +187,6 @@ const TableGroupRow = React.forwardRef<
 })
 TableGroupRow.displayName = 'TableGroupRow'
 
-// Linha única que ocupa todas as colunas (estado vazio, expansão).
-const TableFullRow = React.forwardRef<
-  HTMLTableRowElement,
-  React.HTMLAttributes<HTMLTableRowElement> & { cellClassName?: string }
->(({ className, cellClassName, children, ...props }, ref) => {
-  const columns = React.useContext(TableColumnsContext)
-  return (
-    <tr ref={ref} data-span-all="" className={className} {...props}>
-      <td colSpan={columns} className={cellClassName}>
-        {children}
-      </td>
-    </tr>
-  )
-})
-TableFullRow.displayName = 'TableFullRow'
-
 const TableCaption = React.forwardRef<
   HTMLTableCaptionElement,
   React.HTMLAttributes<HTMLTableCaptionElement>
@@ -215,11 +199,6 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = 'TableCaption'
 
-/** Colunas da tabela atual (para quem ainda precisa de colSpan explícito). */
-function useTableColumns() {
-  return React.useContext(TableColumnsContext)
-}
-
 export {
   Table,
   TableHeader,
@@ -229,7 +208,5 @@ export {
   TableRow,
   TableCell,
   TableGroupRow,
-  TableFullRow,
   TableCaption,
-  useTableColumns,
 }

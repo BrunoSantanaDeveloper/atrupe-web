@@ -30,10 +30,6 @@ const ROLE_CLASS: Record<TypographyRole, string> = {
   'nav-group': 'type-nav-group',
 }
 
-export function typeRole(role: TypographyRole) {
-  return ROLE_CLASS[role]
-}
-
 type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4'
 
 const DEFAULT_HEADING_ROLE: Record<HeadingTag, TypographyRole> = {

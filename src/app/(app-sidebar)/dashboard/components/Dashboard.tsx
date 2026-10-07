@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { IconEye, IconEyeOff } from '@tabler/icons-react'
 
 import { Card, CardContent } from '@/components/ui/card'
+import { Heading } from '@/components/ui/typography'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -95,9 +96,12 @@ function DashboardContent() {
     <div className="space-y-4 mt-1 w-full">
       <FiscalOnboardingBanner />
 
-      <div className="flex items-center justify-end gap-2">
-        <DashboardPeriodFilter value={period} onChange={setPeriod} />
-        <ToggleValuesButton />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Heading as="h1">Painel</Heading>
+        <div className="flex items-center gap-2">
+          <DashboardPeriodFilter value={period} onChange={setPeriod} />
+          <ToggleValuesButton />
+        </div>
       </div>
 
       {!canSeeDashboard && (
