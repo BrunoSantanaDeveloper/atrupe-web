@@ -1,7 +1,8 @@
 import { PricingSummaryView } from './components/PricingSummaryView'
+import { pageTitle } from '@/lib/metadata'
 
 export function metadata() {
-  return { title: 'Precificação' }
+  return { title: pageTitle('Resumo', 'Precificação') }
 }
 
 export default function PricingSummaryPage() {

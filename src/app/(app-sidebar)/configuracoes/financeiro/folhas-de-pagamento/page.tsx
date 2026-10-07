@@ -1,10 +1,11 @@
 // Components
 import { Main } from './components/Main'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { pageTitle } from '@/lib/metadata'
 
 export function metadata() {
   return {
-    title: 'Folha de pagamento',
+    title: pageTitle('Folhas de pagamento', 'Configurações'),
   }
 }
 

@@ -3,7 +3,7 @@ import { Dashboard } from './components/Dashboard'
 
 export function metadata() {
   return {
-    title: 'Dashboard',
+    title: 'Painel',
   }
 }
 
