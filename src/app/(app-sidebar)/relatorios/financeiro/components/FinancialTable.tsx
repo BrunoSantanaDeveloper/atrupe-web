@@ -3,7 +3,7 @@
 import { Fragment } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useRouter } from '@/hooks/useRouter'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // UI
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
@@ -19,6 +19,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { TablePagination } from '@/components/common/TablePagination'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 
 // Config
 import {
@@ -71,7 +72,9 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
     router.push(`${pathname}?${params.toString()}`, { scroll: false })
   }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    // Filtro, agrupamento e página mantêm a tabela anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: [
       'financial-table',
       searchParams?.startDate,
@@ -160,162 +163,164 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
       </CardHeader>
 
       <CardContent>
-        {isLoading ? (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[40%]">
-                  <Skeleton className="h-4 w-24" />
-                </TableHead>
-                <TableHead>
-                  <Skeleton className="h-4 w-32" />
-                </TableHead>
-                <TableHead className="text-right">
-                  <Skeleton className="h-4 w-16 ml-auto" />
-                </TableHead>
-                <TableHead className="text-right w-16">
-                  <Skeleton className="h-4 w-8 ml-auto" />
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array.from({ length: 5 }, (_, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <div className="flex flex-col">
-                      <Skeleton className="h-4 w-32 mb-1" />
-                      <Skeleton className="h-3.5 w-48" />
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-4 w-20 ml-auto" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="h-4 w-10 ml-auto" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : !data ||
-          (data.records.length === 0 &&
-            (!data.groups || data.groups.length === 0)) ? (
-          <div className="flex items-center justify-center py-10">
-            <p className="text-gray-500">Nenhum dado disponível</p>
-          </div>
-        ) : (
-          <>
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading ? (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[40%]">
-                    <span className="flex items-center gap-2">
-                      {tab === 'receitas' ? 'Receitas' : 'Despesas'}
-                      <Badge variant="neutralLight">
-                        {data?.totalCount || 0}
-                      </Badge>
-                    </span>
+                    <Skeleton className="h-4 w-24" />
                   </TableHead>
                   <TableHead>
-                    {tab === 'receitas'
-                      ? 'Data do recebimento'
-                      : 'Data do pagamento'}
+                    <Skeleton className="h-4 w-32" />
                   </TableHead>
                   <TableHead className="text-right">
-                    {tab === 'receitas' ? 'Vendas' : 'Pagamentos'}
+                    <Skeleton className="h-4 w-16 ml-auto" />
                   </TableHead>
-                  <TableHead className="text-right w-16">100%</TableHead>
+                  <TableHead className="text-right w-16">
+                    <Skeleton className="h-4 w-8 ml-auto" />
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.grouped && data.groups
-                  ? data.groups.map((group) => (
-                      <Fragment key={group.clientId}>
-                        {/* Group Header */}
-                        <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={2} className="font-medium">
-                            <div className="flex items-center gap-2">
-                              {group.clientName}
-                              <Badge variant="neutralLight">
-                                {group.count}
-                              </Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-semibold">
-                            {formatCurrencyToBrl(group.total)}
-                          </TableCell>
-                          <TableCell />
-                        </TableRow>
-
-                        {/* Group Records */}
-                        {group.records.map((record) => (
-                          <TableRow key={record.id}>
-                            <TableCell>
-                              <div className="flex flex-col">
-                                <span className="font-medium">
-                                  {record.clientName}
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                  {record.description}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-gray-500">
-                              {record.receivedDate || '-'}
-                            </TableCell>
-                            <TableCell
-                              className={`text-right font-medium ${getValueColor(record.status)}`}
-                            >
-                              {formatCurrencyToBrl(record.value)}
-                            </TableCell>
-                            <TableCell className="text-right text-gray-500">
-                              {getPct(record.value)}%
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </Fragment>
-                    ))
-                  : data.records.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {record.clientName}
-                            </span>
-                            <span className="text-sm text-gray-500">
-                              {record.description}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-gray-500">
-                          {record.receivedDate || '-'}
-                        </TableCell>
-                        <TableCell
-                          className={`text-right font-medium ${getValueColor(record.status)}`}
-                        >
-                          {formatCurrencyToBrl(record.value)}
-                        </TableCell>
-                        <TableCell className="text-right text-gray-500">
-                          {getPct(record.value)}%
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                {Array.from({ length: 5 }, (_, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <Skeleton className="h-4 w-32 mb-1" />
+                        <Skeleton className="h-3.5 w-48" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-4 w-20" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-20 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Skeleton className="h-4 w-10 ml-auto" />
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
+          ) : !data ||
+            (data.records.length === 0 &&
+              (!data.groups || data.groups.length === 0)) ? (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-gray-500">Nenhum dado disponível</p>
+            </div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40%]">
+                      <span className="flex items-center gap-2">
+                        {tab === 'receitas' ? 'Receitas' : 'Despesas'}
+                        <Badge variant="neutralLight">
+                          {data?.totalCount || 0}
+                        </Badge>
+                      </span>
+                    </TableHead>
+                    <TableHead>
+                      {tab === 'receitas'
+                        ? 'Data do recebimento'
+                        : 'Data do pagamento'}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {tab === 'receitas' ? 'Vendas' : 'Pagamentos'}
+                    </TableHead>
+                    <TableHead className="text-right w-16">100%</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.grouped && data.groups
+                    ? data.groups.map((group) => (
+                        <Fragment key={group.clientId}>
+                          {/* Group Header */}
+                          <TableRow className="bg-gray-50 hover:bg-gray-50">
+                            <TableCell colSpan={2} className="font-medium">
+                              <div className="flex items-center gap-2">
+                                {group.clientName}
+                                <Badge variant="neutralLight">
+                                  {group.count}
+                                </Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {formatCurrencyToBrl(group.total)}
+                            </TableCell>
+                            <TableCell />
+                          </TableRow>
 
-            {data.pagination.totalPages > 1 && (
-              <div className="mt-4">
-                <TablePagination
-                  searchParams={searchParams as { [key: string]: string }}
-                  lastPage={data.pagination.totalPages}
-                />
-              </div>
-            )}
-          </>
-        )}
+                          {/* Group Records */}
+                          {group.records.map((record) => (
+                            <TableRow key={record.id}>
+                              <TableCell>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    {record.clientName}
+                                  </span>
+                                  <span className="text-sm text-gray-500">
+                                    {record.description}
+                                  </span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-gray-500">
+                                {record.receivedDate || '-'}
+                              </TableCell>
+                              <TableCell
+                                className={`text-right font-medium ${getValueColor(record.status)}`}
+                              >
+                                {formatCurrencyToBrl(record.value)}
+                              </TableCell>
+                              <TableCell className="text-right text-gray-500">
+                                {getPct(record.value)}%
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </Fragment>
+                      ))
+                    : data.records.map((record) => (
+                        <TableRow key={record.id}>
+                          <TableCell>
+                            <div className="flex flex-col">
+                              <span className="font-medium">
+                                {record.clientName}
+                              </span>
+                              <span className="text-sm text-gray-500">
+                                {record.description}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-gray-500">
+                            {record.receivedDate || '-'}
+                          </TableCell>
+                          <TableCell
+                            className={`text-right font-medium ${getValueColor(record.status)}`}
+                          >
+                            {formatCurrencyToBrl(record.value)}
+                          </TableCell>
+                          <TableCell className="text-right text-gray-500">
+                            {getPct(record.value)}%
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                </TableBody>
+              </Table>
+
+              {data.pagination.totalPages > 1 && (
+                <div className="mt-4">
+                  <TablePagination
+                    searchParams={searchParams as { [key: string]: string }}
+                    lastPage={data.pagination.totalPages}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </FetchingRegion>
       </CardContent>
     </Card>
   )

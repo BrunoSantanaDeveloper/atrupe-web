@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { usePermissions } from '@/hooks/usePermissions'
 
 import { Fragment, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // UI
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
@@ -20,6 +20,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { TablePagination } from '@/components/common/TablePagination'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 
 // Config
 import { groupByOptions, orderByOptions } from '../config'
@@ -74,7 +75,9 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
 
   const page = parseInt((searchParams?.page as string) || '1')
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    // Filtro, agrupamento e página mantêm a tabela anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: [
       'commission-table',
       searchParams?.commissionType,
@@ -180,128 +183,133 @@ export function CommissionTable({ searchParams }: CommissionTableProps) {
       </CardHeader>
 
       <CardContent className="p-0">
-        {isLoading ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead>Venda</TableHead>
-                {headers}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {Array(5)
-                .fill(0)
-                .map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-48" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-20" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-24 ml-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-24 ml-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-24 ml-auto" />
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Skeleton className="h-4 w-10 ml-auto" />
-                    </TableCell>
-                  </TableRow>
-                ))}
-            </TableBody>
-          </Table>
-        ) : !data ||
-          (data.records.length === 0 &&
-            (!data.groups || data.groups.length === 0)) ? (
-          <div className="flex items-center justify-center py-10">
-            <p className="text-gray-500">Nenhum dado disponível</p>
-          </div>
-        ) : (
-          <>
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading ? (
             <Table>
               <TableHeader>
                 <TableRow className="bg-gray-50">
-                  <TableHead>
-                    <div className="flex items-center gap-2">
-                      <span>Venda</span>
-                      <Badge variant="neutralLight" className="font-medium">
-                        {data.totalCount}
-                      </Badge>
-                    </div>
-                  </TableHead>
+                  <TableHead>Venda</TableHead>
                   {headers}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.grouped && data.groups.length > 0
-                  ? data.groups.map((group) => (
-                      <Fragment key={group.vendedorId}>
-                        {/* Group Header */}
-                        <TableRow className="bg-gray-100">
-                          <TableCell
-                            colSpan={2}
-                            className="text-gray font-medium text-xs py-3"
-                          >
-                            <div className="flex items-center gap-2">
-                              <span className="text-primary-700">
-                                {group.vendedorName}
-                              </span>
-                              <Badge variant="neutralLight" className="text-xs">
-                                {group.count}
-                              </Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right text-gray font-medium text-xs py-3">
-                            {formatCurrencyToBrl(
-                              mode === 'received_value'
-                                ? group.saleTotal
-                                : group.receivedTotal,
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
-                            {formatCurrencyToBrl(
-                              mode === 'received_value'
-                                ? group.receivedTotal
-                                : group.saleTotal,
-                            )}
-                          </TableCell>
-                          <TableCell />
-                          <TableCell className="text-right text-success-700 font-semibold text-xs py-3">
-                            {formatCurrencyToBrl(
-                              group.records.reduce(
-                                (sum, r) => sum + commissionOf(r, mode),
-                                0,
-                              ),
-                            )}
-                          </TableCell>
-                        </TableRow>
-
-                        {/* Group Records */}
-                        {group.records.map((record) => renderRecord(record))}
-                      </Fragment>
-                    ))
-                  : data.records.map((record) => renderRecord(record))}
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-20" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-4 w-24 ml-auto" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-4 w-24 ml-auto" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-4 w-24 ml-auto" />
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Skeleton className="h-4 w-10 ml-auto" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
+          ) : !data ||
+            (data.records.length === 0 &&
+              (!data.groups || data.groups.length === 0)) ? (
+            <div className="flex items-center justify-center py-10">
+              <p className="text-gray-500">Nenhum dado disponível</p>
+            </div>
+          ) : (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>
+                      <div className="flex items-center gap-2">
+                        <span>Venda</span>
+                        <Badge variant="neutralLight" className="font-medium">
+                          {data.totalCount}
+                        </Badge>
+                      </div>
+                    </TableHead>
+                    {headers}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data.grouped && data.groups.length > 0
+                    ? data.groups.map((group) => (
+                        <Fragment key={group.vendedorId}>
+                          {/* Group Header */}
+                          <TableRow className="bg-gray-100">
+                            <TableCell
+                              colSpan={2}
+                              className="text-gray font-medium text-xs py-3"
+                            >
+                              <div className="flex items-center gap-2">
+                                <span className="text-primary-700">
+                                  {group.vendedorName}
+                                </span>
+                                <Badge
+                                  variant="neutralLight"
+                                  className="text-xs"
+                                >
+                                  {group.count}
+                                </Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right text-gray font-medium text-xs py-3">
+                              {formatCurrencyToBrl(
+                                mode === 'received_value'
+                                  ? group.saleTotal
+                                  : group.receivedTotal,
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right text-gray-900 font-medium text-xs py-3">
+                              {formatCurrencyToBrl(
+                                mode === 'received_value'
+                                  ? group.receivedTotal
+                                  : group.saleTotal,
+                              )}
+                            </TableCell>
+                            <TableCell />
+                            <TableCell className="text-right text-success-700 font-semibold text-xs py-3">
+                              {formatCurrencyToBrl(
+                                group.records.reduce(
+                                  (sum, r) => sum + commissionOf(r, mode),
+                                  0,
+                                ),
+                              )}
+                            </TableCell>
+                          </TableRow>
 
-            {data.pagination.totalPages > 1 && (
-              <div className="p-4">
-                <TablePagination
-                  searchParams={searchParams as Record<string, string>}
-                  lastPage={data.pagination.totalPages}
-                />
-              </div>
-            )}
-          </>
-        )}
+                          {/* Group Records */}
+                          {group.records.map((record) => renderRecord(record))}
+                        </Fragment>
+                      ))
+                    : data.records.map((record) => renderRecord(record))}
+                </TableBody>
+              </Table>
+
+              {data.pagination.totalPages > 1 && (
+                <div className="p-4">
+                  <TablePagination
+                    searchParams={searchParams as Record<string, string>}
+                    lastPage={data.pagination.totalPages}
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </FetchingRegion>
       </CardContent>
     </Card>
   )

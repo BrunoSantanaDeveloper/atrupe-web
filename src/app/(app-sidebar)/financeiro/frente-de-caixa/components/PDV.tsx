@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Card, CardFooter } from '@/components/ui/card'
 
@@ -28,6 +27,7 @@ import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 import {
   OpenCashDialog,
   CloseCashDialog,
@@ -193,18 +193,20 @@ export function PDV() {
       },
     })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
   return (
     <TooltipProvider>
       <div className="space-y-5">
         <Topbar
           review="new"
           title="Frente de caixa"
+          // Topbar já aparece na carga; sessão e ações só depois de saber se
+          // há caixa aberto (microinteracoes)
           supportText={
-            session
-              ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
-              : 'Nenhum caixa aberto'
+            isLoading
+              ? undefined
+              : session
+                ? `${session.name} nº ${session.number} · ${session.operator} · aberto às ${hora(session.openedAt)}`
+                : 'Nenhum caixa aberto'
           }
           // As abas ficam na URL (design.md §5.1), com a contagem de cada uma
           paramName="aba"
@@ -234,7 +236,7 @@ export function PDV() {
               : undefined
           }
           primaryCta={
-            isOpen ? (
+            isLoading ? undefined : isOpen ? (
               <PermissionGate permissions={['financial:pdv:edit']}>
                 <Button
                   type="button"
@@ -306,7 +308,11 @@ export function PDV() {
           }
         />
 
-        {!session ? (
+        {isLoading ? (
+          <Card>
+            <TableSkeleton cols={6} rows={5} />
+          </Card>
+        ) : !session ? (
           <Card>
             <ListDataTotalEmpty
               icon={IconDeviceImacCancel}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // UI
 import { Card, CardContent } from '@/components/ui/card'
@@ -14,6 +14,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
+
+// Components
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 
 // Icons
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
@@ -33,7 +36,9 @@ export function DfcTable({ searchParams }: SearchParamsType) {
     new Set(['receitas', 'despesas', '02-oper', '01.02.01-vendas']),
   )
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    // Troca de período ou regime mantém a tabela anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: [
       'dfc-table',
       searchParams?.startDate,
@@ -122,86 +127,88 @@ export function DfcTable({ searchParams }: SearchParamsType) {
   return (
     <Card>
       <CardContent className="p-0 overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-gray-50">
-              <TableHead className="sticky left-0 bg-gray-50 min-w-[250px]">
-                Categoria
-              </TableHead>
-              {data.headers.map((header) => (
-                <TableHead key={header} className="text-right min-w-[120px]">
-                  {header}
+        <FetchingRegion isFetching={isPlaceholderData}>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-gray-50">
+                <TableHead className="sticky left-0 bg-gray-50 min-w-[250px]">
+                  Categoria
                 </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {visibleRows.map((row) => {
-              const isExpanded = expandedRows.has(row.id)
-              const isNegative =
-                row.name === 'Despesas' || row.parentId?.startsWith('desp')
-              const paddingLeft = 16 + row.level * 24
+                {data.headers.map((header) => (
+                  <TableHead key={header} className="text-right min-w-[120px]">
+                    {header}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {visibleRows.map((row) => {
+                const isExpanded = expandedRows.has(row.id)
+                const isNegative =
+                  row.name === 'Despesas' || row.parentId?.startsWith('desp')
+                const paddingLeft = 16 + row.level * 24
 
-              return (
-                <TableRow
-                  key={row.id}
-                  className={cn(
-                    row.level === 0 && 'bg-gray-50 font-semibold',
-                    isNegative && row.level === 0 && 'bg-red-50',
-                    !isNegative && row.level === 0 && 'bg-success-50',
-                  )}
-                >
-                  <TableCell
+                return (
+                  <TableRow
+                    key={row.id}
                     className={cn(
-                      'sticky left-0 bg-inherit',
-                      row.level === 0 && 'bg-gray-50',
+                      row.level === 0 && 'bg-gray-50 font-semibold',
                       isNegative && row.level === 0 && 'bg-red-50',
                       !isNegative && row.level === 0 && 'bg-success-50',
                     )}
-                    style={{ paddingLeft }}
                   >
-                    <div className="flex items-center gap-2">
-                      {row.isExpandable && (
-                        <button
-                          onClick={() => toggleRow(row.id)}
-                          className="p-0.5 hover:bg-gray-200 rounded"
-                        >
-                          {isExpanded ? (
-                            <IconChevronDown className="w-4 h-4 text-gray-500" />
-                          ) : (
-                            <IconChevronRight className="w-4 h-4 text-gray-500" />
-                          )}
-                        </button>
+                    <TableCell
+                      className={cn(
+                        'sticky left-0 bg-inherit',
+                        row.level === 0 && 'bg-gray-50',
+                        isNegative && row.level === 0 && 'bg-red-50',
+                        !isNegative && row.level === 0 && 'bg-success-50',
                       )}
-                      {!row.isExpandable && <span className="w-5" />}
-                      {row.code && (
-                        <span className="text-gray text-sm">{row.code}</span>
-                      )}
-                      <span>{row.name}</span>
-                    </div>
-                  </TableCell>
-                  {data.headers.map((header) => {
-                    const value = row.values[header] || 0
-                    const isValueNegative = value < 0
-
-                    return (
-                      <TableCell
-                        key={header}
-                        className={cn(
-                          'text-right',
-                          isValueNegative && 'text-red-600',
+                      style={{ paddingLeft }}
+                    >
+                      <div className="flex items-center gap-2">
+                        {row.isExpandable && (
+                          <button
+                            onClick={() => toggleRow(row.id)}
+                            className="p-0.5 hover:bg-gray-200 rounded"
+                          >
+                            {isExpanded ? (
+                              <IconChevronDown className="w-4 h-4 text-gray-500" />
+                            ) : (
+                              <IconChevronRight className="w-4 h-4 text-gray-500" />
+                            )}
+                          </button>
                         )}
-                      >
-                        {isValueNegative ? '-' : ''}
-                        {formatCurrencyToBrl(Math.abs(value))}
-                      </TableCell>
-                    )
-                  })}
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+                        {!row.isExpandable && <span className="w-5" />}
+                        {row.code && (
+                          <span className="text-gray text-sm">{row.code}</span>
+                        )}
+                        <span>{row.name}</span>
+                      </div>
+                    </TableCell>
+                    {data.headers.map((header) => {
+                      const value = row.values[header] || 0
+                      const isValueNegative = value < 0
+
+                      return (
+                        <TableCell
+                          key={header}
+                          className={cn(
+                            'text-right',
+                            isValueNegative && 'text-red-600',
+                          )}
+                        >
+                          {isValueNegative ? '-' : ''}
+                          {formatCurrencyToBrl(Math.abs(value))}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </FetchingRegion>
       </CardContent>
     </Card>
   )

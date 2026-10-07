@@ -8,7 +8,8 @@ import { FixedExpensesFilter } from './FixedExpensesFilter'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
@@ -43,7 +44,11 @@ import { formatCurrencyToBrl, truncateString } from '@/lib/utils'
 import { formatDateOnly } from '@/lib/formatDate'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Consts
 import { fixedExpensesRecurringTypeObj } from '@/consts/fixedExpenses'
@@ -80,8 +85,10 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
 
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['fixed-expenses-list', searchParams],
     queryFn: () =>
       getData({
@@ -313,191 +320,204 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
             />
           </TableFiltersHeader>
           <CardContent>
-            {isLoading ? (
-              <TableSkeleton cols={6} />
-            ) : hasData ? (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-12">
-                      <Checkbox
-                        checked={getHeaderCheckboxState()}
-                        onCheckedChange={handleSelectAll}
-                      />
-                    </TableHead>
-                    <TableHead>Referência</TableHead>
-                    <TableHead>Padrão</TableHead>
-                    <TableHead>Recorrência</TableHead>
-                    <TableHead>Movimentação</TableHead>
-                    <TableHead>Lançado</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {allExpenseItems?.map((item) => {
-                    const description = `${truncateString(80, item?.description)}`
-                    const isSelected = selectedIds.includes(item.id)
-                    const isDisabled = item.launchStatus !== EMPTY_STATUS
-                    const defaultDueDate = `${item?.dueDay}/${(month + 1).toString().padStart(2, '0')}/${year}`
+            <FetchingRegion isFetching={isPlaceholderData}>
+              {isLoading || hasData ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={getHeaderCheckboxState()}
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead>Referência</TableHead>
+                      <TableHead>Padrão</TableHead>
+                      <TableHead>Recorrência</TableHead>
+                      <TableHead>Movimentação</TableHead>
+                      <TableHead>Lançado</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={7} />
+                    ) : (
+                      allExpenseItems?.map((item) => {
+                        const description = `${truncateString(80, item?.description)}`
+                        const isSelected = selectedIds.includes(item.id)
+                        const isDisabled = item.launchStatus !== EMPTY_STATUS
+                        const defaultDueDate = `${item?.dueDay}/${(month + 1).toString().padStart(2, '0')}/${year}`
 
-                    const payableInstallment =
-                      item?.payables[0]?.installments?.[0]
+                        const payableInstallment =
+                          item?.payables[0]?.installments?.[0]
 
-                    const realDueDate = payableInstallment?.dueDate
+                        const realDueDate = payableInstallment?.dueDate
 
-                    // Se estiver paga, não permite excluir
-                    const canDelete = payableInstallment?.status !== 'PAID'
+                        // Se estiver paga, não permite excluir
+                        const canDelete = payableInstallment?.status !== 'PAID'
 
-                    return (
-                      <TableRow key={item?.id}>
-                        <TableCell>
-                          <Checkbox
-                            checked={isSelected}
-                            disabled={isDisabled}
-                            onCheckedChange={(checked) => {
-                              if (isDisabled) return
-                              handleSelectItem(item.id, checked as boolean)
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <p className="font-medium">{item?.supplierName}</p>
-                          <p className="text-gray-600">{description}</p>
-                        </TableCell>
-                        <TableCell>
-                          <p>{formatCurrencyToBrl(item?.amount)}</p>
-                          <p className="text-gray-600">{defaultDueDate}</p>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              fixedExpensesRecurringTypeObj[item?.recurringType]
-                                ?.variant
-                            }
-                          >
-                            {
-                              fixedExpensesRecurringTypeObj[item?.recurringType]
-                                ?.text
-                            }
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {item?.launchStatus === EMPTY_STATUS ? (
-                            <Badge status variant="neutralLight">
-                              Sem lançamento
-                            </Badge>
-                          ) : (
-                            <p>{item?.description || '-'}</p>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p>
-                              {item?.payables[0]?.totalAmount
-                                ? formatCurrencyToBrl(
-                                    item?.payables[0]?.totalAmount,
-                                  )
-                                : '-'}
-                            </p>
-                            <p className="text-gray">
-                              {formatDateOnly(realDueDate)}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <TooltipProvider>
-                              {item?.launchStatus !== EMPTY_STATUS ? (
-                                <>
-                                  <PermissionGate
-                                    permissions={[
-                                      'financial:fixed_expense:view',
-                                    ]}
-                                  >
-                                    <ActionButton
-                                      Icon={IconSearch}
-                                      tooltip="Visualizar"
-                                      disabled={isGenerating?.includes(
-                                        item?.payables?.[0]?.id,
-                                      )}
-                                      onClick={() =>
-                                        handleViewTransaction(item)
-                                      }
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={[
-                                      'financial:fixed_expense:edit',
-                                    ]}
-                                  >
-                                    <ActionButton
-                                      Icon={IconRefreshDot}
-                                      tooltip="Editar parcelas"
-                                      disabled={isGenerating?.includes(
-                                        item?.payables?.[0]?.id,
-                                      )}
-                                      onClick={() =>
-                                        handleEditInstallments(item)
-                                      }
-                                    />
-                                  </PermissionGate>
-                                  <PermissionGate
-                                    permissions={[
-                                      'financial:fixed_expense:edit',
-                                    ]}
-                                  >
-                                    <ActionButton
-                                      Icon={IconTrash}
-                                      variant="errorGhost"
-                                      tooltip="Remover"
-                                      isLoading={isGenerating?.includes(
-                                        item?.payables?.[0]?.id,
-                                      )}
-                                      onClick={() => {
-                                        if (canDelete) {
-                                          handleRemoveExpense(
-                                            item?.payables?.[0]?.id,
-                                          )
-                                        }
-                                      }}
-                                      disabled={!canDelete}
-                                    />
-                                  </PermissionGate>
-                                </>
+                        return (
+                          <TableRow key={item?.id}>
+                            <TableCell>
+                              <Checkbox
+                                checked={isSelected}
+                                disabled={isDisabled}
+                                onCheckedChange={(checked) => {
+                                  if (isDisabled) return
+                                  handleSelectItem(item.id, checked as boolean)
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <p className="font-medium">
+                                {item?.supplierName}
+                              </p>
+                              <p className="text-gray-600">{description}</p>
+                            </TableCell>
+                            <TableCell>
+                              <p>{formatCurrencyToBrl(item?.amount)}</p>
+                              <p className="text-gray-600">{defaultDueDate}</p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  fixedExpensesRecurringTypeObj[
+                                    item?.recurringType
+                                  ]?.variant
+                                }
+                              >
+                                {
+                                  fixedExpensesRecurringTypeObj[
+                                    item?.recurringType
+                                  ]?.text
+                                }
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {item?.launchStatus === EMPTY_STATUS ? (
+                                <Badge status variant="neutralLight">
+                                  Sem lançamento
+                                </Badge>
                               ) : (
-                                <PermissionGate
-                                  permissions={[
-                                    'financial:fixed_expense:create',
-                                  ]}
-                                >
-                                  <ActionButton
-                                    Icon={IconPlus}
-                                    tooltip="Lançar"
-                                    isLoading={isGenerating?.includes(item?.id)}
-                                    onClick={() => handleOpenLaunchModal(item)}
-                                  />
-                                </PermissionGate>
+                                <p>{item?.description || '-'}</p>
                               )}
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            ) : (
-              <FilteredDataEmpty
-                title="Despesas fixas não encontradas"
-                description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre uma nova despesa fixa"
-              />
-            )}
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p>
+                                  {item?.payables[0]?.totalAmount
+                                    ? formatCurrencyToBrl(
+                                        item?.payables[0]?.totalAmount,
+                                      )
+                                    : '-'}
+                                </p>
+                                <p className="text-gray">
+                                  {formatDateOnly(realDueDate)}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  {item?.launchStatus !== EMPTY_STATUS ? (
+                                    <>
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:fixed_expense:view',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconSearch}
+                                          tooltip="Visualizar"
+                                          disabled={isGenerating?.includes(
+                                            item?.payables?.[0]?.id,
+                                          )}
+                                          onClick={() =>
+                                            handleViewTransaction(item)
+                                          }
+                                        />
+                                      </PermissionGate>
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:fixed_expense:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconRefreshDot}
+                                          tooltip="Editar parcelas"
+                                          disabled={isGenerating?.includes(
+                                            item?.payables?.[0]?.id,
+                                          )}
+                                          onClick={() =>
+                                            handleEditInstallments(item)
+                                          }
+                                        />
+                                      </PermissionGate>
+                                      <PermissionGate
+                                        permissions={[
+                                          'financial:fixed_expense:edit',
+                                        ]}
+                                      >
+                                        <ActionButton
+                                          Icon={IconTrash}
+                                          variant="errorGhost"
+                                          tooltip="Remover"
+                                          isLoading={isGenerating?.includes(
+                                            item?.payables?.[0]?.id,
+                                          )}
+                                          onClick={() => {
+                                            if (canDelete) {
+                                              handleRemoveExpense(
+                                                item?.payables?.[0]?.id,
+                                              )
+                                            }
+                                          }}
+                                          disabled={!canDelete}
+                                        />
+                                      </PermissionGate>
+                                    </>
+                                  ) : (
+                                    <PermissionGate
+                                      permissions={[
+                                        'financial:fixed_expense:create',
+                                      ]}
+                                    >
+                                      <ActionButton
+                                        Icon={IconPlus}
+                                        tooltip="Lançar"
+                                        isLoading={isGenerating?.includes(
+                                          item?.id,
+                                        )}
+                                        onClick={() =>
+                                          handleOpenLaunchModal(item)
+                                        }
+                                      />
+                                    </PermissionGate>
+                                  )}
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              ) : (
+                <FilteredDataEmpty
+                  title="Despesas fixas não encontradas"
+                  description="Sua busca não encontrou nenhum resultado. Tente novamente ou cadastre uma nova despesa fixa"
+                />
+              )}
+            </FetchingRegion>
           </CardContent>
           {isLoading || hasData ? (
             <CardFooter>
               <TablePagination
                 searchParams={searchParams}
                 lastPage={data?.lastPage}
+                isLoading={isLoading}
               />
             </CardFooter>
           ) : null}

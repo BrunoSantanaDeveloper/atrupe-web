@@ -7,7 +7,8 @@ import { useState } from 'react'
 import { PayrollFilter } from './PayrollFilter'
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { TablePagination } from '@/components/common/TablePagination'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
@@ -35,7 +36,11 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 import { payrollStatusObj } from '@/consts/payroll'
 
 // Third-party
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Icons
 import { IconPlus, IconPencil, IconBusinessplan } from '@tabler/icons-react'
@@ -53,8 +58,10 @@ export function Payroll({ searchParams }: SearchParamsType) {
 
   const queryClient = useQueryClient()
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['payroll-list', searchParams],
     queryFn: () =>
       getData({ route: '/financial/payroll', filters: searchParams }),
@@ -169,131 +176,140 @@ export function Payroll({ searchParams }: SearchParamsType) {
             />
           </TableFiltersHeader>
           <CardContent>
-            {isLoading ? (
-              <TableSkeleton cols={6} />
-            ) : hasData ? (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-12">
-                      <Checkbox
-                        checked={getHeaderCheckboxState()}
-                        onCheckedChange={handleSelectAll}
-                      />
-                    </TableHead>
-                    <TableHead>Colaborador</TableHead>
-                    <TableHead>Salário total</TableHead>
-                    <TableHead>Saldo</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {payrollList?.map((item, index) => {
-                    const isSelected = selectedIds.includes(item.employee.id)
-                    const isDisabled = item.status !== EMPTY_STATUS
+            <FetchingRegion isFetching={isPlaceholderData}>
+              {isLoading || hasData ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-12">
+                        <Checkbox
+                          checked={getHeaderCheckboxState()}
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </TableHead>
+                      <TableHead>Colaborador</TableHead>
+                      <TableHead>Salário total</TableHead>
+                      <TableHead>Saldo</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={6} />
+                    ) : (
+                      payrollList?.map((item, index) => {
+                        const isSelected = selectedIds.includes(
+                          item.employee.id,
+                        )
+                        const isDisabled = item.status !== EMPTY_STATUS
 
-                    return (
-                      <TableRow key={item?.id + item?.employee?.id + index}>
-                        <TableCell>
-                          <Checkbox
-                            checked={isSelected}
-                            disabled={isDisabled}
-                            onCheckedChange={(checked) => {
-                              if (isDisabled) return
-                              handleSelectItem(
-                                item.employee.id,
-                                checked as boolean,
-                              )
-                            }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">
-                              {item?.employee?.name}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {item?.employee?.role}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <p className="text-gray-600">
-                            {item?.totalSalary
-                              ? formatCurrencyToBrl(item?.totalSalary)
-                              : '-'}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <p className="font-medium">
-                            {item?.balance
-                              ? formatCurrencyToBrl(item?.balance)
-                              : '-'}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          {item?.status ? (
-                            <Badge
-                              status
-                              variant={payrollStatusObj[item?.status]?.variant}
-                            >
-                              {payrollStatusObj[item?.status]?.text}
-                            </Badge>
-                          ) : (
-                            <Badge status variant="neutralLight">
-                              Sem lançamento
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <TooltipProvider>
-                              {item?.status !== EMPTY_STATUS ? (
-                                <ActionButton
-                                  Icon={IconPencil}
-                                  tooltip="Editar"
-                                  link={`/financeiro/folha-de-pagamento/${item?.id}`}
-                                />
-                              ) : (
-                                <PermissionGate
-                                  permissions={['financial:payroll:create']}
+                        return (
+                          <TableRow key={item?.id + item?.employee?.id + index}>
+                            <TableCell>
+                              <Checkbox
+                                checked={isSelected}
+                                disabled={isDisabled}
+                                onCheckedChange={(checked) => {
+                                  if (isDisabled) return
+                                  handleSelectItem(
+                                    item.employee.id,
+                                    checked as boolean,
+                                  )
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <div>
+                                <p className="font-medium">
+                                  {item?.employee?.name}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  {item?.employee?.role}
+                                </p>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-gray-600">
+                                {item?.totalSalary
+                                  ? formatCurrencyToBrl(item?.totalSalary)
+                                  : '-'}
+                              </p>
+                            </TableCell>
+                            <TableCell>
+                              <p className="font-medium">
+                                {item?.balance
+                                  ? formatCurrencyToBrl(item?.balance)
+                                  : '-'}
+                              </p>
+                            </TableCell>
+                            <TableCell>
+                              {item?.status ? (
+                                <Badge
+                                  status
+                                  variant={
+                                    payrollStatusObj[item?.status]?.variant
+                                  }
                                 >
-                                  <ActionButton
-                                    Icon={IconPlus}
-                                    tooltip="Lançar"
-                                    isLoading={isGenerating?.includes(
-                                      item?.employee?.id,
-                                    )}
-                                    onClick={() =>
-                                      handleGenerateTransaction([
-                                        item?.employee?.id,
-                                      ])
-                                    }
-                                  />
-                                </PermissionGate>
+                                  {payrollStatusObj[item?.status]?.text}
+                                </Badge>
+                              ) : (
+                                <Badge status variant="neutralLight">
+                                  Sem lançamento
+                                </Badge>
                               )}
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            ) : (
-              <ListDataTotalEmpty
-                title="Nenhuma folha de pagamento cadastrada"
-                icon={IconBusinessplan}
-                description=""
-              />
-            )}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex justify-end gap-1">
+                                <TooltipProvider>
+                                  {item?.status !== EMPTY_STATUS ? (
+                                    <ActionButton
+                                      Icon={IconPencil}
+                                      tooltip="Editar"
+                                      link={`/financeiro/folha-de-pagamento/${item?.id}`}
+                                    />
+                                  ) : (
+                                    <PermissionGate
+                                      permissions={['financial:payroll:create']}
+                                    >
+                                      <ActionButton
+                                        Icon={IconPlus}
+                                        tooltip="Lançar"
+                                        isLoading={isGenerating?.includes(
+                                          item?.employee?.id,
+                                        )}
+                                        onClick={() =>
+                                          handleGenerateTransaction([
+                                            item?.employee?.id,
+                                          ])
+                                        }
+                                      />
+                                    </PermissionGate>
+                                  )}
+                                </TooltipProvider>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })
+                    )}
+                  </TableBody>
+                </Table>
+              ) : (
+                <ListDataTotalEmpty
+                  title="Nenhuma folha de pagamento cadastrada"
+                  icon={IconBusinessplan}
+                  description=""
+                />
+              )}
+            </FetchingRegion>
           </CardContent>
           {isLoading || hasData ? (
             <CardFooter>
               <TablePagination
                 searchParams={searchParams}
                 lastPage={data?.lastPage}
+                isLoading={isLoading}
               />
             </CardFooter>
           ) : null}
