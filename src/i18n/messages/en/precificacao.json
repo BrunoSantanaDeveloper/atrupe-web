@@ -1,0 +1,74 @@
+{
+  "inicio": {
+    "taxation": "Taxation",
+    "financialCost": "Financial cost",
+    "profit": "Profit",
+    "priceSaved": "Price saved",
+    "errorSavingThePrice": "Error saving the price",
+    "variablePrice": "Variable price",
+    "fixedPrice": "Fixed price",
+    "editPricing": "Edit pricing",
+    "texto": "· {code}",
+    "averageSales": "Average sales",
+    "perMonth": "per month",
+    "withoutACostThePrice": "Without a cost, the price can't be calculated from profit. Use the fixed price, or build the build-up so the cost appears.",
+    "withoutACostTheSummary": "Without a cost, the summary doesn't show the margin. The fixed price can still be saved.",
+    "pricingSummary": "Pricing summary",
+    "estimateForTheMonth": "Estimate for the month",
+    "enterTheMonthSAverage": "Enter the month's average sales to see the estimate.",
+    "priced": "Priced",
+    "pending": "Pending",
+    "belowCost": "Below cost",
+    "noCost": "No cost",
+    "noToPrice": "No {itemLabel} to price",
+    "theCostComesFrom": "The cost comes from {originLabel}.",
+    "noItemsInThisStatus": "No items in this status.",
+    "currentCost": "Current cost",
+    "costUpdatedOn": "Cost updated on",
+    "priceType": "Price type",
+    "priceCharged": "Price charged",
+    "seeCostSource": "See cost source — {name}",
+    "theCostComesFromAnd": "The cost comes from {originLabel} and isn't edited here. The price charged is free: the margin shows the result.",
+    "youDonTHavePermission": "You don't have permission to view pricing.",
+    "pricing": "Pricing",
+    "thePricingHubIsPart": "The Pricing hub is part of the PRO plan. It brings the price of labor, machines, materials and products together in one place."
+  },
+  "maoDeObra": {
+    "theHourForEachProduction": "The hour for each production department, with the cost coming from the Cost base."
+  },
+  "maquinas": {
+    "oneRowPerProductionSetup": "One row per production setup. Groups of equivalent assets appear as a single row."
+  },
+  "materiais": {
+    "whenAMaterialHasVariants": "When a material has variants, the row is the variant: that is where cost and price live."
+  },
+  "produtos": {
+    "aProductWithoutABuild": "A product without a build-up appears as cost not calculated, never as zero margin."
+  },
+  "resumo": {
+    "referenceTaxation": "Reference taxation",
+    "referenceCommission": "Reference commission",
+    "averageCommissionPercentageConsidered": "Average commission percentage considered.",
+    "referenceFinancialCost": "Reference financial cost",
+    "costOfPaymentMethodsFees": "Cost of payment methods, fees and early receipts.",
+    "targetMargin": "Target margin",
+    "theProfitMarginYouWant": "The profit margin you want to achieve.",
+    "itemIs": "item is",
+    "itemsAre": "items are",
+    "beingSold": "being sold",
+    "belowCost": "below cost.",
+    "seeWhichOnes": "See which ones.",
+    "referenceParameters": "Reference parameters",
+    "usedToCalculateTheSuggested": "Used to calculate the suggested price. The price charged can be adjusted to the market. Cost calculated through {referenceMonth}.",
+    "referenceMarkup": "Reference markup",
+    "includesTheTargetMarginIt": "Includes the target margin. It is the value used for the suggested price in all groups.",
+    "suggestedPriceBreakdown": "Suggested price breakdown",
+    "costCharges": "Cost {costShare} + charges {charges}",
+    "texto": "{label}: {value}",
+    "pricingByGroup": "Pricing by group",
+    "eachGroupSTotalIs": "Each group's total is the sum of priced items and pending ones.",
+    "pendingItem": "pending item",
+    "pendingItems": "pending items",
+    "belowCost2": "{belowCost} below cost"
+  }
+}

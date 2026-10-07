@@ -1,0 +1,75 @@
+{
+  "inicio": {
+    "taxation": "Tributação",
+    "financialCost": "Custo financeiro",
+    "profit": "Lucro",
+    "priceSaved": "Preço salvo",
+    "errorSavingThePrice": "Erro ao salvar o preço",
+    "variablePrice": "Preço variável",
+    "fixedPrice": "Preço fixo",
+    "editPricing": "Editar precificação",
+    "texto": "· {code}",
+    "averageSales": "Média de venda",
+    "perMonth": "no mês",
+    "withoutACostThePrice": "Sem custo não há como calcular o preço pelo lucro. Use o preço fixo, ou monte a composição para o custo aparecer.",
+    "withoutACostTheSummary": "Sem custo, o resumo não mostra a margem. O preço fixo pode ser gravado mesmo assim.",
+    "pricingSummary": "Resumo de precificação",
+    "estimateForTheMonth": "Estimativa do mês",
+    "enterTheMonthSAverage": "Informe a média de venda do mês para ver a estimativa.",
+    "priced": "Com preço",
+    "pending": "Pendentes",
+    "belowCost": "Abaixo do custo",
+    "noCost": "Sem custo",
+    "noToPrice": "Nenhum {itemLabel} para precificar",
+    "theCostComesFrom": "O custo vem de {originLabel}.",
+    "noItemsInThisStatus": "Nenhum item nesta situação.",
+    "currentCost": "Custo atual",
+    "costUpdatedOn": "Custo atualizado em",
+    "priceType": "Tipo de preço",
+    "priceCharged": "Preço praticado",
+    "seeCostSource": "Ver origem do custo — {name}",
+    "theCostComesFromAnd": "O custo vem de {originLabel} e não é editado aqui. Preço praticado é livre: a margem mostra o resultado.",
+    "youDonTHavePermission": "Você não tem permissão para visualizar a precificação.",
+    "pricing": "Precificação",
+    "thePricingHubIsPart": "A central de Precificação faz parte do plano PRO. Ela reúne o preço de mão de obra, máquinas, materiais e produtos num lugar só."
+  },
+  "maoDeObra": {
+    "theHourForEachProduction": "A hora de cada setor produtivo, com o custo vindo da Base de custos."
+  },
+  "maquinas": {
+    "oneRowPerProductionSetup": "Uma linha por configuração produtiva. Grupos de bens equivalentes aparecem como uma linha só."
+  },
+  "materiais": {
+    "whenAMaterialHasVariants": "Quando o material tem variação, a linha é a variação: é nela que vivem custo e preço."
+  },
+  "produtos": {
+    "aProductWithoutABuild": "Produto sem composição aparece como custo não calculado, nunca como margem zero."
+  },
+  "resumo": {
+    "referenceTaxation": "Tributação de referência",
+    "aliquotaTotalConsideradaParaSeus": "Alíquota total considerada para seus produtos e serviços.",
+    "referenceCommission": "Comissão de referência",
+    "averageCommissionPercentageConsidered": "Percentual médio de comissão considerado.",
+    "referenceFinancialCost": "Custo financeiro de referência",
+    "costOfPaymentMethodsFees": "Custo das formas de pagamento, taxas e antecipações.",
+    "targetMargin": "Margem desejada",
+    "theProfitMarginYouWant": "Margem de lucro que você deseja obter.",
+    "itemIs": "item está",
+    "itemsAre": "itens estão",
+    "beingSold": "sendo vendido",
+    "belowCost": "abaixo do custo.",
+    "seeWhichOnes": "Ver quais.",
+    "referenceParameters": "Parâmetros de referência",
+    "usedToCalculateTheSuggested": "Usados para calcular o preço sugerido. O preço praticado pode ser ajustado conforme o mercado. Custo apurado até {referenceMonth}.",
+    "referenceMarkup": "Markup de referência",
+    "includesTheTargetMarginIt": "Inclui a margem desejada. É o valor usado para o preço sugerido em todos os grupos.",
+    "suggestedPriceBreakdown": "Composição do preço sugerido",
+    "costCharges": "Custo {costShare} + encargos {charges}",
+    "texto": "{label}: {value}",
+    "pricingByGroup": "Precificação por grupo",
+    "eachGroupSTotalIs": "O total de cada grupo é a soma dos itens com preço e dos pendentes.",
+    "pendingItem": "item pendente",
+    "pendingItems": "itens pendentes",
+    "belowCost2": "{belowCost} abaixo do custo"
+  }
+}

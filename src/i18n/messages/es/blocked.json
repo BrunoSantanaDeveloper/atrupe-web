@@ -1,0 +1,18 @@
+{
+  "inicio": {
+    "errorConnectingToTheServer": "Error al conectar con el servidor. Intente nuevamente.",
+    "changePlan": "Cambiar de plan",
+    "planChanged": "Plan modificado",
+    "yourPlanWasChangedTo": "Su plan fue cambiado a",
+    "weGeneratedANewCharge": "Generamos un nuevo cobro por el valor del plan elegido, con vencimiento hoy. Complete el pago en",
+    "settlePayment": "Regularizar pago",
+    "toReactivateAccessYouWere": "para reactivar el acceso — el período en que la cuenta estuvo bloqueada no fue cobrado.",
+    "chooseThePlanYouWant": "Elija el plan que desea utilizar. Al confirmar, su cobro pendiente se reemplaza por un único cobro por el valor del plan elegido, con vencimiento hoy — usted no paga por el período en que estuvo sin acceso.",
+    "accountSuspended": "Cuenta suspendida",
+    "yourAccountWasSuspendedDue": "Su cuenta fue suspendida por pendientes financieros",
+    "yourCompanySAccessWas": "El acceso de su empresa fue suspendido debido a pendientes financieros. Regularice su situación para volver a utilizar el sistema.",
+    "yourSubscriptionHasPendingPayments": "Su suscripción tiene pagos pendientes. Una vez confirmado el pago, se restablecerá el acceso.",
+    "ifYouThinkThisIs": "Si cree que esto es un error,",
+    "contactUs": "comuníquese con nosotros"
+  }
+}

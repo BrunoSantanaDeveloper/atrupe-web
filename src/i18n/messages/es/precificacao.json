@@ -1,0 +1,74 @@
+{
+  "inicio": {
+    "taxation": "Tributación",
+    "financialCost": "Costo financiero",
+    "profit": "Ganancia",
+    "priceSaved": "Precio guardado",
+    "errorSavingThePrice": "Error al guardar el precio",
+    "variablePrice": "Precio variable",
+    "fixedPrice": "Precio fijo",
+    "editPricing": "Editar precios",
+    "texto": "· {code}",
+    "averageSales": "Promedio de venta",
+    "perMonth": "en el mes",
+    "withoutACostThePrice": "Sin costo no hay forma de calcular el precio por ganancia. Use el precio fijo, o arme la composición para que aparezca el costo.",
+    "withoutACostTheSummary": "Sin costo, el resumen no muestra el margen. El precio fijo se puede guardar de todos modos.",
+    "pricingSummary": "Resumen de precios",
+    "estimateForTheMonth": "Estimación del mes",
+    "enterTheMonthSAverage": "Indique el promedio de venta del mes para ver la estimación.",
+    "priced": "Con precio",
+    "pending": "Pendientes",
+    "belowCost": "Bajo el costo",
+    "noCost": "Sin costo",
+    "noToPrice": "Ningún {itemLabel} para fijar precio",
+    "theCostComesFrom": "El costo viene de {originLabel}.",
+    "noItemsInThisStatus": "Ningún ítem en esta situación.",
+    "currentCost": "Costo actual",
+    "costUpdatedOn": "Costo actualizado el",
+    "priceType": "Tipo de precio",
+    "priceCharged": "Precio aplicado",
+    "seeCostSource": "Ver origen del costo — {name}",
+    "theCostComesFromAnd": "El costo viene de {originLabel} y no se edita aquí. El precio aplicado es libre: el margen muestra el resultado.",
+    "youDonTHavePermission": "Usted no tiene permiso para ver los precios.",
+    "pricing": "Precios",
+    "thePricingHubIsPart": "La central de Precios forma parte del plan PRO. Reúne en un solo lugar el precio de mano de obra, máquinas, materiales y productos."
+  },
+  "maoDeObra": {
+    "theHourForEachProduction": "La hora de cada sector productivo, con el costo proveniente de la Base de costos."
+  },
+  "maquinas": {
+    "oneRowPerProductionSetup": "Una fila por configuración productiva. Los grupos de activos equivalentes aparecen como una sola fila."
+  },
+  "materiais": {
+    "whenAMaterialHasVariants": "Cuando el material tiene variantes, la fila es la variante: ahí viven el costo y el precio."
+  },
+  "produtos": {
+    "aProductWithoutABuild": "Un producto sin composición aparece como costo no calculado, nunca como margen cero."
+  },
+  "resumo": {
+    "referenceTaxation": "Tributación de referencia",
+    "referenceCommission": "Comisión de referencia",
+    "averageCommissionPercentageConsidered": "Porcentaje promedio de comisión considerado.",
+    "referenceFinancialCost": "Costo financiero de referencia",
+    "costOfPaymentMethodsFees": "Costo de las formas de pago, tarifas y adelantos.",
+    "targetMargin": "Margen deseado",
+    "theProfitMarginYouWant": "Margen de ganancia que usted desea obtener.",
+    "itemIs": "ítem se está",
+    "itemsAre": "ítems se están",
+    "beingSold": "vendiendo",
+    "belowCost": "por debajo del costo.",
+    "seeWhichOnes": "Ver cuáles.",
+    "referenceParameters": "Parámetros de referencia",
+    "usedToCalculateTheSuggested": "Se usan para calcular el precio sugerido. El precio aplicado puede ajustarse según el mercado. Costo calculado hasta {referenceMonth}.",
+    "referenceMarkup": "Markup de referencia",
+    "includesTheTargetMarginIt": "Incluye el margen deseado. Es el valor usado para el precio sugerido en todos los grupos.",
+    "suggestedPriceBreakdown": "Composición del precio sugerido",
+    "costCharges": "Costo {costShare} + cargos {charges}",
+    "texto": "{label}: {value}",
+    "pricingByGroup": "Precios por grupo",
+    "eachGroupSTotalIs": "El total de cada grupo es la suma de los ítems con precio y de los pendientes.",
+    "pendingItem": "ítem pendiente",
+    "pendingItems": "ítems pendientes",
+    "belowCost2": "{belowCost} bajo el costo"
+  }
+}

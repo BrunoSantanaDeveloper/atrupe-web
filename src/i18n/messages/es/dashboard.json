@@ -1,0 +1,48 @@
+{
+  "inicio": {
+    "hideAmounts": "Ocultar valores",
+    "showAmounts": "Mostrar valores",
+    "restrictedAccess": "Acceso restringido",
+    "youDonTHavePermission": "Usted no tiene permiso para ver la información general del panel.",
+    "last30Days": "Últimos 30 días",
+    "week": "Semana",
+    "month": "Mes",
+    "realizedIncome": "Ingreso realizado",
+    "realizedExpense": "Gasto realizado",
+    "realizedBalance": "Saldo realizado",
+    "toBeRealized": "Por realizar",
+    "overdue": "Vencidos",
+    "financialSummary": "Resumen financiero",
+    "viewCashFlow": "Ver flujo",
+    "texto30Days": "30 días",
+    "texto6Months": "6 meses",
+    "texto1Year": "1 año",
+    "salesItemsDashboard": "Panel de ítems de venta",
+    "reports": "Informes",
+    "salesReport": "Informe de ventas",
+    "quickAccess": "Acceso rápido",
+    "approved": "Aprobados",
+    "notApproved": "No aprobados",
+    "viewQuotes": "Ver cotizaciones",
+    "approvedSales": "Ventas aprobadas",
+    "awaitingResponse": "Esperando respuesta",
+    "notApproved2": "No aprobadas",
+    "averageTicket": "Ticket promedio",
+    "estimatedCommission": "Comisión estimada",
+    "salesSummary": "Resumen de ventas",
+    "viewReport": "Ver informe"
+  },
+  "SalesBySeller": {
+    "noSalesBySalespersonIn": "Ninguna venta por vendedor en el período.",
+    "salesBySalesperson": "Ventas por vendedor"
+  },
+  "SalesEvolution": {
+    "approved": "Aprobadas",
+    "noApprovedSalesInThe": "Ninguna venta aprobada en el período.",
+    "salesTrend": "Evolución de ventas"
+  },
+  "TopClients": {
+    "noCustomersWithAnApproved": "Ningún cliente con venta aprobada en el período.",
+    "topCustomers": "Mejores clientes"
+  }
+}

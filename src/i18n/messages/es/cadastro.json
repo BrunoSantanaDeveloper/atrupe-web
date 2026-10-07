@@ -1,0 +1,32 @@
+{
+  "inicio": {
+    "mainAccountOwnerSCpf": "CPF del responsable principal",
+    "cpfOfThePersonWho": "CPF de quien será el administrador principal de esta cuenta.",
+    "alreadyHaveAnAccount": "¿Ya tiene una cuenta?",
+    "logInNow": "¡Ingrese ahora!",
+    "byContinuingIAgreeTo": "Al continuar, estoy de acuerdo con los",
+    "termsOfUse": "Términos de uso",
+    "privacyNotice": "Aviso de privacidad",
+    "ofAtrupe": "de Atrupe.",
+    "createYourAccount": "Cree su cuenta",
+    "letSGetStarted": "¡Comencemos!",
+    "createYourAccountAndTry": "¡Cree su cuenta y pruebe gratis por 7 días!"
+  },
+  "novaSenha": {
+    "sessionExpiredPleaseSignUp": "Sesión expirada. Por favor, regístrese nuevamente.",
+    "createPassword": "Creación de contraseña",
+    "createYourPassword": "Cree su contraseña"
+  },
+  "verificarEmail": {
+    "couldnTResendTheCode": "No fue posible reenviar el código. Por favor, regístrese nuevamente.",
+    "codeResentSuccessfully": "Código reenviado con éxito",
+    "resendIn": "Reenviar en {countdown}",
+    "resendCode": "Reenviar código",
+    "devHomologOnly": "Dev / Homolog only",
+    "verificationToken": "Token de verificación:",
+    "verifyEmail": "Verificar correo electrónico",
+    "checkYourEmail": "Verifique su correo electrónico",
+    "emailVerification": "Verificación de correo electrónico",
+    "weSentAVerificationCode": "Enviamos un código de verificación al correo electrónico"
+  }
+}
