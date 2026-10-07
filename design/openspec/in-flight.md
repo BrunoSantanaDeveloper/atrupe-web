@@ -24,12 +24,6 @@ Regras de manutenção:
   seletor Claro / Escuro / Sistema no menu do usuário e no menu do celular;
   toca `globals.css`, `tailwind.config.ts`, `Providers`, `src/components/ui` e
   as classes com hexadecimal.
-- `tipografia-e-hierarquia` — tipografia · `spec-only`. Papéis tipográficos
-  fechados, primitivos `Heading`/`Text`, título de página 24 px, eyebrow como
-  único uppercase, mínimo 12 px, numerais tabulares, títulos de documento;
-  toca `tailwind.config.ts`, `ui/typography.tsx`, `Topbar`, `Card`, `Dialog`,
-  `Table`, `Form` e as classes de tamanho/peso de todas as páginas. Design:
-  `design/sistema-visual.md`.
 - `cores-e-contraste` — cor · `spec-only`. Tokens em canais com opacidade,
   camada semântica de cor, dicionário único de estados, dinheiro neutro,
   contraste mínimo, anel de foco único, gráficos por token, lint de hex e
@@ -112,15 +106,12 @@ Arestas duras (A não termina antes de B):
   camada semântica nasce com os valores escuros já decididos lá.
 - `botoes-e-acoes` → `cores-e-contraste` (tons, foco e desabilitado do
   botão vêm dos tokens semânticos) e `icones` (tamanho do ícone por `size`).
-- `espacamento-e-layout` → `tipografia-e-hierarquia` (alturas de linha e
-  cabeçalho de tabela derivam dos papéis).
 - `interacao-e-movimento` → `cores-e-contraste` (`ring-focus`, `scrim`).
 - `componentes-adequados` → `botoes-e-acoes` (`RowActions`, `SelectionBar`,
   `ConfirmDialog`) e `espacamento-e-layout` (`size` de Dialog/Sheet,
   densidade).
-- `navegacao-e-cabecalhos` → `tipografia-e-hierarquia` (papéis do
-  cabeçalho) e `componentes-adequados` (`Breadcrumb`, `StatusBadge`,
-  `EmptyState`, `Sheet`, `Tabs`).
+- `navegacao-e-cabecalhos` → `componentes-adequados` (`Breadcrumb`,
+  `StatusBadge`, `EmptyState`, `Sheet`, `Tabs`).
 - `telas-configuracoes`, `telas-vendas`, `telas-financeiro-e-caixa`,
   `telas-nota-fiscal`, `telas-cadastros-producao-custos`,
   `telas-dashboard-e-relatorios` → `navegacao-e-cabecalhos` e
@@ -130,8 +121,6 @@ Arestas duras (A não termina antes de B):
 
 Arestas suaves (preferência de ordem, não bloqueio):
 
-- `tipografia-e-hierarquia` antes de `cores-e-contraste`: o plugin de papéis
-  é o único ponto a trocar quando os tokens semânticos de texto existirem.
 - `icones` antes de `componentes-adequados`: o kit já sai do Lucide antes de
   ganhar componentes novos.
 - `telas-vendas` antes de `telas-nota-fiscal`: `TotalsBlock` nasce em vendas
@@ -145,18 +134,17 @@ Arestas suaves (preferência de ordem, não bloqueio):
    futura depende dos tokens escuros.
    - `tema-claro-escuro` — em andamento; única da onda.
 2. Fundação visual — muda o que toda tela herda sem tocar nas telas
-   (`design/sistema-visual.md` §5). Paralelizáveis entre si, exceto a aresta
-   suave tipografia → cores.
-   - `tipografia-e-hierarquia` — primeira: papéis e capturas de referência
-     servem às demais.
+   (`design/sistema-visual.md` §5). Paralelizáveis entre si. Os papéis
+   tipográficos (`src/lib/typography-roles.ts`) apontam para as rampas; quando
+   a camada semântica de cor existir, só aquela tabela muda.
    - `icones` — pequena; independente.
    - `cores-e-contraste` — espera `tema-claro-escuro` arquivar; contende
      `globals.css`/`tailwind.config.ts`.
 3. Componentes — cria o que a onda seguinte usa. `botoes-e-acoes` e
    `espacamento-e-layout` primeiro (os outros três dependem deles).
    - `botoes-e-acoes` — espera cores e ícones.
-   - `espacamento-e-layout` — espera tipografia; contende `dialog.tsx`/`table.tsx`
-     com `componentes-adequados` (por isso vem antes).
+   - `espacamento-e-layout` — contende `dialog.tsx`/`table.tsx` com
+     `componentes-adequados` (por isso vem antes).
    - `interacao-e-movimento` — espera cores; toca `ui/*` inteiro (foco), por
      isso depois de botões.
    - `componentes-adequados` — maior da onda; espera botões e layout.
