@@ -23,6 +23,7 @@ import { Badge } from '@/components/ui/badge'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 import { SectorAllocationDialog } from './SectorAllocationDialog'
@@ -120,11 +121,13 @@ export function SectorAllocations() {
                     </TableCell>
                     <TableCell>
                       {single ? null : (
-                        <ActionButton
-                          Icon={IconPencil}
-                          tooltip="Configurar o rateio"
-                          onClick={() => setSelected(allocation)}
-                        />
+                        <TooltipProvider>
+                          <ActionButton
+                            Icon={IconPencil}
+                            tooltip="Configurar o rateio"
+                            onClick={() => setSelected(allocation)}
+                          />
+                        </TooltipProvider>
                       )}
                     </TableCell>
                   </TableRow>
