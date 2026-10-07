@@ -16,6 +16,8 @@ import type {
 // Os materiais vêm do cadastro (DC-6: a Precificação é a segunda porta para
 // o mesmo dado). Com variação, a linha é a variação (MT-3)
 import { materials, materialUnitSymbol } from './materials-data'
+// O custo da máquina acompanha o rateio manual do setor (BC-3.1)
+import { SETUP_BY_RESOURCE, allocatedUnitCost } from './sector-allocation-data'
 
 const REFERENCE_MONTH = '2026-08'
 
@@ -176,7 +178,7 @@ export const getPricingSummary = async () => {
     referenceMonth: REFERENCE_MONTH,
     parameters: withMarkup(parameters),
     groups: (Object.keys(items) as PricingGroup[]).map((group) => {
-      const list = items[group]
+      const list = group === 'machines' ? machinePricingItems() : items[group]
 
       return {
         group,
@@ -201,6 +203,24 @@ const statusOf = (cost: number | null, price: number | null) => {
   if (!price) return 'PENDING' as const
   return price < cost ? ('BELOW_COST' as const) : ('PRICED' as const)
 }
+
+// A máquina que é configuração produtiva de um patrimônio tem o custo pelo
+// rateio do setor; com o critério manual, o custo e a margem mudam juntos
+const machinePricingItems = (): PricingItem[] =>
+  items.machines.map((item) => {
+    const setupId = SETUP_BY_RESOURCE[item.id]
+    if (!setupId || item.cost === null) return item
+
+    const cost = allocatedUnitCost(setupId, item.cost)
+    if (cost === item.cost) return item
+
+    return {
+      ...item,
+      cost,
+      margin: marginOf(cost, item.price),
+      status: statusOf(cost, item.price),
+    }
+  })
 
 // Um item por variação (ou por material sem variação), com o mesmo id que a
 // composição usa para o recurso: "mat:<material>[:<variação>]"
@@ -251,7 +271,12 @@ export const getPricingItems = async ({
   const status = filters?.status
   const search = filters?.search?.trim().toLowerCase()
 
-  const source = group === 'materials' ? materialPricingItems() : items[group]
+  const source =
+    group === 'materials'
+      ? materialPricingItems()
+      : group === 'machines'
+        ? machinePricingItems()
+        : items[group]
   const data = source
     .filter((item) => !status || status === 'todos' || item.status === status)
     .filter((item) => !search || item.name.toLowerCase().includes(search))

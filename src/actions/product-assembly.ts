@@ -49,6 +49,7 @@ import {
   type FormulaVars,
 } from '@/lib/formula'
 import { materialResources } from './materials-data'
+import { SETUP_BY_RESOURCE, allocatedUnitCost } from './sector-allocation-data'
 
 // Markup de referência da empresa, vindo da Precificação (PR-1)
 const REFERENCE_MARKUP = 1.68
@@ -1905,12 +1906,24 @@ const compute = (
         : null
 
     const lines: ComputedLine[] = block.lines.map((line) => {
-      const selected =
+      const chosen =
         line.mode === 'LIST'
           ? null
           : line.options.find((option) => option.id === line.selectedId) ||
             line.options[0] ||
             null
+      // A máquina que é configuração produtiva de um patrimônio tem o custo
+      // pelo rateio do setor (BC-3.1). Sem preço de venda próprio, a venda
+      // acompanha o custo pelo markup de referência (IP-25)
+      const setupId =
+        chosen && line.kind === 'MACHINE' ? SETUP_BY_RESOURCE[chosen.id] : null
+      const selected =
+        chosen && setupId
+          ? {
+              ...chosen,
+              unitCost: allocatedUnitCost(setupId, chosen.unitCost),
+            }
+          : chosen
 
       // Aproveitamento de folha (AP-1): as peças são a quantidade da etapa,
       // do tamanho da etapa; a folha vem da opção escolhida
