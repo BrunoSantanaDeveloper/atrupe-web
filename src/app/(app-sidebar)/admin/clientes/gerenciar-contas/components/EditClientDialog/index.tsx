@@ -212,6 +212,7 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="edit-client"
             disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
             RightIcon={IconCircleCheck}
           >
             Salvar

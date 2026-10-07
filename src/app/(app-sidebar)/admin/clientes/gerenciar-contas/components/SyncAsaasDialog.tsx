@@ -321,9 +321,10 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
               type="button"
               onClick={handleSync}
               disabled={isSyncing}
+              isLoading={isSyncing}
               RightIcon={IconRefresh}
             >
-              {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
+              Sincronizar
             </Button>
           )}
         </DialogFooter>

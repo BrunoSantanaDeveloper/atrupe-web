@@ -261,6 +261,7 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="change-status"
             disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
           >
             Alterar
           </Button>

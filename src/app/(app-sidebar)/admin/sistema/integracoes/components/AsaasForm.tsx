@@ -214,6 +214,7 @@ export function AsaasForm({
                 type="submit"
                 form="asaas-form"
                 disabled={isSubmitting}
+                isLoading={isSubmitting}
                 RightIcon={IconCircleCheck}
               >
                 Salvar Configurações

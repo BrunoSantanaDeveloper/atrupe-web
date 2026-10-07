@@ -16,7 +16,8 @@ import { SummaryCards } from './SummaryCards'
 import { AdminExpensesData } from './AdminExpensesData'
 import { EditCriterionModal } from './EditCriterion'
 import { AdminExpensesFilter } from './AdminExpensesFilter'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
 
 // Types
@@ -27,7 +28,7 @@ import type { AdminExpenseAccount } from '../../types'
 import { getAdminExpenses, getAdminExpensesTotals } from '@/actions/cost-base'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconReceipt } from '@tabler/icons-react'
@@ -52,8 +53,10 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
     queryFn: () => getAdminExpensesTotals(),
   })
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro e busca mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['admin-expense-list', searchParams],
     queryFn: () => getAdminExpenses({ filters: searchParams }),
   })
@@ -66,8 +69,8 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
       <div className="space-y-5">
         <SummaryCards totals={totals?.data} isLoading={isLoadingTotals} />
         <Card>
-          {isLoading || isLoadingTotals ? (
-            <TableSkeleton cols={8} rows={8} />
+          {isLoadingTotals ? (
+            <ListSkeleton cols={8} filters={2} />
           ) : !hasAnyAccount ? (
             <ListDataTotalEmpty
               icon={IconReceipt}
@@ -83,11 +86,17 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
                   {formatReferenceMonth(data?.data?.referenceMonth)}
                 </p>
               </TableFiltersHeader>
-              {accounts.length ? (
-                <AdminExpensesData accounts={accounts} onEdit={setEditing} />
-              ) : (
-                <FilteredDataEmpty description="Nenhuma conta atende aos filtros escolhidos." />
-              )}
+              <FetchingRegion isFetching={isPlaceholderData}>
+                {isLoading || accounts.length ? (
+                  <AdminExpensesData
+                    accounts={accounts}
+                    isLoading={isLoading}
+                    onEdit={setEditing}
+                  />
+                ) : (
+                  <FilteredDataEmpty description="Nenhuma conta atende aos filtros escolhidos." />
+                )}
+              </FetchingRegion>
             </>
           )}
         </Card>

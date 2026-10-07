@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { CardContent } from '@/components/ui/card'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Types
 import type { AssetGroup, DepreciationAsset } from '../../types'
@@ -24,6 +25,7 @@ import { assetGroupObj, assetStatusObj } from '@/consts/cost-base'
 
 interface Props {
   assets: DepreciationAsset[]
+  isLoading?: boolean
 }
 
 // Sem depreciação calculada mostra `-`, nunca R$ 0,00 (design.md §7)
@@ -32,7 +34,7 @@ const formatValue = (value: number | null) =>
 
 const groupOrder: AssetGroup[] = ['MACHINES', 'FURNITURE', 'VEHICLES']
 
-export function DepreciationData({ assets }: Props) {
+export function DepreciationData({ assets, isLoading }: Props) {
   const groups = groupOrder
     .map((group) => ({
       group,
@@ -63,71 +65,79 @@ export function DepreciationData({ assets }: Props) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {groups.map(({ group, assets: groupAssets }) => (
-            <Fragment key={group}>
-              <TableRow className="bg-gray-50 hover:bg-gray-50">
-                <TableCell colSpan={9}>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{assetGroupObj[group]}</span>
-                    <Badge variant="neutralLight">{groupAssets.length}</Badge>
-                  </div>
-                </TableCell>
-              </TableRow>
-              {groupAssets.map((asset) => {
-                const progress = Math.min(
-                  Math.round(
-                    (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
-                  ),
-                  100,
-                )
+          {isLoading ? (
+            <TableSkeletonRows cols={9} />
+          ) : (
+            groups.map(({ group, assets: groupAssets }) => (
+              <Fragment key={group}>
+                <TableRow className="bg-gray-50 hover:bg-gray-50">
+                  <TableCell colSpan={9}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">
+                        {assetGroupObj[group]}
+                      </span>
+                      <Badge variant="neutralLight">{groupAssets.length}</Badge>
+                    </div>
+                  </TableCell>
+                </TableRow>
+                {groupAssets.map((asset) => {
+                  const progress = Math.min(
+                    Math.round(
+                      (asset.elapsedMonths / asset.usefulLifeMonths) * 100,
+                    ),
+                    100,
+                  )
 
-                return (
-                  <TableRow key={asset.id}>
-                    <TableCell className="font-medium">{asset.name}</TableCell>
-                    <TableCell>{asset.sector}</TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrencyToBrl(asset.acquisitionValue)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrencyToBrl(asset.depreciableValue)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatValue(asset.monthlyDepreciation)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrencyToBrl(asset.depreciatedValue)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatCurrencyToBrl(asset.remainingValue)}
-                    </TableCell>
-                    <TableCell>
-                      <p className="text-sm text-gray">
-                        {asset.usefulLifeMonths} meses · {progress}%
-                      </p>
-                      <div
-                        role="img"
-                        aria-label={`Vida útil de ${asset.name}: ${progress}%`}
-                        className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
-                      >
+                  return (
+                    <TableRow key={asset.id}>
+                      <TableCell className="font-medium">
+                        {asset.name}
+                      </TableCell>
+                      <TableCell>{asset.sector}</TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrencyToBrl(asset.acquisitionValue)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrencyToBrl(asset.depreciableValue)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatValue(asset.monthlyDepreciation)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrencyToBrl(asset.depreciatedValue)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatCurrencyToBrl(asset.remainingValue)}
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-sm text-gray">
+                          {asset.usefulLifeMonths} meses · {progress}%
+                        </p>
                         <div
-                          className="h-1.5 rounded-full bg-brand"
-                          style={{ width: `${progress}%` }}
-                        />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        status
-                        variant={assetStatusObj[asset.status].variant}
-                      >
-                        {assetStatusObj[asset.status].text}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </Fragment>
-          ))}
+                          role="img"
+                          aria-label={`Vida útil de ${asset.name}: ${progress}%`}
+                          className="mt-1 h-1.5 w-full max-w-[120px] rounded-full bg-gray-100"
+                        >
+                          <div
+                            className="h-1.5 rounded-full bg-brand"
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          status
+                          variant={assetStatusObj[asset.status].variant}
+                        >
+                          {assetStatusObj[asset.status].text}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </Fragment>
+            ))
+          )}
         </TableBody>
       </Table>
     </CardContent>

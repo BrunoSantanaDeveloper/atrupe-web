@@ -396,6 +396,7 @@ export function NewClientModal({
               type="submit"
               form="new-client-form-abc"
               disabled={isSubmitting}
+              isLoading={isSubmitting}
               onClick={() => {
                 // TODO : corrigir e remover este workaround para o erro de não submitar se não abrir tab limite de crédito
                 if (hasFinancialModule('credit_limit')) {
@@ -407,13 +408,7 @@ export function NewClientModal({
                 }
               }}
             >
-              {editMode
-                ? isSubmitting
-                  ? 'Atualizando...'
-                  : 'Salvar'
-                : isSubmitting
-                  ? 'Cadastrando...'
-                  : 'Cadastrar cliente'}
+              {editMode ? 'Salvar' : 'Cadastrar cliente'}
             </Button>
           </div>
         </DialogFooter>

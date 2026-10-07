@@ -38,7 +38,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Topbar } from '@/components/common/Topbar'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormFileUpload } from '@/components/common/form/FileUpload'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
@@ -58,7 +59,11 @@ import {
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { defaultValues, schema, type FormType } from './schema'
-import { useQueryClient, useQuery } from '@tanstack/react-query'
+import {
+  useQueryClient,
+  useQuery,
+  keepPreviousData,
+} from '@tanstack/react-query'
 
 // Actions
 import { createItemNew, deleteItemNew, getData } from '@/actions/_cruds'
@@ -165,8 +170,11 @@ function AddAcademyContent() {
   const {
     data: academyResponse,
     isLoading: isLoadingAcademy,
+    isPlaceholderData,
     refetch: refetchAcademy,
   } = useQuery({
+    // Trocar o plano mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['academy-admin', selectedPlan],
     queryFn: () => getData({ route: `/academy/${selectedPlan.toLowerCase()}` }),
     staleTime: 5 * 60 * 1000,
@@ -548,129 +556,137 @@ function AddAcademyContent() {
           </div>
         </CardHeader>
         <CardContent>
-          {isLoadingAcademy ? (
-            <TableSkeleton cols={5} />
-          ) : Object.keys(itemsBySection).length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="max-w-10">#</TableHead>
-                  <TableHead>Descrição</TableHead>
-                  <TableHead>Arquivos</TableHead>
-                  <TableHead>Vídeo</TableHead>
-                  <TableHead>Página</TableHead>
-                  <TableHead>Modal</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {Object.entries(itemsBySection).map(([section, items]) => (
-                  <Fragment key={section}>
-                    {/* Header da seção */}
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={7}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {section}
-                      </TableCell>
-                    </TableRow>
-                    {/* Items da seção */}
-                    {items.map((item, index) => (
-                      <TableRow key={item.id}>
-                        <TableCell className="text-sm text-gray">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell className="font-medium max-w-xs">
-                          <p className="truncate">{item.description || '-'}</p>
-                        </TableCell>
-                        <TableCell>
-                          {item.files && item.files.length > 0 ? (
-                            <div className="flex flex-wrap gap-1">
-                              {item.files.map((file, index) => {
-                                const fileExtension =
-                                  file.url.split('.').pop()?.toLowerCase() ||
-                                  'other'
+          <FetchingRegion isFetching={isPlaceholderData}>
+            {isLoadingAcademy || Object.keys(itemsBySection).length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="max-w-10">#</TableHead>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead>Arquivos</TableHead>
+                    <TableHead>Vídeo</TableHead>
+                    <TableHead>Página</TableHead>
+                    <TableHead>Modal</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoadingAcademy ? (
+                    <TableSkeletonRows cols={7} />
+                  ) : (
+                    Object.entries(itemsBySection).map(([section, items]) => (
+                      <Fragment key={section}>
+                        {/* Header da seção */}
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={7}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {section}
+                          </TableCell>
+                        </TableRow>
+                        {/* Items da seção */}
+                        {items.map((item, index) => (
+                          <TableRow key={item.id}>
+                            <TableCell className="text-sm text-gray">
+                              {index + 1}
+                            </TableCell>
+                            <TableCell className="font-medium max-w-xs">
+                              <p className="truncate">
+                                {item.description || '-'}
+                              </p>
+                            </TableCell>
+                            <TableCell>
+                              {item.files && item.files.length > 0 ? (
+                                <div className="flex flex-wrap gap-1">
+                                  {item.files.map((file, index) => {
+                                    const fileExtension =
+                                      file.url
+                                        .split('.')
+                                        .pop()
+                                        ?.toLowerCase() || 'other'
 
-                                return (
-                                  <Button
-                                    key={index}
-                                    type="button"
-                                    variant={
-                                      buttonVariant[fileExtension] ||
-                                      'neutralGhost'
-                                    }
-                                    size="iconSm"
-                                    RightIcon={IconFileTextFilled}
-                                    onClick={() =>
-                                      window.open(file.url, '_blank')
-                                    }
-                                    title={file.name}
-                                  />
-                                )
-                              })}
-                            </div>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.video ? (
-                            <Button
-                              type="button"
-                              variant="neutralGhost"
-                              size="iconSm"
-                              onClick={() =>
-                                handleVideoClick(
-                                  item.video!,
-                                  item.description || 'Vídeo',
-                                )
-                              }
-                              RightIcon={IconVideo}
-                            />
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.page ? (
-                            <span className="text-xs text-gray-600">
-                              {item.page}
-                            </span>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {item.modal ? (
-                            <span className="text-xs text-gray-600">
-                              {item.modal}
-                            </span>
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            type="button"
-                            variant="errorGhost"
-                            size="icon"
-                            RightIcon={IconTrash}
-                            isLoading={isGenerating.includes(item.id)}
-                            onClick={() => handleDeleteItem(item.id)}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <ListDataStatusEmpty
-              title={`Não há itens no plano ${selectedPlan}.`}
-            />
-          )}
+                                    return (
+                                      <Button
+                                        key={index}
+                                        type="button"
+                                        variant={
+                                          buttonVariant[fileExtension] ||
+                                          'neutralGhost'
+                                        }
+                                        size="iconSm"
+                                        RightIcon={IconFileTextFilled}
+                                        onClick={() =>
+                                          window.open(file.url, '_blank')
+                                        }
+                                        title={file.name}
+                                      />
+                                    )
+                                  })}
+                                </div>
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {item.video ? (
+                                <Button
+                                  type="button"
+                                  variant="neutralGhost"
+                                  size="iconSm"
+                                  onClick={() =>
+                                    handleVideoClick(
+                                      item.video!,
+                                      item.description || 'Vídeo',
+                                    )
+                                  }
+                                  RightIcon={IconVideo}
+                                />
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {item.page ? (
+                                <span className="text-xs text-gray-600">
+                                  {item.page}
+                                </span>
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {item.modal ? (
+                                <span className="text-xs text-gray-600">
+                                  {item.modal}
+                                </span>
+                              ) : (
+                                '-'
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                type="button"
+                                variant="errorGhost"
+                                size="icon"
+                                RightIcon={IconTrash}
+                                isLoading={isGenerating.includes(item.id)}
+                                onClick={() => handleDeleteItem(item.id)}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            ) : (
+              <ListDataStatusEmpty
+                title={`Não há itens no plano ${selectedPlan}.`}
+              />
+            )}
+          </FetchingRegion>
         </CardContent>
       </Card>
 

@@ -28,7 +28,8 @@ import {
 // Components
 import { EditPriceModal } from './EditPriceModal'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import {
   FilteredDataEmpty,
@@ -51,7 +52,7 @@ import {
 } from '@/consts/pricing'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconCurrencyReal, IconExternalLink } from '@tabler/icons-react'
@@ -88,8 +89,10 @@ export function PricingList({
   const [editing, setEditing] = useState<PricingItem>()
   const status = (searchParams?.status as string) || 'todos'
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Trocar a situação mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['pricing-items', group, searchParams],
     queryFn: () => getPricingItems({ group, filters: searchParams }),
   })
@@ -112,117 +115,123 @@ export function PricingList({
             </TabsList>
           </Tabs>
         </CardHeader>
-        {isLoading ? (
-          <TableSkeleton cols={8} rows={6} />
-        ) : !items.length ? (
-          status === 'todos' ? (
-            <ListDataTotalEmpty
-              icon={IconCurrencyReal}
-              title={`Nenhum ${itemLabel} para precificar`}
-              description={`O custo vem de ${originLabel}.`}
-            />
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {!isLoading && !items.length ? (
+            status === 'todos' ? (
+              <ListDataTotalEmpty
+                icon={IconCurrencyReal}
+                title={`Nenhum ${itemLabel} para precificar`}
+                description={`O custo vem de ${originLabel}.`}
+              />
+            ) : (
+              <FilteredDataEmpty description="Nenhum item nesta situação." />
+            )
           ) : (
-            <FilteredDataEmpty description="Nenhum item nesta situação." />
-          )
-        ) : (
-          <>
-            <CardContent>
-              <Table className="min-w-[1000px]">
-                <TableHeader>
-                  <TableRow className="bg-gray-50">
-                    <TableHead className="w-[24%] min-w-[200px]">
-                      {itemLabel === 'setor' ? 'Setor' : 'Item'}
-                    </TableHead>
-                    <TableHead className="w-[12%]">Unidade</TableHead>
-                    <TableHead className="w-[12%] text-right">
-                      Custo atual
-                    </TableHead>
-                    <TableHead className="w-[12%]">
-                      Custo atualizado em
-                    </TableHead>
-                    <TableHead className="w-[10%]">Tipo de preço</TableHead>
-                    <TableHead className="w-[12%] text-right">
-                      Preço praticado
-                    </TableHead>
-                    <TableHead className="w-[10%] text-right">
-                      Margem atual
-                    </TableHead>
-                    <TableHead className="w-[14%]">Status</TableHead>
-                    <TableHead className="w-[6%]" />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {items.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <p className="font-medium">{item.name}</p>
-                        <p className="text-sm text-gray">
-                          {item.code} · {item.sector}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-sm">{item.unit}</TableCell>
-                      <TableCell className="text-right">
-                        {formatValue(item.cost)}
-                      </TableCell>
-                      <TableCell className="text-sm text-gray">
-                        {formatDate(item.costUpdatedAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={priceRuleObj[item.rule].variant}>
-                          {priceRuleObj[item.rule].text}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {formatValue(item.price)}
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          'text-right font-medium',
-                          item.margin !== null &&
-                            item.margin < 0 &&
-                            'text-error-700',
-                        )}
-                      >
-                        {item.margin === null
-                          ? '-'
-                          : `${item.margin.toString().replace('.', ',')}%`}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          status
-                          variant={pricingStatusObj[item.status].variant}
-                        >
-                          {pricingStatusObj[item.status].text}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end gap-1">
-                          <ActionButton
-                            Icon={IconExternalLink}
-                            tooltip={`Ver origem do custo — ${item.name}`}
-                          />
-                          <PermissionGate permissions={['cost:pricing:edit']}>
-                            <ActionButton
-                              Icon={IconCurrencyReal}
-                              tooltip={`Precificar ${item.name}`}
-                              onClick={() => setEditing(item)}
-                            />
-                          </PermissionGate>
-                        </div>
-                      </TableCell>
+            <>
+              <CardContent>
+                <Table className="min-w-[1000px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="w-[24%] min-w-[200px]">
+                        {itemLabel === 'setor' ? 'Setor' : 'Item'}
+                      </TableHead>
+                      <TableHead className="w-[12%]">Unidade</TableHead>
+                      <TableHead className="w-[12%] text-right">
+                        Custo atual
+                      </TableHead>
+                      <TableHead className="w-[12%]">
+                        Custo atualizado em
+                      </TableHead>
+                      <TableHead className="w-[10%]">Tipo de preço</TableHead>
+                      <TableHead className="w-[12%] text-right">
+                        Preço praticado
+                      </TableHead>
+                      <TableHead className="w-[10%] text-right">
+                        Margem atual
+                      </TableHead>
+                      <TableHead className="w-[14%]">Status</TableHead>
+                      <TableHead className="w-[6%]" />
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-            <CardFooter>
-              <p className="text-sm text-gray">
-                O custo vem de {originLabel} e não é editado aqui. Preço
-                praticado é livre: a margem mostra o resultado.
-              </p>
-            </CardFooter>
-          </>
-        )}
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableSkeletonRows cols={9} rows={6} />
+                    ) : (
+                      items.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell>
+                            <p className="font-medium">{item.name}</p>
+                            <p className="text-sm text-gray">
+                              {item.code} · {item.sector}
+                            </p>
+                          </TableCell>
+                          <TableCell className="text-sm">{item.unit}</TableCell>
+                          <TableCell className="text-right">
+                            {formatValue(item.cost)}
+                          </TableCell>
+                          <TableCell className="text-sm text-gray">
+                            {formatDate(item.costUpdatedAt)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={priceRuleObj[item.rule].variant}>
+                              {priceRuleObj[item.rule].text}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {formatValue(item.price)}
+                          </TableCell>
+                          <TableCell
+                            className={cn(
+                              'text-right font-medium',
+                              item.margin !== null &&
+                                item.margin < 0 &&
+                                'text-error-700',
+                            )}
+                          >
+                            {item.margin === null
+                              ? '-'
+                              : `${item.margin.toString().replace('.', ',')}%`}
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              status
+                              variant={pricingStatusObj[item.status].variant}
+                            >
+                              {pricingStatusObj[item.status].text}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-1">
+                              <ActionButton
+                                Icon={IconExternalLink}
+                                tooltip={`Ver origem do custo — ${item.name}`}
+                              />
+                              <PermissionGate
+                                permissions={['cost:pricing:edit']}
+                              >
+                                <ActionButton
+                                  Icon={IconCurrencyReal}
+                                  tooltip={`Precificar ${item.name}`}
+                                  onClick={() => setEditing(item)}
+                                />
+                              </PermissionGate>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter>
+                <p className="text-sm text-gray">
+                  O custo vem de {originLabel} e não é editado aqui. Preço
+                  praticado é livre: a margem mostra o resultado.
+                </p>
+              </CardFooter>
+            </>
+          )}
+        </FetchingRegion>
       </Card>
       <EditPriceModal
         group={group}

@@ -23,7 +23,8 @@ import {
 } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { ListDataStatusEmpty } from '@/components/common/TableEmptyState'
 import { Avatar } from '@/components/AvatarComponent'
 
@@ -57,8 +58,15 @@ export function SessionDetailsDialog({
   const [historyPage, setHistoryPage] = useState(0)
   const limit = 10
 
-  const { data: historyData, isLoading: isLoadingHistory } = useQuery({
+  const {
+    data: historyData,
+    isLoading: isLoadingHistory,
+    isPlaceholderData,
+  } = useQuery({
     queryKey: ['user-history', user?.userId, historyPage],
+    // Trocar de página mantém a anterior até a nova chegar; outro usuário não
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[1] === user?.userId ? previousData : undefined,
     queryFn: async () => {
       if (!user?.userId) return null
       const offset = historyPage * limit
@@ -212,114 +220,121 @@ export function SessionDetailsDialog({
 
               {/* History Tab */}
               <TabsContent value="history" className="space-y-4">
-                {isLoadingHistory ? (
-                  <TableSkeleton cols={5} rows={5} />
-                ) : !historyData?.data || historyData.data.length === 0 ? (
-                  <ListDataStatusEmpty title="Nenhum histórico encontrado" />
-                ) : (
-                  <>
-                    <div className="rounded-lg border border-gray-200">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50">
-                            <TableHead>Endpoint</TableHead>
-                            <TableHead>Método</TableHead>
-                            <TableHead>IP</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Data/Hora</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {historyData.data.map((activity) => (
-                            <TableRow key={activity.id}>
-                              <TableCell>
-                                <Badge variant="neutralLight">
-                                  {activity.endpoint}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    activity.method === 'GET'
-                                      ? 'blueLight'
-                                      : activity.method === 'POST'
-                                        ? 'successLight'
-                                        : activity.method === 'DELETE'
-                                          ? 'errorLight'
-                                          : 'warningLight'
-                                  }
-                                >
-                                  {activity.method}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="font-mono text-xs">
-                                {activity.ipAddress}
-                              </TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant={
-                                    activity.isActive
-                                      ? 'successLight'
-                                      : 'neutralLight'
-                                  }
-                                  status
-                                >
-                                  {activity.isActive ? 'Ativa' : 'Encerrada'}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex flex-col gap-0.5">
-                                  <span className="text-sm text-gray-900">
-                                    {getTimeAgo(activity.lastActive)}
-                                  </span>
-                                  <span className="text-xs text-gray-500">
-                                    {formatToLocaleDateTime(
-                                      activity.lastActive,
-                                    )}
-                                  </span>
-                                </div>
-                              </TableCell>
+                <FetchingRegion isFetching={isPlaceholderData}>
+                  {!isLoadingHistory &&
+                  (!historyData?.data || historyData.data.length === 0) ? (
+                    <ListDataStatusEmpty title="Nenhum histórico encontrado" />
+                  ) : (
+                    <>
+                      <div className="rounded-lg border border-gray-200">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-gray-50">
+                              <TableHead>Endpoint</TableHead>
+                              <TableHead>Método</TableHead>
+                              <TableHead>IP</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Data/Hora</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-
-                    {/* Pagination */}
-                    {totalPages > 1 && (
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm text-gray-600">
-                          Página {historyPage + 1} de {totalPages} (
-                          {historyData.total} registros)
-                        </p>
-                        <div className="flex gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setHistoryPage((p) => Math.max(0, p - 1))
-                            }
-                            disabled={historyPage === 0}
-                          >
-                            Anterior
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              setHistoryPage((p) =>
-                                Math.min(totalPages - 1, p + 1),
-                              )
-                            }
-                            disabled={historyPage === totalPages - 1}
-                          >
-                            Próxima
-                          </Button>
-                        </div>
+                          </TableHeader>
+                          <TableBody>
+                            {isLoadingHistory || !historyData ? (
+                              <TableSkeletonRows cols={5} rows={5} />
+                            ) : (
+                              historyData.data.map((activity) => (
+                                <TableRow key={activity.id}>
+                                  <TableCell>
+                                    <Badge variant="neutralLight">
+                                      {activity.endpoint}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        activity.method === 'GET'
+                                          ? 'blueLight'
+                                          : activity.method === 'POST'
+                                            ? 'successLight'
+                                            : activity.method === 'DELETE'
+                                              ? 'errorLight'
+                                              : 'warningLight'
+                                      }
+                                    >
+                                      {activity.method}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="font-mono text-xs">
+                                    {activity.ipAddress}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Badge
+                                      variant={
+                                        activity.isActive
+                                          ? 'successLight'
+                                          : 'neutralLight'
+                                      }
+                                      status
+                                    >
+                                      {activity.isActive
+                                        ? 'Ativa'
+                                        : 'Encerrada'}
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex flex-col gap-0.5">
+                                      <span className="text-sm text-gray-900">
+                                        {getTimeAgo(activity.lastActive)}
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        {formatToLocaleDateTime(
+                                          activity.lastActive,
+                                        )}
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+                        </Table>
                       </div>
-                    )}
-                  </>
-                )}
+
+                      {/* Pagination */}
+                      {!isLoadingHistory && totalPages > 1 && (
+                        <div className="flex items-center justify-between">
+                          <p className="text-sm text-gray-600">
+                            Página {historyPage + 1} de {totalPages} (
+                            {historyData?.total} registros)
+                          </p>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setHistoryPage((p) => Math.max(0, p - 1))
+                              }
+                              disabled={historyPage === 0}
+                            >
+                              Anterior
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setHistoryPage((p) =>
+                                  Math.min(totalPages - 1, p + 1),
+                                )
+                              }
+                              disabled={historyPage === totalPages - 1}
+                            >
+                              Próxima
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </FetchingRegion>
               </TabsContent>
             </Tabs>
           </div>

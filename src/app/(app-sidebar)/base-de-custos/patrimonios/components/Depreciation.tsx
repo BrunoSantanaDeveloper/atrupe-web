@@ -16,6 +16,7 @@ import {
 // Components
 import { DepreciationData } from './DepreciationData'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { DepreciationSummaryCards } from './DepreciationSummaryCards'
 import {
   FilteredDataEmpty,
@@ -36,7 +37,7 @@ import {
 import { assetStatusTabs } from '@/consts/cost-base'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconBuildingWarehouse } from '@tabler/icons-react'
@@ -56,8 +57,10 @@ export function Depreciation({ searchParams }: SearchParamsType) {
     queryFn: () => getDepreciationCounts(),
   })
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Trocar a situação mantém a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['depreciation-assets', searchParams],
     queryFn: () => getDepreciationAssets({ filters: searchParams }),
   })
@@ -93,7 +96,7 @@ export function Depreciation({ searchParams }: SearchParamsType) {
             </TabsList>
           </Tabs>
         </CardHeader>
-        {isLoading || isLoadingTotals ? (
+        {isLoadingTotals ? (
           <TableSkeleton cols={9} rows={8} />
         ) : !hasAnyAsset ? (
           <ListDataTotalEmpty
@@ -101,10 +104,14 @@ export function Depreciation({ searchParams }: SearchParamsType) {
             title="Nenhum patrimônio cadastrado"
             description="Cadastre máquinas, móveis e veículos para acompanhar a depreciação."
           />
-        ) : assets.length ? (
-          <DepreciationData assets={assets} />
         ) : (
-          <FilteredDataEmpty description="Nenhum patrimônio nesta situação." />
+          <FetchingRegion isFetching={isPlaceholderData}>
+            {isLoading || assets.length ? (
+              <DepreciationData assets={assets} isLoading={isLoading} />
+            ) : (
+              <FilteredDataEmpty description="Nenhum patrimônio nesta situação." />
+            )}
+          </FetchingRegion>
         )}
       </Card>
     </div>

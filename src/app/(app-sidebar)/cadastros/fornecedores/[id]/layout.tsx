@@ -4,12 +4,12 @@
 import Link from 'next/link'
 
 // UI
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { ClientActions } from '../../clientes/[id]/components/ClientActions'
+import { DetailCardSkeleton } from '../../clientes/[id]/components/DetailCardSkeleton'
 
 // Consts
 import { supplierStatusObj } from '@/consts/supplier'
@@ -119,7 +119,7 @@ export default function SupplierDetailLayout({ children, params }: Props) {
         </Tabs>
         <div>
           {isLoading ? (
-            <Skeleton className="h-[300px]" />
+            <DetailCardSkeleton />
           ) : (
             <div className="space-y-3">{children}</div>
           )}

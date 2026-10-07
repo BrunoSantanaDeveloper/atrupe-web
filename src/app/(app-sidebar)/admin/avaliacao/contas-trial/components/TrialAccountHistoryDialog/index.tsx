@@ -136,6 +136,7 @@ export function TrialAccountHistoryDialog({ open, setOpen, rowData }: Props) {
             type="button"
             onClick={handleSendMessage}
             disabled={mutation.isPending || !message.trim()}
+            isLoading={mutation.isPending}
           >
             <IconSend className="h-4 w-4 mr-2" />
             Enviar mensagem

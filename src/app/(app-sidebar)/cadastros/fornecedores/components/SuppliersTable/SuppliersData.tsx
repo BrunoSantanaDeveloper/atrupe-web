@@ -6,7 +6,8 @@ import { useState, useEffect, Fragment } from 'react'
 // Component Imports
 import { NewSupplier, NewSupplierTriggerButton } from '../NewSupplier'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 
@@ -32,7 +33,7 @@ import type { TabNavType } from '@/components/common/Topbar'
 import { getDataOld } from '@/actions/_cruds'
 
 // Third-party Imports
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icon Imports
 import { IconSearch } from '@tabler/icons-react'
@@ -52,8 +53,10 @@ export function SuppliersData({ searchParams, tabs }: Props) {
     tabs?.find((tab) => tab.tab === searchParams.status)?.value || ''
   const filters = { ...searchParams, status }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['supplier-list', searchParams],
     queryFn: () => getDataOld({ route: 'supplierRoute', filters }),
   })
@@ -70,90 +73,100 @@ export function SuppliersData({ searchParams, tabs }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton />
-        ) : hasData ? (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-gray-50">
-                <TableHead className="w-[50%] min-w-[250px]">Nome</TableHead>
-                <TableHead className="w-[15%]">Grupo</TableHead>
-                <TableHead className="w-[13%]">Status</TableHead>
-                <TableHead className="w-[12%]">Contato</TableHead>
-                <TableHead className="w-[10%]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {suppliers.map((supplier) => (
-                <TableRow key={supplier?.id}>
-                  <TableCell>
-                    <p className="font-medium">{supplier?.name}</p>
-                    <p className="text-gray">{supplier?.kind}</p>
-                  </TableCell>
-                  <TableCell>
-                    {supplier?.categoryRelation?.name || '-'}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      status
-                      variant={supplierStatusObj[supplier?.status]?.variant}
-                    >
-                      {supplierStatusObj[supplier?.status]?.text}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-gray">{supplier?.phoneNumber || '-'}</p>
-                    <p className="text-gray">{supplier?.email || '-'}</p>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex justify-end gap-1">
-                      <TooltipProvider>
-                        <PermissionGate
-                          permissions={['register:supplier:view']}
-                        >
-                          <ActionButton
-                            link={`/cadastros/fornecedores/${supplier?.id}/dados`}
-                            Icon={IconSearch}
-                            tooltip="Ver"
-                          />
-                        </PermissionGate>
-                        <PermissionGate
-                          permissions={['register:supplier:edit']}
-                        >
-                          <NewSupplierTriggerButton
-                            editMode
-                            onOpenChange={() => {
-                              setSupplierId(supplier?.id)
-                              setOpenDialog('edit-supplier')
-                            }}
-                          />
-                        </PermissionGate>
-                      </TooltipProvider>
-                    </div>
-                  </TableCell>
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gray-50">
+                  <TableHead className="w-[50%] min-w-[250px]">Nome</TableHead>
+                  <TableHead className="w-[15%]">Grupo</TableHead>
+                  <TableHead className="w-[13%]">Status</TableHead>
+                  <TableHead className="w-[12%]">Contato</TableHead>
+                  <TableHead className="w-[10%]"></TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        ) : (
-          <FilteredDataEmpty
-            title="Fornecedor não encontrado"
-            description="Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo fornecedor"
-            cta={
-              <PermissionGate permissions={['register:supplier:create']}>
-                <NewSupplierTriggerButton
-                  onOpenChange={() => {
-                    setOpenDialog('new-supplier')
-                  }}
-                />
-              </PermissionGate>
-            }
-          />
-        )}
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableSkeletonRows cols={5} />
+                ) : (
+                  suppliers.map((supplier) => (
+                    <TableRow key={supplier?.id}>
+                      <TableCell>
+                        <p className="font-medium">{supplier?.name}</p>
+                        <p className="text-gray">{supplier?.kind}</p>
+                      </TableCell>
+                      <TableCell>
+                        {supplier?.categoryRelation?.name || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          status
+                          variant={supplierStatusObj[supplier?.status]?.variant}
+                        >
+                          {supplierStatusObj[supplier?.status]?.text}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <p className="text-gray">
+                          {supplier?.phoneNumber || '-'}
+                        </p>
+                        <p className="text-gray">{supplier?.email || '-'}</p>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex justify-end gap-1">
+                          <TooltipProvider>
+                            <PermissionGate
+                              permissions={['register:supplier:view']}
+                            >
+                              <ActionButton
+                                link={`/cadastros/fornecedores/${supplier?.id}/dados`}
+                                Icon={IconSearch}
+                                tooltip="Ver"
+                              />
+                            </PermissionGate>
+                            <PermissionGate
+                              permissions={['register:supplier:edit']}
+                            >
+                              <NewSupplierTriggerButton
+                                editMode
+                                onOpenChange={() => {
+                                  setSupplierId(supplier?.id)
+                                  setOpenDialog('edit-supplier')
+                                }}
+                              />
+                            </PermissionGate>
+                          </TooltipProvider>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          ) : (
+            <FilteredDataEmpty
+              title="Fornecedor não encontrado"
+              description="Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo fornecedor"
+              cta={
+                <PermissionGate permissions={['register:supplier:create']}>
+                  <NewSupplierTriggerButton
+                    onOpenChange={() => {
+                      setOpenDialog('new-supplier')
+                    }}
+                  />
+                </PermissionGate>
+              }
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
-          <TablePagination searchParams={searchParams} lastPage={lastPage} />
+          <TablePagination
+            searchParams={searchParams}
+            lastPage={lastPage}
+            isLoading={isLoading}
+          />
         </CardFooter>
       ) : null}
       <NewSupplier

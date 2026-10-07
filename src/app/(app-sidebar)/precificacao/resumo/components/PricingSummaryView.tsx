@@ -51,10 +51,37 @@ export function PricingSummaryView() {
   const parameters = summary?.parameters
 
   if (isLoading || !summary || !parameters) {
+    // Primeira carga no formato final: títulos reais e blocos no lugar dos
+    // cartões (design/openspec/changes/microinteracoes)
     return (
       <div className="space-y-5">
-        <Skeleton className="h-[260px] w-full rounded-xl" />
-        <Skeleton className="h-[200px] w-full rounded-xl" />
+        <Card>
+          <CardHeader>
+            <CardTitle>Parâmetros de referência</CardTitle>
+            <Skeleton className="h-4 w-2/3" />
+          </CardHeader>
+          <CardContent className="space-y-6 px-6 pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              {Array.from({ length: 5 }, (_, index) => (
+                <Skeleton key={index} className="h-[120px] rounded-xl" />
+              ))}
+            </div>
+            <Skeleton className="h-3 w-full rounded-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Precificação por grupo</CardTitle>
+            <Skeleton className="h-4 w-1/2" />
+          </CardHeader>
+          <CardContent className="px-6 pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-[180px] rounded-xl" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     )
   }

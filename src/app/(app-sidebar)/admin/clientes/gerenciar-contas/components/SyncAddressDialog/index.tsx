@@ -266,6 +266,7 @@ export function SyncAddressDialog({ open, setOpen, rowData }: Props) {
             type="submit"
             form="sync-address"
             disabled={form.formState.isSubmitting}
+            isLoading={form.formState.isSubmitting}
             RightIcon={IconMapPin}
           >
             Salvar e sincronizar

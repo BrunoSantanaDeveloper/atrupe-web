@@ -6,7 +6,8 @@ import { Fragment, useState, useEffect } from 'react'
 // Components
 import { Badge } from '@/components/ui/badge'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { CompleteRegistrationDialog } from '../CompleteRegistrationDialog'
@@ -34,7 +35,7 @@ import { getData } from '@/actions/_cruds'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconCopy } from '@tabler/icons-react'
@@ -138,8 +139,10 @@ export function Data({ searchParams, searchDescription }: Props) {
 
   const filters = { ...searchParams }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['incomplete-registration-list', searchParams],
     queryFn: () =>
       getData({ route: '/subscriptions/incomplete-registrations', filters }),
@@ -151,104 +154,112 @@ export function Data({ searchParams, searchDescription }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton cols={7} />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Conta</TableHead>
-                  <TableHead>Token</TableHead>
-                  <TableHead>Usuário</TableHead>
-                  <TableHead>Contato</TableHead>
-                  <TableHead>Validação e-mail</TableHead>
-                  <TableHead>Criação</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {dataArray.map((group) => (
-                  <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={7}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
-                    {group?.data?.length
-                      ? group?.data.map((item) => {
-                          return (
-                            <TableRow key={item.id}>
-                              <TableCell>
-                                <div>
-                                  <p className="font-medium text-sm">
-                                    {item.companyName}
-                                  </p>
-                                  <p className="text-xs text-gray-600">
-                                    {item.code}
-                                  </p>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                <TokenCell item={item} />
-                              </TableCell>
-                              <TableCell>{item.userName}</TableCell>
-                              <TableCell>
-                                <div className="text-sm">
-                                  <p className="text-gray-900">{item.phone}</p>
-                                  <p className="text-gray-600">{item.email}</p>
-                                </div>
-                              </TableCell>
-                              <TableCell>
-                                {item.emailVerified ? (
-                                  <Badge variant="successLight">
-                                    Confirmado
-                                  </Badge>
-                                ) : (
-                                  <Badge variant="errorLight">
-                                    Não confirmado
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <TableCell className="text-gray-600">
-                                {formatToLocaleDate(item.createdAt)}
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Cadastrar"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setOpenDialog(true)
-                                      }}
-                                    />
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </>
-        ) : (
-          <FilteredDataEmpty
-            title="Resultado não encontrado"
-            description={
-              searchDescription ||
-              'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo item'
-            }
-            cta={undefined}
-          />
-        )}
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Conta</TableHead>
+                    <TableHead>Token</TableHead>
+                    <TableHead>Usuário</TableHead>
+                    <TableHead>Contato</TableHead>
+                    <TableHead>Validação e-mail</TableHead>
+                    <TableHead>Criação</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={7} />
+                  ) : (
+                    dataArray.map((group) => (
+                      <Fragment key={group.date}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={7}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {formatToWeekDate(group?.date)}
+                          </TableCell>
+                        </TableRow>
+                        {group?.data?.length
+                          ? group?.data.map((item) => {
+                              return (
+                                <TableRow key={item.id}>
+                                  <TableCell>
+                                    <div>
+                                      <p className="font-medium text-sm">
+                                        {item.companyName}
+                                      </p>
+                                      <p className="text-xs text-gray-600">
+                                        {item.code}
+                                      </p>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    <TokenCell item={item} />
+                                  </TableCell>
+                                  <TableCell>{item.userName}</TableCell>
+                                  <TableCell>
+                                    <div className="text-sm">
+                                      <p className="text-gray-900">
+                                        {item.phone}
+                                      </p>
+                                      <p className="text-gray-600">
+                                        {item.email}
+                                      </p>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell>
+                                    {item.emailVerified ? (
+                                      <Badge variant="successLight">
+                                        Confirmado
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="errorLight">
+                                        Não confirmado
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+                                  <TableCell className="text-gray-600">
+                                    {formatToLocaleDate(item.createdAt)}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex justify-end gap-1">
+                                      <TooltipProvider>
+                                        <ActionButton
+                                          Icon={IconPencil}
+                                          tooltip="Cadastrar"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setOpenDialog(true)
+                                          }}
+                                        />
+                                      </TooltipProvider>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </>
+          ) : (
+            <FilteredDataEmpty
+              title="Resultado não encontrado"
+              description={
+                searchDescription ||
+                'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo item'
+              }
+              cta={undefined}
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
@@ -256,6 +267,7 @@ export function Data({ searchParams, searchDescription }: Props) {
             searchParams={searchParams}
             // lastPage={data?.lastPage}
             lastPage={data?.total ? Math.ceil(data.total / 10) : 1}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

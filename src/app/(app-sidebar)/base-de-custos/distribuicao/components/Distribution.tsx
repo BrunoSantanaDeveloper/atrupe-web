@@ -198,7 +198,7 @@ export function Distribution() {
                   isLoading={isPending}
                   onClick={() => mutate()}
                 >
-                  {isPending ? 'Salvando...' : 'Salvar distribuição'}
+                  Salvar distribuição
                 </Button>
               </PermissionGate>
             </CardFooter>

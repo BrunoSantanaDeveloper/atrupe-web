@@ -5,12 +5,12 @@ import Link from 'next/link'
 
 // UI
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Components
 import { ClientActions } from './components/ClientActions'
+import { DetailCardSkeleton } from './components/DetailCardSkeleton'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 
 // Consts
@@ -131,7 +131,7 @@ export default function ClientDetailLayout({ children, params }: Props) {
         </Tabs>
         <div>
           {isLoading ? (
-            <Skeleton className="h-[300px]" />
+            <DetailCardSkeleton />
           ) : (
             <div className="space-y-3">{children}</div>
           )}

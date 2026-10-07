@@ -70,7 +70,7 @@ export function LaborCosts() {
           </CardDescription>
         </CardHeader>
         {isLoading ? (
-          <TableSkeleton cols={6} rows={6} />
+          <TableSkeleton cols={7} rows={6} />
         ) : !sectors.length ? (
           <ListDataTotalEmpty
             icon={IconUsers}

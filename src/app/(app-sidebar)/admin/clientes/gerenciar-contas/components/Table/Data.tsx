@@ -5,7 +5,8 @@ import { Fragment, useState } from 'react'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
 import { EditClientDialog } from '../EditClientDialog'
@@ -44,7 +45,7 @@ import { maskCpfCnpj } from '@/lib/utils'
 import { formatToLocaleDate, formatToWeekDate } from '@/lib/formatDate'
 
 // Third-party
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 
 // Icons
 import {
@@ -115,8 +116,10 @@ export function Data({ searchParams, searchDescription }: Props) {
   const filters = { ...searchParams }
   const currentStatus = searchParams.status
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['active-clients-list', searchParams],
     queryFn: () => getData({ route: '/subscriptions/active-clients', filters }),
   })
@@ -127,209 +130,218 @@ export function Data({ searchParams, searchDescription }: Props) {
   return (
     <>
       <CardContent>
-        {isLoading ? (
-          <TableSkeleton cols={6} />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead>Conta</TableHead>
-                  <TableHead>Usuário</TableHead>
-                  <TableHead>Contato</TableHead>
-                  <TableHead>Criação</TableHead>
-                  <TableHead>Plano</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {dataArray.map((group) => (
-                  <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={6}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
-                    {group?.data?.length
-                      ? group?.data.map((item, index) => {
-                          return (
-                            <TableRow key={item.id + index}>
-                              {/* Conta */}
-                              <TableCell>
-                                <div className="flex items-center gap-3">
-                                  <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
-                                    {item.avatar ? (
-                                      <Image
-                                        src={item.avatar}
-                                        alt={item.companyName || 'Avatar'}
-                                        fill
-                                        className="object-cover p-1"
-                                      />
-                                    ) : (
-                                      <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                                        <IconBuildingStore
-                                          size={24}
-                                          className="text-gray-400"
-                                        />
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead>Conta</TableHead>
+                    <TableHead>Usuário</TableHead>
+                    <TableHead>Contato</TableHead>
+                    <TableHead>Criação</TableHead>
+                    <TableHead>Plano</TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={6} />
+                  ) : (
+                    dataArray.map((group) => (
+                      <Fragment key={group.date}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={6}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {formatToWeekDate(group?.date)}
+                          </TableCell>
+                        </TableRow>
+                        {group?.data?.length
+                          ? group?.data.map((item, index) => {
+                              return (
+                                <TableRow key={item.id + index}>
+                                  {/* Conta */}
+                                  <TableCell>
+                                    <div className="flex items-center gap-3">
+                                      <div className="relative w-12 h-12 rounded-md overflow-hidden flex-shrink-0 bg-gray-100">
+                                        {item.avatar ? (
+                                          <Image
+                                            src={item.avatar}
+                                            alt={item.companyName || 'Avatar'}
+                                            fill
+                                            className="object-cover p-1"
+                                          />
+                                        ) : (
+                                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                            <IconBuildingStore
+                                              size={24}
+                                              className="text-gray-400"
+                                            />
+                                          </div>
+                                        )}
                                       </div>
-                                    )}
-                                  </div>
-                                  <div>
-                                    <p className="font-medium text-sm">
-                                      {item.companyName}
+                                      <div>
+                                        <p className="font-medium text-sm">
+                                          {item.companyName}
+                                        </p>
+                                        <p className="text-xs text-gray-600">
+                                          {`${item.code} - ${maskCpfCnpj(item.document)}`}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                  {/* Usuário */}
+                                  <TableCell>
+                                    <p className="text-sm text-gray-700">
+                                      {item.userName}
                                     </p>
-                                    <p className="text-xs text-gray-600">
-                                      {`${item.code} - ${maskCpfCnpj(item.document)}`}
+                                  </TableCell>
+                                  {/* Contato */}
+                                  <TableCell>
+                                    <div className="text-sm">
+                                      <p className="text-gray-700">
+                                        {item.phone}
+                                      </p>
+                                      <p className="text-gray-600">
+                                        {item.email}
+                                      </p>
+                                    </div>
+                                  </TableCell>
+                                  {/* Criação */}
+                                  <TableCell>
+                                    <p className="text-sm text-gray-700">
+                                      {formatToLocaleDate(item.createdAt)}
                                     </p>
-                                  </div>
-                                </div>
-                              </TableCell>
-                              {/* Usuário */}
-                              <TableCell>
-                                <p className="text-sm text-gray-700">
-                                  {item.userName}
-                                </p>
-                              </TableCell>
-                              {/* Contato */}
-                              <TableCell>
-                                <div className="text-sm">
-                                  <p className="text-gray-700">{item.phone}</p>
-                                  <p className="text-gray-600">{item.email}</p>
-                                </div>
-                              </TableCell>
-                              {/* Criação */}
-                              <TableCell>
-                                <p className="text-sm text-gray-700">
-                                  {formatToLocaleDate(item.createdAt)}
-                                </p>
-                              </TableCell>
-                              {/* Plano */}
-                              <TableCell>
-                                <Badge
-                                  variant={planVariants[item.planType]}
-                                  className="text-xs font-medium capitalize"
-                                >
-                                  {item.planType.toLowerCase()}
-                                </Badge>
-                              </TableCell>
-                              {/* Ações */}
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <ActionButton
-                                      Icon={IconPencil}
-                                      tooltip="Editar"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsEditDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconSettings}
-                                      tooltip="Configurações"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsChangeStatusDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconStack2}
-                                      tooltip="Módulos"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsModulesDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconArrowsExchange}
-                                      tooltip="Trocar plano"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsChangePlanDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconGift}
-                                      tooltip="Plano manual, sem cobrança"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsManualPlanDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconRefresh}
-                                      tooltip="Verificar Asaas"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsSyncDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconMapPin}
-                                      tooltip="Endereço Asaas"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsSyncAddressDialogOpen(true)
-                                      }}
-                                    />
-                                    <ActionButton
-                                      Icon={IconKey}
-                                      tooltip="Redefinir senha"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsResetPasswordDialogOpen(true)
-                                      }}
-                                      disabled={!item.userId}
-                                    />
-                                    <ActionButton
-                                      Icon={IconHistory}
-                                      tooltip="Histórico"
-                                      onClick={() => {
-                                        setRowData(item)
-                                        setIsHistoryDialogOpen(true)
-                                      }}
-                                    />
-                                    {currentStatus !== 'ativas' && (
-                                      <ActionButton
-                                        Icon={IconTrash}
-                                        tooltip="Excluir conta"
-                                        onClick={() => {
-                                          setRowData(item)
-                                          setIsDeleteDialogOpen(true)
-                                        }}
-                                      />
-                                    )}
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </>
-        ) : (
-          <FilteredDataEmpty
-            title="Resultado não encontrado"
-            description={
-              searchDescription ||
-              'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo item'
-            }
-            cta={undefined}
-          />
-        )}
+                                  </TableCell>
+                                  {/* Plano */}
+                                  <TableCell>
+                                    <Badge
+                                      variant={planVariants[item.planType]}
+                                      className="text-xs font-medium capitalize"
+                                    >
+                                      {item.planType.toLowerCase()}
+                                    </Badge>
+                                  </TableCell>
+                                  {/* Ações */}
+                                  <TableCell>
+                                    <div className="flex justify-end gap-1">
+                                      <TooltipProvider>
+                                        <ActionButton
+                                          Icon={IconPencil}
+                                          tooltip="Editar"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsEditDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconSettings}
+                                          tooltip="Configurações"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsChangeStatusDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconStack2}
+                                          tooltip="Módulos"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsModulesDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconArrowsExchange}
+                                          tooltip="Trocar plano"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsChangePlanDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconGift}
+                                          tooltip="Plano manual, sem cobrança"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsManualPlanDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconRefresh}
+                                          tooltip="Verificar Asaas"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsSyncDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconMapPin}
+                                          tooltip="Endereço Asaas"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsSyncAddressDialogOpen(true)
+                                          }}
+                                        />
+                                        <ActionButton
+                                          Icon={IconKey}
+                                          tooltip="Redefinir senha"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsResetPasswordDialogOpen(true)
+                                          }}
+                                          disabled={!item.userId}
+                                        />
+                                        <ActionButton
+                                          Icon={IconHistory}
+                                          tooltip="Histórico"
+                                          onClick={() => {
+                                            setRowData(item)
+                                            setIsHistoryDialogOpen(true)
+                                          }}
+                                        />
+                                        {currentStatus !== 'ativas' && (
+                                          <ActionButton
+                                            Icon={IconTrash}
+                                            tooltip="Excluir conta"
+                                            onClick={() => {
+                                              setRowData(item)
+                                              setIsDeleteDialogOpen(true)
+                                            }}
+                                          />
+                                        )}
+                                      </TooltipProvider>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </>
+          ) : (
+            <FilteredDataEmpty
+              title="Resultado não encontrado"
+              description={
+                searchDescription ||
+                'Sua busca não encontrou nenhum resultado. Tente novamente ou crie um novo item'
+              }
+              cta={undefined}
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.total ? Math.ceil(data.total / 10) : 1}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

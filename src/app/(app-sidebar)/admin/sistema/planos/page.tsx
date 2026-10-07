@@ -6,7 +6,6 @@ import { toast } from 'sonner'
 import {
   IconCheck,
   IconX,
-  IconLoader,
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
@@ -255,17 +254,9 @@ export default function AdminPlansPage() {
               type="button"
               onClick={handleConfirmToggle}
               disabled={isSaving}
+              isLoading={isSaving}
             >
-              {isSaving ? (
-                <span className="flex items-center gap-1">
-                  <IconLoader size={16} className="animate-spin" />
-                  Salvando...
-                </span>
-              ) : pendingToggle?.next ? (
-                'Disponibilizar'
-              ) : (
-                'Remover'
-              )}
+              {pendingToggle?.next ? 'Disponibilizar' : 'Remover'}
             </Button>
           </DialogFooter>
         </DialogContent>
