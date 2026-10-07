@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/tooltip'
 
 const avatarAddVariants = cva(
-  'relative flex shrink-0 items-center justify-center rounded-full transition-all focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f2f4f7] disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
+  'relative flex shrink-0 items-center justify-center rounded-full transition-[color,background-color,border-color,box-shadow,opacity] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#f2f4f7] disabled:pointer-events-none disabled:opacity-50 cursor-pointer',
   {
     variants: {
       size: {

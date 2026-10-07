@@ -22,7 +22,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       return (
         <div
           className={cn(
-            'flex items-center justify-center h-10 rounded-lg border text-sm border-gray-300 bg-white shadow-xs focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden transition-all duration-200 ease-in-out',
+            'flex items-center justify-center h-10 rounded-lg border text-sm border-gray-300 bg-white shadow-xs focus-within:border-brand-300 focus-within:ring-4 focus-within:ring-brand-50 data-[disabled=true]:cursor-not-allowed data-[disabled=true]:opacity-50 overflow-hidden transition-[color,background-color,border-color,box-shadow,opacity] duration-200 ease-in-out',
             error &&
               'border-error-300 focus-within:border-error-300 focus-within:ring-error-100',
             className,
@@ -60,7 +60,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <input
         className={cn(
-          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2.5 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-all duration-200 ease-in-out',
+          'flex h-10 w-full rounded-lg border border-gray-300 bg-white shadow-xs px-3.5 py-2.5 text-sm text-gray-900 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 disabled:cursor-not-allowed disabled:opacity-50 transition-[color,background-color,border-color,box-shadow,opacity] duration-200 ease-in-out',
           error &&
             'border-error-300 focus-visible:border-error-300 focus-visible:ring-error-100',
           className,

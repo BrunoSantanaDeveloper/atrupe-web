@@ -40,6 +40,8 @@ const createTimeoutPromise = (timeout: number) =>
   )
 
 type AlertDialogStore = BaseAlertDialog & {
+  // `onConfirm` em andamento: o diálogo fica aberto com o botão em progresso
+  isConfirming: boolean
   open: (props: Omit<BaseAlertDialog, 'isOpen'>) => Promise<boolean>
   close: () => void
   confirm: () => Promise<boolean>
@@ -47,6 +49,7 @@ type AlertDialogStore = BaseAlertDialog & {
 
 export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
   isOpen: false,
+  isConfirming: false,
   title: 'Confirmar ação',
   description: '',
   confirmLabel: '',
@@ -68,13 +71,13 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
       const { onConfirm, toastMsg, timeout = DEFAULT_TIMEOUT } = get()
 
       const timeoutId = setTimeout(() => {
-        set({ isOpen: false })
+        set({ isOpen: false, isConfirming: false })
         reject(new Error('Dialog confirmation timed out'))
       }, timeout)
 
       const cleanup = () => {
         clearTimeout(timeoutId)
-        set({ isOpen: false })
+        set({ isOpen: false, isConfirming: false })
       }
 
       const handleConfirm = async () => {
@@ -84,6 +87,7 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
           return
         }
 
+        set({ isConfirming: true })
         try {
           if (toastMsg) {
             await toast.promise(

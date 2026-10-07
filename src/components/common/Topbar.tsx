@@ -104,7 +104,7 @@ export function Topbar({
                 {title}
               </h1>
             ) : (
-              <Skeleton className="h-5 w-48 bg-gray-300" />
+              <Skeleton className="h-5 w-48" />
             )}
           </div>
           <h3 className="text-gray font-medium text-lg">{supportText}</h3>

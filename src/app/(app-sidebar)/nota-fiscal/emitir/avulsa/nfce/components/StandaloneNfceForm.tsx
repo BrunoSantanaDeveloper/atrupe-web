@@ -401,15 +401,15 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
       <TooltipProvider>
         <div className="space-y-6 pb-10">
           <div className="space-y-4">
-            <Skeleton className="h-16 w-full animate-pulse" />
+            <Skeleton className="h-16 w-full" />
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-4">
-                <Skeleton className="h-32 w-full animate-pulse" />
-                <Skeleton className="h-64 w-full animate-pulse" />
-                <Skeleton className="h-48 w-full animate-pulse" />
+                <Skeleton className="h-32 w-full" />
+                <Skeleton className="h-64 w-full" />
+                <Skeleton className="h-48 w-full" />
               </div>
               <div className="space-y-4">
-                <Skeleton className="h-64 w-full animate-pulse" />
+                <Skeleton className="h-64 w-full" />
               </div>
             </div>
           </div>

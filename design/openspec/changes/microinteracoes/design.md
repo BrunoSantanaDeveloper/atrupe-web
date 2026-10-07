@@ -23,9 +23,10 @@ Estado atual que molda a solução:
 - **`ui/button.tsx` com `isLoading`:** aplica `disabled`, e o estilo
   `disabled:` pinta o botão de cinza; o spinner de 24 px entra à direita e muda
   a largura.
-- **Overlays:** `dialog` e `alert-dialog` usam o padrão antigo do shadcn
-  (`slide-in-from-left-1/2` + `slide-in-from-top-[48%]`), que desloca na
-  diagonal; `sheet` abre em 500 ms.
+- **Overlays:** `dialog` e `alert-dialog` entram com zoom e sobem 2%
+  (`slide-in-from-top-[48%]` contra a posição final de 50%), com a mesma
+  duração na entrada e na saída; `sheet` abre em 500 ms. O diálogo global de
+  confirmação fecha no clique, antes de a ação (exclusão etc.) terminar.
 - **Barra lateral:** dezenas de elementos com `transition-all duration-500`
   animando largura, gap, padding e margem.
 
@@ -41,10 +42,11 @@ por Suspense; refazer o layout das telas.
 
 ### 1. Tokens de movimento no Tailwind
 `transitionDuration` ganha `fast` 150 ms, `base` 200 ms, `slow` 300 ms;
-`transitionTimingFunction` ganha `out` = `cubic-bezier(0.16, 1, 0.3, 1)` e
-`in-out` = `cubic-bezier(0.65, 0, 0.35, 1)`. O `tailwindcss-animate` lê
-`transitionDuration` para `duration-*` das animações, então `duration-fast`
-serve aos dois.
+`transitionTimingFunction` redefine `out` = `cubic-bezier(0.16, 1, 0.3, 1)` e
+`in-out` = `cubic-bezier(0.65, 0, 0.35, 1)` — substituem as curvas padrão do
+Tailwind, então todo `ease-out`/`ease-in-out` existente passa a usar a curva do
+sistema. O `tailwindcss-animate` lê `transitionDuration` para `duration-*` das
+animações, então `duration-fast` serve aos dois.
 
 ### 2. Esqueleto
 `bg-gray-200` (o token inverte no escuro) sem blend. Animação `skeleton`:
@@ -69,7 +71,13 @@ propriedade: o pulso começa quando o fade termina. Overrides de cor existentes
 
 ### 4. Overlays
 - `dialog` / `alert-dialog`: `fade` + `zoom-in-95`, entrada `duration-base`
-  `ease-out`, saída `duration-fast`; removidos os `slide-*`.
+  `ease-out`, saída `duration-fast`. No Tailwind 3 a animação substitui o
+  `transform` que centraliza (`translate(-50%, -50%)`), então os `slide-*`
+  ficam, mas compensando exatamente `-50%` nos dois eixos (`slide-*-1/2`):
+  zoom puro, sem subida.
+- Diálogo global de confirmação (`GlobalAlertDialog`): fica aberto com o botão
+  de confirmar em progresso até o `onConfirm` terminar; Esc e Voltar não
+  fecham nesse intervalo. Os avisos (toasts) continuam como estão.
 - `sheet`: entrada `duration-slow ease-out`, saída `duration-base`.
 - `TabsContent`: `animate-in fade-in-0 duration-base`.
 

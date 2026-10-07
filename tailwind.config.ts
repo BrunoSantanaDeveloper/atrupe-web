@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
 
 const config = {
   darkMode: ['class'],
@@ -384,15 +385,51 @@ const config = {
           '0%,70%,100%': { opacity: '1' },
           '20%,50%': { opacity: '0' },
         },
+        'fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        'skeleton-pulse': {
+          '0%,100%': { opacity: '1' },
+          '50%': { opacity: '0.55' },
+        },
+        'progress-indeterminate': {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(400%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'caret-blink': 'caret-blink 1.25s ease-out infinite',
+        // Esqueleto: aparece após 150 ms (carga rápida não pisca) e pulsa
+        skeleton:
+          'fade-in 300ms cubic-bezier(0.16, 1, 0.3, 1) 150ms both, skeleton-pulse 1.8s ease-in-out 450ms infinite',
+        'progress-indeterminate':
+          'progress-indeterminate 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite',
+      },
+      // Movimento — design/openspec/changes/microinteracoes (Decisão 1).
+      // O tailwindcss-animate lê transitionDuration, então `duration-fast`
+      // vale para transições e animações
+      transitionDuration: {
+        fast: '150ms',
+        base: '200ms',
+        slow: '300ms',
+      },
+      transitionTimingFunction: {
+        out: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'in-out': 'cubic-bezier(0.65, 0, 0.35, 1)',
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [
+    require('tailwindcss-animate'),
+    // Desabilitado sem estar em progresso: o botão em progresso também é
+    // `disabled`, mas mantém a cor da variante (Decisão 3)
+    plugin(({ addVariant }) => {
+      addVariant('disabled-idle', '&:disabled:not([data-loading])')
+    }),
+  ],
 } satisfies Config
 
 export default config

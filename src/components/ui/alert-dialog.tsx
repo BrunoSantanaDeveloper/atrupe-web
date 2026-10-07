@@ -38,7 +38,7 @@ const AlertDialogContent = React.forwardRef<
     <AlertDialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid min-w-96 max-w-[405px] translate-x-[-50%] translate-y-[-50%] gap-8 border border-gray-200 bg-white p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-xl dark:border-gray-800 dark:bg-gray-950',
+        'fixed left-[50%] top-[50%] z-50 grid min-w-96 max-w-[405px] translate-x-[-50%] translate-y-[-50%] gap-8 border border-gray-200 bg-white p-6 shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-1/2 data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-1/2 ease-out data-[state=open]:duration-base data-[state=closed]:duration-fast sm:rounded-xl dark:border-gray-800 dark:bg-gray-950',
         className,
       )}
       {...props}
@@ -108,17 +108,29 @@ const AlertDialogAction = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action> &
     ButtonIconProps & { isLoading?: boolean }
 >(({ className, RightIcon, LeftIcon, isLoading, ...props }, ref) => (
+  // Em progresso: mesma cor e largura, spinner centralizado (como o Button)
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn('gap-2', buttonVariants(), className)}
+    className={cn(
+      'gap-2',
+      buttonVariants(),
+      isLoading && 'relative',
+      className,
+    )}
     {...props}
+    disabled={isLoading || props.disabled}
+    data-loading={isLoading ? '' : undefined}
+    aria-busy={isLoading || undefined}
   >
-    {LeftIcon && <LeftIcon aria-hidden="true" size={20} />}
-    {props.children}
-    {isLoading ? (
-      <LoaderCircle aria-hidden="true" size={20} className="animate-spin" />
-    ) : (
-      RightIcon && <RightIcon aria-hidden="true" size={20} />
+    <span className={cn('contents', isLoading && 'invisible')}>
+      {LeftIcon && <LeftIcon aria-hidden="true" size={20} />}
+      {props.children}
+      {RightIcon && <RightIcon aria-hidden="true" size={20} />}
+    </span>
+    {isLoading && (
+      <span className="absolute inset-0 flex items-center justify-center">
+        <LoaderCircle aria-hidden="true" size={20} className="animate-spin" />
+      </span>
     )}
   </AlertDialogPrimitive.Action>
 ))

@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Third-party
@@ -126,9 +127,9 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
         <DialogBody>
           {isLoading ? (
             <div className="space-y-4">
-              <div className="h-20 bg-gray-100 rounded-lg animate-pulse" />
-              <div className="h-20 bg-gray-100 rounded-lg animate-pulse" />
-              <div className="h-20 bg-gray-100 rounded-lg animate-pulse" />
+              <Skeleton className="h-20 rounded-lg" />
+              <Skeleton className="h-20 rounded-lg" />
+              <Skeleton className="h-20 rounded-lg" />
             </div>
           ) : (
             <div className="space-y-4">

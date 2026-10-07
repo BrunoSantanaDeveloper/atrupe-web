@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { LoaderCircle } from 'lucide-react'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-[color,background-color,border-color,box-shadow,opacity] duration-base ease-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled-idle:bg-gray-100 disabled-idle:text-gray-300 disabled-idle:border-gray-200',
   {
     variants: {
       variant: {
@@ -56,9 +56,9 @@ const buttonVariants = cva(
           'text-gray hover:bg-gray-100 hover:text-gray-600 active:bg-gray-50 active:text-gray',
 
         input:
-          'justify-start text-left font-normal border border-gray-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 cursor-text transition-all duration-200 ease-in-out',
+          'justify-start text-left font-normal border border-gray-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-brand-50 focus-visible:border-brand-300 cursor-text transition-[color,background-color,border-color,box-shadow] duration-base ease-out',
         inputError:
-          'justify-start text-left font-normal border border-error-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-error-100 focus-visible:border-error-300 cursor-text transition-all duration-200 ease-in-out',
+          'justify-start text-left font-normal border border-error-300 bg-white shadow-xs text-gray-900 focus-visible:ring-offset-0 focus-visible:ring-4 focus-visible:ring-error-100 focus-visible:border-error-300 cursor-text transition-[color,background-color,border-color,box-shadow] duration-base ease-out',
 
         link: 'text-gray-900 underline-offset-4 hover:underline',
 
@@ -140,6 +140,15 @@ export interface ButtonProps
 
 export type ButtonIconProps = IconProps | IconRefProps
 
+// Spinner proporcional ao botão
+const SPINNER_SIZE: Partial<Record<NonNullable<ButtonProps['size']>, number>> =
+  {
+    sm: 16,
+    iconSm: 16,
+    iconXs: 14,
+    iconXxs: 12,
+  }
+
 const Button = React.forwardRef<
   HTMLButtonElement,
   ButtonProps & ButtonIconProps
@@ -160,35 +169,78 @@ const Button = React.forwardRef<
     },
     ref,
   ) => {
-    const Comp = asChild ? Slot : 'button'
     // https://enhanced-button.vercel.app/
+    if (asChild) {
+      // O filho único recebe as props (Slot), então o conteúdo não pode ser
+      // embrulhado: o spinner entra à direita
+      const Comp: React.ElementType = Slot
+      return (
+        <Comp
+          className={cn(buttonVariants({ variant, size, rounded, className }))}
+          ref={ref}
+          {...props}
+          disabled={isLoading || props.disabled}
+        >
+          {!isLoading && LeftIcon && (
+            <LeftIcon aria-hidden="true" size={leftIconSize} />
+          )}
+          <Slottable>{props.children}</Slottable>
+          {isLoading ? (
+            <LoaderCircle
+              aria-hidden="true"
+              size={rightIconSize}
+              className="animate-spin"
+            />
+          ) : (
+            RightIcon && (
+              <RightIcon
+                aria-hidden="true"
+                size={rightIconSize}
+                className="ml-auto"
+              />
+            )
+          )}
+        </Comp>
+      )
+    }
+
+    // Em progresso o botão mantém a cor da variante (`data-loading` desliga o
+    // estilo `disabled-idle:`) e a largura: o conteúdo fica invisível no lugar
+    // (`visibility` é herdada através do `contents`) e o spinner, centralizado
+    // (design/openspec/changes/microinteracoes, Decisão 3)
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, rounded, className }))}
+      <button
+        className={cn(
+          isLoading && 'relative',
+          buttonVariants({ variant, size, rounded, className }),
+        )}
         ref={ref}
         {...props}
         disabled={isLoading || props.disabled}
+        data-loading={isLoading ? '' : undefined}
+        aria-busy={isLoading || undefined}
       >
-        {!isLoading && LeftIcon && (
-          <LeftIcon aria-hidden="true" size={leftIconSize} />
-        )}
-        <Slottable>{props.children}</Slottable>
-        {isLoading ? (
-          <LoaderCircle
-            aria-hidden="true"
-            size={rightIconSize}
-            className="animate-spin"
-          />
-        ) : (
-          RightIcon && (
+        <span className={cn('contents', isLoading && 'invisible')}>
+          {LeftIcon && <LeftIcon aria-hidden="true" size={leftIconSize} />}
+          {props.children}
+          {RightIcon && (
             <RightIcon
               aria-hidden="true"
               size={rightIconSize}
               className="ml-auto"
             />
-          )
+          )}
+        </span>
+        {isLoading && (
+          <span className="absolute inset-0 flex items-center justify-center">
+            <LoaderCircle
+              aria-hidden="true"
+              size={SPINNER_SIZE[size ?? 'default'] ?? 20}
+              className="animate-spin"
+            />
+          </span>
         )}
-      </Comp>
+      </button>
     )
   },
 )
