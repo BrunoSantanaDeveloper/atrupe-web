@@ -185,7 +185,11 @@ export function DeliveryScheduleDateDialog({ open, rowData, setOpen }: Props) {
             >
               Cancelar
             </Button>
-            <Button RightIcon={IconCircleCheck} onClick={handleSubmit}>
+            <Button
+              RightIcon={IconCircleCheck}
+              onClick={handleSubmit}
+              isLoading={mutation.isPending}
+            >
               Salvar
             </Button>
           </div>

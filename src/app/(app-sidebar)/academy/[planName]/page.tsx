@@ -16,6 +16,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { buttonVariants, Button } from '@/components/ui/button'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
@@ -75,15 +76,29 @@ export default function AcademyPage() {
     retry: 2, // Tenta 2 vezes em caso de erro
   })
 
+  // Forma da tela (progresso + seções) no lugar de spinner com texto
   if (isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <Card className="w-full">
-          <CardContent className="p-8 text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando conteúdo...</p>
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <Skeleton className="h-2 w-full" />
           </CardContent>
         </Card>
+        {Array.from({ length: 3 }, (_, index) => (
+          <Card key={index} className="w-full">
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Skeleton className="size-6 rounded-full" />
+                <Skeleton className="h-5 w-48" />
+              </div>
+            </CardHeader>
+          </Card>
+        ))}
       </div>
     )
   }

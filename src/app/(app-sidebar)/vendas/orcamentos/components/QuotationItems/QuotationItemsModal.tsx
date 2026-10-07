@@ -12,6 +12,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Components
 import { Form } from '@/components/ui/form'
@@ -64,7 +65,7 @@ type FormData = z.infer<typeof schema>
 export function QuotationItemsModal({ open }: { open: boolean }) {
   const { quotationData, updateQuotationData, openChangeModal } = useQuotation()
 
-  const { data: productsList, refetch } = useProducts()
+  const { data: productsList, refetch, isLoading } = useProducts()
 
   // Revalida a lista de produtos sempre que o modal abrir
   useEffect(() => {
@@ -198,7 +199,14 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
         </div>
         {/* Table */}
         <div className="pr-1 mt-0 m-6 bg-white rounded-xl h-[calc(50vh-100px)] overflow-y-auto">
-          {filteredProducts.length > 0 ? (
+          {/* Sem a lista ainda, "Nenhum produto" seria falso */}
+          {isLoading ? (
+            <Table className="table-fixed">
+              <TableBody>
+                <TableSkeletonRows cols={4} rows={6} />
+              </TableBody>
+            </Table>
+          ) : filteredProducts.length > 0 ? (
             <Table className="table-fixed">
               <TableBody>
                 {filteredProducts?.map((item) => {

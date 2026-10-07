@@ -258,7 +258,20 @@ export function QuotationComposition({ quotationId }: Props) {
         : [...current, id],
     )
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
+  // Topbar já na tela (o título vem com os dados); abaixo, a forma da lista
+  if (isLoading)
+    return (
+      <div className="space-y-5">
+        <Topbar title="" previousPage="/vendas/orcamentos" />
+        <Card>
+          <CardContent className="space-y-3 pt-6">
+            {Array.from({ length: 3 }, (_, index) => (
+              <Skeleton key={index} className="h-12 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   if (!quotation) return <div className="p-4">Orçamento não encontrado.</div>
 

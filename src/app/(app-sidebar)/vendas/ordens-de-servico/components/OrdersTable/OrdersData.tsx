@@ -6,7 +6,8 @@ import { Fragment, useState } from 'react'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
+import { FetchingRegion } from '@/components/common/FetchingRegion'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { TablePagination } from '@/components/common/TablePagination'
 import { FilteredDataEmpty } from '@/components/common/TableEmptyState'
@@ -46,7 +47,7 @@ import { toast } from 'sonner'
 // dele chegam como undefined na renderização do servidor e derrubam a página
 // com "Element type is invalid". Biblioteca e documento são carregados dentro
 // do clique que gera o PDF
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { ordersStatusObj } from '@/consts/orders'
 
 // Icons
@@ -142,8 +143,10 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
     }
   }
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isPlaceholderData } = useQuery({
     staleTime: Infinity,
+    // Filtro, busca e página mantêm a lista anterior até a nova chegar
+    placeholderData: keepPreviousData,
     queryKey: ['order-list', searchParams],
     queryFn: () => getDataOld({ route: 'orderRoute', filters }),
   })
@@ -172,332 +175,353 @@ export function OrdersData({ searchParams, tabs, searchDescription }: Props) {
             <FiscalEnvironmentBadge documentType="NFCE" showDocumentType />
           </div>
         )}
-        {isLoading ? (
-          <TableSkeleton cols={totalColumns} />
-        ) : hasData ? (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="max-w-96">Referência</TableHead>
-                  <PermissionGate permissions={['values:values:view']}>
-                    <TableHead>Valor</TableHead>
-                  </PermissionGate>
-                  <TableHead>Vendedor</TableHead>
-                  {showCurrentPhase && <TableHead>Fase atual</TableHead>}
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orderArray.map((group) => (
-                  <Fragment key={group.date}>
-                    <TableRow className="bg-gray-100">
-                      <TableCell
-                        colSpan={totalColumns}
-                        className="text-gray font-medium text-xs py-3"
-                      >
-                        {formatToWeekDate(group?.date)}
-                      </TableCell>
-                    </TableRow>
-                    {group?.orders?.length
-                      ? group?.orders.map((order) => {
-                          const link = `/vendas/ordens-de-servico/${order?.id}`
-                          const quotation = order?.quotation
-                          const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
-                          const authorizedNfe = order?.nfes?.find(
-                            (nfe) =>
-                              nfe.status === 'AUTHORIZED' &&
-                              nfe.ambiente === activeEnvironment.nfe,
-                          )
-                          const issuedNfce = order?.nfces?.find(
-                            (nfce) =>
-                              ['AUTHORIZED', 'CONTINGENCY'].includes(
-                                nfce.status,
-                              ) && nfce.ambiente === activeEnvironment.nfce,
-                          )
-                          const issuedNfse = order?.nfses?.find(
-                            (nfse) =>
-                              nfse.status === 'AUTHORIZED' &&
-                              nfse.ambiente === activeEnvironment.nfse,
-                          )
-                          const otherEnvironmentDocuments = [
-                            order?.nfes?.some(
-                              (nfe) =>
-                                nfe.status === 'AUTHORIZED' &&
-                                nfe.ambiente !== activeEnvironment.nfe,
-                            ) && 'NF-e',
-                            order?.nfces?.some(
-                              (nfce) =>
-                                ['AUTHORIZED', 'CONTINGENCY'].includes(
-                                  nfce.status,
-                                ) && nfce.ambiente !== activeEnvironment.nfce,
-                            ) && 'NFC-e',
-                            order?.nfses?.some(
-                              (nfse) =>
-                                nfse.status === 'AUTHORIZED' &&
-                                nfse.ambiente !== activeEnvironment.nfse,
-                            ) && 'NFS-e',
-                          ].filter(Boolean) as string[]
+        <FetchingRegion isFetching={isPlaceholderData}>
+          {isLoading || hasData ? (
+            <>
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50">
+                    <TableHead className="max-w-96">Referência</TableHead>
+                    <PermissionGate permissions={['values:values:view']}>
+                      <TableHead>Valor</TableHead>
+                    </PermissionGate>
+                    <TableHead>Vendedor</TableHead>
+                    {showCurrentPhase && <TableHead>Fase atual</TableHead>}
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                    <TableSkeletonRows cols={totalColumns} />
+                  ) : (
+                    orderArray.map((group) => (
+                      <Fragment key={group.date}>
+                        <TableRow className="bg-gray-100">
+                          <TableCell
+                            colSpan={totalColumns}
+                            className="text-gray font-medium text-xs py-3"
+                          >
+                            {formatToWeekDate(group?.date)}
+                          </TableCell>
+                        </TableRow>
+                        {group?.orders?.length
+                          ? group?.orders.map((order) => {
+                              const link = `/vendas/ordens-de-servico/${order?.id}`
+                              const quotation = order?.quotation
+                              const description = `${quotation?.serie?.quotation || ''}-${quotation?.serie?.code || ''} - ${quotation?.description}`
+                              const authorizedNfe = order?.nfes?.find(
+                                (nfe) =>
+                                  nfe.status === 'AUTHORIZED' &&
+                                  nfe.ambiente === activeEnvironment.nfe,
+                              )
+                              const issuedNfce = order?.nfces?.find(
+                                (nfce) =>
+                                  ['AUTHORIZED', 'CONTINGENCY'].includes(
+                                    nfce.status,
+                                  ) && nfce.ambiente === activeEnvironment.nfce,
+                              )
+                              const issuedNfse = order?.nfses?.find(
+                                (nfse) =>
+                                  nfse.status === 'AUTHORIZED' &&
+                                  nfse.ambiente === activeEnvironment.nfse,
+                              )
+                              const otherEnvironmentDocuments = [
+                                order?.nfes?.some(
+                                  (nfe) =>
+                                    nfe.status === 'AUTHORIZED' &&
+                                    nfe.ambiente !== activeEnvironment.nfe,
+                                ) && 'NF-e',
+                                order?.nfces?.some(
+                                  (nfce) =>
+                                    ['AUTHORIZED', 'CONTINGENCY'].includes(
+                                      nfce.status,
+                                    ) &&
+                                    nfce.ambiente !== activeEnvironment.nfce,
+                                ) && 'NFC-e',
+                                order?.nfses?.some(
+                                  (nfse) =>
+                                    nfse.status === 'AUTHORIZED' &&
+                                    nfse.ambiente !== activeEnvironment.nfse,
+                                ) && 'NFS-e',
+                              ].filter(Boolean) as string[]
 
-                          return (
-                            <TableRow key={order?.id} className="text-nowrap">
-                              <TableCell className="max-w-96">
-                                <p className="font-medium">
-                                  {quotation?.client?.name ||
-                                    'Cliente não informado'}
-                                </p>
-                                <Link
-                                  href={link}
-                                  className="text-gray hover:opacity-80 active:opacity-95 transition-opacity"
+                              return (
+                                <TableRow
+                                  key={order?.id}
+                                  className="text-nowrap"
                                 >
-                                  <p className="truncate">{description}</p>
-                                </Link>
-                                {otherEnvironmentDocuments.length > 0 && (
-                                  <Badge
-                                    variant="neutralLight"
-                                    className="mt-1"
+                                  <TableCell className="max-w-96">
+                                    <p className="font-medium">
+                                      {quotation?.client?.name ||
+                                        'Cliente não informado'}
+                                    </p>
+                                    <Link
+                                      href={link}
+                                      className="text-gray hover:opacity-80 active:opacity-95 transition-opacity"
+                                    >
+                                      <p className="truncate">{description}</p>
+                                    </Link>
+                                    {otherEnvironmentDocuments.length > 0 && (
+                                      <Badge
+                                        variant="neutralLight"
+                                        className="mt-1"
+                                      >
+                                        {otherEnvironmentDocuments.join(', ')}{' '}
+                                        emitida em outro ambiente
+                                      </Badge>
+                                    )}
+                                  </TableCell>
+                                  <PermissionGate
+                                    permissions={['values:values:view']}
                                   >
-                                    {otherEnvironmentDocuments.join(', ')}{' '}
-                                    emitida em outro ambiente
-                                  </Badge>
-                                )}
-                              </TableCell>
-                              <PermissionGate
-                                permissions={['values:values:view']}
-                              >
-                                <TableCell className="text-success-700 text-nowrap">
-                                  {formatCurrencyToBrl(
-                                    (() => {
-                                      // Cálculo igual ao PaymentConditions.tsx
-                                      const itemsValue =
-                                        quotation?.totalValue || 0
-                                      const deliveryValue =
-                                        quotation?.deliveryInfo?.value ?? 0
-                                      const payment =
-                                        quotation?.quotationPayment
-                                      const commissionValue =
-                                        payment?.commission?.type === 'ADD'
-                                          ? (payment?.commission
-                                              ?.totalCommission ?? 0)
-                                          : 0
-                                      const installmentsAdditionalFee =
-                                        payment?.quotationInstallment?.reduce(
-                                          (
-                                            acc: number,
-                                            inst: { additionalFee?: number },
-                                          ) => acc + (inst?.additionalFee ?? 0),
-                                          0,
-                                        ) ?? 0
-                                      const downPaymentAdditionalFee =
-                                        payment?.downPaymentAdditionalFee ?? 0
-                                      const totalAdditionalFee =
-                                        installmentsAdditionalFee +
-                                        downPaymentAdditionalFee
-                                      const discountTotal =
-                                        payment?.discountTotal ?? 0
+                                    <TableCell className="text-success-700 text-nowrap">
+                                      {formatCurrencyToBrl(
+                                        (() => {
+                                          // Cálculo igual ao PaymentConditions.tsx
+                                          const itemsValue =
+                                            quotation?.totalValue || 0
+                                          const deliveryValue =
+                                            quotation?.deliveryInfo?.value ?? 0
+                                          const payment =
+                                            quotation?.quotationPayment
+                                          const commissionValue =
+                                            payment?.commission?.type === 'ADD'
+                                              ? (payment?.commission
+                                                  ?.totalCommission ?? 0)
+                                              : 0
+                                          const installmentsAdditionalFee =
+                                            payment?.quotationInstallment?.reduce(
+                                              (
+                                                acc: number,
+                                                inst: {
+                                                  additionalFee?: number
+                                                },
+                                              ) =>
+                                                acc +
+                                                (inst?.additionalFee ?? 0),
+                                              0,
+                                            ) ?? 0
+                                          const downPaymentAdditionalFee =
+                                            payment?.downPaymentAdditionalFee ??
+                                            0
+                                          const totalAdditionalFee =
+                                            installmentsAdditionalFee +
+                                            downPaymentAdditionalFee
+                                          const discountTotal =
+                                            payment?.discountTotal ?? 0
 
-                                      return (
-                                        itemsValue +
-                                        deliveryValue +
-                                        commissionValue +
-                                        totalAdditionalFee -
-                                        discountTotal
-                                      )
-                                    })(),
+                                          return (
+                                            itemsValue +
+                                            deliveryValue +
+                                            commissionValue +
+                                            totalAdditionalFee -
+                                            discountTotal
+                                          )
+                                        })(),
+                                      )}
+                                    </TableCell>
+                                  </PermissionGate>
+                                  <TableCell className="text-gray-600">
+                                    {quotation?.seller?.name}
+                                  </TableCell>
+                                  {showCurrentPhase && (
+                                    <TableCell>
+                                      {order?.status ? (
+                                        <Badge
+                                          status
+                                          variant={
+                                            ordersStatusObj[order?.status]
+                                              ?.variant
+                                          }
+                                        >
+                                          {ordersStatusObj[order?.status]?.text}
+                                        </Badge>
+                                      ) : (
+                                        '-'
+                                      )}
+                                    </TableCell>
                                   )}
-                                </TableCell>
-                              </PermissionGate>
-                              <TableCell className="text-gray-600">
-                                {quotation?.seller?.name}
-                              </TableCell>
-                              {showCurrentPhase && (
-                                <TableCell>
-                                  {order?.status ? (
-                                    <Badge
-                                      status
-                                      variant={
-                                        ordersStatusObj[order?.status]?.variant
-                                      }
-                                    >
-                                      {ordersStatusObj[order?.status]?.text}
-                                    </Badge>
-                                  ) : (
-                                    '-'
-                                  )}
-                                </TableCell>
-                              )}
-                              <TableCell>
-                                <div className="flex justify-end gap-1">
-                                  <TooltipProvider>
-                                    <PermissionGate
-                                      permissions={['sale:order:view']}
-                                    >
-                                      <ActionButton
-                                        link={link}
-                                        Icon={IconSearch}
-                                        tooltip="Visualizar venda"
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:order:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPrinter}
-                                        tooltip="Via do cliente"
-                                        onClick={() => {
-                                          setRowData(order)
-                                          setOpenPrintDialog(true)
-                                        }}
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:order:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconPrinter}
-                                        tooltip="Ficha de produção"
-                                        isLoading={loadingProdPDF.includes(
-                                          order?.id,
-                                        )}
-                                        onClick={() =>
-                                          handleGenerateProductionPDF(order)
-                                        }
-                                      />
-                                    </PermissionGate>
-                                    <PermissionGate
-                                      permissions={['sale:quotation:create']}
-                                    >
-                                      <DuplicateQuotationButton
-                                        quotationId={order?.quotation?.id}
-                                        clientId={quotation?.client?.id}
-                                        clientName={quotation?.client?.name}
-                                        description={quotation?.description}
-                                        tooltip="Duplicar orçamento"
-                                      />
-                                    </PermissionGate>
-                                    {hasFiscalModule &&
-                                      order?.status !== 'CANCELED' && (
+                                  <TableCell>
+                                    <div className="flex justify-end gap-1">
+                                      <TooltipProvider>
                                         <PermissionGate
                                           permissions={['sale:order:view']}
                                         >
-                                          {authorizedNfe ? (
-                                            <ActionButton
-                                              Icon={IconFileInvoice}
-                                              tooltip={`DANFE NF-e ${authorizedNfe.numero}/${authorizedNfe.serie}`}
-                                              onClick={() => {
-                                                if (authorizedNfe.danfeUrl) {
-                                                  window.open(
-                                                    authorizedNfe.danfeUrl,
-                                                    '_blank',
-                                                  )
-                                                }
-                                              }}
-                                            />
-                                          ) : issuedNfce ? (
-                                            <ActionButton
-                                              Icon={IconFileInvoice}
-                                              tooltip={`DANFE NFC-e ${issuedNfce.numero}/${issuedNfce.serie}`}
-                                              onClick={() => {
-                                                if (issuedNfce.danfeUrl) {
-                                                  window.open(
-                                                    issuedNfce.danfeUrl,
-                                                    '_blank',
-                                                  )
-                                                }
-                                              }}
-                                            />
-                                          ) : issuedNfse ? (
-                                            <ActionButton
-                                              Icon={IconFileInvoice}
-                                              tooltip={`PDF NFS-e ${issuedNfse.numero}/${issuedNfse.serie}`}
-                                              onClick={() => {
-                                                if (issuedNfse.pdfUrl) {
-                                                  window.open(
-                                                    issuedNfse.pdfUrl,
-                                                    '_blank',
-                                                  )
-                                                }
-                                              }}
-                                            />
-                                          ) : (
-                                            <ActionButton
-                                              Icon={IconFileInvoice}
-                                              tooltip="Emitir nota fiscal"
-                                              onClick={() => {
-                                                setRowData(order)
-                                                setOpenInvoiceTypeModal(true)
-                                              }}
-                                            />
-                                          )}
+                                          <ActionButton
+                                            link={link}
+                                            Icon={IconSearch}
+                                            tooltip="Visualizar venda"
+                                          />
                                         </PermissionGate>
-                                      )}
-                                    <PermissionGate
-                                      permissions={['sale:order:view']}
-                                    >
-                                      <ActionButton
-                                        Icon={IconHistory}
-                                        tooltip="Histórico"
-                                        onClick={() => {
-                                          setRowData(order)
-                                          setOpenHistoryDialog(true)
-                                        }}
-                                      />
-                                    </PermissionGate>
-                                    {order?.status !== 'CANCELED' && (
-                                      <PermissionGate
-                                        permissions={['sale:order:delete']}
-                                      >
-                                        <CancelOrderButton order={order} />
-                                      </PermissionGate>
-                                    )}
-                                  </TooltipProvider>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )
-                        })
-                      : null}
-                  </Fragment>
-                ))}
-              </TableBody>
-            </Table>
-            {rowData && (
-              <>
-                <PrintQuotationDialog
-                  type="order"
-                  quotationId={rowData?.quotation?.id}
-                  open={openPrintDialog}
-                  onOpenChange={setOpenPrintDialog}
-                />
-                <OrderHistoryDialog
-                  open={openHistoryDialog}
-                  setOpen={setOpenHistoryDialog}
-                  order={rowData}
-                />
-                <InvoiceTypeSelectModal
-                  open={openInvoiceTypeModal}
-                  onOpenChange={setOpenInvoiceTypeModal}
-                  orderId={rowData.id}
-                />
-              </>
-            )}
-          </>
-        ) : (
-          <FilteredDataEmpty
-            title="Ordem de serviço não encontrada"
-            description={
-              searchDescription ||
-              'Sua busca não encontrou nenhum resultado. Tente novamente ou crie uma nova ordem de serviço'
-            }
-            // cta={<NewQuotationModal />}
-          />
-        )}
+                                        <PermissionGate
+                                          permissions={['sale:order:view']}
+                                        >
+                                          <ActionButton
+                                            Icon={IconPrinter}
+                                            tooltip="Via do cliente"
+                                            onClick={() => {
+                                              setRowData(order)
+                                              setOpenPrintDialog(true)
+                                            }}
+                                          />
+                                        </PermissionGate>
+                                        <PermissionGate
+                                          permissions={['sale:order:view']}
+                                        >
+                                          <ActionButton
+                                            Icon={IconPrinter}
+                                            tooltip="Ficha de produção"
+                                            isLoading={loadingProdPDF.includes(
+                                              order?.id,
+                                            )}
+                                            onClick={() =>
+                                              handleGenerateProductionPDF(order)
+                                            }
+                                          />
+                                        </PermissionGate>
+                                        <PermissionGate
+                                          permissions={[
+                                            'sale:quotation:create',
+                                          ]}
+                                        >
+                                          <DuplicateQuotationButton
+                                            quotationId={order?.quotation?.id}
+                                            clientId={quotation?.client?.id}
+                                            clientName={quotation?.client?.name}
+                                            description={quotation?.description}
+                                            tooltip="Duplicar orçamento"
+                                          />
+                                        </PermissionGate>
+                                        {hasFiscalModule &&
+                                          order?.status !== 'CANCELED' && (
+                                            <PermissionGate
+                                              permissions={['sale:order:view']}
+                                            >
+                                              {authorizedNfe ? (
+                                                <ActionButton
+                                                  Icon={IconFileInvoice}
+                                                  tooltip={`DANFE NF-e ${authorizedNfe.numero}/${authorizedNfe.serie}`}
+                                                  onClick={() => {
+                                                    if (
+                                                      authorizedNfe.danfeUrl
+                                                    ) {
+                                                      window.open(
+                                                        authorizedNfe.danfeUrl,
+                                                        '_blank',
+                                                      )
+                                                    }
+                                                  }}
+                                                />
+                                              ) : issuedNfce ? (
+                                                <ActionButton
+                                                  Icon={IconFileInvoice}
+                                                  tooltip={`DANFE NFC-e ${issuedNfce.numero}/${issuedNfce.serie}`}
+                                                  onClick={() => {
+                                                    if (issuedNfce.danfeUrl) {
+                                                      window.open(
+                                                        issuedNfce.danfeUrl,
+                                                        '_blank',
+                                                      )
+                                                    }
+                                                  }}
+                                                />
+                                              ) : issuedNfse ? (
+                                                <ActionButton
+                                                  Icon={IconFileInvoice}
+                                                  tooltip={`PDF NFS-e ${issuedNfse.numero}/${issuedNfse.serie}`}
+                                                  onClick={() => {
+                                                    if (issuedNfse.pdfUrl) {
+                                                      window.open(
+                                                        issuedNfse.pdfUrl,
+                                                        '_blank',
+                                                      )
+                                                    }
+                                                  }}
+                                                />
+                                              ) : (
+                                                <ActionButton
+                                                  Icon={IconFileInvoice}
+                                                  tooltip="Emitir nota fiscal"
+                                                  onClick={() => {
+                                                    setRowData(order)
+                                                    setOpenInvoiceTypeModal(
+                                                      true,
+                                                    )
+                                                  }}
+                                                />
+                                              )}
+                                            </PermissionGate>
+                                          )}
+                                        <PermissionGate
+                                          permissions={['sale:order:view']}
+                                        >
+                                          <ActionButton
+                                            Icon={IconHistory}
+                                            tooltip="Histórico"
+                                            onClick={() => {
+                                              setRowData(order)
+                                              setOpenHistoryDialog(true)
+                                            }}
+                                          />
+                                        </PermissionGate>
+                                        {order?.status !== 'CANCELED' && (
+                                          <PermissionGate
+                                            permissions={['sale:order:delete']}
+                                          >
+                                            <CancelOrderButton order={order} />
+                                          </PermissionGate>
+                                        )}
+                                      </TooltipProvider>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                            })
+                          : null}
+                      </Fragment>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+              {rowData && (
+                <>
+                  <PrintQuotationDialog
+                    type="order"
+                    quotationId={rowData?.quotation?.id}
+                    open={openPrintDialog}
+                    onOpenChange={setOpenPrintDialog}
+                  />
+                  <OrderHistoryDialog
+                    open={openHistoryDialog}
+                    setOpen={setOpenHistoryDialog}
+                    order={rowData}
+                  />
+                  <InvoiceTypeSelectModal
+                    open={openInvoiceTypeModal}
+                    onOpenChange={setOpenInvoiceTypeModal}
+                    orderId={rowData.id}
+                  />
+                </>
+              )}
+            </>
+          ) : (
+            <FilteredDataEmpty
+              title="Ordem de serviço não encontrada"
+              description={
+                searchDescription ||
+                'Sua busca não encontrou nenhum resultado. Tente novamente ou crie uma nova ordem de serviço'
+              }
+              // cta={<NewQuotationModal />}
+            />
+          )}
+        </FetchingRegion>
       </CardContent>
       {isLoading || hasData ? (
         <CardFooter>
           <TablePagination
             searchParams={searchParams}
             lastPage={data?.lastPage}
+            isLoading={isLoading}
           />
         </CardFooter>
       ) : null}

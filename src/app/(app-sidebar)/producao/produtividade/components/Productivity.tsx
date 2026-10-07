@@ -9,7 +9,6 @@ import {
   TableHead,
   TableHeader,
 } from '@/components/ui/table'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Card,
   CardHeader,
@@ -21,6 +20,7 @@ import {
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 
 // Actions
 import { getProductivity } from '@/actions/production'
@@ -51,8 +51,8 @@ export function Productivity() {
     queryFn: () => getProductivity(),
   })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
-
+  // Sem retorno antecipado: Topbar e cartões já na tela, e as tabelas com
+  // linhas de esqueleto enquanto os números chegam
   const bySector = data?.data?.bySector || []
   const people = data?.data?.people || []
 
@@ -87,28 +87,36 @@ export function Productivity() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {bySector.map((sector) => (
-                <TableRow key={sector.sector}>
-                  <TableCell className="font-medium">{sector.sector}</TableCell>
-                  <TableCell className="text-right">{sector.stages}</TableCell>
-                  <TableCell className="text-right">
-                    {sector.planned ? formatMinutes(sector.planned) : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {sector.actual ? formatMinutes(sector.actual) : '-'}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      'text-right font-medium',
-                      sector.efficiency !== null &&
-                        sector.efficiency < 100 &&
-                        'text-error-700',
-                    )}
-                  >
-                    {efficiencyLabel(sector.efficiency)}
-                  </TableCell>
-                </TableRow>
-              ))}
+              {isLoading ? (
+                <TableSkeletonRows cols={5} rows={4} />
+              ) : (
+                bySector.map((sector) => (
+                  <TableRow key={sector.sector}>
+                    <TableCell className="font-medium">
+                      {sector.sector}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {sector.stages}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {sector.planned ? formatMinutes(sector.planned) : '-'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {sector.actual ? formatMinutes(sector.actual) : '-'}
+                    </TableCell>
+                    <TableCell
+                      className={cn(
+                        'text-right font-medium',
+                        sector.efficiency !== null &&
+                          sector.efficiency < 100 &&
+                          'text-error-700',
+                      )}
+                    >
+                      {efficiencyLabel(sector.efficiency)}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -128,7 +136,7 @@ export function Productivity() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {people.length ? (
+          {isLoading || people.length ? (
             <Table className="min-w-[680px]">
               <TableHeader>
                 <TableRow className="bg-gray-50">
@@ -144,32 +152,36 @@ export function Productivity() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {people.map((person) => (
-                  <TableRow key={person.assignee}>
-                    <TableCell className="font-medium">
-                      {person.assignee}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {person.stages}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatMinutes(person.planned)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {formatMinutes(person.actual)}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        'text-right font-medium',
-                        person.efficiency !== null &&
-                          person.efficiency < 100 &&
-                          'text-error-700',
-                      )}
-                    >
-                      {efficiencyLabel(person.efficiency)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {isLoading ? (
+                  <TableSkeletonRows cols={5} rows={4} />
+                ) : (
+                  people.map((person) => (
+                    <TableRow key={person.assignee}>
+                      <TableCell className="font-medium">
+                        {person.assignee}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {person.stages}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatMinutes(person.planned)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {formatMinutes(person.actual)}
+                      </TableCell>
+                      <TableCell
+                        className={cn(
+                          'text-right font-medium',
+                          person.efficiency !== null &&
+                            person.efficiency < 100 &&
+                            'text-error-700',
+                        )}
+                      >
+                        {efficiencyLabel(person.efficiency)}
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           ) : (

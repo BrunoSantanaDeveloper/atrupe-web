@@ -37,7 +37,23 @@ export function ProductionSheet({ id }: { id: string }) {
     queryFn: () => getProject({ id }),
   })
   const detail = data?.data
-  if (isLoading || !detail) return <Skeleton className="h-[480px] w-full" />
+  // Topbar já na tela; abaixo, a forma da folha
+  if (isLoading || !detail)
+    return (
+      <div className="space-y-5">
+        <Topbar
+          title="Ficha de produção"
+          previousPage={`/producao/projetos/${id}`}
+        />
+        <div className="mx-auto max-w-[820px] space-y-4 rounded-xl border border-gray-200 bg-white p-8">
+          <Skeleton className="h-6 w-1/3" />
+          <Skeleton className="h-4 w-1/2" />
+          {Array.from({ length: 4 }, (_, index) => (
+            <Skeleton key={index} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
+    )
 
   const { project, tasks } = detail
   const items = Array.from(new Set(tasks.map((task) => task.itemName)))

@@ -19,10 +19,10 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { TablePagination } from '@/components/common/TablePagination'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { NfeActionsDropdown } from '@/components/common/fiscal/NfeActionsDropdown'
 import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReasonAction'
 
@@ -168,22 +168,9 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
     )
   }
 
-  if (isLoading) {
-    return (
-      <Card className="flex flex-col mt-6">
-        <CardHeader>
-          <CardTitle>NF-e Avulsas Emitidas</CardTitle>
-        </CardHeader>
-        <CardContent className="flex-1 p-4 space-y-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </CardContent>
-      </Card>
-    )
-  }
-
-  if (nfes.length === 0) {
+  // Carregando, a tabela real fica com linhas de esqueleto (cabeçalho e
+  // paginação no lugar); some só quando não há NF-e avulsa
+  if (!isLoading && nfes.length === 0) {
     return null
   }
 
@@ -206,26 +193,30 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {nfes.map((nfe) => (
-              <TableRow key={nfe.id} className="hover:bg-gray-50">
-                <TableCell className="px-4 font-medium">
-                  {nfe.numero} / {nfe.serie}
-                </TableCell>
-                <TableCell className="text-gray-600">
-                  {nfe.destinatario?.nome || 'Não informado'}
-                </TableCell>
-                <TableCell className="font-semibold text-gray-800">
-                  {formatCurrency(nfe.valorTotal)}
-                </TableCell>
-                <TableCell className="text-gray-500 text-sm">
-                  {nfe.dataEmissao ? formatDate(nfe.dataEmissao) : '-'}
-                </TableCell>
-                <TableCell>{getStatusBadge(nfe)}</TableCell>
-                <TableCell>
-                  <NfeActionsDropdown nfe={nfe} onRefetch={fetchNfes} />
-                </TableCell>
-              </TableRow>
-            ))}
+            {isLoading ? (
+              <TableSkeletonRows cols={6} rows={3} />
+            ) : (
+              nfes.map((nfe) => (
+                <TableRow key={nfe.id} className="hover:bg-gray-50">
+                  <TableCell className="px-4 font-medium">
+                    {nfe.numero} / {nfe.serie}
+                  </TableCell>
+                  <TableCell className="text-gray-600">
+                    {nfe.destinatario?.nome || 'Não informado'}
+                  </TableCell>
+                  <TableCell className="font-semibold text-gray-800">
+                    {formatCurrency(nfe.valorTotal)}
+                  </TableCell>
+                  <TableCell className="text-gray-500 text-sm">
+                    {nfe.dataEmissao ? formatDate(nfe.dataEmissao) : '-'}
+                  </TableCell>
+                  <TableCell>{getStatusBadge(nfe)}</TableCell>
+                  <TableCell>
+                    <NfeActionsDropdown nfe={nfe} onRefetch={fetchNfes} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>
@@ -235,6 +226,7 @@ export function NfeAvulsaSection({ searchParams }: SearchParamsType) {
           searchParams={searchParams}
           lastPage={totalPages}
           activeVariant="success"
+          isLoading={isLoading}
         />
       </CardFooter>
     </Card>

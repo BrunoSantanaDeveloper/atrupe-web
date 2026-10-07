@@ -14,6 +14,7 @@ export function FiscalModulePendingBanner() {
     useFiscalOnboardingStatus()
   const [modalOpen, setModalOpen] = useState(false)
 
+  // Some enquanto carrega; ao aparecer, entra suave (não empurra a tela)
   if (isLoading) return null
 
   if (needsSetup) {
@@ -22,7 +23,7 @@ export function FiscalModulePendingBanner() {
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          className="w-full rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-center gap-3 hover:bg-brand-100 transition-colors group text-left"
+          className="w-full rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-center gap-3 hover:bg-brand-100 transition-colors group text-left animate-in fade-in-0 duration-base"
         >
           <IconSettings className="h-5 w-5 text-brand-600 flex-shrink-0" />
           <div className="flex-1">
@@ -43,7 +44,7 @@ export function FiscalModulePendingBanner() {
 
   if (isPending) {
     return (
-      <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 flex items-center gap-3">
+      <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 flex items-center gap-3 animate-in fade-in-0 duration-base">
         <IconAlertTriangle className="h-5 w-5 text-warning-600 flex-shrink-0" />
         <div className="flex-1">
           <p className="text-sm font-semibold text-warning-800">

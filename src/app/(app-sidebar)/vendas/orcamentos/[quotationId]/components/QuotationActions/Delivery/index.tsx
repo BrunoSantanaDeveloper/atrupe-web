@@ -428,6 +428,7 @@ export function DeliveryDialog({ quotationData }: Props) {
               type="submit"
               form="quotation-delivery"
               RightIcon={IconCircleCheck}
+              isLoading={form.formState.isSubmitting}
             >
               Salvar
             </Button>

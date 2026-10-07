@@ -689,6 +689,7 @@ export function FiscalSetupModal() {
                     type="submit"
                     form="fiscal-onboarding-form"
                     disabled={form.formState.isSubmitting}
+                    isLoading={form.formState.isSubmitting}
                   >
                     Ativar módulo fiscal
                   </Button>

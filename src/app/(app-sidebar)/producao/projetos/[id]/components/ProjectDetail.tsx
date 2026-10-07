@@ -106,7 +106,45 @@ export function ProjectDetail({ id }: { id: string }) {
       queryClient.invalidateQueries({ queryKey: ['production-config'] }),
     ])
 
-  if (isLoading || !detail) return <Skeleton className="h-[480px] w-full" />
+  // Topbar já na tela (o título vem com os dados); abaixo, a forma dos cartões
+  if (isLoading || !detail)
+    return (
+      <div className="space-y-5">
+        <Topbar title="" previousPage="/producao/projetos" />
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-3 px-6 pb-6">
+              {Array.from({ length: 3 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-full" />
+              ))}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <Skeleton className="h-5 w-24" />
+            </CardHeader>
+            <CardContent className="grid grid-cols-2 gap-4 px-6 pb-6">
+              {Array.from({ length: 4 }, (_, index) => (
+                <Skeleton key={index} className="h-4 w-2/3" />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-32" />
+          </CardHeader>
+          <CardContent className="space-y-3 px-6 pb-6">
+            {Array.from({ length: 4 }, (_, index) => (
+              <Skeleton key={index} className="h-10 w-full" />
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    )
 
   const { project, tasks, late } = detail
   const items = Array.from(new Set(tasks.map((task) => task.itemName)))

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 // UI
-import { Card } from '@/components/ui/card'
+import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
@@ -20,6 +20,8 @@ import { TableFiltersHeader } from '@/components/common/TableHeader'
 import { QuotationsFilter } from './QuotationsTable/QuotationsFilter'
 import { ExportDataButton } from '@/components/common/ExportDataButton'
 import { PermissionGate } from '@/components/common/PermissionGate'
+import { ListSkeleton } from '@/components/common/ListSkeleton'
+import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -290,7 +292,15 @@ export function Quotations({ searchParams }: SearchParamsType) {
     return (
       <div className="space-y-5">
         <Topbar title="Venda rápida" />
-        <Skeleton className="h-[calc(100vh-150px)]" />
+        {/* Mesma forma da tela de itens, que é o destino */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-40" />
+          </CardHeader>
+          <CardContent>
+            <TableSkeleton cols={6} rows={3} />
+          </CardContent>
+        </Card>
       </div>
     )
   }
@@ -304,6 +314,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
         tabs={tabs}
         activeTab={status}
         paramName="status"
+        countsLoading={isLoading}
         primaryCta={
           <TooltipProvider>
             <PermissionGate permissions={['sale:quotation:export']}>
@@ -326,7 +337,7 @@ export function Quotations({ searchParams }: SearchParamsType) {
       <div>
         <Card>
           {isLoading ? (
-            <Skeleton className="h-[calc(100vh-150px)]" />
+            <ListSkeleton cols={7} filters={3} />
           ) : totals?.todos && totals?.todos > 0 ? (
             statusEmpty ? (
               <ListDataStatusEmpty

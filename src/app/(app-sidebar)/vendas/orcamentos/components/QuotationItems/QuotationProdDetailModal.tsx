@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect } from 'react'
 // UI component Imports
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Dialog,
   DialogBody,
@@ -490,9 +491,7 @@ export function QuotationProdDetailModal({
             <div className="flex items-center gap-4">
               <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
               {isLoading ? (
-                <span className="text-gray-400">
-                  Carregando dados do produto...
-                </span>
+                <Skeleton className="h-5 w-48" />
               ) : (
                 <span>{product?.name || items?.fields[0]?.name}</span>
               )}

@@ -645,7 +645,7 @@ export function StandaloneNfseForm() {
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
-                title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
+                title="Pré-visualizar"
                 iconVariant="neutralOutline"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
@@ -653,7 +653,7 @@ export function StandaloneNfseForm() {
               />
               <CustomButton
                 icon={IconCircleCheck}
-                title={isEmitting ? 'Emitindo...' : 'Emitir NFS-e'}
+                title="Emitir NFS-e"
                 iconVariant="successLight"
                 onClick={handleEmit}
                 disabled={isEmitting}

@@ -118,7 +118,28 @@ export function ProposalPrint({ quotationId }: Props) {
     })),
   })
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
+  // Topbar já na tela (o título vem com os dados); abaixo, a forma da folha
+  if (isLoading)
+    return (
+      <div className="space-y-5">
+        <Topbar
+          title=""
+          previousPage={`/vendas/orcamentos/${quotationId}/composicao`}
+        />
+        <div className="flex flex-wrap gap-2">
+          {Array.from({ length: 3 }, (_, index) => (
+            <Skeleton key={index} className="h-14 w-40" />
+          ))}
+        </div>
+        <div className="mx-auto max-w-[800px] space-y-4 rounded-xl border border-gray-200 bg-white p-8">
+          <Skeleton className="h-6 w-1/2" />
+          <Skeleton className="h-4 w-1/3" />
+          {Array.from({ length: 4 }, (_, index) => (
+            <Skeleton key={index} className="h-10 w-full" />
+          ))}
+        </div>
+      </div>
+    )
   if (!quotation) return <div className="p-4">Orçamento não encontrado.</div>
 
   const reportOf = (index: number) =>

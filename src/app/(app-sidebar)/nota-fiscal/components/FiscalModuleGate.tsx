@@ -6,6 +6,7 @@ import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { FiscalOnboardingModal } from '@/components/fiscal/FiscalOnboardingModal'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   IconLock,
@@ -26,11 +27,15 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   const [modalOpen, setModalOpen] = useState(false)
 
   // Still loading session/status
+  // Forma neutra de página (título + cartão): emenda no esqueleto da própria
+  // página, sem dois carregamentos diferentes em sequência
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <IconLoader2 className="h-8 w-8 animate-spin text-gray mb-4" />
-        <p className="text-sm text-gray">Verificando acesso ao módulo...</p>
+      <div className="space-y-5">
+        <div className="flex min-h-10 items-center">
+          <Skeleton className="h-5 w-48" />
+        </div>
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     )
   }

@@ -53,7 +53,38 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
 
   const quotation = data?.data
 
-  if (isLoading) return <Skeleton className="h-[calc(100vh-150px)]" />
+  // Topbar já na tela (o título vem com os dados); abaixo, a forma do resumo
+  if (isLoading)
+    return (
+      <div className="space-y-5">
+        <Topbar
+          title=""
+          previousPage={`/vendas/orcamentos/${quotationId}/composicao`}
+        />
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+            <Skeleton className="h-4 w-2/3" />
+          </CardHeader>
+          <CardContent className="px-6 pb-6">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {Array.from({ length: 5 }, (_, index) => (
+                <div key={index} className="space-y-2">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-6 w-28" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </CardHeader>
+        </Card>
+      </div>
+    )
 
   if (!quotation) return <div className="p-4">Orçamento não encontrado.</div>
 

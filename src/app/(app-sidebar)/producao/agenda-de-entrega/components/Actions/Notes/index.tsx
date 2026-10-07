@@ -114,6 +114,7 @@ export function DeliveryScheduleNotesDialog({ open, rowData, setOpen }: Props) {
               type="submit"
               form="delivery-schedule-notes"
               RightIcon={IconCircleCheck}
+              isLoading={mutation.isPending}
             >
               Salvar
             </Button>

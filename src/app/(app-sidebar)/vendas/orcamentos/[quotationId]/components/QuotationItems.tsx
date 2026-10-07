@@ -23,6 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 // Components
@@ -137,7 +138,7 @@ export function QuotationItems({ data }: Props) {
   const alertDialog = useAlertDialog()
   const [composeTarget, setComposeTarget] =
     useState<ComposedItemSummary | null>(null)
-  const { data: composedRes } = useQuery({
+  const { data: composedRes, isLoading: loadingComposed } = useQuery({
     queryKey: ['composed-items', data?.id],
     queryFn: () => getComposedItems({ quotationId: String(data?.id) }),
     enabled: !!data?.id,
@@ -237,9 +238,15 @@ export function QuotationItems({ data }: Props) {
             <CardTitle className="text-gray-700 font-semibold text-base">
               Itens
             </CardTitle>
-            <Badge variant="neutralLight" className="mt-1">
-              {(items?.length || 0) + composed.length}
-            </Badge>
+            {/* Só com os montados na hora já contados: o número não salta */}
+            {!loadingComposed && (
+              <Badge
+                variant="neutralLight"
+                className="mt-1 animate-in fade-in-0 duration-base"
+              >
+                {(items?.length || 0) + composed.length}
+              </Badge>
+            )}
           </div>
         </CardHeader>
         <CardContent className="pb-0">
@@ -755,6 +762,9 @@ export function QuotationItems({ data }: Props) {
                 rowData={rowData}
               />
             </>
+          ) : loadingComposed ? (
+            // Sem itens do orçamento, os montados na hora ainda podem chegar
+            <Skeleton className="mb-6 h-12 w-full" />
           ) : (
             <Separator />
           )}

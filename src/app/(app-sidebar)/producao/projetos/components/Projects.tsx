@@ -23,7 +23,7 @@ import { Card, CardContent } from '@/components/ui/card'
 // Components
 import { Topbar } from '@/components/common/Topbar'
 import { ActionButton } from '@/components/common/ActionButton'
-import { TableSkeleton } from '@/components/common/TableSkeleton'
+import { TableSkeletonRows } from '@/components/common/TableSkeleton'
 import { ListDataTotalEmpty } from '@/components/common/TableEmptyState'
 
 // Types
@@ -79,12 +79,12 @@ export function Projects() {
             label: tab.label,
             count: all.filter((item) => item.status === tab.value).length,
           }))}
+          countsLoading={isLoading}
         />
 
         <Card>
-          {isLoading ? (
-            <TableSkeleton cols={6} rows={4} />
-          ) : !projects.length ? (
+          {/* Carregando, a tabela real fica com linhas de esqueleto */}
+          {!isLoading && !projects.length ? (
             <ListDataTotalEmpty
               icon={IconListCheck}
               title="Nenhum projeto nesta situação"
@@ -104,64 +104,68 @@ export function Projects() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {projects.map((project) => (
-                    <TableRow key={project.id}>
-                      <TableCell className="font-medium">
-                        {project.number}
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-gray-800">
-                          {project.client}
-                        </p>
-                        <p className="text-xs text-gray">
-                          {project.deliveryType}
-                        </p>
-                      </TableCell>
-                      <TableCell className="text-sm text-gray-700">
-                        {date(project.approvedAt)}
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm text-gray-800">
-                          {date(project.due)}
-                        </p>
-                        {project.late && (
-                          <Badge variant="errorLight" className="mt-1">
-                            Em atraso
+                  {isLoading ? (
+                    <TableSkeletonRows cols={6} rows={4} />
+                  ) : (
+                    projects.map((project) => (
+                      <TableRow key={project.id}>
+                        <TableCell className="font-medium">
+                          {project.number}
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-800">
+                            {project.client}
+                          </p>
+                          <p className="text-xs text-gray">
+                            {project.deliveryType}
+                          </p>
+                        </TableCell>
+                        <TableCell className="text-sm text-gray-700">
+                          {date(project.approvedAt)}
+                        </TableCell>
+                        <TableCell>
+                          <p className="text-sm text-gray-800">
+                            {date(project.due)}
+                          </p>
+                          {project.late && (
+                            <Badge variant="errorLight" className="mt-1">
+                              Em atraso
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-100">
+                              <div
+                                className="h-full bg-success-500"
+                                style={{
+                                  width: `${project.total ? (project.done / project.total) * 100 : 0}%`,
+                                }}
+                              />
+                            </div>
+                            <span className="text-sm text-gray-700">
+                              {project.done} / {project.total}
+                            </span>
+                          </div>
+                          <Badge
+                            variant={projectStatusObj[project.status].variant}
+                            className="mt-1"
+                          >
+                            {projectStatusObj[project.status].text}
                           </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-100">
-                            <div
-                              className="h-full bg-success-500"
-                              style={{
-                                width: `${project.total ? (project.done / project.total) * 100 : 0}%`,
-                              }}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex justify-end">
+                            <ActionButton
+                              Icon={IconSearch}
+                              tooltip={`Abrir ${project.number}`}
+                              link={`/producao/projetos/${project.id}`}
                             />
                           </div>
-                          <span className="text-sm text-gray-700">
-                            {project.done} / {project.total}
-                          </span>
-                        </div>
-                        <Badge
-                          variant={projectStatusObj[project.status].variant}
-                          className="mt-1"
-                        >
-                          {projectStatusObj[project.status].text}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex justify-end">
-                          <ActionButton
-                            Icon={IconSearch}
-                            tooltip={`Abrir ${project.number}`}
-                            link={`/producao/projetos/${project.id}`}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

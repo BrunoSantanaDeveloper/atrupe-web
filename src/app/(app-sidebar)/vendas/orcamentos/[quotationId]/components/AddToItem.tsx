@@ -13,6 +13,7 @@ import { useMemo, useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Actions
@@ -63,7 +64,7 @@ export function AddToItem({
   const [price, setPrice] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const { data: listRes } = useQuery({
+  const { data: listRes, isLoading: loadingList } = useQuery({
     queryKey: ['process-list'],
     queryFn: () => getProcessList(),
   })
@@ -343,11 +344,16 @@ export function AddToItem({
                 <p className="text-sm text-gray">{process.sector}</p>
               </button>
             ))}
-            {!visible.length && (
-              <p className="text-sm text-gray">
-                Nenhum processo com esse nome.
-              </p>
-            )}
+            {/* Sem a lista ainda, o vazio seria falso: forma dos cartões */}
+            {loadingList
+              ? Array.from({ length: 3 }, (_, index) => (
+                  <Skeleton key={index} className="h-[66px] w-full" />
+                ))
+              : !visible.length && (
+                  <p className="text-sm text-gray">
+                    Nenhum processo com esse nome.
+                  </p>
+                )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Button

@@ -72,6 +72,19 @@ const quickFilters: { value: QuickFilter; label: string }[] = [
   { value: 'unassigned', label: 'Sem atribuição' },
 ]
 
+// Forma do quadro (filtros + fila + coluna lateral) enquanto carrega
+function BoardSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-5 xl:grid-cols-4">
+      <div className="space-y-4 xl:col-span-3">
+        <Skeleton className="h-16 w-full rounded-xl" />
+        <Skeleton className="h-72 w-full rounded-xl" />
+      </div>
+      <Skeleton className="h-72 w-full rounded-xl" />
+    </div>
+  )
+}
+
 export function ManagerBoard() {
   const router = useRouter()
   const params = useSearchParams()
@@ -104,7 +117,23 @@ export function ManagerBoard() {
       queryClient.invalidateQueries({ queryKey: ['production-projects'] }),
     ])
 
-  if (loadingSummary) return <Skeleton className="h-[480px] w-full" />
+  // Topbar já na tela; abaixo, a forma dos gerenciadores e do quadro
+  if (loadingSummary)
+    return (
+      <div className="space-y-5">
+        <Topbar
+          review="new"
+          title="Gerenciador de produção"
+          supportText="A fila de cada setor, com a agenda e quem está trabalhando"
+        />
+        <div className="flex flex-wrap gap-3">
+          {Array.from({ length: 4 }, (_, index) => (
+            <Skeleton key={index} className="h-[92px] w-[150px] rounded-xl" />
+          ))}
+        </div>
+        <BoardSkeleton />
+      </div>
+    )
 
   const tasks = (board?.tasks || []).filter((task) => {
     if (hiddenTypes.includes(task.taskTypeId)) return false
@@ -261,7 +290,7 @@ export function ManagerBoard() {
         </div>
 
         {loadingBoard || !board ? (
-          <Skeleton className="h-[360px] w-full" />
+          <BoardSkeleton />
         ) : (
           <div className="grid grid-cols-1 gap-5 xl:grid-cols-4">
             <div className="space-y-4 xl:col-span-3">
