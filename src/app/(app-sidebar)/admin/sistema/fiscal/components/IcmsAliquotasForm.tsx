@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { IconAlertTriangle, IconRotate } from '@tabler/icons-react'
 import { Save } from 'lucide-react'
 import { toast } from 'sonner'

@@ -1,7 +1,8 @@
 'use client'
 
 import { Fragment } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useQuery } from '@tanstack/react-query'
 
 // UI

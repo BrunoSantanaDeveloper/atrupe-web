@@ -2,7 +2,7 @@
 
 import { signIn } from 'next-auth/react'
 import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {

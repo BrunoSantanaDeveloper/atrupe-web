@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'

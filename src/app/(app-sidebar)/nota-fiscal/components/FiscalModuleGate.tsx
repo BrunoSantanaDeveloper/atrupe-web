@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 import { FiscalOnboardingModal } from '@/components/fiscal/FiscalOnboardingModal'

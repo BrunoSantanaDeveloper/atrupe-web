@@ -2,7 +2,8 @@
 
 import { Fragment } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 
 // UI

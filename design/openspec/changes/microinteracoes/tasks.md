@@ -1,6 +1,6 @@
 ## 1. Base de movimento
 
-- [x] 1.1 Durações `fast`/`base`/`slow`, curvas `out`/`in-out` e keyframes (`skeleton-in`, `skeleton-pulse`, `progress-indeterminate`) em `tailwind.config.ts`; variante `disabled-idle`
+- [x] 1.1 Durações `fast`/`base`/`slow`, curvas `out`/`in-out` e keyframes (`fade-in`, `skeleton-pulse`, `progress-indeterminate`) em `tailwind.config.ts`; variante `disabled-idle`
 - [x] 1.2 Redução de movimento em `globals.css` (exceto `.animate-spin`)
 
 ## 2. Primitivos
@@ -14,11 +14,11 @@
 
 ## 3. Navegação
 
-- [ ] 3.1 `NavigationProgress` no layout raiz + `startNavigationProgress()`
-- [ ] 3.2 Item ativo otimista na barra lateral (desktop e celular)
-- [ ] 3.3 Aba otimista e `countsLoading` no Topbar
+- [x] 3.1 `NavigationProgress` no layout raiz + `startNavigationProgress()` + `hooks/useRouter.ts` nas navegações por código
+- [x] 3.2 Item ativo otimista na barra lateral do desktop (`usePendingPath`)
+- [x] 3.3 Aba otimista e `countsLoading` no Topbar
 - [x] 3.4 `src/app/loading.tsx` com logo em fade/pulso atrasado
-- [ ] 3.5 Recolher a barra lateral em 300 ms, só largura e opacidade
+- [x] 3.5 Recolher a barra lateral em 300 ms, só largura e opacidade
 
 ## 4. Listagens
 

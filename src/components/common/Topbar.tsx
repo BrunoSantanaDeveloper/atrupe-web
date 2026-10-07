@@ -1,5 +1,8 @@
 'use client'
 
+// React
+import { useEffect, useState } from 'react'
+
 // Next
 import Link from 'next/link'
 
@@ -48,6 +51,8 @@ interface Props {
   // Marcação temporária da revisão: 'new' pinta o título de azul,
   // 'todo' de vermelho. Sai junto com src/consts/revisao.ts
   review?: ReviewMarkKind
+  // Contadores das abas ainda carregando: reserva o lugar do número
+  countsLoading?: boolean
 }
 
 export function Topbar({
@@ -63,10 +68,18 @@ export function Topbar({
   supportText,
   classNames,
   review,
+  countsLoading,
 }: Props) {
   const { helpData } = useHelpData()
   const hasHelpContent =
     helpData && (helpData.video || (helpData.files?.length ?? 0) > 0)
+
+  // Aba marcada no clique, antes de a página nova chegar
+  // (design/openspec/changes/microinteracoes, Decisão 5)
+  const [selectedTab, setSelectedTab] = useState(activeTab)
+  useEffect(() => {
+    setSelectedTab(activeTab)
+  }, [activeTab])
 
   return (
     <div className="space-y-3">
@@ -124,16 +137,32 @@ export function Topbar({
         </div>
       </div>
       {tabs?.length ? (
-        <Tabs value={activeTab} variant="pill" className="overflow-x-auto">
+        <Tabs value={selectedTab} variant="pill" className="overflow-x-auto">
           <TabsList>
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.tab} asChild>
-                <Link href={`?${paramName}=${tab.tab}`}>
+                <Link
+                  href={`?${paramName}=${tab.tab}`}
+                  onClick={(event) => {
+                    if (
+                      !event.metaKey &&
+                      !event.ctrlKey &&
+                      !event.shiftKey &&
+                      !event.altKey
+                    ) {
+                      setSelectedTab(tab.tab)
+                    }
+                  }}
+                >
                   <span>{tab.label}</span>
-                  {tab?.count && tab?.count > 0 ? (
+                  {countsLoading ? (
+                    <Skeleton className="ml-2 h-5 w-6 rounded-full" />
+                  ) : tab?.count && tab?.count > 0 ? (
                     <Badge
-                      variant={activeTab === tab.tab ? 'light' : 'neutralLight'}
-                      className="ml-2 font-semibold"
+                      variant={
+                        selectedTab === tab.tab ? 'light' : 'neutralLight'
+                      }
+                      className="ml-2 font-semibold animate-in fade-in-0 duration-base"
                     >
                       {tab.count}
                     </Badge>

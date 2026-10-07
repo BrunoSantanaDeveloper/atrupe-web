@@ -12,7 +12,8 @@ import Image from 'next/image'
 
 // React
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import {

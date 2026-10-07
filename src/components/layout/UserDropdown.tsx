@@ -1,7 +1,7 @@
 'use client'
 
 // Next
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useSession } from 'next-auth/react'
 
 // UI

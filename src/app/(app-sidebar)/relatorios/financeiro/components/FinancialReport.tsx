@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'

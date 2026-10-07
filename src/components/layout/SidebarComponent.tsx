@@ -52,6 +52,7 @@ import type { MainNavigationType, SecondaryNavigationType } from '@/consts/nav'
 import { usePermissions } from '@/hooks/usePermissions'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
+import { usePendingPath } from '@/hooks/usePendingPath'
 import { useSession } from 'next-auth/react'
 
 interface Props {
@@ -72,6 +73,8 @@ export function SidebarComponent(props: Props) {
   )
 
   const pathname = usePathname()
+  // Item ativo marcado no clique, antes de a página nova chegar
+  const { currentPath, markPending } = usePendingPath()
 
   const user = session.user
   const userRole = user.role || 'USER'
@@ -207,7 +210,7 @@ export function SidebarComponent(props: Props) {
   return (
     <aside
       className={cn(
-        'bg-white border-r border-gray-200 hidden lg:block transition-all ease-in-out duration-500 text-nowrap overflow-hidden space-y-4',
+        'bg-white border-r border-gray-200 hidden lg:block transition-[min-width,max-width] ease-out duration-slow text-nowrap overflow-hidden space-y-4',
         collapsed ? 'max-w-24 min-w-24' : 'max-w-[296px] min-w-[296px]',
       )}
     >
@@ -215,7 +218,7 @@ export function SidebarComponent(props: Props) {
         <div className="flex flex-col h-full">
           {/* header */}
           <div className="border-b border-gray-200">
-            <div className="flex items-center justify-between h-28 transition-all ease-in-out duration-500 px-6 relative">
+            <div className="flex items-center justify-between h-28 transition-all ease-out duration-slow px-6 relative">
               <Link
                 href={userIsSystemAdmin ? SYSTEM_HOME_PAGE : HOME_PAGE}
                 className="flex items-center"
@@ -226,7 +229,7 @@ export function SidebarComponent(props: Props) {
                   width={145}
                   height={35}
                   className={cn(
-                    'min-w-[145px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
+                    'min-w-[145px] max-h-28 h-full transition-all ease-out duration-slow object-contain',
                     collapsed ? '-ml-44 opacity-0' : 'ml-0',
                   )}
                 />
@@ -236,7 +239,7 @@ export function SidebarComponent(props: Props) {
                   width={38}
                   height={38}
                   className={cn(
-                    'min-w-[38px] max-h-28 h-full transition-all ease-in-out duration-500 object-contain',
+                    'min-w-[38px] max-h-28 h-full transition-all ease-out duration-slow object-contain',
                     collapsed ? 'ml-9' : 'ml-44 opacity-0',
                   )}
                 />
@@ -255,7 +258,7 @@ export function SidebarComponent(props: Props) {
               >
                 <IconChevronLeft
                   className={cn(
-                    'text-gray transition-transform duration-300',
+                    'text-gray transition-transform ease-out duration-slow',
                     collapsed && 'rotate-180',
                   )}
                 />
@@ -268,7 +271,7 @@ export function SidebarComponent(props: Props) {
             <div className="border-b border-gray-200 mb-3">
               <div
                 className={cn(
-                  'flex justify-between items-center gap-3 h-28 transition-all ease-in-out duration-500 px-6 relative',
+                  'flex justify-between items-center gap-3 h-28 transition-all ease-out duration-slow px-6 relative',
                   secondaryNav && 'hidden',
                 )}
               >
@@ -280,7 +283,7 @@ export function SidebarComponent(props: Props) {
                   />
                   <div
                     className={cn(
-                      'transition-all ease-in-out duration-500',
+                      'transition-all ease-out duration-slow',
                       collapsed ? 'ml-4 opacity-0' : 'ml-0',
                     )}
                   >
@@ -323,31 +326,32 @@ export function SidebarComponent(props: Props) {
                           <TooltipTrigger asChild>
                             <Link
                               href={`${item?.path}${item?.query || ''}` || '#'}
+                              onClick={markPending(item?.path)}
                               className={cn(
                                 'flex flex-1 mr-2 h-11 items-center justify-between font-medium transition-all hover:no-underline rounded-lg',
-                                pathname.includes(`${item?.path}`)
+                                currentPath.includes(`${item?.path}`)
                                   ? 'bg-brand-25 text-brand-600 font-semibold'
                                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-700',
                               )}
                             >
                               <div
                                 className={cn(
-                                  'flex items-center transition-all ease-in-out duration-500 min-w-52',
+                                  'flex items-center transition-all ease-out duration-slow min-w-52',
                                   collapsed ? 'gap-10 px-5' : 'gap-4 px-2',
                                 )}
                               >
                                 <IconComponent
                                   icon={item?.icon}
                                   className={cn(
-                                    pathname.includes(`${item?.path}`)
+                                    currentPath.includes(`${item?.path}`)
                                       ? 'text-brand'
                                       : 'text-gray-600',
                                   )}
                                 />
                                 <span
                                   className={cn(
-                                    'text-gray-700 text-sm font-semibold transition-all ease-in-out duration-500',
-                                    pathname.includes(`${item?.path}`) &&
+                                    'text-gray-700 text-sm font-semibold transition-all ease-out duration-slow',
+                                    currentPath.includes(`${item?.path}`) &&
                                       'text-brand',
                                     collapsed && 'opacity-0',
                                     reviewTextClass(item?.review),
@@ -365,7 +369,7 @@ export function SidebarComponent(props: Props) {
                                       : 'neutralLight'
                                   }
                                   className={cn(
-                                    'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
+                                    'text-[10px] px-1.5 py-0.5 transition-all ease-out duration-slow mr-2',
                                     collapsed && 'opacity-0',
                                   )}
                                 >
@@ -375,7 +379,7 @@ export function SidebarComponent(props: Props) {
                                 <Badge
                                   variant="light"
                                   className={cn(
-                                    'transition-all ease-in-out duration-500 mr-2',
+                                    'transition-all ease-out duration-slow mr-2',
                                     collapsed && 'opacity-0',
                                   )}
                                 >
@@ -416,7 +420,7 @@ export function SidebarComponent(props: Props) {
                           <TooltipTrigger asChild>
                             <div
                               className={cn(
-                                'flex items-center transition-all ease-in-out duration-500 min-w-52',
+                                'flex items-center transition-all ease-out duration-slow min-w-52',
                                 collapsed ? 'gap-10 px-5' : 'gap-4 px-2',
                               )}
                             >
@@ -426,7 +430,7 @@ export function SidebarComponent(props: Props) {
                               />
                               <span
                                 className={cn(
-                                  'text-gray-700 text-sm font-semibold transition-all ease-in-out duration-500',
+                                  'text-gray-700 text-sm font-semibold transition-all ease-out duration-slow',
                                   collapsed && 'opacity-0',
                                   reviewTextClass(item?.review),
                                 )}
@@ -449,7 +453,7 @@ export function SidebarComponent(props: Props) {
                               não parecerem a mesma coisa (05/10/2026) */}
                           <ul
                             className={cn(
-                              'space-y-1 transition-all ease-in-out duration-500',
+                              'space-y-1 transition-all ease-out duration-slow',
                               collapsed
                                 ? ''
                                 : 'ml-5 border-l border-gray-200 pl-3',
@@ -467,9 +471,11 @@ export function SidebarComponent(props: Props) {
                                       type="button"
                                       variant="none"
                                       className={cn(
-                                        'h-10 w-full justify-between rounded-lg transition-all ease-in-out duration-500',
+                                        'h-10 w-full justify-between rounded-lg transition-all ease-out duration-slow',
                                         collapsed ? 'px-5' : 'px-2',
-                                        pathname.includes(`${navChild?.path}`)
+                                        currentPath.includes(
+                                          `${navChild?.path}`,
+                                        )
                                           ? 'text-brand-600 bg-brand-25 hover:bg-brand-50 font-semibold'
                                           : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
                                       )}
@@ -479,13 +485,14 @@ export function SidebarComponent(props: Props) {
                                           `${navChild?.path}${navChild?.query || ''}` ||
                                           '#'
                                         }
+                                        onClick={markPending(navChild?.path)}
                                       >
                                         <div className="flex items-center gap-4">
                                           <IconComponent
                                             icon={navChild?.icon}
                                             className={cn(
                                               'size-5',
-                                              pathname.includes(
+                                              currentPath.includes(
                                                 `${navChild?.path}`,
                                               )
                                                 ? 'text-brand'
@@ -498,7 +505,7 @@ export function SidebarComponent(props: Props) {
                                           />
                                           <span
                                             className={cn(
-                                              'text-xs font-medium transition-all ease-in-out duration-500',
+                                              'text-xs font-medium transition-all ease-out duration-slow',
                                               collapsed
                                                 ? 'ml-4 opacity-0'
                                                 : 'mr-0',
@@ -521,7 +528,7 @@ export function SidebarComponent(props: Props) {
                                                 : 'neutralLight'
                                             }
                                             className={cn(
-                                              'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500',
+                                              'text-[10px] px-1.5 py-0.5 transition-all ease-out duration-slow',
                                               collapsed && 'opacity-0',
                                             )}
                                           >
@@ -533,7 +540,7 @@ export function SidebarComponent(props: Props) {
                                           <Badge
                                             variant="light"
                                             className={cn(
-                                              'transition-all ease-in-out duration-500',
+                                              'transition-all ease-out duration-slow',
                                               collapsed && 'opacity-0',
                                             )}
                                           >
@@ -588,7 +595,7 @@ export function SidebarComponent(props: Props) {
               type="button"
               variant="ghost"
               className={cn(
-                'w-full h-12 justify-start transition-all ease-in-out duration-500 hover:bg-green-50 hover:text-green-600',
+                'w-full h-12 justify-start transition-all ease-out duration-slow hover:bg-green-50 hover:text-green-600',
                 collapsed ? 'px-5' : 'px-2',
               )}
             >
@@ -604,7 +611,7 @@ export function SidebarComponent(props: Props) {
                 />
                 <span
                   className={cn(
-                    'text-sm font-medium transition-all ease-in-out duration-500',
+                    'text-sm font-medium transition-all ease-out duration-slow',
                     collapsed ? 'ml-4 opacity-0' : 'mr-0',
                   )}
                 >
@@ -642,7 +649,7 @@ export function SidebarComponent(props: Props) {
                       asChild
                       type="button"
                       className={cn(
-                        'justify-between transition-all ease-in-out duration-500',
+                        'justify-between transition-all ease-out duration-slow',
                         collapsed ? 'px-5' : 'mx-4',
                         spn[spn.length - 1] === sip[sip.length - 1] ||
                           spn[spn.length - 2] === sip[sip.length - 1]

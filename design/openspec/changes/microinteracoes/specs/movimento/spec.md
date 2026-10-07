@@ -42,7 +42,7 @@ fade de no máximo 200 ms.
 
 ### Requirement: Recolher a barra lateral
 Recolher e expandir a barra lateral do desktop MUST terminar em até 300 ms,
-animando a largura da barra e a opacidade dos rótulos.
+sem passar disso em nenhum elemento (largura, rótulos, logos).
 
 #### Scenario: Recolher
 - **WHEN** o usuário clica para recolher a barra lateral

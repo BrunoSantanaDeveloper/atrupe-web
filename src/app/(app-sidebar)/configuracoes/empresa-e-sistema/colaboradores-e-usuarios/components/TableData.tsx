@@ -2,7 +2,7 @@
 
 // React
 import { Fragment, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Auth
 import { useSession } from 'next-auth/react'

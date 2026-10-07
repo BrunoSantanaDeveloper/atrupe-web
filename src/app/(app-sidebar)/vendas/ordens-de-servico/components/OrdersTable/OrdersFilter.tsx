@@ -4,7 +4,7 @@
 // import { useState } from 'react'
 
 // Next Imports
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI component Imports
 import { SelectSerieField } from '@/components/common/form/global-inputs/SeriesSelectField'

@@ -1,7 +1,7 @@
 'use client'
 
 // React
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // Components
 import { SelectClientCategoryField } from '@/components/common/form/global-inputs/ClientCategorySelectField'

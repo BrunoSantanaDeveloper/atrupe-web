@@ -1,7 +1,7 @@
 'use client'
 
 // Next Imports
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI component Imports
 import { Button } from '@/components/ui/button'

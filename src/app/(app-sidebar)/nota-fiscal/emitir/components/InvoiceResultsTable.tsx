@@ -8,7 +8,8 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { toast } from 'sonner'
 
 // UI

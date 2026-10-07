@@ -47,7 +47,7 @@ import {
 } from '@/actions/_cruds'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 import { generateIdempotencyKey } from '@/lib/idempotency'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { refreshPlanFeatures } from '@/actions/subscription'
 
 const IS_DEV_ENV = process.env.NEXT_PUBLIC_ENV !== 'production'

@@ -88,10 +88,15 @@ propriedade: o pulso começa quando o fade termina. Overrides de cor existentes
   `useSearchParams` mudam. Barra de 2 px na cor da marca, visível só após
   150 ms, progresso assintótico, completa e some ao terminar; trava de
   segurança de 10 s.
-- Exporta `startNavigationProgress()` para navegações por `router.push` em
-  código (linha de tabela clicável, busca).
-- Barra lateral (desktop e celular): `pendingHref` no clique; o ativo usa
-  `pendingHref ?? pathname` e zera quando o `pathname` muda.
+- Navegações por código: `src/hooks/useRouter.ts` embrulha o `useRouter` do
+  Next (mesma API) e chama `startNavigationProgress()` antes de `push` /
+  `replace` para outra URL; os imports de `useRouter` de `next/navigation`
+  passam a vir dele. Descartado: trocar o `AppRouterContext` do Next, que é
+  API interna.
+- Barra lateral do desktop: `usePendingPath` marca o caminho no clique; o
+  ativo usa `pendingPath ?? pathname` e volta ao real quando o `pathname`
+  muda. No celular o menu fecha no clique, então o retorno é a barra de
+  progresso.
 - Topbar: aba otimista (`useState` sincronizado com `activeTab`).
 - `src/app/loading.tsx`: logo com fade e pulso suave, aparecendo após 200 ms.
 
@@ -115,8 +120,9 @@ comportamentos diferentes para a mesma ação.
   Topbar.
 
 ### 7. Barra lateral
-Só o `aside` anima largura (`duration-slow ease-out`); rótulos e logos animam
-opacidade/transform (`duration-base`). Fim do `transition-all duration-500`.
+O `aside` anima só a largura; rótulos, logos e recuos mantêm o desenho atual
+(opacidade e margem), todos em `duration-slow ease-out` no lugar de
+`duration-500`.
 
 ### 8. Redução de movimento
 Em `globals.css`, sob `prefers-reduced-motion: reduce`: animações e transições

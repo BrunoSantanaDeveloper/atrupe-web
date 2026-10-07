@@ -7,7 +7,8 @@
 // expõe parte do método (SEG-6). Custo nunca aparece (ORC-7).
 
 // React / Next
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 
 // UI
 import { Button } from '@/components/ui/button'

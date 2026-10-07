@@ -3,7 +3,7 @@
 // React
 import { createPortal } from 'react-dom'
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/hooks/useRouter'
 import { useQuery } from '@tanstack/react-query'
 
 // Lib
