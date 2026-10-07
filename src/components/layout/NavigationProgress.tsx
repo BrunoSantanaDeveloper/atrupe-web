@@ -45,7 +45,8 @@ function getNavigationTarget(event: MouseEvent) {
 
   const target = event.target as Element | null
   const anchor = target?.closest('a')
-  if (!anchor || !anchor.href) return null
+  // <a> de SVG tem `href` de outro tipo e não é navegação do Next
+  if (!(anchor instanceof HTMLAnchorElement) || !anchor.href) return null
   if (anchor.target && anchor.target !== '_self') return null
   if (anchor.hasAttribute('download')) return null
 

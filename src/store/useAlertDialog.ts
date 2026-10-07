@@ -62,7 +62,8 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
   toastMsg: DEFAULT_MESSAGES,
   timeout: DEFAULT_TIMEOUT,
   open: (props) => {
-    set({ isOpen: true, ...props })
+    // Um diálogo aberto de dentro de outra confirmação começa parado
+    set({ isOpen: true, isConfirming: false, ...props })
     return get().confirm()
   },
   close: () => set({ isOpen: false }),
