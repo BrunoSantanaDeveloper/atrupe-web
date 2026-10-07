@@ -17,6 +17,7 @@ import {
 
 // Components
 import { DistributionData } from './DistributionData'
+import { SectorAllocations } from './SectorAllocations'
 import { AdministrativeCostTable } from './AdministrativeCostTable'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
@@ -205,6 +206,7 @@ export function Distribution() {
           </>
         )}
       </Card>
+      <SectorAllocations />
     </div>
   )
 }

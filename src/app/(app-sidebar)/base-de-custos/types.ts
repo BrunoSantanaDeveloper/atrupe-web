@@ -69,6 +69,12 @@ export type DistributionTotals = {
 // A tela para no custo: produtividade e custo unitário são da Precificação
 // (regras-de-negocio/areas/05-base-de-custos.md §9).
 
+// Critério do rateio do setor entre os seus equipamentos (BC-3, BC-3.1)
+export type AllocationCriterion =
+  | 'ACQUISITION_VALUE'
+  | 'ACTIVITY_TIME'
+  | 'MANUAL'
+
 export type SectorCostOrigin = 'LABOR' | 'ASSETS' | 'DEPRECIATION' | 'OTHER'
 
 export type SectorCostItem = {
@@ -92,7 +98,7 @@ export type SectorCost = {
   receivedCost: number | null
   totalCost: number | null
   // Critério do rateio interno do setor entre as máquinas (BC-4)
-  allocationCriterion: 'ACQUISITION_VALUE' | 'ACTIVITY_TIME'
+  allocationCriterion: AllocationCriterion
   items: SectorCostItem[]
 }
 
@@ -211,4 +217,42 @@ export type ComparisonResponse = {
     withEstimate: number
     withoutEstimate: number
   }
+}
+
+// --- Rateio do setor entre os equipamentos ------------------------------
+// O custo do setor que não é de um equipamento detalhado (bens simplificados,
+// lançamentos diretos, administrativo recebido) é repartido entre os
+// equipamentos detalhados do setor (P-15, P-16) pelo critério que o setor
+// escolhe (BC-3, BC-3.1, BC-4).
+
+export type AllocationEquipment = {
+  id: string
+  name: string
+  acquisitionValue: number
+  // Tempo de atividade por mês, em horas: tempo por unidade × produtividade
+  // de cada configuração produtiva (BC-2)
+  activityHours: number
+  // Custo do próprio bem no mês: depreciação e custos cadastrados nele
+  ownCost: number
+  // Percentual que cada critério daria, para comparar (BC-3.1)
+  shares: { [key in AllocationCriterion]: number | null }
+  // Percentual em uso, pelo critério do setor
+  share: number
+  // Custo do bem no mês já com a parte do setor, e o custo-hora dele
+  monthlyCost: number
+  hourCost: number | null
+}
+
+export type SectorAllocation = {
+  sectorId: string
+  sectorName: string
+  criterion: AllocationCriterion
+  // O critério automático em uso antes do manual: é de onde os percentuais
+  // manuais nasceram
+  previousCriterion: Exclude<AllocationCriterion, 'MANUAL'> | null
+  // O custo do setor a repartir entre os equipamentos
+  pool: number
+  equipment: AllocationEquipment[]
+  // Bem sem tempo informado não recebe nada pelo tempo de atividade (ORG-33)
+  missingTime: string[]
 }
