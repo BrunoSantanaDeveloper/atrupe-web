@@ -18,11 +18,7 @@ Regras de manutenção:
 
 ## Mudanças pendentes
 
-- `microinteracoes` — movimento e carregamento · `in progress`. Durações e
-  curvas nomeadas, esqueleto, botão em progresso, modais/painéis, retorno de
-  navegação e recarga de listagens; toca `tailwind.config.ts`, `globals.css`,
-  `src/components/ui`, `src/components/layout`, `src/components/common` e as
-  listagens de `src/app/(app-sidebar)`.
+Nenhuma.
 
 ## Dependências
 
@@ -30,6 +26,4 @@ Nenhuma.
 
 ## Ondas
 
-1. Movimento e carregamento — refina os primitivos de `src/components/ui` que
-   todas as telas usam.
-   - `microinteracoes` — única pendente.
+Nenhuma.

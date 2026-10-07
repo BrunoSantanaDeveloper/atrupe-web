@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils'
 // `bg-gray-200` se distingue do fundo da página (`gray-100`) e do cartão, sem
 // `mix-blend-multiply`, que escurece demais sobre fundos escuros. A animação
 // atrasa a entrada para que cargas rápidas não pisquem
-// (design/openspec/changes/microinteracoes, Decisão 2)
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 2)
 function Skeleton({
   className,
   ...props

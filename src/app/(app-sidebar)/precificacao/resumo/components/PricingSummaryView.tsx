@@ -52,7 +52,7 @@ export function PricingSummaryView() {
 
   if (isLoading || !summary || !parameters) {
     // Primeira carga no formato final: títulos reais e blocos no lugar dos
-    // cartões (design/openspec/changes/microinteracoes)
+    // cartões (design/openspec/changes/archive/2026-10-07-microinteracoes)
     return (
       <div className="space-y-5">
         <Card>

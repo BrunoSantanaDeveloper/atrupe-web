@@ -14,7 +14,7 @@ interface Props {
 
 // Primeira carga de uma listagem dentro do <Card>: barra de filtros, tabela e
 // paginação no formato final, no lugar do bloco cinza de tela inteira
-// (design/openspec/changes/microinteracoes, Decisão 6)
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 6)
 export function ListSkeleton({ cols = 6, rows = 8, filters = 1 }: Props) {
   return (
     <>

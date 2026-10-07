@@ -89,7 +89,7 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
         }
 
         // O diálogo fica aberto com o botão em progresso até a ação terminar
-        // (design/openspec/changes/microinteracoes, Decisão 4). `toast.promise`
+        // (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 4). `toast.promise`
         // devolve o id do aviso, não a promessa: a ação é aguardada à parte
         set({ isConfirming: true })
         try {

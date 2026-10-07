@@ -19,7 +19,7 @@ function startIfUrlChanges(href: string) {
 }
 
 // O `useRouter` do Next com a barra de progresso nas navegações por código
-// (design/openspec/changes/microinteracoes, Decisão 5). Mesma API.
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5). Mesma API.
 export function useRouter(): AppRouter {
   const router = useNextRouter()
 

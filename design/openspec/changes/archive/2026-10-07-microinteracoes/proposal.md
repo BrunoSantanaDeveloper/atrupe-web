@@ -60,4 +60,5 @@ quase some no tema claro e vira mancha escura no escuro.
   `FetchingRegion`.
 - Listagens e telas com carregamento em `src/app/(app-sidebar)` (cerca de 90
   arquivos).
-- Sem dependência nova. Depende dos tokens escuros de `tema-claro-escuro`.
+- Sem dependência nova. Não depende de `tema-claro-escuro`; quando ele
+  entrar, o esqueleto acompanha porque usa um token de cinza.

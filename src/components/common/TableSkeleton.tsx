@@ -20,7 +20,7 @@ interface TableSkeletonRowsProps {
 
 // Linhas de esqueleto para o <TableBody> da tabela real: o cabeçalho é o
 // verdadeiro e nada troca de forma quando os dados chegam
-// (design/openspec/changes/microinteracoes, Decisão 6)
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 6)
 export function TableSkeletonRows({ cols, rows = 8 }: TableSkeletonRowsProps) {
   return (
     <>

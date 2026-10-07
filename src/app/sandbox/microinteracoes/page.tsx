@@ -1,6 +1,6 @@
 'use client'
 
-// Vitrine de movimento e carregamento — design/openspec/changes/microinteracoes
+// Vitrine de movimento e carregamento — design/openspec/changes/archive/2026-10-07-microinteracoes
 import { useState } from 'react'
 
 // UI

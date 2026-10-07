@@ -214,7 +214,7 @@
   }
 }
 
-/* Movimento reduzido — design/openspec/changes/microinteracoes (Decisão 8).
+/* Movimento reduzido — design/openspec/changes/archive/2026-10-07-microinteracoes (Decisão 8).
    Animações e transições quase instantâneas; o spinner continua girando
    porque indica trabalho em andamento */
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 
-// Movimento e carregamento — design/openspec/changes/microinteracoes.
+// Movimento e carregamento — design/openspec/changes/archive/2026-10-07-microinteracoes.
 // Roda na vitrine /sandbox/microinteracoes: nada aqui grava no backend.
 
 async function openShowcase(page: Page) {

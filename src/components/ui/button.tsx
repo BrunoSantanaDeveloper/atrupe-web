@@ -207,7 +207,7 @@ const Button = React.forwardRef<
     // Em progresso o botão mantém a cor da variante (`data-loading` desliga o
     // estilo `disabled-idle:`) e a largura: o conteúdo fica invisível no lugar
     // (`visibility` é herdada através do `contents`) e o spinner, centralizado
-    // (design/openspec/changes/microinteracoes, Decisão 3)
+    // (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 3)
     return (
       <button
         className={cn(

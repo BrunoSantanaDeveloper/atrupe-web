@@ -13,7 +13,7 @@ interface Props {
 // Recarga de listagem: os dados anteriores ficam esmaecidos, com uma barra
 // fina no topo, até os novos chegarem. Os dois só aparecem após 150 ms, para
 // que respostas rápidas não pisquem
-// (design/openspec/changes/microinteracoes, Decisão 6)
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 6)
 export function FetchingRegion({
   isFetching,
   className,

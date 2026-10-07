@@ -30,7 +30,7 @@ export function TablePagination({
   const currentPage = Number(searchParams?.page) || 1
 
   // Página marcada no clique, antes de a página nova chegar
-  // (design/openspec/changes/microinteracoes, Decisão 5)
+  // (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5)
   const [selectedPage, setSelectedPage] = useState(currentPage)
   useEffect(() => {
     setSelectedPage(currentPage)

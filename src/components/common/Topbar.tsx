@@ -75,7 +75,7 @@ export function Topbar({
     helpData && (helpData.video || (helpData.files?.length ?? 0) > 0)
 
   // Aba marcada no clique, antes de a página nova chegar
-  // (design/openspec/changes/microinteracoes, Decisão 5)
+  // (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5)
   const [selectedTab, setSelectedTab] = useState(activeTab)
   useEffect(() => {
     setSelectedTab(activeTab)

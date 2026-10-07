@@ -39,6 +39,6 @@
 ## 6. Conferência
 
 - [x] 6.1 `tsc` e `lint` limpos
-- [x] 6.2 Vitrine `/sandbox/microinteracoes` com antes/depois dos primitivos, nos dois temas
+- [x] 6.2 Vitrine `/sandbox/microinteracoes` com antes/depois dos primitivos, nos dois temas (conferida sobre a branch do tema escuro)
 - [x] 6.3 Conferência visual (claro, escuro, movimento reduzido)
 - [x] 6.4 Teste e2e `e2e/microinteracoes/microinteracoes.spec.ts` na vitrine (botão, confirmação, listagem, barra de navegação, movimento reduzido)

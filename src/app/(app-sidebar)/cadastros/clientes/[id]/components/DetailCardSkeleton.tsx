@@ -8,7 +8,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 
 // Primeira carga do detalhe no formato do DetailCard (ícone, título e linhas
 // de rótulo e valor), no lugar de um bloco cinza único
-// (design/openspec/changes/microinteracoes)
+// (design/openspec/changes/archive/2026-10-07-microinteracoes)
 export function DetailCardSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <Card className="w-full pb-4">

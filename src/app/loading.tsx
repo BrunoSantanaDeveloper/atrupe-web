@@ -2,7 +2,7 @@
 import { Logo } from '@/components/Logo'
 
 // Carga inicial: o logo entra com atraso (espera curta não pisca) e pulsa
-// suave, no lugar do quique (design/openspec/changes/microinteracoes, Decisão 5)
+// suave, no lugar do quique (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5)
 export default function Loading() {
   return (
     <div

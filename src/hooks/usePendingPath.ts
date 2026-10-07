@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import type { MouseEvent } from 'react'
 
 // Caminho marcado como ativo no clique, antes de a página nova chegar
-// (design/openspec/changes/microinteracoes, Decisão 5). Volta ao `pathname`
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5). Volta ao `pathname`
 // real assim que ele muda.
 export function usePendingPath() {
   const pathname = usePathname()

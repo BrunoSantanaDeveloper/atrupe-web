@@ -408,7 +408,7 @@ const config = {
         'progress-indeterminate':
           'progress-indeterminate 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite',
       },
-      // Movimento — design/openspec/changes/microinteracoes (Decisão 1).
+      // Movimento — design/openspec/changes/archive/2026-10-07-microinteracoes (Decisão 1).
       // O tailwindcss-animate lê transitionDuration, então `duration-fast`
       // vale para transições e animações
       transitionDuration: {

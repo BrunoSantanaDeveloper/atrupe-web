@@ -10,7 +10,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { cn } from '@/lib/utils'
 
 // Barra de progresso no topo durante a troca de página
-// (design/openspec/changes/microinteracoes, Decisão 5).
+// (design/openspec/changes/archive/2026-10-07-microinteracoes, Decisão 5).
 //
 // O App Router não avisa quando uma navegação começa: o início vem do clique
 // num link interno (ou de `startNavigationProgress()`, para `router.push` em
