@@ -1,0 +1,30 @@
+schema: spec-driven
+
+context: |
+  OpenSpec EXCLUSIVO de design (visual e interface) do front do Atrupe.
+  Rode o CLI `openspec` de dentro da pasta `design/`.
+
+  Separação obrigatória:
+  - Aqui: tema (claro/escuro), tokens de cor, tipografia, espaçamento,
+    componentes visuais, layout e telas.
+  - Fora daqui: regras de negócio, fluxos do produto e decisões de domínio
+    ficam no repositório `atrupe-regras`, clonado em `openspec/` na raiz do
+    front. Nunca crie, cite como dependência ou edite mudanças daquele
+    OpenSpec a partir deste, e vice-versa.
+
+  Produto: Atrupe, sistema de gestão (orçamentos, produção, financeiro) com
+  planos START, LITE, PRO, ELITE e FULL.
+
+  Stack do front: Next.js 14 (App Router), React 18, TypeScript,
+  Tailwind CSS 3 com `darkMode: ['class']`, next-themes, componentes
+  shadcn/ui sobre Radix (`src/components/ui`), CSS global em
+  `src/app/globals.css`.
+
+  Referência visual atual: `../design.md` (raiz do front), extraído do Figma,
+  com tokens, componentes, padrões de layout e divergências entre arquivos.
+  Vale o arquivo de Figma mais novo; os antigos só completam lacunas.
+
+  Conferência visual: `npm run dev` (http://localhost:3000) e as vitrines
+  `/sandbox/fluxo` e `/sandbox/orcamento`.
+
+  Idioma dos artefatos (proposal, design, tasks, specs): português do Brasil.
