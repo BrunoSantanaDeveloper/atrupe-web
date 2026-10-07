@@ -110,31 +110,33 @@ export function Main({ searchParams }: SearchParamsType) {
                   <TableHeader>
                     <TableRow className="bg-gray-50">
                       <TableHead>Perfil</TableHead>
-                      <TableHead>Desconto máximo</TableHead>
-                      <TableHead>Valor mínimo venda</TableHead>
-                      <TableHead>Comissão</TableHead>
+                      <TableHead numeric>Desconto máximo</TableHead>
+                      <TableHead numeric>Valor mínimo de venda</TableHead>
+                      <TableHead numeric>Comissão</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {profiles.map((group) => (
                       <Fragment key={group.profile?.id}>
-                        <TableRow className="bg-gray-100">
-                          <TableCell className="text-gray font-medium text-xs py-0">
+                        {/* O perfil é a entidade principal: linha de dado, não
+                            cabeçalho de grupo. Os vendedores vêm abaixo. */}
+                        <TableRow>
+                          <TableCell className="type-body-strong">
                             {group?.profile?.name}
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell numeric>
                             {group?.profile?.maxDiscount} %
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell numeric>
                             {canSeeValues
                               ? formatCurrencyToBrl(group?.profile?.minValue)
                               : '••••••'}
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell numeric>
                             {group?.profile?.commission} %
                           </TableCell>
-                          <TableCell className="py-0">
+                          <TableCell>
                             <div className="flex justify-end gap-1">
                               <TooltipProvider>
                                 <PermissionGate
@@ -181,16 +183,13 @@ export function Main({ searchParams }: SearchParamsType) {
                           group?.employees.map((item) => {
                             return (
                               <TableRow key={item?.id}>
-                                <TableCell className="flex items-center gap-3">
+                                <TableCell colSpan={4} className="pl-12">
                                   <UserInfo
                                     name={item?.name}
                                     description={item?.role}
                                     imageUrl={item?.avatar}
                                   />
                                 </TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
                                 <TableCell>
                                   <div className="flex justify-end gap-1">
                                     <TooltipProvider>

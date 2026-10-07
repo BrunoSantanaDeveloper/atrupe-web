@@ -17,13 +17,23 @@ function useColumnCount(tableRef: React.RefObject<HTMLTableElement>) {
     const table = tableRef.current
     if (!table) return
     const measure = () => {
-      const head = table.tHead?.rows[0] ?? table.rows[0]
-      if (!head) return
-      const total = Array.from(head.cells).reduce(
-        (sum, cell) => sum + cell.colSpan,
+      // Cabeçalho quando existe; senão, a linha de dado mais larga. Linhas que
+      // ocupam a tabela toda (grupo, estado) não entram na conta.
+      const rows = table.tHead?.rows.length
+        ? [table.tHead.rows[0]]
+        : Array.from(table.rows).filter(
+            (row) => row.dataset.spanAll === undefined,
+          )
+      const total = rows.reduce(
+        (max, row) =>
+          Math.max(
+            max,
+            Array.from(row.cells).reduce((sum, cell) => sum + cell.colSpan, 0),
+          ),
         0,
       )
-      setCount((prev) => (prev === total ? prev : Math.max(total, 1)))
+      if (!total) return
+      setCount((prev) => (prev === total ? prev : total))
     }
     measure()
     const observer = new MutationObserver(measure)
@@ -161,6 +171,7 @@ const TableGroupRow = React.forwardRef<
   return (
     <tr
       ref={ref}
+      data-span-all=""
       className={cn('border-b border-gray-100 bg-gray-50', className)}
       {...props}
     >
@@ -183,7 +194,7 @@ const TableFullRow = React.forwardRef<
 >(({ className, cellClassName, children, ...props }, ref) => {
   const columns = React.useContext(TableColumnsContext)
   return (
-    <tr ref={ref} className={className} {...props}>
+    <tr ref={ref} data-span-all="" className={className} {...props}>
       <td colSpan={columns} className={cellClassName}>
         {children}
       </td>

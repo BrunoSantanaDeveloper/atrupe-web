@@ -11,6 +11,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableGroupRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -191,11 +192,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                   <TableBody>
                     {sectors.map((sector) => (
                       <Fragment key={sector}>
-                        <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={7}>
-                            <span className="font-medium">{sector}</span>
-                          </TableCell>
-                        </TableRow>
+                        <TableGroupRow>{sector}</TableGroupRow>
                         {/* Setor › subcategoria (05/10/2026): dentro do
                             setor, os materiais vêm agrupados pela
                             subcategoria */}
@@ -221,7 +218,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                     <TableCell />
                                     <TableCell
                                       colSpan={6}
-                                      className="type-eyebrow py-2"
+                                      className="type-body-strong py-2"
                                     >
                                       {material.subcategory}
                                     </TableCell>

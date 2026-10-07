@@ -201,7 +201,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
           </div>
         </div>
         <Button onClick={handleNew} LeftIcon={IconPlus}>
-          Nova Natureza
+          Nova natureza
         </Button>
       </div>
 
@@ -219,7 +219,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
             Cadastre naturezas de operação para facilitar a emissão de notas
           </p>
           <Button onClick={handleNew} LeftIcon={IconPlus}>
-            Nova Natureza
+            Nova natureza
           </Button>
         </div>
       ) : (

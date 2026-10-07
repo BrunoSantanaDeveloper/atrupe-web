@@ -364,12 +364,10 @@ export function EmissoresListClient() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <FeaturedIcon variant="outline" Icon={IconBuilding} />
-          <div>
-            <h2 className="type-section-title">Emissores de Nota Fiscal</h2>
-            <p className="text-sm text-gray-500">
-              Gerencie as configurações fiscais por empresa/filial
-            </p>
-          </div>
+          {/* O título já está no cabeçalho da página; aqui só o contexto. */}
+          <p className="type-secondary">
+            Gerencie as configurações fiscais por empresa/filial
+          </p>
         </div>
         {/* Botão Novo Emissor removido pois a lista é baseada em empresas cadastradas */}
       </div>
@@ -429,7 +427,7 @@ export function EmissoresListClient() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remover Configuração</AlertDialogTitle>
+            <AlertDialogTitle>Remover configuração</AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja remover as configurações fiscais de{' '}
               <strong>{deleteEmissor?.name}</strong>? A emissão de notas será
@@ -442,7 +440,7 @@ export function EmissoresListClient() {
               onClick={confirmDelete}
               className="bg-red-600 hover:bg-red-700"
             >
-              Remover Configuração
+              Remover configuração
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

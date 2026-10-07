@@ -186,7 +186,7 @@ export function CfopListClient() {
             <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
             <div>
               <h2 className="type-section-title">Tabela de CFOP</h2>
-              <p className="text-sm text-gray-500">
+              <p className="type-secondary">
                 Gerencie os CFOPs utilizados na emissão de notas fiscais
               </p>
             </div>

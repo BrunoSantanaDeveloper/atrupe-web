@@ -212,7 +212,7 @@ export function CancelSubscriptionDialog({
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="CANCELAR"
-                  className="type-eyebrow"
+                  className="uppercase"
                 />
               </div>
             </DialogBody>

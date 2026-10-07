@@ -125,7 +125,7 @@ export function Clients({ searchParams }: SearchParamsType) {
     {
       value: 'PROSPECT',
       tab: 'preCadastros',
-      label: 'Pré-Cadastros',
+      label: 'Pré-cadastros',
       count: totals?.preCadastros,
     },
     {

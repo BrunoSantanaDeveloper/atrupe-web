@@ -103,7 +103,7 @@ export function InvoiceConfigSection({ data }: InvoiceConfigSectionProps) {
                   >
                     {row.map((field, i) => (
                       <div key={i} className="space-y-1">
-                        <p className="type-eyebrow">{field.label}</p>
+                        <p className="type-label">{field.label}</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {field.value}
                         </p>

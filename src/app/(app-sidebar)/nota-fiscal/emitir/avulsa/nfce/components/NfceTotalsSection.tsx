@@ -55,7 +55,7 @@ export function NfceTotalsSection({
 
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-gray-900">
-            Valor Total da Nota
+            Valor total da nota
           </span>
           <span className="text-xl font-bold text-gray-900">
             {formatCurrency(totalNota)}

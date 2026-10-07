@@ -321,7 +321,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                                 <span className="text-xs text-gray-500 font-normal">
                                   (
                                   {groupBy === 'client'
-                                    ? 'Total do Cliente'
+                                    ? 'Total do cliente'
                                     : 'Total do Vendedor'}
                                   )
                                 </span>

@@ -638,52 +638,52 @@ export function EmissorListItem({
           {/* Details Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div>
-              <p className="type-eyebrow mb-1">Razão Social</p>
+              <p className="type-label mb-1">Razão social</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.legalName || '—'}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">Nome Fantasia</p>
+              <p className="type-label mb-1">Nome fantasia</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.name || '—'}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">CNPJ</p>
+              <p className="type-label mb-1">CNPJ</p>
               <p className="font-medium text-gray-900 font-mono">
                 {formatCnpj(emissor.company?.cnpj)}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">CRT</p>
+              <p className="type-label mb-1">CRT</p>
               <p className="font-medium text-gray-900">
                 {CRT_LABELS[String(emissor.emitCrt)] ?? 'Não informado'}
               </p>
             </div>
             {/* Row 2 */}
             <div>
-              <p className="type-eyebrow mb-1">Endereço</p>
+              <p className="type-label mb-1">Endereço</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.address?.street},{' '}
                 {emissor.company?.address?.number}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">Bairro</p>
+              <p className="type-label mb-1">Bairro</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.address?.neighborhood || '—'}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">Cidade/UF</p>
+              <p className="type-label mb-1">Cidade/UF</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.address?.city} -{' '}
                 {emissor.company?.address?.state}
               </p>
             </div>
             <div>
-              <p className="type-eyebrow mb-1">CEP</p>
+              <p className="type-label mb-1">CEP</p>
               <p className="font-medium text-gray-900">
                 {emissor.company?.address?.zipcode || '—'}
               </p>

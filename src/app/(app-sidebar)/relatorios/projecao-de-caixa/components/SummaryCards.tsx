@@ -42,19 +42,19 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
     {
       icon: IconTrendingUp,
       variant: 'successLight',
-      label: 'Receitas Previstas',
+      label: 'Receitas previstas',
       value: formatCurrencyToBrl(data?.expectedRevenue || 0),
     },
     {
       icon: IconTrendingDown,
       variant: 'errorLight',
-      label: 'Despesas Previstas',
+      label: 'Despesas previstas',
       value: formatCurrencyToBrl(data?.expectedExpenses || 0),
     },
     {
       icon: IconWallet,
       variant: 'neutralLight',
-      label: 'Saldo de Caixa Previsto',
+      label: 'Saldo de caixa previsto',
       value: formatCurrencyToBrl(data?.expectedBalance || 0),
     },
   ]

@@ -214,7 +214,7 @@ export function InvoiceDeliveryAddressSection({
                   {destinatarioAddress?.endereco ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-1">
-                        <p className="type-eyebrow">Rua</p>
+                        <p className="type-label">Rua</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.endereco}
                           {destinatarioAddress.numero
@@ -223,31 +223,31 @@ export function InvoiceDeliveryAddressSection({
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="type-eyebrow">Complemento</p>
+                        <p className="type-label">Complemento</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.complemento || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="type-eyebrow">Bairro</p>
+                        <p className="type-label">Bairro</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.bairro || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="type-eyebrow">CEP</p>
+                        <p className="type-label">CEP</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.cep || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="type-eyebrow">Cidade</p>
+                        <p className="type-label">Cidade</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.cidade || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="type-eyebrow">Estado</p>
+                        <p className="type-label">Estado</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.estado || '—'}
                         </p>
@@ -442,7 +442,7 @@ export function InvoiceDeliveryAddressSection({
                     <div className="flex flex-col">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border-b border-gray-100">
                         <div className="space-y-1">
-                          <p className="type-eyebrow">Rua</p>
+                          <p className="type-label">Rua</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.endereco
                               ? `${entrega.endereco}, ${entrega.numero}`
@@ -450,13 +450,13 @@ export function InvoiceDeliveryAddressSection({
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="type-eyebrow">Complemento</p>
+                          <p className="type-label">Complemento</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.complemento || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="type-eyebrow">Bairro</p>
+                          <p className="type-label">Bairro</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.bairro || 'N/D'}
                           </p>
@@ -464,26 +464,26 @@ export function InvoiceDeliveryAddressSection({
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
                         <div className="space-y-1">
-                          <p className="type-eyebrow">CEP</p>
+                          <p className="type-label">CEP</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.cep || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="type-eyebrow">Cidade</p>
+                          <p className="type-label">Cidade</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.cidade || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="type-eyebrow">Estado</p>
+                          <p className="type-label">Estado</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.estado || 'N/D'}
                           </p>
                         </div>
                         {entrega.cnpjCpf && (
                           <div className="space-y-1">
-                            <p className="type-eyebrow">CPF/CNPJ do local</p>
+                            <p className="type-label">CPF/CNPJ do local</p>
                             <p className="text-sm font-semibold text-gray-900">
                               {entrega.cnpjCpf}
                             </p>

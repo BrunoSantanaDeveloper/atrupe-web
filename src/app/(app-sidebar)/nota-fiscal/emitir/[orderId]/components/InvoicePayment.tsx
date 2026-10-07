@@ -432,7 +432,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                       <div className="space-y-3">
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <Label className="type-eyebrow">Número</Label>
+                            <Label className="type-label">Número</Label>
                             <Input
                               value={dup.numero}
                               onChange={(e) =>
@@ -441,7 +441,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                             />
                           </div>
                           <div className="space-y-1">
-                            <Label className="type-eyebrow">Vencimento</Label>
+                            <Label className="type-label">Vencimento</Label>
                             <Input
                               type="date"
                               value={dup.dataVencimento}
@@ -456,7 +456,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <Label className="type-eyebrow">Valor</Label>
+                          <Label className="type-label">Valor</Label>
                           <Input
                             type="text"
                             inputMode="decimal"

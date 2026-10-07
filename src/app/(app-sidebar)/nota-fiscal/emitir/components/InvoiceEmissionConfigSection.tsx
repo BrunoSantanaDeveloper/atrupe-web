@@ -123,7 +123,7 @@ function ReadOnlyField({
 }) {
   return (
     <div className="space-y-1">
-      <p className="type-eyebrow">{label}</p>
+      <p className="type-label">{label}</p>
       <p className="text-sm font-semibold text-gray-900">{value || '-'}</p>
     </div>
   )
@@ -480,7 +480,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                 </div>
 
                 <div className="space-y-1 self-end">
-                  <p className="type-eyebrow">Destino operacao</p>
+                  <p className="type-label">Destino da operação</p>
                   <p className="min-h-10 rounded-lg border border-gray-200 bg-gray-50 px-3.5 py-2.5 text-sm font-semibold text-gray-700">
                     {getDestinoLabel(data.emissao.destinoOperacao)}
                   </p>

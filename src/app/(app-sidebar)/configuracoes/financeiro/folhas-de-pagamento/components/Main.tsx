@@ -303,7 +303,7 @@ export function Main() {
                   name={employee ? getFirstAndLastName(employee.name) : ''}
                 />
                 <div>
-                  <p className="text-xl font-semibold text-gray-900">
+                  <p className="type-section-title">
                     {employee?.name || 'Nenhum colaborador neste setor'}
                   </p>
                   <div className="flex flex-wrap items-center gap-2">
@@ -472,10 +472,7 @@ export function Main() {
                         >
                           {money(totalDiscount(employee))}
                         </TableCell>
-                        <TableCell
-                          numeric
-                          className="text-lg font-semibold text-gray-900"
-                        >
+                        <TableCell numeric className="type-body-strong">
                           {money(cost)}
                         </TableCell>
                         <TableCell className="w-20" />

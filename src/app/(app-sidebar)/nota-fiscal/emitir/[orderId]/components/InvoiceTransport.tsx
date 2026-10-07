@@ -287,7 +287,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                             updateTransport('uf', e.target.value)
                           }
                           maxLength={2}
-                          className="type-eyebrow"
+                          className="uppercase"
                         />
                       </div>
                     </div>

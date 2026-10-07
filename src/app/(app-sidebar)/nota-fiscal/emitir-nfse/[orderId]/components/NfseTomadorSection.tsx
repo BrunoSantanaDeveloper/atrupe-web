@@ -82,25 +82,25 @@ export function NfseTomadorSection({
             <CardContent className="p-6">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="space-y-1">
-                  <p className="type-eyebrow">Razão Social</p>
+                  <p className="type-label">Razão social</p>
                   <p className="text-sm font-semibold text-gray-900">
                     {client?.corporateName || client?.name}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="type-eyebrow">CNPJ/CPF</p>
+                  <p className="type-label">CNPJ/CPF</p>
                   <p className="text-sm font-semibold text-gray-900">
                     {client?.cnpj || client?.cpf || 'N/D'}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="type-eyebrow">E-mail</p>
+                  <p className="type-label">E-mail</p>
                   <p className="text-sm font-semibold text-gray-900">
                     {client?.email || 'N/D'}
                   </p>
                 </div>
                 <div className="space-y-1">
-                  <p className="type-eyebrow">Valor Total</p>
+                  <p className="type-label">Valor total</p>
                   <p className="text-sm font-semibold text-brand-600">
                     {servicesTotal}
                   </p>
@@ -114,7 +114,7 @@ export function NfseTomadorSection({
                   </div>
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     <div className="space-y-1 lg:col-span-2">
-                      <p className="type-eyebrow">Logradouro</p>
+                      <p className="type-label">Logradouro</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {client.address[0].street || 'N/D'}
                         {client.address[0].number
@@ -126,13 +126,13 @@ export function NfseTomadorSection({
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="type-eyebrow">Bairro</p>
+                      <p className="type-label">Bairro</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {client.address[0].neighborhood || 'N/D'}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="type-eyebrow">Cidade/UF</p>
+                      <p className="type-label">Cidade/UF</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {client.address[0].city || 'N/D'}
                         {client.address[0].state
@@ -141,13 +141,13 @@ export function NfseTomadorSection({
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="type-eyebrow">CEP</p>
+                      <p className="type-label">CEP</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {client.address[0].zipcode || 'N/D'}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <p className="type-eyebrow">Telefone</p>
+                      <p className="type-label">Telefone</p>
                       <p className="text-sm font-semibold text-gray-900">
                         {client?.phone || client?.mobile || 'N/D'}
                       </p>

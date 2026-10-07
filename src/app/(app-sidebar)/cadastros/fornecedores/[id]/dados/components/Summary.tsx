@@ -7,7 +7,7 @@ import { formatToLocaleDateTime } from '@/lib/formatDate'
 // Types
 import { ClientInfoType } from '@/types/cadastros/client'
 import { DetailCardRowItem } from '../../components/DetailCardRowItem'
-import { DetailCard } from '../../components/DetailCard'
+import { DetailCard } from '@/components/common/DetailCard'
 import { IconFileInvoice, IconMapPin, IconUserStar } from '@tabler/icons-react'
 
 interface Props {
