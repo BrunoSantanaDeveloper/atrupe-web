@@ -25,11 +25,27 @@ import { useQueryClient } from '@tanstack/react-query'
 // Actions
 import { createItemNew, getData } from '@/actions/_cruds'
 
+// Libs
+import { formatToCalendarDate } from '@/lib/formatDate'
+
 // Types
 import type { AccountItem } from './Table/Data'
 
 // Icons
 import { IconRefresh, IconAlertTriangle, IconCheck } from '@tabler/icons-react'
+
+/** Uma cobrança em que o sistema e o Asaas discordam — o que a sincronização alinha. */
+interface ChargeDivergence {
+  asaasPaymentId: string
+  /** YYYY-MM-DD */
+  dueDate: string
+  value: number
+  /** Nulo quando a cobrança só existe no Asaas. */
+  localStatus: string | null
+  /** REMOVED quando foi removida (ou não existe) no Asaas. */
+  asaasStatus: string
+  action: 'create' | 'update' | 'cancel'
+}
 
 interface AsaasCheckResult {
   found: boolean
@@ -46,6 +62,50 @@ interface AsaasCheckResult {
     id: string
     plan: string
   }
+  divergences?: ChargeDivergence[]
+}
+
+interface ChargeSyncCounts {
+  created: number
+  updated: number
+  canceled: number
+}
+
+const formatValue = (value: number): string =>
+  value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+
+// Status da cobrança, no vocabulário do sistema
+const translateChargeStatus = (status?: string | null): string => {
+  const translations: Record<string, string> = {
+    PENDING: 'pendente',
+    OVERDUE: 'atrasada',
+    CONFIRMED: 'confirmada',
+    RECEIVED: 'recebida',
+    REFUNDED: 'estornada',
+    CANCELED: 'cancelada',
+    FAILED: 'com falha',
+  }
+  return translations[status || ''] || status || '-'
+}
+
+const describeDivergence = (d: ChargeDivergence): string => {
+  if (d.action === 'cancel') {
+    return `Removida no Asaas, ${translateChargeStatus(d.localStatus)} aqui → será baixada`
+  }
+  if (d.action === 'create') {
+    return `Só no Asaas (${translateChargeStatus(d.asaasStatus)}) → será criada aqui`
+  }
+  return `${translateChargeStatus(d.localStatus)} aqui, ${translateChargeStatus(d.asaasStatus)} no Asaas → será atualizada`
+}
+
+const plural = (count: number, singular: string, pluralForm: string) =>
+  `${count} ${count === 1 ? singular : pluralForm}`
+
+// Resultado da reavaliação de ativação e bloqueio que vale avisar
+const SYNC_STATUS_MESSAGES: Record<string, string> = {
+  unblocked: 'Empresa desbloqueada.',
+  overdue: 'Segue com cobrança vencida no Asaas.',
+  manually_deactivated: 'Assinatura inativada manualmente: não foi reativada.',
 }
 
 interface Props {
@@ -61,6 +121,8 @@ const translateLocalStatus = (status?: string): string => {
     INACTIVE: 'Inativo',
     BLOCKED: 'Bloqueado',
     PENDING: 'Pendente',
+    CANCELED: 'Cancelado',
+    EXPIRED: 'Expirado',
   }
   return translations[status || ''] || status || '-'
 }
@@ -135,13 +197,42 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
         return
       }
 
+      const charges = res.data?.charges as ChargeSyncCounts | undefined
+      const aligned = [
+        charges?.canceled
+          ? plural(charges.canceled, 'baixada', 'baixadas')
+          : null,
+        charges?.updated
+          ? plural(charges.updated, 'atualizada', 'atualizadas')
+          : null,
+        charges?.created ? plural(charges.created, 'criada', 'criadas') : null,
+      ].filter(Boolean)
+      const chargesSummary = aligned.length
+        ? `Cobranças alinhadas ao Asaas: ${aligned.join(', ')}.`
+        : null
+
+      queryClient.invalidateQueries({ queryKey: ['active-clients-list'] })
+
       if (res.data?.status === 'activated') {
-        toast.success('Subscription ativada com sucesso!')
-        queryClient.invalidateQueries({ queryKey: ['active-clients-list'] })
+        toast.success(
+          ['Subscription ativada com sucesso!', chargesSummary]
+            .filter(Boolean)
+            .join(' '),
+        )
         handleOpenChange(false)
-      } else {
-        toast.info(`Resultado: ${res.data?.status || 'desconhecido'}`)
+        return
       }
+
+      const summary = [chargesSummary, SYNC_STATUS_MESSAGES[res.data?.status]]
+        .filter(Boolean)
+        .join(' ')
+      if (summary) {
+        toast.success(summary)
+      } else {
+        toast.info('Nada a alinhar: o sistema já estava igual ao Asaas.')
+      }
+      // Mostra o estado já alinhado
+      await fetchAsaasStatus()
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'Erro ao sincronizar com Asaas'
@@ -270,9 +361,7 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Vencimento:</span>
                       <span className="font-medium text-error-600">
-                        {new Date(
-                          checkResult.overdueDueDate,
-                        ).toLocaleDateString('pt-BR')}
+                        {formatToCalendarDate(checkResult.overdueDueDate)}
                       </span>
                     </div>
                   )}
@@ -284,6 +373,35 @@ export function SyncAsaasDialog({ open, setOpen, rowData }: Props) {
                       </span>
                     </div>
                   )}
+                </div>
+              )}
+
+              {!!checkResult.divergences?.length && (
+                <div className="space-y-2 rounded-lg border border-warning-200 bg-warning-50 p-3">
+                  <p className="text-sm font-medium text-gray-700">
+                    {`Cobranças fora de sincronia (${checkResult.divergences.length})`}
+                  </p>
+                  <ul className="space-y-2">
+                    {checkResult.divergences.map((divergence) => (
+                      <li key={divergence.asaasPaymentId} className="text-sm">
+                        <div className="flex items-center justify-between">
+                          <span className="font-medium text-gray-700">
+                            {formatToCalendarDate(divergence.dueDate)}
+                          </span>
+                          <span className="text-gray-600">
+                            {formatValue(divergence.value)}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          {describeDivergence(divergence)}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="text-xs text-gray-500">
+                    Depois de sincronizar, o cliente vê a mudança em até 5
+                    minutos ou ao recarregar a página.
+                  </p>
                 </div>
               )}
 

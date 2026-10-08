@@ -41,6 +41,31 @@ export function formatToLocaleDate(date: string | Date | undefined) {
   return newDate
 }
 
+// Returns 12/03/2024 for a calendar date stored either as a pure date or as an
+// instant. Pure dates (a due date, a payment date from Asaas) are saved at
+// midnight UTC and read in UTC — in Sao Paulo time they would fall on the
+// previous day. Anything else is an instant (e.g. a confirmation recorded at
+// the moment of payment) and keeps the Sao Paulo time zone.
+export function formatToCalendarDate(date: string | Date | null | undefined) {
+  if (!date) return '-'
+
+  const value = new Date(date)
+  if (Number.isNaN(value.getTime())) return '-'
+
+  const isPureDate =
+    value.getUTCHours() === 0 &&
+    value.getUTCMinutes() === 0 &&
+    value.getUTCSeconds() === 0 &&
+    value.getUTCMilliseconds() === 0
+
+  return value.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: isPureDate ? 'UTC' : 'America/Sao_Paulo',
+  })
+}
+
 // Returns 12/03/24
 export function formatToLocaleShortDate(date: string) {
   if (!date) return '-'
