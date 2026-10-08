@@ -144,9 +144,10 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
         <div className="space-y-4">
           <div className="p-3 border rounded-lg flex items-center justify-between border-neutral-200 bg-white">
             <div className="flex items-center gap-3">
-              <IconFileCertificate
-                aria-hidden
-                className="h-7 w-7 text-neutral-400 shrink-0"
+              <Icon
+                icon={IconFileCertificate}
+                size="lg"
+                className="text-neutral-400 shrink-0"
               />
               <p className="text-sm font-medium text-neutral-800 truncate">
                 {certFileName}
@@ -218,7 +219,7 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
         >
           <input {...getInputProps()} />
           <div className="flex flex-col items-center gap-2">
-            <IconCloudUpload aria-hidden className="h-7 w-7 text-gray-400" />
+            <Icon icon={IconCloudUpload} size="lg" className="text-gray-400" />
             <p className="text-sm text-gray-500">
               <span className="text-brand-600 font-semibold">
                 {hasCertificate

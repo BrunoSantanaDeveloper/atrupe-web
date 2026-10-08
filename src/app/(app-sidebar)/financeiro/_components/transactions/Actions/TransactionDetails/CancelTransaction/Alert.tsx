@@ -113,7 +113,7 @@ export function CancelAlertDialog(props: Props) {
             Icon={IconAlertTriangle}
             size="lg"
             tone="warning"
-            className="mx-auto mb-2"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Cancelar movimentação</AlertDialogTitle>
           {hasInstallments && canCancel && (

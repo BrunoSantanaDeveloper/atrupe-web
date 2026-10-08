@@ -61,6 +61,7 @@ import {
   type MeasureText,
   type RankingItem,
 } from './ranking-chart-layout'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 export type { RankingItem } from './ranking-chart-layout'
 
@@ -217,7 +218,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
           <Skeleton className="h-[280px] w-full" />
         ) : !hasData ? (
           <div className="flex h-[280px] flex-col items-center justify-center gap-2 text-center">
-            <IconChartBarOff aria-hidden className="size-8 text-gray-300" />
+            <FeaturedIcon tone="neutral" size="lg" Icon={IconChartBarOff} />
             <p className="text-sm text-gray-500">
               Sem dados no período selecionado
             </p>

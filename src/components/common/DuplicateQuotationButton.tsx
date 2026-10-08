@@ -210,7 +210,7 @@ export function DuplicateQuotationButton({
               Icon={IconCircleCheck}
               size="lg"
               tone="success"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Orçamento duplicado</AlertDialogTitle>
             <AlertDialogDescription>

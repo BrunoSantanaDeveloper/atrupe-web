@@ -16,6 +16,7 @@ import { ProgressCircle } from '@/components/ui/progress-circle'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { createItemNew } from '@/actions/_cruds'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 type SubscriptionStatus = 'processing' | 'success' | 'error' | 'waiting_payment'
 
@@ -304,9 +305,7 @@ export default function FinishSubscriptionPage() {
           <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-green-100 p-3">
-                  <IconCheck aria-hidden size={48} className="text-green-600" />
-                </div>
+                <FeaturedIcon tone="success" size="lg" Icon={IconCheck} />
               </div>
               <CardTitle className="text-green-600">
                 Assinatura realizada com sucesso!
@@ -338,9 +337,7 @@ export default function FinishSubscriptionPage() {
           <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-blue-100 p-3">
-                  <IconCheck aria-hidden size={48} className="text-blue-600" />
-                </div>
+                <FeaturedIcon tone="info" size="lg" Icon={IconCheck} />
               </div>
               <CardTitle className="text-blue-600">
                 Aguardando pagamento
@@ -386,9 +383,7 @@ export default function FinishSubscriptionPage() {
           <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
-                <div className="rounded-full bg-red-100 p-3">
-                  <IconX aria-hidden size={48} className="text-red-600" />
-                </div>
+                <FeaturedIcon tone="error" size="lg" Icon={IconX} />
               </div>
               <CardTitle className="text-red-600">
                 Erro ao processar assinatura

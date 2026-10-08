@@ -79,7 +79,7 @@ export function InactiveEmployeeAlertDialog(props: Props) {
               Icon={IconAlertTriangle}
               size="lg"
               tone="warning"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
               Deseja {rowData?.isActive ? 'inativar' : 'ativar'} este

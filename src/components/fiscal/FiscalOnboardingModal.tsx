@@ -35,6 +35,7 @@ import { Icon } from '@/components/ui/icon'
 import { createItemNew } from '@/actions/_cruds'
 import { encodeFileToBase64 } from '@/lib/file-to-base64'
 import { maskCep, maskCnpj } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const UF_OPTIONS = [
   'AC',
@@ -270,9 +271,10 @@ export function FiscalOnboardingModal({
 
           {status === 'submitting' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
-              <IconLoader2
-                aria-hidden
-                className="h-14 w-14 animate-spin text-brand mb-6"
+              <Icon
+                icon={IconLoader2}
+                size="lg"
+                className="animate-spin text-brand mb-6"
               />
               <h2 className="type-section-title mb-2">
                 Configurando módulo fiscal...
@@ -286,9 +288,12 @@ export function FiscalOnboardingModal({
 
           {status === 'success' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
-              <div className="h-14 w-14 rounded-full bg-success-100 flex items-center justify-center mb-6">
-                <IconCheck aria-hidden className="h-7 w-7 text-success-600" />
-              </div>
+              <FeaturedIcon
+                tone="success"
+                size="lg"
+                Icon={IconCheck}
+                className="mb-6"
+              />
               <h2 className="type-section-title mb-2">
                 Módulo fiscal ativado!
               </h2>
@@ -301,12 +306,12 @@ export function FiscalOnboardingModal({
 
           {status === 'pending_review' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
-              <div className="h-14 w-14 rounded-full bg-warning-100 flex items-center justify-center mb-6">
-                <IconAlertTriangle
-                  aria-hidden
-                  className="h-7 w-7 text-warning-600"
-                />
-              </div>
+              <FeaturedIcon
+                tone="warning"
+                size="lg"
+                Icon={IconAlertTriangle}
+                className="mb-6"
+              />
               <h2 className="type-section-title mb-2">Dados recebidos!</h2>
               <p className="text-sm text-gray text-center mb-6">
                 {resultMessage}
@@ -541,9 +546,10 @@ export function FiscalOnboardingModal({
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-1.5">
-                      <IconCloudUpload
-                        aria-hidden
-                        className="h-7 w-7 text-gray"
+                      <Icon
+                        icon={IconCloudUpload}
+                        size="lg"
+                        className="text-gray"
                       />
                       <span className="text-sm text-gray">
                         Clique para selecionar o arquivo .pfx

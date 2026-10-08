@@ -113,7 +113,7 @@ export function RejectQuotation({ data }: Props) {
             Icon={IconAlertCircle}
             size="lg"
             tone="error"
-            className="mx-auto mb-2"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Rejeitar orçamento</AlertDialogTitle>
           <AlertDialogDescription className="sr-only">

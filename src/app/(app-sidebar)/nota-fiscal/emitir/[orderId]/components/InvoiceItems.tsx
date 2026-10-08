@@ -121,10 +121,11 @@ export function InvoiceItems({
               <CardContent className="p-0">
                 {filteredItems.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <IconLayoutGrid
-                      aria-hidden
-                      size={32}
-                      className="mb-3 opacity-40"
+                    <FeaturedIcon
+                      tone="neutral"
+                      size="lg"
+                      Icon={IconLayoutGrid}
+                      className="mb-3"
                     />
                     <p className="text-sm font-medium">
                       Nenhum item adicionado

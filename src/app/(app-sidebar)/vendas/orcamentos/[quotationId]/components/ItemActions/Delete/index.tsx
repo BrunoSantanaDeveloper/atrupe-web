@@ -65,7 +65,7 @@ export function DeleteItemDialog({ open, setOpen, rowData }: Props) {
             Icon={IconAlertCircle}
             size="lg"
             tone="error"
-            className="mx-auto mb-2"
+            className="mx-auto mb-2 flex"
           />
           <AlertDialogTitle>Excluir item</AlertDialogTitle>
           <AlertDialogDescription>

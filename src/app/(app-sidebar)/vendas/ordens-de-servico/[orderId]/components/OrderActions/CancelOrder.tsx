@@ -199,7 +199,7 @@ export function CancelOrder({ data }: Props) {
               Icon={IconAlertCircle}
               size="lg"
               tone="error"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Cancelar ordem de serviço</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">

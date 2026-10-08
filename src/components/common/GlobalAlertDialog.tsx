@@ -41,7 +41,7 @@ export function GlobalAlertDialog() {
               Icon={Icon}
               size="lg"
               tone={iconTone}
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
           )}
           <AlertDialogTitle>{title}</AlertDialogTitle>

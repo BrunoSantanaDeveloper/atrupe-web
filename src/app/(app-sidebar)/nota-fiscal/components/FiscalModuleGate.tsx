@@ -12,8 +12,9 @@ import {
   IconFileInvoice,
   IconSettings,
   IconLoader2,
+  IconHourglass,
 } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 interface FiscalModuleGateProps {
   children: React.ReactNode
@@ -30,9 +31,10 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <IconLoader2
-          aria-hidden
-          className="h-8 w-8 animate-spin text-gray mb-4"
+        <Icon
+          icon={IconLoader2}
+          size="lg"
+          className="animate-spin text-gray mb-4"
         />
         <p className="text-sm text-gray">Verificando acesso ao módulo...</p>
       </div>
@@ -90,7 +92,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (isPending) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
-        <FeaturedIcon tone="neutral" Icon={IconLoader2} />
+        <FeaturedIcon tone="neutral" size="lg" Icon={IconHourglass} />
         <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo em ativação
         </h2>

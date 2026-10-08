@@ -34,6 +34,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Actions
 import { getData, createItemNew, updateItemNew } from '@/actions/_cruds'
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Coupon {
   id: string
@@ -318,10 +319,11 @@ export default function AdminCouponsPage() {
             </div>
           ) : coupons.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
-              <IconTicket
-                aria-hidden
-                size={48}
-                className="text-gray-300 mb-2"
+              <FeaturedIcon
+                tone="neutral"
+                size="lg"
+                Icon={IconTicket}
+                className="mb-2"
               />
               <p className="font-semibold text-gray-700">
                 Nenhum cupom cadastrado
@@ -782,10 +784,11 @@ export default function AdminCouponsPage() {
               </div>
             ) : usages.length === 0 ? (
               <div className="text-center p-8 text-gray-500">
-                <IconTicket
-                  aria-hidden
-                  size={40}
-                  className="text-gray-300 mb-2 mx-auto"
+                <FeaturedIcon
+                  tone="neutral"
+                  size="lg"
+                  Icon={IconTicket}
+                  className="mb-2 mx-auto flex"
                 />
                 <p className="font-semibold text-gray-600">
                   Nenhum uso registrado

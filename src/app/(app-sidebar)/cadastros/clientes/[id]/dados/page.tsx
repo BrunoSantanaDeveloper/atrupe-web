@@ -5,6 +5,7 @@ import { ClientData } from './components/ClientData'
 import { useClientById } from '@/hooks/queries/useClient'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { IconLoader2 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   params: {
@@ -26,7 +27,7 @@ export default function ClientDataPage({ params }: Props) {
     >
       <Suspense
         fallback={
-          <IconLoader2 aria-hidden className="size-16 animate-spin p-8" />
+          <Icon icon={IconLoader2} size="lg" className="animate-spin p-8" />
         }
       >
         <ClientData data={data} />

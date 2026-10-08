@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 export function Step5() {
   const { hasFeature } = usePlanFeatures()
@@ -39,9 +40,7 @@ export function Step5() {
   if (!hasFiscalModule) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
-        <div className="h-14 w-14 rounded-full bg-brand-50 flex items-center justify-center">
-          <IconReceipt aria-hidden className="h-7 w-7 text-brand-600" />
-        </div>
+        <FeaturedIcon tone="brand" size="lg" Icon={IconReceipt} />
         <div className="space-y-1">
           <h3 className="type-card-title">Módulo Fiscal não contratado</h3>
           <p className="text-sm text-gray-500 max-w-xs mx-auto">
@@ -61,9 +60,7 @@ export function Step5() {
   if (!isActive) {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
-        <div className="h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
-          <IconClock aria-hidden className="h-7 w-7 text-amber-500" />
-        </div>
+        <FeaturedIcon tone="warning" size="lg" Icon={IconClock} />
         <div className="space-y-1">
           <h3 className="type-card-title">
             {isPending

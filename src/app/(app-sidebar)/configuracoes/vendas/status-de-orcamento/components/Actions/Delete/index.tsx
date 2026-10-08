@@ -72,7 +72,7 @@ export function DeleteAlertDialog(props: Props) {
               Icon={IconExclamationCircle}
               size="lg"
               tone="error"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Deseja remover status?</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">

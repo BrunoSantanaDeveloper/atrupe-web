@@ -37,7 +37,7 @@ export function SetClient() {
               Icon={IconAlertTriangle}
               size="lg"
               tone="warning"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Informar cliente</AlertDialogTitle>
             <AlertDialogDescription className="sr-only"></AlertDialogDescription>

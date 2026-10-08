@@ -28,7 +28,7 @@ export default function SignupPage() {
           Icon={CheckCircle}
           tone="success"
           size="lg"
-          className="mx-auto mb-2"
+          className="mx-auto mb-2 flex"
         />
         <CardTitle>E-mail enviado com sucesso</CardTitle>
       </CardHeader>

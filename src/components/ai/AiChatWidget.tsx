@@ -38,6 +38,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import type { AiConversation, AiMessage } from '@/types/ai-chat'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 type LocalMessage = AiMessage & { pending?: boolean }
 
@@ -302,9 +303,11 @@ export function AiChatWidget() {
                   ) : (
                     <div className="flex h-[46vh] items-center justify-center text-center">
                       <div>
-                        <Bot
-                          aria-hidden
-                          className="mx-auto mb-3 size-8 text-brand-600"
+                        <FeaturedIcon
+                          tone="brand"
+                          size="lg"
+                          Icon={Bot}
+                          className="mx-auto mb-3 flex"
                         />
                         <p className="text-sm font-semibold text-gray-800">
                           Como posso ajudar?

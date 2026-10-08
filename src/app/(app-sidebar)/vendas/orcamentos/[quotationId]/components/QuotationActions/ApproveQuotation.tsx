@@ -135,7 +135,7 @@ export function ApproveQuotation({ data }: Props) {
               Icon={IconAlertTriangle}
               size="lg"
               tone="warning"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Deseja aprovar este orçamento?</AlertDialogTitle>
             <AlertDialogDescription>

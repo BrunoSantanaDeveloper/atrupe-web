@@ -67,7 +67,7 @@ export function WipeTrainingDataAlertDialog(props: Props) {
               Icon={IconAlertTriangle}
               size="lg"
               tone="warning"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>
               Apagar os dados da série de venda?

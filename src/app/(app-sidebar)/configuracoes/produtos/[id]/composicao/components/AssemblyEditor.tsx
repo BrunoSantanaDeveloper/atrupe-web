@@ -184,7 +184,7 @@ import {
   IconArrowBackUp,
   IconListDetails,
 } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { updateFilterParam } from '@/lib/filter-utils'
@@ -1663,7 +1663,7 @@ function AssemblyEditorBody({
                     />
                   ) : (
                     <div className="flex h-full flex-col items-center justify-center gap-2 px-4 text-center text-gray">
-                      <IconPackage size={28} aria-hidden="true" />
+                      <Icon icon={IconPackage} size="lg" />
                       <span className="text-xs">
                         A imagem é a do cadastro do produto
                       </span>

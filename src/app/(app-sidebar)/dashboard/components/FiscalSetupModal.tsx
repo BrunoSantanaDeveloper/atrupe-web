@@ -40,6 +40,7 @@ import {
 import { Icon } from '@/components/ui/icon'
 import { useQueryClient } from '@tanstack/react-query'
 import { maskCnpj, maskCep } from '@/lib/utils'
+import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const DISMISSAL_KEY = 'fiscal-setup-modal-dismissed'
 
@@ -414,12 +415,7 @@ export function FiscalSetupModal() {
                 {/* Success */}
                 {formStatus === 'success' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                      <IconCheck
-                        aria-hidden
-                        className="h-8 w-8 text-green-600"
-                      />
-                    </div>
+                    <FeaturedIcon tone="success" size="lg" Icon={IconCheck} />
                     <h3 className="type-card-title">Módulo fiscal ativado!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
@@ -430,12 +426,11 @@ export function FiscalSetupModal() {
                 {/* Pending review */}
                 {formStatus === 'pending_review' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
-                      <IconAlertTriangle
-                        aria-hidden
-                        className="h-8 w-8 text-amber-600"
-                      />
-                    </div>
+                    <FeaturedIcon
+                      tone="warning"
+                      size="lg"
+                      Icon={IconAlertTriangle}
+                    />
                     <h3 className="type-card-title">Dados recebidos!</h3>
                     <p className="text-sm text-muted-foreground">
                       {resultMessage}
@@ -450,9 +445,10 @@ export function FiscalSetupModal() {
                 {/* Submitting */}
                 {formStatus === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <IconLoader2
-                      aria-hidden
-                      className="h-12 w-12 animate-spin text-primary"
+                    <Icon
+                      icon={IconLoader2}
+                      size="lg"
+                      className="animate-spin text-primary"
                     />
                     <p className="text-sm text-muted-foreground">
                       Configurando módulo fiscal...
@@ -648,9 +644,10 @@ export function FiscalSetupModal() {
                           </div>
                         ) : (
                           <div className="flex flex-col items-center gap-1">
-                            <IconCloudUpload
-                              aria-hidden
-                              className="h-7 w-7 text-muted-foreground"
+                            <Icon
+                              icon={IconCloudUpload}
+                              size="lg"
+                              className="text-muted-foreground"
                             />
                             <span className="text-sm text-muted-foreground">
                               Arraste o .pfx aqui ou clique para selecionar

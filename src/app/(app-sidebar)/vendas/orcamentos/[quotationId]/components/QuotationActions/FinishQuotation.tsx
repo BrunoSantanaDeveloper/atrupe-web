@@ -32,11 +32,9 @@ import { createItemNew } from '@/actions/_cruds'
 import { getComposedItems } from '@/actions/quotation-composition'
 
 // Lib
-import { cn } from '@/lib/utils'
 
 // Icons
 import {
-  IconLoader2,
   IconCircleCheck,
   IconAlertTriangle,
   IconPrinter,
@@ -155,10 +153,11 @@ export function FinishQuotation({ data, canFinish }: Props) {
             <AlertDialogContent className="max-w-96">
               <AlertDialogHeader>
                 <FeaturedIcon
-                  Icon={loading ? IconLoader2 : IconAlertTriangle}
+                  Icon={IconAlertTriangle}
+                  isLoading={loading}
                   size="lg"
                   tone={loading ? 'neutral' : 'warning'}
-                  className={cn('mx-auto mb-2', loading && 'animate-spin')}
+                  className="mx-auto mb-2 flex"
                 />
                 <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
                 <AlertDialogDescription /* className={cn(validated && 'sr-only')} */
@@ -189,7 +188,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
               Icon={IconCircleCheck}
               size="lg"
               tone="success"
-              className="mx-auto mb-2"
+              className="mx-auto mb-2 flex"
             />
             <AlertDialogTitle>Orçamento concluído</AlertDialogTitle>
             <AlertDialogDescription>

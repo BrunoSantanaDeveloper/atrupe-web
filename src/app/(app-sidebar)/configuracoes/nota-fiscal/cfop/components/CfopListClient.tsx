@@ -210,9 +210,11 @@ export function CfopListClient() {
           </div>
         ) : cfops.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
-            <IconArrowsSplit
-              aria-hidden
-              className="w-12 h-12 mx-auto text-gray-400 mb-4"
+            <FeaturedIcon
+              tone="neutral"
+              size="lg"
+              Icon={IconArrowsSplit}
+              className="mx-auto mb-4 flex"
             />
             <h3 className="type-card-title mb-2">Nenhum CFOP cadastrado</h3>
             <p className="text-gray-500 mb-4">
