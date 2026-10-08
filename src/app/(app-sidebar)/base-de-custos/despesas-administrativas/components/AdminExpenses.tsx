@@ -15,6 +15,7 @@ import {
 import { SummaryCards } from './SummaryCards'
 import { AdminExpensesData } from './AdminExpensesData'
 import { EditCriterionModal } from './EditCriterion'
+import { ExpenseAllocationDialog } from './ExpenseAllocationDialog'
 import { AdminExpensesFilter } from './AdminExpensesFilter'
 import { TableSkeleton } from '@/components/common/TableSkeleton'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
@@ -45,6 +46,7 @@ const formatReferenceMonth = (month?: string) => {
 
 export function AdminExpenses({ searchParams }: SearchParamsType) {
   const [editing, setEditing] = useState<AdminExpenseAccount>()
+  const [allocating, setAllocating] = useState<AdminExpenseAccount>()
 
   const { data: totals, isLoading: isLoadingTotals } = useQuery({
     staleTime: Infinity,
@@ -84,7 +86,11 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
                 </p>
               </TableFiltersHeader>
               {accounts.length ? (
-                <AdminExpensesData accounts={accounts} onEdit={setEditing} />
+                <AdminExpensesData
+                  accounts={accounts}
+                  onEdit={setEditing}
+                  onAllocate={setAllocating}
+                />
               ) : (
                 <FilteredDataEmpty description="Nenhuma conta atende aos filtros escolhidos." />
               )}
@@ -95,6 +101,11 @@ export function AdminExpenses({ searchParams }: SearchParamsType) {
           account={editing}
           open={!!editing}
           onOpenChange={() => setEditing(undefined)}
+        />
+        <ExpenseAllocationDialog
+          account={allocating}
+          open={!!allocating}
+          onOpenChange={() => setAllocating(undefined)}
         />
       </div>
     </TooltipProvider>

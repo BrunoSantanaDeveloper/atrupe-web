@@ -29,11 +29,16 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { costCriterionObj } from '@/consts/cost-base'
 
 // Icons
-import { IconInfoCircle, IconPencil } from '@tabler/icons-react'
+import {
+  IconPencil,
+  IconInfoCircle,
+  IconArrowsSplit2,
+} from '@tabler/icons-react'
 
 interface Props {
   accounts: AdminExpenseAccount[]
   onEdit: (account: AdminExpenseAccount) => void
+  onAllocate: (account: AdminExpenseAccount) => void
 }
 
 const valueColumns: {
@@ -54,9 +59,14 @@ const formatValue = (value: number | null) =>
 const sumReference = (accounts: AdminExpenseAccount[]) =>
   accounts.reduce((sum, account) => sum + (account.referenceValue || 0), 0)
 
+const sumAllocated = (accounts: AdminExpenseAccount[]) =>
+  accounts.reduce((sum, account) => sum + account.allocatedValue, 0)
+
 // Lista plana, sem divisão por grupo: a divisão repetia a hierarquia do plano
 // de contas, que já aparece na própria linha (decisão do time em 22/09/2026)
-export function AdminExpensesData({ accounts, onEdit }: Props) {
+export function AdminExpensesData({ accounts, onEdit, onAllocate }: Props) {
+  const allocated = sumAllocated(accounts)
+
   return (
     <>
       <CardContent>
@@ -96,7 +106,7 @@ export function AdminExpensesData({ accounts, onEdit }: Props) {
                   </Tooltip>
                 </span>
               </TableHead>
-              <TableHead className="w-[6%]" />
+              <TableHead className="w-[8%]" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -141,10 +151,38 @@ export function AdminExpensesData({ accounts, onEdit }: Props) {
                         Informado manualmente
                       </span>
                     ) : null}
+                    {/* Rateio por item (BC-8): a parte de cada setor e o que
+                        sobra no administrativo */}
+                    {account.allocations.length ? (
+                      <>
+                        <span className="text-xs text-gray">
+                          {account.allocations
+                            .map(
+                              (share) =>
+                                `${share.sectorName} ${share.percentage.toLocaleString('pt-BR')}%`,
+                            )
+                            .join(' · ')}
+                        </span>
+                        <span className="text-xs text-gray">
+                          {formatValue(account.remainder)} fica no
+                          administrativo
+                        </span>
+                      </>
+                    ) : null}
                   </div>
                 </TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-1">
+                    <ActionButton
+                      tooltip={
+                        account.allocations.length
+                          ? 'Rateio entre os setores'
+                          : 'Ratear entre os setores'
+                      }
+                      Icon={IconArrowsSplit2}
+                      onClick={() => onAllocate(account)}
+                      disabled={!account.referenceValue}
+                    />
                     <PermissionGate permissions={['cost:base:edit']}>
                       <ActionButton
                         tooltip="Editar critério"
@@ -163,11 +201,18 @@ export function AdminExpensesData({ accounts, onEdit }: Props) {
         <span>
           {accounts.length} {accounts.length === 1 ? 'conta' : 'contas'}
         </span>
-        <span>
+        <span className="text-right">
           Total:{' '}
           <span className="font-semibold text-gray-900">
             {formatCurrencyToBrl(sumReference(accounts))}
           </span>
+          {allocated ? (
+            <span className="block text-xs">
+              {formatCurrencyToBrl(allocated)} rateados por item ·{' '}
+              {formatCurrencyToBrl(sumReference(accounts) - allocated)} no
+              administrativo
+            </span>
+          ) : null}
         </span>
       </CardFooter>
     </>

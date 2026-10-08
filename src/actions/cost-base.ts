@@ -9,8 +9,8 @@
 // Types
 import type {
   CostCriterion,
-  AdminExpenseAccount,
   AdminExpenseGroup,
+  ExpenseAllocation,
   AdminExpensesResponse,
   AdminExpensesTotals,
   DistributionResponse,
@@ -31,10 +31,18 @@ import type {
 // Os setores e os custos de cada um, compartilhados com o rateio do setor
 // entre os equipamentos (BC-3)
 import {
+  accounts,
   sectors,
-  sectorCostItems,
+  directCostOf,
+  sectorItemsOf,
   distributedCost,
   administrativeCost,
+  withReference,
+  criterionValue,
+  allocatedTotal,
+  allocationOf,
+  adminExpensesTotal,
+  saveAllocation,
 } from './cost-base-data'
 import { configOf } from './sector-allocation-data'
 
@@ -47,172 +55,6 @@ const groups: AdminExpenseGroup[] = [
   { id: 'financeiras', name: 'Despesas financeiras' },
   { id: 'escritorio', name: 'Escritório' },
 ]
-
-type Seed = Omit<AdminExpenseAccount, 'referenceValue'>
-
-const accounts: Seed[] = [
-  {
-    id: '1',
-    name: 'Aluguel',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'ocupacao',
-    lastMonth: 880000,
-    avg3: 873333,
-    avg6: 866667,
-    avg12: 870000,
-    criterion: 'AVG_6',
-    manualValue: null,
-  },
-  {
-    id: '2',
-    name: 'Condomínio',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'ocupacao',
-    lastMonth: 65000,
-    avg3: 65000,
-    avg6: 64200,
-    avg12: 62500,
-    criterion: 'LAST_MONTH',
-    manualValue: null,
-  },
-  {
-    id: '3',
-    name: 'IPTU',
-    chartAccount: 'Impostos e taxas',
-    groupId: 'ocupacao',
-    lastMonth: 0,
-    avg3: 0,
-    avg6: 38000,
-    avg12: 38000,
-    criterion: 'AVG_12',
-    manualValue: null,
-  },
-  {
-    id: '4',
-    name: 'Energia elétrica',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'utilidades',
-    lastMonth: 215000,
-    avg3: 208000,
-    avg6: 213000,
-    avg12: 212000,
-    criterion: 'AVG_12',
-    manualValue: null,
-  },
-  {
-    id: '5',
-    name: 'Água e esgoto',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'utilidades',
-    lastMonth: 18500,
-    avg3: 17900,
-    avg6: 17600,
-    avg12: 17200,
-    criterion: 'AVG_6',
-    manualValue: null,
-  },
-  {
-    id: '6',
-    name: 'Internet',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'utilidades',
-    lastMonth: 22000,
-    avg3: 22000,
-    avg6: 21500,
-    avg12: 21000,
-    criterion: 'LAST_MONTH',
-    manualValue: null,
-  },
-  {
-    id: '7',
-    name: 'Contabilidade',
-    chartAccount: 'Serviços de terceiros',
-    groupId: 'servicos',
-    lastMonth: 39000,
-    avg3: 39000,
-    avg6: 39000,
-    avg12: 37500,
-    criterion: 'LAST_MONTH',
-    manualValue: null,
-  },
-  {
-    id: '8',
-    name: 'Sistemas e assinaturas',
-    chartAccount: 'Serviços de terceiros',
-    groupId: 'servicos',
-    lastMonth: 48900,
-    avg3: 47300,
-    avg6: null,
-    avg12: null,
-    criterion: 'AVG_3',
-    manualValue: null,
-  },
-  {
-    id: '9',
-    name: 'Limpeza',
-    chartAccount: 'Serviços de terceiros',
-    groupId: 'servicos',
-    lastMonth: 32000,
-    avg3: 32000,
-    avg6: 31000,
-    avg12: 30500,
-    criterion: 'MANUAL',
-    manualValue: 35000,
-  },
-  {
-    id: '10',
-    name: 'Tarifas bancárias',
-    chartAccount: 'Despesas financeiras',
-    groupId: 'financeiras',
-    lastMonth: 56000,
-    avg3: 54300,
-    avg6: 55800,
-    avg12: 54900,
-    criterion: 'AVG_6',
-    manualValue: null,
-  },
-  {
-    id: '11',
-    name: 'Material de escritório',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'escritorio',
-    lastMonth: 60000,
-    avg3: 20000,
-    avg6: 10000,
-    avg12: 5000,
-    criterion: 'AVG_12',
-    manualValue: null,
-  },
-  {
-    id: '12',
-    name: 'Correios e entregas',
-    chartAccount: 'Despesas administrativas',
-    groupId: 'escritorio',
-    lastMonth: 9800,
-    avg3: 11200,
-    avg6: 10400,
-    avg12: 10100,
-    criterion: 'AVG_6',
-    manualValue: null,
-  },
-]
-
-const criterionValue = (account: Seed): number | null => {
-  const map: Record<CostCriterion, number | null> = {
-    LAST_MONTH: account.lastMonth,
-    AVG_3: account.avg3,
-    AVG_6: account.avg6,
-    AVG_12: account.avg12,
-    MANUAL: account.manualValue,
-  }
-
-  return map[account.criterion]
-}
-
-const withReference = (account: Seed): AdminExpenseAccount => ({
-  ...account,
-  referenceValue: criterionValue(account),
-})
 
 export const getAdminExpenses = async ({
   filters,
@@ -255,9 +97,93 @@ export const getAdminExpensesTotals = async () => {
       (sum, account) => sum + (account.referenceValue || 0),
       0,
     ),
+    allocatedValue: allocatedTotal(),
+    remainingValue: adminExpensesTotal() - allocatedTotal(),
   }
 
   return { success: true, data, message: '' }
+}
+
+// --- Rateio por item (BC-8) ---------------------------------------------
+// Rotas esperadas: `GET /cost-base/admin-expense/:id/allocation` e
+// `PUT /cost-base/admin-expense/:id/allocation` (backend-pendente.md)
+
+export const getExpenseAllocation = async ({ id }: { id: string }) => {
+  const account = accounts.find((item) => item.id === id)
+
+  if (!account) {
+    return { success: false, data: null, message: 'Conta não encontrada' }
+  }
+
+  const shares = allocationOf(id)
+  // Só setor produtivo recebe rateio por item: o custo do setor administrativo
+  // já está inteiro no total administrativo (BC-7)
+  const data: ExpenseAllocation = {
+    accountId: account.id,
+    accountName: account.name,
+    referenceValue: criterionValue(account) || 0,
+    sectors: sectors
+      .filter((sector) => sector.nature === 'PRODUCTIVE')
+      .map((sector) => ({
+        id: sector.id,
+        name: sector.name,
+        ownCost: directCostOf(sector.id),
+        percentage:
+          shares.find((share) => share.sectorId === sector.id)?.percentage || 0,
+      })),
+  }
+
+  return { success: true, data, message: '' }
+}
+
+export const updateExpenseAllocation = async ({
+  id,
+  percentages,
+}: {
+  id: string
+  percentages: { sectorId: string; percentage: number }[]
+}) => {
+  const account = accounts.find((item) => item.id === id)
+
+  if (!account) {
+    return { success: false, data: null, message: 'Conta não encontrada' }
+  }
+
+  const productive = percentages.filter((item) =>
+    sectors.some(
+      (sector) => sector.id === item.sectorId && sector.nature === 'PRODUCTIVE',
+    ),
+  )
+  const reference = criterionValue(account) || 0
+  const total = productive.reduce((sum, item) => sum + item.percentage, 0)
+
+  // A soma pode ficar abaixo de 100% (a sobra volta ao administrativo), mas
+  // não passar. Conferido pelo valor, com tolerância de 1 centavo (BC-9)
+  const exceeded = reference
+    ? productive.reduce(
+        (sum, item) => sum + Math.round((reference * item.percentage) / 100),
+        0,
+      ) >
+      reference + 1
+    : total > 100
+
+  if (exceeded) {
+    return {
+      success: false,
+      data: null,
+      message: 'O rateio não pode passar de 100% do custo de referência.',
+    }
+  }
+
+  saveAllocation(
+    id,
+    productive.map((item) => ({
+      sectorId: item.sectorId,
+      percentage: Math.min(Math.max(item.percentage, 0), 100),
+    })),
+  )
+
+  return { success: true, data: withReference(account), message: '' }
 }
 
 export const updateAdminExpenseCriterion = async ({
@@ -297,7 +223,11 @@ export const updateAdminExpenseCriterion = async ({
 export const getDistribution = async () => {
   const data: DistributionResponse = {
     referenceMonth: REFERENCE_MONTH,
-    sectors,
+    // O custo próprio vem dos itens do setor, já com o rateio por item (BC-8)
+    sectors: sectors.map((sector) => ({
+      ...sector,
+      directCost: directCostOf(sector.id),
+    })),
   }
 
   return { success: true, data, message: '' }
@@ -306,6 +236,7 @@ export const getDistribution = async () => {
 export const getDistributionTotals = async () => {
   const data: DistributionTotals = {
     administrativeCost: administrativeCost(),
+    allocatedByItem: allocatedTotal(),
     distributedCost: distributedCost(),
     notDistributedCost: administrativeCost() - distributedCost(),
     receivingSectors: sectors.filter(
@@ -374,7 +305,7 @@ export const getSectorCosts = async () => {
     referenceMonth: REFERENCE_MONTH,
     isDistributing: distributed > 0,
     sectors: sectors.map((sector) => {
-      const items = sectorCostItems[sector.id] || []
+      const items = sectorItemsOf(sector.id)
       const ownCost = items.reduce((sum, item) => sum + item.value, 0) || null
       const receivedCost =
         sector.nature === 'PRODUCTIVE' && sector.percentage > 0

@@ -5,6 +5,13 @@ export type CostCriterion =
   | 'AVG_12'
   | 'MANUAL'
 
+export type ExpenseAllocationShare = {
+  sectorId: string
+  sectorName: string
+  percentage: number
+  value: number
+}
+
 // Valores em centavos. `null` = sem histórico suficiente para o cálculo.
 export type AdminExpenseAccount = {
   id: string
@@ -18,6 +25,26 @@ export type AdminExpenseAccount = {
   criterion: CostCriterion
   manualValue: number | null
   referenceValue: number | null
+  // Rateio por item (BC-8): a parte de cada setor produtivo, o total rateado
+  // e o que sobra no administrativo
+  allocations: ExpenseAllocationShare[]
+  allocatedValue: number
+  remainder: number | null
+}
+
+// O diálogo de ratear uma despesa entre os setores produtivos (BC-8, BC-9)
+export type ExpenseAllocation = {
+  accountId: string
+  accountName: string
+  referenceValue: number
+  sectors: {
+    id: string
+    name: string
+    // Custo próprio do setor hoje, já com o que ele recebe desta e das outras
+    // despesas rateadas
+    ownCost: number | null
+    percentage: number
+  }[]
 }
 
 export type AdminExpenseGroup = {
@@ -37,6 +64,10 @@ export type AdminExpensesTotals = {
   byAverage: number
   manual: number
   referenceValue: number
+  // Rateado por item entre os setores produtivos, e o que fica no
+  // administrativo (BC-8)
+  allocatedValue: number
+  remainingValue: number
 }
 
 // A natureza vem do cadastro do setor (regras-de-negocio/areas/05-base-de-custos.md, BC-7)
@@ -59,7 +90,9 @@ export type DistributionResponse = {
 }
 
 export type DistributionTotals = {
+  // Já sem o que foi rateado por item (BC-8)
   administrativeCost: number
+  allocatedByItem: number
   distributedCost: number
   notDistributedCost: number
   receivingSectors: number

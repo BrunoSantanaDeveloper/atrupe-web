@@ -14,7 +14,7 @@ import type { Asset } from '@/app/(app-sidebar)/configuracoes/empresa-e-sistema/
 
 // Data
 import { assets } from './assets-data'
-import { sectors, sectorCostItems, administrativeCost } from './cost-base-data'
+import { sectors, sectorItemsOf, administrativeCost } from './cost-base-data'
 
 type AutomaticCriterion = Exclude<AllocationCriterion, 'MANUAL'>
 
@@ -72,7 +72,7 @@ const ownCostOf = (asset: Asset) =>
 // simplificados, lançamentos diretos e o administrativo que ele recebe
 const poolOf = (sectorId: string, equipment: Asset[]) => {
   const names = equipment.map((asset) => asset.name)
-  const items = (sectorCostItems[sectorId] || []).filter(
+  const items = sectorItemsOf(sectorId).filter(
     (item) => !names.includes(item.name),
   )
   const sector = sectors.find((item) => item.id === sectorId)
