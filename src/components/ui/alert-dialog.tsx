@@ -6,7 +6,7 @@ import * as AlertDialogPrimitive from '@radix-ui/react-alert-dialog'
 import { cn } from '@/lib/utils'
 import { type ButtonIconProps, buttonVariants } from '@/components/ui/button'
 
-import { LoaderCircle } from 'lucide-react'
+import { IconLoader2 as LoaderCircle } from '@tabler/icons-react'
 
 const AlertDialog = AlertDialogPrimitive.Root
 

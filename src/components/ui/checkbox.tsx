@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as CheckboxPrimitive from '@radix-ui/react-checkbox'
-import { Check, Minus } from 'lucide-react'
+import { IconCheck as Check, IconMinus as Minus } from '@tabler/icons-react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
@@ -50,14 +50,14 @@ const Checkbox = React.forwardRef<
   >
     <CheckboxPrimitive.Indicator className={cn(indicatorVariants({ size }))}>
       <Check
-        strokeWidth={3}
+        stroke={3}
         className={cn(
           'hidden group-data-[state=checked]:block',
           size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3',
         )}
       />
       <Minus
-        strokeWidth={3}
+        stroke={3}
         className={cn(
           'hidden group-data-[state=indeterminate]:block',
           size === 'md' ? 'h-3.5 w-3.5' : 'h-3 w-3',

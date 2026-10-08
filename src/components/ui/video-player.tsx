@@ -3,7 +3,10 @@
 import React, { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Play, Pause } from 'lucide-react'
+import {
+  IconPlayerPlay as Play,
+  IconPlayerPause as Pause,
+} from '@tabler/icons-react'
 
 const videoPlayerVariants = cva(
   'relative overflow-hidden rounded-lg bg-black group transition-all duration-300 isolate',

@@ -9,7 +9,13 @@ import {
   useState,
 } from 'react'
 import { usePathname } from 'next/navigation'
-import { Bot, MessageSquare, Plus, Send, Trash2 } from 'lucide-react'
+import {
+  IconRobot as Bot,
+  IconMessage as MessageSquare,
+  IconPlus as Plus,
+  IconSend as Send,
+  IconTrash as Trash2,
+} from '@tabler/icons-react'
 import { toast } from 'sonner'
 
 import {

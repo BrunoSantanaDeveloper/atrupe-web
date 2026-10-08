@@ -6,7 +6,7 @@ import {
   AccountMenuGroup,
   AccountMenuVariant,
 } from '@/components/common/account-dropdown-menu'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown as ChevronDown } from '@tabler/icons-react'
 
 export const dynamic = 'force-dynamic'
 

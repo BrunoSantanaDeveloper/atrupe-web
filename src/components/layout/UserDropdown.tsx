@@ -28,10 +28,12 @@ import { MyProfileDialog } from './MyProfile'
 import { THEME_OPTIONS } from './theme-options'
 
 // Icons
-import { CreditCard, LogOut, User } from 'lucide-react'
-
-// Actions
-import { IconDotsVertical } from '@tabler/icons-react'
+import {
+  IconCreditCard as CreditCard,
+  IconDotsVertical,
+  IconLogout as LogOut,
+  IconUser as User,
+} from '@tabler/icons-react'
 
 // Lib
 import { cn } from '@/lib/utils'

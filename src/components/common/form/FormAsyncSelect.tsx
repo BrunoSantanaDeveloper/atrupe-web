@@ -10,7 +10,11 @@ import {
 } from '@/components/ui/form'
 
 // Icons
-import { User, ChevronDown, LucideIcon } from 'lucide-react'
+import {
+  IconChevronDown as ChevronDown,
+  IconUser as User,
+  type TablerIcon,
+} from '@tabler/icons-react'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -124,7 +128,7 @@ interface Props<T extends EntityBase = EntityBase> {
   value?: string
   route: string // Rota da API para buscar os dados
   filterField?: string // Campo usado para filtrar na API (default: 'search')
-  icon?: LucideIcon // Ícone personalizado
+  icon?: TablerIcon // Ícone personalizado
   minChars?: number // Mínimo de caracteres para iniciar a busca
   mapFunction?: (entity: T) => SelectOption // Função para mapear entidades para opções
   additionalOnChange?: (value: string) => void

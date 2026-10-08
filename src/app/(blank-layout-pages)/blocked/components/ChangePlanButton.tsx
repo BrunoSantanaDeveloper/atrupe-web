@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 // Icons
-import { Repeat, Check, Loader2 } from 'lucide-react'
+import {
+  IconRepeat as Repeat,
+  IconCheck as Check,
+  IconLoader2 as Loader2,
+} from '@tabler/icons-react'
 
 // Components
 import { Button } from '@/components/ui/button'

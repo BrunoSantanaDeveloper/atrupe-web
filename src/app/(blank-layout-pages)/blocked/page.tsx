@@ -3,7 +3,11 @@ import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 // Icons
-import { Lock, CreditCard, AlertTriangle } from 'lucide-react'
+import {
+  IconLock as Lock,
+  IconCreditCard as CreditCard,
+  IconAlertTriangle as AlertTriangle,
+} from '@tabler/icons-react'
 
 // UI
 import { Button } from '@/components/ui/button'

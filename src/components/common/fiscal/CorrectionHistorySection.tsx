@@ -5,7 +5,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion'
-import { FileEdit, Calendar, Hash } from 'lucide-react'
+import {
+  IconFilePencil as FileEdit,
+  IconCalendar as Calendar,
+  IconHash as Hash,
+} from '@tabler/icons-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useQuery } from '@tanstack/react-query'

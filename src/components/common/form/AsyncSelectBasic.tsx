@@ -1,7 +1,7 @@
 'use client'
 
 import AsyncSelect from 'react-select/async'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown as ChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { getData } from '@/actions/_cruds'
 import { Label } from '@/components/ui/label'

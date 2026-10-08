@@ -13,7 +13,7 @@ import {
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { CheckCircle } from 'lucide-react'
+import { IconCircleCheck as CheckCircle } from '@tabler/icons-react'
 
 export const metadata: Metadata = {
   title: 'E-mail enviado com sucesso',

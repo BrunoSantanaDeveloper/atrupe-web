@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { IconAlertTriangle, IconRotate } from '@tabler/icons-react'
-import { Save } from 'lucide-react'
+import {
+  IconAlertTriangle,
+  IconDeviceFloppy as Save,
+  IconRotate,
+} from '@tabler/icons-react'
 import { toast } from 'sonner'
 
 import {

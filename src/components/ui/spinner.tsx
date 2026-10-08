@@ -1,5 +1,5 @@
 // Icon Imports
-import { LoaderCircle } from 'lucide-react'
+import { IconLoader2 as LoaderCircle } from '@tabler/icons-react'
 
 // Lib Imports
 import { cn } from '@/lib/utils'

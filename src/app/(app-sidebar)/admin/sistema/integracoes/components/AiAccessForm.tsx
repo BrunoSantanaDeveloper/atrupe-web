@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bot, Save } from 'lucide-react'
+import { IconRobot as Bot, IconDeviceFloppy as Save } from '@tabler/icons-react'
 import { toast } from 'sonner'
 
 import { updateAiAccessSettings } from '@/actions/systemSettings'

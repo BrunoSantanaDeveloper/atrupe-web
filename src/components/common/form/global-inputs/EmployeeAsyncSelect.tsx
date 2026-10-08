@@ -1,6 +1,6 @@
 'use client'
 
-import { UserRound } from 'lucide-react'
+import { IconUserCircle as UserRound } from '@tabler/icons-react'
 import {
   FormAsyncSelect,
   EntityBase,

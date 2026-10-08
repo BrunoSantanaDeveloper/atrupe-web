@@ -2,7 +2,11 @@
 
 import * as React from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
-import { ChevronDown, ChevronUp, User, Check, Search } from 'lucide-react'
+import {
+  IconChevronDown as ChevronDown,
+  IconChevronUp as ChevronUp,
+  IconSearch as Search,
+} from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 

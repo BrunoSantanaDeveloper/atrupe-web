@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Plus } from 'lucide-react'
+import { IconPlus as Plus } from '@tabler/icons-react'
 
 import { cn } from '@/lib/utils'
 import {

@@ -5,7 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { HelpCircle } from 'lucide-react'
+import { IconHelpCircle as HelpCircle } from '@tabler/icons-react'
 
 export const dynamic = 'force-dynamic'
 
