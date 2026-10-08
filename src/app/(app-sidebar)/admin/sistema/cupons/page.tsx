@@ -436,20 +436,12 @@ export default function AdminCouponsPage() {
                       <td className="p-4">
                         {coupon.isActive && !isExpired ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                            <Icon
-                              icon={IconCheck}
-                              size="sm"
-                              className="stroke-[3px]"
-                            />
+                            <Icon icon={IconCheck} size="sm" />
                             Ativo
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
-                            <Icon
-                              icon={IconX}
-                              size="sm"
-                              className="stroke-[3px]"
-                            />
+                            <Icon icon={IconX} size="sm" />
                             {isExpired ? 'Expirado' : 'Inativo'}
                           </span>
                         )}

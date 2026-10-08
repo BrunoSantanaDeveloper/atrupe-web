@@ -13,6 +13,7 @@ import {
 } from '@tabler/icons-react'
 
 // Libs
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 import { auth } from '@/lib/auth'
 
@@ -53,8 +54,11 @@ export async function TrialExpiredAlert() {
       <div className="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 sm:gap-4 py-3 px-4">
         <div className="flex items-center gap-3">
           <Icon
+            size={ICON_SIZE.lg}
+            stroke={ICON_STROKE.lg}
+            aria-hidden
             className={cn(
-              'size-6 sm:size-8 stroke-1 flex-shrink-0',
+              'shrink-0',
               isExpired || trialOneDayLeft
                 ? 'text-error-600'
                 : 'text-warning-600',

@@ -340,6 +340,7 @@ export function SidebarComponent(props: Props) {
                               >
                                 <IconComponent
                                   icon={item?.icon}
+                                  size="md"
                                   className={cn(
                                     pathname.includes(`${item?.path}`)
                                       ? 'text-brand'
@@ -427,6 +428,7 @@ export function SidebarComponent(props: Props) {
                             >
                               <IconComponent
                                 icon={item?.icon}
+                                size="md"
                                 className="text-gray-600"
                               />
                               <span
@@ -488,14 +490,13 @@ export function SidebarComponent(props: Props) {
                                         <div className="flex items-center gap-4">
                                           <IconComponent
                                             icon={navChild?.icon}
+                                            size="md"
                                             className={cn(
-                                              'size-5',
                                               pathname.includes(
                                                 `${navChild?.path}`,
                                               )
                                                 ? 'text-brand'
-                                                : navChild?.iconColor ||
-                                                    'text-gray-500',
+                                                : 'text-gray-500',
                                               navChild?.action
                                                 ? 'text-brand'
                                                 : '',

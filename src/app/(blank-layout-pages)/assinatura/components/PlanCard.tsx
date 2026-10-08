@@ -328,7 +328,7 @@ export function PlanCard({
                                 <Icon
                                   icon={IconCheck}
                                   size="sm"
-                                  className="text-brand-400 mt-0.5 flex-shrink-0 stroke-[3px]"
+                                  className="text-brand-400 mt-0.5 flex-shrink-0"
                                 />
                                 <span>{item}</span>
                               </li>

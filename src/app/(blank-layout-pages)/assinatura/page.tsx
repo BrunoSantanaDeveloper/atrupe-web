@@ -904,7 +904,7 @@ export default function SubscriptionPage() {
                             <Icon
                               icon={IconCheck}
                               size="sm"
-                              className="text-brand-400 stroke-[3px]"
+                              className="text-brand-400"
                             />
                             <span className="text-gray text-sm">
                               Atrupe {selectedPlan?.name}
@@ -936,7 +936,7 @@ export default function SubscriptionPage() {
                               <Icon
                                 icon={IconCheck}
                                 size="sm"
-                                className="text-brand-400 stroke-[3px]"
+                                className="text-brand-400"
                               />
                               <span className="text-gray text-sm">
                                 Módulo {selectedModule.name}
@@ -957,7 +957,7 @@ export default function SubscriptionPage() {
                             <Icon
                               icon={IconCheck}
                               size="sm"
-                              className="text-brand-400 stroke-[3px]"
+                              className="text-brand-400"
                             />
                             <span className="text-gray text-sm">
                               {additionalUsers}{' '}
@@ -1060,11 +1060,7 @@ export default function SubscriptionPage() {
 
                       {appliedCoupon && (
                         <div className="flex items-center gap-1.5 text-xs text-green-600 font-semibold bg-green-50 border border-green-200/50 rounded-lg p-2.5">
-                          <Icon
-                            icon={IconCheck}
-                            size="sm"
-                            className="stroke-[3px]"
-                          />
+                          <Icon icon={IconCheck} size="sm" />
                           <span>
                             Cupom <strong>{appliedCoupon.code}</strong>{' '}
                             aplicado: -

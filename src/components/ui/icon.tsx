@@ -7,11 +7,19 @@ import { cn } from '@/lib/utils'
 // e não de um número escolhido em cada tela.
 //
 //   sm 16: texto em linha, botão pequeno, chip, badge
-//   md 20: botão médio e grande, ação de linha, campo, item de menu
-//   lg 24: barra lateral, cabeçalho, estado vazio
+//   md 20: botão médio e grande, ação de linha, campo, item de menu, barra
+//          lateral
+//   lg 24: cabeçalho, estado vazio
 
 export const ICON_SIZE = { sm: 16, md: 20, lg: 24 } as const
 export type IconSize = keyof typeof ICON_SIZE
+
+/** Classe Tailwind do mesmo tamanho, para SVG que não aceita `size`. */
+export const ICON_SIZE_CLASS: Record<IconSize, string> = {
+  sm: 'size-icon-sm',
+  md: 'size-icon-md',
+  lg: 'size-icon-lg',
+}
 
 // Traço do Tabler: 2 até 20 px, 1,5 a partir de 24 px (o desenho fica leve
 // demais com 2 no tamanho grande)
