@@ -51,7 +51,10 @@ function FeaturedIcon({
   isLoading,
 }: FeaturedIconProps) {
   return (
-    <div className={cn(featuredIconVariants({ tone, size }), className)}>
+    <div
+      data-slot="featured-icon"
+      className={cn(featuredIconVariants({ tone, size }), className)}
+    >
       <Icon
         icon={isLoading ? IconLoader2 : Glyph}
         // Ícone de 16 em 32, 20 em 40, 24 em 48: o mesmo nome de tamanho
