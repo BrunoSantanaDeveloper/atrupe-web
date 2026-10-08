@@ -35,8 +35,8 @@ export function CellText({
       className={cn('flex flex-col justify-start items-start', className)}
       {...props}
     >
-      <p className="text-sm font-medium text-[#101828]">{title}</p>
-      {subtitle && <p className="text-sm text-[#667085]">{subtitle}</p>}
+      <p className="text-sm font-medium text-gray-900">{title}</p>
+      {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
     </div>
   )
 }
@@ -92,8 +92,8 @@ export interface CellFileProps extends CellTextProps {
 export function CellFile({
   title,
   subtitle,
-  iconBgColor = 'bg-[#A9F1CC]',
-  iconColor = 'text-[#077550]',
+  iconBgColor = 'bg-brand-100',
+  iconColor = 'text-brand-600',
   icon,
   className,
   ...props
@@ -130,7 +130,7 @@ export function CellPayment({
 }: CellPaymentProps) {
   return (
     <div className={cn('flex items-center gap-3', className)} {...props}>
-      <div className="flex items-center justify-center w-[46px] h-8 bg-white border border-[#F2F4F7] rounded-md shrink-0 shadow-sm text-[#172B85]">
+      <div className="flex items-center justify-center w-[46px] h-8 bg-white border border-gray-100 rounded-md shrink-0 shadow-sm text-[#172B85]">
         {icon ?? <IconCreditCard className="w-6 h-6" />}
       </div>
       <CellText title={title} subtitle={subtitle} />
@@ -162,10 +162,10 @@ export function CellProgress({
         <Progress
           value={value}
           className="h-2"
-          indicatorClassName="bg-[#099260]"
+          indicatorClassName="bg-brand-500"
         />
       </div>
-      <span className="text-sm font-medium text-[#344054] min-w-[36px]">
+      <span className="text-sm font-medium text-gray-700 min-w-[36px]">
         {label ?? `${value}%`}
       </span>
     </div>
@@ -194,7 +194,7 @@ export function CellAvatarGroup({
   const visibleUsers = users.slice(0, max)
   const remainingCount = (total ?? users.length) - visibleUsers.length
 
-  const szClass = size === 'sm' ? 'w-6 h-6 text-[10px]' : 'w-8 h-8 text-xs'
+  const szClass = size === 'sm' ? 'w-6 h-6 text-xs' : 'w-8 h-8 text-xs'
 
   return (
     <div
@@ -212,7 +212,7 @@ export function CellAvatarGroup({
       {remainingCount > 0 && (
         <div
           className={cn(
-            'flex items-center justify-center rounded-full border-2 border-white bg-[#d2f9e3] text-[#38cf8f] font-medium shrink-0 z-10',
+            'flex items-center justify-center rounded-full border-2 border-white bg-brand-50 text-brand-300 font-medium shrink-0 z-10',
             szClass,
           )}
         >
@@ -249,29 +249,29 @@ export function CellActionGroup({
       {onDelete && (
         <button
           onClick={onDelete}
-          className="cursor-pointer text-sm font-semibold text-[#667085] hover:text-[#344054] transition-colors"
+          className="cursor-pointer text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors"
         >
           {mode === 'text' ? (
             deleteText
           ) : (
-            <IconTrash className="w-5 h-5 text-[#667085]" />
+            <IconTrash className="w-5 h-5 text-gray-500" />
           )}
         </button>
       )}
       {onEdit && (
         <button
           onClick={onEdit}
-          className="cursor-pointer text-sm font-semibold text-[#667085] hover:text-[#344054] transition-colors"
+          className="cursor-pointer text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors"
         >
           {mode === 'text' ? (
             editText
           ) : (
-            <IconEdit className="w-5 h-5 text-[#667085]" />
+            <IconEdit className="w-5 h-5 text-gray-500" />
           )}
         </button>
       )}
       {mode === 'icon' && !onEdit && !onDelete && (
-        <button className="cursor-pointer text-[#98A2B3] hover:text-[#667085] transition-colors">
+        <button className="cursor-pointer text-gray-400 hover:text-gray-500 transition-colors">
           <IconDotsVertical className="w-5 h-5" />
         </button>
       )}
@@ -304,7 +304,7 @@ export function CellTrend({
     <div
       className={cn(
         'inline-flex items-center gap-1 pl-1.5 pr-2 py-0.5 rounded-2xl text-xs font-medium',
-        isUp ? 'bg-[#ecfdf3] text-[#027a48]' : 'bg-[#fef3f2] text-[#b42318]',
+        isUp ? 'bg-success-50 text-success-700' : 'bg-error-50 text-error-700',
         className,
       )}
       {...props}
@@ -352,18 +352,18 @@ export interface CellBadgeGroupProps
 }
 
 const badgeColorMap: Record<string, string> = {
-  green: 'bg-[#ecfdf3] text-[#027a48]',
-  blue: 'bg-[#eff8ff] text-[#175cd3]',
-  indigo: 'bg-[#eef4ff] text-[#3538cd]',
-  pink: 'bg-[#fdf2fa] text-[#c11574]',
-  orange: 'bg-[#fff6ed] text-[#c4320a]',
-  gray: 'bg-[#f8f9fc] text-[#363f72]',
-  brand: 'bg-[#d2f9e3] text-[#085d40]',
+  green: 'bg-success-50 text-success-700',
+  blue: 'bg-blue-50 text-blue-700',
+  indigo: 'bg-indigo-50 text-indigo-700',
+  pink: 'bg-pink-50 text-pink-700',
+  orange: 'bg-orange-50 text-orange-700',
+  gray: 'bg-blue-gray-50 text-blue-gray-700',
+  brand: 'bg-brand-50 text-brand-700',
 }
 
 const dotColorMap: Record<string, string> = {
-  green: 'bg-[#12B76A]',
-  gray: 'bg-[#667085]',
+  green: 'bg-success-500',
+  gray: 'bg-gray-500',
 }
 
 /**
@@ -396,7 +396,7 @@ export function CellBadgeGroup({
             <span
               className={cn(
                 'w-2 h-2 rounded-full',
-                dotColorMap[b.color ?? 'gray'] ?? 'bg-[#12B76A]',
+                dotColorMap[b.color ?? 'gray'] ?? 'bg-success-500',
               )}
             />
           )}
@@ -404,7 +404,7 @@ export function CellBadgeGroup({
         </span>
       ))}
       {remaining > 0 && (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-2xl text-xs font-medium bg-[#f2f4f7] text-[#344054]">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-2xl text-xs font-medium bg-gray-100 text-gray-700">
           +{remaining}
         </span>
       )}

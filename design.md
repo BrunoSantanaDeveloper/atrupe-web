@@ -117,20 +117,36 @@ Família **Inter**. Fonte: Allan › Typography.
 
 Variável extra "Text / Small": Inter Semibold 12 / 16, usada nos contadores das abas. Fonte: Allan › Base de Custos.
 
-**Uso nas telas**
+**Papéis no código**
 
-| Elemento | Estilo | Fonte |
+A partir de `tipografia-e-hierarquia` (design/openspec), cada texto pertence a
+um papel com tamanho, linha, peso e cor fixos. Classe `type-<papel>` ou os
+componentes `Heading`/`Text` (`src/components/ui/typography.tsx`); tabela
+em `src/lib/typography-roles.ts`; vitrine em `/sandbox/tipografia`.
+
+| Papel | Estilo | Onde |
 |---|---|---|
-| Título da página (navbar) | Text lg Semibold, Gray/900 | Allan › Base de Custos |
-| Título de modal de confirmação | Text lg Semibold, Gray/900, centralizado | Allan › Empresas e Sistemas |
-| Item de menu da sidebar | Text sm Semibold, Gray/700 | Allan › Base de Custos |
-| Subitem da sidebar | Text xs Medium, Gray/500 (ativo Brand/600) | Allan › Base de Custos |
-| Rótulo de campo | Text sm Medium, Gray/700 | Allan › Inputs |
-| Texto de dica / erro | 12 px Regular, Gray/500 / Error/500 | Allan › Inputs |
-| Valor de KPI | Text lg Semibold, Gray/900 | Allan › Base de Custos |
-| Botão | Text sm Semibold | Allan › Buttons |
-| Aba | Text sm Medium | Allan › Base de Custos |
-| Badge de status | Text xs Medium | Allan › Base de Custos |
+| `page-title` | Display xs Semibold, Gray/900 | título da página (um `h1`) |
+| `page-subtitle` | Text sm Regular, Gray/600 | linha abaixo do título |
+| `section-title` | Text lg Semibold, Gray/900 | `h2` de seção |
+| `card-title` | Text md Semibold, Gray/900 | título de card |
+| `dialog-title` | Text lg Semibold, Gray/900 | título de diálogo e painel |
+| `object-title` | Display xs Semibold, Gray/900 | nome do registro no detalhe |
+| `kpi-value` / `kpi-hero` | Display xs / Display sm Semibold, tabular | valor de indicador |
+| `kpi-label` | Text sm Medium, Gray/600 | rótulo de indicador |
+| `body` / `body-strong` | Text sm Regular Gray/700 / Semibold Gray/900 | corpo, células, identificador da linha |
+| `secondary` / `helper` | Text sm Regular, Gray/600 | apoio, ajuda de campo |
+| `caption` | Text xs Regular, Gray/600 | metadados |
+| `label` | Text sm Medium, Gray/700 | rótulo de campo e de valor |
+| `eyebrow` | Text xs Semibold, Gray/600, caixa alta, +0,04em | único uppercase: grupo de tabela, seção de formulário |
+| `table-header` | Text xs Medium, Gray/600 | cabeçalho de tabela |
+| `nav-item` | Text sm Medium, Gray/700 | item e subitem da barra lateral |
+
+Divergência deliberada do Figma (Allan › Base de Custos): o título da
+página sobe de Text lg para Display xs, para ficar acima de títulos de
+card e diálogo; o subitem da barra lateral sobe de Text xs para Text sm;
+dica e erro de campo sobem de 12 px para Text sm. Nenhum texto abaixo de
+12 px e nenhum peso 700 (regra de lint).
 
 ### 2.3 Espaçamento e grid
 

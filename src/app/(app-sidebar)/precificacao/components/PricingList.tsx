@@ -134,17 +134,17 @@ export function PricingList({
                       {itemLabel === 'setor' ? 'Setor' : 'Item'}
                     </TableHead>
                     <TableHead className="w-[12%]">Unidade</TableHead>
-                    <TableHead className="w-[12%] text-right">
+                    <TableHead numeric className="w-[12%]">
                       Custo atual
                     </TableHead>
                     <TableHead className="w-[12%]">
                       Custo atualizado em
                     </TableHead>
                     <TableHead className="w-[10%]">Tipo de preço</TableHead>
-                    <TableHead className="w-[12%] text-right">
+                    <TableHead numeric className="w-[12%]">
                       Preço praticado
                     </TableHead>
-                    <TableHead className="w-[10%] text-right">
+                    <TableHead numeric className="w-[10%]">
                       Margem atual
                     </TableHead>
                     <TableHead className="w-[14%]">Status</TableHead>
@@ -161,9 +161,7 @@ export function PricingList({
                         </p>
                       </TableCell>
                       <TableCell className="text-sm">{item.unit}</TableCell>
-                      <TableCell className="text-right">
-                        {formatValue(item.cost)}
-                      </TableCell>
+                      <TableCell numeric>{formatValue(item.cost)}</TableCell>
                       <TableCell className="text-sm text-gray">
                         {formatDate(item.costUpdatedAt)}
                       </TableCell>
@@ -172,9 +170,7 @@ export function PricingList({
                           {priceRuleObj[item.rule].text}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">
-                        {formatValue(item.price)}
-                      </TableCell>
+                      <TableCell numeric>{formatValue(item.price)}</TableCell>
                       <TableCell
                         className={cn(
                           'text-right font-medium',

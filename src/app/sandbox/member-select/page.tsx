@@ -293,7 +293,7 @@ function Section({
 }) {
   return (
     <section className="space-y-4">
-      <h2 className="text-sm font-bold text-[#344054] uppercase tracking-wide border-b border-[#F2F4F7] pb-2">
+      <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wide border-b border-gray-100 pb-2">
         {title}
       </h2>
       {children}
@@ -312,7 +312,7 @@ function ColHeaders() {
       {labels.map((l) => (
         <p
           key={l}
-          className="text-[11px] font-semibold text-[#98A2B3] uppercase text-center tracking-wider"
+          className="text-[11px] font-semibold text-gray-400 uppercase text-center tracking-wider"
         >
           {l}
         </p>
@@ -331,10 +331,10 @@ export default function MemberSelectSandboxPage() {
       <div className="max-w-5xl mx-auto px-6 space-y-14">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold text-[#101828]">
+          <h1 className="text-2xl font-bold text-gray-900">
             MemberSelect — Sandbox
           </h1>
-          <p className="text-sm text-[#667085] mt-1">
+          <p className="text-sm text-gray-500 mt-1">
             Mapeamento completo de todas as variantes e estados do Figma. As
             linhas <strong>"Interactive"</strong> são totalmente funcionais —
             clique para abrir e selecionar.
@@ -346,7 +346,7 @@ export default function MemberSelectSandboxPage() {
         {/* ── Block A: Sem label, nome apenas ────────────────────────────── */}
         <Section title="A — Sem label · Nome apenas">
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Placeholder
             </p>
             <StaticRow
@@ -357,7 +357,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Selecionado (fechado)
             </p>
             <StaticRow
@@ -368,7 +368,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Interativo (clique para abrir)
             </p>
             <InteractiveRow showUsername={false} label={false} id="a-live" />
@@ -378,7 +378,7 @@ export default function MemberSelectSandboxPage() {
         {/* ── Block B: Sem label, nome + @username ───────────────────────── */}
         <Section title="B — Sem label · Nome + @username">
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Placeholder
             </p>
             <StaticRow
@@ -389,7 +389,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Selecionado (fechado)
             </p>
             <StaticRow
@@ -400,7 +400,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Interativo
             </p>
             <InteractiveRow showUsername={true} label={false} id="b-live" />
@@ -410,7 +410,7 @@ export default function MemberSelectSandboxPage() {
         {/* ── Block C: Com label, nome apenas ────────────────────────────── */}
         <Section title="C — Com label · Nome apenas">
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Placeholder
             </p>
             <StaticRow
@@ -421,7 +421,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Selecionado (fechado)
             </p>
             <StaticRow
@@ -432,7 +432,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Interativo
             </p>
             <InteractiveRow showUsername={false} label={true} id="c-live" />
@@ -442,7 +442,7 @@ export default function MemberSelectSandboxPage() {
         {/* ── Block D: Com label, nome + @username ───────────────────────── */}
         <Section title="D — Com label · Nome + @username">
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Placeholder
             </p>
             <StaticRow
@@ -453,7 +453,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Selecionado (fechado)
             </p>
             <StaticRow
@@ -464,7 +464,7 @@ export default function MemberSelectSandboxPage() {
             />
           </div>
           <div className="space-y-3">
-            <p className="text-[11px] text-[#98A2B3] uppercase font-semibold">
+            <p className="text-[11px] text-gray-400 uppercase font-semibold">
               Interativo
             </p>
             <InteractiveRow showUsername={true} label={true} id="d-live" />
@@ -473,8 +473,8 @@ export default function MemberSelectSandboxPage() {
 
         {/* ── Block E: Live integrated form example ──────────────────────── */}
         <Section title="E — Exemplo de formulário integrado">
-          <div className="bg-white rounded-xl border border-[#EAECF0] p-6 space-y-6 shadow-sm">
-            <p className="text-sm font-semibold text-[#101828]">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6 shadow-sm">
+            <p className="text-sm font-semibold text-gray-900">
               Atribuição de tarefa
             </p>
             <div className="grid grid-cols-2 gap-6">

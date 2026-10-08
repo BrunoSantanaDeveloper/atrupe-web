@@ -453,7 +453,7 @@ export function CashControl(_: SearchParamsType) {
                   {showTotals && (
                     <>
                       <TableHead className="text-right">Movimento</TableHead>
-                      <TableHead className="text-right">Saldo</TableHead>
+                      <TableHead numeric>Saldo</TableHead>
                     </>
                   )}
                   <TableHead />
@@ -513,7 +513,7 @@ export function CashControl(_: SearchParamsType) {
                     <TableHead className="text-right">Entradas</TableHead>
                     <TableHead className="text-right">Saídas</TableHead>
                     <TableHead className="text-right">Retroativo</TableHead>
-                    <TableHead className="text-right">Saldo</TableHead>
+                    <TableHead numeric>Saldo</TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -570,15 +570,24 @@ export function CashControl(_: SearchParamsType) {
                               <TableCell className="whitespace-nowrap text-right text-gray">
                                 {money(day.opening)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-success-700">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-success-700"
+                              >
                                 {money(totals.entries)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-error-600">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-error-600"
+                              >
                                 {totals.exits
                                   ? `− ${money(totals.exits)}`
                                   : money(0)}
                               </TableCell>
-                              <TableCell className="whitespace-nowrap text-right text-gray">
+                              <TableCell
+                                numeric
+                                className="whitespace-nowrap text-gray"
+                              >
                                 {totals.retroactive
                                   ? money(totals.retroactive)
                                   : '—'}

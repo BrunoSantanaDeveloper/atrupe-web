@@ -64,8 +64,8 @@ const Slider = React.forwardRef<
         )}
         {...props}
       >
-        <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-[#eaecf0]">
-          <SliderPrimitive.Range className="absolute h-full bg-[#38cf8f]" />
+        <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-gray-200">
+          <SliderPrimitive.Range className="absolute h-full bg-brand-300" />
         </SliderPrimitive.Track>
         {values.map((v, index) => {
           const tooltipPos = getPositionClass(index, showTooltips, true)
@@ -75,7 +75,7 @@ const Slider = React.forwardRef<
           return (
             <SliderPrimitive.Thumb
               key={index}
-              className="block h-6 w-6 rounded-full border-2 border-[#38cf8f] bg-white shadow-[0_2px_4px_rgba(16,24,40,0.06),0_4px_8px_rgba(16,24,40,0.1)] transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+              className="block h-6 w-6 rounded-full border-2 border-brand-300 bg-white shadow-[0_2px_4px_rgba(16,24,40,0.06),0_4px_8px_rgba(16,24,40,0.1)] transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             >
               {showTooltips && tooltipPos && (
                 <div
@@ -105,7 +105,7 @@ const Slider = React.forwardRef<
                         />
                       </svg>
                       <div className="flex flex-col justify-start items-start relative px-3 py-2 rounded-lg bg-white">
-                        <p className="text-xs font-semibold text-center text-[#344054]">
+                        <p className="text-xs font-semibold text-center text-gray-700">
                           {formatLabel(v)}
                         </p>
                       </div>
@@ -113,7 +113,7 @@ const Slider = React.forwardRef<
                   ) : (
                     <>
                       <div className="flex flex-col justify-start items-start relative px-3 py-2 rounded-lg bg-white">
-                        <p className="text-xs font-semibold text-center text-[#344054]">
+                        <p className="text-xs font-semibold text-center text-gray-700">
                           {formatLabel(v)}
                         </p>
                       </div>
@@ -139,7 +139,7 @@ const Slider = React.forwardRef<
               {showLabels && labelPos && !showTooltips && (
                 <p
                   className={cn(
-                    'absolute left-1/2 -translate-x-1/2 text-base font-medium text-center text-[#101828] pointer-events-none w-16',
+                    'absolute left-1/2 -translate-x-1/2 text-base font-medium text-center text-gray-900 pointer-events-none w-16',
                     labelPos,
                   )}
                 >

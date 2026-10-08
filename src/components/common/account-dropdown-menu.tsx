@@ -72,7 +72,7 @@ function MenuContent({
         side={side}
         sideOffset={sideOffset}
         className={cn(
-          'z-50 w-60 overflow-hidden rounded-lg border border-[#F2F4F7] bg-white text-[#344054]',
+          'z-50 w-60 overflow-hidden rounded-lg border border-gray-100 bg-white text-gray-700',
           'shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08),0px_4px_6px_-2px_rgba(16,24,40,0.03)]',
           'data-[state=open]:animate-in data-[state=closed]:animate-out',
           'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -91,9 +91,9 @@ function LabelHeader({ label }: { label: string }) {
   return (
     <>
       <div className="px-4 py-3">
-        <p className="text-sm font-semibold text-[#344054] truncate">{label}</p>
+        <p className="text-sm font-semibold text-gray-700 truncate">{label}</p>
       </div>
-      <div className="h-px bg-[#F2F4F7]" />
+      <div className="h-px bg-gray-100" />
     </>
   )
 }
@@ -123,7 +123,7 @@ function AvatarHeader({
                 className="w-10 h-10 rounded-full object-cover"
               />
             ) : (
-              <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-sm font-semibold text-[#344054]">
+              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-sm font-semibold text-gray-700">
                 {userName?.[0]?.toUpperCase() ?? 'U'}
               </div>
             )}
@@ -134,20 +134,20 @@ function AvatarHeader({
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <p className="text-sm font-semibold text-[#344054] truncate">
+            <p className="text-sm font-semibold text-gray-700 truncate">
               {userName}
             </p>
-            <p className="text-sm text-[#667085] truncate">{userEmail}</p>
+            <p className="text-sm text-gray-500 truncate">{userEmail}</p>
           </div>
         </div>
       </div>
-      <div className="h-px bg-[#F2F4F7]" />
+      <div className="h-px bg-gray-100" />
     </>
   )
 }
 
 /** Separator between groups */
-const Separator = () => <div className="h-px bg-[#F2F4F7] my-0" />
+const Separator = () => <div className="h-px bg-gray-100 my-0" />
 
 /** Plain menu item (no shortcut, no checkbox) */
 function SimpleItem({ item }: { item: AccountMenuItemDef }) {
@@ -157,9 +157,9 @@ function SimpleItem({ item }: { item: AccountMenuItemDef }) {
       onSelect={item.onClick}
       className={cn(
         'relative flex cursor-pointer select-none items-center px-4 py-2.5',
-        'text-sm font-medium text-[#344054] outline-none transition-colors',
+        'text-sm font-medium text-gray-700 outline-none transition-colors',
         'hover:bg-gray-50 focus:bg-gray-50',
-        'data-[disabled]:pointer-events-none data-[disabled]:text-[#EAECF0]',
+        'data-[disabled]:pointer-events-none data-[disabled]:text-gray-200',
       )}
     >
       {item.label}
@@ -175,14 +175,14 @@ function ShortcutItem({ item }: { item: AccountMenuItemDef }) {
       onSelect={item.onClick}
       className={cn(
         'relative flex cursor-pointer select-none items-center justify-between px-4 py-2.5',
-        'text-sm font-medium text-[#344054] outline-none transition-colors',
+        'text-sm font-medium text-gray-700 outline-none transition-colors',
         'hover:bg-gray-50 focus:bg-gray-50',
-        'data-[disabled]:pointer-events-none data-[disabled]:text-[#EAECF0]',
+        'data-[disabled]:pointer-events-none data-[disabled]:text-gray-200',
       )}
     >
       <span>{item.label}</span>
       {item.shortcut && (
-        <span className="ml-auto text-xs text-[#667085] font-normal">
+        <span className="ml-auto text-xs text-gray-500 font-normal">
           {item.shortcut}
         </span>
       )}
@@ -199,22 +199,22 @@ function CheckboxItem({ item }: { item: AccountMenuItemDef }) {
       onCheckedChange={item.onCheckedChange}
       className={cn(
         'relative flex cursor-pointer select-none items-center justify-between px-4 py-2.5',
-        'text-sm text-[#344054] outline-none transition-colors',
+        'text-sm text-gray-700 outline-none transition-colors',
         'hover:bg-gray-50 focus:bg-gray-50',
-        'data-[disabled]:pointer-events-none data-[disabled]:text-[#EAECF0]',
+        'data-[disabled]:pointer-events-none data-[disabled]:text-gray-200',
       )}
     >
       <div className="flex items-center gap-3">
         {/* DS checkbox box — 16×16 rounded border */}
-        <span className="relative flex h-4 w-4 items-center justify-center rounded border border-[#D0D5DD] bg-white flex-shrink-0">
+        <span className="relative flex h-4 w-4 items-center justify-center rounded border border-gray-300 bg-white flex-shrink-0">
           <DropdownMenuPrimitive.ItemIndicator>
-            <Check className="h-3 w-3 text-[#344054]" />
+            <Check className="h-3 w-3 text-gray-700" />
           </DropdownMenuPrimitive.ItemIndicator>
         </span>
         <span className="text-sm">{item.label}</span>
       </div>
       {item.shortcut && (
-        <span className="ml-auto text-xs text-[#667085] font-normal">
+        <span className="ml-auto text-xs text-gray-500 font-normal">
           {item.shortcut}
         </span>
       )}

@@ -18,8 +18,8 @@ const tooltipVariants = cva(
   {
     variants: {
       intent: {
-        dark: 'bg-[#101828] text-white',
-        light: 'bg-white text-[#344054]',
+        dark: 'bg-gray-900 text-white',
+        light: 'bg-white text-gray-700',
       },
     },
     defaultVariants: {
@@ -31,7 +31,7 @@ const tooltipVariants = cva(
 const arrowVariants = cva('', {
   variants: {
     intent: {
-      dark: 'fill-[#101828]',
+      dark: 'fill-gray-900',
       light: 'fill-white',
     },
   },

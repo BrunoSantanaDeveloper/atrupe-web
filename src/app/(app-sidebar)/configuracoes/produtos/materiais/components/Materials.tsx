@@ -11,6 +11,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
+  TableGroupRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -179,10 +180,10 @@ export function Materials({ searchParams }: SearchParamsType) {
                       </TableHead>
                       <TableHead className="w-[10%]">Unidade</TableHead>
                       <TableHead className="w-[14%]">Uso</TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Custo
                       </TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Preço de venda
                       </TableHead>
                       <TableHead className="w-[8%]" />
@@ -191,11 +192,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                   <TableBody>
                     {sectors.map((sector) => (
                       <Fragment key={sector}>
-                        <TableRow className="bg-gray-50 hover:bg-gray-50">
-                          <TableCell colSpan={7}>
-                            <span className="font-medium">{sector}</span>
-                          </TableCell>
-                        </TableRow>
+                        <TableGroupRow>{sector}</TableGroupRow>
                         {/* Setor › subcategoria (05/10/2026): dentro do
                             setor, os materiais vêm agrupados pela
                             subcategoria */}
@@ -221,7 +218,7 @@ export function Materials({ searchParams }: SearchParamsType) {
                                     <TableCell />
                                     <TableCell
                                       colSpan={6}
-                                      className="py-2 text-xs font-medium uppercase tracking-wide text-gray"
+                                      className="type-body-strong py-2"
                                     >
                                       {material.subcategory}
                                     </TableCell>
@@ -336,10 +333,10 @@ export function Materials({ searchParams }: SearchParamsType) {
                                           {variation.brand} · {variation.color}
                                         </span>
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.cost)}
                                       </TableCell>
-                                      <TableCell className="text-right text-sm">
+                                      <TableCell numeric className="text-sm">
                                         {formatValue(variation.price)}
                                       </TableCell>
                                       <TableCell />

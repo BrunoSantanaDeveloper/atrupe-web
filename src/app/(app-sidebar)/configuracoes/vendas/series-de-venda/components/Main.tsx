@@ -110,7 +110,7 @@ export function Main() {
                 <CardHeader>
                   <div className="flex justify-between">
                     <div className="flex gap-3 items-center">
-                      <CardTitle className="text-gray-700 font-semibold">
+                      <CardTitle>
                         {`${item?.code || ''} - ${item?.description || ''}`}
                       </CardTitle>
                       <Badge

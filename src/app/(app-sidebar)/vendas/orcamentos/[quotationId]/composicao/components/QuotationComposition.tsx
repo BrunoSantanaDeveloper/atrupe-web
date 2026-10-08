@@ -342,13 +342,13 @@ export function QuotationComposition({ quotationId }: Props) {
                         Referência
                       </TableHead>
                       <TableHead className="w-[16%]">Medidas</TableHead>
-                      <TableHead className="w-[12%] text-right">
+                      <TableHead numeric className="w-[12%]">
                         Valor unitário
                       </TableHead>
-                      <TableHead className="w-[10%] text-right">
+                      <TableHead numeric className="w-[10%]">
                         Desconto
                       </TableHead>
-                      <TableHead className="w-[14%] text-right">
+                      <TableHead numeric className="w-[14%]">
                         Valor final
                       </TableHead>
                       <TableHead className="w-[10%]" />
@@ -403,15 +403,15 @@ export function QuotationComposition({ quotationId }: Props) {
                               {item.quantity} un
                               {measure(item) ? ` · ${measure(item)}` : ''}
                             </TableCell>
-                            <TableCell className="text-right">
+                            <TableCell numeric>
                               {formatMoney(itemUnitPrice(item))}
                             </TableCell>
-                            <TableCell className="text-right text-gray">
+                            <TableCell numeric className="text-gray">
                               {item.discount
                                 ? `- ${formatMoney(item.discount)}`
                                 : '--'}
                             </TableCell>
-                            <TableCell className="text-right font-semibold">
+                            <TableCell numeric className="font-semibold">
                               {formatMoney(itemTotal(item))}
                             </TableCell>
                             <TableCell>

@@ -561,7 +561,7 @@ function NewProductModal({
                           {watch('items.0.unitKind') &&
                             watch('items.0.unitKind') !== 'UNITY' && (
                               <div className="w-full">
-                                <h4 className="text-md font-semibold text-gray-700 mb-2">
+                                <h4 className="type-card-title mb-2">
                                   Padrão de medidas do produto
                                 </h4>
                                 <div className="flex flex-wrap gap-3 p-6 bg-blue-light-50 rounded-xl border border-blue-light-300">
@@ -646,7 +646,7 @@ function NewProductModal({
                             {watch(`items.${index}.unitKind`) &&
                               watch(`items.${index}.unitKind`) !== 'UNITY' && (
                                 <div className="w-full">
-                                  <h4 className="text-sm font-medium text-gray-900 mb-3">
+                                  <h4 className="type-body-strong mb-3">
                                     Padrão de medidas do produto
                                   </h4>
                                   <div className="flex flex-wrap gap-4 bg-gray-50 p-4 rounded-lg">

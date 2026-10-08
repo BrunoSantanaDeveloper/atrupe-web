@@ -212,6 +212,7 @@ export function CancelSubscriptionDialog({
                   value={confirmText}
                   onChange={(e) => setConfirmText(e.target.value)}
                   placeholder="CANCELAR"
+                  // eslint-disable-next-line no-restricted-syntax -- confirmação digitada em maiúsculas
                   className="uppercase"
                 />
               </div>

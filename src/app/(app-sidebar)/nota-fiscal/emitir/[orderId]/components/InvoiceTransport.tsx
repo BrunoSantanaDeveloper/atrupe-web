@@ -152,9 +152,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                   variant="neutralOutline"
                   Icon={IconTruckDelivery}
                 />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Transportadora
-                </CardTitle>
+                <CardTitle>Transportadora</CardTitle>
               </div>
               <div className="flex items-center gap-2">
                 {/* Supplier search */}
@@ -289,6 +287,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                             updateTransport('uf', e.target.value)
                           }
                           maxLength={2}
+                          // eslint-disable-next-line no-restricted-syntax -- UF é digitada em maiúsculas
                           className="uppercase"
                         />
                       </div>
@@ -333,9 +332,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
           <CardHeader className="flex flex-row items-center gap-3 py-4 bg-white">
             <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
             <div>
-              <CardTitle className="text-gray-500 font-semibold text-base">
-                Volumes transportados
-              </CardTitle>
+              <CardTitle>Volumes transportados</CardTitle>
               <p className="text-xs text-gray-400 mt-0.5">
                 Não aplicável — modalidade de frete &ldquo;Sem ocorrência de
                 transporte&rdquo;.
@@ -350,9 +347,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
               <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                 <div className="flex gap-3 items-center">
                   <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
-                  <CardTitle className="text-gray-700 font-semibold text-base">
-                    Volumes transportados
-                  </CardTitle>
+                  <CardTitle>Volumes transportados</CardTitle>
                 </div>
                 <div className="flex gap-3">
                   <Button

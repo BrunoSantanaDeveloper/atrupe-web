@@ -17,9 +17,9 @@ const switchVariants = cva(
       },
       intent: {
         success:
-          'data-[state=checked]:bg-[#099260] data-[state=unchecked]:bg-[#f2f4f7]',
+          'data-[state=checked]:bg-brand-500 data-[state=unchecked]:bg-gray-100',
         brand:
-          'data-[state=checked]:bg-[#7b61ff] data-[state=unchecked]:bg-[#f2f4f7]',
+          'data-[state=checked]:bg-[#7b61ff] data-[state=unchecked]:bg-gray-100',
       },
     },
     defaultVariants: {

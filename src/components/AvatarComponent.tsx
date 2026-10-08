@@ -14,13 +14,11 @@ const avatarVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand-50 text-brand-300 dark:bg-brand-800 dark:text-brand',
-        warning:
-          'bg-warning-50 text-warning-300 dark:bg-warning-800 dark:text-warning',
-        error: 'bg-error-50 text-error-300 dark:bg-error-800 dark:text-error',
-        success:
-          'bg-success-50 text-success-300 dark:bg-success-800 dark:text-success',
-        info: 'bg-info-50 text-info-300 dark:bg-info-800 dark:text-info',
+        default: 'bg-brand-50 text-brand-300',
+        warning: 'bg-warning-50 text-warning-300',
+        error: 'bg-error-50 text-error-300',
+        success: 'bg-success-50 text-success-300',
+        info: 'bg-info-50 text-info-300',
       },
       size: {
         xs: 'h-8 w-8',

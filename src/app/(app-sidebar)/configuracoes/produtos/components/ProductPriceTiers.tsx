@@ -87,9 +87,7 @@ export function ProductPriceTiers({
       <div className="w-full space-y-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h4 className="text-md font-semibold text-gray-700">
-              Preço por quantidade
-            </h4>
+            <h4 className="type-card-title">Preço por quantidade</h4>
             <p className="text-sm text-gray">
               Até 100 um valor, de 101 a 500 outro. A faixa vale para o total:
               150 unidades saem todas pelo valor da segunda faixa. Sem faixas,

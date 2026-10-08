@@ -20,6 +20,7 @@ import { Dialog } from '@/components/ui/dialog'
 // Components
 import { Avatar } from '../AvatarComponent'
 import { MyProfileDialog } from './MyProfile'
+import { ThemeToggleGroup } from './ThemeToggleGroup'
 
 // Assets
 import favicon from '@public/logo/logo.png'
@@ -298,7 +299,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                           variant={
                             isFiscalPending ? 'warningLight' : 'neutralLight'
                           }
-                          className="text-[10px] px-1.5 py-0.5"
+                          className="text-xs px-1.5 py-0.5"
                         >
                           {isFiscalPending ? 'Pendente' : 'Configurar'}
                         </Badge>
@@ -322,7 +323,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                   value={`${item?.path}`}
                   className="border-gray-60 py-2"
                 >
-                  <AccordionTrigger className="h-11 rounded-lg px-2 py-0 hover:no-underline data-[state=open]:bg-brand-25 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600">
+                  <AccordionTrigger
+                    asHeading={false}
+                    className="h-11 rounded-lg px-2 py-0 hover:no-underline data-[state=open]:bg-brand-25 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600"
+                  >
                     <div className="flex items-center gap-3">
                       <IconComponent
                         icon={item?.icon}
@@ -373,7 +377,7 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                                 />
                                 <span
                                   className={cn(
-                                    'text-xs font-medium',
+                                    'text-sm font-medium',
                                     navChild?.action &&
                                       'font-semibold text-gray-600',
                                     reviewTextClass(navChild?.review),
@@ -410,6 +414,10 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
                 Perfil
               </span>
             </button>
+          </div>
+          <div className="flex items-center justify-between gap-3 border-b border-gray-200 mt-3 pt-2 pb-3">
+            <span className="text-sm font-semibold text-gray-700">Tema</span>
+            <ThemeToggleGroup />
           </div>
           <div className="border-b border-gray-200 mt-3 pb-2">
             <button

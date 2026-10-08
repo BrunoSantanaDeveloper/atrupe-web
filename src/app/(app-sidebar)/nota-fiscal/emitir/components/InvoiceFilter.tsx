@@ -86,7 +86,7 @@ export function InvoiceFilter({ searchParams }: SearchParamsType) {
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end p-4 border-b border-gray-100">
       <div className="w-full sm:w-1/4">
         <Label className="mb-1 block text-sm font-medium text-gray-700">
-          Tipo de Registro
+          Tipo de registro
         </Label>
         <Select
           value={recordType || 'TODOS'}

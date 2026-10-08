@@ -186,9 +186,7 @@ export function InvoiceDeliveryAddressSection({
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconMapPin} />
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  {sectionTitle}
-                </CardTitle>
+                <CardTitle>{sectionTitle}</CardTitle>
                 <label className="inline-flex items-center gap-2 cursor-pointer text-sm text-gray-500 hover:text-gray-700 select-none">
                   <Checkbox
                     id="delivery-different-address"
@@ -216,9 +214,7 @@ export function InvoiceDeliveryAddressSection({
                   {destinatarioAddress?.endereco ? (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          Rua
-                        </p>
+                        <p className="type-label">Rua</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.endereco}
                           {destinatarioAddress.numero
@@ -227,41 +223,31 @@ export function InvoiceDeliveryAddressSection({
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          Complemento
-                        </p>
+                        <p className="type-label">Complemento</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.complemento || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          Bairro
-                        </p>
+                        <p className="type-label">Bairro</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.bairro || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          CEP
-                        </p>
+                        <p className="type-label">CEP</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.cep || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          Cidade
-                        </p>
+                        <p className="type-label">Cidade</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.cidade || '—'}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          Estado
-                        </p>
+                        <p className="type-label">Estado</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {destinatarioAddress.estado || '—'}
                         </p>
@@ -456,9 +442,7 @@ export function InvoiceDeliveryAddressSection({
                     <div className="flex flex-col">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 border-b border-gray-100">
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Rua
-                          </p>
+                          <p className="type-label">Rua</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.endereco
                               ? `${entrega.endereco}, ${entrega.numero}`
@@ -466,17 +450,13 @@ export function InvoiceDeliveryAddressSection({
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Complemento
-                          </p>
+                          <p className="type-label">Complemento</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.complemento || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Bairro
-                          </p>
+                          <p className="type-label">Bairro</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.bairro || 'N/D'}
                           </p>
@@ -484,34 +464,26 @@ export function InvoiceDeliveryAddressSection({
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            CEP
-                          </p>
+                          <p className="type-label">CEP</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.cep || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Cidade
-                          </p>
+                          <p className="type-label">Cidade</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.cidade || 'N/D'}
                           </p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                            Estado
-                          </p>
+                          <p className="type-label">Estado</p>
                           <p className="text-sm font-semibold text-gray-900">
                             {entrega.estado || 'N/D'}
                           </p>
                         </div>
                         {entrega.cnpjCpf && (
                           <div className="space-y-1">
-                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                              CPF/CNPJ do local
-                            </p>
+                            <p className="type-label">CPF/CNPJ do local</p>
                             <p className="text-sm font-semibold text-gray-900">
                               {entrega.cnpjCpf}
                             </p>

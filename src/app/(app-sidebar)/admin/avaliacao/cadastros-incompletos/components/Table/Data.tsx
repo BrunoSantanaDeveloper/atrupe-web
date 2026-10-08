@@ -122,7 +122,7 @@ function TokenCell({ item }: { item: IncompleteRegistrationItem }) {
         )}
       </div>
       <span
-        className={`text-[10px] mt-0.5 ${isExpired ? 'text-error-500' : 'text-success-600'}`}
+        className={`text-xs mt-0.5 ${isExpired ? 'text-error-500' : 'text-success-600'}`}
       >
         {timeLeft || '...'}
       </span>

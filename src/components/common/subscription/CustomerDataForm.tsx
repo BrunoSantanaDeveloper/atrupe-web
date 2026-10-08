@@ -40,9 +40,7 @@ export function CustomerDataForm({
   return (
     <div className="mt-8">
       <Card className="bg-white p-6">
-        <h3 className="font-semibold text-gray-700 mb-1">
-          Dados complementares
-        </h3>
+        <h3 className="type-card-title mb-1">Dados complementares</h3>
         <p className="text-xs text-muted-foreground mb-4">
           Informações do responsável pela contratação.
         </p>
@@ -132,7 +130,7 @@ export function CustomerDataForm({
 
           {/* Address Section */}
           <div className="pt-4 border-t border-gray-100">
-            <h4 className="font-medium text-gray-700 mb-3">Endereço</h4>
+            <h4 className="type-card-title mb-3">Endereço</h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>

@@ -9,9 +9,9 @@ import { cn } from '@/lib/utils'
 
 const TOKEN = {
   // Border
-  borderDefault: 'border-[#d0d5dd]',
-  borderFocus: 'border-[#38cf8f]',
-  borderError: 'border-[#fda29b]',
+  borderDefault: 'border-gray-300',
+  borderFocus: 'border-brand-300',
+  borderError: 'border-error-300',
 
   // Shadow
   shadowDefault: '[box-shadow:0px_1px_2px_0_rgba(16,24,40,0.05)]',
@@ -22,12 +22,12 @@ const TOKEN = {
   bgDisabled: 'bg-gray-50',
 
   // Text
-  textLabel: 'text-sm font-medium text-[#344054]',
-  textPlaceholder: 'text-base text-[#98a2b3]',
-  textFilled: 'text-base text-[#101828]',
-  textHint: 'text-sm text-[#667085]',
-  textError: 'text-sm text-[#f04438]',
-  textAddon: 'text-base text-[#667085]',
+  textLabel: 'text-sm font-medium text-gray-700',
+  textPlaceholder: 'text-base text-gray-400',
+  textFilled: 'text-base text-gray-900',
+  textHint: 'text-sm text-gray-500',
+  textError: 'text-sm text-error-500',
+  textAddon: 'text-base text-gray-500',
 
   // Icon strokes
   strokeLeading: '#667085',
@@ -277,8 +277,8 @@ function TextInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -324,8 +324,8 @@ function EmailInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -366,11 +366,11 @@ function PhoneInput({
         type="button"
         disabled={isDisabled}
         className={cn(
-          'flex items-center gap-0.5 pl-3.5 pr-3 py-2.5 flex-shrink-0 border-r border-[#d0d5dd]',
+          'flex items-center gap-0.5 pl-3.5 pr-3 py-2.5 flex-shrink-0 border-r border-gray-300',
           isDisabled && 'cursor-not-allowed',
         )}
       >
-        <span className="text-base text-[#101828]">{countryCode}</span>
+        <span className="text-base text-gray-900">{countryCode}</span>
         <ChevronDownIcon />
       </button>
       {/* Input */}
@@ -385,8 +385,8 @@ function PhoneInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -429,7 +429,7 @@ function CurrencyInput({
           <span
             className={cn(
               'text-base flex-shrink-0',
-              isDisabled ? 'text-[#98a2b3]' : 'text-[#667085]',
+              isDisabled ? 'text-gray-400' : 'text-gray-500',
             )}
           >
             {currencySymbol}
@@ -445,8 +445,8 @@ function CurrencyInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -454,7 +454,7 @@ function CurrencyInput({
           <span
             className={cn(
               'text-base flex-shrink-0',
-              isDisabled ? 'text-[#98a2b3]' : 'text-[#667085]',
+              isDisabled ? 'text-gray-400' : 'text-gray-500',
             )}
           >
             {currencySymbol}
@@ -489,7 +489,7 @@ function WebsiteInput({
       className={cn(
         'flex items-start rounded-lg border overflow-hidden',
         isDisabled ? TOKEN.bgDisabled : TOKEN.bgDefault,
-        'border-[#d0d5dd]', // outer border always default — inner field carries the state border
+        'border-gray-300', // outer border always default — inner field carries the state border
         TOKEN.shadowDefault,
       )}
     >
@@ -521,8 +521,8 @@ function WebsiteInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -568,8 +568,8 @@ function CardInput({
           className={cn(
             'flex-1 min-w-0 bg-transparent outline-none text-base',
             hasValue
-              ? 'text-[#101828]'
-              : 'text-[#98a2b3] placeholder:text-[#98a2b3]',
+              ? 'text-gray-900'
+              : 'text-gray-400 placeholder:text-gray-400',
             isDisabled && 'cursor-not-allowed',
           )}
         />
@@ -615,8 +615,8 @@ function TextareaInput({
         className={cn(
           'flex-1 w-full bg-transparent outline-none resize-none px-3.5 py-2.5 text-base',
           hasValue
-            ? 'text-[#101828]'
-            : 'text-[#667085] placeholder:text-[#667085]',
+            ? 'text-gray-900'
+            : 'text-gray-500 placeholder:text-gray-500',
           isDisabled && 'cursor-not-allowed',
         )}
       />

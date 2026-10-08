@@ -41,7 +41,11 @@ test.describe('Base de custos — estrutura (design.md §4, §5.2, §10)', () =>
   }) => {
     await openAdminExpenses(page)
 
-    await expect(page).toHaveTitle(/^Base de custos/)
+    // Cada sub-página tem o próprio título de aba (tipografia-e-hierarquia,
+    // hierarquia-de-pagina: "Título do documento").
+    await expect(page).toHaveTitle(
+      /^Despesas administrativas · Base de custos · Atrupe$/,
+    )
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(
       'Base de custos',
     )

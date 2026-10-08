@@ -309,7 +309,7 @@ export function DiscountAndTotal({
       <PermissionGate permissions={['values:values:edit']}>
         <FormBrlInput
           name="totalValue"
-          label="Valor Total"
+          label="Valor total"
           startAdornment={<>R$</>}
           width="flex-[1_0_200px]"
           additionalOnChange={handleTotalValueChange}

@@ -365,7 +365,7 @@ export function SidebarComponent(props: Props) {
                                       : 'neutralLight'
                                   }
                                   className={cn(
-                                    'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
+                                    'text-xs px-1.5 py-0.5 transition-all ease-in-out duration-500 mr-2',
                                     collapsed && 'opacity-0',
                                   )}
                                 >
@@ -412,7 +412,10 @@ export function SidebarComponent(props: Props) {
                       >
                         {/* Grupo aberto vira pílula Brand/25 (Figma §3.12,
                             05/10/2026), para separar o módulo dos subitens */}
-                        <AccordionTrigger className="h-11 rounded-lg py-0 pr-3 hover:bg-gray-50 data-[state=open]:bg-brand-25 data-[state=open]:text-brand-600 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600">
+                        <AccordionTrigger
+                          asHeading={false}
+                          className="h-11 rounded-lg py-0 pr-3 hover:bg-gray-50 data-[state=open]:bg-brand-25 data-[state=open]:text-brand-600 [&[data-state=open]_svg]:text-brand-600 [&[data-state=open]_span]:text-brand-600"
+                        >
                           <TooltipTrigger asChild>
                             <div
                               className={cn(
@@ -498,7 +501,7 @@ export function SidebarComponent(props: Props) {
                                           />
                                           <span
                                             className={cn(
-                                              'text-xs font-medium transition-all ease-in-out duration-500',
+                                              'text-sm font-medium transition-all ease-in-out duration-500',
                                               collapsed
                                                 ? 'ml-4 opacity-0'
                                                 : 'mr-0',
@@ -521,7 +524,7 @@ export function SidebarComponent(props: Props) {
                                                 : 'neutralLight'
                                             }
                                             className={cn(
-                                              'text-[10px] px-1.5 py-0.5 transition-all ease-in-out duration-500',
+                                              'text-xs px-1.5 py-0.5 transition-all ease-in-out duration-500',
                                               collapsed && 'opacity-0',
                                             )}
                                           >

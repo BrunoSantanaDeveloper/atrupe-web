@@ -160,7 +160,7 @@ export function InvoicyConfigForm() {
       <div className="flex items-center gap-4">
         <FeaturedIcon variant="outline" Icon={IconSettings} />
         <div>
-          <h2 className="text-lg font-semibold">Configurações gerais</h2>
+          <h2 className="type-section-title">Configurações gerais</h2>
           <p className="text-sm text-gray-500">
             Configure as séries, numeração e padrões fiscais para emissão de
             notas fiscais
@@ -172,7 +172,7 @@ export function InvoicyConfigForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Environment Section */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Ambiente</h3>
+            <h3 className="type-card-title">Ambiente</h3>
 
             <FormSelect
               name="environment"
@@ -183,7 +183,7 @@ export function InvoicyConfigForm() {
 
           {/* NF-e Configuration */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Configuração de NF-e</h3>
+            <h3 className="type-card-title">Configuração de NF-e</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput name="nfeSeries" label="Série NF-e" placeholder="1" />
@@ -198,7 +198,7 @@ export function InvoicyConfigForm() {
 
           {/* NFC-e Configuration (Optional) */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">
+            <h3 className="type-card-title">
               Configuração de NFC-e (Opcional)
             </h3>
 
@@ -234,7 +234,7 @@ export function InvoicyConfigForm() {
 
           {/* NFS-e Configuration (Optional) */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">
+            <h3 className="type-card-title">
               Configuração de NFS-e (Opcional)
             </h3>
             <p className="text-sm text-gray-500">
@@ -285,7 +285,7 @@ export function InvoicyConfigForm() {
 
           {/* Fiscal Defaults */}
           <div className="rounded-lg bg-white p-6 space-y-4">
-            <h3 className="font-semibold text-base">Padrões Fiscais</h3>
+            <h3 className="type-card-title">Padrões Fiscais</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormInput
@@ -310,7 +310,7 @@ export function InvoicyConfigForm() {
 
           <div className="rounded-lg bg-white p-6 space-y-4">
             <div>
-              <h3 className="font-semibold text-base">Envio ao Cliente</h3>
+              <h3 className="type-card-title">Envio ao Cliente</h3>
               <p className="text-sm text-gray-500">
                 Configure o envio automático dos documentos fiscais quando a
                 NF-e for autorizada.

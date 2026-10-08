@@ -16,7 +16,7 @@ export default function NewPasswordPage() {
   return (
     <>
       <CardHeader className="p-0 mb-4 text-center">
-        <CardTitle className="text-xl font-bold">Criação de senha</CardTitle>
+        <CardTitle>Criação de senha</CardTitle>
       </CardHeader>
       <CardContent>
         <NewPassword />

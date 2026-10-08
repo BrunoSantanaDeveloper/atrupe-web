@@ -22,7 +22,7 @@ export function DataTableCard({
   return (
     <div
       className={cn(
-        'flex flex-col bg-white border border-[#eaecf0] rounded-lg overflow-hidden',
+        'flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden',
         'shadow-[0px_1px_3px_0px_rgba(16,24,40,0.1),_0px_1px_2px_0px_rgba(16,24,40,0.06)]',
         className,
       )}
@@ -55,23 +55,23 @@ export function DataTableHeader({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-start justify-between gap-4 px-6 pt-5 pb-[19px] bg-white border-b border-[#eaecf0]',
+        'flex flex-wrap items-start justify-between gap-4 px-6 pt-5 pb-[19px] bg-white border-b border-gray-200',
         className,
       )}
       {...props}
     >
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-medium text-[#101828]">{title}</h2>
+          <h2 className="text-lg font-medium text-gray-900">{title}</h2>
           {badge && (
-            <div className="flex items-center justify-center px-2 py-0.5 rounded-2xl bg-[#d2f9e3]">
-              <span className="text-xs font-medium text-[#085d40]">
+            <div className="flex items-center justify-center px-2 py-0.5 rounded-2xl bg-brand-50">
+              <span className="text-xs font-medium text-brand-700">
                 {badge}
               </span>
             </div>
           )}
         </div>
-        {description && <p className="text-sm text-[#667085]">{description}</p>}
+        {description && <p className="text-sm text-gray-500">{description}</p>}
       </div>
       {actions && <div className="flex items-center gap-3">{actions}</div>}
     </div>
@@ -109,17 +109,17 @@ export function DataTableSortHead({
         className={cn(
           'text-xs font-medium transition-colors',
           isActive || isSorted
-            ? 'text-[#344054]'
-            : 'text-[#667085] group-hover:text-[#344054]',
+            ? 'text-gray-700'
+            : 'text-gray-500 group-hover:text-gray-700',
         )}
       >
         {title}
       </span>
       {sortDirection === 'asc' && (
-        <IconArrowUp className="w-4 h-4 text-[#667085]" stroke={2} />
+        <IconArrowUp className="w-4 h-4 text-gray-500" stroke={2} />
       )}
       {sortDirection === 'desc' && (
-        <IconArrowDown className="w-4 h-4 text-[#667085]" stroke={2} />
+        <IconArrowDown className="w-4 h-4 text-gray-500" stroke={2} />
       )}
     </div>
   )
@@ -139,7 +139,7 @@ export function DataTableFooter({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-between px-6 pt-3 pb-4 bg-white border-t border-[#eaecf0]',
+        'flex flex-wrap items-center justify-between px-6 pt-3 pb-4 bg-white border-t border-gray-200',
         className,
       )}
       {...props}
@@ -174,21 +174,21 @@ export function DataTableFooterSimple({
 }: DataTableFooterSimpleProps) {
   return (
     <DataTableFooter className={className} {...props}>
-      <p className="text-sm font-medium text-[#344054]">
+      <p className="text-sm font-medium text-gray-700">
         Página {currentPage} de {totalPages}
       </p>
       <div className="flex items-center gap-3">
         <button
           onClick={onPrevious}
           disabled={currentPage <= 1}
-          className="flex items-center justify-center px-3.5 py-2 rounded-lg bg-white border border-[#d0d5dd] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] text-sm font-medium text-[#344054] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center px-3.5 py-2 rounded-lg bg-white border border-gray-300 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {previousLabel}
         </button>
         <button
           onClick={onNext}
           disabled={currentPage >= totalPages}
-          className="flex items-center justify-center px-3.5 py-2 rounded-lg bg-white border border-[#d0d5dd] shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] text-sm font-medium text-[#344054] hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center justify-center px-3.5 py-2 rounded-lg bg-white border border-gray-300 shadow-[0px_1px_2px_0px_rgba(16,24,40,0.05)] text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {nextLabel}
         </button>

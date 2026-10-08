@@ -78,9 +78,7 @@ export function InvoiceConfigSection({ data }: InvoiceConfigSectionProps) {
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
-              <CardTitle className="text-gray-700 font-semibold text-base">
-                Configuração de emissão
-              </CardTitle>
+              <CardTitle>Configuração de emissão</CardTitle>
             </div>
             <AccordionTrigger
               className={cn(
@@ -105,9 +103,7 @@ export function InvoiceConfigSection({ data }: InvoiceConfigSectionProps) {
                   >
                     {row.map((field, i) => (
                       <div key={i} className="space-y-1">
-                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">
-                          {field.label}
-                        </p>
+                        <p className="type-label">{field.label}</p>
                         <p className="text-sm font-semibold text-gray-900">
                           {field.value}
                         </p>

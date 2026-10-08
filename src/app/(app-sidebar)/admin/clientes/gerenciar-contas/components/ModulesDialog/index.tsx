@@ -137,7 +137,7 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
                   key={category}
                   className="border border-gray-200 rounded-lg p-6"
                 >
-                  <h3 className="font-semibold text-sm mb-4">
+                  <h3 className="type-body-strong mb-4">
                     {categoryLabels[category] || category}
                   </h3>
                   <div className="space-y-4">

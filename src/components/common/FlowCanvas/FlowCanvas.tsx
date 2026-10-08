@@ -239,7 +239,7 @@ export function FlowCanvas({
                       {node.badge ? (
                         <Badge
                           variant={node.badge.variant}
-                          className="mt-0.5 h-4 px-1.5 text-[10px]"
+                          className="mt-0.5 h-4 px-1.5 text-xs"
                         >
                           {node.badge.text}
                         </Badge>

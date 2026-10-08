@@ -144,7 +144,7 @@ export function VariationsModal({ material, open, onOpenChange }: Props) {
                     <TableHead className="w-[20%]">Marca</TableHead>
                     <TableHead className="w-[16%]">Cor</TableHead>
                     <TableHead className="w-[30%]">Custo</TableHead>
-                    <TableHead className="w-[24%] text-right">
+                    <TableHead numeric className="w-[24%]">
                       Preço de venda
                     </TableHead>
                     <TableHead className="w-[10%]" />

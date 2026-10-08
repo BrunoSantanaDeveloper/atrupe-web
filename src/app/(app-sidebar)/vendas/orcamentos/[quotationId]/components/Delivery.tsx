@@ -55,9 +55,7 @@ export function QuotationDelivery({ quotationData }: Props) {
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Entrega
-                </CardTitle>
+                <CardTitle>Entrega</CardTitle>
                 {data?.status && (
                   <Badge
                     status

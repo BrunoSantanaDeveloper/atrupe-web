@@ -1,5 +1,91 @@
 import type { Config } from 'tailwindcss'
 
+import { typographyRoles } from './tailwind/typography-roles'
+
+// Tema escuro — design/openspec/changes/tema-claro-escuro (Decisões 3 e 6)
+
+// Paletas padrão do Tailwind em uso viram variáveis: no claro valem os valores
+// do Tailwind (nada muda); no escuro, os de globals.css (.dark)
+const TAILWIND_PALETTES = [
+  'red',
+  'green',
+  'amber',
+  'emerald',
+  'yellow',
+  'neutral',
+  'slate',
+  'violet',
+]
+const TAILWIND_SHADES = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950]
+
+// Variáveis em canais RGB para manter as classes com opacidade (`/50`)
+const tailwindPaletteColors = Object.fromEntries(
+  TAILWIND_PALETTES.map((name) => [
+    name,
+    Object.fromEntries(
+      TAILWIND_SHADES.map((shade) => [
+        shade,
+        `rgb(var(--${name}-${shade}) / <alpha-value>)`,
+      ]),
+    ),
+  ]),
+)
+
+// Fundo de tom 600–900 é preenchimento sólido (botão, marcação): no escuro
+// mantém a cor do claro pela variável -fill, que só existe em .dark
+const fill = (token: string) => `var(--${token}-fill, var(--${token}))`
+const fillRgb = (token: string) =>
+  `rgb(var(--${token}-fill, var(--${token})) / <alpha-value>)`
+
+// [prefixo da classe, prefixo da variável]
+const SOLID_FILL_FAMILIES = [
+  ['gray-', 'gray-'],
+  ['brand-', 'brand-'],
+  ['error-', 'error-'],
+  ['warning-', 'warning-'],
+  ['success-', 'success-'],
+  ['blue-', 'blue-'],
+  ['indigo-', 'indigo-'],
+  ['purple-', 'purple-'],
+  ['pink-', 'pink-'],
+  ['orange-', 'orange-'],
+  ['ros-', 'ros-'],
+  ['rose-', 'ros-'],
+  ['blue-gray', 'blue-gray'],
+  ['blue-gray-', 'blue-gray'],
+  ['blue-light', 'blue-light'],
+  ['blue-light-', 'blue-light'],
+]
+
+const solidFills = {
+  // `bg-brand` (botão `default`) também é preenchimento: no escuro usa a
+  // primária do tema escuro (--brand-500-fill)
+  brand: fill('brand-500'),
+  'brand-500': fill('brand-500'),
+  // `bg-gray` (botão `neutral`, texto branco) também: mantém o cinza do claro
+  gray: fill('gray-500'),
+  'gray-500': fill('gray-500'),
+  ...Object.fromEntries(
+    SOLID_FILL_FAMILIES.flatMap(([classPrefix, varPrefix]) =>
+      [600, 700, 800, 900].map((shade) => [
+        `${classPrefix}${shade}`,
+        fill(`${varPrefix}${shade}`),
+      ]),
+    ),
+  ),
+  ...Object.fromEntries(
+    TAILWIND_PALETTES.map((name) => [
+      name,
+      Object.fromEntries(
+        [600, 700, 800, 900, 950].map((shade) => [
+          shade,
+          fillRgb(`${name}-${shade}`),
+        ]),
+      ),
+    ]),
+  ),
+}
+
 const config = {
   darkMode: ['class'],
   content: [
@@ -18,10 +104,23 @@ const config = {
       },
     },
     extend: {
+      // `white` como fundo, borda, anel ou divisória é superfície: escurece no
+      // tema escuro. Como cor de texto (`text-white`) continua branco.
+      backgroundColor: {
+        white: 'var(--surface)',
+        ...solidFills,
+      },
       borderColor: {
         DEFAULT: 'var(--gray-500)',
+        white: 'var(--surface)',
       },
+      ringColor: { white: 'var(--surface)' },
+      ringOffsetColor: { white: 'var(--surface)' },
+      divideColor: { white: 'var(--surface)' },
+      // Gradiente segue a regra do fundo: tons 600–900 mantêm a cor do claro
+      gradientColorStops: { white: 'var(--surface)', ...solidFills },
       colors: {
+        ...tailwindPaletteColors,
         black: 'var(--black)',
         'blue-100': 'var(--blue-100)',
         'blue-200': 'var(--blue-200)',
@@ -216,80 +315,6 @@ const config = {
         'rose-800': 'var(--ros-800)',
         'rose-900': 'var(--ros-900)',
       },
-      fontFamily: {
-        'display-2xl-bold': 'var(--display-2xl-bold-font-family)',
-        'display-2xl-medium': 'var(--display-2xl-medium-font-family)',
-        'display-2xl-regular': 'var(--display-2xl-regular-font-family)',
-        'display-2xl-semibold': 'var(--display-2xl-semibold-font-family)',
-        'display-lg-bold': 'var(--display-lg-bold-font-family)',
-        'display-lg-medium': 'var(--display-lg-medium-font-family)',
-        'display-lg-regular': 'var(--display-lg-regular-font-family)',
-        'display-lg-semibold': 'var(--display-lg-semibold-font-family)',
-        'display-md-bold': 'var(--display-md-bold-font-family)',
-        'display-md-medium': 'var(--display-md-medium-font-family)',
-        'display-md-regular': 'var(--display-md-regular-font-family)',
-        'display-md-semibold': 'var(--display-md-semibold-font-family)',
-        'display-sm-bold': 'var(--display-sm-bold-font-family)',
-        'display-sm-medium': 'var(--display-sm-medium-font-family)',
-        'display-sm-medium-italic':
-          'var(--display-sm-medium-italic-font-family)',
-        'display-sm-regular': 'var(--display-sm-regular-font-family)',
-        'display-sm-semibold': 'var(--display-sm-semibold-font-family)',
-        'display-xl-bold': 'var(--display-xl-bold-font-family)',
-        'display-xl-medium': 'var(--display-xl-medium-font-family)',
-        'display-xl-regular': 'var(--display-xl-regular-font-family)',
-        'display-xl-semibold': 'var(--display-xl-semibold-font-family)',
-        'display-xs-bold': 'var(--display-xs-bold-font-family)',
-        'display-xs-medium': 'var(--display-xs-medium-font-family)',
-        'display-xs-medium-italic':
-          'var(--display-xs-medium-italic-font-family)',
-        'display-xs-regular': 'var(--display-xs-regular-font-family)',
-        'display-xs-semibold': 'var(--display-xs-semibold-font-family)',
-        'display-xs-semibold-underlined':
-          'var(--display-xs-semibold-underlined-font-family)',
-        'text-lg-bold': 'var(--text-lg-bold-font-family)',
-        'text-lg-bold-italic': 'var(--text-lg-bold-italic-font-family)',
-        'text-lg-medium': 'var(--text-lg-medium-font-family)',
-        'text-lg-medium-italic': 'var(--text-lg-medium-italic-font-family)',
-        'text-lg-medium-underlined':
-          'var(--text-lg-medium-underlined-font-family)',
-        'text-lg-regular': 'var(--text-lg-regular-font-family)',
-        'text-lg-regular-italic': 'var(--text-lg-regular-italic-font-family)',
-        'text-lg-regular-underlined':
-          'var(--text-lg-regular-underlined-font-family)',
-        'text-lg-semibold': 'var(--text-lg-semibold-font-family)',
-        'text-lg-semibold-italic': 'var(--text-lg-semibold-italic-font-family)',
-        'text-md-bold': 'var(--text-md-bold-font-family)',
-        'text-md-bold-italic': 'var(--text-md-bold-italic-font-family)',
-        'text-md-medium': 'var(--text-md-medium-font-family)',
-        'text-md-medium-italic': 'var(--text-md-medium-italic-font-family)',
-        'text-md-regular': 'var(--text-md-regular-font-family)',
-        'text-md-regular-italic': 'var(--text-md-regular-italic-font-family)',
-        'text-md-regular-underlined':
-          'var(--text-md-regular-underlined-font-family)',
-        'text-md-semibold': 'var(--text-md-semibold-font-family)',
-        'text-md-semibold-italic': 'var(--text-md-semibold-italic-font-family)',
-        'text-sm-bold': 'var(--text-sm-bold-font-family)',
-        'text-sm-medium': 'var(--text-sm-medium-font-family)',
-        'text-sm-regular': 'var(--text-sm-regular-font-family)',
-        'text-sm-semibold': 'var(--text-sm-semibold-font-family)',
-        'text-xl-bold': 'var(--text-xl-bold-font-family)',
-        'text-xl-bold-italic': 'var(--text-xl-bold-italic-font-family)',
-        'text-xl-medium': 'var(--text-xl-medium-font-family)',
-        'text-xl-medium-italic': 'var(--text-xl-medium-italic-font-family)',
-        'text-xl-medium-underlined':
-          'var(--text-xl-medium-underlined-font-family)',
-        'text-xl-regular': 'var(--text-xl-regular-font-family)',
-        'text-xl-regular-italic': 'var(--text-xl-regular-italic-font-family)',
-        'text-xl-regular-underlined':
-          'var(--text-xl-regular-underlined-font-family)',
-        'text-xl-semibold': 'var(--text-xl-semibold-font-family)',
-        'text-xl-semibold-italic': 'var(--text-xl-semibold-italic-font-family)',
-        'text-xs-bold': 'var(--text-xs-bold-font-family)',
-        'text-xs-medium': 'var(--text-xs-medium-font-family)',
-        'text-xs-regular': 'var(--text-xs-regular-font-family)',
-        'text-xs-semibold': 'var(--text-xs-semibold-font-family)',
-      },
       boxShadow: {
         // Escala do Figma (design.md §2.5): substitui as sombras padrão do Tailwind
         // para que `shadow-sm`, `shadow-lg` etc. usem os valores do design system.
@@ -392,7 +417,7 @@ const config = {
       },
     },
   },
-  plugins: [require('tailwindcss-animate')],
+  plugins: [require('tailwindcss-animate'), typographyRoles],
 } satisfies Config
 
 export default config

@@ -253,9 +253,7 @@ export function NextStepDialog({
                       )}
                       {grouped.map(([group, items]) => (
                         <div key={group} className="space-y-2">
-                          <p className="text-xs font-medium uppercase tracking-wide text-gray">
-                            {group}
-                          </p>
+                          <p className="type-eyebrow">{group}</p>
                           {items.map((process) => (
                             <ProcessRow
                               key={process.id}

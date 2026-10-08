@@ -290,7 +290,7 @@ export function PaymentConditionsDialog({
 
               <FormBrlInput
                 name="commission.totalCommission"
-                label="Valor Comissão"
+                label="Valor da comissão"
                 startAdornment={<>R$</>}
                 width="flex-[1_0_200px]"
                 disabled

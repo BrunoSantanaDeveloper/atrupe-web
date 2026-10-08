@@ -35,23 +35,23 @@ export function AdministrativeCostTable({ sectors, total }: Props) {
           <TableHead className="w-[70%] min-w-[220px]">
             Setores administrativos
           </TableHead>
-          <TableHead className="w-[30%] text-right">Custo mensal</TableHead>
+          <TableHead numeric className="w-[30%]">
+            Custo mensal
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {sectors.map((sector) => (
           <TableRow key={sector.id}>
             <TableCell className="font-medium">{sector.name}</TableCell>
-            <TableCell className="text-right">
-              {formatValue(sector.directCost)}
-            </TableCell>
+            <TableCell numeric>{formatValue(sector.directCost)}</TableCell>
           </TableRow>
         ))}
         <TableRow className="bg-gray-50 hover:bg-gray-50">
           <TableCell className="font-medium">
             Total administrativo a distribuir
           </TableCell>
-          <TableCell className="text-right font-semibold">
+          <TableCell numeric className="font-semibold">
             {formatCurrencyToBrl(total)}
           </TableCell>
         </TableRow>

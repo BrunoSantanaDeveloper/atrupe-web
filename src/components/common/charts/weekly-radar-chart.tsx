@@ -51,9 +51,7 @@ export function WeeklyRadarChart({ data, title }: WeeklyRadarChartProps) {
     <div className="flex flex-col items-center justify-center p-6 rounded-md bg-white border border-dashed border-[#7b61ff] overflow-hidden">
       {title && (
         <div className="w-full mb-4">
-          <h3 className="text-sm font-semibold text-gray-900 text-center">
-            {title}
-          </h3>
+          <h3 className="type-body-strong text-center">{title}</h3>
         </div>
       )}
       <ChartContainer config={chartConfig} className="w-full max-w-sm h-64">
@@ -65,7 +63,7 @@ export function WeeklyRadarChart({ data, title }: WeeklyRadarChartProps) {
           />
           <PolarAngleAxis
             dataKey="day"
-            tick={{ fill: '#667085', fontSize: 12 }}
+            tick={{ fill: 'var(--gray-500)', fontSize: 12 }}
             tickLine={false}
           />
           <ChartTooltip

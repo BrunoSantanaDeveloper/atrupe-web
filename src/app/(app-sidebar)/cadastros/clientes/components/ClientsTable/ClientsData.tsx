@@ -219,7 +219,7 @@ export function ClientsData({ searchParams, tabs }: Props) {
                     </Badge>
                     {showResponsible && (
                       <p className="mt-1 text-sm text-gray italic">
-                        {client?.responsible?.name || 'Sem Responsável'}
+                        {client?.responsible?.name || 'Sem responsável'}
                       </p>
                     )}
                   </TableCell>

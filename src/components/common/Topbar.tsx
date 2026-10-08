@@ -23,7 +23,7 @@ import { HelpButton } from './HelpButton'
 import { useHelpData } from '@/hooks/queries/useHelpData'
 
 // Revisão (temporário)
-import { reviewTextClass, REVIEW_LEGEND } from '@/consts/revisao'
+import { reviewTextClass } from '@/consts/revisao'
 import type { ReviewMarkKind } from '@/consts/revisao'
 
 export type TabNavType = {
@@ -72,47 +72,50 @@ export function Topbar({
     <div className="space-y-3">
       <div
         className={cn(
-          'flex flex-wrap justify-between gap-2 rounded-lg min-h-10',
+          'flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-lg min-h-12',
           label && 'bg-brand-200 px-6',
           classNames?.label,
         )}
       >
-        <div className="flex justify-center items-center gap-2">
-          <div className="flex justify-center items-center gap-1">
-            {previousPage ? (
-              <Button
-                asChild
-                type="button"
-                size="icon"
-                variant="neutralLight"
-                className="bg-transparent"
-              >
-                <Link href={previousPage}>
-                  <IconArrowLeft />
-                </Link>
-              </Button>
-            ) : null}
-            {title ? (
-              <h1
-                title={review ? REVIEW_LEGEND[review] : undefined}
-                className={cn(
-                  'text-gray-900 font-semibold text-lg',
-                  classNames?.title,
-                  reviewTextClass(review),
-                )}
-              >
-                {title}
-              </h1>
-            ) : (
-              <Skeleton className="h-5 w-48 bg-gray-300" />
-            )}
-          </div>
-          <h3 className="text-gray font-medium text-lg">{supportText}</h3>
-          {badge ? (
-            <Badge status variant={badge.variant || 'default'}>
-              {badge.text || '-'}
-            </Badge>
+        <div className="flex min-w-0 items-center gap-2">
+          {previousPage ? (
+            <Button
+              asChild
+              type="button"
+              size="icon"
+              variant="neutralLight"
+              className="bg-transparent"
+            >
+              <Link href={previousPage} aria-label="Voltar">
+                <IconArrowLeft />
+              </Link>
+            </Button>
           ) : null}
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+              {title ? (
+                <h1
+                  className={cn(
+                    'type-page-title',
+                    classNames?.title,
+                    reviewTextClass(review),
+                  )}
+                >
+                  {title}
+                </h1>
+              ) : (
+                <Skeleton className="h-8 w-56 bg-gray-300" />
+              )}
+              {badge ? (
+                <Badge status variant={badge.variant || 'default'}>
+                  {badge.text || '-'}
+                </Badge>
+              ) : null}
+            </div>
+            {supportText ? (
+              <p className="type-page-subtitle truncate">{supportText}</p>
+            ) : null}
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {label ? (

@@ -97,9 +97,7 @@ export function InvoiceItems({
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
                 <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Itens
-                </CardTitle>
+                <CardTitle>Itens</CardTitle>
                 {filteredItems.length > 0 && (
                   <Badge variant="neutralLight" className="text-xs">
                     {filteredItems.length}
@@ -150,16 +148,25 @@ export function InvoiceItems({
                           <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
                             Seguro
                           </TableHead>
-                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                          <TableHead
+                            numeric
+                            className="px-4 py-3 font-medium text-gray-500 text-xs"
+                          >
                             Desconto
                           </TableHead>
-                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                          <TableHead
+                            numeric
+                            className="px-4 py-3 font-medium text-gray-500 text-xs"
+                          >
                             Valor unitário
                           </TableHead>
                           <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-center">
                             Qtd.
                           </TableHead>
-                          <TableHead className="px-4 py-3 font-medium text-gray-500 text-xs text-right">
+                          <TableHead
+                            numeric
+                            className="px-4 py-3 font-medium text-gray-500 text-xs"
+                          >
                             Valor final
                           </TableHead>
                           <TableHead className="px-6 py-3 w-[80px]"></TableHead>
@@ -208,7 +215,7 @@ export function InvoiceItems({
                                   Configurar
                                 </Button>
                               ) : (
-                                <div className="text-[13px] text-gray-500 space-y-0.5 mt-0.5">
+                                <div className="text-sm text-gray-500 space-y-0.5 mt-0.5">
                                   <div>ICMS: {item.cstIcms || '-'}</div>
                                   <div>COFINS: {item.cstCofins || '-'}</div>
                                   <div>PIS: {item.cstPis || '-'}</div>
@@ -220,22 +227,34 @@ export function InvoiceItems({
                             </TableCell>
 
                             {/* Valores e Quantidade */}
-                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                            <TableCell
+                              numeric
+                              className="px-4 py-4 text-gray-600 text-sm align-top font-medium"
+                            >
                               {item.freight > 0
                                 ? formatCurrency(item.freight)
                                 : '-'}
                             </TableCell>
-                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums">
+                            <TableCell
+                              numeric
+                              className="px-4 py-4 text-gray-600 text-sm align-top font-medium"
+                            >
                               {item.insurance > 0
                                 ? formatCurrency(item.insurance)
                                 : '-'}
                             </TableCell>
-                            <TableCell className="px-4 py-4 text-right text-gray-600 text-sm align-top font-medium tabular-nums text-error-600">
+                            <TableCell
+                              numeric
+                              className="px-4 py-4 text-gray-600 text-sm align-top font-medium text-error-600"
+                            >
                               {item.discount > 0
                                 ? `- ${formatCurrency(item.discount)}`
                                 : '-'}
                             </TableCell>
-                            <TableCell className="px-4 py-4 text-right text-gray-900 text-sm align-top font-medium tabular-nums">
+                            <TableCell
+                              numeric
+                              className="px-4 py-4 text-gray-900 text-sm align-top font-medium"
+                            >
                               {formatCurrency(item.unitValue)}
                             </TableCell>
                             <TableCell className="px-4 py-4 text-center text-gray-900 text-sm align-top font-medium whitespace-nowrap">
@@ -244,7 +263,10 @@ export function InvoiceItems({
                                 {item.unit || item.uCom || 'UN'}
                               </span>
                             </TableCell>
-                            <TableCell className="px-4 py-4 text-right text-gray-900 font-bold text-sm align-top tabular-nums">
+                            <TableCell
+                              numeric
+                              className="px-4 py-4 type-body-strong align-top"
+                            >
                               {formatCurrency(item.totalValue)}
                             </TableCell>
 

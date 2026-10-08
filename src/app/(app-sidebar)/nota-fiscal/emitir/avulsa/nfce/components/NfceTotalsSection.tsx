@@ -32,9 +32,7 @@ export function NfceTotalsSection({
       <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
         <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
         <div>
-          <CardTitle className="text-gray-700 font-semibold text-base">
-            Resumo dos Totais
-          </CardTitle>
+          <CardTitle>Resumo dos Totais</CardTitle>
         </div>
       </CardHeader>
 
@@ -57,11 +55,9 @@ export function NfceTotalsSection({
 
         <div className="flex justify-between items-center">
           <span className="text-sm font-semibold text-gray-900">
-            Valor Total da Nota
+            Valor total da nota
           </span>
-          <span className="text-xl font-bold text-gray-900">
-            {formatCurrency(totalNota)}
-          </span>
+          <span className="type-kpi-value">{formatCurrency(totalNota)}</span>
         </div>
 
         <Separator className="my-2" />

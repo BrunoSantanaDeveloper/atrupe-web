@@ -121,7 +121,7 @@ function CheckIcon() {
       viewBox="0 0 20 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-5 h-5 flex-shrink-0 text-[#077550]"
+      className="w-5 h-5 flex-shrink-0 text-brand-600"
     >
       <path
         d="M16.6667 5L7.50001 14.1667L3.33334 10"
@@ -186,7 +186,7 @@ function LeadingIcon({
         {member.avatarSrc && (
           <AvatarImage src={member.avatarSrc} alt={member.name} />
         )}
-        <AvatarFallback className="text-[10px] font-semibold text-gray-600 bg-gray-100">
+        <AvatarFallback className="text-xs font-semibold text-gray-600 bg-gray-100">
           {MEMBER_AVATAR_FALLBACK(member.name)}
         </AvatarFallback>
       </Avatar>
@@ -239,7 +239,7 @@ export function MemberSelect({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-[#344054]">
+        <label htmlFor={id} className="text-sm font-medium text-gray-700">
           {label}
         </label>
       )}
@@ -260,8 +260,8 @@ export function MemberSelect({
               'outline-none focus-visible:outline-none',
               // border
               isOpen
-                ? 'border-[#38cf8f] shadow-[0px_1px_2px_0_rgba(16,24,40,0.05),0px_0px_0px_4px_#f4ebff]'
-                : 'border-[#d0d5dd] shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)]',
+                ? 'border-brand-300 shadow-[0px_1px_2px_0_rgba(16,24,40,0.05),0px_0px_0px_4px_#f4ebff]'
+                : 'border-gray-300 shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)]',
               disabled && 'cursor-not-allowed opacity-50',
             )}
           >
@@ -276,26 +276,26 @@ export function MemberSelect({
             <span className="flex-1 flex items-center gap-2 min-w-0">
               {value ? (
                 <>
-                  <span className="text-base font-medium text-[#101828] truncate">
+                  <span className="text-base font-medium text-gray-900 truncate">
                     {value.name}
                   </span>
                   {showUsername && value.username && (
-                    <span className="text-base text-[#667085] truncate">
+                    <span className="text-base text-gray-500 truncate">
                       @{value.username}
                     </span>
                   )}
                 </>
               ) : (
-                <span className="text-base text-[#667085]">{placeholder}</span>
+                <span className="text-base text-gray-500">{placeholder}</span>
               )}
             </span>
 
             {/* Chevron — hidden for 'search' variant (no dropdown indicator) */}
             {iconVariant !== 'search' &&
               (isOpen ? (
-                <ChevronUp className="w-5 h-5 text-[#667085] flex-shrink-0" />
+                <ChevronUp className="w-5 h-5 text-gray-500 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-[#667085] flex-shrink-0" />
+                <ChevronDown className="w-5 h-5 text-gray-500 flex-shrink-0" />
               ))}
           </button>
         </PopoverPrimitive.Trigger>
@@ -306,7 +306,7 @@ export function MemberSelect({
           sideOffset={4}
           className={cn(
             'z-50 w-[var(--radix-popover-trigger-width)] min-w-[320px] rounded-lg bg-white py-1',
-            'border border-[#F2F4F7]',
+            'border border-gray-100',
             'shadow-[0px_12px_16px_-4px_rgba(16,24,40,0.08),0px_4px_6px_-2px_rgba(16,24,40,0.03)]',
             'data-[state=open]:animate-in data-[state=closed]:animate-out',
             'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -318,15 +318,15 @@ export function MemberSelect({
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Search input */}
             {searchable && (
-              <div className="px-3.5 py-2 border-b border-[#F2F4F7]">
+              <div className="px-3.5 py-2 border-b border-gray-100">
                 <div className="flex items-center gap-2">
-                  <Search className="w-4 h-4 text-[#667085] flex-shrink-0" />
+                  <Search className="w-4 h-4 text-gray-500 flex-shrink-0" />
                   <input
                     autoFocus
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Buscar..."
-                    className="flex-1 text-sm text-[#101828] placeholder-[#667085] outline-none bg-transparent"
+                    className="flex-1 text-sm text-gray-900 placeholder-gray-500 outline-none bg-transparent"
                   />
                 </div>
               </div>
@@ -335,7 +335,7 @@ export function MemberSelect({
             {/* List */}
             <div className="flex-1 overflow-y-auto member-select-scroll">
               {filtered.length === 0 ? (
-                <div className="px-3.5 py-4 text-sm text-[#667085] text-center">
+                <div className="px-3.5 py-4 text-sm text-gray-500 text-center">
                   Nenhum membro encontrado
                 </div>
               ) : (
@@ -365,9 +365,7 @@ export function MemberSelect({
                         <span
                           className={cn(
                             'text-base font-medium truncate',
-                            member.disabled
-                              ? 'text-[#EAECF0]'
-                              : 'text-[#101828]',
+                            member.disabled ? 'text-gray-200' : 'text-gray-900',
                           )}
                         >
                           {member.name}
@@ -377,8 +375,8 @@ export function MemberSelect({
                             className={cn(
                               'text-base truncate',
                               member.disabled
-                                ? 'text-[#EAECF0]'
-                                : 'text-[#667085]',
+                                ? 'text-gray-200'
+                                : 'text-gray-500',
                             )}
                           >
                             @{member.username}
@@ -398,7 +396,7 @@ export function MemberSelect({
           {/* Custom scrollbar track (decorative, matches Figma spec) */}
           <div className="w-4 flex-shrink-0 flex items-start justify-center py-1">
             <div
-              className="w-2 rounded-lg bg-[#EAECF0]"
+              className="w-2 rounded-lg bg-gray-200"
               style={{ minHeight: 32, height: '40%' }}
             />
           </div>
@@ -435,14 +433,14 @@ export function MemberSearchInput({
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       {label && (
-        <label className="text-sm font-medium text-[#344054]">{label}</label>
+        <label className="text-sm font-medium text-gray-700">{label}</label>
       )}
       <div
         className={cn(
           'flex items-center gap-2 px-3.5 py-2.5 rounded-lg bg-white border transition-shadow',
           focused
-            ? 'border-[#38cf8f] shadow-[0px_1px_2px_0_rgba(16,24,40,0.05),0px_0px_0px_4px_#f4ebff]'
-            : 'border-[#d0d5dd] shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)]',
+            ? 'border-brand-300 shadow-[0px_1px_2px_0_rgba(16,24,40,0.05),0px_0px_0px_4px_#f4ebff]'
+            : 'border-gray-300 shadow-[0px_1px_2px_0_rgba(16,24,40,0.05)]',
           disabled && 'opacity-50 cursor-not-allowed',
         )}
       >
@@ -450,17 +448,17 @@ export function MemberSearchInput({
         <span className="flex-1 flex items-center gap-2 min-w-0">
           {value ? (
             <>
-              <span className="text-base font-medium text-[#101828] truncate">
+              <span className="text-base font-medium text-gray-900 truncate">
                 {value.name}
               </span>
               {showUsername && value.username && (
-                <span className="text-base text-[#667085] truncate">
+                <span className="text-base text-gray-500 truncate">
                   @{value.username}
                 </span>
               )}
             </>
           ) : (
-            <span className="text-base text-[#667085]">{placeholder}</span>
+            <span className="text-base text-gray-500">{placeholder}</span>
           )}
         </span>
       </div>

@@ -14,7 +14,7 @@ export function EnvioTab() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-900 pb-2 border-b border-gray-100">
+        <h3 className="type-card-title pb-2 border-b border-gray-100">
           Informações Complementares
         </h3>
         <FormTextarea
@@ -27,7 +27,7 @@ export function EnvioTab() {
 
       <div className="space-y-4">
         <div className="space-y-2 pb-2 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-900">Envio ao Cliente</h3>
+          <h3 className="type-card-title">Envio ao Cliente</h3>
           <p className="text-sm text-muted-foreground">
             Configure o envio automático dos documentos fiscais quando a NF-e
             for autorizada.

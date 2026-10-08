@@ -77,8 +77,12 @@ export function DistributionData({
             Setores produtivos
           </TableHead>
           <TableHead className="w-[46%] min-w-[400px]">Quanto recebe</TableHead>
-          <TableHead className="w-[15%] text-right">Custo direto</TableHead>
-          <TableHead className="w-[15%] text-right">Custo total</TableHead>
+          <TableHead numeric className="w-[15%]">
+            Custo direto
+          </TableHead>
+          <TableHead numeric className="w-[15%]">
+            Custo total
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -122,10 +126,8 @@ export function DistributionData({
                   />
                 </div>
               </TableCell>
-              <TableCell className="text-right">
-                {formatValue(sector.directCost)}
-              </TableCell>
-              <TableCell className="text-right font-semibold">
+              <TableCell numeric>{formatValue(sector.directCost)}</TableCell>
+              <TableCell numeric className="font-semibold">
                 {formatValue(totalOf(sector))}
               </TableCell>
             </TableRow>
