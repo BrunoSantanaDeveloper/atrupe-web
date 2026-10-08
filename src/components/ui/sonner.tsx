@@ -5,9 +5,9 @@ import { Toaster as Sonner } from 'sonner'
 
 import {
   IconLoader,
-  IconXboxXFilled,
+  IconCircleXFilled,
   IconInfoCircleFilled,
-  IconAlertCircleFilled,
+  IconAlertTriangleFilled,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
 
@@ -36,8 +36,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       icons={{
         loading: <IconLoader size={16} className="animate-spin" />,
         success: <IconCircleCheckFilled size={16} className="text-success" />,
-        warning: <IconAlertCircleFilled size={16} className="text-warning" />,
-        error: <IconXboxXFilled size={16} className="text-error" />,
+        warning: <IconAlertTriangleFilled size={16} className="text-warning" />,
+        error: <IconCircleXFilled size={16} className="text-error" />,
         info: <IconInfoCircleFilled size={16} className="text-blue" />,
       }}
       expand={true}

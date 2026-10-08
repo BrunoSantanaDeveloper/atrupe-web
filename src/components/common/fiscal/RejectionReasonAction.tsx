@@ -36,7 +36,6 @@ export function RejectionReasonAction({
           size="sm"
           className="h-7 px-2"
           LeftIcon={IconAlertTriangle}
-          leftIconSize={14}
         >
           Motivo
         </Button>
@@ -67,7 +66,6 @@ export function RejectionReasonAction({
               variant="warningLight"
               size="sm"
               LeftIcon={IconPencil}
-              leftIconSize={16}
             >
               <Link href={reissueHref}>Corrigir e reemitir</Link>
             </Button>

@@ -143,7 +143,6 @@ function EditableDateField({
           variant="neutralLight"
           size="iconSm"
           LeftIcon={IconDeviceFloppy}
-          leftIconSize={16}
           title="Salvar data"
           disabled={isSaving || !hasChanged}
           isLoading={isSaving}
