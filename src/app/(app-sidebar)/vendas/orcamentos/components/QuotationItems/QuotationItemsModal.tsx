@@ -180,7 +180,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
                 label="Buscar produto"
                 placeholder="Buscar produto"
                 width="flex-[1_0_190px]"
-                startAdornment={<IconSearch />}
+                startAdornment={<IconSearch aria-hidden />}
               />
               <SelectSectorWithProductsField<FormData>
                 name="sectorId"

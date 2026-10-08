@@ -305,7 +305,7 @@ export default function FinishSubscriptionPage() {
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
                 <div className="rounded-full bg-green-100 p-3">
-                  <IconCheck size={48} className="text-green-600" />
+                  <IconCheck aria-hidden size={48} className="text-green-600" />
                 </div>
               </div>
               <CardTitle className="text-green-600">
@@ -339,7 +339,7 @@ export default function FinishSubscriptionPage() {
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
                 <div className="rounded-full bg-blue-100 p-3">
-                  <IconCheck size={48} className="text-blue-600" />
+                  <IconCheck aria-hidden size={48} className="text-blue-600" />
                 </div>
               </div>
               <CardTitle className="text-blue-600">
@@ -387,7 +387,7 @@ export default function FinishSubscriptionPage() {
             <CardHeader className="p-0 mb-8 text-center">
               <div className="flex justify-center mb-4">
                 <div className="rounded-full bg-red-100 p-3">
-                  <IconX size={48} className="text-red-600" />
+                  <IconX aria-hidden size={48} className="text-red-600" />
                 </div>
               </div>
               <CardTitle className="text-red-600">

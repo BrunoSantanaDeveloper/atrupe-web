@@ -17,7 +17,7 @@ import {
   IconFileInvoice,
   IconChevronRight,
 } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface AvulsaTypeOption {
   key: string
@@ -95,7 +95,7 @@ export default function NotaAvulsaPage() {
                         ${type.disabled ? 'bg-gray-100 text-gray-400' : 'bg-primary-100 text-primary-600 group-hover:bg-primary-200'}
                       `}
                     >
-                      <Icon size={22} />
+                      <Icon size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
                     </div>
 
                     <div className="flex-1 min-w-0">
@@ -120,6 +120,7 @@ export default function NotaAvulsaPage() {
                       </Badge>
                     ) : (
                       <IconChevronRight
+                        aria-hidden
                         size={ICON_SIZE.md}
                         className={`shrink-0 transition-transform ${type.disabled ? 'text-gray-300' : 'text-gray-400 group-hover:translate-x-0.5 group-hover:text-primary-500'}`}
                       />

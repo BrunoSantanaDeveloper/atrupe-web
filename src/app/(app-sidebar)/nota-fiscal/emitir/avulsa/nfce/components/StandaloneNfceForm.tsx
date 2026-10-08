@@ -433,7 +433,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
-                <IconArrowLeft size={ICON_SIZE.sm} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.sm} />
               </Button>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -494,6 +494,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
               <IconAlertTriangleFilled
+                aria-hidden
                 size={ICON_SIZE.md}
                 className="text-warning-500"
               />

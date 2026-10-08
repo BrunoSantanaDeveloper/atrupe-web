@@ -255,6 +255,7 @@ export function SidebarComponent(props: Props) {
                 onClick={handleCollapse}
               >
                 <IconChevronLeft
+                  aria-hidden
                   size={ICON_SIZE.sm}
                   className={cn(
                     'text-gray transition-transform duration-300',

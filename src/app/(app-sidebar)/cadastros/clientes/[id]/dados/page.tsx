@@ -24,7 +24,11 @@ export default function ClientDataPage({ params }: Props) {
         </div>
       }
     >
-      <Suspense fallback={<IconLoader2 className="size-16 animate-spin p-8" />}>
+      <Suspense
+        fallback={
+          <IconLoader2 aria-hidden className="size-16 animate-spin p-8" />
+        }
+      >
         <ClientData data={data} />
       </Suspense>
     </PermissionGate>

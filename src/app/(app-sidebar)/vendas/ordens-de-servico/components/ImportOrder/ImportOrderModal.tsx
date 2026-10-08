@@ -352,7 +352,7 @@ export function ImportOrderModal() {
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash size={ICON_SIZE.md} />
+                      <IconTrash aria-hidden size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -414,7 +414,7 @@ export function ImportOrderModal() {
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle size={ICON_SIZE.sm} />
+                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -457,6 +457,7 @@ export function ImportOrderModal() {
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
                               <IconExternalLink
+                                aria-hidden
                                 size={ICON_SIZE.sm}
                                 className="mr-1"
                               />

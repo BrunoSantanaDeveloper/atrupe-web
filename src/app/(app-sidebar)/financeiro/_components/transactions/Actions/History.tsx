@@ -61,6 +61,7 @@ export function TransactionHistoryDialog({ open, setOpen, rowData }: Props) {
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <IconLoader2
+                aria-hidden
                 size={ICON_SIZE.lg}
                 stroke={ICON_STROKE.lg}
                 className="animate-spin text-gray-500"

@@ -201,6 +201,7 @@ export function CfopListClient() {
         {isLoading ? (
           <div className="flex items-center justify-center p-8">
             <IconLoader2
+              aria-hidden
               size={ICON_SIZE.lg}
               stroke={ICON_STROKE.lg}
               className="animate-spin text-gray-400"
@@ -209,7 +210,10 @@ export function CfopListClient() {
           </div>
         ) : cfops.length === 0 ? (
           <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-8 text-center">
-            <IconArrowsSplit className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+            <IconArrowsSplit
+              aria-hidden
+              className="w-12 h-12 mx-auto text-gray-400 mb-4"
+            />
             <h3 className="type-card-title mb-2">Nenhum CFOP cadastrado</h3>
             <p className="text-gray-500 mb-4">
               Adicione CFOPs customizados para usar nas suas notas fiscais

@@ -302,7 +302,10 @@ export function AiChatWidget() {
                   ) : (
                     <div className="flex h-[46vh] items-center justify-center text-center">
                       <div>
-                        <Bot className="mx-auto mb-3 size-8 text-brand-600" />
+                        <Bot
+                          aria-hidden
+                          className="mx-auto mb-3 size-8 text-brand-600"
+                        />
                         <p className="text-sm font-semibold text-gray-800">
                           Como posso ajudar?
                         </p>

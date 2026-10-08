@@ -222,6 +222,7 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
               {emissionResult.statusMessage && (
                 <div className="flex items-start gap-2 p-3 bg-red-50 rounded-lg">
                   <IconAlertTriangle
+                    aria-hidden
                     size={ICON_SIZE.md}
                     className="text-red-500 shrink-0 mt-0.5"
                   />
@@ -237,7 +238,11 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
                   className="w-full"
                   onClick={() => window.open(emissionResult.danfeUrl, '_blank')}
                 >
-                  <IconExternalLink size={ICON_SIZE.md} className="mr-2" />
+                  <IconExternalLink
+                    aria-hidden
+                    size={ICON_SIZE.md}
+                    className="mr-2"
+                  />
                   Visualizar DANFE
                 </Button>
               )}

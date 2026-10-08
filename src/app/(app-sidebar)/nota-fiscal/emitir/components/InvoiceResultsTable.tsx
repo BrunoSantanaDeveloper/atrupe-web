@@ -852,22 +852,25 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         <TabsList>
           <TabsTrigger
             value="TODOS"
-            icon={<IconLayoutGrid size={ICON_SIZE.sm} />}
+            icon={<IconLayoutGrid aria-hidden size={ICON_SIZE.sm} />}
           >
             Todos
           </TabsTrigger>
           <TabsTrigger
             value="NFE"
-            icon={<IconBuildingStore size={ICON_SIZE.sm} />}
+            icon={<IconBuildingStore aria-hidden size={ICON_SIZE.sm} />}
           >
             NF-e
           </TabsTrigger>
-          <TabsTrigger value="NFSE" icon={<IconTool size={ICON_SIZE.sm} />}>
+          <TabsTrigger
+            value="NFSE"
+            icon={<IconTool aria-hidden size={ICON_SIZE.sm} />}
+          >
             NFS-e
           </TabsTrigger>
           <TabsTrigger
             value="NFCE"
-            icon={<IconFileInvoice size={ICON_SIZE.sm} />}
+            icon={<IconFileInvoice aria-hidden size={ICON_SIZE.sm} />}
           >
             NFC-e
           </TabsTrigger>
@@ -882,12 +885,15 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       >
         <TabsList aria-label="Filtrar por ambiente fiscal">
           <TabsTrigger value="TODOS">Todos</TabsTrigger>
-          <TabsTrigger value="1" icon={<IconCircleCheck size={ICON_SIZE.sm} />}>
+          <TabsTrigger
+            value="1"
+            icon={<IconCircleCheck aria-hidden size={ICON_SIZE.sm} />}
+          >
             Produção
           </TabsTrigger>
           <TabsTrigger
             value="2"
-            icon={<IconAlertTriangle size={ICON_SIZE.sm} />}
+            icon={<IconAlertTriangle aria-hidden size={ICON_SIZE.sm} />}
           >
             Homologação
           </TabsTrigger>
@@ -1289,6 +1295,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                           aria-label="Ações da NFC-e"
                                         >
                                           <IconDotsVertical
+                                            aria-hidden
                                             size={ICON_SIZE.sm}
                                             className="text-gray-500"
                                           />
@@ -1313,6 +1320,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             }
                                           >
                                             <IconFileCheck
+                                              aria-hidden
                                               size={ICON_SIZE.md}
                                               className="mr-2"
                                             />
@@ -1331,6 +1339,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               }
                                             >
                                               <IconPrinter
+                                                aria-hidden
                                                 size={ICON_SIZE.md}
                                                 className="mr-2"
                                               />
@@ -1350,6 +1359,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             }
                                           >
                                             <IconQrcode
+                                              aria-hidden
                                               size={ICON_SIZE.md}
                                               className="mr-2"
                                             />
@@ -1362,6 +1372,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             onClick={handleDownloadXml}
                                           >
                                             <IconDownload
+                                              aria-hidden
                                               size={ICON_SIZE.md}
                                               className="mr-2"
                                             />
@@ -1379,6 +1390,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               onClick={handleConsultarStatus}
                                             >
                                               <IconRefresh
+                                                aria-hidden
                                                 size={ICON_SIZE.md}
                                                 className="mr-2"
                                               />
@@ -1394,6 +1406,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               onClick={handleReprocess}
                                             >
                                               <IconRepeat
+                                                aria-hidden
                                                 size={ICON_SIZE.md}
                                                 className="mr-2"
                                               />
@@ -1416,6 +1429,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               }
                                             >
                                               <IconBan
+                                                aria-hidden
                                                 size={ICON_SIZE.md}
                                                 className="mr-2"
                                               />

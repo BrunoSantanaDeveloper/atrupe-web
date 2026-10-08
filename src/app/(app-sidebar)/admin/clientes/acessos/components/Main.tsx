@@ -121,22 +121,24 @@ export function Main({ searchParams }: SearchParamsType) {
         <SummaryCard
           title="Sessões"
           value={summary?.totalSessions || 0}
-          icon={<IconClock className="text-blue-500" />}
+          icon={<IconClock aria-hidden className="text-blue-500" />}
         />
         <SummaryCard
           title="Ativas"
           value={summary?.activeSessions || 0}
-          icon={<IconActivity className="text-green-500" />}
+          icon={<IconActivity aria-hidden className="text-green-500" />}
         />
         <SummaryCard
           title="Usuários"
           value={summary?.uniqueUsers || 0}
-          icon={<IconUsers className="text-violet-500" />}
+          icon={<IconUsers aria-hidden className="text-violet-500" />}
         />
         <SummaryCard
           title="Empresas"
           value={summary?.uniqueCompanies || 0}
-          icon={<IconBuildingCommunity className="text-orange-500" />}
+          icon={
+            <IconBuildingCommunity aria-hidden className="text-orange-500" />
+          }
         />
       </div>
 

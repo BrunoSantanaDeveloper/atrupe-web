@@ -175,7 +175,11 @@ export function FiscalPendenciasAlert() {
                   >
                     <Button variant="neutralLight" size="sm">
                       Corrigir
-                      <IconChevronRight size={ICON_SIZE.sm} className="ml-1" />
+                      <IconChevronRight
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="ml-1"
+                      />
                     </Button>
                   </Link>
                 </div>

@@ -34,7 +34,9 @@ export default function ClientQuotationsPage({ params }: Props) {
       >
         <div className="rounded-lg my-6 bg-white overflow-hidden">
           <Suspense
-            fallback={<IconLoader2 className="size-16 animate-spin p-8" />}
+            fallback={
+              <IconLoader2 aria-hidden className="size-16 animate-spin p-8" />
+            }
           >
             <QuotationsData
               searchParams={{ clientId: params.id }}

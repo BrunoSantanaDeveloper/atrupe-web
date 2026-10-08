@@ -30,7 +30,10 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <IconLoader2 className="h-8 w-8 animate-spin text-gray mb-4" />
+        <IconLoader2
+          aria-hidden
+          className="h-8 w-8 animate-spin text-gray mb-4"
+        />
         <p className="text-sm text-gray">Verificando acesso ao módulo...</p>
       </div>
     )
@@ -73,7 +76,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
             fiscais.
           </p>
           <Button onClick={() => setModalOpen(true)}>
-            <IconFileInvoice size={ICON_SIZE.md} className="mr-2" />
+            <IconFileInvoice aria-hidden size={ICON_SIZE.md} className="mr-2" />
             Configurar agora
           </Button>
         </div>

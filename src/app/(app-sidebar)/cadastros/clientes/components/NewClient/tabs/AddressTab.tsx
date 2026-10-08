@@ -55,7 +55,7 @@ export function AddressTab() {
                   className="absolute top-1 right-1"
                   onClick={() => remove(index)}
                 >
-                  <IconTrash size={ICON_SIZE.sm} />
+                  <IconTrash aria-hidden size={ICON_SIZE.sm} />
                 </Button>
               )}
             </div>

@@ -151,6 +151,7 @@ export const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
             className={cn(centerPlayButtonVariants({ size }))}
           >
             <Play
+              aria-hidden
               className={cn(
                 'fill-current ml-1',
                 size === 'xs' || size === 'sm' ? 'w-5 h-5' : 'w-8 h-8',

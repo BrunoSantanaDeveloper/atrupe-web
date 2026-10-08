@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 import { type ButtonIconProps, buttonVariants } from '@/components/ui/button'
 
 import { IconLoader2 as LoaderCircle } from '@tabler/icons-react'
-import { Icon } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 const AlertDialog = AlertDialogPrimitive.Root
 
@@ -111,12 +111,12 @@ const AlertDialogAction = React.forwardRef<
     className={cn('gap-2', buttonVariants(), className)}
     {...props}
   >
-    {LeftIcon && <LeftIcon aria-hidden="true" size={20} />}
+    {LeftIcon && <LeftIcon aria-hidden="true" size={ICON_SIZE.md} />}
     {props.children}
     {isLoading ? (
       <Icon icon={LoaderCircle} size="md" className="animate-spin" />
     ) : (
-      RightIcon && <RightIcon aria-hidden="true" size={20} />
+      RightIcon && <RightIcon aria-hidden="true" size={ICON_SIZE.md} />
     )}
   </AlertDialogPrimitive.Action>
 ))

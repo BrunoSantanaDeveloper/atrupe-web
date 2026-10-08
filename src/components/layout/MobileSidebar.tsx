@@ -410,7 +410,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"
               onClick={handleProfileClick}
             >
-              <IconUser size={ICON_SIZE.md} className="text-gray-600" />
+              <IconUser
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-gray-600"
+              />
               <span className="text-sm font-semibold text-gray-700">
                 Perfil
               </span>
@@ -426,7 +430,11 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
               className="flex flex-1 items-center gap-3 pt-2 pb-3 w-full text-left"
               onClick={handleLogOut}
             >
-              <IconLogout size={ICON_SIZE.md} className="text-gray-600" />
+              <IconLogout
+                aria-hidden
+                size={ICON_SIZE.md}
+                className="text-gray-600"
+              />
               <span className="text-sm font-semibold text-gray-700">Sair</span>
             </button>
           </div>

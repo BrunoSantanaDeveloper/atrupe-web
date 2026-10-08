@@ -115,7 +115,11 @@ export default function AdminPlansPage() {
             </div>
           ) : plans.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-12 text-center text-gray-500">
-              <IconLayoutGrid size={48} className="text-gray-300 mb-2" />
+              <IconLayoutGrid
+                aria-hidden
+                size={48}
+                className="text-gray-300 mb-2"
+              />
               <p className="font-semibold text-gray-700">
                 Nenhum plano encontrado
               </p>

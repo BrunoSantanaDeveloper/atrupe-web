@@ -84,7 +84,7 @@ export function AdminExpensesData({ accounts, onEdit }: Props) {
                         aria-label="O que é o custo mensal de referência"
                         className="text-gray-400 hover:text-gray-600"
                       >
-                        <IconInfoCircle size={ICON_SIZE.sm} />
+                        <IconInfoCircle aria-hidden size={ICON_SIZE.sm} />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">

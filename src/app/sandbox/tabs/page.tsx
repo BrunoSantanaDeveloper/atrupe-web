@@ -60,7 +60,10 @@ export default function TabsSandboxPage() {
 
               <Tabs defaultValue="empty" variant="underline" intent="success">
                 <TabsList>
-                  <TabsTrigger value="1" icon={<IconLayoutDashboard />}>
+                  <TabsTrigger
+                    value="1"
+                    icon={<IconLayoutDashboard aria-hidden />}
+                  >
                     Tab Name
                   </TabsTrigger>
                 </TabsList>
@@ -78,7 +81,7 @@ export default function TabsSandboxPage() {
                 <TabsList>
                   <TabsTrigger
                     value="1"
-                    icon={<IconLayoutDashboard />}
+                    icon={<IconLayoutDashboard aria-hidden />}
                     badge="1"
                   >
                     Tab Name
@@ -101,7 +104,10 @@ export default function TabsSandboxPage() {
 
               <Tabs defaultValue="1" variant="underline" intent="success">
                 <TabsList>
-                  <TabsTrigger value="1" icon={<IconLayoutDashboard />}>
+                  <TabsTrigger
+                    value="1"
+                    icon={<IconLayoutDashboard aria-hidden />}
+                  >
                     Tab Name
                   </TabsTrigger>
                 </TabsList>
@@ -119,7 +125,7 @@ export default function TabsSandboxPage() {
                 <TabsList>
                   <TabsTrigger
                     value="1"
-                    icon={<IconLayoutDashboard />}
+                    icon={<IconLayoutDashboard aria-hidden />}
                     badge="1"
                   >
                     Tab Name
@@ -142,7 +148,10 @@ export default function TabsSandboxPage() {
 
               <Tabs defaultValue="1" variant="underline" intent="dark">
                 <TabsList>
-                  <TabsTrigger value="1" icon={<IconLayoutDashboard />}>
+                  <TabsTrigger
+                    value="1"
+                    icon={<IconLayoutDashboard aria-hidden />}
+                  >
                     Tab Name
                   </TabsTrigger>
                 </TabsList>
@@ -160,7 +169,7 @@ export default function TabsSandboxPage() {
                 <TabsList>
                   <TabsTrigger
                     value="1"
-                    icon={<IconLayoutDashboard />}
+                    icon={<IconLayoutDashboard aria-hidden />}
                     badge="1"
                   >
                     Tab Name
@@ -223,22 +232,31 @@ export default function TabsSandboxPage() {
             {/* Underline Examples (With Icons) */}
             <Tabs defaultValue="dashboard" variant="underline" intent="success">
               <TabsList>
-                <TabsTrigger value="dashboard" icon={<IconLayoutDashboard />}>
+                <TabsTrigger
+                  value="dashboard"
+                  icon={<IconLayoutDashboard aria-hidden />}
+                >
                   Dashboard
                 </TabsTrigger>
-                <TabsTrigger value="admin" icon={<IconUsers />}>
+                <TabsTrigger value="admin" icon={<IconUsers aria-hidden />}>
                   Admin
                 </TabsTrigger>
-                <TabsTrigger value="providers" icon={<IconBuildingStore />}>
+                <TabsTrigger
+                  value="providers"
+                  icon={<IconBuildingStore aria-hidden />}
+                >
                   Providers
                 </TabsTrigger>
-                <TabsTrigger value="payout" icon={<IconReceipt />}>
+                <TabsTrigger value="payout" icon={<IconReceipt aria-hidden />}>
                   Payout
                 </TabsTrigger>
-                <TabsTrigger value="consumers" icon={<IconUser />}>
+                <TabsTrigger value="consumers" icon={<IconUser aria-hidden />}>
                   Consumers
                 </TabsTrigger>
-                <TabsTrigger value="settings" icon={<IconSettings />}>
+                <TabsTrigger
+                  value="settings"
+                  icon={<IconSettings aria-hidden />}
+                >
                   Settings
                 </TabsTrigger>
               </TabsList>
@@ -246,26 +264,36 @@ export default function TabsSandboxPage() {
 
             <Tabs defaultValue="dashboard" variant="underline" intent="success">
               <TabsList>
-                <TabsTrigger value="dashboard" icon={<IconLayoutDashboard />}>
+                <TabsTrigger
+                  value="dashboard"
+                  icon={<IconLayoutDashboard aria-hidden />}
+                >
                   Dashboard
                 </TabsTrigger>
-                <TabsTrigger value="admin" icon={<IconUsers />}>
+                <TabsTrigger value="admin" icon={<IconUsers aria-hidden />}>
                   Admin
                 </TabsTrigger>
                 <TabsTrigger
                   value="providers"
                   badge="25"
-                  icon={<IconBuildingStore />}
+                  icon={<IconBuildingStore aria-hidden />}
                 >
                   Providers
                 </TabsTrigger>
-                <TabsTrigger value="payout" icon={<IconReceipt />} badge="12">
+                <TabsTrigger
+                  value="payout"
+                  icon={<IconReceipt aria-hidden />}
+                  badge="12"
+                >
                   Payout
                 </TabsTrigger>
-                <TabsTrigger value="consumers" icon={<IconUser />}>
+                <TabsTrigger value="consumers" icon={<IconUser aria-hidden />}>
                   Consumers
                 </TabsTrigger>
-                <TabsTrigger value="settings" icon={<IconSettings />}>
+                <TabsTrigger
+                  value="settings"
+                  icon={<IconSettings aria-hidden />}
+                >
                   Settings
                 </TabsTrigger>
               </TabsList>

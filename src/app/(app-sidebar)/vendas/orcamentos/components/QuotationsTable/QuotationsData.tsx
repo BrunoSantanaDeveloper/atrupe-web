@@ -25,6 +25,7 @@ import {
   TableHeader,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Icon } from '@/components/ui/icon'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -61,6 +62,7 @@ import {
   IconPrinter,
   IconHistory,
   IconTrash,
+  IconBolt,
 } from '@tabler/icons-react'
 import { PrintQuotationDialog } from '@/components/common/PrintQuotation/PrintQuotationDialog'
 import { useQuotationTag } from '@/hooks/queries/useQuotationTag'
@@ -265,17 +267,24 @@ export function QuotationsData({
                                 <PermissionGate
                                   permissions={['sale:quotation:edit']}
                                   fallback={
-                                    <p className="text-gray truncate">
-                                      {description}{' '}
-                                      {quotation?.quickSale && '⚡'}
+                                    <p className="flex min-w-0 items-center gap-2 text-gray">
+                                      <span className="truncate">
+                                        {description}
+                                      </span>
+                                      {quotation?.quickSale && (
+                                        <QuickSaleBadge />
+                                      )}
                                     </p>
                                   }
                                 >
                                   <Link
                                     href={link}
-                                    className="text-gray hover:opacity-80 active:opacity-95 transition-opacity truncate"
+                                    className="flex min-w-0 items-center gap-2 text-gray hover:opacity-80 active:opacity-95 transition-opacity"
                                   >
-                                    {description} {quotation?.quickSale && '⚡'}
+                                    <span className="truncate">
+                                      {description}
+                                    </span>
+                                    {quotation?.quickSale && <QuickSaleBadge />}
                                   </Link>
                                 </PermissionGate>
                               </TableCell>
@@ -461,5 +470,14 @@ export function QuotationsData({
         }}
       />
     </>
+  )
+}
+
+function QuickSaleBadge() {
+  return (
+    <Badge variant="warningLight" size="sm" className="shrink-0">
+      <Icon icon={IconBolt} size="sm" />
+      Venda rápida
+    </Badge>
   )
 }

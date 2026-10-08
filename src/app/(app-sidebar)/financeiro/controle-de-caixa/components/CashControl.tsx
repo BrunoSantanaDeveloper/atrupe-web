@@ -419,7 +419,10 @@ export function CashControl(_: SearchParamsType) {
               className="flex flex-col gap-3 rounded-xl border border-warning-300 bg-warning-50 p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex items-start gap-3">
-                <IconAlertTriangle className="mt-0.5 shrink-0 text-warning-600" />
+                <IconAlertTriangle
+                  aria-hidden
+                  className="mt-0.5 shrink-0 text-warning-600"
+                />
                 <p className="text-sm text-warning-800">
                   <strong>
                     O caixa de {brDate(day.date)} da{' '}

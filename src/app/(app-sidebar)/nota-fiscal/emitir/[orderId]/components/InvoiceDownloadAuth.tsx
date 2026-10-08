@@ -136,7 +136,11 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                     className="flex items-center justify-between p-3 border rounded-lg bg-white"
                   >
                     <div className="flex items-center gap-3">
-                      <IconId className="text-gray-400" size={ICON_SIZE.md} />
+                      <IconId
+                        aria-hidden
+                        className="text-gray-400"
+                        size={ICON_SIZE.md}
+                      />
                       <span className="font-medium text-gray-700">
                         {formatDoc(doc)}
                       </span>
@@ -148,7 +152,7 @@ export function InvoiceDownloadAuth({ data, onUpdate }: Props) {
                       onClick={() => removeDoc(idx)}
                       aria-label="Remover autorização"
                     >
-                      <IconTrash size={ICON_SIZE.sm} />
+                      <IconTrash aria-hidden size={ICON_SIZE.sm} />
                     </Button>
                   </div>
                 ))}

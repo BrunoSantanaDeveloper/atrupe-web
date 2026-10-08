@@ -343,7 +343,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash size={ICON_SIZE.md} />
+                      <IconTrash aria-hidden size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -413,7 +413,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle size={ICON_SIZE.sm} />
+                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -456,6 +456,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
                               <IconExternalLink
+                                aria-hidden
                                 size={ICON_SIZE.sm}
                                 className="mr-1"
                               />

@@ -114,7 +114,11 @@ export function ClientSearchSidebar({ searchParams }: Props) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               startAdornment={
-                <IconSearch size={ICON_SIZE.md} className="text-gray-400" />
+                <IconSearch
+                  aria-hidden
+                  size={ICON_SIZE.md}
+                  className="text-gray-400"
+                />
               }
             />
           </div>
@@ -158,7 +162,11 @@ export function ClientSearchSidebar({ searchParams }: Props) {
                   )}
                 </div>
                 {selectedClientId === client.id && (
-                  <IconCheck size={ICON_SIZE.md} className="text-success-600" />
+                  <IconCheck
+                    aria-hidden
+                    size={ICON_SIZE.md}
+                    className="text-success-600"
+                  />
                 )}
               </button>
             ))}

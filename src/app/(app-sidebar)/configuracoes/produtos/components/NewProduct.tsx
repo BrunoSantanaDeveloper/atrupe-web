@@ -486,18 +486,30 @@ function NewProductModal({
               <div className="px-6 pt-4 border-b border-gray-100">
                 <TabsList>
                   <TabsTrigger value="general">
-                    <IconPackage size={ICON_SIZE.sm} className="mr-1.5" />
+                    <IconPackage
+                      aria-hidden
+                      size={ICON_SIZE.sm}
+                      className="mr-1.5"
+                    />
                     Produto
                   </TabsTrigger>
                   {showCompositionTab && (
                     <TabsTrigger value="composition">
-                      <IconHierarchy2 size={ICON_SIZE.sm} className="mr-1.5" />
+                      <IconHierarchy2
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-1.5"
+                      />
                       Composição
                     </TabsTrigger>
                   )}
                   {showFiscalTab && (
                     <TabsTrigger value="fiscal">
-                      <IconReceiptTax size={ICON_SIZE.sm} className="mr-1.5" />
+                      <IconReceiptTax
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-1.5"
+                      />
                       Dados Fiscais
                     </TabsTrigger>
                   )}
@@ -621,7 +633,7 @@ function NewProductModal({
                                   handleRemoveCompositionProducts(index)
                                 }
                               >
-                                <IconTrash size={ICON_SIZE.sm} />
+                                <IconTrash aria-hidden size={ICON_SIZE.sm} />
                               </Button>
                             )}
                             <FormInput

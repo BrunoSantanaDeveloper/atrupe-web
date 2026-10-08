@@ -267,9 +267,9 @@ export function FlowCanvas({
                         }}
                       >
                         {expandedPartId === node.id ? (
-                          <IconChevronUp size={ICON_SIZE.sm} />
+                          <IconChevronUp aria-hidden size={ICON_SIZE.sm} />
                         ) : (
-                          <IconChevronDown size={ICON_SIZE.sm} />
+                          <IconChevronDown aria-hidden size={ICON_SIZE.sm} />
                         )}
                       </Button>
                     )}
@@ -289,7 +289,7 @@ export function FlowCanvas({
                             aria-label={`Ações de ${node.name}`}
                             onClick={(event) => event.stopPropagation()}
                           >
-                            <IconDotsVertical size={ICON_SIZE.sm} />
+                            <IconDotsVertical aria-hidden size={ICON_SIZE.sm} />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -337,7 +337,7 @@ export function FlowCanvas({
                         onAddAfter(node)
                       }}
                     >
-                      <IconPlus size={ICON_SIZE.sm} />
+                      <IconPlus aria-hidden size={ICON_SIZE.sm} />
                     </button>
                   )}
                 </Fragment>
@@ -367,7 +367,7 @@ export function FlowCanvas({
                       onInsertBetween(fromNode, toNode)
                     }}
                   >
-                    <IconPlus size={ICON_SIZE.sm} />
+                    <IconPlus aria-hidden size={ICON_SIZE.sm} />
                   </button>
                 )
               })}

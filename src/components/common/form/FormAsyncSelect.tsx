@@ -199,6 +199,7 @@ export function FormAsyncSelect<T extends EntityBase = EntityBase>({
                 components={{
                   DropdownIndicator: () => (
                     <ChevronDown
+                      aria-hidden
                       size={ICON_SIZE.md}
                       className="text-gray-700"
                     />

@@ -217,7 +217,7 @@ export function RankingBarChart({ title, nameLabel, items, isLoading }: Props) {
           <Skeleton className="h-[280px] w-full" />
         ) : !hasData ? (
           <div className="flex h-[280px] flex-col items-center justify-center gap-2 text-center">
-            <IconChartBarOff className="size-8 text-gray-300" />
+            <IconChartBarOff aria-hidden className="size-8 text-gray-300" />
             <p className="text-sm text-gray-500">
               Sem dados no período selecionado
             </p>

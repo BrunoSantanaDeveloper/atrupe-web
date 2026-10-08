@@ -62,7 +62,10 @@ const AvatarAddButton = React.forwardRef<
       {...props}
     >
       <span className="sr-only">{tooltipText}</span>
-      <Plus className={cn('shrink-0', iconSizeClass, iconStrokeClass)} />
+      <Plus
+        aria-hidden
+        className={cn('shrink-0', iconSizeClass, iconStrokeClass)}
+      />
     </button>
   )
 

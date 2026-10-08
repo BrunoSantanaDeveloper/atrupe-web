@@ -15,6 +15,7 @@ import {
   commissionModeCopy,
   type CommissionMode,
 } from '../mode'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 const icons = { sold_value: IconReceipt2, received_value: IconCoin }
 
@@ -61,7 +62,7 @@ export function ModeSelector() {
                   : 'bg-gray-100 text-gray-500',
               )}
             >
-              <Icon size={20} />
+              <Icon size={ICON_SIZE.md} />
             </span>
             <span className="min-w-0 flex-1">
               <span className="block font-semibold text-gray-800">

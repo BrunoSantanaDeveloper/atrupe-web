@@ -226,7 +226,11 @@ export function DuplicateQuotationButton({
             <Button asChild type="button">
               <Link href={`/vendas/orcamentos/${newQuotationId}`}>
                 Ver orçamento
-                <IconArrowRight size={ICON_SIZE.md} className="ml-auto" />
+                <IconArrowRight
+                  aria-hidden
+                  size={ICON_SIZE.md}
+                  className="ml-auto"
+                />
               </Link>
             </Button>
           </AlertDialogFooter>

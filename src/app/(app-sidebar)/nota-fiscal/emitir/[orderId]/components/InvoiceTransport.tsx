@@ -168,7 +168,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                     onClick={() => handleSupplierSelect(null)}
                     title="Limpar transportadora"
                   >
-                    <IconX size={ICON_SIZE.sm} />
+                    <IconX aria-hidden size={ICON_SIZE.sm} />
                     Limpar
                   </Button>
                 )}
@@ -400,7 +400,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                           onClick={() => removeVolume(index)}
                           aria-label="Remover volume"
                         >
-                          <IconTrash size={ICON_SIZE.sm} />
+                          <IconTrash aria-hidden size={ICON_SIZE.sm} />
                         </Button>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pr-8">

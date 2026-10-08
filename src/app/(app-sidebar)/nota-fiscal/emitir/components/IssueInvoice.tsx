@@ -220,7 +220,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                               : 'bg-gray-100 text-gray-500',
                           )}
                         >
-                          <Icon size={20} />
+                          <Icon size={ICON_SIZE.md} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-sm text-gray-800">
@@ -231,6 +231,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                           </p>
                         </div>
                         <IconChevronRight
+                          aria-hidden
                           size={ICON_SIZE.md}
                           className="text-gray-400 shrink-0"
                         />
@@ -270,7 +271,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                             : 'bg-brand-100 text-brand-600',
                         )}
                       >
-                        <Icon size={20} />
+                        <Icon size={ICON_SIZE.md} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p
@@ -299,6 +300,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                         </Badge>
                       ) : (
                         <IconChevronRight
+                          aria-hidden
                           size={ICON_SIZE.md}
                           className={cn(
                             'shrink-0 transition-transform',

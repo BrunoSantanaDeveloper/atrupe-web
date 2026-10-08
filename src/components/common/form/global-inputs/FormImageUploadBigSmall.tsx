@@ -178,12 +178,16 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                             />
                           ) : (
                             <div className="h-20 min-w-32 max-w-32 border border-brand-300 rounded bg-brand-50 animate-pulse flex items-center justify-center">
-                              <IconCloudUpload className="text-brand-500 opacity-50" />
+                              <IconCloudUpload
+                                aria-hidden
+                                className="text-brand-500 opacity-50"
+                              />
                             </div>
                           )}
                           <div className="flex w-full flex-col justify-between">
                             <div className="flex items-center gap-2">
                               <IconCircleCheckFilled
+                                aria-hidden
                                 size={ICON_SIZE.sm}
                                 className={
                                   previewUrl

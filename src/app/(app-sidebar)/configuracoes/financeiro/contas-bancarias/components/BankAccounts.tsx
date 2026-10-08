@@ -312,7 +312,8 @@ export function BankAccounts(_: SearchParamsType) {
                       href="/financeiro/controle-de-caixa"
                       className="inline-flex items-center gap-1 font-medium text-brand-700 hover:underline"
                     >
-                      Controle de caixa <IconArrowRight size={ICON_SIZE.sm} />
+                      Controle de caixa{' '}
+                      <IconArrowRight aria-hidden size={ICON_SIZE.sm} />
                     </Link>
                   </p>
                 </CardContent>

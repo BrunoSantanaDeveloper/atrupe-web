@@ -759,7 +759,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão"
               >
-                <IconArrowLeft size={ICON_SIZE.sm} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.sm} />
               </Button>
               <div className="flex items-center gap-2">
                 <h1 className="type-page-title">
@@ -827,6 +827,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
               <IconAlertTriangleFilled
+                aria-hidden
                 size={ICON_SIZE.md}
                 className="text-warning-500"
               />

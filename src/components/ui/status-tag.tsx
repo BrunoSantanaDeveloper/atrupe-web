@@ -142,7 +142,9 @@ export function StatusTag({
   tabLabel,
   ...props
 }: StatusTagProps) {
-  const Icon = icon ?? <IconFileDescription className="w-1/2 h-1/2" />
+  const Icon = icon ?? (
+    <IconFileDescription aria-hidden className="w-1/2 h-1/2" />
+  )
 
   return (
     <div

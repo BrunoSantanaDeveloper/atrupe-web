@@ -9,6 +9,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 // Components
 import { THEME_OPTIONS } from './theme-options'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Seletor de tema em linha (Claro / Escuro / Sistema), usado no menu do celular
 export function ThemeToggleGroup() {
@@ -35,7 +36,7 @@ export function ThemeToggleGroup() {
           aria-label={option.label}
           className="gap-1.5"
         >
-          <option.icon size={16} />
+          <option.icon size={ICON_SIZE.sm} />
           <span className="text-xs">{option.label}</span>
         </ToggleGroupItem>
       ))}

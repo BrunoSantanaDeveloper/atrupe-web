@@ -351,11 +351,11 @@ export function InvoiceItemEditDialog({
           >
             <TabsList className="-mb-px">
               <TabsTrigger value="valores" className="gap-1.5">
-                <IconCurrencyReal size={ICON_SIZE.sm} />
+                <IconCurrencyReal aria-hidden size={ICON_SIZE.sm} />
                 Valores
               </TabsTrigger>
               <TabsTrigger value="fiscal" className="gap-1.5">
-                <IconReceipt size={ICON_SIZE.sm} />
+                <IconReceipt aria-hidden size={ICON_SIZE.sm} />
                 Dados Fiscais
               </TabsTrigger>
             </TabsList>

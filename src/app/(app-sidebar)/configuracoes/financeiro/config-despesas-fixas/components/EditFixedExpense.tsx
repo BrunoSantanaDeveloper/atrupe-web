@@ -240,7 +240,9 @@ function NewFixedExpenseModal({
                       min={1}
                       max={31}
                       width="flex-[1_0_300px]"
-                      startAdornment={<IconCalendarMonth size={ICON_SIZE.md} />}
+                      startAdornment={
+                        <IconCalendarMonth aria-hidden size={ICON_SIZE.md} />
+                      }
                     />
                   </div>
                 </DialogBody>

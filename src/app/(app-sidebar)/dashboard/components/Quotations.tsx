@@ -18,6 +18,7 @@ import {
   IconCoin,
   IconUrgent,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 type DashboardFilters = {
   startDate?: string
@@ -84,7 +85,7 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
               ))
             : items.map((item) => (
                 <div key={item.label} className="flex items-center gap-2">
-                  <item.icon size={20} className="text-gray" />
+                  <item.icon size={ICON_SIZE.md} className="text-gray" />
                   <span className="type-kpi-label">{item.label}</span>
                   <span className="type-kpi-value">{item.value}</span>
                 </div>

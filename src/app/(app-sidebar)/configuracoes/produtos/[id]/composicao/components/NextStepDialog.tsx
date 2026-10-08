@@ -204,7 +204,7 @@ export function NextStepDialog({
               <Input
                 value={search}
                 placeholder="Buscar processo pelo nome ou setor"
-                startAdornment={<IconSearch size={ICON_SIZE.sm} />}
+                startAdornment={<IconSearch aria-hidden size={ICON_SIZE.sm} />}
                 onChange={(event) => setSearch(event.target.value)}
                 aria-label="Buscar processo"
               />

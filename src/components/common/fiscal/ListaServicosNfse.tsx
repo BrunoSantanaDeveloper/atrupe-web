@@ -223,6 +223,7 @@ export function CodigoServicoCombobox({
             </Badge>
           )}
           <IconChevronDown
+            aria-hidden
             size={ICON_SIZE.md}
             className={cn(
               'shrink-0 text-gray-400 transition-transform duration-200',
@@ -263,6 +264,7 @@ export function CodigoServicoCombobox({
                   className="flex items-center gap-2 px-3 py-2.5 cursor-pointer"
                 >
                   <IconCheck
+                    aria-hidden
                     size={ICON_SIZE.md}
                     className={cn(
                       'shrink-0 transition-opacity',
@@ -297,7 +299,11 @@ export function CodigoServicoCombobox({
                     onSelect={() => usarCodigoManual(buscaLimpa)}
                     className="flex items-center gap-2 px-3 py-2.5 cursor-pointer text-brand-600"
                   >
-                    <IconPlus size={ICON_SIZE.md} className="shrink-0" />
+                    <IconPlus
+                      aria-hidden
+                      size={ICON_SIZE.md}
+                      className="shrink-0"
+                    />
                     <span className="font-medium">
                       Usar o código &ldquo;{buscaLimpa}&rdquo; sem cadastrar
                     </span>
@@ -599,7 +605,7 @@ export function ListaServicosManagerDialog({
                       onClick={() => iniciarEdicao(s)}
                       aria-label={`Editar ${s.codigo}`}
                     >
-                      <IconPencil size={ICON_SIZE.sm} />
+                      <IconPencil aria-hidden size={ICON_SIZE.sm} />
                     </Button>
                     <Button
                       variant="errorGhost"
@@ -607,7 +613,7 @@ export function ListaServicosManagerDialog({
                       onClick={() => remover(s)}
                       aria-label={`Remover ${s.codigo}`}
                     >
-                      <IconTrash size={ICON_SIZE.sm} />
+                      <IconTrash aria-hidden size={ICON_SIZE.sm} />
                     </Button>
                   </div>
                 </div>

@@ -606,8 +606,12 @@ export function QuotationProdDetailModal({
                         endAdornment={
                           <TooltipProvider>
                             <Tooltip>
-                              <TooltipTrigger type="button">
+                              <TooltipTrigger
+                                type="button"
+                                aria-label="Ajuda sobre a quantidade"
+                              >
                                 <IconHelpCircle
+                                  aria-hidden
                                   size={ICON_SIZE.sm}
                                   className="text-gray-400"
                                 />

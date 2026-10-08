@@ -415,7 +415,10 @@ export function FiscalSetupModal() {
                 {formStatus === 'success' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
                     <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-                      <IconCheck className="h-8 w-8 text-green-600" />
+                      <IconCheck
+                        aria-hidden
+                        className="h-8 w-8 text-green-600"
+                      />
                     </div>
                     <h3 className="type-card-title">Módulo fiscal ativado!</h3>
                     <p className="text-sm text-muted-foreground">
@@ -428,7 +431,10 @@ export function FiscalSetupModal() {
                 {formStatus === 'pending_review' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
                     <div className="h-16 w-16 rounded-full bg-amber-100 flex items-center justify-center">
-                      <IconAlertTriangle className="h-8 w-8 text-amber-600" />
+                      <IconAlertTriangle
+                        aria-hidden
+                        className="h-8 w-8 text-amber-600"
+                      />
                     </div>
                     <h3 className="type-card-title">Dados recebidos!</h3>
                     <p className="text-sm text-muted-foreground">
@@ -444,7 +450,10 @@ export function FiscalSetupModal() {
                 {/* Submitting */}
                 {formStatus === 'submitting' && (
                   <div className="flex flex-col items-center justify-center py-10 text-center gap-4">
-                    <IconLoader2 className="h-12 w-12 animate-spin text-primary" />
+                    <IconLoader2
+                      aria-hidden
+                      className="h-12 w-12 animate-spin text-primary"
+                    />
                     <p className="text-sm text-muted-foreground">
                       Configurando módulo fiscal...
                     </p>
@@ -639,7 +648,10 @@ export function FiscalSetupModal() {
                           </div>
                         ) : (
                           <div className="flex flex-col items-center gap-1">
-                            <IconCloudUpload className="h-7 w-7 text-muted-foreground" />
+                            <IconCloudUpload
+                              aria-hidden
+                              className="h-7 w-7 text-muted-foreground"
+                            />
                             <span className="text-sm text-muted-foreground">
                               Arraste o .pfx aqui ou clique para selecionar
                             </span>

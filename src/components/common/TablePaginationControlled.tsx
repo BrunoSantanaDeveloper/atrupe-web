@@ -38,7 +38,7 @@ export function TablePaginationControlled(props: Props) {
         onClick={handlePrevPage}
         disabled={page <= 1}
       >
-        <ArrowLeft size={ICON_SIZE.md} />
+        <ArrowLeft aria-hidden size={ICON_SIZE.md} />
         <span className="ml-1">Anterior</span>
       </Button>
 
@@ -73,7 +73,7 @@ export function TablePaginationControlled(props: Props) {
         disabled={page >= lastPage}
       >
         <span className="mr-1">Proxima</span>
-        <ArrowRight size={ICON_SIZE.md} />
+        <ArrowRight aria-hidden size={ICON_SIZE.md} />
       </Button>
     </div>
   )

@@ -172,6 +172,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center bg-gray-200">
                                         <IconBuildingStore
+                                          aria-hidden
                                           size={ICON_SIZE.lg}
                                           stroke={ICON_STROKE.lg}
                                           className="text-gray-400"

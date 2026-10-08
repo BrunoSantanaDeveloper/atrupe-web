@@ -270,7 +270,10 @@ export function FiscalOnboardingModal({
 
           {status === 'submitting' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
-              <IconLoader2 className="h-14 w-14 animate-spin text-brand mb-6" />
+              <IconLoader2
+                aria-hidden
+                className="h-14 w-14 animate-spin text-brand mb-6"
+              />
               <h2 className="type-section-title mb-2">
                 Configurando módulo fiscal...
               </h2>
@@ -284,7 +287,7 @@ export function FiscalOnboardingModal({
           {status === 'success' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
               <div className="h-14 w-14 rounded-full bg-success-100 flex items-center justify-center mb-6">
-                <IconCheck className="h-7 w-7 text-success-600" />
+                <IconCheck aria-hidden className="h-7 w-7 text-success-600" />
               </div>
               <h2 className="type-section-title mb-2">
                 Módulo fiscal ativado!
@@ -299,7 +302,10 @@ export function FiscalOnboardingModal({
           {status === 'pending_review' && (
             <div className="flex flex-col items-center justify-center py-16 px-6">
               <div className="h-14 w-14 rounded-full bg-warning-100 flex items-center justify-center mb-6">
-                <IconAlertTriangle className="h-7 w-7 text-warning-600" />
+                <IconAlertTriangle
+                  aria-hidden
+                  className="h-7 w-7 text-warning-600"
+                />
               </div>
               <h2 className="type-section-title mb-2">Dados recebidos!</h2>
               <p className="text-sm text-gray text-center mb-6">
@@ -535,7 +541,10 @@ export function FiscalOnboardingModal({
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-1.5">
-                      <IconCloudUpload className="h-7 w-7 text-gray" />
+                      <IconCloudUpload
+                        aria-hidden
+                        className="h-7 w-7 text-gray"
+                      />
                       <span className="text-sm text-gray">
                         Clique para selecionar o arquivo .pfx
                       </span>

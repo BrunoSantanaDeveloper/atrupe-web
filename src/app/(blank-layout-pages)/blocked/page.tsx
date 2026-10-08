@@ -87,7 +87,7 @@ export default async function BlockedPage() {
               </p>
 
               <Alert variant="error">
-                <AlertTriangle size={ICON_SIZE.sm} />
+                <AlertTriangle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Sua assinatura possui pagamentos pendentes. Após a confirmação
                   do pagamento, o acesso será restaurado.

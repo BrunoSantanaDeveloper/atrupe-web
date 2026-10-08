@@ -1994,7 +1994,11 @@ export function LibraryDialog({
               placeholder="Buscar pelo nome"
               className="min-w-[220px] flex-1"
               startAdornment={
-                <IconSearch size={ICON_SIZE.sm} className="text-gray" />
+                <IconSearch
+                  aria-hidden
+                  size={ICON_SIZE.sm}
+                  className="text-gray"
+                />
               }
               value={search}
               onChange={(event) => setSearch(event.target.value)}

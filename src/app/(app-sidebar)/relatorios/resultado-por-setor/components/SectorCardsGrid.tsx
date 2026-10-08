@@ -38,7 +38,11 @@ function SectorCard({ sector }: { sector: SectorResult }) {
           {Icon ? (
             <Icon className="h-6 w-6 text-gray-600" />
           ) : (
-            <IconLayoutGrid size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
+            <IconLayoutGrid
+              aria-hidden
+              size={ICON_SIZE.lg}
+              stroke={ICON_STROKE.lg}
+            />
           )}
         </div>
         <span className="font-semibold text-gray-900">{sector.name}</span>
@@ -61,6 +65,7 @@ function GeneralCard({ total }: { total: number }) {
         {/* TODO: Usar FeaturedIcon */}
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-600">
           <IconLayoutGrid
+            aria-hidden
             size={ICON_SIZE.lg}
             stroke={ICON_STROKE.lg}
             className="text-gray-100"

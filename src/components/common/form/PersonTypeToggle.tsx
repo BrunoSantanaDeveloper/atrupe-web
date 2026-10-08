@@ -19,12 +19,12 @@ export function PersonTypeToggle({
     {
       value: 'individual' as PersonType,
       label: 'Pessoa Física',
-      icon: <IconUser />,
+      icon: <IconUser aria-hidden />,
     },
     {
       value: 'company' as PersonType,
       label: 'Pessoa Jurídica',
-      icon: <IconBuildingCommunity />,
+      icon: <IconBuildingCommunity aria-hidden />,
     },
   ]
 
@@ -60,7 +60,7 @@ export function PersonTypeToggle({
             }`}
             aria-hidden="true"
           >
-            {value === option.value && <IconCheck />}
+            {value === option.value && <IconCheck aria-hidden />}
           </span>
         </button>
       ))}

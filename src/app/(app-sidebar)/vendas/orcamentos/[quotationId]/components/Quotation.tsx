@@ -145,7 +145,11 @@ export function Quotation({ id }: Props) {
             <Button type="button" asChild>
               <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
                 Ver ordem de serviço
-                <IconExternalLink size={ICON_SIZE.md} className="ml-auto" />
+                <IconExternalLink
+                  aria-hidden
+                  size={ICON_SIZE.md}
+                  className="ml-auto"
+                />
               </Link>
             </Button>
           )}
@@ -193,7 +197,11 @@ export function Quotation({ id }: Props) {
                 <Button type="button" asChild>
                   <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
                     Ver ordem de serviço
-                    <IconExternalLink size={ICON_SIZE.md} className="ml-auto" />
+                    <IconExternalLink
+                      aria-hidden
+                      size={ICON_SIZE.md}
+                      className="ml-auto"
+                    />
                   </Link>
                 </Button>
               )}

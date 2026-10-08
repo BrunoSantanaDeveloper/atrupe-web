@@ -125,6 +125,7 @@ export function QuotationCategorySelectorModal({
             {isLoading ? (
               <div className="col-span-full flex items-center justify-center py-8">
                 <IconLoader2
+                  aria-hidden
                   size={ICON_SIZE.lg}
                   stroke={ICON_STROKE.lg}
                   className="text-gray animate-spin"

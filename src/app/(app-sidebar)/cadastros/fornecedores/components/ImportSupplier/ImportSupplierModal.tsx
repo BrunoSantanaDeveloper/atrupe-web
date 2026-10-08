@@ -345,7 +345,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash size={ICON_SIZE.md} />
+                      <IconTrash aria-hidden size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -415,7 +415,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle size={ICON_SIZE.sm} />
+                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -458,6 +458,7 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
                               <IconExternalLink
+                                aria-hidden
                                 size={ICON_SIZE.sm}
                                 className="mr-1"
                               />

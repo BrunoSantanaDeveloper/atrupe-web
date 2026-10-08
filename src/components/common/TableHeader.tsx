@@ -63,7 +63,7 @@ export function TableFiltersHeader({ searchParams, children }: Props) {
             type="search"
             value={search}
             placeholder="Buscar por..."
-            startAdornment={<IconSearch size={ICON_SIZE.md} />}
+            startAdornment={<IconSearch aria-hidden size={ICON_SIZE.md} />}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>

@@ -133,6 +133,7 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <IconLoader2
+                aria-hidden
                 size={ICON_SIZE.lg}
                 stroke={ICON_STROKE.lg}
                 className="animate-spin text-gray-500"
@@ -211,7 +212,7 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
             onClick={handleSendMessage}
             disabled={mutation.isPending || !message.trim()}
           >
-            <IconSend size={ICON_SIZE.md} className="mr-2" />
+            <IconSend aria-hidden size={ICON_SIZE.md} className="mr-2" />
             Enviar mensagem
           </Button>
         </DialogFooter>

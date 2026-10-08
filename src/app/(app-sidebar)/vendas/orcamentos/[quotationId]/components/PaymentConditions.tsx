@@ -143,7 +143,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
                         variant="outline"
                         className="text-xs font-medium border-blue-200 bg-blue-50 text-blue-700 gap-1 mt-1"
                       >
-                        <IconFileInvoice size={ICON_SIZE.sm} />
+                        <IconFileInvoice aria-hidden size={ICON_SIZE.sm} />
                         Gera{' '}
                         {data.paymentCondition.invoiceType === 'NFE'
                           ? 'NF-e'

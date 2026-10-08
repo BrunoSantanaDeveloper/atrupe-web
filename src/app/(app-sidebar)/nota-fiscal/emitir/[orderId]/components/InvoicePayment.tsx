@@ -206,7 +206,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                     variant="warning"
                     className="text-xs flex items-center gap-1"
                   >
-                    <IconAlertTriangle size={ICON_SIZE.sm} />
+                    <IconAlertTriangle aria-hidden size={ICON_SIZE.sm} />
                     Valor diverge do total da NF
                   </Badge>
                 )}
@@ -280,7 +280,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                           className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 transition-colors"
                           title={`Sincronizar com total da NF (${formatCurrency(currentTotal)})`}
                         >
-                          <IconRefresh size={ICON_SIZE.sm} />
+                          <IconRefresh aria-hidden size={ICON_SIZE.sm} />
                           Sincronizar ({formatCurrency(currentTotal)})
                         </button>
                       )}
@@ -393,7 +393,11 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="w-20"
                       />
                       <Button variant="neutral" onClick={generateInstallments}>
-                        <IconCalculator size={ICON_SIZE.md} className="mr-2" />
+                        <IconCalculator
+                          aria-hidden
+                          size={ICON_SIZE.md}
+                          className="mr-2"
+                        />
                         Gerar
                       </Button>
                     </div>
@@ -427,7 +431,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="absolute right-2 top-2 text-gray-400 hover:text-error-600 p-1"
                         aria-label="Remover duplicata"
                       >
-                        <IconTrash size={ICON_SIZE.sm} />
+                        <IconTrash aria-hidden size={ICON_SIZE.sm} />
                       </button>
 
                       <div className="space-y-3">

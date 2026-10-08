@@ -42,6 +42,7 @@ export function InvoiceTotalsSection({
       {valuesModified && (
         <div className="flex items-start gap-3 rounded-lg border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-800 animate-in fade-in slide-in-from-top-2">
           <IconAlertTriangle
+            aria-hidden
             size={ICON_SIZE.md}
             className="mt-0.5 shrink-0 text-warning-500"
           />

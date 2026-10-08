@@ -1095,7 +1095,7 @@ export default function SubscriptionPage() {
                         {isAddModuleMode ? 'Acréscimo mensal' : 'Total'}
                       </span>
                       <div className="flex items-center gap-1">
-                        <IconCoin className="text-blue" />
+                        <IconCoin aria-hidden className="text-blue" />
                         <div className="flex items-baseline gap-1">
                           <span className="type-kpi-value">
                             {formatCurrencyToBrl(finalPrice)}

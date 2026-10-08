@@ -204,7 +204,7 @@ export function NfcePaymentSection({
                         onClick={() => handleRemovePayment(idx)}
                         className="text-red-500 hover:text-red-700 transition"
                       >
-                        <IconTrash size={ICON_SIZE.sm} />
+                        <IconTrash aria-hidden size={ICON_SIZE.sm} />
                       </button>
                     </div>
                   </div>

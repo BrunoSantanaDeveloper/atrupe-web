@@ -34,7 +34,7 @@ import {
   IconLogout as LogOut,
   IconUser as User,
 } from '@tabler/icons-react'
-import { Icon } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -90,7 +90,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
             )}
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <currentTheme.icon size={16} className="mr-2" />
+                <currentTheme.icon size={ICON_SIZE.sm} className="mr-2" />
                 <span>Tema</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
@@ -104,7 +104,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                         key={option.value}
                         value={option.value}
                       >
-                        <option.icon size={16} className="mr-2" />
+                        <option.icon size={ICON_SIZE.sm} className="mr-2" />
                         <span>{option.label}</span>
                       </DropdownMenuRadioItem>
                     ))}

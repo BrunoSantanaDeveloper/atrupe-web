@@ -50,6 +50,7 @@ const Checkbox = React.forwardRef<
   >
     <CheckboxPrimitive.Indicator className={cn(indicatorVariants({ size }))}>
       <Check
+        aria-hidden
         stroke={3}
         className={cn(
           'hidden group-data-[state=checked]:block',
@@ -57,6 +58,7 @@ const Checkbox = React.forwardRef<
         )}
       />
       <Minus
+        aria-hidden
         stroke={3}
         className={cn(
           'hidden group-data-[state=indeterminate]:block',

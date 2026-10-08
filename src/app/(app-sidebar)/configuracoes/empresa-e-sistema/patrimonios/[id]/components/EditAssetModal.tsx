@@ -136,7 +136,11 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-gray-400">
-                  <IconPhoto size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
+                  <IconPhoto
+                    aria-hidden
+                    size={ICON_SIZE.lg}
+                    stroke={ICON_STROKE.lg}
+                  />
                 </div>
               )}
             </div>

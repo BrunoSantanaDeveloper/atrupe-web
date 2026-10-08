@@ -210,7 +210,7 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
                         onClick={() => removeDuplicate(idx)}
                         aria-label="Remover duplicata"
                       >
-                        <IconTrash size={ICON_SIZE.sm} />
+                        <IconTrash aria-hidden size={ICON_SIZE.sm} />
                       </Button>
                     </div>
                   ))

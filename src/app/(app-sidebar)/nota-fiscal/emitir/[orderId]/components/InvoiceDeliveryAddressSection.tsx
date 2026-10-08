@@ -314,7 +314,11 @@ export function InvoiceDeliveryAddressSection({
                       onClick={() => setIsEditing(!isEditing)}
                       className="sm:ml-auto"
                     >
-                      <IconEdit size={ICON_SIZE.sm} className="mr-2" />
+                      <IconEdit
+                        aria-hidden
+                        size={ICON_SIZE.sm}
+                        className="mr-2"
+                      />
                       {isEditing ? 'Ver Dados' : 'Editar Endereço'}
                     </Button>
                   </div>

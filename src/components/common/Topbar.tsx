@@ -88,7 +88,7 @@ export function Topbar({
               className="bg-transparent"
             >
               <Link href={previousPage} aria-label="Voltar">
-                <IconArrowLeft size={ICON_SIZE.md} />
+                <IconArrowLeft aria-hidden size={ICON_SIZE.md} />
               </Link>
             </Button>
           ) : null}

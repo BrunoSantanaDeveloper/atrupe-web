@@ -221,11 +221,20 @@ export default function AcademyPage() {
                     <div className="flex gap-3 items-center">
                       {section.items.every((item) => item.checked) &&
                       section.items.length > 0 ? (
-                        <IconCircleCheckFilled className="text-success" />
+                        <IconCircleCheckFilled
+                          aria-hidden
+                          className="text-success"
+                        />
                       ) : section.items.some((item) => item.checked) ? (
-                        <IconCircleDotFilled className="text-blue" />
+                        <IconCircleDotFilled
+                          aria-hidden
+                          className="text-blue"
+                        />
                       ) : (
-                        <IconCircleFilled className="text-gray-200" />
+                        <IconCircleFilled
+                          aria-hidden
+                          className="text-gray-200"
+                        />
                       )}
                       <CardTitle>{section.title}</CardTitle>
                       <span className="text-xs text-gray-400 ml-2">

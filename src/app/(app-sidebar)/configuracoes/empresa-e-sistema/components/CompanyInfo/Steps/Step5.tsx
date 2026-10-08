@@ -40,7 +40,7 @@ export function Step5() {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
         <div className="h-14 w-14 rounded-full bg-brand-50 flex items-center justify-center">
-          <IconReceipt className="h-7 w-7 text-brand-600" />
+          <IconReceipt aria-hidden className="h-7 w-7 text-brand-600" />
         </div>
         <div className="space-y-1">
           <h3 className="type-card-title">Módulo Fiscal não contratado</h3>
@@ -62,7 +62,7 @@ export function Step5() {
     return (
       <div className="flex flex-col items-center justify-center py-10 gap-5 text-center">
         <div className="h-14 w-14 rounded-full bg-amber-50 flex items-center justify-center">
-          <IconClock className="h-7 w-7 text-amber-500" />
+          <IconClock aria-hidden className="h-7 w-7 text-amber-500" />
         </div>
         <div className="space-y-1">
           <h3 className="type-card-title">

@@ -450,6 +450,7 @@ export function OrderItems({ data }: Props) {
                                         <TableCell className="pl-14 py-0">
                                           <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
                                             <IconCornerDownRight
+                                              aria-hidden
                                               size={ICON_SIZE.sm}
                                               className="ml-3 text-gray-400"
                                             />

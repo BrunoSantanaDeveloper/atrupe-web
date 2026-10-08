@@ -1634,11 +1634,13 @@ function AssemblyEditorBody({
             </div>
             {productOpen ? (
               <IconChevronUp
+                aria-hidden
                 size={ICON_SIZE.md}
                 className="shrink-0 text-gray"
               />
             ) : (
               <IconChevronDown
+                aria-hidden
                 size={ICON_SIZE.md}
                 className="shrink-0 text-gray"
               />

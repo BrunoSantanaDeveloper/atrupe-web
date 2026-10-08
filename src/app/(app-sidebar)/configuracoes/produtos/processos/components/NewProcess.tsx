@@ -237,15 +237,27 @@ export function ProcessDialog({
             <div className="px-6 pt-4 border-b border-gray-100">
               <TabsList>
                 <TabsTrigger value="general">
-                  <IconListCheck size={ICON_SIZE.sm} className="mr-1.5" />
+                  <IconListCheck
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Processo
                 </TabsTrigger>
                 <TabsTrigger value="composition">
-                  <IconHierarchy2 size={ICON_SIZE.sm} className="mr-1.5" />
+                  <IconHierarchy2
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Composição
                 </TabsTrigger>
                 <TabsTrigger value="usage">
-                  <IconPackages size={ICON_SIZE.sm} className="mr-1.5" />
+                  <IconPackages
+                    aria-hidden
+                    size={ICON_SIZE.sm}
+                    className="mr-1.5"
+                  />
                   Uso
                 </TabsTrigger>
               </TabsList>

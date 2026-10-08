@@ -116,7 +116,7 @@ export function ImportReviewDialog({
 
               {groups.some((group) => group.type === 'bankAccount') && (
                 <Alert variant="warning" className="mt-4">
-                  <IconAlertCircle size={ICON_SIZE.sm} />
+                  <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
                   <AlertDescription>
                     As contas bancárias serão criadas sem instituição definida.
                     Você pode ajustar o banco depois em Configurações &gt;
