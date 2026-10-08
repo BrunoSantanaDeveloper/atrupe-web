@@ -13,12 +13,17 @@ import {
 } from '@/components/common/TableEmptyState'
 import { TabNavType, Topbar } from '@/components/common/Topbar'
 import { TableFiltersHeader } from '@/components/common/TableHeader'
+import { ExportDataButton } from '@/components/common/ExportDataButton'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { AccountItem } from './types'
 
 // Actions
 import { getData } from '@/actions/_cruds'
+
+// Libs
+import { ACCOUNT_EXPORT_COLUMNS } from './billing'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -75,6 +80,20 @@ export function Main({ searchParams }: SearchParamsType) {
 
   const statusLabel = tabs?.find((tab) => tab.tab === status)?.label
 
+  // A planilha da cobrança sai com a aba e os filtros que estão na tela.
+  const getExportAccounts = async () => {
+    const result = await getData({
+      route: '/subscriptions/active-clients/export',
+      filters: searchParams,
+    })
+
+    if (!result.success) {
+      throw new Error(result.message)
+    }
+
+    return (result.data || []) as AccountItem[]
+  }
+
   return (
     <div className="space-y-5">
       <Topbar
@@ -84,6 +103,15 @@ export function Main({ searchParams }: SearchParamsType) {
         paramName="status"
         label="Super Admin"
         classNames={{ title: 'text-white', label: 'bg-[#FF4201]' }}
+        primaryCta={
+          <ExportDataButton
+            columns={ACCOUNT_EXPORT_COLUMNS}
+            fileName="contas-cobranca"
+            sheetName="Contas"
+            getData={getExportAccounts}
+            emptyMessage="Nenhuma conta para exportar com estes filtros"
+          />
+        }
       />
       <div>
         <Card>

@@ -111,7 +111,7 @@ const SYNC_STATUS_MESSAGES: Record<string, string> = {
 interface Props {
   open: boolean
   setOpen: (value: boolean) => void
-  rowData: AccountItem | null
+  rowData: Pick<AccountItem, 'id' | 'companyName'> | null
 }
 
 // Tradução de status local

@@ -38,35 +38,47 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
     queryFn: () => getDashboardFinancialOverview(filters),
   })
 
-  const revenues = data?.revenues
-  const expenses = data?.expenses
-  const totals = data?.totals
+  const receivables = data?.totals?.receivables
+  const payables = data?.totals?.payables
 
-  const realizedRevenue =
-    totals?.receivables.totalPaid ?? revenues?.received ?? 0
-  const realizedExpense = totals?.payables.totalPaid ?? expenses?.received ?? 0
-  const expectedRevenue = totals?.receivables.expected ?? 0
-  const expectedExpense = totals?.payables.expected ?? 0
-  const pendingRevenue = Math.max(expectedRevenue - realizedRevenue, 0)
-  const pendingExpense = Math.max(expectedExpense - realizedExpense, 0)
+  const realizedRevenue = receivables?.totalPaid ?? 0
+  const realizedExpense = payables?.totalPaid ?? 0
+  const expectedRevenue = receivables?.expected ?? 0
+  const expectedExpense = payables?.expected ?? 0
+
+  // "A realizar" vem somado parcela a parcela pelo backend. O fallback
+  // reproduz o cálculo antigo (previsto - pago do conjunto), que deixava
+  // resíduo de toda parcela quitada por valor diferente do previsto;
+  // serve só enquanto a API não estiver atualizada.
+  const pendingRevenue =
+    receivables?.open ?? Math.max(expectedRevenue - realizedRevenue, 0)
+  const pendingExpense =
+    payables?.open ?? Math.max(expectedExpense - realizedExpense, 0)
+
   const realizedBalance = realizedRevenue - realizedExpense
-  const projectedBalance = expectedRevenue - expectedExpense
-  const overdueTotal = (revenues?.overdue ?? 0) + (expenses?.overdue ?? 0)
+  // Projetado = o que já se realizou mais o que ainda está em aberto.
+  // Usar `expected - expected` contava de novo a diferença das parcelas
+  // quitadas por valor menor que o previsto.
+  const projectedBalance = realizedBalance + pendingRevenue - pendingExpense
+
+  const receivedCount = receivables?.paidCount ?? 0
+  const paidCount = payables?.paidCount ?? 0
+  const overdueTotal = (receivables?.overdue ?? 0) + (payables?.overdue ?? 0)
   const overdueCount =
-    (revenues?.overdueCount ?? 0) + (expenses?.overdueCount ?? 0)
+    (receivables?.overdueCount ?? 0) + (payables?.overdueCount ?? 0)
 
   const cards = [
     {
       label: 'Receita realizada',
       value: formatValue(realizedRevenue),
-      detail: `${revenues?.receivedCount ?? 0} recebimentos`,
+      detail: `${receivedCount} recebimentos`,
       icon: IconTrendingUp,
       variant: 'successLight',
     },
     {
       label: 'Despesa realizada',
       value: formatValue(realizedExpense),
-      detail: `${expenses?.receivedCount ?? 0} pagamentos`,
+      detail: `${paidCount} pagamentos`,
       icon: IconTrendingDown,
       variant: 'errorLight',
     },
@@ -87,7 +99,7 @@ export function FinancialOverview({ filters }: FinancialOverviewProps) {
     {
       label: 'Vencidos',
       value: formatValue(overdueTotal),
-      detail: `${overdueCount} parcelas`,
+      detail: `${overdueCount} parcelas no período`,
       icon: IconAlertCircle,
       variant: 'errorLight',
     },

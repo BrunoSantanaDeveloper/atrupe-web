@@ -612,7 +612,11 @@ export function formatSubscriptionHistoryEvent(
   if (item.action.startsWith('PAYMENT_')) {
     // Eventos de pagamento
     if (item.metadata?.value) {
-      details.push(`Valor: ${formatCurrencyToBrl(item.metadata.value)}`)
+      // A cobrança guarda o valor em reais, como o Asaas; o formatador
+      // espera centavos.
+      details.push(
+        `Valor: ${formatCurrencyToBrl(Math.round(item.metadata.value * 100))}`,
+      )
     }
     if (item.metadata?.billingType) {
       const billingTypes: Record<string, string> = {

@@ -239,6 +239,13 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: true,
       },
       {
+        icon: IconBoxSeam,
+        title: 'Produtos',
+        path: '/relatorios/produtos',
+        permission: ['reports:sales:view', 'values:values:view'],
+        requireAllPermissions: true,
+      },
+      {
         icon: IconCashBanknote,
         title: 'Financeiro',
         path: '/relatorios/financeiro',

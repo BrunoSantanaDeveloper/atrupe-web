@@ -7,39 +7,31 @@ import type {
   TopClientData,
   TopProductData,
 } from '@/app/(app-sidebar)/relatorios/vendas/types'
-import type { FinancialSummary } from '@/app/(app-sidebar)/relatorios/financeiro/types'
 
 type DashboardFilters = {
   startDate?: string
   endDate?: string
 }
 
+type FlowSideTotals = {
+  expected: number
+  totalPaid: number
+  // Campos opcionais: versões anteriores da API não os devolviam.
+  open?: number
+  paidCount?: number
+  overdue?: number
+  overdueCount?: number
+}
+
 type FlowTotals = {
-  receivables: {
-    expected: number
-    totalPaid: number
-  }
-  payables: {
-    expected: number
-    totalPaid: number
-  }
+  receivables: FlowSideTotals
+  payables: FlowSideTotals
 }
 
 type SalesSellerRanking = {
   name: string
   value: number
   count: number
-}
-
-const emptyFinancialSummary: FinancialSummary = {
-  received: 0,
-  confirmed: 0,
-  toReceive: 0,
-  overdue: 0,
-  receivedCount: 0,
-  confirmedCount: 0,
-  toReceiveCount: 0,
-  overdueCount: 0,
 }
 
 const emptySalesSummary: SalesSummary = {
@@ -58,15 +50,18 @@ const emptySalesSummary: SalesSummary = {
   approvalTime: '0d 0h',
 }
 
+const emptyFlowSideTotals: FlowSideTotals = {
+  expected: 0,
+  totalPaid: 0,
+  open: 0,
+  paidCount: 0,
+  overdue: 0,
+  overdueCount: 0,
+}
+
 const emptyFlowTotals: FlowTotals = {
-  receivables: {
-    expected: 0,
-    totalPaid: 0,
-  },
-  payables: {
-    expected: 0,
-    totalPaid: 0,
-  },
+  receivables: emptyFlowSideTotals,
+  payables: emptyFlowSideTotals,
 }
 
 function cleanFilters(filters?: DashboardFilters) {
@@ -75,39 +70,24 @@ function cleanFilters(filters?: DashboardFilters) {
   )
 }
 
+// O resumo financeiro do dashboard sai inteiro de /financial/flow/totals.
+// Antes os valores vinham daqui e as contagens de /report/financial/summary,
+// que usa outra janela de datas (limite do dia em -03:00) e outro regime
+// (caixa, não competência) - valor e legenda falavam de conjuntos diferentes.
 export async function getDashboardFinancialOverview(
   filters?: DashboardFilters,
-): Promise<{
-  revenues: FinancialSummary
-  expenses: FinancialSummary
-  totals: FlowTotals
-}> {
+): Promise<{ totals: FlowTotals }> {
   const api = await apiInstance()
-  const params = cleanFilters(filters)
 
   try {
-    const [revenues, expenses, totals] = await Promise.all([
-      api.get('/report/financial/summary', {
-        params: { ...params, tab: 'receitas' },
-      }),
-      api.get('/report/financial/summary', {
-        params: { ...params, tab: 'despesas' },
-      }),
-      api.get('/financial/flow/totals', { params }),
-    ])
+    const totals = await api.get('/financial/flow/totals', {
+      params: cleanFilters(filters),
+    })
 
-    return {
-      revenues: revenues.data || emptyFinancialSummary,
-      expenses: expenses.data || emptyFinancialSummary,
-      totals: totals.data || emptyFlowTotals,
-    }
+    return { totals: totals.data || emptyFlowTotals }
   } catch (error) {
     console.error('Error fetching dashboard financial overview:', error)
-    return {
-      revenues: emptyFinancialSummary,
-      expenses: emptyFinancialSummary,
-      totals: emptyFlowTotals,
-    }
+    return { totals: emptyFlowTotals }
   }
 }
 

@@ -37,7 +37,7 @@ import { ptBR } from 'date-fns/locale'
 interface Props {
   open: boolean
   setOpen: (value: boolean) => void
-  rowData: AccountItem | null
+  rowData: Pick<AccountItem, 'id' | 'companyName'> | null
 }
 
 export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {

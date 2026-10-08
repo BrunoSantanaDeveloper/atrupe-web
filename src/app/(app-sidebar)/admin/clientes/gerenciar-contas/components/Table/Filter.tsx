@@ -5,10 +5,17 @@ import { useRouter } from 'next/navigation'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import type { AccountFilterOptions } from '../types'
 import { SortSelectorField } from '@/components/common/form/global-inputs/SortSelectField'
 
 // UI
 import { SelectBasic } from '@/components/common/form/FormSelect'
+
+// Actions
+import { getData } from '@/actions/_cruds'
+
+// Third-party
+import { useQuery } from '@tanstack/react-query'
 
 const sortOptions = [
   { value: 'default', label: 'Nome da conta' },
@@ -16,12 +23,54 @@ const sortOptions = [
   { value: 'created_at', label: 'Data de criação' },
 ]
 
-const filterOptions = [{ value: 'default', label: 'Nenhum' }]
+const additionalUsersOptions = [
+  { value: 'default', label: 'Todos' },
+  { value: 'with', label: 'Com adicionais' },
+  { value: 'without', label: 'Sem adicionais' },
+]
 
-const stateOptions = [{ value: 'default', label: 'Todos' }]
+const planOptions = [
+  { value: 'default', label: 'Todos' },
+  { value: 'START', label: 'Start' },
+  { value: 'LITE', label: 'Lite' },
+  { value: 'PRO', label: 'Pro' },
+  { value: 'ELITE', label: 'Elite' },
+  { value: 'FULL', label: 'Full' },
+]
+
+const billingModeOptions = [
+  { value: 'default', label: 'Todas' },
+  { value: 'ASAAS_SUBSCRIPTION', label: 'Asaas' },
+  { value: 'ASAAS_INSTALLMENT', label: 'Anual parcelado' },
+  { value: 'MANUAL', label: 'Manual (sem cobrança)' },
+]
 
 export function Filter({ searchParams }: SearchParamsType) {
   const router = useRouter()
+
+  // Os módulos e as UFs que existem nas contas, inclusive o módulo que saiu
+  // de venda e segue contratado.
+  const { data } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['active-clients-filters'],
+    queryFn: () => getData({ route: '/subscriptions/active-clients/filters' }),
+  })
+  const options = data?.data as AccountFilterOptions | undefined
+
+  const moduleOptions = [
+    { value: 'default', label: 'Todos' },
+    { value: 'any', label: 'Com algum módulo' },
+    { value: 'none', label: 'Sem módulo' },
+    ...(options?.modules ?? []).map((module) => ({
+      value: module.key,
+      label: module.name,
+    })),
+  ]
+
+  const stateOptions = [
+    { value: 'default', label: 'Todos' },
+    ...(options?.states ?? []).map((state) => ({ value: state, label: state })),
+  ]
 
   const searchParamsObject = new URLSearchParams(searchParams)
   const params = new URLSearchParams(searchParamsObject.toString())
@@ -42,28 +91,55 @@ export function Filter({ searchParams }: SearchParamsType) {
     <>
       <SortSelectorField
         name="sort"
-        width="w-[220px]"
+        width="w-[200px]"
         options={sortOptions}
         value={searchParams?.sort || 'default'}
         onChange={(value) => handleFilter('sort', value)}
       />
 
       <SelectBasic
-        name="filter"
-        label="Filtrar por"
-        value={searchParams?.filter || 'default'}
-        onChange={(value) => handleFilter('filter', value)}
-        options={filterOptions}
-        className="w-[220px]"
+        name="module"
+        label="Módulo"
+        value={searchParams?.module || 'default'}
+        onChange={(value) => handleFilter('module', value)}
+        options={moduleOptions}
+        className="w-[180px]"
       />
 
-      <SelectBasic // Usar select de Estado
+      <SelectBasic
+        name="additionalUsers"
+        label="Usuários adicionais"
+        value={searchParams?.additionalUsers || 'default'}
+        onChange={(value) => handleFilter('additionalUsers', value)}
+        options={additionalUsersOptions}
+        className="w-[180px]"
+      />
+
+      <SelectBasic
+        name="plan"
+        label="Plano"
+        value={searchParams?.plan || 'default'}
+        onChange={(value) => handleFilter('plan', value)}
+        options={planOptions}
+        className="w-[140px]"
+      />
+
+      <SelectBasic
+        name="billingMode"
+        label="Cobrança"
+        value={searchParams?.billingMode || 'default'}
+        onChange={(value) => handleFilter('billingMode', value)}
+        options={billingModeOptions}
+        className="w-[200px]"
+      />
+
+      <SelectBasic
         name="state"
         label="Estado"
         value={searchParams?.state || 'default'}
         onChange={(value) => handleFilter('state', value)}
         options={stateOptions}
-        className="w-[220px]"
+        className="w-[120px]"
       />
     </>
   )
