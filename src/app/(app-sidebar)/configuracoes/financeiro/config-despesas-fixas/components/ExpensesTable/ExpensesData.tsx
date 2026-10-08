@@ -78,7 +78,7 @@ export function FixedExpensesData({ searchParams, tabs }: Props) {
                 <TableHead>Plano de conta</TableHead>
                 <TableHead>Recorrência</TableHead>
                 <TableHead>Dia vencimento</TableHead>
-                <TableHead>Valor Padrão</TableHead>
+                <TableHead>Valor padrão</TableHead>
                 <TableHead className="w-[10px]"></TableHead>
               </TableRow>
             </TableHeader>

@@ -194,7 +194,7 @@ export function TaskDetailDialog({
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-[20%]">Tipo</TableHead>
                   <TableHead className="w-[55%]">Recurso</TableHead>
-                  <TableHead className="w-[25%] text-right">
+                  <TableHead numeric className="w-[25%]">
                     Quantidade
                   </TableHead>
                 </TableRow>
@@ -219,7 +219,7 @@ export function TaskDetailDialog({
                     <TableCell className="text-sm text-gray-800">
                       {line.resource}
                     </TableCell>
-                    <TableCell className="text-right text-sm">
+                    <TableCell numeric className="text-sm">
                       {line.quantity === null
                         ? '-'
                         : line.unit === 'min'

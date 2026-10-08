@@ -62,9 +62,7 @@ export function PayrollMovement({ data }: Props) {
         <CardHeader>
           <div className="flex gap-3 items-center">
             <FeaturedIcon variant="neutralOutline" Icon={IconWallet} />
-            <CardTitle className="text-gray-700 font-semibold text-base">
-              Movimentação do salário
-            </CardTitle>
+            <CardTitle>Movimentação do salário</CardTitle>
           </div>
         </CardHeader>
         <CardContent>

@@ -51,7 +51,7 @@ export function QuotationHistoryDialog({ open, setOpen, quotation }: Props) {
         <DialogHeader>
           <div className="flex items-center gap-4">
             <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
-            <DialogTitle>Histórico do Orçamento</DialogTitle>
+            <DialogTitle>Histórico do orçamento</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>
         </DialogHeader>

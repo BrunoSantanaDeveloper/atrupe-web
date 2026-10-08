@@ -122,10 +122,12 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                 <TableHead className="w-[24%]">
                   Preço de venda por {unit}
                 </TableHead>
-                <TableHead className="w-[20%] text-right">
+                <TableHead numeric className="w-[20%]">
                   Custo por {unit} nessa quantidade
                 </TableHead>
-                <TableHead className="w-[14%] text-right">Margem</TableHead>
+                <TableHead numeric className="w-[14%]">
+                  Margem
+                </TableHead>
                 <TableHead className="w-[20%]" />
               </TableRow>
             </TableHeader>
@@ -173,7 +175,7 @@ export function PriceTiersCard({ assembly, onSaved }: Props) {
                         />
                       </PermissionGate>
                     </TableCell>
-                    <TableCell className="text-right text-sm">
+                    <TableCell numeric className="text-sm">
                       {summary && !changed ? money(summary.unitCost) : '-'}
                     </TableCell>
                     <TableCell

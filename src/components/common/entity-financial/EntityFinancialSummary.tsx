@@ -55,7 +55,7 @@ export function EntityFinancialSummary({ entityId, entityType }: Props) {
   return (
     <div className="my-6 space-y-6">
       <section className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700">Saldo</h3>
+        <h3 className="type-body-strong">Saldo</h3>
         <EntityBalanceCards
           entityId={entityId}
           startDate={ALL_TIME_START}
@@ -64,20 +64,18 @@ export function EntityFinancialSummary({ entityId, entityType }: Props) {
       </section>
 
       <section className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700">
-          Contas a receber
-        </h3>
+        <h3 className="type-body-strong">Contas a receber</h3>
         <SummaryCards searchParams={summaryParams} tab="receitas" />
       </section>
 
       <section className="space-y-3">
-        <h3 className="text-sm font-semibold text-gray-700">Contas a pagar</h3>
+        <h3 className="type-body-strong">Contas a pagar</h3>
         <SummaryCards searchParams={summaryParams} tab="despesas" />
       </section>
 
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-700">Movimentações</h3>
+          <h3 className="type-body-strong">Movimentações</h3>
           <Button
             asChild
             variant="neutralOutline"

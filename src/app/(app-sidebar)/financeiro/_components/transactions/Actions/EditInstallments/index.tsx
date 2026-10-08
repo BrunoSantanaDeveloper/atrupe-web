@@ -266,7 +266,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                               <p
                                 className={cn(
                                   'text-sm font-medium text-gray-700 leading-[44px] mt-5',
-                                  isCurrent && 'font-bold',
+                                  isCurrent && 'font-semibold',
                                 )}
                               >
                                 {`${currentInstallment?.installmentNumber || index + 1}/${fields.length}`}

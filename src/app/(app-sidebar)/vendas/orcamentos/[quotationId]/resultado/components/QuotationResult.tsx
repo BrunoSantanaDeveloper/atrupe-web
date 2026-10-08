@@ -158,16 +158,16 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
                           <TableHead className="w-[14%] text-right">
                             Estimado
                           </TableHead>
-                          <TableHead className="w-[14%] text-right">
+                          <TableHead numeric className="w-[14%]">
                             Realizado
                           </TableHead>
-                          <TableHead className="w-[14%] text-right">
+                          <TableHead numeric className="w-[14%]">
                             Custo estimado
                           </TableHead>
-                          <TableHead className="w-[14%] text-right">
+                          <TableHead numeric className="w-[14%]">
                             Custo realizado
                           </TableHead>
-                          <TableHead className="w-[14%] text-right">
+                          <TableHead numeric className="w-[14%]">
                             Diferença
                           </TableHead>
                         </TableRow>
@@ -188,26 +188,26 @@ export function QuotationResult({ quotationId }: { quotationId: string }) {
                                 <TableCell className="pl-8">
                                   {resource.name}
                                 </TableCell>
-                                <TableCell className="text-right text-gray-600">
+                                <TableCell numeric className="text-gray-600">
                                   {resource.quantity
                                     .toString()
                                     .replace('.', ',')}{' '}
                                   {resource.unit}
                                 </TableCell>
-                                <TableCell className="text-right text-gray">
+                                <TableCell numeric className="text-gray">
                                   {resource.actualQuantity === null
                                     ? '—'
                                     : `${resource.actualQuantity} ${resource.unit}`}
                                 </TableCell>
-                                <TableCell className="text-right">
+                                <TableCell numeric>
                                   {formatMoney(resource.cost)}
                                 </TableCell>
-                                <TableCell className="text-right text-gray">
+                                <TableCell numeric className="text-gray">
                                   {resource.actualCost === null
                                     ? '—'
                                     : formatMoney(resource.actualCost)}
                                 </TableCell>
-                                <TableCell className="text-right text-gray">
+                                <TableCell numeric className="text-gray">
                                   {resource.actualCost === null
                                     ? '—'
                                     : formatMoney(

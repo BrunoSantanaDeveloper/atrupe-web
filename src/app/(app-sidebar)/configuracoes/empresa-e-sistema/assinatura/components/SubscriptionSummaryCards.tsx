@@ -95,7 +95,7 @@ export function SubscriptionSummaryCards({
             {isTrial ? (
               <div className="flex flex-col items-center justify-center">
                 <span className="font-semibold text-gray-700 text-lg">
-                  Período de Teste
+                  Período de teste
                 </span>
               </div>
             ) : (

@@ -2,9 +2,10 @@ import { PricingList } from '../components/PricingList'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
+import { pageTitle } from '@/lib/metadata'
 
 export function metadata() {
-  return { title: 'Precificação' }
+  return { title: pageTitle('Produtos', 'Precificação') }
 }
 
 export default function ProductPricingPage({ searchParams }: SearchParamsType) {

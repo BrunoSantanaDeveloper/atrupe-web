@@ -183,7 +183,7 @@ export function CompositionReport({ item, onOpenChange }: Props) {
                     <TableRow className="bg-gray-50">
                       <TableHead className="w-[30%]">Linha</TableHead>
                       <TableHead className="w-[45%]">Recurso</TableHead>
-                      <TableHead className="w-[25%] text-right">
+                      <TableHead numeric className="w-[25%]">
                         Quantidade
                       </TableHead>
                     </TableRow>

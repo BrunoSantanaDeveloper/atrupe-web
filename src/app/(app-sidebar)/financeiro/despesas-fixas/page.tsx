@@ -7,7 +7,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 export function metadata() {
   return {
-    title: 'Despesas Fixas',
+    title: 'Despesas fixas',
   }
 }
 

@@ -43,9 +43,7 @@ export function DashboardQuickAccess() {
   return (
     <Card className="flex-[1_1_265px]">
       <CardHeader>
-        <CardTitle className="text-gray-700 font-semibold text-base">
-          Acesso rápido
-        </CardTitle>
+        <CardTitle>Acesso rápido</CardTitle>
       </CardHeader>
       <CardContent className="px-3">
         <ul>

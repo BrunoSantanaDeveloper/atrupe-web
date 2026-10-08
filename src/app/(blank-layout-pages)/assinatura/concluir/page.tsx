@@ -282,9 +282,7 @@ export default function FinishSubscriptionPage() {
         <div className="flex flex-col items-center justify-center gap-8 w-full">
           <Card className="rounded-2xl w-full max-w-[464px] mx-auto px-8 py-10">
             <CardHeader className="p-0 mb-8 text-center">
-              <CardTitle className="text-xl font-bold">
-                Validando dados
-              </CardTitle>
+              <CardTitle>Validando dados</CardTitle>
               <CardDescription>
                 Estamos atualizando as informações da sua assinatura.
               </CardDescription>
@@ -310,7 +308,7 @@ export default function FinishSubscriptionPage() {
                   <IconCheck size={48} className="text-green-600" />
                 </div>
               </div>
-              <CardTitle className="text-xl font-bold text-green-600">
+              <CardTitle className="text-green-600">
                 Assinatura realizada com sucesso!
               </CardTitle>
               <CardDescription>
@@ -344,7 +342,7 @@ export default function FinishSubscriptionPage() {
                   <IconCheck size={48} className="text-blue-600" />
                 </div>
               </div>
-              <CardTitle className="text-xl font-bold text-blue-600">
+              <CardTitle className="text-blue-600">
                 Aguardando pagamento
               </CardTitle>
               <CardDescription className="text-gray-600 mt-2">
@@ -392,7 +390,7 @@ export default function FinishSubscriptionPage() {
                   <IconX size={48} className="text-red-600" />
                 </div>
               </div>
-              <CardTitle className="text-xl font-bold text-red-600">
+              <CardTitle className="text-red-600">
                 Erro ao processar assinatura
               </CardTitle>
               <CardDescription className="text-gray-600 mt-2">

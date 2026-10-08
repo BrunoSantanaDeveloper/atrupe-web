@@ -31,7 +31,7 @@ export function InvoiceModule({
 
   return (
     <div className="mt-8">
-      <h3 className="font-semibold text-gray-700 mb-1">Nota Fiscal</h3>
+      <h3 className="type-card-title mb-1">Nota Fiscal</h3>
       <p className="text-xs text-muted-foreground mb-2">
         Contrate recursos adicionais para impulsionar o seu plano.
       </p>
@@ -45,7 +45,7 @@ export function InvoiceModule({
             />
             <span className="text-base font-semibold">Módulo NF</span>
           </div>
-          <span className="text-xl font-bold text-emerald-900">
+          <span className="type-kpi-value text-emerald-900">
             R$ {price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}{' '}
             <span className="text-base font-normal text-muted-foreground">
               /mês

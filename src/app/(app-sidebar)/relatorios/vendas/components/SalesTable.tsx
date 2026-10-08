@@ -172,7 +172,9 @@ export function SalesTable({ searchParams }: SalesTableProps) {
             {phaseConfig[record.phase]?.label || 'Desconhecido'}
           </Badge>
         </TableCell>
-        <TableCell className="text-right text-gray-600">{pct}%</TableCell>
+        <TableCell numeric className="text-gray-600">
+          {pct}%
+        </TableCell>
       </TableRow>
     )
   }
@@ -232,7 +234,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                 <TableHead>Entrega</TableHead>
                 <TableHead>Vendas</TableHead>
                 <TableHead>Fase atual</TableHead>
-                <TableHead className="text-right">%</TableHead>
+                <TableHead numeric>%</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -289,7 +291,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                 <TableHead>Entrega</TableHead>
                 <TableHead>Vendas</TableHead>
                 <TableHead>Fase atual</TableHead>
-                <TableHead className="text-right">100%</TableHead>
+                <TableHead numeric>100%</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -319,7 +321,7 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                                 <span className="text-xs text-gray-500 font-normal">
                                   (
                                   {groupBy === 'client'
-                                    ? 'Total do Cliente'
+                                    ? 'Total do cliente'
                                     : 'Total do Vendedor'}
                                   )
                                 </span>
@@ -336,7 +338,10 @@ export function SalesTable({ searchParams }: SalesTableProps) {
                               {formatCurrencyToBrl(group.total)}
                             </TableCell>
                             <TableCell></TableCell>
-                            <TableCell className="text-right text-gray-600 font-semibold text-xs py-3">
+                            <TableCell
+                              numeric
+                              className="text-gray-600 font-semibold text-xs py-3"
+                            >
                               {totalFiltered > 0
                                 ? ((group.total / totalFiltered) * 100).toFixed(
                                     1,

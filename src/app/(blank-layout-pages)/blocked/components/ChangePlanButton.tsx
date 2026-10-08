@@ -100,7 +100,7 @@ export function ChangePlanButton({ plans, currentPlanName }: Props) {
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-[460px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-2">
-            <DialogTitle className="text-lg font-semibold text-gray-800">
+            <DialogTitle>
               {changedTo ? 'Plano alterado' : 'Mudar de plano'}
             </DialogTitle>
           </DialogHeader>

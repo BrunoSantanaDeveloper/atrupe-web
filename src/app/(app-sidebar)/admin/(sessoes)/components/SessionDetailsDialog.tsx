@@ -108,9 +108,7 @@ export function SessionDetailsDialog({
             {/* User Info */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">
-                  Informações do Usuário
-                </CardTitle>
+                <CardTitle>Informações do Usuário</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-start gap-4">

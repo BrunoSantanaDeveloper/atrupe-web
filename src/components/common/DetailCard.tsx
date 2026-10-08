@@ -26,9 +26,7 @@ export function DetailCard({
         <div className="flex justify-between">
           <div className="flex gap-3 items-center">
             <FeaturedIcon variant="neutralOutline" Icon={icon} />
-            <CardTitle className="text-gray-700 font-semibold text-base">
-              {title}
-            </CardTitle>
+            <CardTitle>{title}</CardTitle>
           </div>
         </div>
       </CardHeader>

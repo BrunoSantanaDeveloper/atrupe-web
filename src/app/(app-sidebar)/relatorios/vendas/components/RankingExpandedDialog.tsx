@@ -73,7 +73,7 @@ export function RankingExpandedDialog({
               <TableRow className="bg-gray-50">
                 <TableHead className="w-10">#</TableHead>
                 <TableHead>{nameLabel}</TableHead>
-                <TableHead className="text-right">Valor</TableHead>
+                <TableHead numeric>Valor</TableHead>
                 <TableHead className="w-20 text-right">Part.</TableHead>
               </TableRow>
             </TableHeader>
@@ -84,10 +84,10 @@ export function RankingExpandedDialog({
                     {index + 1}
                   </TableCell>
                   <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell className="text-right tabular-nums">
+                  <TableCell numeric>
                     {formatCurrencyToBrl(item.value)}
                   </TableCell>
-                  <TableCell className="text-right text-gray-500 tabular-nums">
+                  <TableCell numeric className="text-gray-500">
                     {total > 0
                       ? `${((item.value / total) * 100).toFixed(1)}%`
                       : '—'}

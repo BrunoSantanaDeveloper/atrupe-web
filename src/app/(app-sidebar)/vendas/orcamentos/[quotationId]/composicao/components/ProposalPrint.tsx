@@ -174,15 +174,13 @@ export function ProposalPrint({ quotationId }: Props) {
       <div className="mx-auto max-w-[800px] rounded-xl border border-gray-200 bg-white p-8 print:max-w-none print:border-0 print:p-0">
         <div className="flex items-start justify-between gap-6 border-b border-gray-200 pb-4">
           <div>
-            <p className="text-xs uppercase tracking-wide text-gray">
-              Proposta comercial
-            </p>
+            <p className="type-eyebrow">Proposta comercial</p>
             <p className="text-lg font-semibold text-gray-900">
               {quotation.reference}
             </p>
           </div>
           <div className="text-right">
-            <p className="text-xs uppercase tracking-wide text-gray">Cliente</p>
+            <p className="type-eyebrow">Cliente</p>
             <p className="font-medium text-gray-800">{quotation.client}</p>
           </div>
         </div>
@@ -276,9 +274,7 @@ export function ProposalPrint({ quotationId }: Props) {
 
         <div className="flex justify-end border-t border-gray-200 pt-4">
           <p className="text-right">
-            <span className="block text-xs uppercase tracking-wide text-gray">
-              Total
-            </span>
+            <span className="type-eyebrow block">Total</span>
             <span className="text-xl font-semibold text-gray-900">
               {formatCurrencyToBrl(quotationTotal(quotation.items))}
             </span>

@@ -84,16 +84,13 @@ tabulares (`font-variant-numeric: tabular-nums`).
 
 Cada papel SHALL carregar a sua cor (primária para títulos e identificadores,
 secundária para corpo e rótulos, terciária para apoio, legendas e cabeçalhos de
-tabela); texto informativo SHALL NOT usar as cores `gray-300` ou `gray-400`.
+tabela); a página SHALL NOT precisar repetir a cor ao lado do papel. O limite
+de contraste do texto é da capability `contraste-e-foco` (mudança
+`cores-e-contraste`).
 
 #### Scenario: Texto de apoio numa linha de tabela
 
 - **WHEN** uma célula mostra um identificador e, abaixo, uma linha de apoio
   (e-mail, descrição)
 - **THEN** o identificador usa `body-strong` (cor primária) e o apoio usa
-  `secondary` (cor terciária), com contraste mínimo 4,5:1 sobre o fundo
-
-#### Scenario: Valor ausente
-
-- **WHEN** um dado não existe e a célula mostra "–"
-- **THEN** o traço usa a cor terciária, não `gray-300`
+  `secondary` (cor terciária), sem classe de cor na célula

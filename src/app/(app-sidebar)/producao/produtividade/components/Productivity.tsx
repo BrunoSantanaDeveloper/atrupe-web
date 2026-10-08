@@ -81,8 +81,12 @@ export function Productivity() {
                 <TableHead className="w-[16%] text-right">
                   Etapas concluídas
                 </TableHead>
-                <TableHead className="w-[18%] text-right">Previsto</TableHead>
-                <TableHead className="w-[18%] text-right">Realizado</TableHead>
+                <TableHead numeric className="w-[18%]">
+                  Previsto
+                </TableHead>
+                <TableHead numeric className="w-[18%]">
+                  Realizado
+                </TableHead>
                 <TableHead className="w-[20%] text-right">Eficiência</TableHead>
               </TableRow>
             </TableHeader>
@@ -134,8 +138,10 @@ export function Productivity() {
                 <TableRow className="bg-gray-50">
                   <TableHead className="w-[28%]">Colaborador</TableHead>
                   <TableHead className="w-[16%] text-right">Etapas</TableHead>
-                  <TableHead className="w-[18%] text-right">Previsto</TableHead>
-                  <TableHead className="w-[18%] text-right">
+                  <TableHead numeric className="w-[18%]">
+                    Previsto
+                  </TableHead>
+                  <TableHead numeric className="w-[18%]">
                     Realizado
                   </TableHead>
                   <TableHead className="w-[20%] text-right">

@@ -286,7 +286,7 @@ export function AssetDetail({ id }: Props) {
                               <TableCell className="text-sm text-gray">
                                 {formatDate(cost.lastOccurrence)}
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell numeric>
                                 {formatCurrencyToBrl(cost.monthlyCost)}
                               </TableCell>
                             </TableRow>
@@ -332,10 +332,10 @@ export function AssetDetail({ id }: Props) {
                         <TableHead className="w-[14%] text-right">
                           Tempo em atividade
                         </TableHead>
-                        <TableHead className="w-[12%] text-right">
+                        <TableHead numeric className="w-[12%]">
                           Custo
                         </TableHead>
-                        <TableHead className="w-[12%] text-right">
+                        <TableHead numeric className="w-[12%]">
                           Preço de venda
                         </TableHead>
                         <TableHead className="w-[4%]" />
@@ -365,10 +365,10 @@ export function AssetDetail({ id }: Props) {
                             )}{' '}
                             h/mês
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {formatValue(setup.unitCost)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell numeric>
                             {formatValue(setup.salePrice)}
                           </TableCell>
                           <TableCell>

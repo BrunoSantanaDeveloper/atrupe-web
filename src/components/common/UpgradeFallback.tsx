@@ -29,7 +29,7 @@ export function UpgradeFallback({
         rounded
         className="mb-6"
       />
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
+      <h3 className="type-card-title mb-2">{title}</h3>
       <p className="text-gray-600 text-center mb-6 max-w-md">{description}</p>
       <Button type="button" asChild>
         <Link href={redirectTo}>Fazer upgrade</Link>

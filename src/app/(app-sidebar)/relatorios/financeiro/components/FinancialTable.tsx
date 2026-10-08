@@ -223,10 +223,12 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                       ? 'Data do recebimento'
                       : 'Data do pagamento'}
                   </TableHead>
-                  <TableHead className="text-right">
+                  <TableHead numeric>
                     {tab === 'receitas' ? 'Vendas' : 'Pagamentos'}
                   </TableHead>
-                  <TableHead className="text-right w-16">100%</TableHead>
+                  <TableHead numeric className="w-16">
+                    100%
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -243,7 +245,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                               </Badge>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right font-semibold">
+                          <TableCell numeric className="font-semibold">
                             {formatCurrencyToBrl(group.total)}
                           </TableCell>
                           <TableCell />
@@ -270,7 +272,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                             >
                               {formatCurrencyToBrl(record.value)}
                             </TableCell>
-                            <TableCell className="text-right text-gray-500">
+                            <TableCell numeric className="text-gray-500">
                               {getPct(record.value)}%
                             </TableCell>
                           </TableRow>
@@ -297,7 +299,7 @@ export function FinancialTable({ searchParams, tab }: FinancialTableProps) {
                         >
                           {formatCurrencyToBrl(record.value)}
                         </TableCell>
-                        <TableCell className="text-right text-gray-500">
+                        <TableCell numeric className="text-gray-500">
                           {getPct(record.value)}%
                         </TableCell>
                       </TableRow>

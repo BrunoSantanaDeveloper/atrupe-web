@@ -96,9 +96,7 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
       {/* Fluxo de Caixa */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Fluxo de Caixa
-          </CardTitle>
+          <CardTitle>Fluxo de Caixa</CardTitle>
         </CardHeader>
         <CardContent className="p-6 min-h-[250px]">
           {loadingCashFlow ? (
@@ -201,9 +199,7 @@ export function ChartsSection({ searchParams }: SearchParamsType) {
       {/* Receitas x Despesas */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-700">
-            Receitas x Despesas
-          </CardTitle>
+          <CardTitle>Receitas x Despesas</CardTitle>
         </CardHeader>
         <CardContent className="p-6 min-h-[250px]">
           {loadingRevenueExpense ? (

@@ -71,7 +71,7 @@ export function AccessDetailsDialog({ session, open, onOpenChange }: Props) {
               <div className="grid gap-4 lg:grid-cols-[1fr_1.4fr]">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Usuario</CardTitle>
+                    <CardTitle>Usuario</CardTitle>
                   </CardHeader>
                   <CardContent className="flex gap-4">
                     <Avatar
@@ -96,7 +96,7 @@ export function AccessDetailsDialog({ session, open, onOpenChange }: Props) {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-base">Sessao</CardTitle>
+                    <CardTitle>Sessao</CardTitle>
                   </CardHeader>
                   <CardContent className="grid gap-3 sm:grid-cols-2">
                     <Info label="Status">

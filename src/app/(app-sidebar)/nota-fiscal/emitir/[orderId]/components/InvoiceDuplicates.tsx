@@ -97,9 +97,7 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
             <div className="flex gap-3 items-center">
               <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
               <div className="flex flex-col">
-                <CardTitle className="text-gray-700 font-semibold text-base">
-                  Duplicatas / Fatura
-                </CardTitle>
+                <CardTitle>Duplicatas / Fatura</CardTitle>
                 <span className="text-xs text-gray-500">
                   Total: {formatCurrency(totalDuplicatas)}
                 </span>

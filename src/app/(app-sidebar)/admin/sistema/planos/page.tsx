@@ -142,7 +142,7 @@ export default function AdminPlansPage() {
                     >
                       <td className="p-4 font-semibold text-gray-900">
                         {plan.name}
-                        <span className="block text-xs text-gray-400 font-normal mt-0.5 uppercase tracking-wide">
+                        <span className="type-eyebrow block mt-0.5">
                           {plan.planType}
                         </span>
                       </td>
@@ -185,7 +185,7 @@ export default function AdminPlansPage() {
                             aria-label={`Disponibilidade do plano ${plan.name}`}
                           />
                           {toggleDisabled && (
-                            <span className="text-[10px] text-amber-600 text-right max-w-[160px]">
+                            <span className="text-xs text-amber-600 text-right max-w-[160px]">
                               Defina um preço base antes de ativar.
                             </span>
                           )}
@@ -209,7 +209,7 @@ export default function AdminPlansPage() {
       >
         <DialogContent className="sm:max-w-[460px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-2">
-            <DialogTitle className="flex items-center gap-2.5 text-lg font-bold text-gray-900">
+            <DialogTitle className="flex items-center gap-2.5">
               <IconAlertTriangle size={22} className="text-[#FF4201]" />
               <span>
                 {pendingToggle?.next

@@ -112,9 +112,7 @@ export function OrderItems({ data }: Props) {
         <CardHeader>
           <div className="flex gap-3 items-center">
             <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
-            <CardTitle className="text-gray-700 font-semibold text-base">
-              Itens
-            </CardTitle>
+            <CardTitle>Itens</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pb-0">
