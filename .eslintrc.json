@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "@tribodev/eslint-config/next",
-    "next/core-web-vitals"
-  ],
+  "extends": ["@tribodev/eslint-config/next", "next/core-web-vitals"],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -34,6 +31,18 @@
       {
         "selector": "JSXAttribute[name.name='className'] Literal[value=/(^|\\s)font-bold(\\s|$)/]",
         "message": "Peso 700 não faz parte dos papéis tipográficos. Use type-kpi-hero para destaque ou font-semibold."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name=/^Icon[A-Z]/] > JSXAttribute[name.name='size'] > JSXExpressionContainer > Literal",
+        "message": "Tamanho de ícone vem do contexto: <Icon size=\"sm|md|lg\"> ou size={ICON_SIZE.x} (design/openspec, icones). Marca de controle fora da escala: desative a linha com o motivo."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name=/^Icon[A-Z]/] > JSXAttribute[name.name='className'] Literal[value=/(^|\\s)(h|w|size)-\\d+(\\.5)?(\\s|$)/]",
+        "message": "Tamanho de ícone vem do contexto: <Icon size=\"sm|md|lg\"> ou size={ICON_SIZE.x} (design/openspec, icones). Marca de controle fora da escala: desative a linha com o motivo."
+      },
+      {
+        "selector": "JSXOpeningElement[name.name=/^Icon[A-Z]/] > JSXAttribute[name.name='className'] TemplateElement[value.raw=/(^|\\s)(h|w|size)-\\d+(\\.5)?(\\s|$)/]",
+        "message": "Tamanho de ícone vem do contexto: <Icon size=\"sm|md|lg\"> ou size={ICON_SIZE.x} (design/openspec, icones). Marca de controle fora da escala: desative a linha com o motivo."
       }
     ],
     "no-restricted-imports": [
@@ -50,9 +59,7 @@
   },
   "overrides": [
     {
-      "files": [
-        "src/app/sandbox/**"
-      ],
+      "files": ["src/app/sandbox/**"],
       "rules": {
         "no-restricted-syntax": "off"
       }

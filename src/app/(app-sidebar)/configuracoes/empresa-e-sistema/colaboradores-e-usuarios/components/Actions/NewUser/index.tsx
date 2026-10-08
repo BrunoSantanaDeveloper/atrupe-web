@@ -175,9 +175,10 @@ export function NewUserDialog({
                   <div className="space-y-1 text-sm">
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
+                        size="sm"
                         icon={IconCircleCheckFilled}
                         className={cn(
-                          'size-3 ml-0.5',
+                          'ml-0.5',
                           passwordValidations.minLength
                             ? 'text-success'
                             : 'text-gray-400',
@@ -187,9 +188,10 @@ export function NewUserDialog({
                     </div>
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
+                        size="sm"
                         icon={IconCircleCheckFilled}
                         className={cn(
-                          'size-3 ml-0.5',
+                          'ml-0.5',
                           passwordValidations.upperCase
                             ? 'text-success'
                             : 'text-gray-400',
@@ -199,9 +201,10 @@ export function NewUserDialog({
                     </div>
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
+                        size="sm"
                         icon={IconCircleCheckFilled}
                         className={cn(
-                          'size-3 ml-0.5',
+                          'ml-0.5',
                           passwordValidations.lowerCase
                             ? 'text-success'
                             : 'text-gray-400',
@@ -211,9 +214,10 @@ export function NewUserDialog({
                     </div>
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
+                        size="sm"
                         icon={IconCircleCheckFilled}
                         className={cn(
-                          'size-3 ml-0.5',
+                          'ml-0.5',
                           passwordValidations.number
                             ? 'text-success'
                             : 'text-gray-400',
@@ -223,9 +227,10 @@ export function NewUserDialog({
                     </div>
                     <div className="flex items-center gap-1 text-gray">
                       <IconComponent
+                        size="sm"
                         icon={IconCircleCheckFilled}
                         className={cn(
-                          'size-3 ml-0.5',
+                          'ml-0.5',
                           passwordValidations.special
                             ? 'text-success'
                             : 'text-gray-400',
@@ -243,9 +248,10 @@ export function NewUserDialog({
                   />
                   <div className="flex items-center gap-1 text-gray text-sm">
                     <IconComponent
+                      size="sm"
                       icon={IconCircleCheckFilled}
                       className={cn(
-                        'size-3 ml-0.5',
+                        'ml-0.5',
                         watch('password') === watch('confirmPassword') &&
                           watch('password') !== ''
                           ? 'text-success'

@@ -109,6 +109,7 @@ function QuotationTag({ quotation, tagsList }: Props) {
             onClick={() => handleChangeStatus(null)}
             disabled={!allowChangeStatus || !quotation.tag}
           >
+            {/* eslint-disable-next-line no-restricted-syntax -- ponto de status de 8 px, como os das outras etiquetas */}
             <IconCircle aria-hidden="true" className="size-2 mr-2" />
             Remover status
           </DropdownMenuItem>

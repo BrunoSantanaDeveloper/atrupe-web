@@ -54,7 +54,8 @@ const iconOptions = Object.entries(sectorIcons).map(([key, value]) => ({
     <div className="flex items-center gap-2 text-nowrap">
       <IconComponent
         icon={value.icon}
-        className="size-5 [&>path]:stroke-[2px]"
+        size="md"
+        className="[&>path]:stroke-[2px]"
       />
       {value.text}
     </div>
