@@ -2,17 +2,12 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
+import { ICON_SIZE, ICON_STROKE, type IconSize } from '@/lib/icon-sizes'
+
 // Ícones (design/openspec/changes/icones): uma biblioteca (Tabler), três
 // tamanhos. O tamanho vem do contexto — botão pequeno, célula, barra lateral —
-// e não de um número escolhido em cada tela.
-//
-//   sm 16: texto em linha, botão pequeno, chip, badge
-//   md 20: botão médio e grande, ação de linha, campo, item de menu, barra
-//          lateral
-//   lg 24: cabeçalho, estado vazio
-
-export const ICON_SIZE = { sm: 16, md: 20, lg: 24 } as const
-export type IconSize = keyof typeof ICON_SIZE
+// e não de um número escolhido em cada tela. Valores em src/lib/icon-sizes.ts.
+export { ICON_SIZE, ICON_STROKE, type IconSize }
 
 /** Classe Tailwind do mesmo tamanho, para SVG que não aceita `size`. */
 export const ICON_SIZE_CLASS: Record<IconSize, string> = {
@@ -20,10 +15,6 @@ export const ICON_SIZE_CLASS: Record<IconSize, string> = {
   md: 'size-icon-md',
   lg: 'size-icon-lg',
 }
-
-// Traço do Tabler: 2 até 20 px, 1,5 a partir de 24 px (o desenho fica leve
-// demais com 2 no tamanho grande)
-export const ICON_STROKE: Record<IconSize, number> = { sm: 2, md: 2, lg: 1.5 }
 
 /** Qualquer componente de ícone que aceite o contrato do Tabler. */
 export type IconComponentType = React.ComponentType<{

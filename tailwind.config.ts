@@ -1,6 +1,7 @@
 import type { Config } from 'tailwindcss'
 
 import { typographyRoles } from './tailwind/typography-roles'
+import { iconSpacing } from './src/lib/icon-sizes'
 
 // Tema escuro — design/openspec/changes/tema-claro-escuro (Decisões 3 e 6)
 
@@ -104,10 +105,10 @@ const config = {
       },
     },
     extend: {
-      // Ícones (design/openspec, icones): três tamanhos, iguais a ICON_SIZE em
-      // src/components/ui/icon.tsx. `size-icon-md` num contêiner que força o
-      // tamanho do SVG filho, como o botão.
-      spacing: { 'icon-sm': '1rem', 'icon-md': '1.25rem', 'icon-lg': '1.5rem' },
+      // Ícones (design/openspec, icones): `size-icon-sm|md|lg` lidos de
+      // src/lib/icon-sizes.ts, a mesma fonte do componente Icon. Servem para
+      // o contêiner que força o tamanho do SVG filho, como o botão.
+      spacing: iconSpacing,
       // `white` como fundo, borda, anel ou divisória é superfície: escurece no
       // tema escuro. Como cor de texto (`text-white`) continua branco.
       backgroundColor: {
