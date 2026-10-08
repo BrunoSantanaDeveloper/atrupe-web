@@ -258,6 +258,9 @@ export function ProcessEditor({
   useEffect(() => {
     if (detail && !measure) {
       setMeasure(detail.measure)
+      // O processo que acompanha a base já abre simulado depois dela: é
+      // assim que ele é usado, e a medida vem da base (08/10/2026)
+      if (detail.meta.afterBase === 'INHERIT') setBaseMeasure(detail.measure)
       setMeta({
         sector: detail.block.sector,
         afterBase: detail.meta.afterBase,
@@ -456,18 +459,45 @@ export function ProcessEditor({
       : `${qty} · ${size}`
   })()
 
+  // As regras que valem depois de uma base: quem "acompanha a base" herda a
+  // medida e a quantidade dela, seja qual for a regra própria (como na
+  // composição do produto). Quem tem "medida própria" usa as regras próprias
+  const simRules =
+    baseMeasure && meta.afterBase === 'INHERIT'
+      ? {
+          ...rules,
+          dimension: 'SAME_AS_PARENT' as const,
+          quantityMode: 'HIDDEN_ONE' as const,
+        }
+      : rules
+
+  // Só pede ao usuário o que não vem da base (08/10/2026): a quantidade
+  // quando o vendedor informa, e a medida quando é própria
+  const ownQuantity =
+    !baseMeasure || (!simRules.followsBase && simRules.quantityMode === 'FREE')
+  const ownSize =
+    !baseMeasure || !['SAME_AS_PARENT', 'NONE'].includes(simRules.dimension)
+  const ownFields = [
+    ...(ownQuantity ? ['quantity' as const] : []),
+    ...(ownSize ? ['width' as const, 'height' as const] : []),
+  ]
+
   // As regras herdadas aplicadas na simulação (§9.1): com a base ligada, o
   // cabeçalho explica de onde veio a quantidade e a medida
   const baseText = baseMeasure
     ? [
-        rules.followsBase
+        simRules.followsBase
           ? `quantidade da base (${num(baseMeasure.quantity)})`
-          : rules.quantityMode === 'AREA_RATIO'
+          : simRules.quantityMode === 'AREA_RATIO'
             ? 'quantas cabem na base'
-            : 'quantidade própria',
-        rules.dimension === 'SAME_AS_PARENT'
+            : simRules.quantityMode === 'HIDDEN_ONE'
+              ? 'uma unidade'
+              : 'quantidade própria',
+        simRules.dimension === 'SAME_AS_PARENT'
           ? `medida da base (${num(baseMeasure.width)} × ${num(baseMeasure.height)} m)`
-          : 'medida própria',
+          : simRules.dimension === 'NONE'
+            ? 'sem medida'
+            : 'medida própria',
       ].join(' · ')
     : null
 
@@ -598,6 +628,8 @@ export function ProcessEditor({
                 measureLabel={
                   baseMeasure ? 'Medida própria do processo' : undefined
                 }
+                fields={ownFields}
+                measureNote="Nada a informar: a quantidade e a medida vêm da base."
                 results={[
                   { label: 'Custo', value: money(detail.cost) },
                   {

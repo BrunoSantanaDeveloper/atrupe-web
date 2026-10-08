@@ -28,6 +28,8 @@ import type { AssemblyMeasure } from '../assembly'
 // Utils
 import { cn } from '@/lib/utils'
 
+export type MeasureField = 'quantity' | 'width' | 'height'
+
 export type SimulationResult = {
   label: string
   value: string
@@ -41,6 +43,11 @@ interface Props {
   onMeasureChange: (measure: AssemblyMeasure) => void
   // Rótulo do bloco da medida, quando há mais de uma (a base simulada)
   measureLabel?: string
+  // Quais campos da medida própria aparecem. Depois de uma base, o processo
+  // que herda a medida e a quantidade dela não pede nada (08/10/2026)
+  fields?: MeasureField[]
+  // O que fica no lugar dos campos quando nenhum aparece
+  measureNote?: ReactNode
   results: SimulationResult[]
   // Sem etapa com custo não há o que comparar: a frase que fica no lugar
   emptyText?: string
@@ -62,6 +69,8 @@ export function SimulationCard({
   measure,
   onMeasureChange,
   measureLabel,
+  fields: visibleFields,
+  measureNote,
   results,
   emptyText,
   children,
@@ -69,11 +78,13 @@ export function SimulationCard({
   className,
   idPrefix = 'sim',
 }: Props) {
-  const fields = [
-    ['quantity', 'Quantidade', '1'],
-    ['width', 'Largura (m)', '0.01'],
-    ['height', 'Altura (m)', '0.01'],
-  ] as const
+  const fields = (
+    [
+      ['quantity', 'Quantidade', '1'],
+      ['width', 'Largura (m)', '0.01'],
+      ['height', 'Altura (m)', '0.01'],
+    ] as const
+  ).filter(([key]) => !visibleFields || visibleFields.includes(key))
 
   return (
     <Card className={className}>
@@ -84,9 +95,12 @@ export function SimulationCard({
       <CardContent className="space-y-4 px-6 pb-6">
         {children}
         <div className="space-y-2">
-          {measureLabel && (
+          {measureLabel && fields.length > 0 && (
             <p className="text-sm font-medium text-gray-800">{measureLabel}</p>
           )}
+          {fields.length === 0 && measureNote ? (
+            <p className="text-sm text-gray">{measureNote}</p>
+          ) : null}
           <div className="grid grid-cols-3 gap-3">
             {fields.map(([key, label, step]) => (
               <div key={key} className="space-y-2">
