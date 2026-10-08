@@ -931,10 +931,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
           <div className="text-center space-y-4">
             <FeaturedIcon
               Icon={loadError ? IconRefresh : IconFileInvoice}
-              size="xl"
-              variant={loadError ? 'errorBorderedLight' : 'borderedLight'}
-              rounded
-              color="neutral"
+              size="lg"
+              tone={loadError ? 'error' : 'brand'}
             />
             <div className="space-y-1">
               <p className="font-semibold text-lg text-gray-900">

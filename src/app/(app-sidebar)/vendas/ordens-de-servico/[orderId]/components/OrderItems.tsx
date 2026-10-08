@@ -113,7 +113,7 @@ export function OrderItems({ data }: Props) {
       <Card className="w-full">
         <CardHeader>
           <div className="flex gap-3 items-center">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+            <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
             <CardTitle>Itens</CardTitle>
           </div>
         </CardHeader>
@@ -546,7 +546,7 @@ export function OrderItems({ data }: Props) {
             className="flex justify-center items-center h-full w-full gap-3 py-8 disabled:bg-transparent disabled:opacity-50"
             disabled
           >
-            <FeaturedIcon variant="neutralLight" Icon={IconPlus} rounded />
+            <FeaturedIcon tone="neutral" Icon={IconPlus} />
             <p className="text-sm text-gray-600 font-medium">Adicionar item</p>
           </Button>
         </CardFooter>

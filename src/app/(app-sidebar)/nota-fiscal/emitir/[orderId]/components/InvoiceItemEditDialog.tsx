@@ -14,7 +14,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -29,7 +28,6 @@ import {
 
 // Icons
 import {
-  IconPencil,
   IconDeviceFloppy,
   IconCloudUpload,
   IconCurrencyReal,
@@ -331,7 +329,6 @@ export function InvoiceItemEditDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <div>
                 <span>Editar Item</span>
                 <p className="text-sm font-normal text-gray-500 mt-0.5">

@@ -43,7 +43,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (!hasFeature('nota_fiscal')) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
-        <FeaturedIcon variant="neutralOutline" Icon={IconLock} />
+        <FeaturedIcon tone="neutral" Icon={IconLock} />
         <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo Nota Fiscal não contratado
         </h2>
@@ -67,7 +67,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
     return (
       <>
         <div className="flex flex-col items-center justify-center py-20 px-4">
-          <FeaturedIcon variant="neutralOutline" Icon={IconSettings} />
+          <FeaturedIcon tone="neutral" Icon={IconSettings} />
           <h2 className="type-section-title mt-6 mb-2 text-center">
             Configure seu módulo fiscal
           </h2>
@@ -90,7 +90,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
   if (isPending) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4">
-        <FeaturedIcon variant="neutralOutline" Icon={IconLoader2} />
+        <FeaturedIcon tone="neutral" Icon={IconLoader2} />
         <h2 className="type-section-title mt-6 mb-2 text-center">
           Módulo em ativação
         </h2>

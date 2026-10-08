@@ -49,11 +49,7 @@ import {
 } from '@/lib/utils'
 
 // Icon
-import {
-  IconPrinter,
-  IconCircleCheck,
-  IconAlertTriangle,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
 
 // Store
 import { getItem } from '@/actions/_cruds'
@@ -319,7 +315,6 @@ export function PrintQuotationDialog({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPrinter} />
                 <span>Opções de impressão</span>
               </div>
             </DialogTitle>
@@ -413,11 +408,7 @@ export function PrintQuotationDialog({
         <AlertDialogContent>
           <AlertDialogHeader>
             <div className="flex items-center gap-3">
-              <FeaturedIcon
-                variant="warningOutline"
-                Icon={IconAlertTriangle}
-                size="xl"
-              />
+              <FeaturedIcon tone="warning" Icon={IconAlertTriangle} size="lg" />
               <AlertDialogTitle>
                 Inconsistências Detectadas nos Totais
               </AlertDialogTitle>

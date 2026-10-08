@@ -73,7 +73,7 @@ export function CompanySettingsList({
                 >
                   {item?.iconImage || null}
                   {item?.icon && (
-                    <FeaturedIcon variant="neutralOutline" Icon={item.icon} />
+                    <FeaturedIcon tone="neutral" Icon={item.icon} />
                   )}
                   <div className="w-full sm:w-auto">
                     <p

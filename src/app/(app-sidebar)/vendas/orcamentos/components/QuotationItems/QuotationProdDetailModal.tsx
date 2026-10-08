@@ -12,7 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Form } from '@/components/ui/form'
 
 // Component Imports
@@ -22,11 +21,7 @@ import { UnitOfMeasureField } from '@/components/common/form/global-inputs/UnitO
 
 // Icon Imports
 import { PermissionGate } from '@/components/common/PermissionGate'
-import {
-  IconCircleCheck,
-  IconHelpCircle,
-  IconPackage,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconHelpCircle } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party Imports
@@ -489,7 +484,6 @@ export function QuotationProdDetailModal({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
               {isLoading ? (
                 <span className="text-gray-400">
                   Carregando dados do produto...

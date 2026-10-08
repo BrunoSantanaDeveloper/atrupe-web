@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -25,7 +24,7 @@ import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 import { SelectSectorField } from '@/components/common/form/global-inputs/SectorSelectField'
 
 // Icons
-import { IconPencil, IconPlus, IconCircleCheck } from '@tabler/icons-react'
+import { IconPlus, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -110,10 +109,6 @@ export function NewItemDialog({ open, setOpen, rowData, editMode }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={editMode ? IconPencil : IconPlus}
-              />
               <span>{editMode ? 'Editar cargo' : 'Novo cargo'}</span>
             </div>
           </DialogTitle>

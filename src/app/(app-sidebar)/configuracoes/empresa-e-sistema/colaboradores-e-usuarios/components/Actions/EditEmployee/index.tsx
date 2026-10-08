@@ -15,7 +15,6 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormInputZipCode } from '@/components/common/form/FormInputZipCode'
 
@@ -41,7 +40,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 import type { EmployeeType } from '@/types/settings/employee'
 
 // Icons
-import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Lib
 import { maskCpf, MaskPhoneNumber } from '@/lib/utils'
@@ -133,7 +132,6 @@ export function EditEmployeeDialog({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
                 <span>Editar colaborador</span>
               </div>
             </DialogTitle>

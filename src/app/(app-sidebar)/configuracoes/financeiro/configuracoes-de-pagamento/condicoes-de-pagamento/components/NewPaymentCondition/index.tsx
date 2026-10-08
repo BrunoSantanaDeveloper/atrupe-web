@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { toast } from 'sonner'
@@ -39,7 +38,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Icons
-import { IconCalculator, IconCircleCheck, IconPlus } from '@tabler/icons-react'
+import { IconCircleCheck, IconPlus } from '@tabler/icons-react'
 
 interface Props {
   editMode?: boolean
@@ -219,7 +218,6 @@ export function NewPaymentCondition({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
               <span>
                 {editMode
                   ? 'Editar condição de pagamento'

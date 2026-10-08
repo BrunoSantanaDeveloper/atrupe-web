@@ -184,12 +184,10 @@ export function TransactionsData({ type, searchParams }: Props) {
                           >
                             <div className="flex items-center gap-2">
                               <FeaturedIcon
-                                variant={
-                                  type === 'receivable'
-                                    ? 'successLight'
-                                    : 'errorLight'
+                                tone={
+                                  type === 'receivable' ? 'success' : 'error'
                                 }
-                                size="xs"
+                                size="sm"
                                 Icon={
                                   type === 'receivable'
                                     ? IconTrendingUp

@@ -471,7 +471,6 @@ function NewProductModal({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
                 <span>{editMode ? 'Editar produto' : 'Novo produto'}</span>
               </div>
             </DialogTitle>
@@ -690,11 +689,7 @@ function NewProductModal({
                             className="flex justify-center items-center mx-auto gap-3 py-8"
                             onClick={handleAppendProductItems}
                           >
-                            <FeaturedIcon
-                              variant="light"
-                              Icon={IconPlus}
-                              rounded
-                            />
+                            <FeaturedIcon tone="brand" Icon={IconPlus} />
                             <p className="text-sm text-gray-600 font-medium">
                               Adicionar outra unidade de venda
                             </p>
@@ -751,11 +746,7 @@ function NewProductModal({
                       </TooltipProvider>
                     ) : (
                       <div className="flex flex-col items-center gap-3 py-16 text-center">
-                        <FeaturedIcon
-                          variant="light"
-                          Icon={IconHierarchy2}
-                          rounded
-                        />
+                        <FeaturedIcon tone="brand" Icon={IconHierarchy2} />
                         <p className="text-base font-semibold text-gray-700">
                           O fluxo de etapas vem depois de salvar
                         </p>

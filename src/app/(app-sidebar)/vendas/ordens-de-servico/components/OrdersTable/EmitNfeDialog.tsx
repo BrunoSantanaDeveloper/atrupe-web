@@ -17,7 +17,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -25,7 +24,6 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Icons
 import {
-  IconFileInvoice,
   IconCircleCheck,
   IconExternalLink,
   IconAlertTriangle,
@@ -178,7 +176,6 @@ export function EmitNfeDialog({ open, setOpen, orderId }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="outline" Icon={IconFileInvoice} />
               <span>Emitir NF-e</span>
             </div>
           </DialogTitle>

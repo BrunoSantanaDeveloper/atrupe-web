@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Form Components
 import { FormSelect } from '@/components/common/form/FormSelect'
@@ -37,7 +36,6 @@ import { SupplierSelector } from '@/components/common/form/global-inputs/Supplie
 
 // Icons
 import {
-  IconFilter,
   IconArrowRight,
   IconFileTypePdf,
   IconFileSpreadsheet,
@@ -168,7 +166,6 @@ export function AdvancedReportDialog({ activeTab }: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[540px]">
         <DialogHeader>
-          <FeaturedIcon Icon={IconFilter} variant="outline" />
           <div>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>

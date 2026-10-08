@@ -134,7 +134,7 @@ export function AddressTab() {
       })}
       <div className="w-full flex justify-center">
         <Button type="button" variant="ghost" onClick={handleAddAddress}>
-          <FeaturedIcon variant="light" Icon={IconPlus} rounded />
+          <FeaturedIcon tone="brand" Icon={IconPlus} />
           Adicionar endereço
         </Button>
       </div>

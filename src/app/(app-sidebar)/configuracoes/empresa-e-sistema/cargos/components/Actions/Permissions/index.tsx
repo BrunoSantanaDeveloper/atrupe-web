@@ -25,7 +25,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import {
@@ -35,7 +34,7 @@ import {
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 // Icons
-import { IconShieldLock, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm, type FieldPath } from 'react-hook-form'
@@ -385,7 +384,6 @@ export function UserPermissionsDialog({ open, setOpen, rowData }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconShieldLock} />
                 <span>Permissões do cargo {rowData?.name || ''}</span>
               </div>
             </DialogTitle>

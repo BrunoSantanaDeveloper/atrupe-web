@@ -174,13 +174,7 @@ export function ClientSearchSidebar({ searchParams }: Props) {
         ) : (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
             <div className="space-y-4">
-              <FeaturedIcon
-                Icon={IconUserSearch}
-                size="xl"
-                variant="borderedLight"
-                rounded
-                color="success"
-              />
+              <FeaturedIcon Icon={IconUserSearch} size="lg" tone="brand" />
               <div className="space-y-1">
                 <p className="font-semibold text-lg text-gray-900">
                   {isSearching ? 'Buscando...' : 'Sem clientes filtrados'}

@@ -876,7 +876,7 @@ function AssemblyEditorBody({
         <CardHeader className="flex-row flex-wrap items-start justify-between gap-4 space-y-0">
           <div className="flex min-w-0 items-start gap-3">
             {/* O setor em destaque: é ele que diz onde a etapa é produzida */}
-            <FeaturedIcon variant="light" Icon={SectorIcon} />
+            <FeaturedIcon tone="brand" Icon={SectorIcon} />
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="neutralLight">{item.sector}</Badge>
@@ -2931,7 +2931,6 @@ export function AssemblyEditor(props: EditorProps) {
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
               <div>
                 <DialogTitle>
                   {variantDialog?.kind === 'rename'

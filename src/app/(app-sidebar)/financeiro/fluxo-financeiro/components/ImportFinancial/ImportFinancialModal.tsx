@@ -22,7 +22,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
@@ -326,12 +325,6 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de lançamentos financeiros</span>
               </div>
             </DialogTitle>
@@ -353,10 +346,9 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -443,7 +435,6 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na

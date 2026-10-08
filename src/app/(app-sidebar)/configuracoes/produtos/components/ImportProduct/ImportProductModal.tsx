@@ -23,7 +23,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Switch } from '@/components/ui/switch'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
@@ -273,12 +272,6 @@ export function ImportProductModal() {
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de produtos</span>
               </div>
             </DialogTitle>
@@ -300,10 +293,9 @@ export function ImportProductModal() {
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -398,7 +390,6 @@ export function ImportProductModal() {
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na

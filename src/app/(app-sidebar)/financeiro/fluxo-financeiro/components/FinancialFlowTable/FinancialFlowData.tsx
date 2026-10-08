@@ -188,7 +188,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                             <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-success-25">
                               <div className="flex items-center gap-2">
                                 <FeaturedIcon
-                                  variant="successLight"
+                                  tone="success"
                                   Icon={IconTrendingUp}
                                 />
                                 <div className="flex gap-4">
@@ -218,7 +218,7 @@ export function FinancialFlowData({ searchParams, showTotals }: Props) {
                             <div className="flex items-center gap-5 p-1.5 pr-2 rounded-lg bg-error-25">
                               <div className="flex items-center gap-2">
                                 <FeaturedIcon
-                                  variant="errorLight"
+                                  tone="error"
                                   Icon={IconTrendingDown}
                                 />
                                 <div className="flex gap-4">

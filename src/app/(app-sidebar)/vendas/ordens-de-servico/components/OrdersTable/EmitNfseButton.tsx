@@ -17,7 +17,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -171,7 +170,6 @@ export function EmitNfseButton({ orderId, orderStatus, tooltip }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="outline" Icon={IconFileDescription} />
                 <span>Emitir NFS-e</span>
               </div>
             </DialogTitle>

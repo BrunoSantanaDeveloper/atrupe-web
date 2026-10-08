@@ -96,7 +96,7 @@ export function InvoiceDuplicates({ data, onUpdate }: Props) {
         <AccordionItem value="duplicates" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
+              <FeaturedIcon tone="neutral" Icon={IconCopy} />
               <div className="flex flex-col">
                 <CardTitle>Duplicatas / Fatura</CardTitle>
                 <span className="text-xs text-gray-500">

@@ -4,7 +4,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
@@ -15,6 +14,7 @@ import { getFinancialSummary } from '@/actions/financial-report'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   /**
@@ -83,15 +83,12 @@ export function EntityBalanceCards({ entityId, startDate, endDate }: Props) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {cards.map((card) => {
-        const variant: FeaturedIconProps['variant'] =
-          card.value < 0 ? 'errorLight' : 'successLight'
-
         return (
           <Card
             key={card.label}
             className="p-6 flex items-center gap-3 rounded-xl"
           >
-            <FeaturedIcon size="md" variant={variant} Icon={IconScale} />
+            <Icon icon={IconScale} size="md" className="text-gray-600" />
             <div className="flex flex-col min-w-0">
               <span className="text-xs text-gray truncate">{card.label}</span>
               <span className="text-lg font-semibold text-gray-900">

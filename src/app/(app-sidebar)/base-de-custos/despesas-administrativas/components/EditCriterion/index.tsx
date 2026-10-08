@@ -15,7 +15,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -39,7 +38,6 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil } from '@tabler/icons-react'
 
 interface Props {
   account?: AdminExpenseAccount
@@ -119,7 +117,6 @@ export function EditCriterionModal({ account, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
             <div>
               <DialogTitle>Editar critério</DialogTitle>
               <DialogDescription>{account?.name}</DialogDescription>

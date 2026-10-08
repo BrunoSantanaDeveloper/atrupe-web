@@ -233,7 +233,7 @@ export function QuotationItems({ data }: Props) {
       <Card className="w-full">
         <CardHeader>
           <div className="flex gap-3 items-center">
-            <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+            <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
             <CardTitle>Itens</CardTitle>
             <Badge variant="neutralLight" className="mt-1">
               {(items?.length || 0) + composed.length}
@@ -769,11 +769,8 @@ export function QuotationItems({ data }: Props) {
               disabled={actionDisabled('addItem', status)}
             >
               <FeaturedIcon
-                variant={
-                  actionDisabled('addItem', status) ? 'neutralLight' : 'light'
-                }
+                tone={actionDisabled('addItem', status) ? 'neutral' : 'brand'}
                 Icon={IconPlus}
-                rounded
               />
               <p className="text-sm text-gray-600 font-medium">
                 Adicionar item

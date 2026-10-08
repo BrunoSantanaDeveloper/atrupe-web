@@ -19,7 +19,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { CategorySelectField } from '@/components/common/form/global-inputs/CategorySelectField'
 
 // Icons
-import { IconBoxOff, IconLayoutGridAdd, IconSearch } from '@tabler/icons-react'
+import { IconBoxOff, IconSearch } from '@tabler/icons-react'
 
 // Third-party
 import * as z from 'zod'
@@ -161,7 +161,6 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGridAdd} />
               <span>Qual item deseja adicionar?</span>
             </div>
           </DialogTitle>
@@ -243,12 +242,7 @@ export function QuotationItemsModal({ open }: { open: boolean }) {
           ) : (
             <div className="flex justify-center items-center h-full">
               <div className="text-center">
-                <FeaturedIcon
-                  Icon={IconBoxOff}
-                  size="xl"
-                  variant="borderedLight"
-                  rounded
-                />
+                <FeaturedIcon Icon={IconBoxOff} size="lg" tone="brand" />
                 <p className="font-semibold text-lg mt-4 mb-1">
                   Nenhum produto encontrado
                 </p>

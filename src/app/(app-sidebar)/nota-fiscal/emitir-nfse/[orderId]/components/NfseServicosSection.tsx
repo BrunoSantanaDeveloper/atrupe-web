@@ -42,7 +42,7 @@ export function NfseServicosSection({
         <AccordionItem value="servicos" className="p-0 m-0 border-0">
           <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
             <div className="flex gap-3 items-center">
-              <FeaturedIcon variant="neutralOutline" Icon={IconFileInvoice} />
+              <FeaturedIcon tone="neutral" Icon={IconFileInvoice} />
               <CardTitle>Serviços ({items.length})</CardTitle>
             </div>
             <AccordionTrigger

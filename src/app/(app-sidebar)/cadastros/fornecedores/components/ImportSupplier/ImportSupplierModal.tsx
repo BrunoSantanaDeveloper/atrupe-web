@@ -22,7 +22,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
@@ -287,12 +286,6 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de fornecedores</span>
               </div>
             </DialogTitle>
@@ -314,10 +307,9 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -403,7 +395,6 @@ PESSOA,Carlos Transportes,carlos.transportador@gmail.com,(11) 6666-7777,(11) 966
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na

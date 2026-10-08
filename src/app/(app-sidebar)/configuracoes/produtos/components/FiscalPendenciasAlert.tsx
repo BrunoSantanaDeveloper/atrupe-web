@@ -97,7 +97,7 @@ export function FiscalPendenciasAlert() {
         }
       >
         <FeaturedIcon
-          variant={severo ? 'errorLight' : 'warningLight'}
+          tone={severo ? 'error' : 'warning'}
           Icon={IconAlertTriangle}
         />
         <div className="flex-1">
@@ -136,10 +136,6 @@ export function FiscalPendenciasAlert() {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon
-                  variant={severo ? 'errorLight' : 'warningLight'}
-                  Icon={IconAlertTriangle}
-                />
                 <div>
                   <span>Pendências fiscais dos serviços</span>
                   <p className="text-sm font-normal text-gray-500">

@@ -130,7 +130,6 @@ export function DuplicateDialog(props: Props) {
         <DialogContent className="sm:max-w-[695px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCopy} />
               <DialogTitle>Duplicar orçamento</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>
@@ -200,9 +199,8 @@ export function DuplicateDialog(props: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconCircleCheck}
-              rounded
               size="lg"
-              variant="successBorderedLight"
+              tone="success"
               className="mx-auto mb-2"
             />
             <AlertDialogTitle>Orçamento duplicado</AlertDialogTitle>

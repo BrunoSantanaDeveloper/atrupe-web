@@ -72,7 +72,6 @@ import {
   IconBolt,
   IconPrinter,
   IconReceipt,
-  IconCash,
   IconCashRegister,
   IconCashBanknote,
   IconReceiptRefund,
@@ -221,7 +220,6 @@ function ChargeNowDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCash} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">Recebimento</DialogTitle>
               <DialogDescription className="truncate">
@@ -355,8 +353,7 @@ export function QuickSaleCheckoutCard({ sale }: { sale: QuickSale }) {
         <div className="flex gap-4">
           <FeaturedIcon
             Icon={isPos ? IconCashRegister : IconBolt}
-            variant="borderedLight"
-            rounded
+            tone="brand"
           />
           <div className="space-y-2">
             <div>
@@ -519,14 +516,9 @@ export function QuickSaleStatusCard({
                     ? IconCircleCheck
                     : IconLock
               }
-              variant={
-                checkout.cancelled
-                  ? 'errorBorderedLight'
-                  : finished
-                    ? 'successBorderedLight'
-                    : 'borderedLight'
+              tone={
+                checkout.cancelled ? 'error' : finished ? 'success' : 'brand'
               }
-              rounded
             />
             <div>
               <div className="flex flex-wrap items-center gap-2">

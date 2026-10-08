@@ -126,10 +126,7 @@ export function Main({ searchParams }: Props) {
                             <TableRow key={item?.id}>
                               <TableCell className="flex items-center gap-3">
                                 <FeaturedIcon
-                                  rounded
-                                  variant={
-                                    item?.isActive ? 'light' : 'neutralLight'
-                                  }
+                                  tone={item?.isActive ? 'brand' : 'neutral'}
                                   Icon={
                                     sectorIcons[item?.icon]?.icon ||
                                     IconQuestionMark

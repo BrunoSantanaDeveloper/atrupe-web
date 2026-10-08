@@ -184,7 +184,7 @@ export function CfopListClient() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="outline" Icon={IconArrowsSplit} />
+            <FeaturedIcon tone="brand" Icon={IconArrowsSplit} />
             <div>
               <h2 className="type-section-title">Tabela de CFOP</h2>
               <p className="type-secondary">

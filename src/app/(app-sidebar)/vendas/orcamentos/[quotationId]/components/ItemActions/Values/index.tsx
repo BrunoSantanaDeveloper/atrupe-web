@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -27,7 +26,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { itemValuesSchema, type FormType } from './schema'
 
 // Icons
-import { IconCircleCheck, IconCoin } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -264,7 +263,6 @@ export function ValuesDialog({ open, quotationData, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[800px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
             <div>
               <DialogTitle>Editar valores do item</DialogTitle>
               <DialogDescription>

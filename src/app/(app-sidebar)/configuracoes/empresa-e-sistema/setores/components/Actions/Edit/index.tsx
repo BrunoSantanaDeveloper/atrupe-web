@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { IconComponent } from '@/components/common/Icon'
@@ -23,7 +22,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 
 // Icons
-import { IconCircleCheck, IconPencil } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -109,7 +108,6 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <span>Editar setor</span>
             </div>
           </DialogTitle>

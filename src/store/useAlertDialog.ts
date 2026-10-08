@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { IconAlertTriangle, IconProps } from '@tabler/icons-react'
 import { ButtonProps } from '@/components/ui/button'
-import { FeaturedIconProps } from '@/components/ui/featured-icon'
+import type { FeaturedIconTone } from '@/components/ui/featured-icon'
 import { toast } from 'sonner'
 
 const DEFAULT_TIMEOUT = 30000
@@ -27,7 +27,7 @@ type BaseAlertDialog = {
   onConfirm?: () => void | Promise<void>
   onCancel?: () => void
   Icon?: React.ComponentType<IconProps>
-  iconVariant?: FeaturedIconProps['variant']
+  iconTone?: FeaturedIconTone
   confirmVariant?: ButtonProps['variant']
   toastMsg?: LoadingConfig
   timeout?: number
@@ -54,7 +54,7 @@ export const useAlertDialog = create<AlertDialogStore>((set, get) => ({
   onConfirm: undefined,
   onCancel: undefined,
   Icon: IconAlertTriangle,
-  iconVariant: 'warningBorderedLight',
+  iconTone: 'warning',
   confirmVariant: 'default',
   toastMsg: DEFAULT_MESSAGES,
   timeout: DEFAULT_TIMEOUT,

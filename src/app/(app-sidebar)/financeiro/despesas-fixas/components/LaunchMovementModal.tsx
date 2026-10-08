@@ -28,7 +28,7 @@ import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 
 // Icons
-import { IconCircleCheck, IconCoins } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Lib
 import { formatCurrencyToBrl } from '@/lib/utils'
@@ -41,7 +41,6 @@ import { useQueryClient } from '@tanstack/react-query'
 
 // Types
 import type { FixedExpenseItemType } from '@/types/financial/fixedExpenses'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const schema = z.object({
   competenceDate: z.date({
@@ -142,7 +141,6 @@ export function LaunchMovementModal({
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <DialogHeader>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCoins} />
                 <DialogTitle>Lançar movimentação</DialogTitle>
               </div>
               <DialogDescription hidden></DialogDescription>

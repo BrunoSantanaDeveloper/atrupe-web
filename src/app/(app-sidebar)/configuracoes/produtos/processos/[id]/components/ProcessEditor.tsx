@@ -534,7 +534,7 @@ export function ProcessEditor({
                   (03/10/2026): setor em destaque, tarefa, nome editável e as
                   regras de venda nos seletores */}
               <div className="flex flex-wrap items-start gap-3 px-6 pb-4">
-                <FeaturedIcon variant="light" Icon={SectorIcon} />
+                <FeaturedIcon tone="brand" Icon={SectorIcon} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge variant="neutralLight">{block.sector}</Badge>

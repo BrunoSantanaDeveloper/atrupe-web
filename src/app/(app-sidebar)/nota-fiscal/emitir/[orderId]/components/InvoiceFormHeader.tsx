@@ -124,7 +124,7 @@ export function InvoiceFormHeader({
           <CustomButton
             icon={IconX}
             title={isCanceling ? 'Cancelando...' : 'Cancelar digitação'}
-            iconVariant="errorLight"
+            iconTone="error"
             onClick={handleCancel}
             disabled={isCanceling || isEmitting}
             isLoading={isCanceling}
@@ -134,7 +134,7 @@ export function InvoiceFormHeader({
               <CustomButton
                 icon={IconFileTypePdf}
                 title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={onPreview}
                 disabled={isEmitting || isCanceling || isPreviewing}
                 isLoading={isPreviewing}
@@ -143,7 +143,7 @@ export function InvoiceFormHeader({
             <CustomButton
               icon={IconSend}
               title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-              iconVariant="light"
+              iconTone="brand"
               onClick={onEmit}
               disabled={isEmitting || isCanceling}
               isLoading={isEmitting}
@@ -156,7 +156,7 @@ export function InvoiceFormHeader({
           <CustomButton
             icon={IconPencil}
             title="Carta de Correção"
-            iconVariant="neutralOutline"
+            iconTone="neutral"
             onClick={onCorrectionLetter}
           />
         </div>

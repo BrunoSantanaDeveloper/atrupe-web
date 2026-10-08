@@ -6,7 +6,6 @@ import { useState } from 'react'
 // UI
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -35,7 +34,6 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconShoppingCart } from '@tabler/icons-react'
 
 interface Props {
   asset: Asset
@@ -81,7 +79,6 @@ export function SellAssetModal({ asset, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconShoppingCart} />
             <DialogTitle>Vender patrimônio</DialogTitle>
             <DialogDescription className="sr-only">
               Informe o valor recebido pela venda do bem.

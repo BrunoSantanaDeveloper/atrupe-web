@@ -34,8 +34,6 @@ import { formatCurrencyToBrl } from '@/lib/utils'
 
 // Types
 import type { RankingItem } from './RankingBarChart'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconChartBar } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -59,7 +57,6 @@ export function RankingExpandedDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconChartBar} />
             <DialogTitle>{title}</DialogTitle>
           </div>
           <DialogDescription>

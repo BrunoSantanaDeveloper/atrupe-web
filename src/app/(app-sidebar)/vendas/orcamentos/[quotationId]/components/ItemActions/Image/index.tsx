@@ -15,13 +15,11 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Badge } from '@/components/ui/badge'
 
 // Icons
 import {
   IconTrash,
-  IconPackage,
   IconCircleCheck,
   IconCloudUpload,
 } from '@tabler/icons-react'
@@ -194,7 +192,6 @@ export function ItemImageDialog({
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPackage} />
             <DialogTitle>{rowData?.description}</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

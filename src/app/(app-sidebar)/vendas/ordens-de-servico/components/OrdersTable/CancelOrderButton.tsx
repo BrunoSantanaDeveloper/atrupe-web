@@ -77,7 +77,7 @@ export function CancelOrderButton({ order }: Props) {
     if (!canManageRejectionReasons()) {
       const confirmed = await alertDialog.open({
         title: 'Confirma cancelamento da venda?',
-        iconVariant: 'errorBorderedLight',
+        iconTone: 'error',
         confirmLabel: 'Cancelar venda',
         confirmVariant: 'error',
         toastMsg: undefined,
@@ -167,7 +167,7 @@ export function CancelOrderButton({ order }: Props) {
       alertDialog.open({
         title: 'Atenção: Parcelas não canceladas',
         description: warningMessage,
-        iconVariant: 'warningBorderedLight',
+        iconTone: 'warning',
         confirmLabel: 'Entendi',
         confirmVariant: 'default',
         timeout: 300000,
@@ -195,9 +195,8 @@ export function CancelOrderButton({ order }: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconAlertCircle}
-            rounded
             size="lg"
-            variant="errorBorderedLight"
+            tone="error"
             className="mx-auto mb-2"
           />
           <AlertDialogTitle>Cancelar ordem de serviço</AlertDialogTitle>

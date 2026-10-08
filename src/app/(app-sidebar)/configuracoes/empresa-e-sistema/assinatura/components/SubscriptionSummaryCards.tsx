@@ -112,7 +112,7 @@ export function SubscriptionSummaryCards({
         {/* NF Card */}
         <Card>
           <CardContent className="relative p-5 flex items-center gap-3 min-h-[88px]">
-            <FeaturedIcon variant="neutralLight" Icon={IconReceipt} />
+            <FeaturedIcon tone="neutral" Icon={IconReceipt} />
             <div className="min-w-0">
               <p className="text-sm text-gray-500">
                 NF ({nfMainModule ? 1 : 0})
@@ -161,7 +161,7 @@ export function SubscriptionSummaryCards({
         {/* Usuário Adicional Card */}
         <Card>
           <CardContent className="relative p-5 flex items-center gap-3 min-h-[88px]">
-            <FeaturedIcon variant="neutralLight" Icon={IconUserPlus} />
+            <FeaturedIcon tone="neutral" Icon={IconUserPlus} />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-gray-500">
                 Usuário adicional ({subscription.additionalUsers || 0})

@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { InstallmentsForm } from './InstallmentsForm'
@@ -219,12 +218,6 @@ export function NewTransaction({ type }: Props) {
             <DialogHeader>
               <DialogTitle>
                 <div className="flex items-center gap-4">
-                  <FeaturedIcon
-                    variant={type === 'receivable' ? 'success' : 'error'}
-                    Icon={
-                      type === 'receivable' ? IconTrendingUp : IconTrendingDown
-                    }
-                  />
                   <span>
                     {type === 'receivable' ? 'Nova receita' : 'Nova despesa'}
                   </span>

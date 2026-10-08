@@ -14,14 +14,13 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -121,10 +120,6 @@ export function NewSerieDialog({ open, setOpen }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconTransactionDollar}
-                />
                 <span>Nova série de venda</span>
               </div>
             </DialogTitle>

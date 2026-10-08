@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 
 // Form
@@ -20,7 +19,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { stagePendingSchema, type StagePendingType } from './schema'
 
 // Icons
-import { IconCircleCheck, IconAlertTriangle } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 import { useEffect } from 'react'
 
 // Third-party
@@ -84,7 +83,6 @@ export function StagePendingDialog({ open, rowData, setOpen }: Props) {
       <DialogContent className="sm:max-w-[564px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconAlertTriangle} />
             <DialogTitle>Pendência</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

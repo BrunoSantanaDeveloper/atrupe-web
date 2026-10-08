@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
@@ -20,6 +19,7 @@ import {
   IconCoin,
   IconReceiptDollar,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 type DashboardFilters = {
   startDate?: string
@@ -53,35 +53,30 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
       value: formatValue(data?.approvedTotal || 0),
       detail: `${data?.approvedCount || 0} aprovadas`,
       icon: IconCircleCheck,
-      variant: 'successLight',
     },
     {
       label: 'Aguardando resposta',
       value: formatValue(data?.noResponseTotal || 0),
       detail: `${data?.noResponseCount || 0} orçamentos`,
       icon: IconClockCheck,
-      variant: 'warningLight',
     },
     {
       label: 'Não aprovadas',
       value: formatValue(lostTotal),
       detail: `${lostCount} registros`,
       icon: IconCircleX,
-      variant: 'errorLight',
     },
     {
       label: 'Ticket médio',
       value: formatValue(data?.averageTicket || 0),
       detail: `Aprovação média ${data?.approvalTime || '0d 0h'}`,
       icon: IconCoin,
-      variant: 'neutralLight',
     },
     {
       label: 'Comissão estimada',
       value: formatValue(data?.commission || 0),
       detail: 'Sobre vendas aprovadas',
       icon: IconReceiptDollar,
-      variant: 'neutralLight',
     },
   ] as const
 
@@ -117,11 +112,7 @@ export function SalesOverview({ filters }: SalesOverviewProps) {
               ))
             : cards.map((card) => (
                 <div key={card.label} className="flex items-center gap-3">
-                  <FeaturedIcon
-                    size="md"
-                    variant={card.variant as FeaturedIconProps['variant']}
-                    Icon={card.icon}
-                  />
+                  <Icon icon={card.icon} size="md" className="text-gray-600" />
                   <div className="min-w-0">
                     <p className="type-kpi-label truncate">{card.label}</p>
                     <p className="type-kpi-value truncate">{card.value}</p>

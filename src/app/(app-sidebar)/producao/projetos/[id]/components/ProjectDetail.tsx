@@ -32,7 +32,6 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Card,
   CardTitle,
@@ -366,7 +365,6 @@ export function ProjectDetail({ id }: { id: string }) {
         <DialogContent className="sm:max-w-[440px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCalendar} />
               <div>
                 <DialogTitle>Alterar entrega</DialogTitle>
                 <DialogDescription>

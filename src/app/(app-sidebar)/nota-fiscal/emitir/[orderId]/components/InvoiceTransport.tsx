@@ -149,10 +149,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
           <AccordionItem value="transport" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconTruckDelivery}
-                />
+                <FeaturedIcon tone="neutral" Icon={IconTruckDelivery} />
                 <CardTitle>Transportadora</CardTitle>
               </div>
               <div className="flex items-center gap-2">
@@ -331,7 +328,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
       {data.emissao.modalidadeFrete === 9 ? (
         <Card className="w-full">
           <CardHeader className="flex flex-row items-center gap-3 py-4 bg-white">
-            <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+            <FeaturedIcon tone="neutral" Icon={IconBox} />
             <div>
               <CardTitle>Volumes transportados</CardTitle>
               <p className="text-xs text-gray-400 mt-0.5">
@@ -347,7 +344,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
             <AccordionItem value="volumes" className="border-0">
               <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                 <div className="flex gap-3 items-center">
-                  <FeaturedIcon variant="neutralOutline" Icon={IconBox} />
+                  <FeaturedIcon tone="neutral" Icon={IconBox} />
                   <CardTitle>Volumes transportados</CardTitle>
                 </div>
                 <div className="flex gap-3">

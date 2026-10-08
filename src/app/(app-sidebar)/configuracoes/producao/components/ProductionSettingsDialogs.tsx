@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { ActionButton } from '@/components/common/ActionButton'
@@ -47,15 +46,11 @@ import {
 
 // Icons
 import {
-  IconBan,
   IconPlus,
-  IconUsers,
   IconTrash,
   IconPencil,
   IconArrowUp,
   IconArrowDown,
-  IconListNumbers,
-  IconBuildingFactory2,
 } from '@tabler/icons-react'
 
 // Utils
@@ -108,10 +103,6 @@ export function ManagerDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={IconBuildingFactory2}
-            />
             <div>
               <DialogTitle>
                 {manager ? `Editar ${manager.name}` : 'Novo gerenciador'}
@@ -258,7 +249,6 @@ export function UsersDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconUsers} />
             <div>
               <DialogTitle>Quem acessa {manager.name}</DialogTitle>
               <DialogDescription>
@@ -341,7 +331,6 @@ export function InactivateManagerDialog({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="errorOutline" Icon={IconBan} />
             <div>
               <DialogTitle>Inativar {manager.name}?</DialogTitle>
               <DialogDescription>
@@ -434,7 +423,6 @@ export function TaskTypeDialog({
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconListNumbers} />
             <div>
               <DialogTitle>
                 {taskType ? `Editar ${taskType.name}` : 'Novo tipo de tarefa'}
@@ -610,7 +598,6 @@ export function StepsDialog({
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconListNumbers} />
             <div>
               <DialogTitle>Etapas de {taskType.name}</DialogTitle>
               <DialogDescription>

@@ -627,7 +627,7 @@ export function StandaloneNfeForm() {
         title: 'Erro na emissão da NF-e',
         description: message,
         Icon: IconBan,
-        iconVariant: 'error',
+        iconTone: 'error',
         confirmLabel: 'Entendi',
         cancelLabel: '',
         onConfirm: () => {},
@@ -712,14 +712,14 @@ export function StandaloneNfeForm() {
             <CustomButton
               icon={IconX}
               title="Cancelar digitação"
-              iconVariant="errorLight"
+              iconTone="error"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
                 title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing || !data}
                 isLoading={isPreviewing}
@@ -727,7 +727,7 @@ export function StandaloneNfeForm() {
               <CustomButton
                 icon={IconSend}
                 title={isEmitting ? 'Emitindo...' : 'Emitir NF-e'}
-                iconVariant="light"
+                iconTone="brand"
                 onClick={handleEmit}
                 disabled={isEmitting || !data}
                 isLoading={isEmitting}
@@ -806,7 +806,7 @@ export function StandaloneNfeForm() {
         {error && (
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar dados
@@ -890,10 +890,7 @@ export function StandaloneNfeForm() {
                   <AccordionItem value="info" className="p-0 m-0 border-0">
                     <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                       <div className="flex gap-3 items-center">
-                        <FeaturedIcon
-                          variant="neutralOutline"
-                          Icon={IconMessage}
-                        />
+                        <FeaturedIcon tone="neutral" Icon={IconMessage} />
                         <CardTitle>Informações complementares</CardTitle>
                       </div>
                       <AccordionTrigger

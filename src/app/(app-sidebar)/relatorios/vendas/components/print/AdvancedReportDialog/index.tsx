@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Form Components
 import { FormSelect } from '@/components/common/form/FormSelect'
@@ -34,7 +33,6 @@ import { ClientSelector } from '@/components/common/form/global-inputs/ClientAsy
 
 // Icons
 import {
-  IconFilter,
   IconArrowRight,
   IconFileTypePdf,
   IconFileSpreadsheet,
@@ -195,7 +193,6 @@ export function AdvancedReportDialog() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[540px]">
         <DialogHeader>
-          <FeaturedIcon Icon={IconFilter} variant="outline" />
           <div>
             <DialogTitle>Relatório avançado de vendas</DialogTitle>
             <DialogDescription>

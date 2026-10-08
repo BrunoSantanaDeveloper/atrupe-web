@@ -149,18 +149,15 @@ export function FinishQuotation({ data, canFinish }: Props) {
             <CustomButton
               icon={IconCircleCheck}
               title="Concluir orçamento"
-              iconVariant="lightBlueBorderedLight"
+              iconTone="info"
               onClick={handleFinish}
             />
             <AlertDialogContent className="max-w-96">
               <AlertDialogHeader>
                 <FeaturedIcon
                   Icon={loading ? IconLoader2 : IconAlertTriangle}
-                  rounded
                   size="lg"
-                  variant={
-                    loading ? 'neutralBorderedLight' : 'warningBorderedLight'
-                  }
+                  tone={loading ? 'neutral' : 'warning'}
                   className={cn('mx-auto mb-2', loading && 'animate-spin')}
                 />
                 <AlertDialogTitle>{alertDialog.title}</AlertDialogTitle>
@@ -190,9 +187,8 @@ export function FinishQuotation({ data, canFinish }: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconCircleCheck}
-              rounded
               size="lg"
-              variant="successBorderedLight"
+              tone="success"
               className="mx-auto mb-2"
             />
             <AlertDialogTitle>Orçamento concluído</AlertDialogTitle>

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCircleCheck, IconPencil, IconPlus } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -32,7 +32,6 @@ import { createItem, updateItem } from '@/actions/_cruds'
 
 // Types
 import type { IContactSource } from '@/hooks/queries/useContactSources'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props {
   editMode?: boolean
@@ -86,10 +85,6 @@ export function NewItemDialog({ open, rowData, setOpen, editMode }: Props) {
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={editMode ? IconPencil : IconPlus}
-            />
             <DialogTitle>
               {editMode ? 'Editar' : 'Nova'} origem de contato
             </DialogTitle>

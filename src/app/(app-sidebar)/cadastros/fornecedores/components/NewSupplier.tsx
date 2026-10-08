@@ -14,14 +14,9 @@ import {
   DialogBody,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
-import {
-  IconPlus,
-  IconBuildingCommunity,
-  IconPencil,
-} from '@tabler/icons-react'
+import { IconPlus, IconPencil } from '@tabler/icons-react'
 
 // Third-party Imports
 import { useForm } from 'react-hook-form'
@@ -197,10 +192,6 @@ export function NewSupplier({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={IconBuildingCommunity}
-              />
               <span>{editMode ? 'Editar' : 'Novo'} fornecedor</span>
             </div>
           </DialogTitle>

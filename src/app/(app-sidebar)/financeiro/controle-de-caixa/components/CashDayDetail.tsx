@@ -28,14 +28,13 @@ import {
 } from '../types'
 
 // Icons
-import { IconPrinter, IconReportMoney } from '@tabler/icons-react'
+import { IconPrinter } from '@tabler/icons-react'
 
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
 
 // Utils
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 const money = (value: number) => formatCurrencyToBrl(value)
 const brDate = (iso: string) => iso.split('-').reverse().join('/')
@@ -155,7 +154,6 @@ export function CashDayDetail({
       <DialogContent className="sm:max-w-[760px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
             <DialogTitle className="flex flex-wrap items-center gap-2">
               {account.name} · {brDate(day.date)}
               <Badge variant={cashControlStatusObj[day.status].variant}>

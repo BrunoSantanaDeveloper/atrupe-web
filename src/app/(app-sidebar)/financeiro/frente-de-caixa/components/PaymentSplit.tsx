@@ -418,8 +418,8 @@ export function CashReceiptBalance({
       >
         <div className="flex items-center gap-2">
           <FeaturedIcon
-            variant={over || missing === 0 ? 'successLight' : 'errorLight'}
-            size="xs"
+            tone={over || missing === 0 ? 'success' : 'error'}
+            size="sm"
             Icon={IconCornerRightDown}
           />
           <p className="text-sm font-medium">

@@ -225,7 +225,6 @@ export function EditPriceModal({
       <DialogContent className="sm:max-w-[960px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCurrencyReal} />
             <div>
               <DialogTitle>Editar precificação</DialogTitle>
               <DialogDescription>
@@ -257,9 +256,8 @@ export function EditPriceModal({
                       )}
                     >
                       <FeaturedIcon
-                        variant={selected ? 'light' : 'neutralOutline'}
+                        tone={selected ? 'brand' : 'neutral'}
                         size="sm"
-                        rounded
                         Icon={Icon}
                       />
                       <span className="flex-1 text-sm font-medium text-gray-900">

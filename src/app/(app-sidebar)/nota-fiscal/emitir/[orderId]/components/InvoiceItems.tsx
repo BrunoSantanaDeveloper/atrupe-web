@@ -97,7 +97,7 @@ export function InvoiceItems({
           <AccordionItem value="items" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconLayoutGrid} />
+                <FeaturedIcon tone="neutral" Icon={IconLayoutGrid} />
                 <CardTitle>Itens</CardTitle>
                 {filteredItems.length > 0 && (
                   <Badge variant="neutralLight" className="text-xs">

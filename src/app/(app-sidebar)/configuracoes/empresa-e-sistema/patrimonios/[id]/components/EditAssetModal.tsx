@@ -8,7 +8,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -38,7 +37,7 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
+import { IconPhoto, IconX } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props {
@@ -116,7 +115,6 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
             <DialogTitle>Editar patrimônio</DialogTitle>
             <DialogDescription className="sr-only">
               Altere os dados do bem e a base da depreciação.

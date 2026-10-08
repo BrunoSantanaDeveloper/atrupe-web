@@ -101,7 +101,7 @@ export function QuotationPaymentConditions({ quotationData }: Props) {
           <CardHeader>
             <div className="flex justify-between">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
+                <FeaturedIcon tone="neutral" Icon={IconCoin} />
                 <CardTitle>Condições de pagamento</CardTitle>
               </div>
               <div className="flex gap-3">

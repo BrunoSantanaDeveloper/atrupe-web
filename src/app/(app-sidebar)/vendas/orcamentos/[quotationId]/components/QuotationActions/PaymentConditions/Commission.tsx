@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
@@ -256,7 +255,6 @@ export function CommissionDialog({ paymentConditionsForm, disabled }: Props) {
       <DialogContent className="sm:max-w-[695px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCurrencyDollar} />
             <DialogTitle>Comissão</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

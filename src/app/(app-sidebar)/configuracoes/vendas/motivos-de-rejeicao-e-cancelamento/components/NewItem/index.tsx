@@ -20,7 +20,7 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Icons
-import { IconCircleCheck, IconPencil, IconPlus } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -37,7 +37,6 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Actions
 import { createItem, updateItem } from '@/actions/_cruds'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props extends SearchParamsType {
   type: ListCancelReasonType['type']
@@ -121,10 +120,6 @@ export function NewItemDialog({
         <DialogContent className="sm:max-w-[450px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={editMode ? IconPencil : IconPlus}
-              />
               <DialogTitle>
                 {editMode ? 'Editar' : 'Novo'} motivo de
                 {type === 'REJECTION' ? ' rejeição' : ' cancelamento'}

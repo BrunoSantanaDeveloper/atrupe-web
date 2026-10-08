@@ -10,7 +10,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { UnpayInstallment } from '../UnpayInstallment'
@@ -18,7 +17,6 @@ import { PrintReceiptButton } from '../PrintReceiptButton'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 
 // Icons
-import { IconCash } from '@tabler/icons-react'
 
 // Types
 import type {
@@ -64,10 +62,7 @@ export function ViewPaymentDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-4 capitalize">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCash} />
-              {typeText}
-            </div>
+            <div className="flex items-center gap-4 capitalize">{typeText}</div>
           </DialogTitle>
           <DialogDescription className="sr-only"></DialogDescription>
         </DialogHeader>

@@ -12,8 +12,7 @@ export function AccountIcon({ icon }: { icon?: string }) {
   return (
     <FeaturedIcon
       Icon={(icon && bankIcons[icon]) || LogoAtrupe}
-      variant="neutralLight"
-      rounded
+      tone="neutral"
     />
   )
 }

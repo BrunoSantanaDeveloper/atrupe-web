@@ -16,7 +16,7 @@ export function IssueConsolidatedNfseForm({ orderIds }: Props) {
       <div className="space-y-6 pb-10">
         <Card className="border-error-200 bg-error-50">
           <CardContent className="flex items-center gap-4 py-6">
-            <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+            <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
             <div>
               <p className="font-semibold text-error-700">
                 Seleção insuficiente

@@ -22,13 +22,7 @@ export function UpgradeFallback({
     <div
       className={`flex flex-col items-center justify-center min-h-[400px] p-8 ${className}`}
     >
-      <FeaturedIcon
-        Icon={IconLock}
-        variant="neutralBorderedLight"
-        size="xl"
-        rounded
-        className="mb-6"
-      />
+      <FeaturedIcon Icon={IconLock} tone="neutral" size="lg" className="mb-6" />
       <h3 className="type-card-title mb-2">{title}</h3>
       <p className="text-gray-600 text-center mb-6 max-w-md">{description}</p>
       <Button type="button" asChild>

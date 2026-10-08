@@ -65,7 +65,6 @@ import {
   IconAlertTriangle,
   IconAlertTriangleFilled,
   IconBan,
-  IconUserSearch,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -385,7 +384,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
         title: 'Erro na emissão da NF-e',
         description: message,
         Icon: IconBan,
-        iconVariant: 'error',
+        iconTone: 'error',
         confirmLabel: 'Entendi',
         cancelLabel: '',
         onConfirm: () => {},
@@ -659,7 +658,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           />
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar dados
@@ -774,7 +773,7 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
               <AccordionItem value="info" className="p-0 m-0 border-0">
                 <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
                   <div className="flex gap-3 items-center">
-                    <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
+                    <FeaturedIcon tone="neutral" Icon={IconMessage} />
                     <CardTitle>Informações complementares</CardTitle>
                   </div>
                   <AccordionTrigger
@@ -829,7 +828,6 @@ export function IssueInvoiceForm({ id, orderIds }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconUserSearch} />
                 <span>Trocar cliente / destinatário</span>
               </div>
             </DialogTitle>

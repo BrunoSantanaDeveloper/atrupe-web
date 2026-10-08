@@ -57,7 +57,7 @@ export function InvoiceTotalsSection({
           <AccordionItem value="totals" className="p-0 m-0 border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCalculator} />
+                <FeaturedIcon tone="neutral" Icon={IconCalculator} />
                 <CardTitle>Totais</CardTitle>
               </div>
               <AccordionTrigger

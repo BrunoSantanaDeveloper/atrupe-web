@@ -132,7 +132,7 @@ export function QuotationsData({
         'Tem certeza que deseja excluir? Esta ação não poderá ser desfeita.',
       confirmLabel: 'Excluir',
       cancelLabel: 'Cancelar',
-      iconVariant: 'error',
+      iconTone: 'error',
       confirmVariant: 'error',
       onConfirm: async () => {
         try {

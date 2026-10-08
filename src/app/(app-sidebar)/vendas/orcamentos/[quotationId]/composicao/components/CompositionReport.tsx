@@ -26,7 +26,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Types
 import type { QuotationItem } from '../types'
@@ -42,7 +41,6 @@ import { ResourceKindLabel } from '@/components/common/ResourceKindIcon'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconSearch } from '@tabler/icons-react'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -115,7 +113,6 @@ export function CompositionReport({ item, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
             <div>
               <DialogTitle>Composição de {item?.name}</DialogTitle>
               <DialogDescription>

@@ -22,7 +22,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { PaymentDialog } from '../Payment'
@@ -36,7 +35,6 @@ import { PermissionGate } from '@/components/common/PermissionGate'
 import { DetailCardRowItem } from '@/app/(app-sidebar)/cadastros/clientes/[id]/components/DetailCardRowItem'
 
 // Icons
-import { IconCoin } from '@tabler/icons-react'
 
 // Types
 import {
@@ -118,7 +116,6 @@ export function TransactionDetailsDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
               <span>Movimentação</span>
             </div>
           </DialogTitle>

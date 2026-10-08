@@ -109,7 +109,7 @@ export function TableData({ tabs, searchParams }: Props) {
         }. Para criar mais usuários, faça upgrade do seu plano.`,
         confirmLabel: 'Fazer upgrade',
         cancelLabel: 'Entendi',
-        iconVariant: 'warningBorderedLight',
+        iconTone: 'warning',
         onConfirm: () => {
           router.push('/assinatura')
         },

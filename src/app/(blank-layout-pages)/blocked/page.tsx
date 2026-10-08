@@ -70,12 +70,7 @@ export default async function BlockedPage() {
           <Card className="rounded-2xl w-full px-8 py-10">
             <CardHeader className="p-0 pb-6 text-center">
               <div className="flex justify-center mb-4">
-                <FeaturedIcon
-                  size="xl"
-                  Icon={Lock}
-                  variant="errorBorderedLight"
-                  rounded
-                />
+                <FeaturedIcon size="lg" Icon={Lock} tone="error" />
               </div>
               <CardTitle>Conta Suspensa</CardTitle>
             </CardHeader>

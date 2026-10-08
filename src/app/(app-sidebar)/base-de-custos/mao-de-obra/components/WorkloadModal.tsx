@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { EmptyState } from '@/components/ui/empty-state'
@@ -41,7 +40,6 @@ import { toast } from 'sonner'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconClock } from '@tabler/icons-react'
 
 interface Props {
   sector?: LaborSector
@@ -91,7 +89,6 @@ export function WorkloadModal({ sector, open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconClock} />
             <DialogTitle>Carga de produção por colaborador</DialogTitle>
             <DialogDescription className="sr-only">
               Informe quantas horas cada colaborador dedica à produção do setor.

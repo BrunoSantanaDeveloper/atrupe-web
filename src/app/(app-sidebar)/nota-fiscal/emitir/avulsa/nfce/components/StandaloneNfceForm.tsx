@@ -457,14 +457,14 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             <CustomButton
               icon={IconX}
               title="Cancelar digitação"
-              iconVariant="errorLight"
+              iconTone="error"
               onClick={() => router.push('/nota-fiscal/emitir')}
             />
             <div className="flex items-center gap-2">
               <CustomButton
                 icon={IconFileTypePdf}
                 title={isPreviewing ? 'Gerando...' : 'Pré-visualizar'}
-                iconVariant="neutralOutline"
+                iconTone="neutral"
                 onClick={handlePreview}
                 disabled={isEmitting || isPreviewing}
                 isLoading={isPreviewing}
@@ -472,7 +472,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
               <CustomButton
                 icon={IconCircleCheck}
                 title={isEmitting ? 'Emitindo...' : 'Emitir NFC-e'}
-                iconVariant="successLight"
+                iconTone="success"
                 onClick={handleEmit}
                 disabled={isEmitting}
                 isLoading={isEmitting}
@@ -517,7 +517,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
         {error && (
           <Card className="border-error-200 bg-error-50">
             <CardContent className="flex items-center gap-4 py-6 px-6">
-              <FeaturedIcon variant="errorLight" Icon={IconAlertTriangle} />
+              <FeaturedIcon tone="error" Icon={IconAlertTriangle} />
               <div>
                 <p className="font-semibold text-error-700">
                   Erro ao carregar configurações fiscais
@@ -541,7 +541,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             {/* 1. Consumer Identification Card */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-                <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
+                <FeaturedIcon tone="neutral" Icon={IconUser} />
                 <div className="flex-1">
                   <CardTitle>Consumidor (Opcional)</CardTitle>
                 </div>
@@ -600,7 +600,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
             {/* 4. Complementary Info Section */}
             <Card className="border-none shadow-sm overflow-hidden">
               <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-                <FeaturedIcon variant="neutralOutline" Icon={IconMessage} />
+                <FeaturedIcon tone="neutral" Icon={IconMessage} />
                 <div className="flex-1">
                   <CardTitle>Informações Complementares</CardTitle>
                 </div>

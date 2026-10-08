@@ -13,7 +13,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormToggleCard } from '@/components/common/form/FormToggleCard'
@@ -31,7 +30,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import { IconAlertTriangle, IconLockOpen } from '@tabler/icons-react'
+import { IconLockOpen } from '@tabler/icons-react'
 import { FormInput } from '@/components/common/form/FormInput'
 
 interface Props {
@@ -94,12 +93,6 @@ export function ChangeStatusDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant="warningBorderedLight"
-                Icon={IconAlertTriangle}
-                size="lg"
-                rounded
-              />
               <span>Alterar status</span>
             </div>
           </DialogTitle>

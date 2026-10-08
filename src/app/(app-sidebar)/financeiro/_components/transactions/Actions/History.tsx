@@ -10,10 +10,9 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
-import { IconHistory, IconLoader2 } from '@tabler/icons-react'
+import { IconLoader2 } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Types
@@ -52,7 +51,6 @@ export function TransactionHistoryDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[692px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
             <DialogTitle>Histórico</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

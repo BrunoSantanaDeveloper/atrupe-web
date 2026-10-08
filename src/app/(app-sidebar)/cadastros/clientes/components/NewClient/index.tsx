@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { NewClientForm } from './NewClientForm'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
 import { IconPlus, IconPencil } from '@tabler/icons-react'
@@ -337,10 +336,6 @@ export function NewClientModal({
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader className="">
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={editMode ? IconPencil : IconPlus}
-            />
             <DialogTitle>
               {editMode ? 'Editar cliente' : 'Novo cliente'}
             </DialogTitle>

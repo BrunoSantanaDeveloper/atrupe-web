@@ -15,7 +15,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Separator } from '@/components/ui/separator'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button, buttonVariants } from '@/components/ui/button'
 
 // Components
@@ -43,7 +42,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
-import { IconCoin, IconPencil, IconCircleCheck } from '@tabler/icons-react'
+import { IconPencil, IconCircleCheck } from '@tabler/icons-react'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -66,7 +65,7 @@ interface Props {
   onFinish?: () => void
   actionTitle?: string
   actionIcon?: ComponentProps<typeof CustomButton>['icon']
-  actionIconVariant?: ComponentProps<typeof CustomButton>['iconVariant']
+  actionIconTone?: ComponentProps<typeof CustomButton>['iconTone']
   submitLabel?: string
 }
 
@@ -75,7 +74,7 @@ export function PaymentConditionsDialog({
   onFinish,
   actionTitle = 'Concluir orçamento',
   actionIcon = IconCircleCheck,
-  actionIconVariant = 'lightBlueBorderedLight',
+  actionIconTone = 'info',
   submitLabel,
 }: Props) {
   // EC-17: desconto acima do limite do vendedor não salva
@@ -225,7 +224,7 @@ export function PaymentConditionsDialog({
             <CustomButton
               icon={actionIcon}
               title={actionTitle}
-              iconVariant={actionIconVariant}
+              iconTone={actionIconTone}
             />
           ) : (
             <ActionButton
@@ -245,7 +244,6 @@ export function PaymentConditionsDialog({
       <DialogContent className="sm:max-w-[950px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
             <DialogTitle>Editar condições de pagamento</DialogTitle>
           </div>
           <DialogDescription className="sr-only">

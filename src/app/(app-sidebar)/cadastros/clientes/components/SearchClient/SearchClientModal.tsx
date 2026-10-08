@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { IconId, IconSearch } from '@tabler/icons-react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -86,13 +85,6 @@ export function SearchClientModal({
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader className="border-none">
             <div className="flex flex-col items-center gap-4">
-              <FeaturedIcon
-                variant="successBorderedLight"
-                size="lg"
-                rounded
-                Icon={IconId}
-              />
-
               <DialogTitle className="pr-0">
                 Consultar dados de cliente
               </DialogTitle>

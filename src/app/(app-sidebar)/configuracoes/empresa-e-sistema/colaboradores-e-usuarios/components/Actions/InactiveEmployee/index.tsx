@@ -77,9 +77,8 @@ export function InactiveEmployeeAlertDialog(props: Props) {
           <AlertDialogHeader>
             <FeaturedIcon
               Icon={IconAlertTriangle}
-              rounded
               size="lg"
-              variant="warningBorderedLight"
+              tone="warning"
               className="mx-auto mb-2"
             />
             <AlertDialogTitle>

@@ -1,16 +1,16 @@
 // UI
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card'
 
 // Icons
 import { IconTrendingUp } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function DashboardRevenues() {
   return (
     <Card className="flex-[1_1_540px]">
       <CardHeader>
         <div className="flex gap-3 items-center">
-          <FeaturedIcon variant="successLight" Icon={IconTrendingUp} />
+          <Icon icon={IconTrendingUp} size="md" className="text-gray-600" />
           <CardTitle>Receita</CardTitle>
         </div>
       </CardHeader>

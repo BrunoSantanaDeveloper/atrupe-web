@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -139,7 +138,6 @@ export function EditTransactionData({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
             <DialogTitle>Editar dados</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

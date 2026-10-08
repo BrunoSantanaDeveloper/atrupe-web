@@ -22,7 +22,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export interface ResumoPrevia {
@@ -93,7 +92,6 @@ export function FiscalPreviewDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconFileTypePdf} />
               <span>{titulo}</span>
             </div>
           </DialogTitle>

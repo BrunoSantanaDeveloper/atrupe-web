@@ -192,7 +192,7 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <FeaturedIcon variant="outline" Icon={IconCategory} />
+          <FeaturedIcon tone="brand" Icon={IconCategory} />
           <div>
             <h2 className="type-section-title">Histórico de Natureza</h2>
             <p className="text-sm text-gray-500">

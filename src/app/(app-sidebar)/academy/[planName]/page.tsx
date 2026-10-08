@@ -94,10 +94,9 @@ export default function AcademyPage() {
         <Card className="w-full">
           <CardContent className="p-8 text-center">
             <FeaturedIcon
-              variant="errorBorderedLight"
-              rounded
+              tone="error"
               Icon={IconCircleX}
-              size="xl"
+              size="lg"
               className="mb-4"
             />
             <h3 className="type-card-title mb-2">Erro ao carregar Academy</h3>
@@ -121,10 +120,9 @@ export default function AcademyPage() {
         <Card className="w-full">
           <CardContent className="p-8 text-center">
             <FeaturedIcon
-              variant="borderedLight"
-              rounded
+              tone="brand"
               Icon={IconBook}
-              size="xl"
+              size="lg"
               className="mb-4"
             />
             <h3 className="type-card-title mb-2">

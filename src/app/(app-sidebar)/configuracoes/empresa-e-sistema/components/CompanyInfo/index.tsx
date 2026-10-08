@@ -13,10 +13,9 @@ import {
 } from '@/components/ui/dialog'
 
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
-import { IconArrowRight, IconBuilding } from '@tabler/icons-react'
+import { IconArrowRight } from '@tabler/icons-react'
 
 // Component Imports
 import { CompanySettingsList } from '@/app/(app-sidebar)/configuracoes/components/CompanySettingsList'
@@ -98,7 +97,6 @@ export function CompanyInfo() {
         <DialogContent className="sm:max-w-[720px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconBuilding} />
               <DialogTitle>Configuração da empresa</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>

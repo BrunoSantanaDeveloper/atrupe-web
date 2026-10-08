@@ -106,11 +106,7 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
     <div className="px-6 pt-6 flex flex-wrap gap-4">
       <div className="flex flex-col flex-[1_400px] gap-5">
         <div className="flex items-center gap-3">
-          <FeaturedIcon
-            size="sm"
-            Icon={IconCashBanknoteOff}
-            variant="errorLight"
-          />
+          <FeaturedIcon size="sm" Icon={IconCashBanknoteOff} tone="error" />
           <span className="font-semibold text-gray-700">Não realizado</span>
           <span className="text-xs text-gray">
             {byPaidDate
@@ -141,7 +137,7 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
       </div>
       <div className="flex flex-col flex-[1_400px] gap-5">
         <div className="flex items-center gap-3">
-          <FeaturedIcon size="sm" Icon={IconCash} variant="successLight" />
+          <FeaturedIcon size="sm" Icon={IconCash} tone="success" />
           <span className="font-semibold text-gray-700">Realizado</span>
           <span className="text-xs text-gray">
             {byPaidDate

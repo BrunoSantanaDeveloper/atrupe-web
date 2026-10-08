@@ -369,7 +369,7 @@ export function EmissoresListClient() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <FeaturedIcon variant="outline" Icon={IconBuilding} />
+          <FeaturedIcon tone="brand" Icon={IconBuilding} />
           {/* O título já está no cabeçalho da página; aqui só o contexto. */}
           <p className="type-secondary">
             Gerencie as configurações fiscais por empresa/filial

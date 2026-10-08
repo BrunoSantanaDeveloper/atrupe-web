@@ -92,7 +92,7 @@ const afterBaseCards: { value: AfterBase; Icon: typeof IconLink }[] = [
 function AfterSave({ title, text }: { title: string; text: string }) {
   return (
     <div className="flex flex-col items-center gap-3 py-16 text-center">
-      <FeaturedIcon variant="light" Icon={IconHierarchy2} rounded />
+      <FeaturedIcon tone="brand" Icon={IconHierarchy2} />
       <p className="text-base font-semibold text-gray-700">{title}</p>
       <p className="max-w-md text-sm text-gray">{text}</p>
     </div>
@@ -218,7 +218,6 @@ export function ProcessDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconListCheck} />
               <span>
                 {editMode
                   ? `Editar processo${detail ? ` · ${detail.block.name}` : ''}`
@@ -328,9 +327,8 @@ export function ProcessDialog({
                               )}
                             >
                               <FeaturedIcon
-                                variant={selected ? 'light' : 'neutralOutline'}
+                                tone={selected ? 'brand' : 'neutral'}
                                 size="sm"
-                                rounded
                                 Icon={Icon}
                               />
                               <span className="flex-1">

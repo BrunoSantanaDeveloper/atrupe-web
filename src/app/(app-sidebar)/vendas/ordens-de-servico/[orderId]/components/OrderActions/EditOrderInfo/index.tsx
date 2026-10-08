@@ -18,7 +18,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -218,7 +217,6 @@ export function EditOrderInfoDialog({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
                 <span>Editar informações da OS</span>
               </div>
             </DialogTitle>

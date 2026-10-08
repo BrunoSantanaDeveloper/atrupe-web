@@ -19,12 +19,7 @@ export default function Error({ error, reset }: ErrorProps) {
   return (
     <div className="relative flex h-screen w-full flex-col items-center justify-center">
       <div className="flex flex-col items-center gap-8">
-        <FeaturedIcon
-          Icon={IconAlertTriangle}
-          size="xl"
-          variant="warningBorderedLight"
-          rounded
-        />
+        <FeaturedIcon Icon={IconAlertTriangle} size="lg" tone="warning" />
         <h2 className="type-section-title">Algo deu errado!</h2>
         <div className="flex gap-5">
           <Button

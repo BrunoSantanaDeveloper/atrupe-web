@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
@@ -25,7 +24,7 @@ import { ProductFiscalTab } from './ProductFiscalTab'
 import { ProductStRules } from './ProductStRules'
 
 // Icons
-import { IconReceipt, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -167,7 +166,6 @@ export function ProductFiscalDataDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
               <span>Configuração Fiscal do Produto</span>
             </div>
           </DialogTitle>

@@ -7,7 +7,6 @@ import { useQuery } from '@tanstack/react-query'
 
 // UI
 import { Card } from '@/components/ui/card'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
@@ -24,6 +23,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Mode
 import { commissionFilters, commissionModeOf } from '../mode'
+import { Icon } from '@/components/ui/icon'
 
 export function SummaryCards({ searchParams }: SearchParamsType) {
   // EC-25: sem a permissão de ver vendas de outros vendedores, o relatório
@@ -75,21 +75,18 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       ? [
           {
             icon: IconReceipt,
-            variant: 'successLight',
             label: 'Comissão a pagar',
             value: formatCurrencyToBrl(data?.commissionTotal || 0),
             support: 'sobre o recebido no período',
           },
           {
             icon: IconCoin,
-            variant: 'neutralLight',
             label: 'Recebido no período',
             value: formatCurrencyToBrl(data?.receivedTotal || 0),
             support: plural(data?.receivedCount, 'recebimento', 'recebimentos'),
           },
           {
             icon: IconCircleCheck,
-            variant: 'neutralLight',
             label: 'Vendido no período',
             value: formatCurrencyToBrl(data?.salesTotal || 0),
             support: 'só referência — não é a base',
@@ -98,21 +95,18 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
       : [
           {
             icon: IconReceipt,
-            variant: 'successLight',
             label: 'Comissão a pagar',
             value: formatCurrencyToBrl(data?.commissionTotal || 0),
             support: 'sobre o vendido no período',
           },
           {
             icon: IconCircleCheck,
-            variant: 'neutralLight',
             label: 'Vendido no período',
             value: formatCurrencyToBrl(data?.salesTotal || 0),
             support: plural(data?.salesCount, 'venda', 'vendas'),
           },
           {
             icon: IconCoin,
-            variant: 'neutralLight',
             label: 'Já recebido dessas vendas',
             value: formatCurrencyToBrl(data?.receivedTotal || 0),
             support: 'só referência — não é a base',
@@ -139,11 +133,7 @@ export function SummaryCards({ searchParams }: SearchParamsType) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
         <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
-          <FeaturedIcon
-            size="md"
-            variant={card.variant as FeaturedIconProps['variant']}
-            Icon={card.icon}
-          />
+          <Icon icon={card.icon} size="md" className="text-gray-600" />
           <div className="flex flex-col min-w-0">
             <span className="type-kpi-label truncate">{card.label}</span>
             <span className="type-kpi-value">{card.value}</span>

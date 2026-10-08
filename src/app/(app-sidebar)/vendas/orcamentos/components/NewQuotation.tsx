@@ -31,8 +31,7 @@ import { ClientContactSelect } from '@/components/common/form/global-inputs/Clie
 import { SelectContactSourceField } from '@/components/common/form/global-inputs/ContactSourcesSelectField'
 
 // Icons
-import { IconPlus, IconArrowRight, IconReportMoney } from '@tabler/icons-react'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
+import { IconPlus, IconArrowRight } from '@tabler/icons-react'
 
 // Hooks
 import { useForm } from 'react-hook-form'
@@ -227,7 +226,6 @@ export function NewQuotationModal({
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
                 {!editMode ? 'Novo orçamento' : 'Editar orçamento'}
               </div>
             </DialogTitle>

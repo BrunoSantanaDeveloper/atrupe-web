@@ -22,7 +22,6 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import {
   IconTrash,
-  IconUpload,
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
@@ -285,12 +284,6 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
           <DialogHeader>
             <DialogTitle>
               <div className="flex flex-col items-center gap-4 text-center">
-                <FeaturedIcon
-                  variant="successBorderedLight"
-                  Icon={IconUpload}
-                  size="lg"
-                  rounded
-                />
                 <span>Importar planilha de clientes</span>
               </div>
             </DialogTitle>
@@ -312,10 +305,9 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
                   <input {...getInputProps()} />
                   <div className="flex flex-col items-center gap-2">
                     <FeaturedIcon
-                      variant="neutralBorderedLight"
+                      tone="neutral"
                       Icon={IconCloudUpload}
-                      size="default"
-                      rounded
+                      size="md"
                     />
                     <p className="text-sm ">
                       <span className="text-brand-700 font-semibold">
@@ -401,7 +393,6 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
         <DialogContent className="sm:max-w-[940px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAlertCircle} />
               <DialogTitle>Erros de importação</DialogTitle>
               <DialogDescription className="sr-only">
                 Verifique se as informações foram inseridas corretamente na

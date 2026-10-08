@@ -17,7 +17,6 @@ import {
 import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
@@ -41,12 +40,7 @@ import type { EmployeeType } from '@/types/settings/employee'
 import { cn, getFirstAndLastName } from '@/lib/utils'
 
 // Icons
-import {
-  IconUserPlus,
-  IconPencil,
-  IconCircleCheck,
-  IconCircleCheckFilled,
-} from '@tabler/icons-react'
+import { IconCircleCheck, IconCircleCheckFilled } from '@tabler/icons-react'
 import { PermissionGate } from '@/components/common/PermissionGate'
 
 interface Props extends SearchParamsType {
@@ -151,10 +145,6 @@ export function NewUserDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={editMode ? IconPencil : IconUserPlus}
-              />
               <span>{editMode ? 'Editar usuário' : 'Novo usuário'}</span>
             </div>
           </DialogTitle>

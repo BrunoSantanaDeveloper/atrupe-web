@@ -35,7 +35,6 @@ import { PaymentConditionsSelectField } from '@/components/common/form/global-in
 // Icons
 import {
   IconTrash,
-  IconPencil,
   IconPlus,
   IconRefreshDot,
   IconCircleCheck,
@@ -192,7 +191,6 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
         <DialogContent className="sm:max-w-[950px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconPencil} />
               <div className="min-w-0">
                 <DialogTitle className="mb-1">Editar parcelas</DialogTitle>
                 <DialogDescription className="truncate">
@@ -221,14 +219,14 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                       >
                         <div className="flex items-center gap-2">
                           <FeaturedIcon
-                            variant={
+                            tone={
                               balance < 0
-                                ? 'errorLight'
+                                ? 'error'
                                 : balance > 0
-                                  ? 'successLight'
-                                  : 'neutralLight'
+                                  ? 'success'
+                                  : 'neutral'
                             }
-                            size="xs"
+                            size="sm"
                             Icon={IconCornerRightDown}
                           />
                           <p className="text-sm font-medium">
@@ -381,7 +379,7 @@ export function EditInstallments({ open, rowData, setOpen, type }: Props) {
                           })
                         }}
                       >
-                        <FeaturedIcon variant="light" Icon={IconPlus} rounded />
+                        <FeaturedIcon tone="brand" Icon={IconPlus} />
                         <p className="text-sm text-gray-600 font-medium">
                           Adicionar parcela
                         </p>

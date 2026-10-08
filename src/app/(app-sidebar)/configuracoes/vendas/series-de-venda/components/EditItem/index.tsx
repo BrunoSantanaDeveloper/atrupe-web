@@ -15,7 +15,6 @@ import {
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
@@ -25,7 +24,7 @@ import { FormSwitch } from '@/components/common/form/FormSwitch'
 import { CheckboxBasic } from '@/components/common/form/FormCheckbox'
 
 // Icons
-import { IconCircleCheck, IconTransactionDollar } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -172,10 +171,6 @@ export function EditItemDialog({ open, setOpen, rowData }: Props) {
           <DialogHeader>
             <DialogTitle>
               <div className="flex items-center gap-4">
-                <FeaturedIcon
-                  variant="neutralOutline"
-                  Icon={IconTransactionDollar}
-                />
                 <span>Configurar série de venda</span>
               </div>
             </DialogTitle>

@@ -127,12 +127,7 @@ export function Quotation({ id }: Props) {
       <div className="flex justify-center items-center h-[calc(100vh-150px)]">
         <div className="max-w-[352px] text-center space-y-6">
           <div>
-            <FeaturedIcon
-              Icon={IconReportMoney}
-              size="xl"
-              variant="borderedLight"
-              rounded
-            />
+            <FeaturedIcon Icon={IconReportMoney} size="lg" tone="brand" />
             <p className="font-semibold text-lg mt-4 mb-1">
               Orçamento aprovado
             </p>
@@ -178,12 +173,7 @@ export function Quotation({ id }: Props) {
           <Card className="w-full">
             <CardContent className="flex flex-col gap-4 py-6 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
-                <FeaturedIcon
-                  Icon={IconReportMoney}
-                  size="md"
-                  variant="borderedLight"
-                  rounded
-                />
+                <FeaturedIcon Icon={IconReportMoney} size="md" tone="brand" />
                 <div>
                   <p className="font-semibold text-base text-gray-700">
                     Orçamento aprovado

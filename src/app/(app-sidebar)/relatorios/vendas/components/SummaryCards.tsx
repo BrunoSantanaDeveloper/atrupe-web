@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query'
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Icons
 import {
@@ -26,6 +25,7 @@ import type { SearchParamsType } from '@/types/coreTypes'
 
 // Utils
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { Icon } from '@/components/ui/icon'
 
 interface SummaryCardsProps extends SearchParamsType {}
 
@@ -76,19 +76,16 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
   const cards = [
     {
       icon: IconCircleCheck,
-      variant: 'successLight',
       label: `Aprovadas (${summary.approvedCount})`,
       value: formatCurrencyToBrl(summary.approvedTotal),
     },
     {
       icon: IconClockHour4,
-      variant: 'warningLight',
       label: `Aguardando (${summary.noResponseCount})`,
       value: formatCurrencyToBrl(summary.noResponseTotal),
     },
     {
       icon: IconCircleX,
-      variant: 'errorLight',
       label: `Não aprovadas / Canceladas (${(summary.rejectedCount || 0) + (summary.expiredCount || 0) + (summary.canceledCount || 0)})`,
       value: formatCurrencyToBrl(
         (summary.rejectedTotal || 0) +
@@ -98,19 +95,16 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
     },
     {
       icon: IconCoin,
-      variant: 'neutralLight',
       label: 'Ticket médio O.S',
       value: formatCurrencyToBrl(summary.averageTicket),
     },
     {
       icon: IconReceiptDollar,
-      variant: 'neutralLight',
       label: 'Comissão',
       value: formatCurrencyToBrl(summary.commission),
     },
     {
       icon: IconClockCheck,
-      variant: 'neutralLight',
       label: 'Aprovação média',
       value: summary.approvalTime,
     },
@@ -120,11 +114,7 @@ export function SummaryCards({ searchParams }: SummaryCardsProps) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {cards.map((card, index) => (
         <Card key={index} className="p-6 flex items-center gap-3 rounded-xl">
-          <FeaturedIcon
-            size="md"
-            variant={card.variant as FeaturedIconProps['variant']}
-            Icon={card.icon}
-          />
+          <Icon icon={card.icon} size="md" className="text-gray-600" />
           <div className="flex flex-col min-w-0">
             <span className="type-kpi-label truncate">{card.label}</span>
             <span className="type-kpi-value">{card.value}</span>

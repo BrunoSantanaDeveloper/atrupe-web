@@ -199,7 +199,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
           <AccordionItem value="payment" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconCoin} />
+                <FeaturedIcon tone="neutral" Icon={IconCoin} />
                 <CardTitle>Pagamento</CardTitle>
                 {hasDivergence && (
                   <Badge
@@ -348,7 +348,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
           <AccordionItem value="duplicates" className="border-0">
             <CardHeader className="flex flex-row items-center justify-between py-4 bg-white border-b border-gray-100">
               <div className="flex gap-3 items-center">
-                <FeaturedIcon variant="neutralOutline" Icon={IconReceipt} />
+                <FeaturedIcon tone="neutral" Icon={IconReceipt} />
                 <CardTitle>Duplicatas</CardTitle>
               </div>
               <div className="flex gap-3">

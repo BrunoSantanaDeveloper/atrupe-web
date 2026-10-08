@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { SelectEmployeeProfileField } from '@/components/common/form/global-inputs/EmployeeProfileSelectField'
 
 // Icons
-import { IconCircleCheck, IconPlus } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -33,7 +33,6 @@ import type { SellerProfileType } from '@/types/settings/sellerProfile'
 
 // Actions
 import { createItem } from '@/actions/_cruds'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 interface Props extends SearchParamsType {
   open?: boolean
@@ -83,7 +82,6 @@ export function AddSellerDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
             <DialogTitle>Adicionar vendedor</DialogTitle>
           </div>
           <DialogDescription hidden></DialogDescription>

@@ -40,21 +40,11 @@ export function EmptyState({
           <div className="flex flex-col justify-start items-center self-stretch gap-4 text-center">
             {/* Visual Icon / Illustration */}
             {iconType === 'search' && (
-              <FeaturedIcon
-                Icon={IconSearch}
-                variant="successBorderedLight"
-                size="xl"
-                rounded
-              />
+              <FeaturedIcon Icon={IconSearch} tone="success" size="lg" />
             )}
 
             {iconType === 'error' && (
-              <FeaturedIcon
-                Icon={IconAlertTriangle}
-                variant="warningBorderedLight"
-                size="xl"
-                rounded
-              />
+              <FeaturedIcon Icon={IconAlertTriangle} tone="warning" size="lg" />
             )}
 
             {iconType === 'data' && (

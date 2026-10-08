@@ -62,9 +62,8 @@ export function DeleteAlertDialog({ open, setOpen, rowData }: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconExclamationCircle}
-            rounded
             size="lg"
-            variant="errorBorderedLight"
+            tone="error"
             className="mx-auto mb-2"
           />
           <AlertDialogTitle>Deseja remover esta origem?</AlertDialogTitle>

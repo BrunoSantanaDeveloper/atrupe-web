@@ -17,9 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
-import { IconUserPlus } from '@tabler/icons-react'
 
 const newContactSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -94,10 +92,7 @@ export function NewContactModal({
       >
         <DialogHeader>
           <DialogTitle>
-            <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUserPlus} />
-              Novo responsável
-            </div>
+            <div className="flex items-center gap-4">Novo responsável</div>
           </DialogTitle>
           <DialogDescription hidden>
             Cadastro rápido de responsável

@@ -8,16 +8,10 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { useSectorWithProducts } from '@/hooks/queries/useSectorWithProducts'
 import { Dialog } from '@radix-ui/react-dialog'
-import {
-  IconPuzzle,
-  IconQuestionMark,
-  IconLayoutGridAdd,
-  IconLoader2,
-} from '@tabler/icons-react'
+import { IconPuzzle, IconQuestionMark, IconLoader2 } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 import { useQuotation } from '@/contexts/quotationContext'
 import { sectorIcons } from '@/consts/sectors'
@@ -96,12 +90,6 @@ export function QuotationCategorySelectorModal({
       <DialogContent className="sm:max-w-fit">
         <DialogHeader className="border-0">
           <DialogTitle className="flex items-center justify-center gap-4 flex-col">
-            <FeaturedIcon
-              rounded
-              variant="borderedLight"
-              Icon={IconLayoutGridAdd}
-              size={'lg'}
-            />
             <span className="text-lg text-gray-900 font-semibold w-full text-center">
               Qual item deseja adicionar?
             </span>

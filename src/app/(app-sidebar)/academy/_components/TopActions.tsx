@@ -55,7 +55,7 @@ export default function TopActions() {
     <>
       <CustomButton
         icon={IconFileTypePdf}
-        iconVariant="errorGhost"
+        iconTone="error"
         title={`Manual completo ${currentPlan.charAt(0).toUpperCase() + currentPlan.slice(1)}`}
         className="h-14"
         onClick={handleOpenManual}

@@ -14,7 +14,6 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { FormInput } from '@/components/common/form/FormInput'
 
 // Components
@@ -34,7 +33,7 @@ import { updateItemNew } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconUser, IconCircleCheck } from '@tabler/icons-react'
+import { IconCircleCheck } from '@tabler/icons-react'
 
 // Lib
 import { maskCpfCnpj, MaskPhoneNumber } from '@/lib/utils'
@@ -104,7 +103,6 @@ export function EditClientDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconUser} />
               <span>Editar cliente</span>
             </div>
           </DialogTitle>

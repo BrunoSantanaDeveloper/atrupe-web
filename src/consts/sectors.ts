@@ -1,4 +1,4 @@
-import { SVGProps } from 'react'
+import type { ComponentType } from 'react'
 
 import {
   IconCnc,
@@ -24,11 +24,12 @@ import {
   IconClientPickup,
   IconAdministration,
 } from '@/assets/icons/pictogramas'
+import type { PictogramaProps } from '@/assets/icons/pictogramas'
 
 const sectors: {
   [key: string]: {
     text: string
-    icon: (props: SVGProps<SVGSVGElement>) => JSX.Element
+    icon: ComponentType<PictogramaProps>
   }
 } = {
   'device-desktop-analytics': {

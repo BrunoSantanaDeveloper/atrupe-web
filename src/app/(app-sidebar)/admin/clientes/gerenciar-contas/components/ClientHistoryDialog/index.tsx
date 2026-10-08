@@ -11,12 +11,11 @@ import {
   DialogContent,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
 // Icons
-import { IconHistory, IconLoader2, IconSend } from '@tabler/icons-react'
+import { IconLoader2, IconSend } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Types
@@ -113,7 +112,6 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
       <DialogContent className="sm:max-w-[692px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconHistory} />
             <div className="flex-1">
               <DialogTitle>Histórico da Conta</DialogTitle>
               {lastAccess && (

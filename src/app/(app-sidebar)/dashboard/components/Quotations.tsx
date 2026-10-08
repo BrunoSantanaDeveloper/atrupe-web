@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { getDashboardSalesSummary } from '@/actions/dashboard'
@@ -18,7 +17,7 @@ import {
   IconCoin,
   IconUrgent,
 } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 
 type DashboardFilters = {
   startDate?: string
@@ -64,7 +63,7 @@ export function DashboardQuotations({ filters }: DashboardQuotationsProps) {
     <Card>
       <CardHeader className="flex-row flex-wrap items-center justify-between gap-3">
         <div className="flex gap-3 items-center">
-          <FeaturedIcon variant="indigoLight" Icon={IconCoin} />
+          <Icon icon={IconCoin} size="md" className="text-gray-600" />
           <CardTitle>Orçamentos</CardTitle>
         </div>
         <PermissionGate permissions={['sale:quotation:view']}>

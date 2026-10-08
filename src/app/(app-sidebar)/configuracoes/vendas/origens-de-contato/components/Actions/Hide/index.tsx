@@ -63,9 +63,8 @@ export function HideAlertDialog({ open, setOpen, rowData }: Props) {
         <AlertDialogHeader>
           <FeaturedIcon
             Icon={IconEyeOff}
-            rounded
             size="lg"
-            variant="neutralOutline"
+            tone="neutral"
             className="mx-auto mb-2"
           />
           <AlertDialogTitle>

@@ -3,7 +3,6 @@
 // UI
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { FeaturedIcon, FeaturedIconProps } from '@/components/ui/featured-icon'
 
 // Types
 import type { DistributionTotals } from '../../types'
@@ -18,6 +17,7 @@ import {
   IconCircleDashed,
   IconBuildingFactory,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   totals?: DistributionTotals
@@ -28,25 +28,21 @@ export function DistributionSummaryCards({ totals, isLoading }: Props) {
   const cards = [
     {
       icon: IconBuilding,
-      variant: 'neutralLight',
       label: 'Custo administrativo',
       value: formatCurrencyToBrl(totals?.administrativeCost),
     },
     {
       icon: IconArrowsSplit2,
-      variant: 'blueLight',
       label: 'Distribuído aos setores',
       value: formatCurrencyToBrl(totals?.distributedCost),
     },
     {
       icon: IconCircleDashed,
-      variant: 'neutralLight',
       label: 'Não distribuído',
       value: formatCurrencyToBrl(totals?.notDistributedCost),
     },
     {
       icon: IconBuildingFactory,
-      variant: 'successLight',
       label: 'Setores que recebem',
       value: totals?.receivingSectors ?? 0,
     },
@@ -69,11 +65,7 @@ export function DistributionSummaryCards({ totals, isLoading }: Props) {
             </>
           ) : (
             <>
-              <FeaturedIcon
-                size="md"
-                variant={card.variant as FeaturedIconProps['variant']}
-                Icon={card.icon}
-              />
+              <Icon icon={card.icon} size="md" className="text-gray-600" />
               <div className="flex flex-col min-w-0">
                 <span className="type-kpi-label truncate">{card.label}</span>
                 <span className="type-kpi-value">{card.value}</span>

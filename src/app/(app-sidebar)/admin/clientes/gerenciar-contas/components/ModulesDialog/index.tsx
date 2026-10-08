@@ -15,7 +15,6 @@ import {
 import { toast } from 'sonner'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Third-party
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
@@ -27,7 +26,6 @@ import { updateItem, getData } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconStack2 } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -117,7 +115,6 @@ export function ModulesDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconStack2} />
               <span>Módulos</span>
             </div>
           </DialogTitle>

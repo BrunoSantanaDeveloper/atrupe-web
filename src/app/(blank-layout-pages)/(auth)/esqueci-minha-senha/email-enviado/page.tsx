@@ -26,10 +26,9 @@ export default function SignupPage() {
       <CardHeader className="p-0 mb-1 text-center">
         <FeaturedIcon
           Icon={CheckCircle}
-          variant="successBorderedLight"
-          size="xl"
+          tone="success"
+          size="lg"
           className="mx-auto mb-2"
-          rounded
         />
         <CardTitle>E-mail enviado com sucesso</CardTitle>
       </CardHeader>

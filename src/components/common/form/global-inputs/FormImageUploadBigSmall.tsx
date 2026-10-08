@@ -248,8 +248,7 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                       <FeaturedIcon
                         Icon={IconCloudUpload}
                         size="lg"
-                        variant="neutralBorderedLight"
-                        rounded
+                        tone="neutral"
                       />
                       <div className="flex flex-col gap-1 text-gray text-sm mt-3 items-center">
                         <p>

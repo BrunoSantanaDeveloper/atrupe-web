@@ -112,7 +112,7 @@ export function NfcePaymentSection({
   return (
     <Card className="border-none shadow-sm overflow-hidden">
       <CardHeader className="flex flex-row items-center space-x-2.5 py-4 bg-white border-b border-gray-100">
-        <FeaturedIcon variant="successOutline" Icon={IconCash} />
+        <FeaturedIcon tone="success" Icon={IconCash} />
         <div className="flex-1">
           <CardTitle>Forma de Pagamento</CardTitle>
         </div>

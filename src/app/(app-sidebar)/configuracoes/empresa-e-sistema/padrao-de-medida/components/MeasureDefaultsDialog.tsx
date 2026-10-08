@@ -17,18 +17,13 @@ import {
 } from '@/components/ui/dialog'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // Components
 import { FormSelect } from '@/components/common/form/FormSelect'
 
 // Icons
-import {
-  IconRuler2,
-  IconArrowRight,
-  IconCircleCheck,
-} from '@tabler/icons-react'
+import { IconArrowRight, IconCircleCheck } from '@tabler/icons-react'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -146,7 +141,6 @@ export function MeasureDefaultsDialog() {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconRuler2} />
               <span>Padrões de medida</span>
             </div>
           </DialogTitle>

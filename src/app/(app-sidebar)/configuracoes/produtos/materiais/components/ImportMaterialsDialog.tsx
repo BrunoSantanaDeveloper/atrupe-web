@@ -31,7 +31,6 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { SelectBasic } from '@/components/common/form/FormSelect'
@@ -55,7 +54,6 @@ import { importStatusObj } from '@/consts/materials'
 import { toast } from 'sonner'
 
 // Icons
-import { IconUpload } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -201,7 +199,6 @@ export function ImportMaterialsDialog({
       <DialogContent className="sm:max-w-[900px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconUpload} />
             <div>
               <DialogTitle>Importar lista de materiais</DialogTitle>
               <DialogDescription>

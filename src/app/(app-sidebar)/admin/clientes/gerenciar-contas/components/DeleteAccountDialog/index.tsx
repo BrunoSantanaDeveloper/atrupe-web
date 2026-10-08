@@ -17,7 +17,6 @@ import { toast } from 'sonner'
 import { Form } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Components
 import { FormInput } from '@/components/common/form/FormInput'
@@ -35,7 +34,6 @@ import { deleteWithBody } from '@/actions/_cruds'
 import type { AccountItem } from '../Table/Data'
 
 // Icons
-import { IconExclamationCircle } from '@tabler/icons-react'
 
 interface Props {
   open: boolean
@@ -103,12 +101,6 @@ export function DeleteAccountDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle className="pr-0">
             <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant="errorBorderedLight"
-                Icon={IconExclamationCircle}
-                size="lg"
-                rounded
-              />
               <span>Excluir conta permanentemente</span>
             </div>
           </DialogTitle>

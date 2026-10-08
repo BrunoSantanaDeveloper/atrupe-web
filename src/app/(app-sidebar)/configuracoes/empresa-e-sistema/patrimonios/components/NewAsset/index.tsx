@@ -8,7 +8,6 @@ import { useRef, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Dialog,
   DialogBody,
@@ -154,10 +153,6 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
       <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon
-              variant="neutralOutline"
-              Icon={isEdit ? IconPencil : IconPlus}
-            />
             <DialogTitle>
               {isEdit ? 'Editar patrimônio' : 'Novo patrimônio'}
             </DialogTitle>

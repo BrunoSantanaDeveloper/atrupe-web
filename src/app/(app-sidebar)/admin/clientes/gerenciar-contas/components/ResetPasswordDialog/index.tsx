@@ -16,7 +16,6 @@ import {
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
   Form,
   FormField,
@@ -135,12 +134,6 @@ export function ResetPasswordDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex flex-col items-center gap-4 text-center">
-              <FeaturedIcon
-                variant="neutralOutline"
-                Icon={IconKey}
-                size="lg"
-                rounded
-              />
               <span>Redefinir senha</span>
             </div>
           </DialogTitle>
