@@ -45,6 +45,7 @@ import { setCookie } from 'cookies-next'
 // Icons
 import { IconComponent } from '../common/Icon'
 import { IconChevronLeft } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Types
 import type { Session } from 'next-auth'
@@ -254,6 +255,7 @@ export function SidebarComponent(props: Props) {
                 onClick={handleCollapse}
               >
                 <IconChevronLeft
+                  size={ICON_SIZE.sm}
                   className={cn(
                     'text-gray transition-transform duration-300',
                     collapsed && 'rotate-180',

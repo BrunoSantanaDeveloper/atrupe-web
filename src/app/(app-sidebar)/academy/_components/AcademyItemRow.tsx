@@ -27,6 +27,7 @@ import {
   IconCircleFilled,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Modals
 import { modalRegistry } from './ModalRegistry'
@@ -276,7 +277,7 @@ export function AcademyItemRow({ data, showVideoInline }: Props) {
                       unoptimized
                     />
                   ) : null}
-                  <IconVideo className="size-4 text-gray-500" />
+                  <Icon icon={IconVideo} size="sm" className="text-gray-500" />
                 </button>
               )
             })()}

@@ -28,6 +28,7 @@ import {
   IconRefresh,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -205,7 +206,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                     variant="warning"
                     className="text-xs flex items-center gap-1"
                   >
-                    <IconAlertTriangle size={12} />
+                    <IconAlertTriangle size={ICON_SIZE.sm} />
                     Valor diverge do total da NF
                   </Badge>
                 )}
@@ -279,7 +280,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                           className="flex items-center gap-1 text-xs text-brand-600 hover:text-brand-700 transition-colors"
                           title={`Sincronizar com total da NF (${formatCurrency(currentTotal)})`}
                         >
-                          <IconRefresh size={12} />
+                          <IconRefresh size={ICON_SIZE.sm} />
                           Sincronizar ({formatCurrency(currentTotal)})
                         </button>
                       )}
@@ -392,7 +393,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="w-20"
                       />
                       <Button variant="neutral" onClick={generateInstallments}>
-                        <IconCalculator size={16} className="mr-2" />
+                        <IconCalculator size={ICON_SIZE.md} className="mr-2" />
                         Gerar
                       </Button>
                     </div>
@@ -426,7 +427,7 @@ export function InvoicePayment({ data, onUpdate, computedValorNota }: Props) {
                         className="absolute right-2 top-2 text-gray-400 hover:text-error-600 p-1"
                         aria-label="Remover duplicata"
                       >
-                        <IconTrash size={14} />
+                        <IconTrash size={ICON_SIZE.sm} />
                       </button>
 
                       <div className="space-y-3">

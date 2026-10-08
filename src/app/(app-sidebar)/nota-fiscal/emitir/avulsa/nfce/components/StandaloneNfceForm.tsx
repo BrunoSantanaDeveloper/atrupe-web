@@ -33,6 +33,7 @@ import {
   IconMessage,
   IconX,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { getItem, createItemNew } from '@/actions/_cruds'
@@ -432,7 +433,7 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft size={ICON_SIZE.sm} />
               </Button>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -492,7 +493,10 @@ export function StandaloneNfceForm({ orderId }: { orderId?: string }) {
         {isHomologacao && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>

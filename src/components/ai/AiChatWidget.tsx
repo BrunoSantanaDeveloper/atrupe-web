@@ -16,6 +16,7 @@ import {
   IconSend as Send,
   IconTrash as Trash2,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { toast } from 'sonner'
 
 import {
@@ -188,7 +189,7 @@ export function AiChatWidget() {
         onClick={() => setOpen(true)}
         aria-label="Abrir assistente IA"
       >
-        <Bot className="size-6" />
+        <Icon icon={Bot} size="lg" />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
@@ -228,7 +229,11 @@ export function AiChatWidget() {
                         className="flex min-w-0 flex-1 items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => selectConversation(item.id)}
                       >
-                        <MessageSquare className="size-4 shrink-0 text-gray-500" />
+                        <Icon
+                          icon={MessageSquare}
+                          size="sm"
+                          className="shrink-0 text-gray-500"
+                        />
                         <span className="truncate">{item.title}</span>
                       </button>
                       <Button
@@ -239,7 +244,7 @@ export function AiChatWidget() {
                         onClick={() => removeConversation(item.id)}
                         aria-label="Excluir conversa"
                       >
-                        <Trash2 className="size-4" />
+                        <Icon icon={Trash2} size="sm" />
                       </Button>
                     </div>
                   ))}
@@ -343,7 +348,7 @@ export function AiChatWidget() {
                     disabled={!message.trim()}
                     aria-label="Enviar mensagem"
                   >
-                    <Send className="size-5" />
+                    <Icon icon={Send} size="md" />
                   </Button>
                 </div>
               </form>

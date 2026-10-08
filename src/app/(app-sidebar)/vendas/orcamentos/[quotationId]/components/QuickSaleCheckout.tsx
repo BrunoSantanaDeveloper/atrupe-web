@@ -77,6 +77,7 @@ import {
   IconCashBanknote,
   IconReceiptRefund,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
 import { quickSaleCheckoutStatusObj } from '@/consts/quickSale'
@@ -571,7 +572,7 @@ export function QuickSaleStatusCard({
                       : 'bg-gray-100 text-gray-500',
                   )}
                 >
-                  {step.done ? <IconCheck size={16} /> : index + 1}
+                  {step.done ? <IconCheck size={ICON_SIZE.sm} /> : index + 1}
                 </span>
                 <span>
                   <span className="block text-sm font-medium text-gray-800">

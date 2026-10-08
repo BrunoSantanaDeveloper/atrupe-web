@@ -61,6 +61,7 @@ import {
   IconRulerMeasure,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -236,15 +237,15 @@ export function ProcessDialog({
             <div className="px-6 pt-4 border-b border-gray-100">
               <TabsList>
                 <TabsTrigger value="general">
-                  <IconListCheck size={14} className="mr-1.5" />
+                  <IconListCheck size={ICON_SIZE.sm} className="mr-1.5" />
                   Processo
                 </TabsTrigger>
                 <TabsTrigger value="composition">
-                  <IconHierarchy2 size={14} className="mr-1.5" />
+                  <IconHierarchy2 size={ICON_SIZE.sm} className="mr-1.5" />
                   Composição
                 </TabsTrigger>
                 <TabsTrigger value="usage">
-                  <IconPackages size={14} className="mr-1.5" />
+                  <IconPackages size={ICON_SIZE.sm} className="mr-1.5" />
                   Uso
                 </TabsTrigger>
               </TabsList>
@@ -330,13 +331,13 @@ export function ProcessDialog({
                               </span>
                               {selected ? (
                                 <IconCircleCheckFilled
-                                  size={20}
+                                  size={ICON_SIZE.md}
                                   className="shrink-0 text-brand-600"
                                   aria-hidden="true"
                                 />
                               ) : (
                                 <IconCircle
-                                  size={20}
+                                  size={ICON_SIZE.md}
                                   className="shrink-0 text-gray-300"
                                   aria-hidden="true"
                                 />

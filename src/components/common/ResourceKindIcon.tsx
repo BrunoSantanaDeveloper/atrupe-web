@@ -14,6 +14,7 @@ import type { ComponentType } from 'react'
 import type { ResourceKind } from '@/app/(app-sidebar)/configuracoes/produtos/processos/types'
 
 // Utils
+import { ICON_SIZE } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 
 // O que o ícone recebe: o mesmo contrato do Tabler, que o Button já usa
@@ -84,7 +85,7 @@ export function ResourceKindLabel({
 }) {
   return (
     <span className={cn('inline-flex items-center gap-1', className)}>
-      <ResourceKindIcon kind={kind} size={14} className="shrink-0" />
+      <ResourceKindIcon kind={kind} size={ICON_SIZE.sm} className="shrink-0" />
       {label}
     </span>
   )

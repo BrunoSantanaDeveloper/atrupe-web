@@ -30,6 +30,7 @@ import { costCriterionObj } from '@/consts/cost-base'
 
 // Icons
 import { IconInfoCircle, IconPencil } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface Props {
   accounts: AdminExpenseAccount[]
@@ -83,7 +84,7 @@ export function AdminExpensesData({ accounts, onEdit }: Props) {
                         aria-label="O que é o custo mensal de referência"
                         className="text-gray-400 hover:text-gray-600"
                       >
-                        <IconInfoCircle className="size-4" />
+                        <IconInfoCircle size={ICON_SIZE.sm} />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent className="max-w-xs">

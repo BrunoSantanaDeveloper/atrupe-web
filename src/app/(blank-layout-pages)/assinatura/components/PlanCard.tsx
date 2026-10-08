@@ -16,6 +16,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { IconCheck, IconPlayerPlayFilled } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
 
 import pro from '@/assets/images/pro-logo.png'
@@ -324,8 +325,9 @@ export function PlanCard({
                                 key={itemIndex}
                                 className="text-gray-600 flex gap-2 items-start"
                               >
-                                <IconCheck
-                                  size={16}
+                                <Icon
+                                  icon={IconCheck}
+                                  size="sm"
                                   className="text-brand-400 mt-0.5 flex-shrink-0 stroke-[3px]"
                                 />
                                 <span>{item}</span>

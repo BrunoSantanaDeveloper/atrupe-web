@@ -111,6 +111,7 @@ import {
 
 // Icons
 import { IconTrash, IconPencil, IconListDetails } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -616,7 +617,7 @@ export function ProcessEditor({
                           {block.name}
                         </span>
                         <IconPencil
-                          size={14}
+                          size={ICON_SIZE.sm}
                           aria-hidden="true"
                           className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
                         />

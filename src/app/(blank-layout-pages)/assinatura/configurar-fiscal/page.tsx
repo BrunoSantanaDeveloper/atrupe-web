@@ -31,6 +31,7 @@ import {
   IconLoader2,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { createItemNew } from '@/actions/_cruds'
 import { encodeFileToBase64 } from '@/lib/file-to-base64'
@@ -496,7 +497,11 @@ export default function ConfigurarFiscalPage() {
                   <input {...getInputProps()} />
                   {certificateFile ? (
                     <div className="flex items-center justify-center gap-2">
-                      <IconFileCertificate className="h-6 w-6 text-green-600" />
+                      <Icon
+                        icon={IconFileCertificate}
+                        size="lg"
+                        className="text-green-600"
+                      />
                       <span className="text-sm font-medium text-green-700">
                         {certificateFile.name}
                       </span>

@@ -9,17 +9,18 @@ import { TableSkeleton } from '@/components/common/TableSkeleton'
 
 // Icons
 import { IconFileInvoice, IconFileDescription } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function GestaoNotasClient() {
   return (
     <Tabs defaultValue="nfe" className="w-full">
       <TabsList className="mb-4">
         <TabsTrigger value="nfe" className="flex items-center gap-2">
-          <IconFileInvoice className="size-4" />
+          <Icon icon={IconFileInvoice} size="sm" />
           NF-e (Produtos)
         </TabsTrigger>
         <TabsTrigger value="nfse" className="flex items-center gap-2">
-          <IconFileDescription className="size-4" />
+          <Icon icon={IconFileDescription} size="sm" />
           NFS-e (Servicos)
         </TabsTrigger>
       </TabsList>
@@ -28,7 +29,7 @@ export function GestaoNotasClient() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <IconFileInvoice className="size-5" />
+              <Icon icon={IconFileInvoice} size="md" />
               Notas Fiscais de Produto (NF-e)
             </CardTitle>
           </CardHeader>
@@ -44,7 +45,7 @@ export function GestaoNotasClient() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <IconFileDescription className="size-5" />
+              <Icon icon={IconFileDescription} size="md" />
               Notas fiscais de serviço (NFS-e)
             </CardTitle>
           </CardHeader>

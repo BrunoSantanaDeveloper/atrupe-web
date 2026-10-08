@@ -4,6 +4,7 @@ import { FormSelect } from '@/components/common/form/FormSelect'
 import { Button } from '@/components/ui/button'
 import { COUNTRIES } from '@/consts/country-codes'
 import { IconPlus, IconTrash } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 import { NewClientFormType } from '../schema'
 import { useCheckZipcode } from '@/hooks/queries/useCheckZipcode'
 import { useEffect } from 'react'
@@ -54,7 +55,7 @@ export function AddressTab() {
                   className="absolute top-1 right-1"
                   onClick={() => remove(index)}
                 >
-                  <IconTrash className="h-4 w-4" />
+                  <IconTrash size={ICON_SIZE.sm} />
                 </Button>
               )}
             </div>

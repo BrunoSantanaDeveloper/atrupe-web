@@ -16,6 +16,7 @@ import {
   IconPlayerPlay,
   IconBrandWhatsapp,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { VideoDialog } from '@/app/(app-sidebar)/academy/_components/VideoDialog'
@@ -46,7 +47,7 @@ export function HelpButton({ data }: Props) {
               setVideoDialogOpen(true)
             }}
           >
-            <IconPlayerPlay size={16} className="mr-2" />
+            <IconPlayerPlay size={ICON_SIZE.md} className="mr-2" />
             <span>Vídeo</span>
           </DropdownMenuItem>
           {files?.length ? (
@@ -55,7 +56,7 @@ export function HelpButton({ data }: Props) {
                 window.open(files[0], '_blank')
               }}
             >
-              <IconFileText size={16} className="mr-2" />
+              <IconFileText size={ICON_SIZE.md} className="mr-2" />
               <span>PDF</span>
             </DropdownMenuItem>
           ) : null}
@@ -72,7 +73,7 @@ export function HelpButton({ data }: Props) {
           <DropdownMenuItem
             onClick={() => window.open('https://wa.me/554721229194', '_blank')}
           >
-            <IconBrandWhatsapp size={16} className="mr-2" />
+            <IconBrandWhatsapp size={ICON_SIZE.md} className="mr-2" />
             <span>Suporte</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

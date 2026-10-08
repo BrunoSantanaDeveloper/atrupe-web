@@ -41,6 +41,7 @@ import {
   IconPlus,
   IconTrash,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -222,7 +223,7 @@ export function CodigoServicoCombobox({
             </Badge>
           )}
           <IconChevronDown
-            size={16}
+            size={ICON_SIZE.md}
             className={cn(
               'shrink-0 text-gray-400 transition-transform duration-200',
               open && 'rotate-180',
@@ -262,7 +263,7 @@ export function CodigoServicoCombobox({
                   className="flex items-center gap-2 px-3 py-2.5 cursor-pointer"
                 >
                   <IconCheck
-                    size={16}
+                    size={ICON_SIZE.md}
                     className={cn(
                       'shrink-0 transition-opacity',
                       escolhido?.id === s.id
@@ -296,7 +297,7 @@ export function CodigoServicoCombobox({
                     onSelect={() => usarCodigoManual(buscaLimpa)}
                     className="flex items-center gap-2 px-3 py-2.5 cursor-pointer text-brand-600"
                   >
-                    <IconPlus size={16} className="shrink-0" />
+                    <IconPlus size={ICON_SIZE.md} className="shrink-0" />
                     <span className="font-medium">
                       Usar o código &ldquo;{buscaLimpa}&rdquo; sem cadastrar
                     </span>
@@ -598,7 +599,7 @@ export function ListaServicosManagerDialog({
                       onClick={() => iniciarEdicao(s)}
                       aria-label={`Editar ${s.codigo}`}
                     >
-                      <IconPencil size={16} />
+                      <IconPencil size={ICON_SIZE.sm} />
                     </Button>
                     <Button
                       variant="errorGhost"
@@ -606,7 +607,7 @@ export function ListaServicosManagerDialog({
                       onClick={() => remover(s)}
                       aria-label={`Remover ${s.codigo}`}
                     >
-                      <IconTrash size={16} />
+                      <IconTrash size={ICON_SIZE.sm} />
                     </Button>
                   </div>
                 </div>

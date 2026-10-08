@@ -35,6 +35,7 @@ import { RejectionReasonAction } from '@/components/common/fiscal/RejectionReaso
 
 // Icons
 import { IconExternalLink, IconX, IconRefresh } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Hooks
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -301,7 +302,7 @@ export function NfseListClient() {
                                 size="icon"
                                 onClick={() => handleOpenPdf(nfse.pdfUrl!)}
                               >
-                                <IconExternalLink className="size-4" />
+                                <Icon icon={IconExternalLink} size="md" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>Ver PDF</TooltipContent>
@@ -317,7 +318,7 @@ export function NfseListClient() {
                                 size="icon"
                                 disabled
                               >
-                                <IconX className="size-4" />
+                                <Icon icon={IconX} size="md" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>Cancelar NFS-e</TooltipContent>

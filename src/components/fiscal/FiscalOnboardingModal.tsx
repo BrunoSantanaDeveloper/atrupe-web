@@ -30,6 +30,7 @@ import {
   IconLoader2,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { createItemNew } from '@/actions/_cruds'
 import { encodeFileToBase64 } from '@/lib/file-to-base64'
@@ -523,7 +524,11 @@ export function FiscalOnboardingModal({
                 >
                   {certificateFile ? (
                     <div className="flex items-center justify-center gap-2">
-                      <IconFileCertificate className="h-5 w-5 text-success-600" />
+                      <Icon
+                        icon={IconFileCertificate}
+                        size="md"
+                        className="text-success-600"
+                      />
                       <span className="text-sm font-medium text-success-700">
                         {certificateFile.name}
                       </span>

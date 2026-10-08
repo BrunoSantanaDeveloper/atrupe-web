@@ -12,6 +12,7 @@ import {
   IconSettings,
   IconClock,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -131,7 +132,7 @@ export function Step5() {
       <div className="rounded-lg border border-brand-100 bg-brand-50 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="h-9 w-9 rounded-full bg-brand-100 flex items-center justify-center shrink-0">
-            <IconSettings className="h-4 w-4 text-brand-700" />
+            <Icon icon={IconSettings} size="sm" className="text-brand-700" />
           </div>
           <div>
             <p className="text-sm font-semibold text-brand-900">

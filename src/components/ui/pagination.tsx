@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { IconArrowLeft, IconArrowRight, IconDots } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { ButtonProps, buttonVariants } from '@/components/ui/button'
@@ -95,7 +96,7 @@ const PaginationPrevious = ({
     className={cn(size === 'icon' ? '' : 'gap-1 pl-2.5', className)}
     {...props}
   >
-    <IconArrowLeft className="h-5 w-5" />
+    <Icon icon={IconArrowLeft} size="md" />
     {size !== 'icon' && <span>Anterior</span>}
   </PaginationLink>
 )
@@ -115,7 +116,7 @@ const PaginationNext = ({
     {...props}
   >
     {size !== 'icon' && <span>Próximo</span>}
-    <IconArrowRight className="h-5 w-5" />
+    <Icon icon={IconArrowRight} size="md" />
   </PaginationLink>
 )
 PaginationNext.displayName = 'PaginationNext'
@@ -129,7 +130,7 @@ const PaginationEllipsis = ({
     className={cn('flex h-10 w-10 items-center justify-center', className)}
     {...props}
   >
-    <IconDots className="h-4 w-4" />
+    <Icon icon={IconDots} size="sm" />
     <span className="sr-only">Mais páginas</span>
   </span>
 )

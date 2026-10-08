@@ -24,6 +24,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 import { IconArrowDown, IconCircleCheck } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 
@@ -1120,7 +1121,7 @@ export function SubscriptionTerms({
             )}
           >
             <div className="flex h-8 justify-center items-center px-2 gap-2 bg-gray-200 text-gray rounded-full text-xs font-semibold border border-gray-300">
-              <IconArrowDown className="size-5" />
+              <Icon icon={IconArrowDown} size="md" />
               Leia todos os termos antes de aceitar
             </div>
           </div>

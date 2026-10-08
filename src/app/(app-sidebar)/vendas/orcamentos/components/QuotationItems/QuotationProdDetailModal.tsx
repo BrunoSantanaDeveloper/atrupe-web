@@ -27,6 +27,7 @@ import {
   IconHelpCircle,
   IconPackage,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party Imports
 import { FormBrlInput } from '@/components/common/form/FormBrlInput'
@@ -606,7 +607,10 @@ export function QuotationProdDetailModal({
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger type="button">
-                                <IconHelpCircle className="text-gray-400 h-4 w-4" />
+                                <IconHelpCircle
+                                  size={ICON_SIZE.sm}
+                                  className="text-gray-400"
+                                />
                               </TooltipTrigger>
                               <TooltipContent className="w-[205px] text-center">
                                 <p>

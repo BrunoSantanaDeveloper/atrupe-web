@@ -25,6 +25,7 @@ import { CfopData } from './CfopRow'
 
 // Icons
 import { IconCategory, IconPlus, IconLoader2 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Actions
 import {
@@ -208,7 +209,11 @@ export function NaturezaListClient({ cfops }: NaturezaListClientProps) {
       {/* List */}
       {isLoading ? (
         <div className="flex items-center justify-center p-8 bg-white border border-gray-200 rounded-xl">
-          <IconLoader2 className="w-6 h-6 animate-spin text-gray-400" />
+          <IconLoader2
+            size={ICON_SIZE.lg}
+            stroke={ICON_STROKE.lg}
+            className="animate-spin text-gray-400"
+          />
           <span className="ml-2 text-gray-500">Carregando Naturezas...</span>
         </div>
       ) : natures.length === 0 ? (

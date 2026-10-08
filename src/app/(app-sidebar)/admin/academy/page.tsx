@@ -53,6 +53,7 @@ import {
   IconCircleCheck,
   IconFileTextFilled,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Form
 import { useForm } from 'react-hook-form'
@@ -526,7 +527,7 @@ function AddAcademyContent() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2">
-            <IconBook className="size-5" />
+            <Icon icon={IconBook} size="md" />
             Aulas Cadastradas
           </CardTitle>
           <div className="flex items-center gap-2">

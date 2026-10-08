@@ -37,6 +37,7 @@ import { sectorIconByName } from '@/consts/sectors'
 
 // Icons
 import { IconPlus, IconSearch } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -203,7 +204,7 @@ export function NextStepDialog({
               <Input
                 value={search}
                 placeholder="Buscar processo pelo nome ou setor"
-                startAdornment={<IconSearch size={16} />}
+                startAdornment={<IconSearch size={ICON_SIZE.sm} />}
                 onChange={(event) => setSearch(event.target.value)}
                 aria-label="Buscar processo"
               />

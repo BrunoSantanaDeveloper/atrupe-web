@@ -38,6 +38,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconCopy } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { toast } from 'sonner'
 
@@ -117,7 +118,7 @@ function TokenCell({ item }: { item: IncompleteRegistrationItem }) {
             className="text-gray-400 hover:text-gray-600 transition-colors"
             title="Copiar token"
           >
-            <IconCopy size={14} />
+            <IconCopy size={ICON_SIZE.sm} />
           </button>
         )}
       </div>

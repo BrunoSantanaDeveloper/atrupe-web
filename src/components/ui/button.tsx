@@ -9,7 +9,7 @@ import { IconLoader2 } from '@tabler/icons-react'
 import { ICON_SIZE, ICON_STROKE, type IconSize } from './icon'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold ring-offset-white transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap [&_svg]:shrink-0 font-semibold ring-offset-white transition-all duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gray-600 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:bg-gray-100 disabled:text-gray-300 disabled:border-gray-200',
   {
     variants: {
       variant: {
@@ -96,16 +96,16 @@ const buttonVariants = cva(
       size: {
         // O ícone acompanha o tamanho do botão (16 no pequeno, 20 nos demais),
         // inclusive quando vem como filho: `[&_svg]` vence h-*/w-* da tela
-        default: 'h-10 px-4 text-sm [&_svg]:size-5',
-        md: 'h-10 px-3 text-sm [&_svg]:size-5',
-        sm: 'h-8 px-2 text-sm [&_svg]:size-4',
-        lg: 'h-14 px-6 text-sm [&_svg]:size-5',
-        icon: 'h-10 w-10 p-2.5 [&_svg]:size-5',
-        iconMd: 'h-10 w-10 p-2.5 [&_svg]:size-5',
-        iconSm: 'h-8 min-w-8 max-w-8 p-2 [&_svg]:size-4',
-        iconXs: 'h-6 min-w-6 max-w-6 p-1 [&_svg]:size-4',
-        iconXxs: 'h-4 min-w-4 max-w-4 p-0 [&_svg]:size-4',
-        iconLg: 'h-14 min-w-14 [&_svg]:size-6',
+        default: 'h-10 px-4 text-sm [&_svg]:size-icon-md',
+        md: 'h-10 px-3 text-sm [&_svg]:size-icon-md',
+        sm: 'h-8 px-2 text-sm [&_svg]:size-icon-sm',
+        lg: 'h-14 px-6 text-sm [&_svg]:size-icon-md',
+        icon: 'h-10 w-10 p-2 [&_svg]:size-icon-md',
+        iconMd: 'h-10 w-10 p-2 [&_svg]:size-icon-md',
+        iconSm: 'h-8 min-w-8 max-w-8 p-2 [&_svg]:size-icon-sm',
+        iconXs: 'h-6 min-w-6 max-w-6 p-1 [&_svg]:size-icon-sm',
+        iconXxs: 'h-4 min-w-4 max-w-4 p-0 [&_svg]:size-icon-sm',
+        iconLg: 'h-14 min-w-14 [&_svg]:size-icon-lg',
         none: 'p-0',
       },
       rounded: {

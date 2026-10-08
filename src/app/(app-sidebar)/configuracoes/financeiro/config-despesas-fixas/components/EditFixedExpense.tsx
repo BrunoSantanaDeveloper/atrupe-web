@@ -46,6 +46,7 @@ import {
   IconPlus,
   IconCalendarMonth,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Action
 import { getItem, createItemNew, updateItemNew } from '@/actions/_cruds'
@@ -239,7 +240,7 @@ function NewFixedExpenseModal({
                       min={1}
                       max={31}
                       width="flex-[1_0_300px]"
-                      startAdornment={<IconCalendarMonth size={20} />}
+                      startAdornment={<IconCalendarMonth size={ICON_SIZE.md} />}
                     />
                   </div>
                 </DialogBody>

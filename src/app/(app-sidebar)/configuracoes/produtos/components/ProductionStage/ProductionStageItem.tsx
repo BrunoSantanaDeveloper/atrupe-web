@@ -3,6 +3,7 @@ import { NewProductsFormType } from '../schema'
 import { TableCell } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { IconMenuOrder } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { Switch } from '@/components/ui/switch'
 import { ProductionStageIcon } from './ProductionStageIcon'
 import { useFormContext } from 'react-hook-form'
@@ -56,7 +57,7 @@ export function ProductionStageItem({
             controls.start(e)
           }}
         >
-          <IconMenuOrder className="h-4 text-gray-500" />
+          <Icon icon={IconMenuOrder} size="sm" className="text-gray-500" />
 
           <span className="text-gray-900 text-sm font-medium">
             {index + 1}º

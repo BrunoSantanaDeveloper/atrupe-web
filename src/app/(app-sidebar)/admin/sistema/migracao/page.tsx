@@ -13,6 +13,7 @@ import {
   IconSearch,
   IconX,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -261,9 +262,9 @@ export default function AdminMigracaoPage() {
                 disabled={buscando || rodando || cnpj.length !== 14}
               >
                 {buscando ? (
-                  <IconLoader2 className="animate-spin" size={16} />
+                  <Icon icon={IconLoader2} size="md" className="animate-spin" />
                 ) : (
-                  <IconSearch size={16} />
+                  <Icon icon={IconSearch} size="md" />
                 )}
                 Buscar no legado
               </Button>
@@ -281,7 +282,11 @@ export default function AdminMigracaoPage() {
               <div className="flex flex-col gap-2">
                 {busca.encontradas.length > 1 && (
                   <p className="flex items-start gap-2 rounded-md bg-muted p-3 text-sm">
-                    <IconAlertTriangle size={16} className="mt-0.5 shrink-0" />
+                    <Icon
+                      icon={IconAlertTriangle}
+                      size="sm"
+                      className="mt-0.5 shrink-0"
+                    />
                     Este CNPJ aparece em {busca.encontradas.length} bases do
                     legado. Confirme com o cliente qual está em uso: cada conta
                     recebe uma base só.
@@ -321,7 +326,7 @@ export default function AdminMigracaoPage() {
                             variant="errorOutline"
                             className="gap-1 px-2 py-0.5"
                           >
-                            <IconAlertTriangle size={14} />
+                            <Icon icon={IconAlertTriangle} size="sm" />
                             Migração bloqueada
                           </Badge>
                           <span className="text-xs text-muted-foreground">
@@ -330,13 +335,13 @@ export default function AdminMigracaoPage() {
                         </div>
                       ) : pronta ? (
                         <div className="flex items-center gap-2 text-sm">
-                          <IconArrowRight size={16} />
+                          <Icon icon={IconArrowRight} size="sm" />
                           <span>{base.empresaVinculada!.name}</span>
                         </div>
                       ) : (
                         <div className="flex flex-col items-end gap-1">
                           <Badge variant="outline" className="gap-1">
-                            <IconAlertTriangle size={14} />
+                            <Icon icon={IconAlertTriangle} size="sm" />
                             Conta ainda não criada
                           </Badge>
                           <span className="text-xs text-muted-foreground">
@@ -384,9 +389,13 @@ export default function AdminMigracaoPage() {
                   variant="outline"
                 >
                   {rodando && run?.dryRun ? (
-                    <IconLoader2 className="animate-spin" size={16} />
+                    <Icon
+                      icon={IconLoader2}
+                      size="md"
+                      className="animate-spin"
+                    />
                   ) : (
-                    <IconPlayerPlay size={16} />
+                    <Icon icon={IconPlayerPlay} size="md" />
                   )}
                   Rodar simulação
                 </Button>
@@ -396,9 +405,13 @@ export default function AdminMigracaoPage() {
                   disabled={!simulacaoAprovada || disparando || rodando}
                 >
                   {rodando && !run?.dryRun ? (
-                    <IconLoader2 className="animate-spin" size={16} />
+                    <Icon
+                      icon={IconLoader2}
+                      size="md"
+                      className="animate-spin"
+                    />
                   ) : (
-                    <IconDatabaseImport size={16} />
+                    <Icon icon={IconDatabaseImport} size="md" />
                   )}
                   Executar migração
                 </Button>
@@ -578,7 +591,7 @@ export default function AdminMigracaoPage() {
 
               {rodando && (
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <IconLoader2 className="animate-spin" size={16} />
+                  <Icon icon={IconLoader2} size="sm" className="animate-spin" />
                   Em execução. A carga roda no servidor e continua mesmo se você
                   fechar esta tela.
                 </p>
@@ -625,7 +638,7 @@ function StatusBadge({ status }: { status: MigrationRun['status'] }) {
   if (status === 'COMPLETED') {
     return (
       <Badge className="gap-1 bg-emerald-600">
-        <IconCheck size={14} /> Concluída
+        <Icon icon={IconCheck} size="sm" /> Concluída
       </Badge>
     )
   }
@@ -633,14 +646,14 @@ function StatusBadge({ status }: { status: MigrationRun['status'] }) {
   if (status === 'FAILED') {
     return (
       <Badge variant="error" className="gap-1">
-        <IconX size={14} /> Falhou
+        <Icon icon={IconX} size="sm" /> Falhou
       </Badge>
     )
   }
 
   return (
     <Badge variant="outline" className="gap-1">
-      <IconLoader2 className="animate-spin" size={14} /> Em execução
+      <Icon icon={IconLoader2} size="sm" className="animate-spin" /> Em execução
     </Badge>
   )
 }

@@ -10,6 +10,7 @@ import {
   IconCalendar as Calendar,
   IconHash as Hash,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { useQuery } from '@tanstack/react-query'
@@ -52,7 +53,7 @@ export function CorrectionHistorySection({
           <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-muted/50 transition-colors">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <FileEdit className="w-4 h-4 text-blue-500" />
+                <Icon icon={FileEdit} size="sm" className="text-blue-500" />
               </div>
               <div className="flex flex-col items-start">
                 <span className="text-sm font-medium text-foreground">
@@ -84,11 +85,15 @@ export function CorrectionHistorySection({
                     <div className="bg-muted/30 rounded-lg p-3 border border-border/50">
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <div className="flex items-center gap-1.5 text-xs font-medium text-foreground">
-                          <Hash className="w-3 h-3 text-muted-foreground" />
+                          <Icon
+                            icon={Hash}
+                            size="sm"
+                            className="text-muted-foreground"
+                          />
                           Sequência {event.sequenciaEvento}
                         </div>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <Calendar className="w-3 h-3" />
+                          <Icon icon={Calendar} size="sm" />
                           {event.dataEvento
                             ? format(
                                 new Date(event.dataEvento),

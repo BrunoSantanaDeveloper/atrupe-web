@@ -45,6 +45,7 @@ import {
   IconAlertTriangleFilled,
   IconBan,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Hooks
 import { useAlertDialog } from '@/store/useAlertDialog'
@@ -758,7 +759,7 @@ export function IssueNfseForm({ id, orderIds }: Props) {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft size={ICON_SIZE.sm} />
               </Button>
               <div className="flex items-center gap-2">
                 <h1 className="type-page-title">
@@ -825,7 +826,10 @@ export function IssueNfseForm({ id, orderIds }: Props) {
         {isHomologacao && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>

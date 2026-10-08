@@ -30,6 +30,7 @@ import {
   IconTool,
   IconFileInvoice,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Components
 import { Topbar } from '@/components/common/Topbar'
@@ -230,7 +231,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                           </p>
                         </div>
                         <IconChevronRight
-                          size={18}
+                          size={ICON_SIZE.md}
                           className="text-gray-400 shrink-0"
                         />
                       </button>
@@ -298,7 +299,7 @@ export function IssueInvoice({ searchParams }: SearchParamsType) {
                         </Badge>
                       ) : (
                         <IconChevronRight
-                          size={18}
+                          size={ICON_SIZE.md}
                           className={cn(
                             'shrink-0 transition-transform',
                             isDisabled

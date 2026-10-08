@@ -34,6 +34,7 @@ import {
   IconLoader2,
   IconMail,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Dialogs
 import { CorrectionLetterDialog } from './CorrectionLetterDialog'
@@ -218,7 +219,7 @@ export function NfeActionsDropdown({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="iconSm" aria-label="Ações da NF-e">
-            <IconDotsVertical size={18} className="text-gray-500" />
+            <Icon icon={IconDotsVertical} size="sm" className="text-gray-500" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -236,9 +237,13 @@ export function NfeActionsDropdown({
               }}
             >
               {isOpeningDanfe ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconFileCheck className="mr-2 h-4 w-4" />
+                <Icon icon={IconFileCheck} size="md" className="mr-2" />
               )}
               <span>Ver DANFE</span>
             </DropdownMenuItem>
@@ -246,7 +251,7 @@ export function NfeActionsDropdown({
 
           {nfe.xmlAutorizado && (
             <DropdownMenuItem onClick={handleDownloadXml}>
-              <IconDownload className="mr-2 h-4 w-4" />
+              <Icon icon={IconDownload} size="md" className="mr-2" />
               <span>Baixar XML</span>
             </DropdownMenuItem>
           )}
@@ -262,9 +267,13 @@ export function NfeActionsDropdown({
               }}
             >
               {isSendingEmail ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconMail className="mr-2 h-4 w-4" />
+                <Icon icon={IconMail} size="md" className="mr-2" />
               )}
               <span>Enviar DANFE/XML por e-mail</span>
             </DropdownMenuItem>
@@ -282,7 +291,7 @@ export function NfeActionsDropdown({
                         cceDisabled ? 'opacity-50 cursor-not-allowed' : ''
                       }
                     >
-                      <IconPencil className="mr-2 h-4 w-4" />
+                      <Icon icon={IconPencil} size="md" className="mr-2" />
                       <span>Carta de Correção</span>
                     </DropdownMenuItem>
                   </div>
@@ -305,7 +314,7 @@ export function NfeActionsDropdown({
                   )
                 }
               >
-                <IconArrowBackUp className="mr-2 h-4 w-4" />
+                <Icon icon={IconArrowBackUp} size="md" className="mr-2" />
                 <span>Devolver NF-e</span>
               </DropdownMenuItem>
 
@@ -316,7 +325,7 @@ export function NfeActionsDropdown({
                   )
                 }
               >
-                <IconPlus className="mr-2 h-4 w-4" />
+                <Icon icon={IconPlus} size="md" className="mr-2" />
                 <span>Emitir Complementar</span>
               </DropdownMenuItem>
             </>
@@ -330,7 +339,11 @@ export function NfeActionsDropdown({
                 )
               }
             >
-              <IconPencil className="mr-2 h-4 w-4 text-warning-600" />
+              <Icon
+                icon={IconPencil}
+                size="md"
+                className="mr-2 text-warning-600"
+              />
               <span className="text-warning-600">Corrigir e Reemitir</span>
             </DropdownMenuItem>
           )}
@@ -347,9 +360,13 @@ export function NfeActionsDropdown({
               }}
             >
               {isConsulting ? (
-                <IconLoader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Icon
+                  icon={IconLoader2}
+                  size="md"
+                  className="mr-2 animate-spin"
+                />
               ) : (
-                <IconRefresh className="mr-2 h-4 w-4" />
+                <Icon icon={IconRefresh} size="md" className="mr-2" />
               )}
               <span>Consultar SEFAZ</span>
             </DropdownMenuItem>
@@ -366,7 +383,7 @@ export function NfeActionsDropdown({
                         onClick={() => setIsCancelDialogOpen(true)}
                         className="text-error-600 focus:bg-error-50 focus:text-error-600"
                       >
-                        <IconBan className="mr-2 h-4 w-4" />
+                        <Icon icon={IconBan} size="md" className="mr-2" />
                         <span>Cancelar NF-e</span>
                       </DropdownMenuItem>
                     </div>

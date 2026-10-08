@@ -39,6 +39,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props {
   asset: Asset
@@ -135,7 +136,7 @@ export function EditAssetModal({ asset, open, onOpenChange }: Props) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-gray-400">
-                  <IconPhoto size={24} />
+                  <IconPhoto size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
                 </div>
               )}
             </div>

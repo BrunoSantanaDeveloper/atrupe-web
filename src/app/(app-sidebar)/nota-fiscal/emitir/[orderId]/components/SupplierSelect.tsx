@@ -26,6 +26,7 @@ import {
   IconTruckDelivery,
   IconX,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -174,8 +175,9 @@ export function SupplierSelect({
           LeftIcon={IconTruckDelivery}
         >
           Alterar transportadora
-          <IconChevronDown
-            size={14}
+          <Icon
+            icon={IconChevronDown}
+            size="sm"
             className={cn(
               'transition-transform duration-200',
               open && 'rotate-180',
@@ -196,7 +198,7 @@ export function SupplierSelect({
             {/* Loading */}
             {isLoading && (
               <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
-                <IconLoader2 size={16} className="animate-spin" />
+                <Icon icon={IconLoader2} size="sm" className="animate-spin" />
                 Buscando fornecedores...
               </div>
             )}
@@ -233,7 +235,11 @@ export function SupplierSelect({
                     onSelect={() => handleSelect(s)}
                     className="flex items-center gap-2 px-3 py-2.5 cursor-pointer"
                   >
-                    <IconCheck size={16} className="shrink-0 opacity-0" />
+                    <Icon
+                      icon={IconCheck}
+                      size="md"
+                      className="shrink-0 opacity-0"
+                    />
                     <div className="flex flex-col min-w-0 flex-1">
                       <span className="font-medium text-gray-800 truncate">
                         {s.name}
@@ -269,7 +275,7 @@ export function SupplierSelect({
                     }}
                     className="flex items-center gap-2 text-xs text-gray-400 hover:text-error-600 transition-colors w-full"
                   >
-                    <IconX size={14} />
+                    <Icon icon={IconX} size="sm" />
                     Limpar transportadora
                   </button>
                 </div>

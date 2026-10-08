@@ -38,6 +38,7 @@ import {
   IconWorld,
   IconDeviceLaptop,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Utils
 import { formatToLocaleDateTime } from '@/lib/formatDate'
@@ -127,13 +128,21 @@ export function SessionDetailsDialog({
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="flex items-center gap-2">
-                        <IconWorld className="h-4 w-4 text-gray-500" />
+                        <Icon
+                          icon={IconWorld}
+                          size="sm"
+                          className="text-gray-500"
+                        />
                         <span className="text-gray-700">
                           {user.companyName}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <IconClock className="h-4 w-4 text-gray-500" />
+                        <Icon
+                          icon={IconClock}
+                          size="sm"
+                          className="text-gray-500"
+                        />
                         <span className="text-gray-700">
                           {getTimeAgo(user.lastActive)}
                         </span>
@@ -172,7 +181,11 @@ export function SessionDetailsDialog({
                         <TableRow key={session.sessionId}>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <IconDeviceLaptop className="h-4 w-4 text-gray-500" />
+                              <Icon
+                                icon={IconDeviceLaptop}
+                                size="sm"
+                                className="text-gray-500"
+                              />
                               <span className="font-mono text-xs text-gray-600">
                                 {session.sessionId.substring(0, 8)}...
                               </span>
@@ -185,7 +198,11 @@ export function SessionDetailsDialog({
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-2">
-                              <IconMapPin className="h-4 w-4 text-gray-500" />
+                              <Icon
+                                icon={IconMapPin}
+                                size="sm"
+                                className="text-gray-500"
+                              />
                               <span className="font-mono text-xs">
                                 {session.ipAddress}
                               </span>

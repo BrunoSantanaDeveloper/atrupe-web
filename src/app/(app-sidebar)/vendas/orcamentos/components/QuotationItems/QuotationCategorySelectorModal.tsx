@@ -18,6 +18,7 @@ import {
   IconLayoutGridAdd,
   IconLoader2,
 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 import { useQuotation } from '@/contexts/quotationContext'
 import { sectorIcons } from '@/consts/sectors'
 import { FEATURES } from '@/consts/features'
@@ -123,7 +124,11 @@ export function QuotationCategorySelectorModal({
           >
             {isLoading ? (
               <div className="col-span-full flex items-center justify-center py-8">
-                <IconLoader2 className="text-gray size-6 animate-spin" />
+                <IconLoader2
+                  size={ICON_SIZE.lg}
+                  stroke={ICON_STROKE.lg}
+                  className="text-gray animate-spin"
+                />
               </div>
             ) : (
               sortedData?.map((option) => (
@@ -145,6 +150,7 @@ export function QuotationCategorySelectorModal({
                     )
                   ) : (
                     <IconQuestionMark
+                      size={ICON_SIZE.md}
                       className="mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full"
                       aria-hidden="true"
                     />
@@ -166,6 +172,7 @@ export function QuotationCategorySelectorModal({
                   onClick={() => openChangeModal(true, 'composeItem')}
                 >
                   <IconPuzzle
+                    size={ICON_SIZE.md}
                     className="mb-2 max-h-6 max-w-6 md:max-h-10 md:max-w-10 w-full"
                     aria-hidden="true"
                   />

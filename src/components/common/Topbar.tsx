@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Icon
 import { IconArrowLeft } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { BadgeType } from '@/types/coreTypes'
@@ -87,7 +88,7 @@ export function Topbar({
               className="bg-transparent"
             >
               <Link href={previousPage} aria-label="Voltar">
-                <IconArrowLeft />
+                <IconArrowLeft size={ICON_SIZE.md} />
               </Link>
             </Button>
           ) : null}

@@ -10,6 +10,7 @@ import {
   IconCheck as Check,
   IconLoader2 as Loader2,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Components
 import { Button } from '@/components/ui/button'
@@ -158,7 +159,11 @@ export function ChangePlanButton({ plans, currentPlanName }: Props) {
                           </span>
                         )}
                         {selected && (
-                          <Check className="h-4 w-4 text-brand-500" />
+                          <Icon
+                            icon={Check}
+                            size="sm"
+                            className="text-brand-500"
+                          />
                         )}
                       </span>
                     </button>
@@ -190,7 +195,7 @@ export function ChangePlanButton({ plans, currentPlanName }: Props) {
                 >
                   {isSaving ? (
                     <span className="flex items-center gap-1">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Icon icon={Loader2} size="md" className="animate-spin" />
                       Alterando...
                     </span>
                   ) : (

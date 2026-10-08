@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // ============================================
 // DATA TABLE SHELL & ACESSÓRIOS
@@ -116,10 +117,10 @@ export function DataTableSortHead({
         {title}
       </span>
       {sortDirection === 'asc' && (
-        <IconArrowUp className="w-4 h-4 text-gray-500" stroke={2} />
+        <Icon icon={IconArrowUp} size="sm" className="text-gray-500" />
       )}
       {sortDirection === 'desc' && (
-        <IconArrowDown className="w-4 h-4 text-gray-500" stroke={2} />
+        <Icon icon={IconArrowDown} size="sm" className="text-gray-500" />
       )}
     </div>
   )

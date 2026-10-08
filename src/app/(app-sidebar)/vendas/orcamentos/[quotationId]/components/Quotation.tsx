@@ -36,6 +36,7 @@ import { getItemOld } from '@/actions/_cruds'
 // Icons
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { IconReportMoney, IconExternalLink } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
 import { quotationsStatusObj } from '@/consts/quotations'
@@ -144,7 +145,7 @@ export function Quotation({ id }: Props) {
             <Button type="button" asChild>
               <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
                 Ver ordem de serviço
-                <IconExternalLink size={24} className="ml-auto" />
+                <IconExternalLink size={ICON_SIZE.md} className="ml-auto" />
               </Link>
             </Button>
           )}
@@ -192,7 +193,7 @@ export function Quotation({ id }: Props) {
                 <Button type="button" asChild>
                   <Link href={`/vendas/ordens-de-servico/${data?.orderId}`}>
                     Ver ordem de serviço
-                    <IconExternalLink size={24} className="ml-auto" />
+                    <IconExternalLink size={ICON_SIZE.md} className="ml-auto" />
                   </Link>
                 </Button>
               )}

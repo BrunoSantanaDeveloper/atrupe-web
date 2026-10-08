@@ -40,6 +40,7 @@ import {
   IconDotsVertical,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -266,9 +267,9 @@ export function FlowCanvas({
                         }}
                       >
                         {expandedPartId === node.id ? (
-                          <IconChevronUp className="size-4" />
+                          <IconChevronUp size={ICON_SIZE.sm} />
                         ) : (
-                          <IconChevronDown className="size-4" />
+                          <IconChevronDown size={ICON_SIZE.sm} />
                         )}
                       </Button>
                     )}
@@ -288,7 +289,7 @@ export function FlowCanvas({
                             aria-label={`Ações de ${node.name}`}
                             onClick={(event) => event.stopPropagation()}
                           >
-                            <IconDotsVertical className="size-4" />
+                            <IconDotsVertical size={ICON_SIZE.sm} />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
@@ -336,7 +337,7 @@ export function FlowCanvas({
                         onAddAfter(node)
                       }}
                     >
-                      <IconPlus className="size-3.5" />
+                      <IconPlus size={ICON_SIZE.sm} />
                     </button>
                   )}
                 </Fragment>
@@ -366,7 +367,7 @@ export function FlowCanvas({
                       onInsertBetween(fromNode, toNode)
                     }}
                   >
-                    <IconPlus className="size-3" />
+                    <IconPlus size={ICON_SIZE.sm} />
                   </button>
                 )
               })}
@@ -401,7 +402,11 @@ export function FlowCanvas({
               bloqueio */}
           {layout.detached.size > 0 && (
             <p className="flex items-center gap-1.5 text-sm text-warning-700">
-              <IconAlertTriangle className="size-4 shrink-0" aria-hidden />
+              <IconAlertTriangle
+                size={ICON_SIZE.sm}
+                className="shrink-0"
+                aria-hidden
+              />
               Este caminho não se liga ao resto do produto: ligue a uma etapa ou
               crie outro produto.
             </p>

@@ -40,6 +40,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 // Icons
 import { IconCopy, IconArrowRight, IconCircleCheck } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party
 import { useQueryClient } from '@tanstack/react-query'
@@ -225,7 +226,7 @@ export function DuplicateQuotationButton({
             <Button asChild type="button">
               <Link href={`/vendas/orcamentos/${newQuotationId}`}>
                 Ver orçamento
-                <IconArrowRight size={24} className="ml-auto" />
+                <IconArrowRight size={ICON_SIZE.md} className="ml-auto" />
               </Link>
             </Button>
           </AlertDialogFooter>

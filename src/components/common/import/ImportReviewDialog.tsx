@@ -17,6 +17,7 @@ import {
   IconArrowRight,
   IconListCheck,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import type { ImportReference, ImportWarning } from '@/actions/import'
 
@@ -115,7 +116,7 @@ export function ImportReviewDialog({
 
               {groups.some((group) => group.type === 'bankAccount') && (
                 <Alert variant="warning" className="mt-4">
-                  <IconAlertCircle className="h-4 w-4" />
+                  <IconAlertCircle size={ICON_SIZE.sm} />
                   <AlertDescription>
                     As contas bancárias serão criadas sem instituição definida.
                     Você pode ajustar o banco depois em Configurações &gt;

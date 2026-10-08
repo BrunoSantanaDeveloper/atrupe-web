@@ -23,6 +23,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import { IconMapPin, IconEdit } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 export interface ClientAddressItem {
@@ -313,7 +314,7 @@ export function InvoiceDeliveryAddressSection({
                       onClick={() => setIsEditing(!isEditing)}
                       className="sm:ml-auto"
                     >
-                      <IconEdit size={16} className="mr-2" />
+                      <IconEdit size={ICON_SIZE.sm} className="mr-2" />
                       {isEditing ? 'Ver Dados' : 'Editar Endereço'}
                     </Button>
                   </div>

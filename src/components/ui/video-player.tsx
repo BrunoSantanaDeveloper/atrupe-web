@@ -7,6 +7,7 @@ import {
   IconPlayerPlay as Play,
   IconPlayerPause as Pause,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const videoPlayerVariants = cva(
   'relative overflow-hidden rounded-lg bg-black group transition-all duration-300 isolate',
@@ -202,7 +203,7 @@ export const VideoPlayer = React.forwardRef<HTMLDivElement, VideoPlayerProps>(
               onClick={handlePlayToggle}
               className="text-white hover:text-white/80 transition-colors mr-3 focus:outline-none"
             >
-              <Pause className="w-5 h-5 fill-current" />
+              <Icon icon={Pause} size="md" className="fill-current" />
             </button>
           )}
 

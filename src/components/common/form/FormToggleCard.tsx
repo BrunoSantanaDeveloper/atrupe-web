@@ -79,6 +79,7 @@ export function FormToggleCard({
                     </div>
                   </div>
                   <span className="flex items-center justify-center h-4 min-w-4 rounded-full bg-white text-white border border-gray-300 check-icon transition-colors">
+                    {/* Marca de controle dentro do círculo de 16 px, fora da escala de ícones */}
                     <IconCheck size={11} className="stroke-[4px]" />
                   </span>
                 </div>

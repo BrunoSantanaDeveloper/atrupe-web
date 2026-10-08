@@ -104,6 +104,10 @@ const config = {
       },
     },
     extend: {
+      // Ícones (design/openspec, icones): três tamanhos, iguais a ICON_SIZE em
+      // src/components/ui/icon.tsx. `size-icon-md` num contêiner que força o
+      // tamanho do SVG filho, como o botão.
+      spacing: { 'icon-sm': '1rem', 'icon-md': '1.25rem', 'icon-lg': '1.5rem' },
       // `white` como fundo, borda, anel ou divisória é superfície: escurece no
       // tema escuro. Como cor de texto (`text-white`) continua branco.
       backgroundColor: {

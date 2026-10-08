@@ -18,6 +18,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icons
 import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { getItem } from '@/actions/_cruds'
@@ -174,7 +175,7 @@ export function FiscalPendenciasAlert() {
                   >
                     <Button variant="neutralLight" size="sm">
                       Corrigir
-                      <IconChevronRight size={16} className="ml-1" />
+                      <IconChevronRight size={ICON_SIZE.sm} className="ml-1" />
                     </Button>
                   </Link>
                 </div>

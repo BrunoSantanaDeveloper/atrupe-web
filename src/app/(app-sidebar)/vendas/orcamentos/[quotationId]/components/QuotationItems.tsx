@@ -50,6 +50,7 @@ import {
   IconPlus,
   IconLayoutGrid,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { QuotationType, QuotationItemType } from '@/types/sales/quotation'
@@ -297,8 +298,9 @@ export function QuotationItems({ data }: Props) {
                             className="flex items-center gap-3 text-left"
                           >
                             <IconChevronRight
+                              size={ICON_SIZE.md}
                               className={cn(
-                                'size-5 shrink-0 text-gray transition-transform',
+                                'shrink-0 text-gray transition-transform',
                                 open && 'rotate-90',
                               )}
                               aria-hidden="true"
@@ -306,7 +308,8 @@ export function QuotationItems({ data }: Props) {
                             <span>{item?.description || '-'}</span>
                             {item?.notes ? (
                               <IconMessage
-                                className="size-4 shrink-0 text-warning-600"
+                                size={ICON_SIZE.sm}
+                                className="shrink-0 text-warning-600"
                                 aria-label="Tem observações"
                               />
                             ) : null}

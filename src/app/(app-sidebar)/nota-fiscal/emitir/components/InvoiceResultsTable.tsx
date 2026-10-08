@@ -62,6 +62,7 @@ import {
   IconCircleCheck,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Components (modal)
 import { InvoiceTypeSelectModal } from './InvoiceTypeSelectModal'
@@ -848,16 +849,25 @@ export function InvoiceResultsTable({ searchParams }: Props) {
         intent="success"
       >
         <TabsList>
-          <TabsTrigger value="TODOS" icon={<IconLayoutGrid size={16} />}>
+          <TabsTrigger
+            value="TODOS"
+            icon={<IconLayoutGrid size={ICON_SIZE.sm} />}
+          >
             Todos
           </TabsTrigger>
-          <TabsTrigger value="NFE" icon={<IconBuildingStore size={16} />}>
+          <TabsTrigger
+            value="NFE"
+            icon={<IconBuildingStore size={ICON_SIZE.sm} />}
+          >
             NF-e
           </TabsTrigger>
-          <TabsTrigger value="NFSE" icon={<IconTool size={16} />}>
+          <TabsTrigger value="NFSE" icon={<IconTool size={ICON_SIZE.sm} />}>
             NFS-e
           </TabsTrigger>
-          <TabsTrigger value="NFCE" icon={<IconFileInvoice size={16} />}>
+          <TabsTrigger
+            value="NFCE"
+            icon={<IconFileInvoice size={ICON_SIZE.sm} />}
+          >
             NFC-e
           </TabsTrigger>
         </TabsList>
@@ -871,10 +881,13 @@ export function InvoiceResultsTable({ searchParams }: Props) {
       >
         <TabsList aria-label="Filtrar por ambiente fiscal">
           <TabsTrigger value="TODOS">Todos</TabsTrigger>
-          <TabsTrigger value="1" icon={<IconCircleCheck size={14} />}>
+          <TabsTrigger value="1" icon={<IconCircleCheck size={ICON_SIZE.sm} />}>
             Produção
           </TabsTrigger>
-          <TabsTrigger value="2" icon={<IconAlertTriangle size={14} />}>
+          <TabsTrigger
+            value="2"
+            icon={<IconAlertTriangle size={ICON_SIZE.sm} />}
+          >
             Homologação
           </TabsTrigger>
         </TabsList>
@@ -1275,7 +1288,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                           aria-label="Ações da NFC-e"
                                         >
                                           <IconDotsVertical
-                                            size={18}
+                                            size={ICON_SIZE.sm}
                                             className="text-gray-500"
                                           />
                                         </Button>
@@ -1298,7 +1311,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               )
                                             }
                                           >
-                                            <IconFileCheck className="mr-2 h-4 w-4" />
+                                            <IconFileCheck
+                                              size={ICON_SIZE.md}
+                                              className="mr-2"
+                                            />
                                             <span>Ver DANFE</span>
                                           </DropdownMenuItem>
                                         )}
@@ -1313,7 +1329,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                                 )
                                               }
                                             >
-                                              <IconPrinter className="mr-2 h-4 w-4" />
+                                              <IconPrinter
+                                                size={ICON_SIZE.md}
+                                                className="mr-2"
+                                              />
                                               <span>
                                                 Imprimir DANFE térmico
                                               </span>
@@ -1329,7 +1348,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                               )
                                             }
                                           >
-                                            <IconQrcode className="mr-2 h-4 w-4" />
+                                            <IconQrcode
+                                              size={ICON_SIZE.md}
+                                              className="mr-2"
+                                            />
                                             <span>Visualizar QR Code</span>
                                           </DropdownMenuItem>
                                         )}
@@ -1338,7 +1360,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                           <DropdownMenuItem
                                             onClick={handleDownloadXml}
                                           >
-                                            <IconDownload className="mr-2 h-4 w-4" />
+                                            <IconDownload
+                                              size={ICON_SIZE.md}
+                                              className="mr-2"
+                                            />
                                             <span>Baixar XML</span>
                                           </DropdownMenuItem>
                                         )}
@@ -1352,7 +1377,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             <DropdownMenuItem
                                               onClick={handleConsultarStatus}
                                             >
-                                              <IconRefresh className="mr-2 h-4 w-4" />
+                                              <IconRefresh
+                                                size={ICON_SIZE.md}
+                                                className="mr-2"
+                                              />
                                               <span>Consultar SEFAZ</span>
                                             </DropdownMenuItem>
                                           </>
@@ -1364,7 +1392,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             <DropdownMenuItem
                                               onClick={handleReprocess}
                                             >
-                                              <IconRefresh className="mr-2 h-4 w-4" />
+                                              <IconRefresh
+                                                size={ICON_SIZE.md}
+                                                className="mr-2"
+                                              />
                                               <span>Reprocessar NFC-e</span>
                                             </DropdownMenuItem>
                                           </>
@@ -1383,7 +1414,10 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                                 })
                                               }
                                             >
-                                              <IconBan className="mr-2 h-4 w-4" />
+                                              <IconBan
+                                                size={ICON_SIZE.md}
+                                                className="mr-2"
+                                              />
                                               <span>Cancelar NFC-e</span>
                                             </DropdownMenuItem>
                                           </>

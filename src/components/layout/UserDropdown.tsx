@@ -34,6 +34,7 @@ import {
   IconLogout as LogOut,
   IconUser as User,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -66,14 +67,14 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                 : '',
             )}
           >
-            <IconDotsVertical className="text-gray" />
+            <Icon icon={IconDotsVertical} size="sm" className="text-gray" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="min-w-40" align="start">
           <DropdownMenuGroup>
             <DialogTrigger asChild>
               <DropdownMenuItem>
-                <User size={16} className="mr-2" />
+                <Icon icon={User} size="md" className="mr-2" />
                 <span>Meu Perfil</span>
               </DropdownMenuItem>
             </DialogTrigger>
@@ -83,7 +84,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                   router.push('/configuracoes/empresa-e-sistema/assinatura')
                 }
               >
-                <CreditCard size={16} className="mr-2" />
+                <Icon icon={CreditCard} size="md" className="mr-2" />
                 <span>Assinatura</span>
               </DropdownMenuItem>
             )}
@@ -114,7 +115,7 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogOut}>
-            <LogOut size={16} className="mr-2" />
+            <Icon icon={LogOut} size="md" className="mr-2" />
             <span>Sair</span>
           </DropdownMenuItem>
         </DropdownMenuContent>

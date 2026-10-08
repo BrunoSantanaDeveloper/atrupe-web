@@ -3,6 +3,7 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { IconFilePlus, IconHistory } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { ReactNode } from 'react'
 import { usePermissions } from '@/hooks/usePermissions'
 
@@ -56,13 +57,13 @@ export function EmitirTabsWrapper({ emitirContent, gestaoContent }: Props) {
         <TabsList className="w-fit">
           {canEmitir && (
             <TabsTrigger value="emitir" className="flex items-center gap-2">
-              <IconFilePlus className="size-4" />
+              <Icon icon={IconFilePlus} size="sm" />
               Emissão de Notas
             </TabsTrigger>
           )}
           {canGestao && (
             <TabsTrigger value="gestao" className="flex items-center gap-2">
-              <IconHistory className="size-4" />
+              <Icon icon={IconHistory} size="sm" />
               Gestão de Notas Emitidas
             </TabsTrigger>
           )}

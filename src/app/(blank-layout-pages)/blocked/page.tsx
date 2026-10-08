@@ -8,6 +8,7 @@ import {
   IconCreditCard as CreditCard,
   IconAlertTriangle as AlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // UI
 import { Button } from '@/components/ui/button'
@@ -86,7 +87,7 @@ export default async function BlockedPage() {
               </p>
 
               <Alert variant="error">
-                <AlertTriangle className="h-4 w-4" />
+                <AlertTriangle size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Sua assinatura possui pagamentos pendentes. Após a confirmação
                   do pagamento, o acesso será restaurado.

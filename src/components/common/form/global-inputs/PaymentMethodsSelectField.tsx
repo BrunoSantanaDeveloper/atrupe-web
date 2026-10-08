@@ -47,6 +47,7 @@ import { createItemNew } from '@/actions/_cruds'
 
 // Icons
 import { IconPlus } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -164,7 +165,7 @@ function SelectPaymentMethodCreateField<T extends FieldValues>({
                   <SelectGroup>
                     <SelectItem value={CREATE_NEW_VALUE}>
                       <span className="flex items-center gap-1.5 text-primary font-medium">
-                        <IconPlus size={14} />
+                        <Icon icon={IconPlus} size="md" />
                         Adicionar nova forma
                       </span>
                     </SelectItem>

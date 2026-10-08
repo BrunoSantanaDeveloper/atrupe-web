@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/accordion'
 import { ModuleType } from '@/types/plans'
 import { IconCheck } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { cn, formatCurrencyToBrl } from '@/lib/utils'
@@ -102,8 +103,9 @@ export function ModuleCard({
                               key={itemIndex}
                               className="text-gray-600 flex gap-2 items-start"
                             >
-                              <IconCheck
-                                size={16}
+                              <Icon
+                                icon={IconCheck}
+                                size="sm"
                                 className="text-brand-400 mt-0.5 flex-shrink-0 stroke-[3px]"
                               />
                               <span>{item}</span>
@@ -146,8 +148,9 @@ export function ModuleCard({
                           key={index}
                           className="text-gray-600 flex gap-2 items-start"
                         >
-                          <IconCheck
-                            size={16}
+                          <Icon
+                            icon={IconCheck}
+                            size="sm"
                             className="text-brand-400 mt-0.5 flex-shrink-0 stroke-[3px]"
                           />
                           <span>{item}</span>

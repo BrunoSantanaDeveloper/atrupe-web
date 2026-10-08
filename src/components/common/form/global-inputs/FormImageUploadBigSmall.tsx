@@ -33,6 +33,7 @@ import {
   IconTrash,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Omitted: import noImage from '@/assets/images/image-placeholder.svg'
 // since it's not strictly needed if we don't use it in this layout
@@ -183,7 +184,7 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                           <div className="flex w-full flex-col justify-between">
                             <div className="flex items-center gap-2">
                               <IconCircleCheckFilled
-                                size={16}
+                                size={ICON_SIZE.sm}
                                 className={
                                   previewUrl
                                     ? 'text-success-600'
@@ -227,7 +228,7 @@ export function FormImageUploadBigSmall<T extends FieldValues>({
                               disabled={isLoading}
                             >
                               <IconTrash
-                                className="size-5"
+                                size={ICON_SIZE.md}
                                 aria-hidden="true"
                               />
                               <span className="sr-only">Remover arquivo</span>

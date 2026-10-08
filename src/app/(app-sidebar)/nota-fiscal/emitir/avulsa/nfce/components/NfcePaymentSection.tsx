@@ -14,6 +14,7 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { IconPlus, IconTrash, IconCash } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 export interface Pagamento {
   tipo: string
@@ -203,7 +204,7 @@ export function NfcePaymentSection({
                         onClick={() => handleRemovePayment(idx)}
                         className="text-red-500 hover:text-red-700 transition"
                       >
-                        <IconTrash size={16} />
+                        <IconTrash size={ICON_SIZE.sm} />
                       </button>
                     </div>
                   </div>

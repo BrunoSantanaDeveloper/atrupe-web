@@ -60,6 +60,7 @@ import {
   IconArrowsExchange,
   IconGift,
 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 import Image from 'next/image'
 
 interface Props extends SearchParamsType {
@@ -171,7 +172,8 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     ) : (
                                       <div className="w-full h-full flex items-center justify-center bg-gray-200">
                                         <IconBuildingStore
-                                          size={24}
+                                          size={ICON_SIZE.lg}
+                                          stroke={ICON_STROKE.lg}
                                           className="text-gray-400"
                                         />
                                       </div>

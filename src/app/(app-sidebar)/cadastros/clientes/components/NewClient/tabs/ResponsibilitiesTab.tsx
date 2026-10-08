@@ -3,6 +3,7 @@ import { FormInput } from '@/components/common/form/FormInput'
 import { FormTextarea } from '@/components/common/form/FormTextarea'
 import { Button } from '@/components/ui/button'
 import { IconPlus, IconTrash } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 import { NewClientFormType } from '../schema'
 import { MaskPhoneNumber } from '@/lib/utils'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -40,7 +41,7 @@ export function ResponsibilitiesTab() {
                 className="absolute top-1 right-1"
                 onClick={() => remove(index)}
               >
-                <IconTrash className="h-4 w-4" />
+                <IconTrash size={ICON_SIZE.sm} />
               </Button>
             )}
           </div>

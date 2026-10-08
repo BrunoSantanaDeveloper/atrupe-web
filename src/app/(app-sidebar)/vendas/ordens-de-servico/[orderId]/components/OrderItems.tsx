@@ -46,6 +46,7 @@ import {
   IconLayoutGrid,
   IconCornerDownRight,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Type
 import { OrderType } from '@/types/sales/order'
@@ -447,7 +448,10 @@ export function OrderItems({ data }: Props) {
                                       >
                                         <TableCell className="pl-14 py-0">
                                           <AccordionContent className="flex items-center gap-4 py-6 text-sm text-gray-600">
-                                            <IconCornerDownRight className="size-4 ml-3 text-gray-400" />
+                                            <IconCornerDownRight
+                                              size={ICON_SIZE.sm}
+                                              className="ml-3 text-gray-400"
+                                            />
                                             {composition?.name}
                                           </AccordionContent>
                                         </TableCell>

@@ -24,6 +24,7 @@ import {
   IconTruckDelivery,
   IconX,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import {
@@ -167,7 +168,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                     onClick={() => handleSupplierSelect(null)}
                     title="Limpar transportadora"
                   >
-                    <IconX size={14} />
+                    <IconX size={ICON_SIZE.sm} />
                     Limpar
                   </Button>
                 )}
@@ -399,7 +400,7 @@ export function InvoiceTransport({ data, onUpdate }: Props) {
                           onClick={() => removeVolume(index)}
                           aria-label="Remover volume"
                         >
-                          <IconTrash size={16} />
+                          <IconTrash size={ICON_SIZE.sm} />
                         </Button>
                       </div>
                       <div className="grid grid-cols-2 md:grid-cols-6 gap-4 pr-8">

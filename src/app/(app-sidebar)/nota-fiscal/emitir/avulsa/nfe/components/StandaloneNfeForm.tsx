@@ -61,6 +61,7 @@ import {
   IconFilePlus,
   IconEdit,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Actions
 import { createItemNew, getItem } from '@/actions/_cruds'
@@ -676,7 +677,7 @@ export function StandaloneNfeForm() {
                 onClick={() => router.push('/nota-fiscal/emitir')}
                 aria-label="Voltar para emissão avulsa"
               >
-                <IconArrowLeft size={20} />
+                <IconArrowLeft size={ICON_SIZE.sm} />
               </Button>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="type-page-title">
@@ -747,7 +748,7 @@ export function StandaloneNfeForm() {
         {isDevolution && data?.originalNfeNumero && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-blue-800 text-sm font-medium flex items-center gap-2">
-              <IconArrowLeft size={16} />
+              <IconArrowLeft size={ICON_SIZE.sm} />
               Devolução referente à NF-e nº {data.originalNfeNumero}
               {data.originalNfeChave &&
                 ` — chave: ${data.originalNfeChave.slice(0, 8)}...`}
@@ -758,7 +759,7 @@ export function StandaloneNfeForm() {
         {isComplementary && data?.originalNfeNumero && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-blue-800 text-sm font-medium flex items-center gap-2">
-              <IconFilePlus size={16} />
+              <IconFilePlus size={ICON_SIZE.sm} />
               Complementar à NF-e nº {data.originalNfeNumero}
               {data.originalNfeChave &&
                 ` — chave: ${data.originalNfeChave.slice(0, 8)}...`}
@@ -773,7 +774,7 @@ export function StandaloneNfeForm() {
         {isReissue && data?.originalNfeNumero && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 text-sm font-medium flex items-center gap-2">
-              <IconEdit size={16} />
+              <IconEdit size={ICON_SIZE.sm} />
               Corrigindo NF-e Rejeitada nº {data.originalNfeNumero}
             </p>
             {data.motivoRejeicao && (
@@ -790,7 +791,10 @@ export function StandaloneNfeForm() {
         {data?.emissao.ambiente === 'HOMOLOGACAO' && (
           <div className="bg-warning-50 border border-warning-200 rounded-lg p-3 text-center transition-all animate-in fade-in slide-in-from-top-2">
             <p className="text-warning-800 font-medium text-sm flex items-center justify-center gap-2">
-              <IconAlertTriangleFilled size={18} className="text-warning-500" />
+              <IconAlertTriangleFilled
+                size={ICON_SIZE.md}
+                className="text-warning-500"
+              />
               Atenção! O emissor está em ambiente de homologação, a nota emitida
               não terá valor fiscal.
             </p>

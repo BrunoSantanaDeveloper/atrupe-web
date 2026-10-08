@@ -36,6 +36,7 @@ import { quotationsStatusObj } from '@/consts/quotations'
 
 // Icons
 import { IconExternalLink } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   data: QuotationType
@@ -69,7 +70,7 @@ export function QuickSaleQuotation({ data, previousUrl }: Props) {
           <Button type="button" variant="neutralOutline" asChild>
             <Link href={`/vendas/ordens-de-servico/${data.orderId}`}>
               Ver ordem de serviço
-              <IconExternalLink size={20} className="ml-2" />
+              <Icon icon={IconExternalLink} size="md" className="ml-2" />
             </Link>
           </Button>
         ) : undefined

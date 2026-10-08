@@ -56,6 +56,7 @@ import {
   IconRestore,
   IconArrowRight,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Consts
 import { bankAccountStatusObj } from '@/consts/cashAccounts'
@@ -318,7 +319,7 @@ export function BankAccounts(_: SearchParamsType) {
                       href="/financeiro/controle-de-caixa"
                       className="inline-flex items-center gap-1 font-medium text-brand-700 hover:underline"
                     >
-                      Controle de caixa <IconArrowRight size={14} />
+                      Controle de caixa <IconArrowRight size={ICON_SIZE.sm} />
                     </Link>
                   </p>
                 </CardContent>

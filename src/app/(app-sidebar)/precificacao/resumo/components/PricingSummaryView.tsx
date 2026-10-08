@@ -25,6 +25,7 @@ import { useQuery } from '@tanstack/react-query'
 
 // Icons
 import { IconAlertTriangle, IconChevronRight } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 const formatPercent = (value: number) =>
   `${(value / 10).toFixed(1).replace('.', ',')}%`
@@ -119,7 +120,11 @@ export function PricingSummaryView() {
       {belowCost > 0 && (
         <Link href="/precificacao/produtos?status=BELOW_COST">
           <Card className="p-4 flex items-center gap-3 border-error-200 bg-error-25">
-            <IconAlertTriangle className="size-5 text-error-600 shrink-0" />
+            <Icon
+              icon={IconAlertTriangle}
+              size="md"
+              className="text-error-600 shrink-0"
+            />
             <p className="text-sm text-gray-900">
               <span className="font-medium">
                 {belowCost} {belowCost === 1 ? 'item está' : 'itens estão'}{' '}
@@ -252,7 +257,7 @@ export function PricingSummaryView() {
                     )}
                   </div>
                   <p className="mt-4 text-sm text-brand flex items-center gap-1">
-                    Ver detalhes <IconChevronRight className="size-4" />
+                    Ver detalhes <Icon icon={IconChevronRight} size="sm" />
                   </p>
                 </Card>
               </Link>

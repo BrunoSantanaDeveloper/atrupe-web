@@ -13,6 +13,7 @@ import {
   IconSettings,
   IconLoader2,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface FiscalModuleGateProps {
   children: React.ReactNode
@@ -72,7 +73,7 @@ export function FiscalModuleGate({ children }: FiscalModuleGateProps) {
             fiscais.
           </p>
           <Button onClick={() => setModalOpen(true)}>
-            <IconFileInvoice className="h-4 w-4 mr-2" />
+            <IconFileInvoice size={ICON_SIZE.md} className="mr-2" />
             Configurar agora
           </Button>
         </div>

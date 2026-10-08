@@ -48,6 +48,7 @@ import {
   IconCurrencyReal,
   IconCircleCheckFilled,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface Props {
   group: PricingGroup
@@ -266,13 +267,13 @@ export function EditPriceModal({
                       </span>
                       {selected ? (
                         <IconCircleCheckFilled
-                          size={20}
+                          size={ICON_SIZE.md}
                           className="text-brand-600"
                           aria-hidden="true"
                         />
                       ) : (
                         <IconCircle
-                          size={20}
+                          size={ICON_SIZE.md}
                           className="text-gray-300"
                           aria-hidden="true"
                         />

@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 
 // Icons
 import { IconHistory, IconLoader2, IconSend } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Types
 import type { AccountItem } from '../Table/Data'
@@ -131,7 +132,11 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
         <DialogBody>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+              <IconLoader2
+                size={ICON_SIZE.lg}
+                stroke={ICON_STROKE.lg}
+                className="animate-spin text-gray-500"
+              />
             </div>
           ) : events.length > 0 ? (
             <>
@@ -206,7 +211,7 @@ export function ClientHistoryDialog({ open, setOpen, rowData }: Props) {
             onClick={handleSendMessage}
             disabled={mutation.isPending || !message.trim()}
           >
-            <IconSend className="h-4 w-4 mr-2" />
+            <IconSend size={ICON_SIZE.md} className="mr-2" />
             Enviar mensagem
           </Button>
         </DialogFooter>

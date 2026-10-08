@@ -37,6 +37,7 @@ import {
   IconAlertTriangle,
   IconInfoCircle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Libs
 import { cn } from '@/lib/utils'
@@ -368,13 +369,13 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                   {data.emissao.finalidade === 4 &&
                     !data.emissao.nfeReferenciada && (
                       <p className="text-xs text-warning-600 flex items-center gap-1 mt-1">
-                        <IconAlertTriangle size={13} />
+                        <IconAlertTriangle size={ICON_SIZE.sm} />
                         NF-e de devolução requer a chave da NF-e original.
                       </p>
                     )}
                   {data.emissao.finalidade === 4 && data.emissao.tipo !== 0 && (
                     <p className="text-xs text-blue-600 flex items-center gap-1 mt-1">
-                      <IconInfoCircle size={13} />
+                      <IconInfoCircle size={ICON_SIZE.sm} />
                       Para devolução de venda, o tipo deve ser &quot;0 -
                       Entrada&quot;.
                     </p>
@@ -382,7 +383,7 @@ export function InvoiceEmissionConfigSection({ data, onUpdate }: Props) {
                   {data.emissao.finalidade === 2 &&
                     !data.emissao.nfeReferenciada && (
                       <p className="text-xs text-warning-600 flex items-center gap-1 mt-1">
-                        <IconAlertTriangle size={13} />
+                        <IconAlertTriangle size={ICON_SIZE.sm} />
                         NF-e complementar requer a chave da NF-e original.
                       </p>
                     )}

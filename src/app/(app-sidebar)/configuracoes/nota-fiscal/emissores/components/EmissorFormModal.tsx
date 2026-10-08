@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 // Icons
 import { IconDeviceFloppy } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -488,7 +489,11 @@ export function EmissorFormModal({
             className="bg-brand hover:bg-brand-600 text-white"
           >
             {isSubmitting && (
-              <IconDeviceFloppy className="w-4 h-4 mr-2 animate-spin" />
+              <Icon
+                icon={IconDeviceFloppy}
+                size="md"
+                className="mr-2 animate-spin"
+              />
             )}
             Salvar
           </Button>

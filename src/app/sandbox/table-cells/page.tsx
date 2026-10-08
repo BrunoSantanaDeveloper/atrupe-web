@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/pagination'
 import { EmptyState } from '@/components/ui/empty-state'
 import { IconSearch, IconCreditCard, IconFileText } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export const dynamic = 'force-dynamic'
 
@@ -303,7 +304,7 @@ export default function TableCellsSandboxPage() {
                   <CellPayment
                     title="Mastercard ending in 1234"
                     subtitle="Expiry 06/2024"
-                    icon={<IconCreditCard className="w-5 h-5" />}
+                    icon={<Icon icon={IconCreditCard} size="md" />}
                   />
                 </TableCell>
                 <TableCell>
@@ -372,7 +373,11 @@ export default function TableCellsSandboxPage() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                  <Icon
+                    icon={IconSearch}
+                    size="sm"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                  />
                   <input
                     type="text"
                     value="Stripe"

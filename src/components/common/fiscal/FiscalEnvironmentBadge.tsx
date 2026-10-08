@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { getDataOld } from '@/actions/_cruds'
 import { Badge } from '@/components/ui/badge'
@@ -63,9 +64,9 @@ export function FiscalEnvironmentBadge({
   return (
     <Badge variant={production ? 'successLight' : 'warningLight'}>
       {production ? (
-        <IconCircleCheck className="mr-1 size-3.5" />
+        <Icon icon={IconCircleCheck} size="sm" className="mr-1" />
       ) : (
-        <IconAlertTriangle className="mr-1 size-3.5" />
+        <Icon icon={IconAlertTriangle} size="sm" className="mr-1" />
       )}
       {showDocumentType
         ? `${documentType.replace('NFSE', 'NFS-e').replace('NFCE', 'NFC-e').replace('NFE', 'NF-e')}: `

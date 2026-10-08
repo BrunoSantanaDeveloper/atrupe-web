@@ -3,6 +3,7 @@
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
 import { IconX } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 
@@ -48,7 +49,7 @@ const DialogContent = React.forwardRef<
       {children}
       {closeButton && (
         <DialogPrimitive.Close className="absolute right-6 top-6 rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-gray-950 focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-gray-100 data-[state=open]:text-gray ">
-          <IconX className="h-6 w-6 text-gray" />
+          <Icon icon={IconX} size="lg" className="text-gray" />
           <span className="sr-only">Fechar</span>
         </DialogPrimitive.Close>
       )}

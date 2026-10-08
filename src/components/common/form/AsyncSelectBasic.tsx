@@ -2,6 +2,7 @@
 
 import AsyncSelect from 'react-select/async'
 import { IconChevronDown as ChevronDown } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { cn } from '@/lib/utils'
 import { getData } from '@/actions/_cruds'
 import { Label } from '@/components/ui/label'
@@ -103,7 +104,11 @@ export function AsyncSelectBasic({
           unstyled
           components={{
             DropdownIndicator: () => (
-              <ChevronDown className="size-5 text-gray-700 mr-2" />
+              <Icon
+                icon={ChevronDown}
+                size="md"
+                className="text-gray-700 mr-2"
+              />
             ),
           }}
           onChange={(newValue) => onChange(newValue as Option | null)}

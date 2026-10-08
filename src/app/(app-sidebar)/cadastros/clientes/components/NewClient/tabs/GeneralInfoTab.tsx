@@ -12,6 +12,7 @@ import { FormCheckbox } from '@/components/common/form/FormCheckbox'
 import { FormDatePickerInput } from '@/components/common/form/FormDatePickerInput'
 import { Button } from '@/components/ui/button'
 import { IconRefresh } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { toast } from 'sonner'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 import { RecipientFiscalFields } from '@/components/common/fiscal/RecipientFiscalFields'
@@ -209,7 +210,9 @@ export function GeneralInfoTab({ type, context = 'client' }: Props) {
             onClick={handleRefreshOfficialData}
             disabled={isRefreshing}
           >
-            <IconRefresh
+            <Icon
+              icon={IconRefresh}
+              size="sm"
               className={`h-4 w-4 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`}
             />
             {isRefreshing ? 'Atualizando...' : 'Atualizar dados oficiais'}

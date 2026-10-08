@@ -7,6 +7,7 @@ import {
   IconDeviceFloppy as Save,
   IconRotate,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { toast } from 'sonner'
 
 import {
@@ -112,7 +113,7 @@ export function IcmsAliquotasForm({
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <IconAlertTriangle className="size-5 text-brand-600" />
+          <Icon icon={IconAlertTriangle} size="md" className="text-brand-600" />
           <CardTitle>Alíquota interna de ICMS por UF</CardTitle>
         </div>
         <CardDescription>

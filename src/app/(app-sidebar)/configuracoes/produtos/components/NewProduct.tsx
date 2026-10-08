@@ -63,6 +63,7 @@ import {
   IconHierarchy2,
   IconTrash,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Action
 import {
@@ -485,18 +486,18 @@ function NewProductModal({
               <div className="px-6 pt-4 border-b border-gray-100">
                 <TabsList>
                   <TabsTrigger value="general">
-                    <IconPackage size={14} className="mr-1.5" />
+                    <IconPackage size={ICON_SIZE.sm} className="mr-1.5" />
                     Produto
                   </TabsTrigger>
                   {showCompositionTab && (
                     <TabsTrigger value="composition">
-                      <IconHierarchy2 size={14} className="mr-1.5" />
+                      <IconHierarchy2 size={ICON_SIZE.sm} className="mr-1.5" />
                       Composição
                     </TabsTrigger>
                   )}
                   {showFiscalTab && (
                     <TabsTrigger value="fiscal">
-                      <IconReceiptTax size={14} className="mr-1.5" />
+                      <IconReceiptTax size={ICON_SIZE.sm} className="mr-1.5" />
                       Dados Fiscais
                     </TabsTrigger>
                   )}
@@ -620,7 +621,7 @@ function NewProductModal({
                                   handleRemoveCompositionProducts(index)
                                 }
                               >
-                                <IconTrash className="size-5" />
+                                <IconTrash size={ICON_SIZE.sm} />
                               </Button>
                             )}
                             <FormInput

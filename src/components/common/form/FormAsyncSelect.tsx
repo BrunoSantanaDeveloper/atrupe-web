@@ -15,6 +15,7 @@ import {
   IconUser as User,
   type TablerIcon,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Lib
 import { cn } from '@/lib/utils'
@@ -197,7 +198,10 @@ export function FormAsyncSelect<T extends EntityBase = EntityBase>({
                 unstyled
                 components={{
                   DropdownIndicator: () => (
-                    <ChevronDown className="size-5 text-gray-700" />
+                    <ChevronDown
+                      size={ICON_SIZE.md}
+                      className="text-gray-700"
+                    />
                   ),
                 }}
                 onChange={(newValue) => {

@@ -23,6 +23,7 @@ import {
   IconLayoutGrid,
   IconTrash,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 import { Checkbox } from '@/components/ui/checkbox'
 
 import { FeaturedIcon } from '@/components/ui/featured-icon'
@@ -282,7 +283,7 @@ export function InvoiceItems({
                                     setEditItem({ item, initialTab: 'valores' })
                                   }
                                 >
-                                  <IconPencil size={16} />
+                                  <IconPencil size={ICON_SIZE.sm} />
                                 </Button>
                                 {onRemoveItem && (
                                   <Button
@@ -294,7 +295,7 @@ export function InvoiceItems({
                                       onRemoveItem(item.itemNumber)
                                     }
                                   >
-                                    <IconTrash size={16} />
+                                    <IconTrash size={ICON_SIZE.sm} />
                                   </Button>
                                 )}
                               </div>

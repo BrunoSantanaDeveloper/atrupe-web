@@ -30,6 +30,7 @@ import {
   IconAlertCircle,
   IconExternalLink,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { downloadExcelCsvTemplate } from '@/lib/csv-template'
@@ -330,7 +331,7 @@ export function ImportProductModal() {
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash className="w-5 h-5" />
+                      <IconTrash size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -409,7 +410,7 @@ export function ImportProductModal() {
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle className="h-4 w-4" />
+                <IconAlertCircle size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -451,7 +452,10 @@ export function ImportProductModal() {
                               size="sm"
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
-                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              <IconExternalLink
+                                size={ICON_SIZE.sm}
+                                className="mr-1"
+                              />
                               Abrir
                             </Button>
                           )}

@@ -31,6 +31,7 @@ import {
   IconExternalLink,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Form
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -222,7 +223,10 @@ export function EmitNfseButton({ orderId, orderStatus, tooltip }: Props) {
 
                 {emissionResult.statusMessage && (
                   <div className="flex items-start gap-2 p-3 bg-red-50 rounded-lg">
-                    <IconAlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                    <IconAlertTriangle
+                      size={ICON_SIZE.md}
+                      className="text-red-500 shrink-0 mt-0.5"
+                    />
                     <p className="text-sm text-red-700">
                       {emissionResult.statusMessage}
                     </p>
@@ -235,7 +239,7 @@ export function EmitNfseButton({ orderId, orderStatus, tooltip }: Props) {
                     className="w-full"
                     onClick={() => window.open(emissionResult.pdfUrl, '_blank')}
                   >
-                    <IconExternalLink className="w-4 h-4 mr-2" />
+                    <IconExternalLink size={ICON_SIZE.md} className="mr-2" />
                     Visualizar PDF
                   </Button>
                 )}

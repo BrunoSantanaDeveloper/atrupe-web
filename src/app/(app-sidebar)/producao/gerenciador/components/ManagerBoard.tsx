@@ -48,6 +48,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 // Icons
 import { IconSearch, IconAlertTriangle, IconUser } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -203,7 +204,7 @@ export function ManagerBoard() {
           </div>
           {(workers.length > 0 || item.assignee) && (
             <p className="flex items-center gap-1 text-xs text-gray-700">
-              <IconUser className="size-3.5" />
+              <Icon icon={IconUser} size="sm" />
               {workers.length
                 ? `${workers.map((person) => person.name).join(', ')} trabalhando`
                 : item.assignee?.name}
@@ -318,7 +319,9 @@ export function ManagerBoard() {
                     aria-label="Buscar tarefa"
                     placeholder="Código, cliente, item"
                     className="ml-auto w-[220px]"
-                    startAdornment={<IconSearch className="size-4 text-gray" />}
+                    startAdornment={
+                      <Icon icon={IconSearch} size="sm" className="text-gray" />
+                    }
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                   />
@@ -382,7 +385,11 @@ export function ManagerBoard() {
                   ))}
                   <div className="space-y-2">
                     <p className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                      <IconAlertTriangle className="size-4 text-warning-600" />
+                      <Icon
+                        icon={IconAlertTriangle}
+                        size="sm"
+                        className="text-warning-600"
+                      />
                       Tarefas não agendadas
                       <span className="font-normal text-gray">
                         ({unscheduled.length})

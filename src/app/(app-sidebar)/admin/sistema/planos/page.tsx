@@ -10,6 +10,7 @@ import {
   IconLayoutGrid,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // UI Components
 import { Card, CardContent } from '@/components/ui/card'
@@ -163,12 +164,20 @@ export default function AdminPlansPage() {
                       <td className="p-4">
                         {plan.isActive ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                            <IconCheck size={12} className="stroke-[3px]" />
+                            <Icon
+                              icon={IconCheck}
+                              size="sm"
+                              className="stroke-[3px]"
+                            />
                             Disponível
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full">
-                            <IconX size={12} className="stroke-[3px]" />
+                            <Icon
+                              icon={IconX}
+                              size="sm"
+                              className="stroke-[3px]"
+                            />
                             {plan.badge?.text || 'Indisponível'}
                           </span>
                         )}
@@ -210,7 +219,11 @@ export default function AdminPlansPage() {
         <DialogContent className="sm:max-w-[460px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-2">
             <DialogTitle className="flex items-center gap-2.5">
-              <IconAlertTriangle size={22} className="text-[#FF4201]" />
+              <Icon
+                icon={IconAlertTriangle}
+                size="lg"
+                className="text-[#FF4201]"
+              />
               <span>
                 {pendingToggle?.next
                   ? 'Disponibilizar plano'
@@ -258,7 +271,7 @@ export default function AdminPlansPage() {
             >
               {isSaving ? (
                 <span className="flex items-center gap-1">
-                  <IconLoader size={16} className="animate-spin" />
+                  <Icon icon={IconLoader} size="md" className="animate-spin" />
                   Salvando...
                 </span>
               ) : pendingToggle?.next ? (

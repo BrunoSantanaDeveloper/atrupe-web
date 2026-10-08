@@ -29,6 +29,7 @@ import {
   IconX,
   IconLoader2,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { getData } from '@/actions/_cruds'
@@ -279,8 +280,9 @@ export function ClientSelect({
               !selectedClient && 'text-gray-400',
             )}
           >
-            <IconUser
-              size={16}
+            <Icon
+              icon={IconUser}
+              size="md"
               className={cn(
                 'shrink-0',
                 selectedClient ? 'text-brand-600' : 'text-gray-400',
@@ -295,11 +297,12 @@ export function ClientSelect({
                   className="flex items-center justify-center rounded-full p-0.5 hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
                   aria-label="Limpar seleção"
                 >
-                  <IconX size={14} />
+                  <Icon icon={IconX} size="md" />
                 </span>
               )}
-              <IconChevronDown
-                size={16}
+              <Icon
+                icon={IconChevronDown}
+                size="md"
                 className={cn(
                   'text-gray-400 transition-transform duration-200',
                   open && 'rotate-180',
@@ -325,7 +328,7 @@ export function ClientSelect({
               {/* Loading state */}
               {isLoading && (
                 <div className="flex items-center justify-center gap-2 py-4 text-sm text-gray-500">
-                  <IconLoader2 size={16} className="animate-spin" />
+                  <Icon icon={IconLoader2} size="sm" className="animate-spin" />
                   Buscando clientes...
                 </div>
               )}
@@ -362,8 +365,9 @@ export function ClientSelect({
                       onSelect={() => handleSelect(client)}
                       className="flex items-center gap-2 px-3 py-2.5 cursor-pointer"
                     >
-                      <IconCheck
-                        size={16}
+                      <Icon
+                        icon={IconCheck}
+                        size="md"
                         className={cn(
                           'shrink-0 transition-opacity',
                           selectedClient?.id === client.id
@@ -413,7 +417,11 @@ export function ClientSelect({
                       }}
                       className="flex items-center gap-2 px-3 py-2.5 cursor-pointer text-brand-600"
                     >
-                      <IconUserPlus size={16} className="shrink-0" />
+                      <Icon
+                        icon={IconUserPlus}
+                        size="md"
+                        className="shrink-0"
+                      />
                       <span className="font-medium">
                         Cadastrar &ldquo;{search.trim()}&rdquo; como novo
                         cliente
@@ -466,7 +474,7 @@ export function ClientSelect({
               className="shrink-0 mt-0.5 text-gray-400 hover:text-error-600 transition-colors"
               aria-label="Remover cliente selecionado"
             >
-              <IconX size={16} />
+              <Icon icon={IconX} size="sm" />
             </button>
           </div>
         </div>

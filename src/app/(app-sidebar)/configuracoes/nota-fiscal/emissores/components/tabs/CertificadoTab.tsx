@@ -12,6 +12,7 @@ import {
   IconTrash,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { updateItemNew } from '@/actions/_cruds'
 import { cn } from '@/lib/utils'
@@ -116,7 +117,7 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
         <h3 className="type-card-title">Certificado Digital</h3>
         {hasCertificate && !certBase64 && (
           <span className="text-xs text-emerald-600 font-medium flex items-center gap-1">
-            <IconCircleCheckFilled className="h-3.5 w-3.5" />
+            <Icon icon={IconCircleCheckFilled} size="sm" />
             Certificado ativo
           </span>
         )}
@@ -128,7 +129,11 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
         modelo de dados não entrega.
       */}
       <div className="flex gap-2 rounded-md border border-amber-200 bg-amber-50 p-3">
-        <IconAlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
+        <Icon
+          icon={IconAlertTriangle}
+          size="sm"
+          className="text-amber-600 shrink-0 mt-0.5"
+        />
         <p className="text-xs text-amber-900">
           O certificado é único por empresa e compartilhado por todos os
           emissores. Substituí-lo aqui afeta a emissão de todos eles.
@@ -150,7 +155,7 @@ export function CertificadoTab({ emissorId, initialHasCertificate }: Props) {
               size="icon"
               onClick={handleRemove}
             >
-              <IconTrash className="h-4 w-4 text-neutral-500" />
+              <Icon icon={IconTrash} size="md" className="text-neutral-500" />
             </Button>
           </div>
 

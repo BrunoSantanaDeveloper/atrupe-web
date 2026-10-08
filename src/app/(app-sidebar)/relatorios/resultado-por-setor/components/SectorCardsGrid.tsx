@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 // Icons
 import { sectorIcons } from '@/consts/sectors'
 import { IconLayoutGrid } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Actions
 import { getSectorResults } from '@/actions/sector-report'
@@ -37,7 +38,7 @@ function SectorCard({ sector }: { sector: SectorResult }) {
           {Icon ? (
             <Icon className="h-6 w-6 text-gray-600" />
           ) : (
-            <IconLayoutGrid className="h-6 w-6 " />
+            <IconLayoutGrid size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
           )}
         </div>
         <span className="font-semibold text-gray-900">{sector.name}</span>
@@ -59,7 +60,11 @@ function GeneralCard({ total }: { total: number }) {
       <div className="flex items-center gap-3 mb-4">
         {/* TODO: Usar FeaturedIcon */}
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-600">
-          <IconLayoutGrid className="h-6 w-6 text-gray-100" />
+          <IconLayoutGrid
+            size={ICON_SIZE.lg}
+            stroke={ICON_STROKE.lg}
+            className="text-gray-100"
+          />
         </div>
         <span className="font-semibold text-gray-900">Geral</span>
       </div>

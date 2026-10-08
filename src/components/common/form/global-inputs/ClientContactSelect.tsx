@@ -7,6 +7,7 @@ import { FormSelect } from '../FormSelect'
 import { NewContactModal } from './NewContactModal'
 import { Button } from '@/components/ui/button'
 import { IconPlus } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FormMethods = ReturnType<typeof useFormContext<any>>
@@ -131,7 +132,7 @@ export function ClientContactSelect({
         onClick={() => setContactModalOpen(true)}
         title="Adicionar novo responsável"
       >
-        <IconPlus size={16} />
+        <Icon icon={IconPlus} size="md" />
       </Button>
       {clientId && (
         <NewContactModal

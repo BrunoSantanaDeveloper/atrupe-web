@@ -15,6 +15,7 @@ import {
   IconBuildingCommunity,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 import { HandleValidateCpf, HandleValidateCnpj } from '@/lib/validateDocs'
 import { toast } from 'sonner'
 import type { ModuleType, VisualPlanType } from '@/types/plans'
@@ -616,7 +617,7 @@ export default function SubscriptionPage() {
                     : '/dashboard'
               }
             >
-              <IconArrowLeft />
+              <Icon icon={IconArrowLeft} size="md" />
             </Link>
           </Button>
           <h1 className="type-page-title">
@@ -636,7 +637,11 @@ export default function SubscriptionPage() {
                   variant="warning"
                   className="border-warning-200 bg-warning-50"
                 >
-                  <IconAlertTriangle className="h-5 w-5 text-warning-600" />
+                  <Icon
+                    icon={IconAlertTriangle}
+                    size="md"
+                    className="text-warning-600"
+                  />
                   <AlertTitle className="text-warning-800 font-semibold text-lg">
                     Pagamento pendente
                   </AlertTitle>
@@ -896,8 +901,9 @@ export default function SubscriptionPage() {
                       {!isAddModuleMode && selectedPlanId && (
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <IconCheck
-                              size={16}
+                            <Icon
+                              icon={IconCheck}
+                              size="sm"
                               className="text-brand-400 stroke-[3px]"
                             />
                             <span className="text-gray text-sm">
@@ -927,8 +933,9 @@ export default function SubscriptionPage() {
                             className="flex items-center justify-between gap-2"
                           >
                             <div className="flex items-center gap-2">
-                              <IconCheck
-                                size={16}
+                              <Icon
+                                icon={IconCheck}
+                                size="sm"
                                 className="text-brand-400 stroke-[3px]"
                               />
                               <span className="text-gray text-sm">
@@ -947,8 +954,9 @@ export default function SubscriptionPage() {
                       {!isAddModuleMode && additionalUsers > 0 && (
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <IconCheck
-                              size={16}
+                            <Icon
+                              icon={IconCheck}
+                              size="sm"
                               className="text-brand-400 stroke-[3px]"
                             />
                             <span className="text-gray text-sm">
@@ -1052,7 +1060,11 @@ export default function SubscriptionPage() {
 
                       {appliedCoupon && (
                         <div className="flex items-center gap-1.5 text-xs text-green-600 font-semibold bg-green-50 border border-green-200/50 rounded-lg p-2.5">
-                          <IconCheck size={14} className="stroke-[3px]" />
+                          <Icon
+                            icon={IconCheck}
+                            size="sm"
+                            className="stroke-[3px]"
+                          />
                           <span>
                             Cupom <strong>{appliedCoupon.code}</strong>{' '}
                             aplicado: -
@@ -1125,7 +1137,9 @@ export default function SubscriptionPage() {
                       isLoading={isSubmitting}
                     >
                       {isAddModuleMode ? 'Adicionar módulo' : 'Avançar'}
-                      {!isSubmitting && <IconArrowRight />}
+                      {!isSubmitting && (
+                        <Icon icon={IconArrowRight} size="md" />
+                      )}
                     </Button>
                   </CardContent>
                 </Card>

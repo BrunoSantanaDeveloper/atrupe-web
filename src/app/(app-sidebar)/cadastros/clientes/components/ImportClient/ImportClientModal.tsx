@@ -29,6 +29,7 @@ import {
   IconAlertCircle,
   IconExternalLink,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 import { downloadExcelCsvTemplate } from '@/lib/csv-template'
@@ -342,7 +343,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
                       onClick={handleRemoveFile}
                       disabled={isProcessing}
                     >
-                      <IconTrash className="w-5 h-5" />
+                      <IconTrash size={ICON_SIZE.md} />
                     </Button>
                   </div>
                   {isProcessing && (
@@ -412,7 +413,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle className="h-4 w-4" />
+                <IconAlertCircle size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
@@ -454,7 +455,10 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
                               size="sm"
                               onClick={() => window.open(fixUrl, '_blank')}
                             >
-                              <IconExternalLink className="w-4 h-4 mr-1" />
+                              <IconExternalLink
+                                size={ICON_SIZE.sm}
+                                className="mr-1"
+                              />
                               Abrir
                             </Button>
                           )}

@@ -184,6 +184,7 @@ import {
   IconArrowBackUp,
   IconListDetails,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { updateFilterParam } from '@/lib/filter-utils'
@@ -971,7 +972,7 @@ function AssemblyEditorBody({
                   >
                     <CardTitle>{item.name}</CardTitle>
                     <IconPencil
-                      size={14}
+                      size={ICON_SIZE.sm}
                       aria-hidden="true"
                       className="text-gray opacity-0 transition-opacity group-hover:opacity-100"
                     />
@@ -1632,9 +1633,15 @@ function AssemblyEditorBody({
               </CardDescription>
             </div>
             {productOpen ? (
-              <IconChevronUp size={20} className="shrink-0 text-gray" />
+              <IconChevronUp
+                size={ICON_SIZE.md}
+                className="shrink-0 text-gray"
+              />
             ) : (
-              <IconChevronDown size={20} className="shrink-0 text-gray" />
+              <IconChevronDown
+                size={ICON_SIZE.md}
+                className="shrink-0 text-gray"
+              />
             )}
           </button>
           {productOpen && (
@@ -2480,7 +2487,7 @@ function AssemblyEditorBody({
             {/* A gravação é por ação (IP-40): a situação aparece só aqui,
                 com o relógio, para não repetir no cabeçalho (03/10/2026) */}
             <p className="inline-flex items-center gap-1.5 text-sm text-gray">
-              <IconClock size={16} aria-hidden="true" />
+              <IconClock size={ICON_SIZE.sm} aria-hidden="true" />
               {pendingDescription
                 ? 'Descritivo técnico ainda não salvo. O resto já está gravado.'
                 : savedAt

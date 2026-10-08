@@ -14,6 +14,7 @@ import { FeaturedIcon } from '@/components/ui/featured-icon'
 
 // Icon Imports
 import { IconHistory, IconLoader2 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Type Imports
 import { Timeline } from '@/components/common/Timeline'
@@ -60,7 +61,11 @@ export function UserHistoryDialog(props: Props) {
         <DialogBody>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <IconLoader2 className="h-6 w-6 animate-spin text-gray-500" />
+              <IconLoader2
+                size={ICON_SIZE.lg}
+                stroke={ICON_STROKE.lg}
+                className="animate-spin text-gray-500"
+              />
             </div>
           ) : events.length > 0 ? (
             <Timeline events={events} />

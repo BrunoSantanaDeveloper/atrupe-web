@@ -17,6 +17,7 @@ import { cn, formatCurrencyToBrl } from '@/lib/utils'
 
 // Icons
 import { IconX, IconSearch } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface Props {
   // Dito em voz alta: o mesmo painel serve aos dois níveis, e o que muda é
@@ -150,7 +151,7 @@ export function AddPanel({
               value={search}
               className="w-full sm:w-[280px]"
               placeholder="Buscar pelo nome"
-              startAdornment={<IconSearch size={16} />}
+              startAdornment={<Icon icon={IconSearch} size="sm" />}
               onChange={(event) => setSearch(event.target.value)}
             />
             <Tabs value={sector} className="overflow-x-auto">

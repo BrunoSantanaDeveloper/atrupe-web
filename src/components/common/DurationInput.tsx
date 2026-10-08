@@ -19,6 +19,7 @@ import {
 
 // Icons
 import { IconClock } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Só dígitos, preenchidos da direita: os dois últimos são os minutos
 const mask = (raw: string) => {
@@ -66,7 +67,7 @@ export function DurationInput({
       type="text"
       inputMode="numeric"
       placeholder={placeholder}
-      startAdornment={<IconClock size={16} aria-hidden="true" />}
+      startAdornment={<Icon icon={IconClock} size="sm" />}
       value={text}
       onChange={(event) => setText(mask(event.target.value))}
       onFocus={(event) => {

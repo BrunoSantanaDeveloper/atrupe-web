@@ -14,6 +14,7 @@ import {
   IconLoader,
   IconTrash,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // UI Components
 import { Card, CardContent } from '@/components/ui/card'
@@ -287,7 +288,7 @@ export default function AdminCouponsPage() {
 
       <div className="flex justify-between items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2 max-w-sm w-full bg-white rounded-lg border border-gray-200 px-3 py-1.5">
-          <IconTicket size={18} className="text-gray-400" />
+          <Icon icon={IconTicket} size="md" className="text-gray-400" />
           <input
             type="text"
             placeholder="Buscar por código ou descrição..."
@@ -302,7 +303,7 @@ export default function AdminCouponsPage() {
           onClick={handleOpenCreateDialog}
           className="flex items-center gap-1.5 h-10 px-4 text-sm font-semibold"
         >
-          <IconPlus size={16} />
+          <Icon icon={IconPlus} size="md" />
           Criar Cupom
         </Button>
       </div>
@@ -405,7 +406,11 @@ export default function AdminCouponsPage() {
                       </td>
                       <td className="p-4">
                         <div className="flex items-center gap-1 text-xs">
-                          <IconCalendar size={14} className="text-gray-400" />
+                          <Icon
+                            icon={IconCalendar}
+                            size="sm"
+                            className="text-gray-400"
+                          />
                           <span>
                             {coupon.validFrom
                               ? new Date(coupon.validFrom).toLocaleDateString()
@@ -431,12 +436,20 @@ export default function AdminCouponsPage() {
                       <td className="p-4">
                         {coupon.isActive && !isExpired ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                            <IconCheck size={12} className="stroke-[3px]" />
+                            <Icon
+                              icon={IconCheck}
+                              size="sm"
+                              className="stroke-[3px]"
+                            />
                             Ativo
                           </span>
                         ) : (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
-                            <IconX size={12} className="stroke-[3px]" />
+                            <Icon
+                              icon={IconX}
+                              size="sm"
+                              className="stroke-[3px]"
+                            />
                             {isExpired ? 'Expirado' : 'Inativo'}
                           </span>
                         )}
@@ -449,7 +462,7 @@ export default function AdminCouponsPage() {
                             onClick={() => handleOpenUsages(coupon)}
                             title="Ver usos"
                           >
-                            <IconEye size={18} />
+                            <Icon icon={IconEye} size="md" />
                           </button>
                           <button
                             type="button"
@@ -457,7 +470,7 @@ export default function AdminCouponsPage() {
                             onClick={() => handleOpenEditDialog(coupon)}
                             title="Editar cupom"
                           >
-                            <IconEdit size={18} />
+                            <Icon icon={IconEdit} size="md" />
                           </button>
                           {coupon.isActive && (
                             <button
@@ -466,7 +479,7 @@ export default function AdminCouponsPage() {
                               onClick={() => handleDeactivateCoupon(coupon)}
                               title="Desativar cupom"
                             >
-                              <IconTrash size={18} />
+                              <Icon icon={IconTrash} size="md" />
                             </button>
                           )}
                         </div>
@@ -485,7 +498,7 @@ export default function AdminCouponsPage() {
         <DialogContent className="sm:max-w-[650px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-4">
             <DialogTitle className="flex items-center gap-2.5">
-              <IconTicket size={22} className="text-[#FF4201]" />
+              <Icon icon={IconTicket} size="lg" className="text-[#FF4201]" />
               <span>{editingCoupon ? 'Editar Cupom' : 'Criar Novo Cupom'}</span>
             </DialogTitle>
           </DialogHeader>
@@ -735,7 +748,11 @@ export default function AdminCouponsPage() {
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? (
                   <span className="flex items-center gap-1">
-                    <IconLoader size={16} className="animate-spin" />
+                    <Icon
+                      icon={IconLoader}
+                      size="md"
+                      className="animate-spin"
+                    />
                     Salvando...
                   </span>
                 ) : (
@@ -752,7 +769,7 @@ export default function AdminCouponsPage() {
         <DialogContent className="sm:max-w-[750px] bg-white p-6 rounded-xl">
           <DialogHeader className="mb-4">
             <DialogTitle className="flex items-center gap-2">
-              <IconEye size={22} className="text-[#FF4201]" />
+              <Icon icon={IconEye} size="lg" className="text-[#FF4201]" />
               <span>
                 Histórico de Usos do Cupom:{' '}
                 <strong>{selectedCouponForUsages?.code}</strong>

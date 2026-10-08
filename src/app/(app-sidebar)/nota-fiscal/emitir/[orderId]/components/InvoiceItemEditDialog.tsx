@@ -35,6 +35,7 @@ import {
   IconCurrencyReal,
   IconReceipt,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Form
 import { commercialUnitOptions } from '@/app/(app-sidebar)/configuracoes/produtos/components/ProductFiscalData/schema'
@@ -350,11 +351,11 @@ export function InvoiceItemEditDialog({
           >
             <TabsList className="-mb-px">
               <TabsTrigger value="valores" className="gap-1.5">
-                <IconCurrencyReal size={14} />
+                <IconCurrencyReal size={ICON_SIZE.sm} />
                 Valores
               </TabsTrigger>
               <TabsTrigger value="fiscal" className="gap-1.5">
-                <IconReceipt size={14} />
+                <IconReceipt size={ICON_SIZE.sm} />
                 Dados Fiscais
               </TabsTrigger>
             </TabsList>

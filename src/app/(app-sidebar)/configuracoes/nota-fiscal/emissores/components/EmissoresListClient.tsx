@@ -25,6 +25,7 @@ import type { FiscalEnv } from '../lib/fiscal-readiness'
 
 // Icons
 import { IconBuilding, IconLoader2 } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 // Actions
 import {
@@ -353,7 +354,11 @@ export function EmissoresListClient() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <IconLoader2 className="w-6 h-6 animate-spin text-gray-400" />
+        <IconLoader2
+          size={ICON_SIZE.lg}
+          stroke={ICON_STROKE.lg}
+          className="animate-spin text-gray-400"
+        />
         <span className="ml-2 text-gray-500">Carregando empresas...</span>
       </div>
     )

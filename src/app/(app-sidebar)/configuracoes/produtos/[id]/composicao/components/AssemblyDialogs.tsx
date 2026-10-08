@@ -76,6 +76,7 @@ import {
   IconBooks,
   IconSearch,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Utils
 import { cn } from '@/lib/utils'
@@ -695,7 +696,9 @@ export function NewLineDialog({
                 autoComplete="off"
                 placeholder="Buscar pelo nome"
                 className="min-w-[200px] flex-1"
-                startAdornment={<IconSearch size={16} aria-hidden="true" />}
+                startAdornment={
+                  <IconSearch size={ICON_SIZE.sm} aria-hidden="true" />
+                }
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
@@ -1990,7 +1993,9 @@ export function LibraryDialog({
               aria-label="Buscar na biblioteca"
               placeholder="Buscar pelo nome"
               className="min-w-[220px] flex-1"
-              startAdornment={<IconSearch className="size-4 text-gray" />}
+              startAdornment={
+                <IconSearch size={ICON_SIZE.sm} className="text-gray" />
+              }
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />

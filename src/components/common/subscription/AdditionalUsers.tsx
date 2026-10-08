@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card'
 import { FormInput } from '@/components/common/form/FormInput'
 import { IconCoin } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 interface AdditionalUsersProps {
   userCount: number
@@ -29,7 +30,7 @@ export function AdditionalUsers({
       <Card className="mb-6">
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <IconCoin className="w-6 h-6 text-emerald-600" />
+            <Icon icon={IconCoin} size="lg" className="text-emerald-600" />
             <div className="flex flex-col">
               <span className="text-base font-semibold">Usuários extras</span>
               <span className="text-sm text-muted-foreground">

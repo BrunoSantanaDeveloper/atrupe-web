@@ -45,6 +45,7 @@ import { ActionButton } from '@/components/common/ActionButton'
 
 // Icons
 import { IconPlus, IconPencil, IconPhoto, IconX } from '@tabler/icons-react'
+import { ICON_SIZE, ICON_STROKE } from '@/components/ui/icon'
 
 interface Props {
   sectors: { value: string; label: string }[]
@@ -194,7 +195,7 @@ export function NewAssetModal({ sectors, groups, asset }: Props) {
                 />
               ) : (
                 <div className="flex h-full items-center justify-center text-gray-400">
-                  <IconPhoto size={24} />
+                  <IconPhoto size={ICON_SIZE.lg} stroke={ICON_STROKE.lg} />
                 </div>
               )}
             </div>

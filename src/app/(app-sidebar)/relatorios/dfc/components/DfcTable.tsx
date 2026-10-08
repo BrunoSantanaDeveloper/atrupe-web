@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 // Icons
 import { IconChevronDown, IconChevronRight } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 // Actions
 import { getDfcTable } from '@/actions/dfc-report'
@@ -167,9 +168,17 @@ export function DfcTable({ searchParams }: SearchParamsType) {
                           className="p-0.5 hover:bg-gray-200 rounded"
                         >
                           {isExpanded ? (
-                            <IconChevronDown className="w-4 h-4 text-gray-500" />
+                            <Icon
+                              icon={IconChevronDown}
+                              size="sm"
+                              className="text-gray-500"
+                            />
                           ) : (
-                            <IconChevronRight className="w-4 h-4 text-gray-500" />
+                            <Icon
+                              icon={IconChevronRight}
+                              size="sm"
+                              className="text-gray-500"
+                            />
                           )}
                         </button>
                       )}

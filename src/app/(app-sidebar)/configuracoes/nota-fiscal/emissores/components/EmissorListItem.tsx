@@ -34,6 +34,7 @@ import {
   IconTrash,
   IconAlertTriangle,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 import { cn } from '@/lib/utils'
 
@@ -244,22 +245,22 @@ const toneClasses: Record<DocTone, string> = {
 const toneIcon: Record<DocTone, React.ReactNode> = {
   success: (
     <div className="p-1 rounded-full bg-emerald-100 text-emerald-600">
-      <IconCheck size={16} />
+      <Icon icon={IconCheck} size="sm" />
     </div>
   ),
   warning: (
     <div className="p-1 rounded-full bg-amber-100 text-amber-600">
-      <IconClock size={16} />
+      <Icon icon={IconClock} size="sm" />
     </div>
   ),
   error: (
     <div className="p-1 rounded-full bg-red-100 text-red-600">
-      <IconAlertTriangle size={16} />
+      <Icon icon={IconAlertTriangle} size="sm" />
     </div>
   ),
   neutral: (
     <div className="p-1 rounded-full bg-gray-100 text-gray-400">
-      <IconBan size={16} />
+      <Icon icon={IconBan} size="sm" />
     </div>
   ),
 }
@@ -376,7 +377,7 @@ export function EmissorListItem({
                 }}
                 title="Testar autenticação"
               >
-                <IconPlugConnected size={16} />
+                <Icon icon={IconPlugConnected} size="sm" />
               </Button>
               <Button
                 variant="ghost"
@@ -388,7 +389,7 @@ export function EmissorListItem({
                 }}
                 title="Editar"
               >
-                <IconPencil size={16} />
+                <Icon icon={IconPencil} size="sm" />
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -399,7 +400,7 @@ export function EmissorListItem({
                     onClick={(e) => e.stopPropagation()}
                     title="Mais opções"
                   >
-                    <IconDotsVertical size={16} />
+                    <Icon icon={IconDotsVertical} size="sm" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -460,7 +461,7 @@ export function EmissorListItem({
               title="Ativação de ambiente temporariamente bloqueada"
             >
               <span className="flex items-center gap-2">
-                Configurar <IconChevronRight size={14} />
+                Configurar <Icon icon={IconChevronRight} size="sm" />
               </span>
             </Button>
           ) : (
@@ -473,7 +474,7 @@ export function EmissorListItem({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <span className="flex items-center gap-2">
-                    Configurar <IconChevronRight size={14} />
+                    Configurar <Icon icon={IconChevronRight} size="sm" />
                   </span>
                 </Button>
               </DropdownMenuTrigger>
@@ -532,14 +533,14 @@ export function EmissorListItem({
                 : 'bg-gray-100 text-gray-500',
             )}
           >
-            <IconBuilding size={20} />
+            <Icon icon={IconBuilding} size="md" />
           </div>
           <div>
             <h3 className="type-card-title flex items-center gap-2">
               {emissor.company?.name || emissor.name}
               {emissor.isDefault && (
                 <Badge variant="light" className="gap-1">
-                  <IconStar size={12} /> Padrão
+                  <Icon icon={IconStar} size="sm" /> Padrão
                 </Badge>
               )}
             </h3>
@@ -574,7 +575,11 @@ export function EmissorListItem({
                 disabled={!hasEmissor}
                 title={hasEmissor ? 'Ações' : 'Configure o emissor primeiro'}
               >
-                <IconDotsVertical size={18} className="text-gray-500" />
+                <Icon
+                  icon={IconDotsVertical}
+                  size="sm"
+                  className="text-gray-500"
+                />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -588,21 +593,21 @@ export function EmissorListItem({
                 onClick={() => onEdit(emissor, 'GLOBAL')}
                 disabled={!hasEmissor}
               >
-                <IconPencil size={16} className="mr-2" />
+                <Icon icon={IconPencil} size="md" className="mr-2" />
                 Editar emissor
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onTestConnection(emissor)}
                 disabled={!hasEmissor}
               >
-                <IconPlugConnected size={16} className="mr-2" />
+                <Icon icon={IconPlugConnected} size="md" className="mr-2" />
                 Testar autenticação
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onSetDefault(emissor)}
                 disabled={!hasEmissor || emissor.isDefault}
               >
-                <IconStar size={16} className="mr-2" />
+                <Icon icon={IconStar} size="md" className="mr-2" />
                 Definir como padrão
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -611,7 +616,7 @@ export function EmissorListItem({
                 disabled={!hasEmissor}
                 className="text-red-600 focus:text-red-600"
               >
-                <IconTrash size={16} className="mr-2" />
+                <Icon icon={IconTrash} size="md" className="mr-2" />
                 Remover
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -624,9 +629,13 @@ export function EmissorListItem({
             )}
           >
             {hasEmissor ? (
-              <IconChevronDown size={20} className="text-gray-400" />
+              <Icon
+                icon={IconChevronDown}
+                size="md"
+                className="text-gray-400"
+              />
             ) : (
-              <IconLock size={20} className="text-gray-400" />
+              <Icon icon={IconLock} size="md" className="text-gray-400" />
             )}
           </div>
         </div>

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 
 // Icons
 import { IconCircle, IconCircleFilled, IconPlus } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 // Third-party
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -96,8 +97,9 @@ function QuotationTag({ quotation, tagsList }: Props) {
               disabled={!allowChangeStatus}
             >
               <IconCircleFilled
+                size={ICON_SIZE.md}
                 aria-hidden="true"
-                className="size-2 mr-2"
+                className="mr-2"
                 color={tag.color}
               />
               {tag.title}

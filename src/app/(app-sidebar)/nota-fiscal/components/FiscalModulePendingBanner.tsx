@@ -8,6 +8,7 @@ import {
   IconSettings,
   IconArrowRight,
 } from '@tabler/icons-react'
+import { Icon } from '@/components/ui/icon'
 
 export function FiscalModulePendingBanner() {
   const { isPending, needsSetup, isLoading, pendingMessage } =
@@ -24,7 +25,11 @@ export function FiscalModulePendingBanner() {
           onClick={() => setModalOpen(true)}
           className="w-full rounded-lg border border-brand-200 bg-brand-50 p-4 flex items-center gap-3 hover:bg-brand-100 transition-colors group text-left"
         >
-          <IconSettings className="h-5 w-5 text-brand-600 flex-shrink-0" />
+          <Icon
+            icon={IconSettings}
+            size="md"
+            className="text-brand-600 flex-shrink-0"
+          />
           <div className="flex-1">
             <p className="text-sm font-semibold text-brand-800">
               Configure seus dados fiscais
@@ -33,7 +38,11 @@ export function FiscalModulePendingBanner() {
               Preencha os dados da empresa para começar a emitir notas fiscais.
             </p>
           </div>
-          <IconArrowRight className="h-4 w-4 text-brand-400 group-hover:text-brand-600 transition-colors" />
+          <Icon
+            icon={IconArrowRight}
+            size="sm"
+            className="text-brand-400 group-hover:text-brand-600 transition-colors"
+          />
         </button>
 
         <FiscalOnboardingModal open={modalOpen} onOpenChange={setModalOpen} />
@@ -44,7 +53,11 @@ export function FiscalModulePendingBanner() {
   if (isPending) {
     return (
       <div className="rounded-lg border border-warning-200 bg-warning-50 p-4 flex items-center gap-3">
-        <IconAlertTriangle className="h-5 w-5 text-warning-600 flex-shrink-0" />
+        <Icon
+          icon={IconAlertTriangle}
+          size="md"
+          className="text-warning-600 flex-shrink-0"
+        />
         <div className="flex-1">
           <p className="text-sm font-semibold text-warning-800">
             Módulo fiscal em configuração

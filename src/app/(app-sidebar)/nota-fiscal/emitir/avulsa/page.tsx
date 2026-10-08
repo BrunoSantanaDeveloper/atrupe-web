@@ -17,6 +17,7 @@ import {
   IconFileInvoice,
   IconChevronRight,
 } from '@tabler/icons-react'
+import { ICON_SIZE } from '@/components/ui/icon'
 
 interface AvulsaTypeOption {
   key: string
@@ -119,7 +120,7 @@ export default function NotaAvulsaPage() {
                       </Badge>
                     ) : (
                       <IconChevronRight
-                        size={18}
+                        size={ICON_SIZE.md}
                         className={`shrink-0 transition-transform ${type.disabled ? 'text-gray-300' : 'text-gray-400 group-hover:translate-x-0.5 group-hover:text-primary-500'}`}
                       />
                     )}
