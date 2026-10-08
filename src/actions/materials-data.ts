@@ -65,6 +65,8 @@ export const materials: Material[] = [
       { id: 'v5', brand: 'Marca Y', color: 'Cru', cost: 8200, price: 9000 },
     ],
     active: true,
+    // A chapa de MDF tem medida: é o que permite o aproveitamento (AP-2)
+    advanced: { shape: 'SHEET', width: 2750, height: 1850, wholeSheets: true },
   },
   {
     id: 'mdf-15',
@@ -80,6 +82,7 @@ export const materials: Material[] = [
     price: 12500,
     variations: [],
     active: true,
+    advanced: { shape: 'SHEET', width: 2750, height: 1850, wholeSheets: true },
   },
   {
     id: 'ilhos',

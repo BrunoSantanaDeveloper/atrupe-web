@@ -19,9 +19,10 @@ import { SelectBasic } from '@/components/common/form/FormSelect'
 
 // Types
 import type { ItemComposition } from '../../[quotationId]/composicao/types'
+import type { SaleSheetUsage } from '@/app/(app-sidebar)/configuracoes/produtos/[id]/composicao/assembly'
 
 // Actions
-import { getSaleForm } from '@/actions/product-assembly'
+import { getSaleForm, getSaleSheetUsage } from '@/actions/product-assembly'
 import {
   hhmmToMinutes,
   minutesToHhmm,
@@ -33,11 +34,38 @@ import { useQuery } from '@tanstack/react-query'
 interface Props {
   productId?: string
   initial?: ItemComposition
+  // Quantidade e medida do item na venda (em metros): é o que o aproveitamento
+  // de folha lê para dizer quantas folhas a venda usa (AP-5)
+  measure?: { quantity: number; width: number; height: number }
   // Sem composição no produto, devolve undefined: o formulário segue igual
   onChange: (composition: ItemComposition | undefined) => void
 }
 
-export function SaleCompositionFields({ productId, initial, onChange }: Props) {
+// "24 por folha · 42 folhas · sobram 8": o texto do aproveitamento, igual na
+// tela e no resumo da linha do item
+export const sheetUsageText = (usage: SaleSheetUsage) => {
+  const y = usage.sheetYield
+  const word = usage.unit === 'chapa' ? 'chapa' : 'folha'
+  const plural = usage.unit === 'chapa' ? 'chapas' : 'folhas'
+  const charged =
+    y.charged !== y.sheets
+      ? ` · cobra ${num(y.charged)} ${y.charged > 1 ? plural : word}`
+      : ''
+
+  return `${y.perSheet} por ${word} · ${y.sheets} ${y.sheets === 1 ? word : plural}${y.leftover ? ` · sobram ${y.leftover}` : ''}${charged}`
+}
+
+const NO_USAGE: SaleSheetUsage[] = []
+
+const num = (value: number) =>
+  value.toLocaleString('pt-BR', { maximumFractionDigits: 3 })
+
+export function SaleCompositionFields({
+  productId,
+  initial,
+  measure,
+  onChange,
+}: Props) {
   const { data: saleFormRes } = useQuery({
     enabled: !!productId,
     staleTime: Infinity,
@@ -87,6 +115,29 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
       })),
     )
   }, [saleForm, initial])
+
+  // O aproveitamento de folha desta venda (AP-5): muda com a quantidade, a
+  // medida e a folha escolhida
+  const { data: usageRes } = useQuery({
+    enabled: !!productId && !!saleForm,
+    queryKey: [
+      'sale-sheet-usage',
+      productId,
+      measure?.quantity ?? 0,
+      measure?.width ?? 0,
+      measure?.height ?? 0,
+      choices.map((choice) => choice.optionId).join(','),
+    ],
+    queryFn: () =>
+      getSaleSheetUsage({
+        productId: productId!,
+        measure: measure || { quantity: 0, width: 0, height: 0 },
+        choices,
+      }),
+  })
+  // Referência estável: uma lista nova a cada render dispararia o onChange
+  // em loop
+  const usage = usageRes?.data ?? NO_USAGE
 
   const included = (lineId: string) =>
     !!optionals.find((optional) => optional.lineId === lineId)?.included
@@ -147,6 +198,8 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
                   `${item.name}: ${listValue(list.lineId, item.id)} ${item.unit}`,
               ),
           ),
+          // As folhas que a venda usa ficam na linha do item (AP-5)
+          ...usage.map((item) => `${item.resource}: ${sheetUsageText(item)}`),
         ]
       : []
 
@@ -166,7 +219,7 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
         : undefined,
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [saleForm, extras, times, choices, optionals, lists, notes])
+  }, [saleForm, extras, times, choices, optionals, lists, notes, usage])
 
   if (!saleForm) return null
 
@@ -367,6 +420,27 @@ export function SaleCompositionFields({ productId, initial, onChange }: Props) {
           </div>
         </div>
       ))}
+      {/* Aproveitamento de folha (AP-5): quantas peças cabem na folha ou na
+          chapa e quantas a venda usa, pela quantidade e medida informadas */}
+      {usage.length ? (
+        <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm">
+          <p className="font-medium text-gray-700">Aproveitamento</p>
+          {usage.map((item) => (
+            <p key={`${item.blockId}-${item.lineName}`} className="text-gray">
+              <span className="text-gray-800">{item.resource}</span>:{' '}
+              {sheetUsageText(item)}
+              <span
+                className="text-gray-400"
+                title="Peças por folha em cada posição"
+              >
+                {' '}
+                ({item.sheetYield.firstFit} × {item.sheetYield.secondFit})
+              </span>
+            </p>
+          ))}
+        </div>
+      ) : null}
+
       {/* Observação de produção por etapa (MS-13): vai para quem produz,
           não para o cliente */}
       <div className="space-y-2">

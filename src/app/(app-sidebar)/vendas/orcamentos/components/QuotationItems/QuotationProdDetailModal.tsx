@@ -305,6 +305,15 @@ export function QuotationProdDetailModal({
   const tiers = tiersRes?.data || []
   const itemQuantity = Number(watch('items.0.quantity') || 1)
   const itemUnitKind = watch('items.0.unitKind')
+  // Quantidade e medida do item para o aproveitamento de folha (AP-5): o
+  // formulário guarda milímetros; a composição calcula em metros
+  const compositionMeasure = {
+    quantity:
+      itemQuantity *
+      ((watch('items') || []).length > 1 ? Number(watch('quantity') || 1) : 1),
+    width: Number(watch('items.0.width') || 0) / 1000,
+    height: Number(watch('items.0.height') || 0) / 1000,
+  }
   const activeTier =
     tiers.length && (watch('items') || []).length === 1
       ? [...tiers]
@@ -715,6 +724,7 @@ export function QuotationProdDetailModal({
                         product?.id || data?.product?.originalProductId
                       }
                       initial={editMode ? savedComposition : undefined}
+                      measure={compositionMeasure}
                       onChange={setComposition}
                     />
                   </div>

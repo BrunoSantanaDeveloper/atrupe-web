@@ -687,8 +687,23 @@ export type SaleCompositionReport = {
       unit: string
       // Na lista, os itens que o vendedor informou
       entries: { name: string; quantity: number; unit: string }[] | null
+      // Aproveitamento de folha ou chapa (AP-1, AP-5): quantas peças cabem e
+      // quantas folhas a venda usa
+      sheetYield: SheetYield | null
     }[]
   }[]
+}
+
+// O aproveitamento de cada folha ou chapa de uma venda, para o orçamento
+// mostrar "24 por folha · 42 folhas" antes de o item ser gravado (AP-5)
+export type SaleSheetUsage = {
+  blockId: string
+  blockName: string
+  lineName: string
+  resource: string
+  // Unidade do material: folha, chapa…
+  unit: string
+  sheetYield: SheetYield
 }
 
 // Tempo digitado em hh:mm, como no legado (IP-33): "1:30" → 90 minutos.

@@ -35,6 +35,7 @@ import type {
   SaleChoice,
   SaleListEntry,
   SaleCompositionReport,
+  SaleSheetUsage,
   PriceTier,
   SheetYield,
   ResourceOption,
@@ -1087,6 +1088,10 @@ assemblies.push({
       localRules: null,
       lines: [
         {
+          // A chapa de ACM tem medida (1,22 × 5 m) e entra pelo aproveitamento
+          // (AP-1, 08/10/2026): quantas peças cabem na chapa, nas duas
+          // posições. Como no ACM a sobra se aproveita, cobra só a fração
+          // usada (AP-4)
           id: `l${uid()}`,
           name: 'Chapa',
           kind: 'MATERIAL',
@@ -1094,25 +1099,28 @@ assemblies.push({
           options: [
             {
               id: 'acm-branco',
-              name: 'ACM 3 mm branco',
-              unit: 'm²',
-              unitCost: 9800,
-              unitSale: 16000,
+              name: 'ACM 3 mm branco · 1,22 × 5 m',
+              unit: 'chapa',
+              unitCost: 59780,
+              unitSale: 97600,
+              sheet: { width: 1.22, height: 5, wholeSheets: false },
             },
             {
               id: 'acm-preto',
-              name: 'ACM 3 mm preto',
-              unit: 'm²',
-              unitCost: 10400,
-              unitSale: 17000,
+              name: 'ACM 3 mm preto · 1,22 × 5 m',
+              unit: 'chapa',
+              unitCost: 63440,
+              unitSale: 103700,
+              sheet: { width: 1.22, height: 5, wholeSheets: false },
             },
           ],
           selectedId: 'acm-branco',
           perUnit: 1,
-          formula: 'PER_AREA',
-          lossPercent: 15,
+          formula: 'SHEET_YIELD',
+          lossPercent: 0,
           minimum: null,
           overridden: false,
+          chargeWholeSheets: false,
         },
         {
           id: `l${uid()}`,
@@ -3708,10 +3716,62 @@ export const getSaleComposition = async ({
                 }))
                 .filter((entry) => entry.quantity > 0)
             : null,
+        // Só na linha da própria folha ou chapa; a máquina que lê a folha
+        // (impressões por folha) mostra a quantidade dela, não o aproveitamento
+        sheetYield:
+          'sheetYield' in line && line.selected?.sheet
+            ? (line.sheetYield ?? null)
+            : null,
       })),
     })),
   }
   return ok(report)
+}
+
+// O aproveitamento de folha da venda (AP-5, 08/10/2026): o orçamento informa
+// a quantidade e a medida do item e vê quantas folhas (ou chapas) vão ser
+// usadas, antes de gravar. Sem medida informada (produto vendido por
+// unidade, como o cartão), vale a medida padrão do produto
+export const getSaleSheetUsage = async ({
+  productId,
+  measure,
+  variationName,
+  choices = [],
+}: {
+  productId: string
+  measure: AssemblyMeasure
+  variationName?: string | null
+  choices?: SaleChoice[]
+}) => {
+  const assembly = assemblies.find((item) => item.productId === productId)
+  if (!assembly) return ok<SaleSheetUsage[]>([])
+
+  const effective: AssemblyMeasure = {
+    quantity: measure.quantity || assembly.measure.quantity,
+    width: measure.width || assembly.measure.width,
+    height: measure.height || assembly.measure.height,
+  }
+  const report = await getSaleComposition({
+    productId,
+    measure: effective,
+    variationName,
+    choices,
+  })
+  if (!report.success || !report.data) return ok<SaleSheetUsage[]>([])
+
+  const usage: SaleSheetUsage[] = report.data.blocks.flatMap((block) =>
+    block.lines
+      .filter((line) => line.sheetYield)
+      .map((line) => ({
+        blockId: block.id,
+        blockName: block.name,
+        lineName: line.name,
+        resource: line.resource || line.sheetYield!.sheetName,
+        unit: line.unit,
+        sheetYield: line.sheetYield as SheetYield,
+      })),
+  )
+  return ok(usage)
 }
 
 /* ---------------------------------------------------------------------------

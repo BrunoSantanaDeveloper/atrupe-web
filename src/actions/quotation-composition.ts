@@ -755,6 +755,17 @@ export const removeItemLine = async ({
 
 const itemCompositions = new Map<string, ItemComposition>()
 
+// A vitrine tem um cartão de visita com o aproveitamento de folha já no
+// resumo da linha (AP-5): 1.000 cartões 5 × 9 cm em couchê A3
+itemCompositions.set('vitrine-orcamento:item-cartao', {
+  extras: [],
+  times: [],
+  choices: [],
+  optionals: [],
+  lists: [],
+  summary: ['Couchê 300 g · A3: 24 por folha · 42 folhas · sobram 8'],
+})
+
 export const saveItemComposition = async ({
   quotationId,
   key,

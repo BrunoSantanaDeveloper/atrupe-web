@@ -10,6 +10,9 @@
 // painel "Acrescentar a este item" funciona inteiro com o mock (processos e
 // produtos de exemplo); o modal "Adicionar item" abre, mas a lista de
 // produtos vem da API.
+//
+// 08/10/2026: o cartão de visita mostra o aproveitamento de folha na linha
+// (AP-5) e em "Ver a composição completa".
 
 import { QuotationItems } from '@/app/(app-sidebar)/vendas/orcamentos/[quotationId]/components/QuotationItems'
 import { QuotationProvider } from '@/contexts/quotationContext'
@@ -133,6 +136,37 @@ const quotation = {
           ),
           part('c4', 'Ilhós', 'UNITY', {}, 2440),
           part('c5', 'Letra caixa (terceirizada)', 'UNITY', {}, 44444),
+        ],
+      },
+    },
+    {
+      id: 'item-cartao',
+      description: 'Cartão de visita 9 × 5 cm',
+      notes: '',
+      discountType: 'VALUE',
+      discount: 0,
+      unitValue: 22,
+      totalValue: 22000,
+      originalValue: 22000,
+      finalValue: 22000,
+      allowEditDescription: true,
+      allowEditValues: true,
+      image: { url: '', original: true },
+      technicalDescription: '',
+      product: {
+        originalProductId: 'cartao',
+        name: 'Cartão de visita',
+        quantity: 1000,
+        unitValue: 22,
+        finalValue: 22000,
+        compositions: [
+          part(
+            'c7',
+            'Cartão de visita',
+            'UNITY',
+            { width: 90, height: 50 },
+            22000,
+          ),
         ],
       },
     },
