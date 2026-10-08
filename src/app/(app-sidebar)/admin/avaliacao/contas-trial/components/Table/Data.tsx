@@ -42,7 +42,7 @@ import { formatToWeekDate } from '@/lib/formatDate'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { LogoAtrupe } from '@/assets/logos'
 import {
   IconTrash,
   IconPencil,
@@ -197,7 +197,7 @@ export function Data({ searchParams, searchDescription }: Props) {
                                     {currentStatus !== 'descartadas' && (
                                       <>
                                         <ActionButton
-                                          Icon={IconAtrupeLogo}
+                                          Icon={LogoAtrupe}
                                           variant="ghost"
                                           tooltip="Upgrade para Start"
                                           onClick={() => {

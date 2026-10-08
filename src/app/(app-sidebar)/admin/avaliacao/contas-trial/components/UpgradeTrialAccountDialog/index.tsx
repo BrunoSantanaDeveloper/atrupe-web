@@ -30,7 +30,7 @@ import { getData, createItemNew } from '@/actions/_cruds'
 import type { TrialAccountItem } from '../Table/Data'
 
 // Icons
-import { IconAtrupeLogo } from '@/assets/icons/CustomIcons'
+import { LogoAtrupe } from '@/assets/logos'
 import { IconCircleCheck } from '@tabler/icons-react'
 
 // Libs
@@ -116,7 +116,7 @@ export function UpgradeTrialAccountDialog({ open, setOpen, rowData }: Props) {
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconAtrupeLogo} />
+              <FeaturedIcon variant="neutralOutline" Icon={LogoAtrupe} />
               <span>Upgrade de plano</span>
             </div>
           </DialogTitle>

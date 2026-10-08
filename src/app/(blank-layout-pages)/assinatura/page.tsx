@@ -28,7 +28,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PlanCard } from './components/PlanCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Checkbox } from '@/components/ui/checkbox'
-import { IconPix } from '@/assets/icons/CustomIcons'
+import { LogoPix } from '@/assets/logos'
 import { ModuleCard } from './components/ModuleCard'
 import { CpfOrCnpjField } from '@/components/common/form/global-inputs/CpfOrCnpjField'
 import { useState, useEffect, useMemo } from 'react'
@@ -75,7 +75,7 @@ const billingTypeOptions = [
   {
     label: 'PIX',
     value: 'PIX',
-    icon: IconPix,
+    icon: LogoPix,
   },
   {
     label: 'Boleto',

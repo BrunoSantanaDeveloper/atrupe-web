@@ -44,7 +44,7 @@ import {
   IconTicket,
   IconBuildingFactory2,
 } from '@tabler/icons-react'
-import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
+import { IconReceitaFederal } from '@/assets/icons/pictogramas'
 import type { SVGProps } from 'react'
 import type { IconProps } from '@tabler/icons-react'
 import type { ReviewMarkKind } from './revisao'

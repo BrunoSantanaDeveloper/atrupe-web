@@ -25,7 +25,7 @@ import {
   IconInstallation,
   IconClientPickup,
   IconAdministration,
-} from '@/assets/icons/CustomIcons'
+} from '@/assets/icons/pictogramas'
 
 // Third-party
 import { v4 as uuidv4 } from 'uuid'

@@ -61,7 +61,7 @@ import {
   IconQuestionMark,
   IconCalendarRepeat,
 } from '@tabler/icons-react'
-import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
+import { IconReceitaFederal } from '@/assets/icons/pictogramas'
 
 // Hooks
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'

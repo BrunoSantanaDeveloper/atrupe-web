@@ -23,7 +23,7 @@ import {
   IconInstallation,
   IconClientPickup,
   IconAdministration,
-} from '@/assets/icons/CustomIcons'
+} from '@/assets/icons/pictogramas'
 
 const sectors: {
   [key: string]: {

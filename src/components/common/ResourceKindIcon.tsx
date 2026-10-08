@@ -7,7 +7,7 @@
 
 // Icons
 import { IconTool, IconPackages, IconUsers } from '@tabler/icons-react'
-import { IconOutsourced } from '@/assets/icons/CustomIcons'
+import { IconOutsourced } from '@/assets/icons/pictogramas'
 
 // Types
 import type { ComponentType } from 'react'
@@ -20,17 +20,6 @@ import { cn } from '@/lib/utils'
 // O que o ícone recebe: o mesmo contrato do Tabler, que o Button já usa
 type IconLike = { size?: number | string; className?: string }
 
-// Os ícones próprios do Figma (CustomIcons) não aceitam `size`: este adaptador
-// deixa o terceirizado se comportar como um ícone do Tabler
-const Outsourced = ({ size = 24, className }: IconLike) => (
-  <IconOutsourced
-    width={size}
-    height={size}
-    className={className}
-    aria-hidden="true"
-  />
-)
-
 // `provisional`: ainda não há ícone decidido para o tipo; fica em vermelho
 // até alguém trocar (pedido do Maicol em 03/10/2026)
 const icons: {
@@ -42,7 +31,7 @@ const icons: {
   MACHINE: { Icon: IconTool, provisional: true },
   MATERIAL: { Icon: IconPackages, provisional: false }, // o mesmo do menu Materiais
   LABOR: { Icon: IconUsers, provisional: false },
-  OUTSOURCED: { Icon: Outsourced, provisional: false }, // o mesmo do setor Terceirizado
+  OUTSOURCED: { Icon: IconOutsourced, provisional: false }, // o mesmo do setor Terceirizado
 }
 
 export function ResourceKindIcon({
