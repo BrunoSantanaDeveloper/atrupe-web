@@ -23,7 +23,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useClientAddresses } from '@/hooks/queries/useClientAddresses'
 import { IconMapPin, IconEdit } from '@tabler/icons-react'
-import { ICON_SIZE } from '@/components/ui/icon'
+import { Icon, ICON_SIZE } from '@/components/ui/icon'
 import type { NfePrepareEntrega } from '@/types/fiscal/nfe-prepare'
 
 export interface ClientAddressItem {
@@ -269,7 +269,8 @@ export function InvoiceDeliveryAddressSection({
                     {addressesList.length > 0 && (
                       <>
                         <span className="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1.5">
-                          📍 Escolher Endereço Cadastrado:
+                          <Icon icon={IconMapPin} size="sm" />
+                          Escolher Endereço Cadastrado:
                         </span>
                         <Select
                           value={selectedAddressId || 'custom'}

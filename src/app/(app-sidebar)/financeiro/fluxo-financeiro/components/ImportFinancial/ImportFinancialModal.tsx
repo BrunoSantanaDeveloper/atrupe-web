@@ -25,7 +25,7 @@ import {
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
-  IconAlertCircle,
+  IconCircleX,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -446,7 +446,7 @@ RECEITA,2 Milheiros Cartão Visita,OS-00148,2024-01-18,400.00,1,012.345.678-90,,
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
+                <IconCircleX aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>

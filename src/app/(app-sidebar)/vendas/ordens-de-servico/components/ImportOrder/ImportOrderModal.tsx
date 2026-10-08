@@ -27,8 +27,8 @@ import {
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
-  IconAlertCircle,
   IconExternalLink,
+  IconCircleX,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -406,7 +406,7 @@ export function ImportOrderModal() {
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
+                <IconCircleX aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>

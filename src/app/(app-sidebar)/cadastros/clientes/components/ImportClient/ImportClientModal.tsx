@@ -25,8 +25,8 @@ import {
   IconDownload,
   IconArrowRight,
   IconCloudUpload,
-  IconAlertCircle,
   IconExternalLink,
+  IconCircleX,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -404,7 +404,7 @@ EMPRESA,Loja Central Modas,compras@centralmodas.com.br,(11) 5678-9012,(11) 96543
           <DialogBody>
             {errors.length > 0 && (
               <Alert variant="error" className="mb-4 hidden">
-                <IconAlertCircle aria-hidden size={ICON_SIZE.sm} />
+                <IconCircleX aria-hidden size={ICON_SIZE.sm} />
                 <AlertDescription>
                   Foram encontrados {errors.length} erro(s) na planilha
                 </AlertDescription>
