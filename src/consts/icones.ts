@@ -43,6 +43,8 @@ export const ICONE = {
   /** Apagar de vez. Inativar não usa a lixeira. */
   excluir: IconTrash,
   inativar: IconBan,
+  /** Cancelar venda, adiantamento, movimentação: não apaga, então não é lixeira. */
+  cancelar: IconBan,
   reativar: IconRotateClockwise,
   duplicar: IconCopy,
   historico: IconHistory,

@@ -42,6 +42,7 @@ import {
   IconDeviceDesktopDollar,
   IconReceiptTax,
   IconTicket,
+  IconBuildingFactory2,
 } from '@tabler/icons-react'
 import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import type { SVGProps } from 'react'
@@ -433,7 +434,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         requireAllPermissions: false,
       },
       {
-        icon: IconListCheck,
+        icon: IconBuildingFactory2,
         title: 'Produção',
         path: '/configuracoes/producao',
         review: 'new',

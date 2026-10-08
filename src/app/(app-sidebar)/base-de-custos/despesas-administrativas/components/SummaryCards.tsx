@@ -16,7 +16,7 @@ import {
   IconPencil,
   IconFileText,
   IconCalculator,
-  IconCurrencyDollar,
+  IconCurrencyReal,
 } from '@tabler/icons-react'
 
 interface Props {
@@ -45,7 +45,7 @@ export function SummaryCards({ totals, isLoading }: Props) {
       value: totals?.manual ?? 0,
     },
     {
-      icon: IconCurrencyDollar,
+      icon: IconCurrencyReal,
       variant: 'successLight',
       label: 'Custo mensal de referência',
       value: formatCurrencyToBrl(totals?.referenceValue),

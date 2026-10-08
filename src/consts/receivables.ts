@@ -1,9 +1,12 @@
 import type { BadgeProps } from '@/components/ui/badge'
 import type { ButtonProps } from '@/components/ui/button'
 
+// Realizado = dinheiro (IconCash); não realizado = dinheiro cortado;
+// cancelado = IconBan. Polegar não diz nada sobre dinheiro (icones §4.4).
 import {
-  IconThumbUp,
-  IconThumbDown,
+  IconBan,
+  IconCash,
+  IconCashBanknoteOff,
   IconQuestionMark,
 } from '@tabler/icons-react'
 
@@ -21,35 +24,35 @@ type TransactionStatusType = {
 
 export const transactionStatus: TransactionStatusType = {
   PENDING: {
-    icon: IconThumbDown,
+    icon: IconCashBanknoteOff,
     text: 'Não realizado',
     tooltip: 'Movimentação prevista',
     button: 'neutralGhost',
     badge: 'neutralLight',
   },
   PROVISIONED: {
-    icon: IconThumbUp,
+    icon: IconCash,
     text: 'Provisionado',
     tooltip: 'Movimentação provisionada',
     button: 'warningGhost',
     badge: 'warningLight',
   },
   PAID: {
-    icon: IconThumbUp,
+    icon: IconCash,
     text: 'Realizado',
     tooltip: 'Movimentação realizada',
     button: 'successGhost',
     badge: 'successLight',
   },
   OVERDUE: {
-    icon: IconThumbDown,
+    icon: IconCashBanknoteOff,
     text: 'Não realizado',
     tooltip: 'Movimentação atrasada',
     button: 'errorGhost',
     badge: 'errorLight',
   },
   CANCELED: {
-    icon: IconThumbDown,
+    icon: IconBan,
     text: 'Cancelado',
     tooltip: 'Movimentação cancelada',
     button: 'errorGhost',

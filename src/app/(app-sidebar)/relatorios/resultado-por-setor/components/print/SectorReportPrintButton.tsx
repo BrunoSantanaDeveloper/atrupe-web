@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 // Icon
-import { IconPrinter } from '@tabler/icons-react'
+import { IconDownload } from '@tabler/icons-react'
 
 // Actions
 import { getSectorReportPdfData } from '@/actions/sector-report-pdf'
@@ -104,11 +104,13 @@ export function SectorReportPrintButton() {
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          size="iconMd"
+          size="md"
           variant="neutralOutline"
           isLoading={isLoading}
-          RightIcon={IconPrinter}
-        />
+          LeftIcon={IconDownload}
+        >
+          Exportar
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-28" align="end">
         <DropdownMenuItem onClick={handleGeneratePDF} disabled={isLoading}>

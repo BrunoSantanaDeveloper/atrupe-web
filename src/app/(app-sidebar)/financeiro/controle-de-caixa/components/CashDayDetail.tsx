@@ -28,7 +28,7 @@ import {
 } from '../types'
 
 // Icons
-import { IconPrinter, IconSearch } from '@tabler/icons-react'
+import { IconPrinter, IconReportMoney } from '@tabler/icons-react'
 
 // Consts
 import { cashControlStatusObj } from '@/consts/cashControl'
@@ -155,7 +155,7 @@ export function CashDayDetail({
       <DialogContent className="sm:max-w-[760px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconSearch} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconReportMoney} />
             <DialogTitle className="flex flex-wrap items-center gap-2">
               {account.name} · {brDate(day.date)}
               <Badge variant={cashControlStatusObj[day.status].variant}>

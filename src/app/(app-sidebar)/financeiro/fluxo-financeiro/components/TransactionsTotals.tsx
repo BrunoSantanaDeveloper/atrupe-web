@@ -2,7 +2,7 @@
 
 // Icons
 import { FeaturedIcon } from '@/components/ui/featured-icon'
-import { IconThumbUp, IconThumbDown } from '@tabler/icons-react'
+import { IconCash, IconCashBanknoteOff } from '@tabler/icons-react'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -106,7 +106,11 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
     <div className="px-6 pt-6 flex flex-wrap gap-4">
       <div className="flex flex-col flex-[1_400px] gap-5">
         <div className="flex items-center gap-3">
-          <FeaturedIcon size="sm" Icon={IconThumbDown} variant="errorLight" />
+          <FeaturedIcon
+            size="sm"
+            Icon={IconCashBanknoteOff}
+            variant="errorLight"
+          />
           <span className="font-semibold text-gray-700">Não realizado</span>
           <span className="text-xs text-gray">
             {byPaidDate
@@ -137,7 +141,7 @@ export function TransactionsTotalsCard({ searchParams }: Props) {
       </div>
       <div className="flex flex-col flex-[1_400px] gap-5">
         <div className="flex items-center gap-3">
-          <FeaturedIcon size="sm" Icon={IconThumbUp} variant="successLight" />
+          <FeaturedIcon size="sm" Icon={IconCash} variant="successLight" />
           <span className="font-semibold text-gray-700">Realizado</span>
           <span className="text-xs text-gray">
             {byPaidDate

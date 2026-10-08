@@ -37,7 +37,6 @@ import {
   IconEyeOff,
   IconTrash,
   IconPencil,
-  IconPrinter,
   IconPlus,
   IconLayoutGrid,
   IconAlertTriangle,
@@ -247,7 +246,7 @@ export function PayrollItems({ data }: Props) {
                         <TooltipProvider>
                           {isAdvance && (
                             <ActionButton
-                              Icon={IconPrinter}
+                              gesto="imprimir"
                               tooltip="Imprimir"
                               onClick={() => handleGeneratePDF(item.id)}
                               isLoading={isLoadingPDF}
@@ -278,7 +277,7 @@ export function PayrollItems({ data }: Props) {
                               permissions={['financial:payroll:delete']}
                             >
                               <ActionButton
-                                Icon={IconTrash}
+                                gesto="cancelar"
                                 tooltip="Cancelar adiantamento e estornar pagamento"
                                 onClick={() => handleCancelAdvance(item)}
                                 disabled={data?.status === 'CLOSED'}

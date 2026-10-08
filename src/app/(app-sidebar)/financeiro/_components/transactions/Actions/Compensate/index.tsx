@@ -35,7 +35,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 
 // Icons
-import { IconCircleCheck, IconThumbUp } from '@tabler/icons-react'
+import { IconCircleCheck, IconCash } from '@tabler/icons-react'
 
 // Types
 import type {
@@ -163,7 +163,7 @@ export function CompensateDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconCash} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {type === 'payable' ? 'Pagamento' : 'Recebimento'}

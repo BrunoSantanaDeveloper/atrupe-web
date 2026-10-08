@@ -19,14 +19,7 @@ import {
 } from '@/components/ui/popover'
 
 // Icons
-import {
-  IconCheck,
-  IconChevronDown,
-  IconPlus,
-  IconLoader2,
-  IconX,
-  IconPackage,
-} from '@tabler/icons-react'
+import { IconPlus, IconLoader2, IconPackage } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
 // Actions

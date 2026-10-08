@@ -33,9 +33,9 @@ import { DangerActionCompanyModal } from './DangerActionCompanyModal'
 // Icons
 import {
   IconArrowRight,
-  IconBuildingStore,
   IconCircleCheck,
   IconPlus,
+  IconBuilding,
 } from '@tabler/icons-react'
 
 // Form
@@ -208,7 +208,7 @@ export function NewCompany({
         <DialogContent className="sm:max-w-[800px]">
           <DialogHeader>
             <div className="flex items-center gap-4">
-              <FeaturedIcon variant="neutralOutline" Icon={IconBuildingStore} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconBuilding} />
               <DialogTitle>Configuração da empresa</DialogTitle>
             </div>
             <DialogDescription hidden></DialogDescription>

@@ -39,7 +39,7 @@ import { projectStatusObj } from '@/consts/productionManager'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconSearch, IconListCheck } from '@tabler/icons-react'
+import { IconListCheck } from '@tabler/icons-react'
 
 // Utils
 
@@ -154,7 +154,7 @@ export function Projects() {
                       <TableCell>
                         <div className="flex justify-end">
                           <ActionButton
-                            Icon={IconSearch}
+                            gesto="ver"
                             tooltip={`Abrir ${project.number}`}
                             link={`/producao/projetos/${project.id}`}
                           />

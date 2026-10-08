@@ -70,11 +70,12 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 // Icons
 import {
   IconSearch,
-  IconPrinter,
   IconCalendar,
   IconPlayerPlay,
   IconCircleCheck,
   IconBan,
+  IconFileText,
+  IconChevronRight,
 } from '@tabler/icons-react'
 
 const EDIT = ['production:production:view']
@@ -155,7 +156,12 @@ export function ProjectDetail({ id }: { id: string }) {
           supportText={project.client}
           primaryCta={
             <div className="flex flex-wrap gap-2">
-              <Button variant="neutralOutline" LeftIcon={IconPrinter} asChild>
+              <Button
+                variant="neutralOutline"
+                LeftIcon={IconFileText}
+                RightIcon={IconChevronRight}
+                asChild
+              >
                 <Link href={`/producao/projetos/${id}/ficha`}>
                   Ficha de produção
                 </Link>

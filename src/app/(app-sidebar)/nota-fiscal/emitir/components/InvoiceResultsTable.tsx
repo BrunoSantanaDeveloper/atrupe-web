@@ -47,7 +47,6 @@ import {
 // Icons
 import {
   IconFileInvoice,
-  IconReceipt,
   IconBan,
   IconTrash,
   IconDotsVertical,
@@ -61,6 +60,8 @@ import {
   IconLayoutGrid,
   IconCircleCheck,
   IconAlertTriangle,
+  IconRepeat,
+  IconSend,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -1392,7 +1393,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                             <DropdownMenuItem
                                               onClick={handleReprocess}
                                             >
-                                              <IconRefresh
+                                              <IconRepeat
                                                 size={ICON_SIZE.md}
                                                 className="mr-2"
                                               />
@@ -1531,7 +1532,7 @@ export function InvoiceResultsTable({ searchParams }: Props) {
                                   return (
                                     <>
                                       <ActionButton
-                                        Icon={IconReceipt}
+                                        gesto="emitirNota"
                                         tooltip="Continuar emissão"
                                         onClick={() => setModalOrderId(item.id)}
                                       />
@@ -1550,8 +1551,8 @@ export function InvoiceResultsTable({ searchParams }: Props) {
 
                                 return (
                                   <ActionButton
-                                    Icon={IconReceipt}
-                                    tooltip="Emitir Nota Fiscal"
+                                    gesto="emitirNota"
+                                    tooltip="Emitir nota fiscal"
                                     onClick={() => setModalOrderId(item.id)}
                                   />
                                 )
@@ -1578,14 +1579,14 @@ export function InvoiceResultsTable({ searchParams }: Props) {
               <div className="flex gap-2">
                 <Button
                   variant="neutralOutline"
-                  LeftIcon={IconFileInvoice}
+                  LeftIcon={IconSend}
                   onClick={handleConsolidateNfse}
                 >
                   Consolidar em NFS-e
                 </Button>
                 <Button
                   variant="success"
-                  LeftIcon={IconFileInvoice}
+                  LeftIcon={IconSend}
                   onClick={handleConsolidate}
                 >
                   Consolidar em NF-e

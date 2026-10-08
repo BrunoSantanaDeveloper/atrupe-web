@@ -45,6 +45,7 @@ import {
   IconPlus,
   IconLayoutGrid,
   IconCornerDownRight,
+  IconCurrencyReal,
 } from '@tabler/icons-react'
 import { ICON_SIZE } from '@/components/ui/icon'
 
@@ -272,7 +273,7 @@ export function OrderItems({ data }: Props) {
                                       requireAll
                                     >
                                       <ActionButton
-                                        Icon={IconCoin}
+                                        Icon={IconCurrencyReal}
                                         tooltip="Valores"
                                         onClick={() => {
                                           setOpenDialog('values')

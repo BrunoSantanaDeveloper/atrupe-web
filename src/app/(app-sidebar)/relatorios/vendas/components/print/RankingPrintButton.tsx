@@ -18,7 +18,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 // Icon
-import { IconPrinter } from '@tabler/icons-react'
+import { IconDownload } from '@tabler/icons-react'
 
 // Actions
 import { getSalesReportPdfData } from '@/actions/sales-report-pdf'
@@ -136,11 +136,13 @@ export function RankingPrintButton({
       <DropdownMenuTrigger asChild>
         <Button
           type="button"
-          size="icon"
-          variant="ghost"
+          size="md"
+          variant="neutralOutline"
           isLoading={isLoading}
-          RightIcon={IconPrinter}
-        />
+          LeftIcon={IconDownload}
+        >
+          Exportar
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-28" align="end">
         <DropdownMenuItem onClick={handleGeneratePDF} disabled={isLoading}>

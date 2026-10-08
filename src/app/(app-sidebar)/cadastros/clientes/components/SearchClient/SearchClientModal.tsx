@@ -1,4 +1,3 @@
-import { ActionButton } from '@/components/common/ActionButton'
 import { CpfOrCnpjField } from '@/components/common/form/global-inputs/CpfOrCnpjField'
 import { Button } from '@/components/ui/button'
 import {
@@ -13,7 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { FeaturedIcon } from '@/components/ui/featured-icon'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IconSearch } from '@tabler/icons-react'
+import { IconId, IconSearch } from '@tabler/icons-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { useState } from 'react'
@@ -35,13 +34,15 @@ export function SearchClientTriggerButton({
   onOpenChange: (open: boolean) => void
 }) {
   return (
-    <ActionButton
-      tooltip="Consultar dados de cliente"
-      size="iconMd"
+    <Button
+      type="button"
+      size="md"
       variant="neutralOutline"
-      Icon={IconSearch}
+      LeftIcon={IconId}
       onClick={() => onOpenChange(true)}
-    />
+    >
+      Consultar CPF/CNPJ
+    </Button>
   )
 }
 
@@ -89,7 +90,7 @@ export function SearchClientModal({
                 variant="successBorderedLight"
                 size="lg"
                 rounded
-                Icon={IconSearch}
+                Icon={IconId}
               />
 
               <DialogTitle className="pr-0">

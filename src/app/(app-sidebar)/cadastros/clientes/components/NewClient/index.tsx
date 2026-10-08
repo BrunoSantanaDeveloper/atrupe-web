@@ -337,7 +337,10 @@ export function NewClientModal({
       <DialogContent className="sm:max-w-[855px]">
         <DialogHeader className="">
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconPlus} />
+            <FeaturedIcon
+              variant="neutralOutline"
+              Icon={editMode ? IconPencil : IconPlus}
+            />
             <DialogTitle>
               {editMode ? 'Editar cliente' : 'Novo cliente'}
             </DialogTitle>

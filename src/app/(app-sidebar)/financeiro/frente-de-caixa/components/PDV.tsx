@@ -64,10 +64,7 @@ import { useAlertDialog } from '@/store/useAlertDialog'
 // previsto; para cima, com parte recebida), o ciclo é mudar as parcelas
 import {
   IconTrash,
-  IconThumbUp,
   IconUserCheck,
-  IconThumbDown,
-  IconRefreshDot,
   IconTrendingUp,
   IconPackage,
   IconTrendingDown,
@@ -379,9 +376,7 @@ export function PDV() {
                                 />
                               )}
                               <ActionButton
-                                Icon={
-                                  sale.paid > 0 ? IconThumbUp : IconThumbDown
-                                }
+                                gesto="receber"
                                 variant={
                                   sale.paid > 0
                                     ? 'warningGhost'
@@ -412,14 +407,14 @@ export function PDV() {
                                 sale.kind === 'QUICK' &&
                                 sale.paid === 0 && (
                                   <ActionButton
-                                    Icon={IconRefreshDot}
+                                    gesto="faturar"
                                     variant="neutralGhost"
                                     tooltip="Faturar para o cliente"
                                     onClick={() => setBillingSale(sale)}
                                   />
                                 )}
                               <ActionButton
-                                Icon={IconTrash}
+                                gesto="cancelar"
                                 variant="errorGhost"
                                 tooltip="Cancelar a venda"
                                 onClick={() => cancelSale(sale)}
@@ -601,9 +596,7 @@ export function PDV() {
                                 {/* O cliente veio buscar: recebe o restante
                                     e entrega, no mesmo diálogo (FC-12) */}
                                 <ActionButton
-                                  Icon={
-                                    sale.paid > 0 ? IconThumbUp : IconThumbDown
-                                  }
+                                  gesto="receber"
                                   variant={
                                     sale.paid > 0
                                       ? 'warningGhost'

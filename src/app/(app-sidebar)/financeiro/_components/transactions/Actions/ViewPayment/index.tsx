@@ -18,7 +18,7 @@ import { PrintReceiptButton } from '../PrintReceiptButton'
 import { TextSupportingText } from '@/components/common/TextSupportingText'
 
 // Icons
-import { IconThumbUp } from '@tabler/icons-react'
+import { IconCash } from '@tabler/icons-react'
 
 // Types
 import type {
@@ -65,7 +65,7 @@ export function ViewPaymentDialog({
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-4 capitalize">
-              <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
+              <FeaturedIcon variant="neutralOutline" Icon={IconCash} />
               {typeText}
             </div>
           </DialogTitle>

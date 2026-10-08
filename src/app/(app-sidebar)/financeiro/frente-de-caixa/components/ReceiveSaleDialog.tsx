@@ -44,7 +44,7 @@ import { useSession } from 'next-auth/react'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconThumbUp, IconPrinter, IconCircleCheck } from '@tabler/icons-react'
+import { IconCash, IconPrinter, IconCircleCheck } from '@tabler/icons-react'
 
 // Utils
 import { cn, formatMoney } from '@/lib/utils'
@@ -127,7 +127,7 @@ export function ReceiveSaleDialog({
       <DialogContent className="sm:max-w-[644px]">
         <DialogHeader>
           <div className="flex items-center gap-4">
-            <FeaturedIcon variant="neutralOutline" Icon={IconThumbUp} />
+            <FeaturedIcon variant="neutralOutline" Icon={IconCash} />
             <div className="min-w-0">
               <DialogTitle className="mb-1">
                 {sale?.ready ? 'Retirada' : 'Recebimento'}

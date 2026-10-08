@@ -10,12 +10,12 @@ Idioma dos exemplos de classe e de arquivo: o do código. Caminhos relativos a
 
 ## 1. Como o diagnóstico foi feito
 
-| Fonte | O que cobriu |
-|---|---|
-| Varredura estática de `src/**/*.tsx` (887 arquivos, 112 páginas, ~204 mil linhas) | contagem de classes de tamanho, peso, cor, raio, sombra, `hover:`, `focus-visible:`, `transition`, hexadecimais, paletas padrão do Tailwind, bibliotecas de ícone, componentes usados e componentes mortos |
-| Leitura módulo a módulo do JSX real (vendas, dashboard, relatórios, financeiro, nota fiscal, configurações, cadastros, produção, estoque, base de custos, precificação, shell, autenticação, admin) | evidência `arquivo:linha` de cada problema; o que está bom e deve ficar |
-| Telas reais (Playwright, 1440×900, conta de teste em `localhost`) | confirmação visual e métricas renderizadas: tamanhos de fonte por página, altura das linhas de tabela, botões sem nome acessível, `title=` nativo |
-| Referências comparadas | SAP Fiori (object page, shell bar, densidade), Shopify Polaris (índice de configurações, IndexTable, BulkActions, ContextualSaveBar, Banner, tamanhos de Modal), Atlassian (Lozenge, foco, estado vazio), Salesforce Lightning (highlights panel), Stripe Dashboard (hierarquia tipográfica, números tabulares, filtros), Linear (linha clicável + menu "⋯", autosave, teclado), Odoo (smart buttons) e Untitled UI (base do kit atual) |
+| Fonte                                                                                                                                                                                               | O que cobriu                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Varredura estática de `src/**/*.tsx` (887 arquivos, 112 páginas, ~204 mil linhas)                                                                                                                   | contagem de classes de tamanho, peso, cor, raio, sombra, `hover:`, `focus-visible:`, `transition`, hexadecimais, paletas padrão do Tailwind, bibliotecas de ícone, componentes usados e componentes mortos                                                                                                                                                                                                                              |
+| Leitura módulo a módulo do JSX real (vendas, dashboard, relatórios, financeiro, nota fiscal, configurações, cadastros, produção, estoque, base de custos, precificação, shell, autenticação, admin) | evidência `arquivo:linha` de cada problema; o que está bom e deve ficar                                                                                                                                                                                                                                                                                                                                                                 |
+| Telas reais (Playwright, 1440×900, conta de teste em `localhost`)                                                                                                                                   | confirmação visual e métricas renderizadas: tamanhos de fonte por página, altura das linhas de tabela, botões sem nome acessível, `title=` nativo                                                                                                                                                                                                                                                                                       |
+| Referências comparadas                                                                                                                                                                              | SAP Fiori (object page, shell bar, densidade), Shopify Polaris (índice de configurações, IndexTable, BulkActions, ContextualSaveBar, Banner, tamanhos de Modal), Atlassian (Lozenge, foco, estado vazio), Salesforce Lightning (highlights panel), Stripe Dashboard (hierarquia tipográfica, números tabulares, filtros), Linear (linha clicável + menu "⋯", autosave, teclado), Odoo (smart buttons) e Untitled UI (base do kit atual) |
 
 Resultado renderizado que resume a queixa "fontes do mesmo tamanho" (57 rotas
 capturadas; tabela completa em `design/evidencia/auditoria-ui-antes.md`):
@@ -305,7 +305,7 @@ ou 73 px (43 linhas). Os rótulos dos módulos da barra lateral são `<h3>` de
   página calculada no navegador como `total/10`.
 - **Formulários:** `placeholder={label}` repete o rótulo (`common/form/FormInput.tsx:73`),
   "Digite aqui" em quase todo campo; `autoComplete="off"` por padrão quebra
-  gerenciadores de senha (`:74`); sem API de obrigatório (0 `required`, 2 "*"
+  gerenciadores de senha (`:74`); sem API de obrigatório (0 `required`, 2 "\*"
   manuais, 12 "(opcional)"); rótulo fica vermelho no erro (`ui/form.tsx:100`);
   três estilos de desabilitado; dois motores de calendário (react-day-picker e
   react-aria) e quatro seletores de data; três implementações de campo em reais
@@ -468,26 +468,26 @@ este texto; detalha apenas o que é só dela.
 Família Inter, `font-feature-settings: "tnum"` ligado em células numéricas e
 KPIs. Tamanho mínimo 12 px. Caixa alta só no papel `eyebrow`.
 
-| Papel | Classe | Tamanho/linha | Peso | Cor | Onde |
-|---|---|---|---|---|---|
-| `page-title` | `text-display-xs` | 24/32 | 600 | text-primary | Topbar, uma vez por página |
-| `page-subtitle` | `text-sm` | 14/20 | 400 | text-tertiary | abaixo do título, `<p>` |
-| `section-title` | `text-lg` | 18/28 | 600 | text-primary | `h2` de seção de página |
-| `card-title` | `text-md` | 16/24 | 600 | text-primary | `CardTitle`, cabeçalho de painel |
-| `dialog-title` | `text-lg` | 18/28 | 600 | text-primary | `DialogTitle`, `SheetTitle` |
-| `object-title` | `text-display-xs` | 24/32 | 600 | text-primary | nome da entidade no cabeçalho de detalhe |
-| `kpi-value` | `text-display-xs` + `tabular-nums` | 24/32 | 600 | text-primary | valor de KPI; herói `display-sm` 30/38 |
-| `kpi-label` | `text-sm` | 14/20 | 500 | text-tertiary | rótulo de KPI |
-| `body` | `text-sm` | 14/20 | 400 | text-secondary | corpo, células |
-| `body-strong` | `text-sm` | 14/20 | 600 | text-primary | identificador principal da linha |
-| `secondary` | `text-sm` | 14/20 | 400 | text-tertiary | linha de apoio na célula |
-| `caption` | `text-xs` | 12/18 | 400 | text-tertiary | metadados, carimbos |
-| `label` | `text-sm` | 14/20 | 500 | text-secondary | rótulo de campo |
-| `helper` | `text-sm` | 14/20 | 400 | text-tertiary | ajuda e erro (erro em text-error) |
-| `eyebrow` | `text-xs uppercase tracking-[0.04em]` | 12/18 | 600 | text-tertiary | único uso de caixa alta: cabeçalho de grupo em tabela e de seção em formulário |
-| `table-header` | `text-xs` | 12/18 | 500 | text-tertiary | `TableHead` |
-| `nav-item` | `text-sm` | 14/20 | 500 | text-secondary | sidebar (ativo 600 text-brand) |
-| `nav-group` | `eyebrow` | 12/18 | 600 | text-tertiary | rótulo de seção da sidebar |
+| Papel           | Classe                                | Tamanho/linha | Peso | Cor            | Onde                                                                           |
+| --------------- | ------------------------------------- | ------------- | ---- | -------------- | ------------------------------------------------------------------------------ |
+| `page-title`    | `text-display-xs`                     | 24/32         | 600  | text-primary   | Topbar, uma vez por página                                                     |
+| `page-subtitle` | `text-sm`                             | 14/20         | 400  | text-tertiary  | abaixo do título, `<p>`                                                        |
+| `section-title` | `text-lg`                             | 18/28         | 600  | text-primary   | `h2` de seção de página                                                        |
+| `card-title`    | `text-md`                             | 16/24         | 600  | text-primary   | `CardTitle`, cabeçalho de painel                                               |
+| `dialog-title`  | `text-lg`                             | 18/28         | 600  | text-primary   | `DialogTitle`, `SheetTitle`                                                    |
+| `object-title`  | `text-display-xs`                     | 24/32         | 600  | text-primary   | nome da entidade no cabeçalho de detalhe                                       |
+| `kpi-value`     | `text-display-xs` + `tabular-nums`    | 24/32         | 600  | text-primary   | valor de KPI; herói `display-sm` 30/38                                         |
+| `kpi-label`     | `text-sm`                             | 14/20         | 500  | text-tertiary  | rótulo de KPI                                                                  |
+| `body`          | `text-sm`                             | 14/20         | 400  | text-secondary | corpo, células                                                                 |
+| `body-strong`   | `text-sm`                             | 14/20         | 600  | text-primary   | identificador principal da linha                                               |
+| `secondary`     | `text-sm`                             | 14/20         | 400  | text-tertiary  | linha de apoio na célula                                                       |
+| `caption`       | `text-xs`                             | 12/18         | 400  | text-tertiary  | metadados, carimbos                                                            |
+| `label`         | `text-sm`                             | 14/20         | 500  | text-secondary | rótulo de campo                                                                |
+| `helper`        | `text-sm`                             | 14/20         | 400  | text-tertiary  | ajuda e erro (erro em text-error)                                              |
+| `eyebrow`       | `text-xs uppercase tracking-[0.04em]` | 12/18         | 600  | text-tertiary  | único uso de caixa alta: cabeçalho de grupo em tabela e de seção em formulário |
+| `table-header`  | `text-xs`                             | 12/18         | 500  | text-tertiary  | `TableHead`                                                                    |
+| `nav-item`      | `text-sm`                             | 14/20         | 500  | text-secondary | sidebar (ativo 600 text-brand)                                                 |
+| `nav-group`     | `eyebrow`                             | 12/18         | 600  | text-tertiary  | rótulo de seção da sidebar                                                     |
 
 Primitivos: `Heading` (`as` + `size`) e `Text` (`variant`) em `ui/typography.tsx`;
 `Topbar`, `CardTitle`, `DialogTitle`, `SheetTitle`, `TableHead`, `FormLabel`,
@@ -501,26 +501,26 @@ Os tokens de rampa continuam (`--gray-500`…), mas passam a guardar canais
 — isso devolve `/NN` a todas as cores. Sobre as rampas entra uma camada
 semântica, a única que componentes e páginas usam:
 
-| Token | Claro | Papel |
-|---|---|---|
-| `text-primary` | gray-900 | títulos, identificadores |
-| `text-secondary` | gray-700 | corpo, rótulos |
-| `text-tertiary` | gray-600 | apoio, legendas, cabeçalho de tabela |
-| `text-placeholder` | gray-500 | placeholder; nunca texto informativo |
-| `text-disabled` | gray-400 | só em controle desabilitado |
-| `text-brand` | brand-700 | links, item ativo |
-| `text-on-brand` | white | texto sobre primária |
-| `bg-page` | gray-100 | área de conteúdo (igual ao Figma) |
-| `bg-surface` | white | card, tabela, diálogo, sidebar |
-| `bg-surface-subtle` | gray-50 | cabeçalho de tabela, hover de linha, faixa de grupo |
-| `bg-surface-selected` | brand-25 | linha e item de navegação selecionados |
-| `border-default` | gray-200 | divisórias, cards (vira o `DEFAULT`) |
-| `border-strong` | gray-300 | controles (input, select, botão secundário) |
-| `border-focus` | brand-300 | borda de controle focado |
-| `ring-focus` | brand-100 (4 px) | anel de foco único de todo o sistema |
-| `scrim` | gray-900 / 60 % | véu de diálogo e sheet |
-| `tone-{success,warning,error,info,neutral,brand}-{bg,border,text,solid}` | 50 / 200 / 700 / 600 das rampas (`blue` para info, `gray` para neutro) | status, alertas, badges, botões de tom |
-| `chart-1…6` | brand-500, blue-500, warning-400, error-400, purple-500, gray-400 | séries; `chart-positive`/`chart-negative` para variação |
+| Token                                                                    | Claro                                                                  | Papel                                                   |
+| ------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| `text-primary`                                                           | gray-900                                                               | títulos, identificadores                                |
+| `text-secondary`                                                         | gray-700                                                               | corpo, rótulos                                          |
+| `text-tertiary`                                                          | gray-600                                                               | apoio, legendas, cabeçalho de tabela                    |
+| `text-placeholder`                                                       | gray-500                                                               | placeholder; nunca texto informativo                    |
+| `text-disabled`                                                          | gray-400                                                               | só em controle desabilitado                             |
+| `text-brand`                                                             | brand-700                                                              | links, item ativo                                       |
+| `text-on-brand`                                                          | white                                                                  | texto sobre primária                                    |
+| `bg-page`                                                                | gray-100                                                               | área de conteúdo (igual ao Figma)                       |
+| `bg-surface`                                                             | white                                                                  | card, tabela, diálogo, sidebar                          |
+| `bg-surface-subtle`                                                      | gray-50                                                                | cabeçalho de tabela, hover de linha, faixa de grupo     |
+| `bg-surface-selected`                                                    | brand-25                                                               | linha e item de navegação selecionados                  |
+| `border-default`                                                         | gray-200                                                               | divisórias, cards (vira o `DEFAULT`)                    |
+| `border-strong`                                                          | gray-300                                                               | controles (input, select, botão secundário)             |
+| `border-focus`                                                           | brand-300                                                              | borda de controle focado                                |
+| `ring-focus`                                                             | brand-100 (4 px)                                                       | anel de foco único de todo o sistema                    |
+| `scrim`                                                                  | gray-900 / 60 %                                                        | véu de diálogo e sheet                                  |
+| `tone-{success,warning,error,info,neutral,brand}-{bg,border,text,solid}` | 50 / 200 / 700 / 600 das rampas (`blue` para info, `gray` para neutro) | status, alertas, badges, botões de tom                  |
+| `chart-1…6`                                                              | brand-500, blue-500, warning-400, error-400, purple-500, gray-400      | séries; `chart-positive`/`chart-negative` para variação |
 
 Os valores escuros destes tokens são definidos junto com `tema-claro-escuro`
 (que já inverte as rampas); a camada semântica é o ponto de contato entre os
@@ -530,13 +530,13 @@ estiver arquivado.
 **Dicionário de estados** (um lugar, `consts/status.ts`, consumido por badge,
 tab e filtro; cada estado tem rótulo, tom e ícone):
 
-| Tom | Estados de domínio |
-|---|---|
+| Tom     | Estados de domínio                                                                                   |
+| ------- | ---------------------------------------------------------------------------------------------------- |
 | success | pago, recebido, aprovado, autorizado/emitido, ativo, concluído, fechado (caixa/folha, estado normal) |
-| neutral | pendente, rascunho, em aberto, não realizado, inativo, arquivado |
-| warning | provisionado, parcial, aguardando aprovação, reaberto, vence hoje, contingência |
-| error | atrasado, vencido, rejeitado, cancelado, bloqueado, inutilizado |
-| info | em andamento, em digitação, enviado, processando |
+| neutral | pendente, rascunho, em aberto, não realizado, inativo, arquivado                                     |
+| warning | provisionado, parcial, aguardando aprovação, reaberto, vence hoje, contingência                      |
+| error   | atrasado, vencido, rejeitado, cancelado, bloqueado, inutilizado                                      |
+| info    | em andamento, em digitação, enviado, processando                                                     |
 
 Dinheiro: cor neutra (`text-primary`) por padrão; negativo em `tone-error-text`
 com sinal; verde só em variação positiva lado a lado com a negativa. Descontos
@@ -557,13 +557,13 @@ paletas padrão (`red-`, `amber-`, `emerald-`, `blue-`…, exceto via tokens).
 
 Um sistema de 4 níveis × 2 tons, mais link:
 
-| Variante | Visual | Uso |
-|---|---|---|
-| `primary` | brand-600, texto branco, hover brand-700, active brand-800 | a ação principal da tela (no máximo uma visível por região) |
-| `secondary` | surface, borda 1 px border-strong, texto text-secondary, `shadow-xs`, hover bg-surface-subtle | todas as outras ações com rótulo |
-| `tertiary` | sem borda, texto text-secondary, hover bg-surface-subtle | ações em linha, barras de ferramentas, "Cancelar" de diálogo |
-| `link` | texto text-brand, sublinhado no hover | navegação em texto |
-| `destructive` / `destructive-secondary` / `destructive-tertiary` | tons error | excluir, cancelar objeto, inativar |
+| Variante                                                         | Visual                                                                                        | Uso                                                          |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `primary`                                                        | brand-600, texto branco, hover brand-700, active brand-800                                    | a ação principal da tela (no máximo uma visível por região)  |
+| `secondary`                                                      | surface, borda 1 px border-strong, texto text-secondary, `shadow-xs`, hover bg-surface-subtle | todas as outras ações com rótulo                             |
+| `tertiary`                                                       | sem borda, texto text-secondary, hover bg-surface-subtle                                      | ações em linha, barras de ferramentas, "Cancelar" de diálogo |
+| `link`                                                           | texto text-brand, sublinhado no hover                                                         | navegação em texto                                           |
+| `destructive` / `destructive-secondary` / `destructive-tertiary` | tons error                                                                                    | excluir, cancelar objeto, inativar                           |
 
 Tamanhos `sm` 32 / `md` 36 (padrão) / `lg` 40 / `xl` 44 (só autenticação e
 checkout), texto `text-sm` em todos; ícone 16 no `sm`, 20 nos demais; versão
@@ -595,17 +595,17 @@ de detalhe, só no menu ou numa seção "Zona de risco" no fim.
 
 **Vocabulário** (`consts/acoes.ts` para os rótulos compartilhados):
 
-| Gesto | Rótulo |
-|---|---|
-| criar | "Novo <objeto>" (botão de página), "Adicionar <objeto>" (dentro de um formulário/lista) |
-| gravar | "Salvar" ("Salvar e continuar" só em wizard) |
-| sair sem gravar | "Cancelar" (diálogo e formulário); "Fechar" só em diálogo de leitura; "Voltar" só entre etapas |
-| apagar de vez | "Excluir <objeto>" + confirmação destrutiva |
-| tirar de uma lista sem apagar | "Remover" |
-| desativar / reativar | "Inativar" / "Reativar" |
-| confirmar ação destrutiva | verbo + objeto ("Cancelar venda", "Excluir cliente"); o botão de desistir é "Manter <objeto>" ou "Voltar", nunca "Cancelar" |
-| importar / exportar | "Importar <objeto>" / "Exportar" (menu PDF/Excel) |
-| configurar em hub | nenhum botão: a linha é o link, com chevron |
+| Gesto                         | Rótulo                                                                                                                      |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| criar                         | "Novo <objeto>" (botão de página), "Adicionar <objeto>" (dentro de um formulário/lista)                                     |
+| gravar                        | "Salvar" ("Salvar e continuar" só em wizard)                                                                                |
+| sair sem gravar               | "Cancelar" (diálogo e formulário); "Fechar" só em diálogo de leitura; "Voltar" só entre etapas                              |
+| apagar de vez                 | "Excluir <objeto>" + confirmação destrutiva                                                                                 |
+| tirar de uma lista sem apagar | "Remover"                                                                                                                   |
+| desativar / reativar          | "Inativar" / "Reativar"                                                                                                     |
+| confirmar ação destrutiva     | verbo + objeto ("Cancelar venda", "Excluir cliente"); o botão de desistir é "Manter <objeto>" ou "Voltar", nunca "Cancelar" |
+| importar / exportar           | "Importar <objeto>" / "Exportar" (menu PDF/Excel)                                                                           |
+| configurar em hub             | nenhum botão: a linha é o link, com chevron                                                                                 |
 
 Confirmações: `ConfirmDialog` com `tone="destructive"` (ícone de alerta em
 `tone-error`, botão `destructive`) ou `tone="default"` (sem triângulo de
@@ -617,18 +617,18 @@ aviso para aprovar, reabrir, concluir); descrição sempre diz a consequência
 Grade de 4 px. Tokens: `space-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 20, `-6`
 24, `-8` 32, `-10` 40, `-12` 48.
 
-| Lugar | Valor |
-|---|---|
-| gutter da área de conteúdo | 24 (todos os lados; `scrollbar-gutter` sai do global e vai só para `main`) |
-| entre seções de página | 24 |
-| entre cabeçalho da página e conteúdo | 20 |
-| padding de card | 20 (conteúdo) / 16 (cabeçalho compacto) |
-| entre cards de uma grade | 16 |
-| pilha de campos | 16; entre grupos de campos 32 com `eyebrow` |
-| gap em linha (botões, chips) | 8 |
-| linha de tabela | 44 (`py-2.5 px-4`); `density="compact"` 36; cabeçalho 40 |
-| padding de diálogo | 24; rodapé 16/24 |
-| sidebar | 264 expandida / 64 recolhida; item 36 de altura; sem régua por item |
+| Lugar                                | Valor                                                                      |
+| ------------------------------------ | -------------------------------------------------------------------------- |
+| gutter da área de conteúdo           | 24 (todos os lados; `scrollbar-gutter` sai do global e vai só para `main`) |
+| entre seções de página               | 24                                                                         |
+| entre cabeçalho da página e conteúdo | 20                                                                         |
+| padding de card                      | 20 (conteúdo) / 16 (cabeçalho compacto)                                    |
+| entre cards de uma grade             | 16                                                                         |
+| pilha de campos                      | 16; entre grupos de campos 32 com `eyebrow`                                |
+| gap em linha (botões, chips)         | 8                                                                          |
+| linha de tabela                      | 44 (`py-2.5 px-4`); `density="compact"` 36; cabeçalho 40                   |
+| padding de diálogo                   | 24; rodapé 16/24                                                           |
+| sidebar                              | 264 expandida / 64 recolhida; item 36 de altura; sem régua por item        |
 
 Diálogos ganham `size`: `sm` 400 (confirmação), `md` 560 (formulário curto,
 padrão), `lg` 720 (formulário em duas colunas), `xl` 960 (tabelas), `full`.
@@ -657,26 +657,27 @@ diálogo.
 
 Dicionário (um glifo, um gesto; `consts/icones.ts`):
 
-| Gesto | Ícone |
-|---|---|
-| abrir/ver | `IconEye` (nunca a lupa) |
-| buscar | `IconSearch` (só em campo de busca) |
-| editar | `IconPencil` |
-| excluir | `IconTrash` |
-| inativar/reativar | `IconBan` / `IconRotateClockwise` |
-| duplicar | `IconCopy` |
-| histórico | `IconHistory` |
-| imprimir | `IconPrinter` (só imprime) |
-| exportar / importar | `IconDownload` / `IconUpload` |
-| emitir NF | `IconSend`; ver NF `IconFileInvoice`; consultar status `IconRefresh`; reprocessar `IconRepeat` |
-| navegar para ficha/documento | `IconFileText` + chevron |
-| receber / pagar | `IconCash` / `IconCashBanknoteOff`; nunca polegares |
-| faturar | `IconReceipt`; editar parcelas `IconCalendarDollar` |
-| menu de linha | `IconDotsVertical` |
-| novo | `IconPlus` |
-| avançar / voltar | `IconChevronRight` / `IconArrowLeft` |
-| observação | `IconNote`; anexo `IconPaperclip` |
-| erro / aviso / sucesso / info (avisos e alertas) | `IconAlertCircle` / `IconAlertTriangle` / `IconCircleCheck` / `IconInfoCircle` |
+| Gesto                                            | Ícone                                                                                          |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| abrir/ver                                        | `IconEye` (nunca a lupa)                                                                       |
+| buscar                                           | `IconSearch` (só em campo de busca)                                                            |
+| editar                                           | `IconPencil`                                                                                   |
+| excluir                                          | `IconTrash`                                                                                    |
+| inativar/reativar                                | `IconBan` / `IconRotateClockwise`                                                              |
+| cancelar (venda, adiantamento, movimentação)     | `IconBan` (não apaga, então não é lixeira)                                                     |
+| duplicar                                         | `IconCopy`                                                                                     |
+| histórico                                        | `IconHistory`                                                                                  |
+| imprimir                                         | `IconPrinter` (só imprime)                                                                     |
+| exportar / importar                              | `IconDownload` / `IconUpload`                                                                  |
+| emitir NF                                        | `IconSend`; ver NF `IconFileInvoice`; consultar status `IconRefresh`; reprocessar `IconRepeat` |
+| navegar para ficha/documento                     | `IconFileText` + chevron                                                                       |
+| receber / pagar                                  | `IconCash` / `IconCashBanknoteOff`; nunca polegares                                            |
+| faturar                                          | `IconReceipt`; editar parcelas `IconCalendarDollar`                                            |
+| menu de linha                                    | `IconDotsVertical`                                                                             |
+| novo                                             | `IconPlus`                                                                                     |
+| avançar / voltar                                 | `IconChevronRight` / `IconArrowLeft`                                                           |
+| observação                                       | `IconNote`; anexo `IconPaperclip`                                                              |
+| erro / aviso / sucesso / info (avisos e alertas) | `IconCircleX` / `IconAlertTriangle` / `IconCircleCheck` / `IconInfoCircle`                     |
 
 ### 4.6 Interação e movimento
 
@@ -710,28 +711,28 @@ Dicionário (um glifo, um gesto; `consts/icones.ts`):
 
 ### 4.7 Componentes adequados à tarefa
 
-| Tarefa | Componente | Em vez de |
-|---|---|---|
-| listar registros | `Table` com `density`, `numeric` em `TableHead`/`TableCell` (direita + `tabular-nums`), `sticky` opcional, `sortable` com `aria-sort`, seleção, `Pagination` única com "1–20 de 340", tamanho de página e estados embutidos (`loading`, `empty`, `error`, `noResults`) | `<table>` cru, "tabelas" de div, duas paginações, `colSpan` manual |
-| ação em linha | `RowActions` (4.3) | 3–8 ícones por linha |
-| cabeçalho de página | `PageHeader` (breadcrumb ou voltar, título, subtítulo, status, metadados, ações, abas) | Topbar com `label`, cabeçalhos à mão |
-| cabeçalho de detalhe | `ObjectHeader` (nome, status, 3–5 números-chave sempre visíveis, ações) | accordions fechados com o total escondido |
-| hub de configurações | `SettingsList` (grupo em um card, linha = link com ícone, título, descrição, chevron, badge de estado) | card por linha + botão "Configurar" |
-| página de configuração | `SettingsSection` (título + descrição + controle; salvar em barra fixa ou autosave) | formulário solto em diálogo |
-| ver/editar um registro sem sair da lista | `Sheet` (`size`) | diálogo de 900 px que abre diálogos |
-| fluxo longo (NF, cadastro completo, condições de pagamento) | página com `SectionNav` lateral e resumo fixo, ou wizard com `Stepper` | diálogo com 8 abas, duas etapas sem indicador |
-| confirmar | `ConfirmDialog` com `tone` | AlertDialog verde, `bg-red-600`, nada |
-| escolher entre 2–4 opções | `SegmentedControl` (ou `RadioCard` quando precisa de descrição) | `Select` com 2 opções, botões coloridos como toggle, `<button>` cru |
-| ligar algo com efeito imediato | `Switch` (com rótulo e feedback "Salvo") | Switch dentro de formulário salvo depois → `Checkbox` |
-| data | `DatePicker` único (react-day-picker, campo digitável, presets) e `DateRangePicker` com presets | 4 seletores, `input type=date` |
-| dinheiro / percentual | `MoneyInput` e `PercentInput` únicos (máscara pt-BR, `inputMode=decimal`) | 3 máscaras, `type=number` |
-| dica | `Tooltip` | `title=` |
-| status | `Badge` do dicionário (`StatusBadge status="OVERDUE"`) | badge ad hoc, polegares, pontos coloridos, enum cru |
-| aviso na tela | `Alert` (`info`, `success`, `warning`, `error`) e `Banner` de topo | caixas amarelas à mão |
-| vazio / sem resultado / erro / sem permissão | `EmptyState` (`kind="empty\|no-results\|error\|forbidden"`) com ação | três padrões + parágrafos cinzas |
-| cor de etiqueta definida pelo usuário | `ColorPicker` com paleta e texto calculado por contraste | `<input type=color>` + `text-white` |
-| navegação entre sub-rotas | `Tabs` de link no `PageHeader` (contador só quando > 0), nunca dentro de `CardHeader` | abas em três lugares |
-| caminho | `Breadcrumb` | nada |
+| Tarefa                                                      | Componente                                                                                                                                                                                                                                                             | Em vez de                                                           |
+| ----------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| listar registros                                            | `Table` com `density`, `numeric` em `TableHead`/`TableCell` (direita + `tabular-nums`), `sticky` opcional, `sortable` com `aria-sort`, seleção, `Pagination` única com "1–20 de 340", tamanho de página e estados embutidos (`loading`, `empty`, `error`, `noResults`) | `<table>` cru, "tabelas" de div, duas paginações, `colSpan` manual  |
+| ação em linha                                               | `RowActions` (4.3)                                                                                                                                                                                                                                                     | 3–8 ícones por linha                                                |
+| cabeçalho de página                                         | `PageHeader` (breadcrumb ou voltar, título, subtítulo, status, metadados, ações, abas)                                                                                                                                                                                 | Topbar com `label`, cabeçalhos à mão                                |
+| cabeçalho de detalhe                                        | `ObjectHeader` (nome, status, 3–5 números-chave sempre visíveis, ações)                                                                                                                                                                                                | accordions fechados com o total escondido                           |
+| hub de configurações                                        | `SettingsList` (grupo em um card, linha = link com ícone, título, descrição, chevron, badge de estado)                                                                                                                                                                 | card por linha + botão "Configurar"                                 |
+| página de configuração                                      | `SettingsSection` (título + descrição + controle; salvar em barra fixa ou autosave)                                                                                                                                                                                    | formulário solto em diálogo                                         |
+| ver/editar um registro sem sair da lista                    | `Sheet` (`size`)                                                                                                                                                                                                                                                       | diálogo de 900 px que abre diálogos                                 |
+| fluxo longo (NF, cadastro completo, condições de pagamento) | página com `SectionNav` lateral e resumo fixo, ou wizard com `Stepper`                                                                                                                                                                                                 | diálogo com 8 abas, duas etapas sem indicador                       |
+| confirmar                                                   | `ConfirmDialog` com `tone`                                                                                                                                                                                                                                             | AlertDialog verde, `bg-red-600`, nada                               |
+| escolher entre 2–4 opções                                   | `SegmentedControl` (ou `RadioCard` quando precisa de descrição)                                                                                                                                                                                                        | `Select` com 2 opções, botões coloridos como toggle, `<button>` cru |
+| ligar algo com efeito imediato                              | `Switch` (com rótulo e feedback "Salvo")                                                                                                                                                                                                                               | Switch dentro de formulário salvo depois → `Checkbox`               |
+| data                                                        | `DatePicker` único (react-day-picker, campo digitável, presets) e `DateRangePicker` com presets                                                                                                                                                                        | 4 seletores, `input type=date`                                      |
+| dinheiro / percentual                                       | `MoneyInput` e `PercentInput` únicos (máscara pt-BR, `inputMode=decimal`)                                                                                                                                                                                              | 3 máscaras, `type=number`                                           |
+| dica                                                        | `Tooltip`                                                                                                                                                                                                                                                              | `title=`                                                            |
+| status                                                      | `Badge` do dicionário (`StatusBadge status="OVERDUE"`)                                                                                                                                                                                                                 | badge ad hoc, polegares, pontos coloridos, enum cru                 |
+| aviso na tela                                               | `Alert` (`info`, `success`, `warning`, `error`) e `Banner` de topo                                                                                                                                                                                                     | caixas amarelas à mão                                               |
+| vazio / sem resultado / erro / sem permissão                | `EmptyState` (`kind="empty\|no-results\|error\|forbidden"`) com ação                                                                                                                                                                                                   | três padrões + parágrafos cinzas                                    |
+| cor de etiqueta definida pelo usuário                       | `ColorPicker` com paleta e texto calculado por contraste                                                                                                                                                                                                               | `<input type=color>` + `text-white`                                 |
+| navegação entre sub-rotas                                   | `Tabs` de link no `PageHeader` (contador só quando > 0), nunca dentro de `CardHeader`                                                                                                                                                                                  | abas em três lugares                                                |
+| caminho                                                     | `Breadcrumb`                                                                                                                                                                                                                                                           | nada                                                                |
 
 ### 4.8 Navegação e cabeçalhos
 
@@ -755,23 +756,23 @@ Dicionário (um glifo, um gesto; `consts/icones.ts`):
 
 ## 5. Mapa de mudanças
 
-| Onda | Mudança | Entrega | Depende de |
-|---|---|---|---|
-| 0 | `tema-claro-escuro` (em andamento) | tokens escuros e seletor | — |
-| 1 | `cores-e-contraste` | canais + `<alpha-value>`, camada semântica, dicionário de estados, dinheiro neutro, contraste, gráficos, lint de hex/paleta | `tema-claro-escuro` (mesmos arquivos `globals.css`/`tailwind.config.ts`) |
-| 1 | `tipografia-e-hierarquia` | papéis, `Heading`/`Text`, Topbar/Card/Dialog/Table/Form nos papéis, eyebrow, mínimo 12 px, títulos de aba | — (toca classes, não tokens de cor) |
-| 1 | `icones` | Tabler único, tokens de tamanho, `Icon`, dicionário de glifos, `FeaturedIcon` enxuto, logos separados | — |
-| 2 | `botoes-e-acoes` | sistema de 4 níveis, codemod de variantes, `RowActions`, `ConfirmDialog`, vocabulário, fim do "Configurar" repetido | `cores-e-contraste`, `icones` |
-| 2 | `espacamento-e-layout` | grade e tokens de espaço, densidade de tabela, `size` em Dialog/Sheet, raios, `FormGrid`, gutter, sidebar 264 | `tipografia-e-hierarquia` |
-| 2 | `interacao-e-movimento` | hover/foco únicos, tokens de movimento, reduced-motion, política de carregamento e avisos, guarda de não salvo | `cores-e-contraste` (ring e scrim) |
-| 2 | `componentes-adequados` | `Table` com API, paginação única, `Sheet`, `SegmentedControl`, `RadioCard`, `DatePicker`/`MoneyInput` únicos, `StatusBadge`, `Alert`/`EmptyState` únicos, `Breadcrumb`, Tooltip em vez de `title` | `botoes-e-acoes`, `espacamento-e-layout` |
-| 2 | `navegacao-e-cabecalhos` | `PageHeader`, `ObjectHeader`, sidebar e menu móvel, renomeações, sem permissão, fim da marcação de revisão | `tipografia-e-hierarquia`, `componentes-adequados` (Breadcrumb) |
-| 3 | `telas-configuracoes` | hubs como lista, páginas em vez de modal, NF no DS, modelos de salvar | `navegacao-e-cabecalhos`, `componentes-adequados` |
-| 3 | `telas-vendas` | listas, detalhe com `ObjectHeader`, diálogos redimensionados, composição | `navegacao-e-cabecalhos`, `componentes-adequados` |
-| 3 | `telas-financeiro-e-caixa` | status único, dinheiro, ações de linha, PDV, caixa, folha | idem |
-| 3 | `telas-nota-fiscal` | emissão como página com seções, lista única, tokens | idem |
-| 3 | `telas-cadastros-producao-custos` | abas de detalhe, formulários, kanban, agenda, estoque, custos, precificação | idem |
-| 3 | `telas-dashboard-e-relatorios` | título e hierarquia de KPIs, gráficos por token, filtros, estados | idem |
+| Onda | Mudança                            | Entrega                                                                                                                                                                                           | Depende de                                                               |
+| ---- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 0    | `tema-claro-escuro` (em andamento) | tokens escuros e seletor                                                                                                                                                                          | —                                                                        |
+| 1    | `cores-e-contraste`                | canais + `<alpha-value>`, camada semântica, dicionário de estados, dinheiro neutro, contraste, gráficos, lint de hex/paleta                                                                       | `tema-claro-escuro` (mesmos arquivos `globals.css`/`tailwind.config.ts`) |
+| 1    | `tipografia-e-hierarquia`          | papéis, `Heading`/`Text`, Topbar/Card/Dialog/Table/Form nos papéis, eyebrow, mínimo 12 px, títulos de aba                                                                                         | — (toca classes, não tokens de cor)                                      |
+| 1    | `icones`                           | Tabler único, tokens de tamanho, `Icon`, dicionário de glifos, `FeaturedIcon` enxuto, logos separados                                                                                             | —                                                                        |
+| 2    | `botoes-e-acoes`                   | sistema de 4 níveis, codemod de variantes, `RowActions`, `ConfirmDialog`, vocabulário, fim do "Configurar" repetido                                                                               | `cores-e-contraste`, `icones`                                            |
+| 2    | `espacamento-e-layout`             | grade e tokens de espaço, densidade de tabela, `size` em Dialog/Sheet, raios, `FormGrid`, gutter, sidebar 264                                                                                     | `tipografia-e-hierarquia`                                                |
+| 2    | `interacao-e-movimento`            | hover/foco únicos, tokens de movimento, reduced-motion, política de carregamento e avisos, guarda de não salvo                                                                                    | `cores-e-contraste` (ring e scrim)                                       |
+| 2    | `componentes-adequados`            | `Table` com API, paginação única, `Sheet`, `SegmentedControl`, `RadioCard`, `DatePicker`/`MoneyInput` únicos, `StatusBadge`, `Alert`/`EmptyState` únicos, `Breadcrumb`, Tooltip em vez de `title` | `botoes-e-acoes`, `espacamento-e-layout`                                 |
+| 2    | `navegacao-e-cabecalhos`           | `PageHeader`, `ObjectHeader`, sidebar e menu móvel, renomeações, sem permissão, fim da marcação de revisão                                                                                        | `tipografia-e-hierarquia`, `componentes-adequados` (Breadcrumb)          |
+| 3    | `telas-configuracoes`              | hubs como lista, páginas em vez de modal, NF no DS, modelos de salvar                                                                                                                             | `navegacao-e-cabecalhos`, `componentes-adequados`                        |
+| 3    | `telas-vendas`                     | listas, detalhe com `ObjectHeader`, diálogos redimensionados, composição                                                                                                                          | `navegacao-e-cabecalhos`, `componentes-adequados`                        |
+| 3    | `telas-financeiro-e-caixa`         | status único, dinheiro, ações de linha, PDV, caixa, folha                                                                                                                                         | idem                                                                     |
+| 3    | `telas-nota-fiscal`                | emissão como página com seções, lista única, tokens                                                                                                                                               | idem                                                                     |
+| 3    | `telas-cadastros-producao-custos`  | abas de detalhe, formulários, kanban, agenda, estoque, custos, precificação                                                                                                                       | idem                                                                     |
+| 3    | `telas-dashboard-e-relatorios`     | título e hierarquia de KPIs, gráficos por token, filtros, estados                                                                                                                                 | idem                                                                     |
 
 As arestas e as ondas vivem em `design/openspec/in-flight.md`; aqui só a
 razão: a onda 1 muda o que todas as telas herdam sem tocar nas telas; a onda

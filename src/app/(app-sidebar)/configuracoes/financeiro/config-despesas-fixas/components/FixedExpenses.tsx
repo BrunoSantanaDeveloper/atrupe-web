@@ -28,7 +28,7 @@ import { getDataOld } from '@/actions/_cruds'
 import { useQuery } from '@tanstack/react-query'
 
 // Icons
-import { IconCalendarDollar, IconPackageOff } from '@tabler/icons-react'
+import { IconCalendarDollar, IconReceipt2 } from '@tabler/icons-react'
 import { FixedExpensesData } from './ExpensesTable/ExpensesData'
 
 export function FixedExpenses({ searchParams }: SearchParamsType) {
@@ -96,7 +96,7 @@ export function FixedExpenses({ searchParams }: SearchParamsType) {
               statusEmpty ? (
                 <ListDataStatusEmpty
                   title={`Nenhuma despesa fixa para o status: ${statusLabel}`}
-                  icon={IconPackageOff}
+                  icon={IconReceipt2}
                 />
               ) : (
                 <>

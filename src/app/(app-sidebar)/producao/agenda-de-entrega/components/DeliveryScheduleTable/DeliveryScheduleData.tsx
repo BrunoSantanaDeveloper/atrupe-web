@@ -57,10 +57,6 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
 // Icons
 import {
-  IconSearch,
-  IconPrinter,
-  IconRefreshDot,
-  IconMessage,
   IconCircleCheck,
   IconQuestionMark,
   IconCalendarRepeat,
@@ -329,7 +325,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       >
                                         <ActionButton
                                           variant="neutralLight"
-                                          Icon={IconRefreshDot}
+                                          gesto="editarParcelas"
                                           tooltip="Editar parcelas"
                                           onClick={() => {
                                             setRowData(deliverySchedule)
@@ -348,7 +344,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       >
                                         <ActionButton
                                           variant="neutralLight"
-                                          Icon={IconRefreshDot}
+                                          gesto="faturar"
                                           badge="errorLight"
                                           tooltip="Faturar"
                                           onClick={() => {
@@ -394,7 +390,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       ]}
                                     >
                                       <ActionButton
-                                        Icon={IconMessage}
+                                        gesto="observacao"
                                         tooltip="Observações"
                                         onClick={() => {
                                           setRowData(deliverySchedule)
@@ -422,7 +418,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                       />
                                     </PermissionGate>
                                     <ActionButton
-                                      Icon={IconPrinter}
+                                      gesto="imprimir"
                                       tooltip="Imprimir"
                                       onClick={() =>
                                         handleGeneratePDF(deliverySchedule)
@@ -433,7 +429,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                     />
                                     <ActionButton
                                       link={link}
-                                      Icon={IconSearch}
+                                      gesto="ver"
                                       tooltip="Ver ordem de serviço"
                                     />
                                   </TooltipProvider>

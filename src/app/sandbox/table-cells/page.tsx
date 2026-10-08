@@ -37,7 +37,7 @@ import {
   PaginationEllipsis,
 } from '@/components/ui/pagination'
 import { EmptyState } from '@/components/ui/empty-state'
-import { IconSearch, IconCreditCard, IconFileText } from '@tabler/icons-react'
+import { IconSearch, IconCreditCard } from '@tabler/icons-react'
 import { Icon } from '@/components/ui/icon'
 
 export const dynamic = 'force-dynamic'
