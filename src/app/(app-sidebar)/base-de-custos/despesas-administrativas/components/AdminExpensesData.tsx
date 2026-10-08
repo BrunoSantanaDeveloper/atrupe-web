@@ -165,7 +165,7 @@ export function AdminExpensesData({ accounts, onEdit, onAllocate }: Props) {
                         </span>
                         <span className="text-xs text-gray">
                           {formatValue(account.remainder)} fica no
-                          administrativo
+                          administrativo · acompanha o custo de referência
                         </span>
                       </>
                     ) : null}

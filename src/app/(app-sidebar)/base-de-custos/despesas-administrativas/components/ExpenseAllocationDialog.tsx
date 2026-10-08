@@ -182,6 +182,17 @@ export function ExpenseAllocationDialog({
             como o espaço que cada um ocupa. A parte rateada passa a ser custo
             próprio do setor; o que sobrar continua no total administrativo.
           </p>
+          {/* O que fica guardado é o percentual (BC-8, 08/10/2026): o custo
+              de referência muda todo mês pelo critério da conta, e o valor
+              de cada setor acompanha */}
+          <p className="text-sm text-gray">
+            <span className="font-medium text-gray-900">
+              O que vale é o percentual.
+            </span>{' '}
+            Quando o custo de referência mudar com o mês ou com o critério da
+            conta, o valor de cada setor acompanha sozinho; digitar em reais só
+            serve para acertar o percentual.
+          </p>
           {isLoading ? (
             <TableSkeleton cols={4} rows={5} />
           ) : (
