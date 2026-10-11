@@ -15,7 +15,7 @@ async function openAssets(page: Page) {
 const assetRow = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Patrimônios — listagem', () => {
+test.describe('Patrimônios — listagem @mock', () => {
   test('agrupa por tipo de bem (P-29)', async ({ page }) => {
     await openAssets(page)
 
@@ -55,7 +55,7 @@ test.describe('Patrimônios — listagem', () => {
   })
 })
 
-test.describe('Patrimônios — cadastro rápido (P-12, P-14)', () => {
+test.describe('Patrimônios — cadastro rápido (P-12, P-14) @mock', () => {
   test('o modal varia pela unidade, sem tipo de equipamento', async ({
     page,
   }) => {
@@ -92,7 +92,7 @@ test.describe('Patrimônios — cadastro rápido (P-12, P-14)', () => {
   })
 })
 
-test.describe('Patrimônio — página do bem', () => {
+test.describe('Patrimônio — página do bem @mock', () => {
   test('mostra resumo, custos e configurações produtivas', async ({ page }) => {
     await page.goto(`${ROUTE}/sublimatica`)
 
@@ -151,7 +151,7 @@ test.describe('Patrimônio — página do bem', () => {
   })
 })
 
-test.describe('Patrimônio — custos e configurações (P-6, P-31)', () => {
+test.describe('Patrimônio — custos e configurações (P-6, P-31) @mock', () => {
   test('o custo fixo é diluído pela periodicidade', async ({ page }) => {
     await page.goto(`${ROUTE}/sublimatica`)
 
@@ -180,7 +180,7 @@ test.describe('Patrimônio — custos e configurações (P-6, P-31)', () => {
   })
 })
 
-test.describe('Grupos de bens equivalentes (P-28)', () => {
+test.describe('Grupos de bens equivalentes (P-28) @mock', () => {
   test('custo pela média e produtividade pela soma', async ({ page }) => {
     await page.goto(`${ROUTE}/grupos`)
 

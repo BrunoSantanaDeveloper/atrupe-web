@@ -21,7 +21,7 @@ async function openSummary(page: Page) {
   ).toBeVisible()
 }
 
-test.describe('Precificação — estrutura (PR-1)', () => {
+test.describe('Precificação — estrutura (PR-1) @mock', () => {
   test('reúne os quatro grupos num lugar só', async ({ page }) => {
     await openSummary(page)
 
@@ -35,7 +35,7 @@ test.describe('Precificação — estrutura (PR-1)', () => {
   })
 })
 
-test.describe('Precificação — parâmetros e markup (PR-4)', () => {
+test.describe('Precificação — parâmetros e markup (PR-4) @mock', () => {
   test('mostra os quatro parâmetros oficiais, sem "despesas gerais"', async ({
     page,
   }) => {
@@ -84,7 +84,7 @@ test.describe('Precificação — parâmetros e markup (PR-4)', () => {
   })
 })
 
-test.describe('Precificação — listas por grupo (PR-3)', () => {
+test.describe('Precificação — listas por grupo (PR-3) @mock', () => {
   test('a coluna de resultado é a margem, e não o markup', async ({ page }) => {
     await page.goto(`${BASE}/materiais`)
 
@@ -126,7 +126,7 @@ test.describe('Precificação — listas por grupo (PR-3)', () => {
   })
 })
 
-test.describe('Precificação — modal do item (PR-2)', () => {
+test.describe('Precificação — modal do item (PR-2) @mock', () => {
   test('alterna entre preço fixo e variável e decompõe o preço', async ({
     page,
   }) => {

@@ -25,7 +25,7 @@ async function capture(page: Page, name: string, theme: 'light' | 'dark') {
   await page.screenshot({ path: `${OUT}/${name}-${theme}.png`, fullPage: true })
 }
 
-test.describe('Capturas de tema', () => {
+test.describe('Capturas de tema @mock', () => {
   test('login', async ({ browser }) => {
     const context = await browser.newContext({
       storageState: { cookies: [], origins: [] },

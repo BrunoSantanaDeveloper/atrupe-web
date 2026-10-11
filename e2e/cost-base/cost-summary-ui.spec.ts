@@ -10,7 +10,7 @@ async function openSummary(page: Page) {
   await expect(page.getByText('Custo mensal de referência')).toBeVisible()
 }
 
-test.describe('Resumo — conteúdo', () => {
+test.describe('Resumo — conteúdo @mock', () => {
   test('mostra o total, o mês das médias e o aviso da depreciação', async ({
     page,
   }) => {
@@ -63,7 +63,7 @@ test.describe('Resumo — conteúdo', () => {
   })
 })
 
-test.describe('Resumo — padrões da interface', () => {
+test.describe('Resumo — padrões da interface @mock', () => {
   test('funciona em 390px, sem rolagem horizontal da página', async ({
     page,
   }) => {

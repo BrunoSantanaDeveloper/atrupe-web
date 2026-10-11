@@ -30,7 +30,7 @@ const table = (page: Page) => page.getByRole('table')
 const row = (page: Page, name: string) =>
   table(page).getByRole('row').filter({ hasText: name })
 
-test.describe('Base de custos — estrutura (design.md §4, §5.2, §10)', () => {
+test.describe('Base de custos — estrutura (design.md §4, §5.2, §10) @mock', () => {
   test('a rota raiz abre a aba Resumo', async ({ page }) => {
     await page.goto(BASE)
     await expect(page).toHaveURL(new RegExp(`${BASE}/resumo$`))
@@ -83,7 +83,7 @@ test.describe('Base de custos — estrutura (design.md §4, §5.2, §10)', () =>
   })
 })
 
-test.describe('Despesas administrativas — listagem (design.md §5.1, §6, §7)', () => {
+test.describe('Despesas administrativas — listagem (design.md §5.1, §6, §7) @mock', () => {
   test('cartões de totais com rótulo e valor', async ({ page }) => {
     await openAdminExpenses(page)
 
@@ -209,7 +209,7 @@ test.describe('Despesas administrativas — listagem (design.md §5.1, §6, §7)
   })
 })
 
-test.describe('Despesas administrativas — filtros na URL (design.md §8)', () => {
+test.describe('Despesas administrativas — filtros na URL (design.md §8) @mock', () => {
   test('filtro de critério grava na URL e filtra a lista', async ({ page }) => {
     await openAdminExpenses(page)
 
@@ -224,8 +224,8 @@ test.describe('Despesas administrativas — filtros na URL (design.md §8)', () 
   test('busca grava na URL', async ({ page }) => {
     await openAdminExpenses(page)
 
-    await page.getByLabel('Buscar').fill('energia')
-    await page.getByRole('button', { name: 'Botão de busca' }).click()
+    await page.getByRole('searchbox', { name: 'Buscar' }).fill('energia')
+    await page.getByRole('button', { name: 'Buscar', exact: true }).click()
 
     await expect(page).toHaveURL(/search=energia/)
     await expect(row(page, 'Energia elétrica')).toBeVisible()
@@ -240,7 +240,7 @@ test.describe('Despesas administrativas — filtros na URL (design.md §8)', () 
   })
 })
 
-test.describe('Despesas administrativas — modal de edição (design.md §5.4, §6.6, §12)', () => {
+test.describe('Despesas administrativas — modal de edição (design.md §5.4, §6.6, §12) @mock', () => {
   test('modal com título, descrição e critérios com valor', async ({
     page,
   }) => {
@@ -320,7 +320,7 @@ test.describe('Despesas administrativas — modal de edição (design.md §5.4, 
   })
 })
 
-test.describe('Despesas administrativas — texto e celular (design.md §10, §11)', () => {
+test.describe('Despesas administrativas — texto e celular (design.md §10, §11) @mock', () => {
   test('sem exclamação nem "com sucesso"', async ({ page }) => {
     await openAdminExpenses(page)
     const text = await page.locator('main').innerText()

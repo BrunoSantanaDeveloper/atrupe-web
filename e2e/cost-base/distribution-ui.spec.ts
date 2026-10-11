@@ -39,7 +39,7 @@ async function type(input: ReturnType<Page['getByRole']>, text: string) {
   await input.press('Enter')
 }
 
-test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
+test.describe('Distribuição — estrutura (BC-6, BC-7) @mock', () => {
   test('a aba abre pela rota e fica ativa', async ({ page }) => {
     await openDistribution(page)
 
@@ -91,7 +91,7 @@ test.describe('Distribuição — estrutura (BC-6, BC-7)', () => {
   })
 })
 
-test.describe('Distribuição — regras de cálculo (BC-5)', () => {
+test.describe('Distribuição — regras de cálculo (BC-5) @mock', () => {
   test('nasce sem distribuir nada, pelo método do custo puro', async ({
     page,
   }) => {
@@ -174,7 +174,7 @@ test.describe('Distribuição — regras de cálculo (BC-5)', () => {
   })
 })
 
-test.describe('Distribuição — padrões da interface (design.md)', () => {
+test.describe('Distribuição — padrões da interface (design.md) @mock', () => {
   test('a ação primária usa o verde de marca e grava com toast', async ({
     page,
   }) => {

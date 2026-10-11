@@ -9,7 +9,7 @@ const ENTRY = '/estoque/entrada-de-nota'
 const row = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Estoque — saldo e movimentações', () => {
+test.describe('Estoque — saldo e movimentações @mock', () => {
   test('mostra saldo, mínimo e situação de cada material', async ({ page }) => {
     await page.goto(STOCK)
 
@@ -40,7 +40,7 @@ test.describe('Estoque — saldo e movimentações', () => {
   })
 })
 
-test.describe('Entrada de nota — conciliação (DC-9)', () => {
+test.describe('Entrada de nota — conciliação (DC-9) @mock', () => {
   test('o item chega com a descrição do fornecedor', async ({ page }) => {
     await page.goto(ENTRY)
 

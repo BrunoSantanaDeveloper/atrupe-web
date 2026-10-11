@@ -11,7 +11,7 @@ const composition = (id: string) => `${PRODUCTS}/${id}/composicao`
 const row = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Processos — etapa produtiva de um setor (§9)', () => {
+test.describe('Processos — etapa produtiva de um setor (§9) @mock', () => {
   test('a lista agrupa por setor e mostra os tipos de recurso', async ({
     page,
   }) => {
@@ -63,7 +63,7 @@ test.describe('Processos — etapa produtiva de um setor (§9)', () => {
   })
 })
 
-test.describe('Composições — produto do START com custo (DC-2, DC-15)', () => {
+test.describe('Composições — produto do START com custo (DC-2, DC-15) @mock', () => {
   test('a lista de produtos abre a composição de cada produto', async ({
     page,
   }) => {

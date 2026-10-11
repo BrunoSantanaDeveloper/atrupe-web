@@ -16,7 +16,7 @@ async function openSectorCosts(page: Page) {
 const productiveRow = (page: Page, name: string) =>
   page.getByRole('table').first().getByRole('row').filter({ hasText: name })
 
-test.describe('Por setor — estrutura', () => {
+test.describe('Por setor — estrutura @mock', () => {
   test('separa setores produtivos e administrativos', async ({ page }) => {
     await openSectorCosts(page)
 
@@ -58,7 +58,7 @@ test.describe('Por setor — estrutura', () => {
   })
 })
 
-test.describe('Por setor — números e detalhamento', () => {
+test.describe('Por setor — números e detalhamento @mock', () => {
   test('o custo próprio soma as parcelas do setor', async ({ page }) => {
     await openSectorCosts(page)
 
@@ -94,7 +94,7 @@ test.describe('Por setor — números e detalhamento', () => {
   })
 })
 
-test.describe('Por setor — método do custo puro', () => {
+test.describe('Por setor — método do custo puro @mock', () => {
   test('sem distribuição, o rodapé explica onde está o administrativo', async ({
     page,
   }) => {

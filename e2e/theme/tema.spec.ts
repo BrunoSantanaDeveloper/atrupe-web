@@ -2,6 +2,10 @@ import { test, expect, type Page } from '@playwright/test'
 
 // Tema claro/escuro — design/openspec/changes/tema-claro-escuro
 // Roda na página de login (pública): a escolha de tema vale sem sessão.
+//
+// Até a mudança ser arquivada, o claro é o padrão, o sistema operacional não
+// decide e os seletores ficam escondidos (src/contexts/themeProvider.tsx). A
+// escolha guardada continua valendo, para a revisão do tema escuro.
 
 const STORAGE_KEY = 'atrupe-tema'
 const LOGIN = '/login'
@@ -12,13 +16,17 @@ const isDark = (page: Page) =>
   page.evaluate(() => document.documentElement.classList.contains('dark'))
 
 test.describe('Preferência de tema', () => {
-  test('sem escolha salva, segue o sistema (escuro)', async ({ page }) => {
+  test('sem escolha salva, fica no claro mesmo com o sistema escuro', async ({
+    page,
+  }) => {
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.goto(LOGIN)
-    expect(await isDark(page)).toBe(true)
+    expect(await isDark(page)).toBe(false)
   })
 
-  test('sem escolha salva, segue o sistema (claro)', async ({ page }) => {
+  test('sem escolha salva, fica no claro com o sistema claro', async ({
+    page,
+  }) => {
     await page.emulateMedia({ colorScheme: 'light' })
     await page.goto(LOGIN)
     expect(await isDark(page)).toBe(false)
@@ -48,7 +56,7 @@ test.describe('Preferência de tema', () => {
     expect(await isDark(page)).toBe(false)
   })
 
-  test('Sistema acompanha a troca do sistema sem recarregar', async ({
+  test('Sistema guardado não acompanha mais o sistema operacional', async ({
     page,
   }) => {
     await page.emulateMedia({ colorScheme: 'light' })
@@ -61,7 +69,7 @@ test.describe('Preferência de tema', () => {
     expect(await isDark(page)).toBe(false)
 
     await page.emulateMedia({ colorScheme: 'dark' })
-    await expect.poll(() => isDark(page)).toBe(true)
+    expect(await isDark(page)).toBe(false)
   })
 
   test('troca numa aba vale na outra aba', async ({ context }) => {
@@ -124,8 +132,10 @@ test.describe('Tema escuro: contraste dos tokens', () => {
   }
 
   test('textos, primária e foco atendem os mínimos', async ({ page }) => {
-    await page.emulateMedia({ colorScheme: 'dark' })
+    // O sistema não liga mais o escuro: a escolha guardada liga
     await page.goto(LOGIN)
+    await page.evaluate((key) => localStorage.setItem(key, 'dark'), STORAGE_KEY)
+    await page.reload()
     expect(await isDark(page)).toBe(true)
 
     // Lê os tokens já resolvidos pelo navegador (com .dark aplicado)

@@ -16,7 +16,7 @@ async function openDepreciation(page: Page, status = '') {
 const assetRow = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Patrimônios — estrutura', () => {
+test.describe('Patrimônios — estrutura @mock', () => {
   test('tem as quatro situações como abas', async ({ page }) => {
     await openDepreciation(page)
 
@@ -55,7 +55,7 @@ test.describe('Patrimônios — estrutura', () => {
   })
 })
 
-test.describe('Patrimônios — situações e regras', () => {
+test.describe('Patrimônios — situações e regras @mock', () => {
   test('a depreciação segue a fórmula de aquisição, residual e vida útil', async ({
     page,
   }) => {

@@ -16,7 +16,7 @@ async function openLabor(page: Page) {
 const sectorRow = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Mão de obra — listagem', () => {
+test.describe('Mão de obra — listagem @mock', () => {
   test('a coluna de resultado é a margem, e não o MKM (PR-3)', async ({
     page,
   }) => {
@@ -53,7 +53,7 @@ test.describe('Mão de obra — listagem', () => {
   })
 })
 
-test.describe('Mão de obra — carga por colaborador (F-11)', () => {
+test.describe('Mão de obra — carga por colaborador (F-11) @mock', () => {
   test('o modal soma as horas de cada colaborador', async ({ page }) => {
     await openLabor(page)
 

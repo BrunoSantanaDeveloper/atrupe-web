@@ -13,7 +13,7 @@ async function openMaterials(page: Page) {
 const materialRow = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Materiais — convivência com produtos (MT-9)', () => {
+test.describe('Materiais — convivência com produtos (MT-9) @mock', () => {
   test('produtos e materiais ficam na mesma tela, em abas', async ({
     page,
   }) => {
@@ -30,7 +30,7 @@ test.describe('Materiais — convivência com produtos (MT-9)', () => {
   })
 })
 
-test.describe('Materiais — variações (MT-3, MT-4)', () => {
+test.describe('Materiais — variações (MT-3, MT-4) @mock', () => {
   test('material com variação mostra custo por variação', async ({ page }) => {
     await openMaterials(page)
 
@@ -71,7 +71,7 @@ test.describe('Materiais — variações (MT-3, MT-4)', () => {
   })
 })
 
-test.describe('Materiais — cadastro (MT-2, MT-6)', () => {
+test.describe('Materiais — cadastro (MT-2, MT-6) @mock', () => {
   test('o novo material usa Unidade e explica o que vira variação', async ({
     page,
   }) => {

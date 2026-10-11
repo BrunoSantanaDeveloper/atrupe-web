@@ -10,7 +10,7 @@ const PRODUCTIVITY = '/producao/produtividade'
 const card = (page: Page, name: string) =>
   page.locator('div').filter({ hasText: name }).first()
 
-test.describe('Gerenciador de produção — quadro por setor', () => {
+test.describe('Gerenciador de produção — quadro por setor @mock', () => {
   test('as etapas ficam em colunas por situação', async ({ page }) => {
     await page.goto(BOARD)
 
@@ -69,7 +69,7 @@ test.describe('Gerenciador de produção — quadro por setor', () => {
   })
 })
 
-test.describe('Produtividade — previsto × realizado', () => {
+test.describe('Produtividade — previsto × realizado @mock', () => {
   test('compara por setor e por colaborador', async ({ page }) => {
     await page.goto(PRODUCTIVITY)
 

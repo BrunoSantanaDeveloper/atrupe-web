@@ -17,7 +17,7 @@ async function style(locator: Locator) {
   })
 }
 
-test.describe('Papéis tipográficos', () => {
+test.describe('Papéis tipográficos @mock', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/sandbox/tipografia')
     await expect(page.locator('h1')).toBeVisible()
@@ -69,7 +69,7 @@ test.describe('Papéis tipográficos', () => {
   })
 })
 
-test.describe('Tabela', () => {
+test.describe('Tabela @mock', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/sandbox/tipografia')
   })

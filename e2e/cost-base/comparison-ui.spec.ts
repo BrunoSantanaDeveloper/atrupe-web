@@ -16,7 +16,7 @@ async function openComparison(page: Page, period = '') {
 const accountRow = (page: Page, name: string) =>
   page.getByRole('row').filter({ hasText: name })
 
-test.describe('Comparativo — estrutura', () => {
+test.describe('Comparativo — estrutura @mock', () => {
   test('compara período contra período, sem médias', async ({ page }) => {
     await openComparison(page)
 
@@ -55,7 +55,7 @@ test.describe('Comparativo — estrutura', () => {
   })
 })
 
-test.describe('Comparativo — leitura da diferença', () => {
+test.describe('Comparativo — leitura da diferença @mock', () => {
   test('a diferença é informação, não erro', async ({ page }) => {
     await openComparison(page, '1')
 

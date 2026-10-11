@@ -31,7 +31,7 @@ test.describe('Ciclo de Vida do Pedido (Orçamento -> OS)', () => {
 
     // Submete a criação
     const submitBtn = createDialog.getByRole('button', {
-      name: /criar orçamento/i,
+      name: /cadastrar orçamento|criar orçamento/i,
     })
     await expect(submitBtn).toBeVisible()
     await submitBtn.click()

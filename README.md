@@ -91,7 +91,9 @@ Parte das telas novas ainda roda sobre dados de exemplo em memória (as actions 
 - **Com a flag:** o estado dos dados de exemplo é compartilhado entre as contas e some quando o servidor reinicia.
 - **Saída:** por módulo. Quando a API de uma tela existir, a guarda sai das actions dela, a rota sai de `DEMO_ROUTES` e o item do menu perde o `demo: true`.
 
-As marcas de revisão (azul e vermelho no menu e nos títulos, a legenda e os cartões de recurso a desenvolver) seguem a mesma regra, com `NEXT_PUBLIC_REVIEW_MARKS=on`. O teste `e2e/fronteira.spec.ts` confere, num build sem a flag, que nada disso vaza.
+As marcas de revisão (azul e vermelho no menu e nos títulos, a legenda e os cartões de recurso a desenvolver) seguem a mesma regra, com `NEXT_PUBLIC_REVIEW_MARKS=on`.
+
+Nos testes e2e, os specs de UI dessas telas levam `@mock` no título e só valem contra um alvo com a flag (`npx playwright test --grep @mock`). O `e2e/fronteira.spec.ts` (`--grep @fronteira`) confere, num build sem a flag, que nada disso vaza; contra um alvo com a flag, declare `NEXT_PUBLIC_DEMO_DATA=on` no ambiente do teste e ele é pulado.
 
 ## 📐 Design e contrato da API
 

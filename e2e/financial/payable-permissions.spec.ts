@@ -35,7 +35,7 @@ test.describe.skip(
      */
     async function searchCargo(page: Page, name: string) {
       await page.getByPlaceholder('Buscar por...').fill(name)
-      await page.getByLabel('Botão de busca').click()
+      await page.getByRole('button', { name: 'Buscar', exact: true }).click()
       await page.waitForTimeout(1500)
     }
 
@@ -69,7 +69,7 @@ test.describe.skip(
       if (await searchInput.isVisible({ timeout: 3000 }).catch(() => false)) {
         // 1. Limpa usuários antigos de E2E
         await searchInput.fill('Diretor E2E')
-        await page.getByLabel('Botão de busca').click()
+        await page.getByRole('button', { name: 'Buscar', exact: true }).click()
         await page.waitForTimeout(1500)
       }
 
@@ -106,7 +106,7 @@ test.describe.skip(
 
       // 2. Garante cota de usuários: Inativa o usuário "Maycon João" para liberar 1 slot no plano de Homologação (limite de 3)
       await searchInput.fill('Maycon João')
-      await page.getByLabel('Botão de busca').click()
+      await page.getByRole('button', { name: 'Buscar', exact: true }).click()
       await page.waitForTimeout(1500)
 
       const mayconRow = page.getByRole('row', { name: /Maycon João/i }).first()
@@ -231,7 +231,7 @@ test.describe.skip(
       const empSearch = page.getByPlaceholder('Buscar por...')
       if (await empSearch.isVisible({ timeout: 3000 }).catch(() => false)) {
         await empSearch.fill('Diretor E2E Test')
-        await page.getByLabel('Botão de busca').click()
+        await page.getByRole('button', { name: 'Buscar', exact: true }).click()
         await page.waitForTimeout(1500)
       }
 

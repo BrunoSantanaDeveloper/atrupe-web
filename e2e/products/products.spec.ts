@@ -74,7 +74,7 @@ test.describe.skip('Módulo de Produtos (E2E)', () => {
     await saveBtn.click()
 
     // Aguardar mensagem de sucesso e o fechamento do modal principal
-    await expect(page.getByText(/produto criado com sucesso/i)).toBeVisible()
+    await expect(page.getByText(/produto criado/i)).toBeVisible()
 
     // 4. Modal de Configuração Fiscal deve abrir automaticamente após o sucesso
     // O sistema aguarda 500ms e abre o Dialog de "Configuração do Item" (ProductFiscalDataDialog)
@@ -100,9 +100,7 @@ test.describe.skip('Módulo de Produtos (E2E)', () => {
     await saveFiscalBtn.click()
 
     // 5. Validar o sucesso
-    await expect(
-      page.getByText(/dados fiscais salvos com sucesso/i),
-    ).toBeVisible()
+    await expect(page.getByText(/dados fiscais salvos/i)).toBeVisible()
 
     // Modal fiscal deve fechar e o produto estar na tabela
     await expect(fiscalDialog).not.toBeVisible()
