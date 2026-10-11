@@ -1,9 +1,11 @@
 'use client'
 
-// Concluir o orçamento (checkout). Decisão de 05/10/2026: concluir SEM
-// condição de pagamento pode, com um aviso do que falta; aprovar, não
-// (ApproveQuotation). O legado concluía direto, sem aviso, até com item em
-// R$ 0,00; aqui o aviso aparece antes e o vendedor decide.
+// Concluir o orçamento (checkout). A decisão de 05/10/2026 (concluir SEM
+// condição de pagamento, com um aviso) espera o /finish aceitar orçamento sem
+// parcelas, o que a API ainda recusa: até lá, sem a condição o Concluir abre
+// as condições de pagamento, como antes (CV-3). O legado concluía direto, sem
+// aviso, até com item em R$ 0,00; aqui o aviso do que o /finish aceita
+// aparece antes e o vendedor decide.
 
 // React
 import { useState } from 'react'
@@ -113,11 +115,6 @@ export function FinishQuotation({ data, canFinish }: Props) {
 
   // O que falta, dito antes de concluir
   const missing: string[] = []
-  if (paymentMissing) {
-    missing.push(
-      'Condição de pagamento não informada. Dá para concluir assim, mas a aprovação vai exigir a condição.',
-    )
-  }
   if (composedAttention) {
     missing.push(
       'Há um item sem etapas (exige atenção). O orçamento segue, mas monte a composição depois para o custo e a produção.',
@@ -164,18 +161,24 @@ export function FinishQuotation({ data, canFinish }: Props) {
     queryClient.invalidateQueries({ queryKey: ['quotation-totals'] })
   }
 
-  const handleFinish = () => {
-    // Parcelas que não fecham com o total: isso precisa ser acertado nas
-    // condições de pagamento antes de concluir
-    if (hasValueDivergence) {
-      setOpenPayment(true)
-      return
-    }
+  // O aviso do que falta vem antes de concluir, também depois de salvar as
+  // condições de pagamento
+  const confirmFinish = () => {
     if (missing.length) {
       setOpenWarning(true)
       return
     }
     finish()
+  }
+
+  const handleFinish = () => {
+    // Sem condição de pagamento, ou com parcelas que não fecham com o total:
+    // isso precisa ser acertado nas condições de pagamento antes de concluir
+    if (hasValueDivergence || paymentMissing) {
+      setOpenPayment(true)
+      return
+    }
+    confirmFinish()
   }
 
   if (!canFinish) return null
@@ -216,18 +219,6 @@ export function FinishQuotation({ data, canFinish }: Props) {
           </AlertDialogHeader>
           <AlertDialogFooter className="flex-wrap">
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            {paymentMissing && (
-              <Button
-                type="button"
-                variant="neutralOutline"
-                onClick={() => {
-                  setOpenWarning(false)
-                  setOpenPayment(true)
-                }}
-              >
-                Informar condição de pagamento
-              </Button>
-            )}
             <AlertDialogAction onClick={finish} RightIcon={IconCircleCheck}>
               Concluir mesmo assim
             </AlertDialogAction>
@@ -235,14 +226,14 @@ export function FinishQuotation({ data, canFinish }: Props) {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* As condições de pagamento, quando o vendedor escolhe informar (ou
-          quando as parcelas não fecham) e, ao salvar, conclui */}
+      {/* As condições de pagamento, quando faltam ou as parcelas não fecham;
+          ao salvar, segue para concluir */}
       <PaymentConditionsDialog
         quotationData={data}
         open={openPayment}
         onOpenChange={setOpenPayment}
         hideTrigger
-        onFinish={finish}
+        onFinish={confirmFinish}
       />
 
       <AlertDialog open={open} onOpenChange={setOpen}>
@@ -284,9 +275,7 @@ export function FinishQuotation({ data, canFinish }: Props) {
             />
             <AlertDialogTitle>Orçamento concluído</AlertDialogTitle>
             <AlertDialogDescription>
-              {paymentMissing
-                ? 'O orçamento passou pelo checkout sem condição de pagamento. Informe a condição antes de aprovar.'
-                : 'O orçamento passou pelo checkout, o que deseja fazer agora?'}
+              O orçamento passou pelo checkout, o que deseja fazer agora?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

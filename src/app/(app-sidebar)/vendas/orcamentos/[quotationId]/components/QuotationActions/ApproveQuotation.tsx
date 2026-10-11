@@ -2,8 +2,8 @@
 
 // Aprovar o orçamento (vira ordem de serviço). Duas travas, com mensagem
 // clara (decisões de 05/10/2026):
-// - a condição de pagamento é obrigatória para aprovar (concluir sem ela
-//   pode; aprovar, não);
+// - a condição de pagamento é obrigatória para aprovar (e, enquanto o /finish
+//   recusar orçamento sem parcelas, também para concluir: FinishQuotation);
 // - um item cujo produto foi inativado (PAD-7) trava a aprovação até ser
 //   trocado ou retirado.
 
@@ -188,8 +188,7 @@ export function ApproveQuotation({ data }: Props) {
                   </>
                 ) : (
                   <p>
-                    Concluir sem condição de pagamento pode; aprovar, não. A
-                    ordem de serviço nasce com as parcelas e a forma de
+                    A ordem de serviço nasce com as parcelas e a forma de
                     pagamento, então elas precisam estar informadas antes.
                   </p>
                 )}
