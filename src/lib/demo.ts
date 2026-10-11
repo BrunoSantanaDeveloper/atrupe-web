@@ -2,9 +2,11 @@
 //
 // As telas novas ainda rodam sobre dados de exemplo em memória: as actions
 // marcadas PROVISÓRIO em src/actions. Elas só respondem com a flag ligada,
-// NEXT_PUBLIC_DEMO_DATA=on, que vale em local e em homolog. O Next embute as
-// variáveis NEXT_PUBLIC_* no build: o build de produção sai sem a flag, e
-// nenhuma tela, dado ou ação de demonstração aparece.
+// NEXT_PUBLIC_DEMO_DATA=on, que vale em local e em homolog. O valor é fixado
+// no build (next.config.mjs, env) e embutido nos pacotes do navegador, do
+// servidor e do middleware: o build de produção sai com a flag desligada e não
+// a lê do ambiente de execução, e nenhuma tela, dado ou ação de demonstração
+// aparece.
 //
 // A saída é por módulo: quando a API de uma action existir, a guarda dela sai
 // junto com o dado de exemplo, a rota sai de DEMO_ROUTES

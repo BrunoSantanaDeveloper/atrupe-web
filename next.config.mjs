@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Flags de demonstração (src/lib/demo.ts e src/consts/revisao.ts): o valor
+  // do build fica embutido nos pacotes do navegador, do servidor e do
+  // middleware, até quando a variável não existe (vira ''). Sem isso, o
+  // servidor de um build sem a flag ainda a lia do ambiente de execução, e
+  // bastava criá-la no ambiente da Vercel para as telas de exemplo
+  // aparecerem em produção.
+  env: {
+    NEXT_PUBLIC_DEMO_DATA: process.env.NEXT_PUBLIC_DEMO_DATA ?? '',
+    NEXT_PUBLIC_REVIEW_MARKS: process.env.NEXT_PUBLIC_REVIEW_MARKS ?? '',
+  },
   experimental: {
     serverActions: {
       bodySizeLimit: '10mb',
