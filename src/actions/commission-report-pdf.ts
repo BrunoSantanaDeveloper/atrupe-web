@@ -27,11 +27,15 @@ export async function getCommissionPdfData(
       },
     })
 
-    // Fetch company info from sales pdf-data (reuse same endpoint for company data)
+    // Fetch company info from sales pdf-data (reuse same endpoint for company data).
+    // Daqui só sai a empresa: sem datas nos filtros (o padrão da tela, que
+    // deixa a API usar o mês atual), vai um dia só. Sem data nenhuma, a API
+    // montava o relatório de vendas de seis meses só para devolver a empresa
+    const today = new Date().toISOString().slice(0, 10)
     const companyRes = await api.get('/report/sales/pdf-data', {
       params: {
-        startDate: filters?.startDate ?? filters?.receivedStartDate,
-        endDate: filters?.endDate ?? filters?.receivedEndDate,
+        startDate: filters?.startDate ?? filters?.receivedStartDate ?? today,
+        endDate: filters?.endDate ?? filters?.receivedEndDate ?? today,
       },
     })
 
