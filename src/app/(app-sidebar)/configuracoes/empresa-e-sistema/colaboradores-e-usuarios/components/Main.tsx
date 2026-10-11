@@ -24,6 +24,9 @@ import type { UsersQuotaType } from '@/types/settings/employee'
 // Actions
 import { getDataOld } from '@/actions/_cruds'
 
+// Auth
+import { useSession } from 'next-auth/react'
+
 // Third-party
 import { useQuery } from '@tanstack/react-query'
 
@@ -33,10 +36,22 @@ import { IconIdBadge, IconNews, IconUserShield } from '@tabler/icons-react'
 import Link from 'next/link'
 
 export function Main({ searchParams }: SearchParamsType) {
+  const { data: session } = useSession()
+
+  // O limite de usuários da sessão entra na chave para a cota ser relida
+  // quando o plano muda fora desta tela: a compra de usuário adicional ou a
+  // troca de plano, também em outra aba, e o refresh depois de um erro de
+  // plano atualizam a sessão. Com a chave fixa e o cache sem prazo, a cota
+  // velha deixava "Novo usuário" desabilitado até recarregar a página.
+  const sessionUserLimit = session?.company?.plan?.limits?.max_users ?? null
+
   const { data, isLoading } = useQuery({
     staleTime: Infinity,
-    queryKey: ['employees-totals'],
+    queryKey: ['employees-totals', sessionUserLimit],
     queryFn: () => getDataOld({ route: 'employeeTotalsRoute' }),
+    // Com a tela aberta, a troca de chave mostra os números anteriores até
+    // a cota nova chegar, sem desmontar a tabela.
+    placeholderData: (previous) => previous,
   })
 
   const totals: { [key: string]: number } = {
