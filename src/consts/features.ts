@@ -14,6 +14,7 @@ export const FEATURES = {
     BANK_ACCOUNT_CREATION: 'bank_account_creation',
     PAYMENT_CONDITION_OPERATOR_FEE: 'payment_condition_operator_fee',
     BANK_ACCOUNT_CASH_CONTROL_SWITCH: 'bank_account_cash_control_switch',
+    TRANSACTION_CANCEL_REASONS: 'transaction_cancel_reasons',
   },
 
   // Vendas e Orçamentos
@@ -24,6 +25,7 @@ export const FEATURES = {
     QUOTATION_STATUS_COLUMN: 'quotation_status_column',
     SERVICE_ORDER_CANCELLATION_REASON: 'service_order_cancellation_reason',
     SERVICE_ORDER_CURRENT_PHASE: 'service_order_current_phase',
+    CAN_BILL_ON_DELIVERY_AND_CHECKOUT: 'can_bill_on_delivery_and_checkout',
   },
 
   // Produtos e Produção
@@ -38,9 +40,7 @@ export const FEATURES = {
   // Configurações Gerais
   SYSTEM: {
     SECTORS_CONFIGURATION: 'sectors_configuration',
-    BASIC_MANAGEMENT: 'basic_management',
-    BASIC_QUOTATIONS: 'basic_quotations',
-    BASIC_SERVICE_ORDERS: 'basic_service_orders',
+    MULTIPLE_COMPANIES: 'multiple_companies',
   },
 
   // Clientes e Fornecedores
@@ -82,5 +82,8 @@ export const FEATURE_NAMES: Record<string, string> = {
   product_composition: 'Composição de Produtos',
   delivery_production_tabs: 'Abas de Produção na Entrega',
   bank_account_creation: 'Criação de Contas Bancárias',
+  multiple_companies: 'Mais de uma empresa',
+  transaction_cancel_reasons: 'Motivo ao cancelar lançamento',
+  can_bill_on_delivery_and_checkout: 'Faturar na entrega e na frente de caixa',
   // adicionar conforme necessário...
 }

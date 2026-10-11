@@ -53,6 +53,7 @@ import { toast } from 'sonner'
 import { useAlertDialog } from '@/store/useAlertDialog'
 
 // Consts
+import { FEATURES } from '@/consts/features'
 import { quotationsStatusObj } from '@/consts/quotations'
 
 // Icons
@@ -88,8 +89,10 @@ export function QuotationsData({
   const { open: openAlertDialog } = useAlertDialog()
   const queryClient = useQueryClient()
 
-  const { canManageBudgetStatus } = usePlanFeatures()
-  const showStatusColumn = canManageBudgetStatus()
+  const { hasFeature } = usePlanFeatures()
+  // A coluna tem chave própria: com a da configuração dos status, desligar
+  // quotation_status_column no painel não mudava a lista.
+  const showStatusColumn = hasFeature(FEATURES.SALES.QUOTATION_STATUS_COLUMN)
   const isAllTab = searchParams?.status === 'todos'
 
   const status = tabs?.find((tab) => tab.tab === searchParams.status)?.value

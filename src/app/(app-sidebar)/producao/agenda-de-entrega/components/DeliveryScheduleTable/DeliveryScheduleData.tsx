@@ -69,6 +69,7 @@ import { IconReceitaFederal } from '@/assets/icons/CustomIcons'
 import { usePlanFeatures } from '@/hooks/usePlanFeatures'
 
 // Consts
+import { FEATURES } from '@/consts/features'
 import { sectorIcons } from '@/consts/sectors'
 import { stageStatus, invoiceStatus } from '@/consts/deliverySchedule'
 
@@ -81,7 +82,16 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
   const [rowData, setRowData] = useState<DeliveryScheduleType>()
   const [isLoadingPDF, setIsLoadingPDF] = useState<string[]>([])
 
-  const { canManageDeliverySchedule } = usePlanFeatures()
+  const { canManageDeliverySchedule, hasFeature } = usePlanFeatures()
+  // As etapas na Agenda e a troca de status delas têm chaves próprias: a da
+  // troca é a que o servidor exige (delivery_stage_status_change). Com a
+  // chave das abas, desligar uma delas no painel não mudava a tela.
+  const showProductionStages = hasFeature(
+    FEATURES.PRODUCTS.DELIVERY_PRODUCTION_STAGES,
+  )
+  const canChangeStageStatus = hasFeature(
+    FEATURES.PRODUCTS.DELIVERY_STAGE_STATUS_CHANGE,
+  )
 
   const alertDialog = useAlertDialog()
 
@@ -240,7 +250,7 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                   </div>
                                 ) : (
                                   <div className="flex gap-2 items-center">
-                                    {canManageDeliverySchedule() && (
+                                    {showProductionStages && (
                                       <div className="flex gap-2">
                                         <TooltipProvider>
                                           {deliverySchedule?.productionStages?.map(
@@ -254,6 +264,9 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                                   }
                                                   rowData={stage}
                                                   searchParams={searchParams}
+                                                  canChangeStatus={
+                                                    canChangeStageStatus
+                                                  }
                                                 >
                                                   <ActionButton
                                                     Icon={
@@ -284,9 +297,10 @@ export function DeliveryScheduleData({ searchParams, tabs }: Props) {
                                     <div
                                       className={cn(
                                         'overflow-hidden transition-[width] duration-300 ease-in-out',
-                                        // Para planos limitados, sempre mostrar o botão
-                                        // Para planos completos, mostrar apenas quando etapas estão concluídas
-                                        !canManageDeliverySchedule() ||
+                                        // Sem etapas na tela (ou sem poder trocá-las), sempre mostrar o botão
+                                        // Com elas, mostrar apenas quando etapas estão concluídas
+                                        !showProductionStages ||
+                                          !canChangeStageStatus ||
                                           !deliverySchedule?.productionStages
                                             ?.length ||
                                           deliverySchedule?.productionStages?.every(
