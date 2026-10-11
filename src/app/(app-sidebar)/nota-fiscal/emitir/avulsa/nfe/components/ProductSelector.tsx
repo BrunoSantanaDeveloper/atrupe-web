@@ -19,20 +19,10 @@ import {
 } from '@/components/ui/popover'
 
 // Icons
-import {
-  IconCheck,
-  IconChevronDown,
-  IconPlus,
-  IconLoader2,
-  IconX,
-  IconPackage,
-} from '@tabler/icons-react'
+import { IconPlus, IconLoader2, IconPackage } from '@tabler/icons-react'
 
 // Actions
 import { getData } from '@/actions/_cruds'
-
-// Utils
-import { cn } from '@/lib/utils'
 
 // Types
 import type { NfePrepareItem } from '@/types/fiscal/nfe-prepare'

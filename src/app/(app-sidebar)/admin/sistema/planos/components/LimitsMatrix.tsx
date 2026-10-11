@@ -44,7 +44,7 @@ export function LimitsMatrix() {
                       className="min-w-[110px] p-3 text-center font-semibold"
                     >
                       <div className="text-gray-900">{plan.name}</div>
-                      <div className="text-[11px] font-normal text-gray-500">
+                      <div className="text-xs font-normal text-gray-500">
                         {subscriptionsLabel(plan.currentSubscriptions)}
                       </div>
                     </th>
@@ -82,7 +82,7 @@ export function LimitsMatrix() {
                             <IconPencil size={14} className="text-gray-400" />
                           </button>
                           {differs && (
-                            <div className="text-[10px] text-amber-600">
+                            <div className="text-xs text-amber-600">
                               padrão: {limitLabel(defaultValue)}
                             </div>
                           )}

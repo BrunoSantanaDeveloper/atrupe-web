@@ -106,7 +106,7 @@ export function OwnershipSection() {
           )}
           {view.previous.length > 0 && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-700">
+              <p className="mb-1 text-xs font-semibold type-eyebrow tracking-wide text-gray-700">
                 Titulares anteriores
               </p>
               <ul className="flex flex-col">

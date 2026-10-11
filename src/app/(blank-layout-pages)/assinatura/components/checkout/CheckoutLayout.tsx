@@ -130,7 +130,7 @@ export function ProceedButton({
 
 /** Nota discreta do topo de uma seção (a titularidade, a cobrança). */
 export function SectionNote({ children }: { children: ReactNode }) {
-  return <p className="text-[11px] text-gray-400">{children}</p>
+  return <p className="text-xs text-gray-400">{children}</p>
 }
 
 /** Rótulo de um grupo de opções dentro da seção. */
@@ -142,7 +142,7 @@ export function GroupTitle({
   children: ReactNode
 }) {
   return (
-    <p id={id} className="text-[13px] font-semibold text-gray-700">
+    <p id={id} className="text-sm font-semibold text-gray-700">
       {children}
     </p>
   )
@@ -173,7 +173,7 @@ export function AccountStatus({
         {getInitials(name)}
       </span>
       <span className="min-w-0 flex-1">
-        <strong className="block text-[13px] font-medium text-gray-800">
+        <strong className="block text-sm font-medium text-gray-800">
           Conectado como {name}
         </strong>
         <small className="block truncate text-xs text-gray-500">{email}</small>
@@ -301,7 +301,7 @@ export function ChoiceCard({
           )}
         </span>
         {badge && (
-          <span className="ml-auto whitespace-nowrap rounded-full bg-brand-100 px-2 py-0.5 text-[11px] font-semibold text-brand-700">
+          <span className="ml-auto whitespace-nowrap rounded-full bg-brand-100 px-2 py-0.5 text-xs font-semibold text-brand-700">
             {badge}
           </span>
         )}
@@ -362,7 +362,7 @@ export function TermsCheckbox({
 /** A nota de segurança sob a ação de pagar. */
 export function SecureNote() {
   return (
-    <p className="flex items-center gap-1.5 text-[11px] text-gray-500">
+    <p className="flex items-center gap-1.5 text-xs text-gray-500">
       <IconShieldCheck className="size-3.5 flex-none text-brand-600" />
       <span>Pagamento processado com segurança</span>
     </p>

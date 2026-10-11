@@ -110,7 +110,7 @@ function FragmentGroup({
       <tr>
         <td
           colSpan={columns.length + 1}
-          className="pt-5 pb-2 text-xs font-semibold uppercase tracking-wide text-gray-500"
+          className="pt-5 pb-2 text-xs font-semibold type-eyebrow tracking-wide text-gray-500"
         >
           {group.group}
         </td>

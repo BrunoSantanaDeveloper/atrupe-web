@@ -195,7 +195,7 @@ export function RegularizationFlow() {
                       <div className="h-px bg-gray-200" />
                       <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
                         <span>Total</span>
-                        <span className="flex items-center gap-1 text-xl font-bold text-gray-700">
+                        <span className="flex items-center gap-1 text-xl font-semibold text-gray-700">
                           <IconCoin className="size-6 flex-none text-brand-500" />
                           {formatCurrencyToBrl(Math.round(charge.value * 100))}
                         </span>
@@ -203,7 +203,7 @@ export function RegularizationFlow() {
                     </>
                   )}
                   {methodLabel && (
-                    <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 text-[13px] text-gray-700">
+                    <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3 text-sm text-gray-700">
                       <span>Forma de pagamento</span>
                       <strong className="font-semibold text-gray-900">
                         {methodLabel}

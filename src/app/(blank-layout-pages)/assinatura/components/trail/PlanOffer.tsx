@@ -70,7 +70,7 @@ export function CycleSwitch({
     return (
       <label
         className={cn(
-          'relative z-[1] flex min-w-[104px] items-center justify-center rounded-lg px-4 py-[7px] text-[13px] transition-colors',
+          'relative z-[1] flex min-w-[104px] items-center justify-center rounded-lg px-4 py-[7px] text-sm transition-colors',
           value === cycle
             ? 'font-semibold text-gray-900'
             : 'font-medium text-gray-600',
@@ -108,7 +108,7 @@ export function CycleSwitch({
         {option('MONTHLY', 'Mensal')}
         {option('YEARLY', 'Anual')}
       </div>
-      <p className="text-[13px] font-medium text-brand-600">
+      <p className="text-sm font-medium text-brand-600">
         1 mês grátis no plano anual
       </p>
     </div>
@@ -195,7 +195,7 @@ export function PlanOfferCard({
         {monthlyCents != null ? (
           <p className="text-2xl font-semibold tracking-[-.02em] text-gray-900">
             {formatCurrencyToBrl(monthlyCents)}
-            <small className="ml-0.5 text-[13px] font-normal text-gray-500">
+            <small className="ml-0.5 text-sm font-normal text-gray-500">
               /mês
             </small>
           </p>
@@ -214,7 +214,7 @@ export function PlanOfferCard({
         {ctaLabel}
       </Button>
       {previousName && (
-        <p className="-mb-1 mt-1 text-[13px] font-semibold text-gray-700">
+        <p className="-mb-1 mt-1 text-sm font-semibold text-gray-700">
           Tudo do {previousName}, mais:
         </p>
       )}
@@ -222,7 +222,7 @@ export function PlanOfferCard({
         {actions.map((action) => (
           <li
             key={action}
-            className="flex items-start gap-2 text-[13px] leading-[1.45] text-gray-600"
+            className="flex items-start gap-2 text-sm leading-[1.45] text-gray-600"
           >
             <IconCircleCheck className="mt-px size-4 flex-none text-brand-600" />
             <span>{action}</span>
@@ -237,7 +237,7 @@ export function PlanOfferCard({
       <div className="flex flex-wrap items-center gap-2">
         <PlanLogo planType={planType} name={name} />
       </div>
-      <p className="text-[13px] leading-[1.5] text-gray-500">{pitch}</p>
+      <p className="text-sm leading-[1.5] text-gray-500">{pitch}</p>
       {video ? (
         <div className="mt-1 grid grid-cols-1 items-center gap-7 md:grid-cols-[minmax(0,1fr)_minmax(0,380px)]">
           <PlanVideo name={name} url={video.url} poster={video.poster} />

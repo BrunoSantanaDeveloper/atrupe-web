@@ -110,11 +110,11 @@ export function FeatureMatrix() {
                       className="min-w-[120px] p-3 text-center align-top font-semibold"
                     >
                       <div className="text-gray-900">{plan.name}</div>
-                      <div className="text-[11px] font-normal text-gray-500">
+                      <div className="text-xs font-normal text-gray-500">
                         {subscriptionsLabel(plan.currentSubscriptions)}
                       </div>
                       {!plan.isActive && plan.planType !== 'TRIAL' && (
-                        <div className="text-[11px] font-normal text-amber-600">
+                        <div className="text-xs font-normal text-amber-600">
                           Em breve
                         </div>
                       )}
@@ -122,7 +122,7 @@ export function FeatureMatrix() {
                         type="button"
                         size="sm"
                         variant="neutralGhost"
-                        className="mt-1 h-7 gap-1 px-2 text-[11px]"
+                        className="mt-1 h-7 gap-1 px-2 text-xs"
                         onClick={() => setRestorePlan(plan)}
                       >
                         <IconRestore size={14} />
@@ -138,7 +138,7 @@ export function FeatureMatrix() {
                     <tr className="bg-gray-100">
                       <td
                         colSpan={data.plans.length + 1}
-                        className="sticky left-0 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600"
+                        className="sticky left-0 px-3 py-2 text-xs font-semibold type-eyebrow tracking-wide text-gray-600"
                       >
                         {group.label}
                       </td>
@@ -191,7 +191,7 @@ export function FeatureMatrix() {
                                   aria-label={`${feature.name} no plano ${plan.name}`}
                                 />
                                 {enabled !== isDefault && (
-                                  <span className="text-[10px] text-amber-600">
+                                  <span className="text-xs text-amber-600">
                                     fora do padrão
                                   </span>
                                 )}

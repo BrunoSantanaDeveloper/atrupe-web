@@ -212,7 +212,7 @@ export function ComplementsFlow() {
                   <div className="h-px bg-gray-200" />
                   <div className="flex items-center justify-between gap-3 text-sm font-semibold text-gray-700">
                     <span>Cobrado agora</span>
-                    <span className="flex items-center gap-1 text-xl font-bold text-gray-700">
+                    <span className="flex items-center gap-1 text-xl font-semibold text-gray-700">
                       <IconCoin className="size-6 flex-none text-brand-500" />
                       {formatCurrencyToBrl(quote.chargedNowCents)}
                     </span>
@@ -249,7 +249,7 @@ export function ComplementsFlow() {
               >
                 Contratar complementos
               </ProceedButton>
-              <p className="text-[11px] text-gray-500">
+              <p className="text-xs text-gray-500">
                 Os complementos ficam disponíveis assim que a contratação é
                 registrada.
               </p>

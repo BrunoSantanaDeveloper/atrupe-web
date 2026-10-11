@@ -34,13 +34,8 @@ export function FormImageUpload<T extends FieldValues>({
   maxSize = 1024 * 50,
   customHelpText,
 }: Props<T>) {
-  const {
-    handleUpload,
-    progresses,
-    uploadedFiles,
-    isUploading,
-    setUploadedFiles,
-  } = useUploadFile()
+  const { handleUpload, uploadedFiles, isUploading, setUploadedFiles } =
+    useUploadFile()
   const { _formValues } = control
 
   useEffect(() => {

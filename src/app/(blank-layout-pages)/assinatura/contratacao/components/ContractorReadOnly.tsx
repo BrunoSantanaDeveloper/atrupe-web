@@ -18,8 +18,8 @@ function Line({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null
   return (
     <div className="flex items-center justify-between gap-3 border-b border-gray-200 py-2 last:border-0">
-      <span className="text-[13px] text-gray-500">{label}</span>
-      <strong className="text-right text-[13px] font-medium text-gray-800">
+      <span className="text-sm text-gray-500">{label}</span>
+      <strong className="text-right text-sm font-medium text-gray-800">
         {value}
       </strong>
     </div>

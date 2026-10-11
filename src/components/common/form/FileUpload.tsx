@@ -32,13 +32,8 @@ export function FormFileUpload<T extends FieldValues>({
   className,
   multiple = false,
 }: Props<T>) {
-  const {
-    handleUpload,
-    progresses,
-    uploadedFiles,
-    isUploading,
-    setUploadedFiles,
-  } = useUploadFile()
+  const { handleUpload, uploadedFiles, isUploading, setUploadedFiles } =
+    useUploadFile()
   const { _formValues } = control
 
   useEffect(() => {

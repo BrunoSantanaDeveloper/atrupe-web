@@ -31,6 +31,9 @@ export function CouponCard({ appliedCoupon, couponStatus, onApply }: Props) {
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Digite o código"
             autoComplete="off"
+            // Campo que força maiúsculas: o código do cupom é digitado assim,
+            // não é um título de seção (exceção prevista na regra do lint)
+            // eslint-disable-next-line no-restricted-syntax
             className="flex-1 uppercase placeholder:normal-case"
           />
           {appliedCoupon ? (

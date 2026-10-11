@@ -116,7 +116,7 @@ export function TransferInvite({ token }: { token: string }) {
   if (invite.emailHasAccount) {
     return (
       <div className="flex flex-col gap-3 text-center" data-conta-existente>
-        <h1 className="text-xl font-bold text-gray-900">
+        <h1 className="text-xl font-semibold text-gray-900">
           Este e-mail já tem conta
         </h1>
         <p className="text-sm text-gray-500">
@@ -157,7 +157,7 @@ function Unavailable({
 }) {
   return (
     <div className="flex flex-col gap-3 text-center" data-convite-invalido>
-      <h1 className="text-xl font-bold text-gray-900">{title}</h1>
+      <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
       <p className="text-sm text-gray-500">{message}</p>
       {!hideLogin && (
         <Button asChild variant="neutralOutline">
@@ -388,7 +388,7 @@ function InviteAcceptForm({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-xl font-bold text-gray-900">
+        <h1 className="text-xl font-semibold text-gray-900">
           Transferência de titularidade
         </h1>
         <p className="text-sm text-gray-500">
