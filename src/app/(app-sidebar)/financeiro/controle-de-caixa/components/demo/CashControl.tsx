@@ -357,7 +357,7 @@ export function CashControl(_: SearchParamsType) {
       fallback={<div>Você não tem permissão para acessar esta página.</div>}
     >
       <TooltipProvider>
-        <div className="space-y-5">
+        <div className="space-y-5" data-demo="true">
           <Topbar
             review="new"
             title="Controle de caixa"

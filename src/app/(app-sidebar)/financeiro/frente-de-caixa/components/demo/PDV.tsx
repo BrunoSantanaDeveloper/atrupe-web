@@ -196,7 +196,7 @@ export function PDV() {
 
   return (
     <TooltipProvider>
-      <div className="space-y-5">
+      <div className="space-y-5" data-demo="true">
         <Topbar
           review="new"
           title="Frente de caixa"

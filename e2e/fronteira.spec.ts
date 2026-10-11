@@ -8,20 +8,25 @@ import { DEMO_ROUTES } from '../src/config/routes'
  * No build SEM a flag de demonstração (NEXT_PUBLIC_DEMO_DATA), nenhuma tela,
  * dado ou ação de exemplo pode aparecer: as rotas de DEMO_ROUTES e o /sandbox
  * respondem "página não encontrada", o menu não leva a elas e as telas reais
- * não mostram nome de exemplo. Roda contra o build de produção (local, com
- * `next build` sem a flag, ou o ambiente depois do deploy) e barra o deploy
- * se algo vazar:
+ * não mostram nome de exemplo nem a versão de demonstração no lugar da real.
+ * Roda contra o build sem a flag servido localmente, com uma API de mentira e
+ * uma sessão com todas as chaves de plano (playwright.fronteira.config.ts), e
+ * barra o deploy de produção se algo vazar (.github/workflows/fronteira.yml):
  *
- *   npx playwright test --grep @fronteira
+ *   npx playwright test -c playwright.fronteira.config.ts
  *
- * Contra um alvo com a flag ligada (homolog, ou local com a flag) a suíte não
- * faz sentido: quem roda declara a flag do alvo no ambiente do teste (o
- * playwright.config lê o .env.local), e então ela é pulada.
+ * Pela config principal (contra homolog, que tem a flag, ou com uma conta sem
+ * as chaves mais altas) a suíte passaria em vazio, por isso é pulada.
  */
 const TARGET_HAS_DEMO_FLAG = process.env.NEXT_PUBLIC_DEMO_DATA === 'on'
+const RUN_BY_FRONTEIRA_CONFIG = process.env.FRONTEIRA_FULL_SESSION === '1'
+const STUB_API = process.env.FRONTEIRA_STUB_API === '1'
 
-/** Nomes que só existem nos dados de exemplo (src/actions PROVISÓRIO). */
-const EXAMPLE_NAMES = ['Renata Alves', 'Lona 440', 'Impressão de exemplo']
+/**
+ * Nomes que só existem nos dados de exemplo (src/actions PROVISÓRIO). Nome
+ * de material (Lona 440, MDF 10 mm) não entra: um cliente pode ter o mesmo.
+ */
+const EXAMPLE_NAMES = ['Renata Alves', 'Impressão de exemplo']
 
 /** Um id qualquer para os segmentos entre colchetes das rotas. */
 const FAKE_ID = 'e2e-fronteira'
@@ -44,10 +49,21 @@ const NOT_FOUND_URLS = [
 ]
 
 /**
- * As vitrines do /sandbox caem no notFound() do layout delas. O loading.tsx
- * da raiz já abriu a resposta quando o layout roda, então o status fica 200:
- * o que vale é a página de não encontrada no lugar da vitrine.
+ * Segmento com ponto: o middleware não vê essas URLs (o matcher deixa de fora
+ * caminho com ponto, que é de arquivo), e quem barra é o notFound() da
+ * própria página. O status fica 200 e a troca para a página de não encontrada
+ * às vezes quebra no navegador (React #310, também nas páginas reais que
+ * chamam notFound()); o que vale aqui é a tela de demonstração não aparecer,
+ * e toda tela dela tem o título da página (h1).
  */
+const DOTTED_URLS = [
+  '/vendas/orcamentos/a.b/composicao',
+  '/vendas/orcamentos/a.b/resultado',
+  '/producao/projetos/a.b',
+  '/configuracoes/produtos/a.b/composicao',
+]
+
+/** As vitrines do /sandbox: o middleware responde "não encontrada" (404). */
 const SANDBOX_URLS = [
   '/sandbox/orcamento',
   '/sandbox/fluxo',
@@ -99,6 +115,10 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
     TARGET_HAS_DEMO_FLAG,
     'O alvo tem a flag de demonstração ligada (NEXT_PUBLIC_DEMO_DATA=on).',
   )
+  test.skip(
+    !RUN_BY_FRONTEIRA_CONFIG,
+    'Rode pela config da fronteira: npx playwright test -c playwright.fronteira.config.ts',
+  )
 
   for (const url of NOT_FOUND_URLS) {
     test(`${url} responde não encontrada`, async ({ page }) => {
@@ -106,11 +126,20 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
     })
   }
 
-  for (const url of SANDBOX_URLS) {
-    test(`${url} mostra a página de não encontrada`, async ({ page }) => {
+  for (const url of DOTTED_URLS) {
+    test(`${url} (ponto no segmento) não abre a tela de demonstração`, async ({
+      page,
+    }) => {
       await page.goto(url)
-      await expect(page.getByText('Página não encontrada')).toBeVisible()
+      await page.waitForLoadState('networkidle')
       await expect(page.locator('h1')).toHaveCount(0)
+      await expect(page.locator('[data-demo]')).toHaveCount(0)
+    })
+  }
+
+  for (const url of SANDBOX_URLS) {
+    test(`${url} responde não encontrada`, async ({ page }) => {
+      await expectNotFound(page, url)
     })
   }
 
@@ -136,6 +165,9 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
       for (const name of [...EXAMPLE_NAMES, ...DEMO_TEXTS]) {
         expect(text, `"${name}" em ${url}`).not.toContain(name)
       }
+      // A raiz das versões de demonstração (caixa, PDV, contas bancárias,
+      // folha) leva data-demo: no lugar da tela real, ela aparece mesmo vazia
+      await expect(page.locator('[data-demo]')).toHaveCount(0)
     })
   }
 
@@ -183,6 +215,11 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
   test('a busca do "adicionar item" não lista material de exemplo', async ({
     page,
   }) => {
+    // Precisa de um orçamento real; com a API de mentira não há. As actions
+    // dos materiais de exemplo estão cobertas pela checagem estática das
+    // guardas (scripts/check-demo-guards.mjs)
+    test.skip(STUB_API, 'A API de mentira não tem orçamento em digitação.')
+
     // Usa um orçamento em digitação que já exista: o teste não cria dado
     await page.goto('/vendas/orcamentos?status=digitacao')
     await page.waitForLoadState('networkidle')
@@ -212,7 +249,7 @@ test.describe('Fronteira do mock: build sem a flag de demonstração @fronteira'
     await dialog.getByLabel('Buscar pelo nome').fill('Lona')
     await page.waitForLoadState('networkidle')
 
-    await expect(dialog.getByText('Lona 440')).toHaveCount(0)
+    await expect(dialog.getByText('Lona 440', { exact: true })).toHaveCount(0)
     // O item montado na hora também é de demonstração
     await expect(
       dialog.getByRole('button', { name: 'Composição' }),

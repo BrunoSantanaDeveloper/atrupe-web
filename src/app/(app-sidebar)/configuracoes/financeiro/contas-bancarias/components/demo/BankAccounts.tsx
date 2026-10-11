@@ -262,7 +262,7 @@ export function BankAccounts(_: SearchParamsType) {
   return (
     <PermissionGate permissions={['financial_settings:bank_accounts:view']}>
       <TooltipProvider>
-        <div className="space-y-5">
+        <div className="space-y-5" data-demo="true">
           <Topbar
             review="new"
             title="Contas bancárias"
