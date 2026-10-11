@@ -7,20 +7,37 @@ import { redirect } from 'next/navigation'
 
 const apiUrl = process.env.API_URL
 
+// 401 da senha gerencial do painel de planos: é a senha digitada que falta ou
+// está errada, não a sessão. O painel mostra o erro no diálogo.
+const PASSWORD_ERROR_CODES = ['PASSWORD_REQUIRED', 'INVALID_PASSWORD']
+
 // Função auxiliar para verificar se deve encerrar a sessão
 const shouldEndSession = (error: AxiosError | Error): boolean => {
   // Erro 401 - Unauthorized
   if ('response' in error && error.response?.status === 401) {
     // Não fazer logout se for erro de validação de senha (ex: delete-account)
     const url = error.config?.url || ''
+    // O filtro de exceção do backend devolve o erro em `userMessage` (texto,
+    // ou objeto com `code` e `message`), e não na raiz: lendo só a raiz, a
+    // mensagem nunca batia, e a senha errada encerrava a sessão.
+    const data = error.response?.data as Record<string, unknown> | undefined
+    const userMessage = data?.userMessage
+    const body =
+      userMessage && typeof userMessage === 'object'
+        ? (userMessage as Record<string, unknown>)
+        : {}
+    const code = String(body.code || '')
     const message =
-      (error.response?.data as Record<string, unknown>)?.message || ''
+      (typeof userMessage === 'string' ? userMessage : body.message) ||
+      data?.message ||
+      ''
 
     // Se for um endpoint que valida senha de admin, não fazer logout
     if (
       url.includes('delete-account') ||
       url.includes('extend-trial') ||
       url.includes('assign-manual') ||
+      PASSWORD_ERROR_CODES.includes(code) ||
       String(message).includes('Senha do administrador')
     ) {
       return false
