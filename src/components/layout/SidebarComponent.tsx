@@ -34,6 +34,7 @@ import logo from '@public/logo/logo-text.png'
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
@@ -115,6 +116,9 @@ export function SidebarComponent(props: Props) {
 
   // Função que verifica se um item deve ser exibido baseado em permissões, features do plano e módulos contratados
   const checkItemAccess = (item: MainNavigationType): boolean => {
+    // Tela de demonstração (dados de exemplo): só com a flag
+    if (item.demo && !DEMO_DATA) return false
+
     // Primeiro verifica permissões
     if (!checkPermission(item)) {
       return false

@@ -38,6 +38,7 @@ import { productBodyFrom, rawMeasureOf } from '../productBody'
 
 // Libs
 import { formatCurrencyToBrl } from '@/lib/utils'
+import { DEMO_DATA } from '@/lib/demo'
 import {
   convertRawToUnitCost,
   convertUnitCostToRaw,
@@ -171,7 +172,8 @@ export function ProductsData({ searchParams, tabs }: Props) {
 
   // A composição é recurso do PRO e vive dentro do produto, sem cadastro
   // paralelo: o mesmo produto do START ganha custo e margem (CP-16, CP-17).
-  const showComposition = hasFeature(FEATURES.COSTS.COST_BASE)
+  // Ainda roda sobre dados de exemplo: só com a flag de demonstração
+  const showComposition = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
 
   // EC-26: a permissão "Valores" também vale aqui — quem não pode ver preço
   // não vê a tabela de preços da empresa

@@ -40,6 +40,7 @@ import type { LibraryEntry } from '../[id]/composicao/assembly'
 
 // Libs
 import { convertRawToUnitCost } from '@/components/common/form/global-inputs/products/UnitCostInput'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Third-party
 import { useQuery } from '@tanstack/react-query'
@@ -146,11 +147,6 @@ export function Products({ searchParams }: SearchParamsType) {
   // pessoa escolhe um produto de referência, cadastra o seu a partir dele e
   // a composição entra para ser revisada, um por vez
   const [libraryPick, setLibraryPick] = useState<LibraryEntry | null>(null)
-  const { data: libraryRes } = useQuery({
-    staleTime: Infinity,
-    queryKey: ['assembly-library'],
-    queryFn: () => getLibrary(),
-  })
   const [selectedProductId, setSelectedProductId] = useState<string>('')
   const [selectedProductName, setSelectedProductName] = useState<string>('')
   const { hasAllPermissions } = usePermissions()
@@ -158,8 +154,16 @@ export function Products({ searchParams }: SearchParamsType) {
 
   const canConfigureProductFiscalData =
     hasFiscalModule() && hasAllPermissions(['nota_fiscal:config:edit'])
-  // No PRO o produto recém-criado reabre na aba Composição (CP-16)
-  const canCompose = hasFeature(FEATURES.COSTS.COST_BASE)
+  // No PRO o produto recém-criado reabre na aba Composição (CP-16). A
+  // composição e a biblioteca ainda rodam sobre dados de exemplo: só com a
+  // flag de demonstração
+  const canCompose = DEMO_DATA && hasFeature(FEATURES.COSTS.COST_BASE)
+  const { data: libraryRes } = useQuery({
+    staleTime: Infinity,
+    queryKey: ['assembly-library'],
+    queryFn: () => getLibrary(),
+    enabled: canCompose,
+  })
 
   const openAfterCreate = (product: { id: string; name: string }) => {
     setTimeout(() => {

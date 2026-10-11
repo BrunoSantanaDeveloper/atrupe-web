@@ -41,6 +41,7 @@ export function SalesSettingsClient() {
                   'Pule o cadastro do orçamento e caia direto na escolha do item.',
                 link: `${defaultPath}/venda-rapida`,
                 permission: 'sales_settings:series:view',
+                demo: true,
               },
             ]
           : []),
@@ -62,6 +63,7 @@ export function SalesSettingsClient() {
                   'Defina o markup padrão aplicado ao custo do terceirizado lançado na hora.',
                 link: `${defaultPath}/terceirizados`,
                 permission: 'sales_settings:series:view',
+                demo: true,
               },
             ]
           : []),

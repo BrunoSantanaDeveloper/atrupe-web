@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { PermissionGate } from '@/components/common/PermissionGate'
 import { reviewTextClass } from '@/consts/revisao'
 import type { ReviewMarkKind } from '@/consts/revisao'
+import { DEMO_DATA } from '@/lib/demo'
 
 export type CompanySettingsType = {
   category?: string
@@ -32,6 +33,9 @@ export type CompanySettingsType = {
     permission?: string | string[]
     // Marcação temporária da revisão (src/consts/revisao.ts)
     review?: ReviewMarkKind
+    // Leva a uma tela de demonstração (dados de exemplo): o cartão só
+    // aparece com a flag (src/lib/demo.ts)
+    demo?: boolean
   }[]
 }
 
@@ -40,9 +44,15 @@ export function CompanySettingsList({
 }: {
   settings: CompanySettingsType[]
 }) {
+  // Cartão que leva a tela de demonstração só aparece com a flag
+  const visibleSettings = settings.map((setting) => ({
+    ...setting,
+    items: setting.items.filter((item) => DEMO_DATA || !item.demo),
+  }))
+
   return (
     <div className="space-y-8">
-      {settings.map((setting, index) => (
+      {visibleSettings.map((setting, index) => (
         <div key={index} className="space-y-4">
           {setting.category ? (
             <h1 className="type-page-title">{setting.category}</h1>

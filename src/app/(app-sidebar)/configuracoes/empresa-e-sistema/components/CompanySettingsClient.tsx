@@ -85,6 +85,7 @@ export function CompanySettingsClient() {
                   'Cadastre máquinas, equipamentos, móveis e veículos, com depreciação e custo por unidade',
                 link: `${defaultPath}/patrimonios`,
                 permission: ['cost:base:view', 'values:values:view'],
+                demo: true,
               },
             ]
           : []),

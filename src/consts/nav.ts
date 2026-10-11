@@ -65,6 +65,9 @@ export interface MainNavigationType {
   // Recurso do plano necessário para exibir o item (com lista, basta um). A
   // composição dos planos é configurada pelo superadmin.
   requiredFeature?: string | string[]
+  // Tela que ainda roda sobre dados de exemplo: o item só aparece com a flag
+  // de demonstração (src/lib/demo.ts). Sai junto com a rota de DEMO_ROUTES
+  demo?: boolean
   review?: ReviewMarkKind // Marcação temporária da revisão: azul = novo, vermelho = a desenvolver
   children?: MainNavigationType[] // ** Sub-itens de menu
 }
@@ -188,6 +191,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     path: '/base-de-custos',
     permission: 'values:values:view',
     requiredFeature: 'cost_base',
+    demo: true,
     children: [
       {
         icon: IconChartPie,
@@ -197,6 +201,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         requireAllPermissions: true,
         requiredFeature: 'cost_base',
+        demo: true,
       },
       {
         icon: IconTag,
@@ -206,6 +211,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: ['cost:pricing:view', 'values:values:view'],
         requireAllPermissions: true,
         requiredFeature: 'pricing_center',
+        demo: true,
       },
     ],
   },
@@ -246,6 +252,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'production:production:view',
         requiredFeature: 'production_manager',
+        demo: true,
       },
       {
         icon: IconClipboardList,
@@ -254,6 +261,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'production:production:view',
         requiredFeature: 'production_manager',
+        demo: true,
       },
       {
         icon: IconChartBar,
@@ -262,6 +270,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'production:production:view',
         requiredFeature: 'productivity_tracking',
+        demo: true,
       },
     ],
   },
@@ -301,6 +310,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'product_settings:products:view',
         requiredFeature: 'cost_base',
+        demo: true,
       },
       {
         icon: IconListCheck,
@@ -309,6 +319,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'product_settings:products:view',
         requiredFeature: 'cost_base',
+        demo: true,
       },
       {
         icon: IconBoxSeam,
@@ -330,6 +341,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
     path: '/estoque',
     permission: 'stock:stock:view',
     requiredFeature: 'stock_control',
+    demo: true,
     children: [
       {
         icon: IconBoxSeam,
@@ -338,6 +350,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         permission: 'stock:stock:view',
         requiredFeature: 'stock_control',
         review: 'new',
+        demo: true,
       },
       {
         icon: IconFileInvoice,
@@ -346,6 +359,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'stock:invoice_entry:view',
         requiredFeature: 'invoice_entry',
+        demo: true,
       },
     ],
   },
@@ -464,6 +478,7 @@ export const defaultMainNavigation: MainNavigationType[] = [
         review: 'new',
         permission: 'production:production:view',
         requiredFeature: 'production_manager',
+        demo: true,
       },
       {
         icon: IconUpload,

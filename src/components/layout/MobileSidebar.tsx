@@ -43,6 +43,7 @@ import { useFiscalOnboardingStatus } from '@/hooks/useFiscalOnboardingStatus'
 // Libs
 import { cn, getFirstAndLastName } from '@/lib/utils'
 import { planAllowsUsers } from '@/lib/plans/planAccess'
+import { DEMO_DATA } from '@/lib/demo'
 
 // Types
 import type { IconProps } from '@tabler/icons-react'
@@ -61,6 +62,7 @@ interface NavigationItem {
   permission?: string | string[]
   requiredModule?: string
   requiredFeature?: string | string[]
+  demo?: boolean
   children?: NavigationItem[]
 }
 
@@ -107,6 +109,9 @@ export function MobileSidebar({ className }: MobileSidebarProps) {
   }
 
   const checkItemAccess = (item: NavigationItem): boolean => {
+    // Tela de demonstração (dados de exemplo): só com a flag
+    if (item.demo && !DEMO_DATA) return false
+
     if (!checkPermission(item.permission)) {
       return false
     }
