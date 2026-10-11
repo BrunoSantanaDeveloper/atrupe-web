@@ -1,7 +1,6 @@
 import { ProductionSettings } from './components/ProductionSettings'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,12 +21,11 @@ export default function ProductionSettingsPage() {
     >
       <FeatureGate
         features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
-        fallback={
-          <UpgradeFallback
-            title="Configurações da produção"
-            description="Os gerenciadores e os tipos de tarefa fazem parte do plano ELITE."
-          />
-        }
+        wall={{
+          title: 'Configurações da produção',
+          description: 'Os gerenciadores e os tipos de tarefa da produção.',
+          pageTitle: true,
+        }}
       >
         <ProductionSettings />
       </FeatureGate>

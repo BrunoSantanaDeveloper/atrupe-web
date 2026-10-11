@@ -11,7 +11,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Topbar } from '@/components/common/Topbar'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Hooks / Store / Consts
 import { usePermissions } from '@/hooks/usePermissions'
@@ -44,12 +43,12 @@ export default function CostBaseLayout({ children }: Props) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={
-          <UpgradeFallback
-            title="Base de custos"
-            description="A Base de custos faz parte do plano PRO. Ela forma o custo mensal de referência da empresa e alimenta a precificação."
-          />
-        }
+        wall={{
+          title: 'Base de custos',
+          description:
+            'Forma o custo mensal de referência da empresa e alimenta a precificação.',
+          pageTitle: true,
+        }}
       >
         <div className="space-y-5">
           <Topbar

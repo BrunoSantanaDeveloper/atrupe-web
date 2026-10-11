@@ -1,7 +1,6 @@
 import { QuickSaleSettingsForm } from './components/QuickSaleSettingsForm'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,12 +21,11 @@ export default function QuickSalePage() {
     >
       <FeatureGate
         features={[FEATURES.SALES.QUOTATION_QUICK_SALE]}
-        fallback={
-          <UpgradeFallback
-            title="Venda rápida"
-            description="A venda de balcão, sem cadastro e sem perguntas, faz parte do plano LITE."
-          />
-        }
+        wall={{
+          title: 'Venda rápida',
+          description: 'A venda de balcão, sem cadastro e sem perguntas.',
+          pageTitle: true,
+        }}
       >
         <QuickSaleSettingsForm />
       </FeatureGate>

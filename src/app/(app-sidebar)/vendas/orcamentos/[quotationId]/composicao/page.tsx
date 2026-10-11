@@ -1,7 +1,6 @@
 import { QuotationComposition } from './components/QuotationComposition'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -31,12 +30,12 @@ export default function QuotationCompositionPage({
           FEATURES.COSTS.COST_BASE,
           FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
         ]}
-        fallback={
-          <UpgradeFallback
-            title="Composição no orçamento"
-            description="Montar o item por processos, partes e terceirizados faz parte do plano PRO. No START o item é vendido pelo preço do cadastro."
-          />
-        }
+        wall={{
+          title: 'Composição no orçamento',
+          description:
+            'Montar o item por processos, partes e terceirizados. Sem o recurso, o item é vendido pelo preço do cadastro.',
+          pageTitle: true,
+        }}
       >
         <QuotationComposition quotationId={params.quotationId} />
       </FeatureGate>

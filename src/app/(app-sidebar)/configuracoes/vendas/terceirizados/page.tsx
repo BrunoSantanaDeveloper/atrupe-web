@@ -1,7 +1,6 @@
 import { OutsourcedSettingsForm } from './components/OutsourcedSettingsForm'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -24,12 +23,11 @@ export default function OutsourcedSettingsPage() {
           em diante (T-2 continua em aberto para o START) */}
       <FeatureGate
         features={[FEATURES.PRODUCTS.PRODUCT_COMPOSITION]}
-        fallback={
-          <UpgradeFallback
-            title="Terceirizado avulso"
-            description="Lançar um terceirizado dentro do item do orçamento faz parte do plano LITE."
-          />
-        }
+        wall={{
+          title: 'Terceirizado avulso',
+          description: 'Lançar um terceirizado dentro do item do orçamento.',
+          pageTitle: true,
+        }}
       >
         <OutsourcedSettingsForm />
       </FeatureGate>

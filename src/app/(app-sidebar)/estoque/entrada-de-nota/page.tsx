@@ -1,7 +1,6 @@
 import { InvoiceEntry } from './components/InvoiceEntry'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,12 +21,12 @@ export default function InvoiceEntryPage() {
     >
       <FeatureGate
         features={[FEATURES.STOCK.INVOICE_ENTRY]}
-        fallback={
-          <UpgradeFallback
-            title="Entrada de nota"
-            description="A entrada de nota no estoque faz parte do plano FULL. Cada item da nota vira material interno, com a conversão da unidade de compra."
-          />
-        }
+        wall={{
+          title: 'Entrada de nota',
+          description:
+            'Cada item da nota vira material interno, com a conversão da unidade de compra.',
+          pageTitle: true,
+        }}
       >
         <InvoiceEntry />
       </FeatureGate>

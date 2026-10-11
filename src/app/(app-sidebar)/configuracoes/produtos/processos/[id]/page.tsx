@@ -1,7 +1,6 @@
 import { ProcessEditor } from './components/ProcessEditor'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,7 +21,7 @@ export default function ProcessPage({ params }: { params: { id: string } }) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={<UpgradeFallback title="Processos" />}
+        wall={{ title: 'Processos', pageTitle: true }}
       >
         <ProcessEditor id={params.id} />
       </FeatureGate>

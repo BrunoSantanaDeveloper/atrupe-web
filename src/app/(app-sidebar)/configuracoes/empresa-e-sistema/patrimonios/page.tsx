@@ -1,7 +1,6 @@
 import { Assets } from './components/Assets'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -26,12 +25,12 @@ export default function AssetsPage({ searchParams }: SearchParamsType) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={
-          <UpgradeFallback
-            title="Patrimônios"
-            description="O cadastro de patrimônios faz parte do plano PRO. Ele calcula a depreciação e o custo por unidade de cada máquina, móvel ou veículo."
-          />
-        }
+        wall={{
+          title: 'Patrimônios',
+          description:
+            'Calcula a depreciação e o custo por unidade de cada máquina, móvel ou veículo.',
+          pageTitle: true,
+        }}
       >
         <Assets searchParams={searchParams} />
       </FeatureGate>

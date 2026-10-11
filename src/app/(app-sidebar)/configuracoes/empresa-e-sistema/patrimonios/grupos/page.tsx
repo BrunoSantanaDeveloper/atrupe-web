@@ -1,7 +1,6 @@
 import { AssetGroups } from './components/AssetGroups'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -23,7 +22,7 @@ export default function AssetGroupsPage() {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={<UpgradeFallback title="Grupos de bens" />}
+        wall={{ title: 'Grupos de bens', pageTitle: true }}
       >
         <AssetGroups />
       </FeatureGate>

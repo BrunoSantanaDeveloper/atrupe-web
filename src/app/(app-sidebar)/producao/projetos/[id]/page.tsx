@@ -1,7 +1,6 @@
 import { ProjectDetail } from './components/ProjectDetail'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,7 +21,7 @@ export default function Page({ params }: { params: { id: string } }) {
     >
       <FeatureGate
         features={[FEATURES.PRODUCTION.PRODUCTION_MANAGER]}
-        fallback={<UpgradeFallback title="Projeto" />}
+        wall={{ title: 'Projeto', pageTitle: true }}
       >
         <ProjectDetail id={params.id} />
       </FeatureGate>

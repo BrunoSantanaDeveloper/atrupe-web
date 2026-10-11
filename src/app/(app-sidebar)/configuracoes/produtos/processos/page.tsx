@@ -1,7 +1,6 @@
 import { Processes } from './components/Processes'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -25,12 +24,12 @@ export default function ProcessesPage({ searchParams }: SearchParamsType) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={
-          <UpgradeFallback
-            title="Processos"
-            description="Os processos fazem parte do plano PRO. Cada processo é uma etapa produtiva de um setor, com máquina, material, mão de obra e terceirizado."
-          />
-        }
+        wall={{
+          title: 'Processos',
+          description:
+            'Cada processo é uma etapa produtiva de um setor, com máquina, material, mão de obra e terceirizado.',
+          pageTitle: true,
+        }}
       >
         <Processes searchParams={searchParams} />
       </FeatureGate>

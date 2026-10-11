@@ -1,7 +1,6 @@
 import { Productivity } from './components/Productivity'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -22,12 +21,12 @@ export default function ProductivityPage() {
     >
       <FeatureGate
         features={[FEATURES.PRODUCTION.PRODUCTIVITY_TRACKING]}
-        fallback={
-          <UpgradeFallback
-            title="Produtividade"
-            description="A medição de produtividade faz parte do plano ELITE: compara o tempo previsto pela composição com o tempo realizado na produção."
-          />
-        }
+        wall={{
+          title: 'Produtividade',
+          description:
+            'Compara o tempo previsto pela composição com o tempo realizado na produção.',
+          pageTitle: true,
+        }}
       >
         <Productivity />
       </FeatureGate>

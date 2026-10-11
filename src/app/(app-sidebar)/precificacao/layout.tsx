@@ -11,7 +11,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Topbar } from '@/components/common/Topbar'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Hooks / Store / Consts
 import { FEATURES } from '@/consts/features'
@@ -36,12 +35,12 @@ export default function PricingLayout({ children }: Props) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.PRICING_CENTER]}
-        fallback={
-          <UpgradeFallback
-            title="Precificação"
-            description="A central de Precificação faz parte do plano PRO. Ela reúne o preço de mão de obra, máquinas, materiais e produtos num lugar só."
-          />
-        }
+        wall={{
+          title: 'Precificação',
+          description:
+            'Reúne o preço de mão de obra, máquinas, materiais e produtos num lugar só.',
+          pageTitle: true,
+        }}
       >
         <div className="space-y-5">
           <Topbar

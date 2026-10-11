@@ -1,7 +1,6 @@
 import { CompositionDetail } from './components/CompositionDetail'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -31,7 +30,7 @@ export default function CompositionPage({
           FEATURES.COSTS.COST_BASE,
           FEATURES.PRODUCTS.PRODUCT_COMPOSITION,
         ]}
-        fallback={<UpgradeFallback title="Composições" />}
+        wall={{ title: 'Composições', pageTitle: true }}
       >
         <CompositionDetail id={params.id} />
       </FeatureGate>

@@ -1,7 +1,6 @@
 import { Stock } from './components/Stock'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -25,12 +24,12 @@ export default function StockPage({ searchParams }: SearchParamsType) {
     >
       <FeatureGate
         features={[FEATURES.STOCK.STOCK_CONTROL]}
-        fallback={
-          <UpgradeFallback
-            title="Estoque"
-            description="O controle de estoque faz parte do plano FULL. A entrada vem da nota conciliada e a baixa, do consumo real da produção."
-          />
-        }
+        wall={{
+          title: 'Estoque',
+          description:
+            'A entrada vem da nota conciliada e a baixa, do consumo real da produção.',
+          pageTitle: true,
+        }}
       >
         <Stock searchParams={searchParams} />
       </FeatureGate>

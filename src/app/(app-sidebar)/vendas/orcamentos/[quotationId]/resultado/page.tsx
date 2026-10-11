@@ -1,7 +1,6 @@
 import { QuotationResult } from './components/QuotationResult'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Consts
 import { FEATURES } from '@/consts/features'
@@ -30,12 +29,11 @@ export default function QuotationResultPage({
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={
-          <UpgradeFallback
-            title="Resultado previsto da venda"
-            description="Ver o custo, a margem e o resultado de cada venda faz parte do plano PRO."
-          />
-        }
+        wall={{
+          title: 'Resultado previsto da venda',
+          description: 'O custo, a margem e o resultado de cada venda.',
+          pageTitle: true,
+        }}
       >
         <QuotationResult quotationId={params.quotationId} />
       </FeatureGate>

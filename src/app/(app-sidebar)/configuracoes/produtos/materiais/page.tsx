@@ -1,7 +1,6 @@
 import { Materials } from './components/Materials'
 import { FeatureGate } from '@/components/common/FeatureGate'
 import { PermissionGate } from '@/components/common/PermissionGate'
-import { UpgradeFallback } from '@/components/common/UpgradeFallback'
 
 // Types
 import type { SearchParamsType } from '@/types/coreTypes'
@@ -25,12 +24,12 @@ export default function MaterialsPage({ searchParams }: SearchParamsType) {
     >
       <FeatureGate
         features={[FEATURES.COSTS.COST_BASE]}
-        fallback={
-          <UpgradeFallback
-            title="Materiais"
-            description="O cadastro de materiais faz parte do plano PRO. Os materiais compõem os produtos que a empresa já vende, sem recadastro."
-          />
-        }
+        wall={{
+          title: 'Materiais',
+          description:
+            'Os materiais compõem os produtos que a empresa já vende, sem recadastro.',
+          pageTitle: true,
+        }}
       >
         <Materials searchParams={searchParams} />
       </FeatureGate>
