@@ -70,10 +70,12 @@ export function usePlanErrorToast() {
         return true
       }
 
-      // Nenhum plano tem o recurso (e não é módulo): não há o que contratar.
-      const purchasable = planError.module || !!planError.availableFrom
+      // Como na parede: sem plano que tenha o recurso, ou com ele ainda fora
+      // de contratação, não há o que contratar na trilha.
+      const purchasable =
+        !!planError.module || !!planError.availableFrom?.isActive
       toast.error(planError.message, {
-        description: isOwner ? undefined : ASK_PRINCIPAL_ADMIN,
+        description: !isOwner && purchasable ? ASK_PRINCIPAL_ADMIN : undefined,
         action:
           isOwner && purchasable
             ? {
