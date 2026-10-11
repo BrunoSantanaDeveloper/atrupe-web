@@ -25,7 +25,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 
 // Components
 import { MyProfileDialog } from './MyProfile'
-import { THEME_OPTIONS } from './theme-options'
+import { THEME_OPTIONS, THEME_SWITCHER } from './theme-options'
 
 // Icons
 import { CreditCard, LogOut, User } from 'lucide-react'
@@ -85,30 +85,33 @@ export function UserDropdown({ collapsed }: { collapsed: boolean }) {
                 <span>Assinatura</span>
               </DropdownMenuItem>
             )}
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <currentTheme.icon size={16} className="mr-2" />
-                <span>Tema</span>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent className="min-w-36">
-                  <DropdownMenuRadioGroup
-                    value={currentTheme.value}
-                    onValueChange={setTheme}
-                  >
-                    {THEME_OPTIONS.map((option) => (
-                      <DropdownMenuRadioItem
-                        key={option.value}
-                        value={option.value}
-                      >
-                        <option.icon size={16} className="mr-2" />
-                        <span>{option.label}</span>
-                      </DropdownMenuRadioItem>
-                    ))}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
+            {/* Escondido até a mudança tema-claro-escuro ser arquivada */}
+            {THEME_SWITCHER && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <currentTheme.icon size={16} className="mr-2" />
+                  <span>Tema</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="min-w-36">
+                    <DropdownMenuRadioGroup
+                      value={currentTheme.value}
+                      onValueChange={setTheme}
+                    >
+                      {THEME_OPTIONS.map((option) => (
+                        <DropdownMenuRadioItem
+                          key={option.value}
+                          value={option.value}
+                        >
+                          <option.icon size={16} className="mr-2" />
+                          <span>{option.label}</span>
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogOut}>

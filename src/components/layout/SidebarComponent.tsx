@@ -39,7 +39,7 @@ import { DEMO_DATA } from '@/lib/demo'
 // Consts
 import { HOME_PAGE, SYSTEM_HOME_PAGE } from '@/middleware'
 import { getMainNavigation, userRoleObj } from '@/consts/nav'
-import { reviewTextClass, REVIEW_LEGEND } from '@/consts/revisao'
+import { reviewTextClass, REVIEW_LEGEND, REVIEW_MARKS } from '@/consts/revisao'
 
 // Third-party
 import { setCookie } from 'cookies-next'
@@ -537,13 +537,16 @@ export function SidebarComponent(props: Props) {
             </nav>
           </ScrollArea>
 
-          {process.env.NODE_ENV === 'development' && (
+          {(process.env.NODE_ENV === 'development' || REVIEW_MARKS) && (
             <div className="border-t border-gray-200 p-4">
-              <p className="text-xs text-gray-500">
-                Plano: {session.company.plan?.name}
-              </p>
-              {/* Legenda da revisão — some junto com src/consts/revisao.ts */}
-              {!collapsed && (
+              {process.env.NODE_ENV === 'development' && (
+                <p className="text-xs text-gray-500">
+                  Plano: {session.company.plan?.name}
+                </p>
+              )}
+              {/* Legenda da revisão: só com as marcas ligadas
+                  (NEXT_PUBLIC_REVIEW_MARKS, src/consts/revisao.ts) */}
+              {REVIEW_MARKS && !collapsed && (
                 <div className="mt-2 space-y-0.5">
                   <p className="text-xs text-blue-600">
                     azul · {REVIEW_LEGEND.new}

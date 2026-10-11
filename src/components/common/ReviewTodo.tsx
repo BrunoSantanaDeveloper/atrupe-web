@@ -4,8 +4,10 @@
 // para a revisão enxergar o sistema inteiro sem abrir documento: o que está
 // vermelho é decisão registrada que ainda não virou tela.
 //
-// Temporário, como src/consts/revisao.ts. Sai antes de produção.
+// Temporário, como src/consts/revisao.ts: só aparece com as marcas de
+// revisão ligadas (NEXT_PUBLIC_REVIEW_MARKS=on, homolog e local).
 import { cn } from '@/lib/utils'
+import { REVIEW_MARKS } from '@/consts/revisao'
 
 interface Props {
   // O que vai existir ali, em uma linha
@@ -18,6 +20,8 @@ interface Props {
 }
 
 export function ReviewTodo({ title, rule, children, className }: Props) {
+  if (!REVIEW_MARKS) return null
+
   return (
     <div
       className={cn(
