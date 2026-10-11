@@ -59,7 +59,7 @@ export function DeleteAlertDialog(props: Props) {
       return
     }
 
-    toast.success('Sucesso!')
+    toast.success('Status removido')
   }
 
   const handleOpenChange = (openDialog: boolean) => {

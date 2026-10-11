@@ -99,7 +99,7 @@ export function NewItemDialog({
       return
     }
 
-    toast.success('Sucesso!')
+    toast.success('Motivo salvo')
     handleOpenChange(false)
   }
 

@@ -84,7 +84,7 @@ export function NewItemDialog({ editMode, rowData, open, setOpen }: Props) {
       return
     }
 
-    toast.success('Sucesso!')
+    toast.success('Status salvo')
     handleOpenChange(false)
   }
 
